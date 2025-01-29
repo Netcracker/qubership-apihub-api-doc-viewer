@@ -18,5 +18,5 @@ jobs:
     if: ${{ github.ref != 'refs/heads/gh-pages' }}
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/workflow-for-storybook
   deploy:
-    needs: call-frontend-ci-workflow
+#    needs: call-frontend-ci-workflow
     uses: netcracker/qubership-apihub-ci/.github/workflows/deploy-storybook.yaml@feature/workflow-for-storybook
