@@ -7,7 +7,6 @@ on:
       - release
       - develop
       - feature/*
-      - gh-pages
   delete:
     branches:
       - release
@@ -15,7 +14,6 @@ on:
 
 jobs:
   call-frontend-ci-workflow:
-    if: ${{ github.ref != 'refs/heads/gh-pages' }}
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/workflow-for-storybook
   deploy:
     needs: call-frontend-ci-workflow
