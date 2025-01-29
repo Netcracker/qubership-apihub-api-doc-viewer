@@ -16,4 +16,5 @@ jobs:
   call-frontend-ci-workflow:
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/workflow-for-storybook
   deploy:
-    uses: ./.github/workflows/upload/action.yml
+    needs: call-frontend-ci-workflow
+    uses: netcracker/qubership-apihub-ci/.github/workflows/deploy-storybook.yaml@feature/workflow-for-storybook
