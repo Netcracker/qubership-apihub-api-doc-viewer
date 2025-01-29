@@ -1,22 +1,8 @@
-name: Frontend CI Workflow
+name: Deploy storybook
 
 on:
   push:
-    branches:
-      - main
-      - release
-      - develop
-      - feature/*
-      - gh-pages
-  delete:
-    branches:
-      - release
-      - feature/*
-
+    branches: [gh-pages]
 jobs:
-  call-frontend-ci-workflow:
-    if: ${{ github.ref != 'refs/heads/gh-pages' }}
-    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/workflow-for-storybook
   deploy:
-#    needs: call-frontend-ci-workflow
     uses: netcracker/qubership-apihub-ci/.github/workflows/deploy-storybook.yaml@feature/workflow-for-storybook
