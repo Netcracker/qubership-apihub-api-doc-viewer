@@ -1,6 +1,6 @@
 {
   "name": "@netcracker/qubership-apihub-api-doc-viewer",
-  "version": "2.0.3-workflow-for-storybook.30",
+  "version": "2.0.3-workflow-for-storybook.31",
   "type": "module",
   "exports": {
     ".": {
