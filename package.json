@@ -50,18 +50,18 @@
     "strip-ansi": "6.0.1"
   },
   "dependencies": {
-    "@netcracker/qubership-apihub-api-data-model": "1.0.3",
-    "@netcracker/qubership-apihub-api-diff": "1.0.4",
+    "@netcracker/qubership-apihub-api-data-model": "feature-npm-update",
+    "@netcracker/qubership-apihub-api-diff": "feature-npm-update",
     "react-markdown": "8.0.7",
     "react-use": "^17.6.0",
     "remark-gfm": "3.0.1"
   },
   "devDependencies": {
-    "@netcracker/qubership-apihub-api-unifier": "1.0.4",
-    "@netcracker/qubership-apihub-compatibility-suites": "2.0.3",
-    "@netcracker/qubership-apihub-graphapi": "1.0.8",
-    "@netcracker/qubership-apihub-npm-gitflow": "2.2.2",
-    "@netcracker/qubership-apihub-jest-chrome-in-docker-environment": "1.0.3",
+    "@netcracker/qubership-apihub-api-unifier": "feature-npm-update",
+    "@netcracker/qubership-apihub-compatibility-suites": "feature-npm-update",
+    "@netcracker/qubership-apihub-graphapi": "feature-npm-update",
+    "@netcracker/qubership-apihub-npm-gitflow": "feature-npm-update",
+    "@netcracker/qubership-apihub-jest-chrome-in-docker-environment": "feature-npm-update",
     "@storybook/addon-essentials": "8.1.11",
     "@storybook/addon-interactions": "8.1.11",
     "@storybook/addon-links": "8.1.11",
