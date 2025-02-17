@@ -1,8 +1,0 @@
-name: Deploy storybook
-
-on:
-  push:
-    branches: [gh-pages]
-jobs:
-  deploy:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/deploy-storybook.yaml@feature/workflow-for-storybook
