@@ -31,7 +31,7 @@
     "generate-tests": "node bin/generate-graphql-compatibility-suite-tests.mjs",
     "postinstall": "npm run generate-stories & npm run generate-tests",
     "development:storybook": "storybook dev -p 9009",
-    "development:local-server:static": "ws -p 9009 -d dist-showcase --spa index.html --static.maxage 3600",
+    "development:local-server:static": "npm run build:showcase && ws -p 9009 -d dist-showcase --spa index.html --static.maxage 3600",
     "integration-test:ci": "start-server-and-test development:local-server:static http://localhost:9009 integration-test:run-test:ci",
     "integration-test:docker": "start-server-and-test development:local-server:static http://localhost:9009 integration-test:run-test:docker",
     "integration-test:run-test:ci": "jest --maxWorkers 4 -c .config/it/it-test.jest.config.cjs",
