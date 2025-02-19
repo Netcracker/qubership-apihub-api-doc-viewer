@@ -15,4 +15,4 @@ on:
 
 jobs:
   call-frontend-ci-workflow:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@main
+    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@feature/screenshot-tests-restoration
