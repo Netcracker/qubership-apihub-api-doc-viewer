@@ -15,9 +15,11 @@
  */
 import type { FC } from '../../../../../node_modules/react';
 import { DiffType } from '@netcracker/qubership-apihub-api-diff';
-export type UxFloatingBadgeProps = {
+type FloatingVariant = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type UxDiffMarkerProps = {
     variant: DiffType;
-    message: string | undefined;
-    backgroundColor?: string;
+    tooltip?: DiffType;
+    floating?: FloatingVariant;
 };
-export declare const UxFloatingBadge: FC<UxFloatingBadgeProps>;
+export declare const UxDiffMarker: FC<UxDiffMarkerProps>;
+export {};
