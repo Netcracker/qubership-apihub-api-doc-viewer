@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { FC } from '../../../../../node_modules/react';
 import { DiffType } from '@netcracker/qubership-apihub-api-diff';
-import { BadgeKind } from './types';
-export declare const COLOR_SCHEMAS: Record<BadgeKind, string>;
-export declare const DIFF_TYPE_COLORS: Record<DiffType, string>;
-export declare const DIFF_TYPE_NAME_MAP: Record<DiffType, string>;
-export declare const COMMON_LAYOUT_STYLE_WITHOUT_BORDER = "rounded-md px-2 pb-px text-xs font-normal";
-export declare const COMMON_LAYOUT_STYLE: string;
+export type UxDiffFloatingBadgeProps = {
+    variant: DiffType;
+    message: string | undefined;
+    backgroundColor?: string;
+};
+export declare const UxDiffFloatingBadge: FC<UxDiffFloatingBadgeProps>;
