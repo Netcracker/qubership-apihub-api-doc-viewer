@@ -36,7 +36,7 @@ export const INLINE_CONTENT_DIFF_COLOR_SCHEMAS: Partial<Record<ActionType, strin
 
 export const CHANGE_SEVERITIES: Record<DiffType, number> = {
   breaking: 6,
-  'semi-breaking': 5,
+  risky: 5,
   deprecated: 4,
   'non-breaking': 3,
   annotation: 2,
