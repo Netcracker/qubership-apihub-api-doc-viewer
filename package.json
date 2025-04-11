@@ -1,6 +1,6 @@
 {
   "name": "@netcracker/qubership-apihub-api-doc-viewer",
-  "version": "2.0.7-feature-rename-label-semi-breaking-changes-two.0",
+  "version": "2.0.8",
   "type": "module",
   "exports": {
     ".": {
