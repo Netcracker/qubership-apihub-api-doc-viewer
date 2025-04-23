@@ -42,6 +42,7 @@ export declare const API_TYPE_GRAPHQL = "graphql";
 export type ApiType = typeof API_TYPE_REST | typeof API_TYPE_GRAPHQL;
 export declare function toChangesList($changes: DiffRecord | undefined, $metaChanges: DiffRecord | undefined, apiType: ApiType): Diff[];
 export declare function takeNodeChangeIfAllChildrenChanged(children: IModelStateNode<any>[]): NodeChange | undefined;
+export declare function takeNodeChangeIfWholeNodeChanged(nodeChange: NodeChange | undefined): NodeChange | undefined;
 export declare function inferRowChange(itemsCount: number, $rowChanges: Diff | DiffRecord | undefined): Diff | undefined;
 export declare function isDiffTypeIncluded(diffType: DiffType | undefined, filters: readonly DiffType[]): boolean;
 export declare function filterChangesList(changesList: Diff[], filters: readonly DiffType[]): Diff[];

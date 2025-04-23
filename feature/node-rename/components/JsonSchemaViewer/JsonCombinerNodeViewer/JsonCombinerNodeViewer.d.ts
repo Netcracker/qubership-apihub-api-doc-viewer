@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import type { FC } from '../../../../node_modules/react';
-import { JsonCombinerNodePropsWithState } from '../../../types/internal/PropsWithState';
 import { PropsWithChanges } from '../../../types/internal/PropsWithChanges';
+import { JsonCombinerNodePropsWithState } from '../../../types/internal/PropsWithState';
 import { PropsWithoutChangesSummary } from '../../../types/PropsWithoutChangesSummary';
 export type JsonCombinerNodeViewerProps = PropsWithoutChangesSummary<JsonCombinerNodePropsWithState & {
     onGlobalSelectNestedNode: (nodeId?: string) => void;
