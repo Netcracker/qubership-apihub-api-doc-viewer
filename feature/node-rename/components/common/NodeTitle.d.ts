@@ -26,5 +26,6 @@ export type NodeTitleProps = NodeTitleData & {
     layoutSide?: LayoutSide;
     requiredChange?: Diff | DiffRecord;
     nullableChange?: Diff | DiffRecord;
+    titleChange?: Diff;
 };
 export declare const NodeTitle: FC<NodeTitleProps>;

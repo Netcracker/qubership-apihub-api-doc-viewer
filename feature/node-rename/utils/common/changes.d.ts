@@ -21,7 +21,7 @@ import { LayoutSide } from '../../types/internal/LayoutSide';
 export declare function diffAdd(diff?: Diff): diff is DiffAdd;
 export declare function diffRemove(diff?: Diff): diff is DiffRemove;
 export declare function diffReplace(diff?: Diff): diff is DiffReplace;
-export declare function diffRename(diff?: Diff): diff is DiffReplace;
+export declare function diffRename(diff?: Diff): diff is DiffRename;
 export declare function buildOpenApiDiffCause(diff: Diff | undefined): string | undefined;
 export declare function maxDiffType(...changes: Array<Diff | undefined>): [DiffType | undefined, string | undefined];
 export declare function maxDiffTypeFromNodeSummary(summary?: NodeChangesSummary): DiffType | undefined;
