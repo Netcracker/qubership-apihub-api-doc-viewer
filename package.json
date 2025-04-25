@@ -52,14 +52,14 @@
     "strip-ansi": "6.0.1"
   },
   "dependencies": {
-    "@netcracker/qubership-apihub-api-data-model": "dev",
-    "@netcracker/qubership-apihub-api-diff": "dev",
+    "@netcracker/qubership-apihub-api-data-model": "bugfix-handle-rich-ref-separately",
+    "@netcracker/qubership-apihub-api-diff": "bugfix-handle-rich-ref-separately",
     "react-markdown": "8.0.7",
     "react-use": "^17.6.0",
     "remark-gfm": "3.0.1"
   },
   "devDependencies": {
-    "@netcracker/qubership-apihub-api-unifier": "1.0.4",
+    "@netcracker/qubership-apihub-api-unifier": "bugfix-handle-rich-ref-separately",
     "@netcracker/qubership-apihub-compatibility-suites": "2.0.3",
     "@netcracker/qubership-apihub-graphapi": "1.0.8",
     "@netcracker/qubership-apihub-npm-gitflow": "2.2.2",
