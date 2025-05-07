@@ -27,4 +27,5 @@ declare const meta: {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export declare const Test: Story;
+export declare const RenamedProperty: Story;
 export declare const Flags: Story;
