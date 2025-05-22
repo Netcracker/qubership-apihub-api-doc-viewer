@@ -4,8 +4,14 @@
   "license": "Apache-2.0",
   "type": "module",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "development:link": "npm link && npm link @netcracker/qubership-apihub-api-data-model && npm link @netcracker/qubership-apihub-graphapi && npm link @netcracker/qubership-apihub-api-diff && npm link @netcracker/qubership-apihub-api-unifier && npm link @netcracker/qubership-apihub-json-crawl",
+    "development:unlink": "npm unlink && npm unlink @netcracker/qubership-apihub-api-data-model && npm unlink @netcracker/qubership-apihub-graphapi && npm unlink @netcracker/qubership-apihub-api-diff && npm unlink @netcracker/qubership-apihub-api-unifier && npm unlink @netcracker/qubership-apihub-json-crawl",
+    "postinstall": "lerna run generate-stories --scope=@netcracker/qubership-apihub-api-doc-viewer & lerna run generate-tests --scope=@netcracker/qubership-apihub-api-doc-viewer"
   },
   "dependencies": {
     "@netcracker/qubership-apihub-api-data-model": "1.0.6",
