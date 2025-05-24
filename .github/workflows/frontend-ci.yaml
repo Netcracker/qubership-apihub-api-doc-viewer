@@ -13,4 +13,4 @@ on:
 
 jobs:
   call-frontend-ci-workflow:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@bugfix/npm-ci-hangs-up
+    uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@bugfix/npm-ci-hangs-up 
