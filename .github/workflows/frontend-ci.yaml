@@ -16,3 +16,4 @@ jobs:
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@bugfix/npm-ci-hangs-up 
     with:
       npm_log_level: "silly"
+      node_version: "20.11.1"
