@@ -1,8 +1,8 @@
 name: Storybook CD Workflow
 
 on:
-  push: 
-    branches:
+  workflow_dispatch:
+
   delete:
     branches:      
 
