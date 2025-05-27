@@ -25,6 +25,9 @@
       ],
       "@netcracker/qubership-apihub-api-state-model": [
         "./../api-state-model/src"
+      ],
+      "@netcracker/qubership-apihub-api-data-model": [
+        "./../api-data-model/src"
       ]
     }
   },

@@ -1,8 +1,9 @@
 {
   "name": "@netcracker/qubership-apihub-api-data-model",
-  "version": "1.0.7",
-  "private": true,
+  "version": "0.0.0",
   "license": "Apache-2.0",
+  "type": "module",
+  "private": true,
   "description": "Convert JSON schema-based document into structured and simplified data tree ",
   "scripts": {
     "test": "jest --maxWorkers 3 --verbose",
@@ -12,10 +13,6 @@
     "@types/js-yaml": "^4.0.5",
     "@types/treeify": "^1.0.0",
     "js-yaml": "^4.1.0",
-    "rimraf": "^5.0.5",
     "treeify": "^1.1.0"
-  },
-  "eslintConfig": {
-    "extends": ".eslintrc.json"
   }
 }
