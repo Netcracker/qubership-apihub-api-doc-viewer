@@ -1,4 +1,4 @@
-name: Frontend CI Workflow
+name: frontend-ci 
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
       - hotfix
       - develop
       - feature/*
-      - bugfix/*
+      - bugfix/*      
     tags:
       - '**'
-  delete:
 
 jobs:
   call-frontend-ci-workflow:
     uses: netcracker/qubership-apihub-ci/.github/workflows/frontend-ci.yaml@main
+    with:      
+      container: "ghcr.io/netcracker/qubership-apihub-nodejs-dev-image:1.7.3"
