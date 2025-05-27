@@ -107,7 +107,7 @@ export function createGraphSchemaTreeCrawlHook(
 
     if (res.value) {
       const stack = new Map(state.alreadyConvertedMappingStack);
-      stack.set(value, <GraphApiTreeNode | GraphApiTreeComplexNode>res.node);
+      stack.set(value, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
       const newState: GraphApiCrawlState = res.node.type === modelTreeNodeType.simple
         ? { parent: res.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
         : { parent, container: res.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
