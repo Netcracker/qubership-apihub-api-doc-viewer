@@ -1,8 +1,8 @@
-import { Diff, DiffAction, DiffAdd, DiffMetaRecord, DiffRemove, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from '@netcracker/qubership-apihub-api-diff'
-import { GraphApiEnumDefinition, isGraphApiAnyUsage, isGraphApiEnumDefinition, isGraphApiRef } from '@netcracker/qubership-apihub-graphapi'
+import { Diff, DiffAction, DiffAdd, DiffMetaRecord, DiffRemove, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from '@netcracker/qubership-apihub-api-diff'
+import { GraphApiEnumDefinition, isGraphApiAnyUsage, isGraphApiRef } from '@netcracker/qubership-apihub-graphapi'
 import { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
-import { IModelTreeNode, ModelTreeNodeType } from './abstract/model/types'
 import { DiffNodeMeta, DiffNodeValue, DiffRecord, NodeChangesSummary } from './abstract/diff'
+import { IModelTreeNode, ModelTreeNodeType } from './abstract/model/types'
 
 export const isKey = <T extends object>(x: T, k: PropertyKey): k is keyof T => {
   return k in x

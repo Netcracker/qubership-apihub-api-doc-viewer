@@ -8,7 +8,7 @@ import { getNodeComplexityType, inverDiffAction, isDiff, isObject, objectKeys, P
 import { graphSchemaNodeKind, graphSchemaNodeMetaProps, graphSchemaNodeValueProps } from '../constants';
 import { isGraphApiNodeType } from '../guards';
 import { type GraphSchemaNodeKind, type GraphSchemaNodeType } from '../tree/types';
-import { resolveDirectiveDeprecated, resolveEnumValues, transformChangesForDirectiveDeprecated } from '../utils';
+import { resolveDirectiveDeprecated, resolveEnumValues } from '../utils';
 import { GraphApiDiffNodeMeta, GraphSchemaDiffNodeValue } from './types';
 
 const OBJECTIVE_KINDS = new Set([
@@ -369,7 +369,7 @@ export class GraphApiModelDiffTree<
   protected getPropsChanges(_value: any, props: readonly string[]) {
     const changes: DiffRecord = {}
     const scanned: Set<unknown> = new Set()
-    syncCrawl(_value, ({ value, path, key }) => {
+    syncCrawl(_value, ({ value, path }) => {
       // exit if we found loop
       if (scanned.has(value)) {
         return { done: true }
