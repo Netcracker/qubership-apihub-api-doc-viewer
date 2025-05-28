@@ -2,7 +2,6 @@
   "name": "@netcracker/qubership-apihub-api-doc-viewer",
   "version": "3.0.0",
   "license": "Apache-2.0",
-  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
@@ -29,8 +28,5 @@
     "screenshot-test:run-test:docker": "jest --maxWorkers 4 -c .config/it/it-test-docker.jest.config.cjs",
     "screenshot-test:regenerate-snapshots": "start-server-and-test development:local-server:static http://localhost:9009 screenshot-test:regenerate-snapshots:run",
     "screenshot-test:regenerate-snapshots:run": "jest --maxWorkers 4 --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs"
-  },
-  "devDependencies": {
-    "vite-tsconfig-paths": "^5.1.4"
   }
 }

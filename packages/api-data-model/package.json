@@ -2,7 +2,6 @@
   "name": "@netcracker/qubership-apihub-api-data-model",
   "version": "0.0.0",
   "license": "Apache-2.0",
-  "type": "module",
   "private": true,
   "description": "Convert JSON schema-based document into structured and simplified data tree ",
   "main": "src/index.ts",
