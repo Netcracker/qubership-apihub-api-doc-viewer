@@ -18,8 +18,6 @@ import react from '@vitejs/plugin-react';
 import path from "path";
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import pkg from '../../package.json'
-import ownPkg from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -35,15 +33,12 @@ export default defineConfig({
     minify: false,
     emptyOutDir: true,
     rollupOptions: {
-      external: [
-        ...('dependencies' in pkg ? Object.keys(pkg.dependencies as Record<string, string>) : []),
-        ...('dependencies' in ownPkg ? Object.keys(ownPkg.dependencies as Record<string, string>) : []),
-      ],
+      external: ["react", "react-dom"],
     },
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format}.js`,
+      formats: ['es'],
+      fileName: 'index',
     },
   },
 })

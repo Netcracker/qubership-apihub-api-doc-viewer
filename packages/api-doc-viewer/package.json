@@ -2,16 +2,18 @@
   "name": "@netcracker/qubership-apihub-api-doc-viewer",
   "version": "3.0.0",
   "license": "Apache-2.0",
-  "module": "./dist/index.es.js",
-  "main": "./dist/index.cjs.js",
-  "types": "./dist/index.d.ts",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "default": "./dist/style.css"
+    }
   },
   "files": [
     "dist",
