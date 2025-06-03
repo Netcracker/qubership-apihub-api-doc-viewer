@@ -34,20 +34,14 @@
     "screenshot-test:regenerate-snapshots": "start-server-and-test development:local-server:static http://localhost:9009 screenshot-test:regenerate-snapshots:run",
     "screenshot-test:regenerate-snapshots:run": "jest --maxWorkers 4 --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs"
   },
-  "dependencies": {
-    "@netcracker/qubership-apihub-api-diff": "2.0.0",
-    "@netcracker/qubership-apihub-api-unifier": "2.0.0",
-    "@netcracker/qubership-apihub-graphapi": "1.0.8",
-    "@netcracker/qubership-apihub-json-crawl": "1.0.4",
+  "dependencies": {    
     "postcss": "8.4.29",
     "react-markdown": "8.0.7",
     "react-use": "^17.6.0",
     "remark-gfm": "3.0.1",
     "tailwindcss": "3.3.3"
   },
-  "devDependencies": {
-    "@netcracker/qubership-apihub-compatibility-suites": "2.0.3",
-    "@netcracker/qubership-apihub-jest-chrome-in-docker-environment": "2.0.0",
+  "devDependencies": {    
     "@storybook/addon-essentials": "8.1.11",
     "@storybook/addon-interactions": "8.1.11",
     "@storybook/addon-links": "8.1.11",
