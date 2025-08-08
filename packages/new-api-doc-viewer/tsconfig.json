@@ -2,32 +2,17 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@apihub/builders/*": [
-        "./src/builders/*"
+      "@adv/graph-ql/*": [
+        "./src/graph-ql/*"
       ],
-      "@apihub/components/*": [
-        "./src/components/*"
+      "@adv/json-schema/*": [
+        "./src/json-schema/*"
       ],
-      "@apihub/constants/*": [
-        "./src/consts/*"
+      "@adv/shared/*": [
+        "./src/shared/*"
       ],
-      "@apihub/contexts/*": [
-        "./src/contexts/*"
-      ],
-      "@apihub/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@apihub/types/*": [
-        "./src/types/*"
-      ],
-      "@apihub/utils/*": [
-        "./src/utils/*"
-      ],
-      "@netcracker/qubership-apihub-api-state-model": [
-        "./../api-state-model/src"
-      ],
-      "@netcracker/qubership-apihub-api-data-model": [
-        "./../api-data-model/src"
+      "@netcracker/qubership-apihub-new-api-data-model/*": [
+        "./../new-api-data-model/src/*"
       ]
     }
   },

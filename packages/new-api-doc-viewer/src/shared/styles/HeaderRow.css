@@ -1,0 +1,9 @@
+.node-title {
+  color: var(--primary-font-color);
+}
+
+.node-type,
+.arguments-in-header,
+.directive-locations-in-header {
+  color: rgb(115, 129, 146);
+}

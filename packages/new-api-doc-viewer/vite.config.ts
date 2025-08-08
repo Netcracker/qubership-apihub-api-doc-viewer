@@ -41,4 +41,11 @@ export default defineConfig({
       fileName: 'index',
     },
   },
+  resolve: {
+    alias: {
+      '@adv/shared': path.resolve(__dirname, './src/shared/'),
+      '@adv/json-schema': path.resolve(__dirname, './src/json-schema/'),
+      '@adv/graph-ql': path.resolve(__dirname, './src/graph-ql/'),
+    },
+  },
 })
