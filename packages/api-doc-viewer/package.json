@@ -22,7 +22,7 @@
   "scripts": {
     "build": "npm run build:dist",
     "build:dist": "tsc && vite build",
-    "build:showcase": "storybook build -o dist-showcase --disable-telemetry",
+    "build:showcase": "storybook build -o ../../dist-showcase --disable-telemetry",
     "generate-stories": "node bin/generate-graphql-compatibility-suite-stories.mjs",
     "generate-tests": "node bin/generate-graphql-compatibility-suite-tests.mjs",
     "development:storybook": "storybook dev -p 9009",
