@@ -17860,7 +17860,7 @@ paths:
         '200':
           description: OK
           content: { }
-`}],["openapi/pathItems/add-method-in-pathitem",{before:`openapi: 3.1.0
+`}],["openapi/path-item/add-method-in-path-item",{before:`openapi: 3.1.0
 info:
   title: test
   version: 1.0.0
@@ -17902,7 +17902,7 @@ components:
         responses:
           '201':
             description: Created
-`}],["openapi/pathItems/add-unused-method-in-pathitem",{before:`openapi: 3.1.0
+`}],["openapi/path-item/add-unused-method-in-path-item",{before:`openapi: 3.1.0
 info:
   title: test
   version: 1.0.0
@@ -17945,7 +17945,7 @@ components:
         responses:
           '201':
             description: Created
-`}],["openapi/pathItems/remove-method-in-pathitem",{before:`openapi: 3.1.0
+`}],["openapi/path-item/remove-method-in-path-item",{before:`openapi: 3.1.0
 info:
   title: test
   version: 1.0.0
@@ -17987,7 +17987,7 @@ components:
         summary: Get users
         responses:
           '200': { description: OK }
-`}],["openapi/pathItems/replace-inline-pathitem-to-ref",{before:`openapi: 3.1.0
+`}],["openapi/path-item/replace-inline-path-item-to-ref",{before:`openapi: 3.1.0
 info:
   title: test
   version: 1.0.0
@@ -18013,7 +18013,7 @@ components:
         responses:
           '200':
             description: OK
-`}],["openapi/pathItems/replace-ref-pathitem-to-inline",{before:`openapi: 3.1.0
+`}],["openapi/path-item/replace-ref-path-item-to-inline",{before:`openapi: 3.1.0
 info:
   title: test
   version: 1.0.0
