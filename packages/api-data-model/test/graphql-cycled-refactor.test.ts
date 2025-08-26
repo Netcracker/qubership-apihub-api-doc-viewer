@@ -1,9 +1,4 @@
-import objectHash, { NotUndefined } from 'object-hash'
-
-export function calculateObjectHash(value: NotUndefined): string {
-  // object hash works only with object keys available in Object.keys() method
-  return objectHash(value, { algorithm: 'md5' })
-}
+import { calculateObjectHash } from "../src/graph-api/common/hooks/cycle-guard"
 
 describe('GraphQL cycled issue', () => {
   it('must not freeze', () => {

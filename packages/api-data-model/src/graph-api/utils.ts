@@ -1,6 +1,6 @@
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { GraphApiDirective, isGraphApiDirective, isGraphApiEnumDefinition } from "@netcracker/qubership-apihub-graphapi"
-import { CrawlHookResponse, JsonPath, syncCrawl } from '@netcracker/qubership-apihub-json-crawl'
+import { JsonPath, syncCrawl } from '@netcracker/qubership-apihub-json-crawl'
 import { isDiff, isObject, setValueByPath, wasGraphApiEnumDefinition } from "../utils"
 
 type GraphApiFragmentWithDirectives = {

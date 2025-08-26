@@ -1,5 +1,5 @@
 import { CrawlRules, syncCrawl, SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl';
-import { createCycleGuardHook } from '../../abstract/hooks/cycle-guard';
+import { createCycleGuardHook } from '../common/hooks/cycle-guard';
 import { graphApiRules } from '../rules';
 import { createGraphSchemaTreeCrawlHook } from '../tree/hooks/create-graph-api-schema-nodes';
 import type { GraphApiNodeKind } from '../tree/types';
