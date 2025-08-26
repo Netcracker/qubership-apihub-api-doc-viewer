@@ -11,9 +11,13 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
+    "@types/object-hash": "^3.0.6",
     "@types/treeify": "^1.0.0",
     "js-yaml": "^4.1.0",
     "treeify": "^1.1.0",
     "ts-node": "10.7.0"
+  },
+  "dependencies": {
+    "object-hash": "^3.0.0"
   }
 }
