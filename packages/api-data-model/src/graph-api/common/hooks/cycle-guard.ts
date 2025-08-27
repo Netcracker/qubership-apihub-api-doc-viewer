@@ -1,7 +1,7 @@
-import { ModelTree } from '@apihub/abstract-model/model/model-tree.impl'
-import { IModelTreeNode } from '@apihub/abstract-model/model/types'
-import { SchemaCrawlRule } from '@apihub/abstract-model/types'
-import { areExcludedComponents } from '@apihub/graph-api-model/utils'
+import { ModelTree } from '../../../abstract/model/model-tree.impl'
+import { IModelTreeNode } from '../../../abstract/model/types'
+import { SchemaCrawlRule } from '../../../abstract/types'
+import { areExcludedComponents } from '../../utils'
 import { buildPointer } from '@netcracker/qubership-apihub-api-unifier'
 import { SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl'
 import { isObject } from '../../../utils'
@@ -26,7 +26,7 @@ export function createCycleGuardHook<T, K extends string, M, S extends CommonSta
       : alreadyConvertedMappingStack.get(value)
 
     if (alreadyExisted) {
-      console.log('alreadyExisted', path.at(-1), isObject(value) ? JSON.stringify(Reflect.ownKeys(value)) : value, rules?.kind)
+      // console.log('alreadyExisted', path.at(-1), isObject(value) ? JSON.stringify(Reflect.ownKeys(value)) : value, rules?.kind)
       const id = '#' + buildPointer(path)
       if (container) {
         container.addNestedNode(tree.createCycledClone(alreadyExisted, id, key, parent))
