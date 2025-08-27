@@ -1,6 +1,7 @@
 module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
+    '\\.(graphql|gql|yaml|yml|txt|svg)$': '<rootDir>/jest-raw-loader.js',
   },
   testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.(ts?|tsx?|js?|jsx?)$',
   moduleFileExtensions: [
@@ -10,15 +11,31 @@ module.exports = {
     'jsx',
     'json',
     'node',
+    'graphql',
+    'gql',
+    'yaml',
+    'yml',
+    'txt',
+    'svg',
   ],
   modulePathIgnorePatterns: [
     '<rootDir>/dist/',
   ],
-  // moduleNameMapper:{
-  //   "^@netcracker/qubership-apihub-json-crawl$":'<rootDir>/../qubership-apihub-json-crawl/src',
-  //   "^@netcracker/qubership-apihub-graphapi$":'<rootDir>/../qubership-apihub-graphapi/src',
-  //   "^@netcracker/qubership-apihub-api-unifier$":'<rootDir>/../qubership-apihub-api-unifier/src',
-  //   "^@netcracker/qubership-apihub-api-diff$":'<rootDir>/../qubership-apihub-api-diff/src',
-  // },
+  moduleNameMapper: {
+    '^@apihub/abstract-model/(.*)$': '<rootDir>/src/abstract/$1',
+    '^@apihub/graph-api-model/(.*)$': '<rootDir>/src/graph-api/$1',
+    '^@apihub/json-schema-model/(.*)$': '<rootDir>/src/json-schema/$1',
+    // Handle ?raw imports by mapping them to the actual file
+    '^(.+)\\.graphql\\?raw$': '$1.graphql',
+    '^(.+)\\.yaml\\?raw$': '$1.yaml',
+    '^(.+)\\.yml\\?raw$': '$1.yml',
+    '^(.+)\\.txt\\?raw$': '$1.txt',
+    '^(.+)\\.json\\?raw$': '$1.json',
+    '^(.+)\\.svg\\?raw$': '$1.svg',
+    // "^@netcracker/qubership-apihub-json-crawl$":'<rootDir>/../qubership-apihub-json-crawl/src',
+    // "^@netcracker/qubership-apihub-graphapi$":'<rootDir>/../qubership-apihub-graphapi/src',
+    // "^@netcracker/qubership-apihub-api-unifier$":'<rootDir>/../qubership-apihub-api-unifier/src',
+    // "^@netcracker/qubership-apihub-api-diff$":'<rootDir>/../qubership-apihub-api-diff/src',
+  },
   collectCoverage: true,
 }

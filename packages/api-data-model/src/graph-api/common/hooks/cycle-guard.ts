@@ -42,7 +42,7 @@ export type HashMd5 = string
 export function calculateObjectHash(value: unknown): HashMd5 | null {
   if (isNotUndefined(value)) {
     // object hash works only with object keys available in Object.keys() method
-    return objectHash(value, { algorithm: 'md5' })
+    return objectHash(value, { algorithm: 'sha256' })
   }
   return null
 }

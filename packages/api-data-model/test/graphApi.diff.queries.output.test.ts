@@ -1,6 +1,6 @@
 import { annotation, breaking, deprecated, DiffAction, nonBreaking, unclassified } from "@netcracker/qubership-apihub-api-diff"
 import { DiffNodeValue } from "../src/abstract/diff"
-import { IGraphSchemaEnumType, isGraphSchemaNodeEnumValue } from "../src/graph-api"
+import { isGraphSchemaNodeEnumValue } from "../src/graph-api"
 import { createGraphApiDiffTreeForTests, graphapi, metaKey } from "./helpers/graphql"
 
 function fail(message?: string): never {

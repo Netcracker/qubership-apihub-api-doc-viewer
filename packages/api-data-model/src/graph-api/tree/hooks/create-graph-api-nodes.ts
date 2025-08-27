@@ -7,6 +7,7 @@ import { ModelTreeNodeParams } from '../../../abstract/model/types';
 import { isBrokenRef } from '../../../json-schema';
 import { areExcludedComponents } from '../../utils';
 import { GraphApiModelTree } from '../model';
+import { calculateObjectHash } from '@apihub/graph-api-model/common/hooks/cycle-guard';
 
 export function createGraphApiTreeCrawlHook(
   tree: GraphApiModelTree
@@ -62,7 +63,10 @@ export function createGraphApiTreeCrawlHook(
 
     if (result.value) {
       const stack = new Map(state.alreadyConvertedMappingStack);
-      stack.set(value, result.node);
+      const valueHash = calculateObjectHash(value)
+      if (valueHash) {
+        stack.set(valueHash, result.node);
+      }
       const newState: GraphApiCrawlState = result.node!.type === modelTreeNodeType.simple
         ? { parent: result.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
         : { parent, container: result.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
