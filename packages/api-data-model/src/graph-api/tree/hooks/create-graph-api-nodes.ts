@@ -5,9 +5,9 @@ import { GraphApiCrawlRule, GraphApiCrawlState, GraphApiNodeData, graphApiNodeKi
 import { modelTreeNodeType } from "../../../abstract/constants";
 import { ModelTreeNodeParams } from '../../../abstract/model/types';
 import { isBrokenRef } from '../../../json-schema';
+import { isObject } from '../../../utils';
 import { areExcludedComponents } from '../../utils';
 import { GraphApiModelTree } from '../model';
-import { calculateObjectHash } from '@apihub/graph-api-model/common/hooks/cycle-guard';
 
 export function createGraphApiTreeCrawlHook(
   tree: GraphApiModelTree
@@ -63,9 +63,10 @@ export function createGraphApiTreeCrawlHook(
 
     if (result.value) {
       const stack = new Map(state.alreadyConvertedMappingStack);
-      const valueHash = calculateObjectHash(value)
-      if (valueHash) {
-        stack.set(valueHash, result.node);
+      if (isObject(value) && 'typeDef' in value) {
+        stack.set(value.typeDef, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
+      } else {
+        stack.set(value, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
       }
       const newState: GraphApiCrawlState = result.node!.type === modelTreeNodeType.simple
         ? { parent: result.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }

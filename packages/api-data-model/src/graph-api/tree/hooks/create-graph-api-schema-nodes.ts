@@ -1,5 +1,5 @@
-import { buildPointer } from '@netcracker/qubership-apihub-api-unifier';
 import { DiffRemove, DiffReplace, isDiffRemove, isDiffReplace } from '@netcracker/qubership-apihub-api-diff';
+import { buildPointer } from '@netcracker/qubership-apihub-api-unifier';
 import { isObject, SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl';
 import { modelTreeNodeType } from "../../../abstract/constants";
 import { isDiff } from '../../../utils';
@@ -9,7 +9,6 @@ import { GraphApiDiffTreeNode } from '../../diff-tree/types';
 import { areExcludedComponents } from '../../utils';
 import { GraphApiModelTree } from '../model';
 import { GraphApiCrawlRule, GraphApiCrawlState, GraphApiTreeComplexNode, GraphApiTreeNode } from '../types';
-import { calculateObjectHash } from '@apihub/graph-api-model/common/hooks/cycle-guard';
 
 function shouldCrawlDiff(value: unknown): value is DiffRemove | DiffReplace {
   return isDiff(value) &&
@@ -108,9 +107,10 @@ export function createGraphSchemaTreeCrawlHook(
 
     if (res.value) {
       const stack = new Map(state.alreadyConvertedMappingStack);
-      const valueHash = calculateObjectHash(res.value)
-      if (valueHash) {
-        stack.set(valueHash, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
+      if (isObject(value) && 'typeDef' in value) {
+        stack.set(value.typeDef, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
+      } else {
+        stack.set(value, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
       }
       const newState: GraphApiCrawlState = res.node.type === modelTreeNodeType.simple
         ? { parent: res.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }

@@ -3,7 +3,6 @@ import { UNKNOWN_TYPE } from "../../abstract/constants"
 import { ModelTreeComplexNode } from '../../abstract/model/model-tree-complex-node.impl'
 import { ModelTreeNode } from '../../abstract/model/model-tree-node.impl'
 import { SchemaCrawlRule } from '../../abstract/types'
-import { HashMd5 } from '../common/hooks/cycle-guard'
 import { graphApiNodeKind, graphSchemaNodeKind } from '../constants'
 
 export const graphSchemaNodeTypes = [
@@ -101,7 +100,7 @@ export type GraphApiNodeKind = GraphSchemaNodeKind | keyof typeof graphApiNodeKi
 export type GraphApiCrawlState = {
   parent: GraphApiTreeNode | null
   container?: GraphApiTreeComplexNode
-  alreadyConvertedMappingStack: Map<HashMd5, GraphApiTreeNode | GraphApiTreeComplexNode>
+  alreadyConvertedMappingStack: Map<unknown, GraphApiTreeNode | GraphApiTreeComplexNode>
 }
 
 export type GraphApiCrawlRule = SchemaCrawlRule<GraphApiNodeKind, GraphApiCrawlState>

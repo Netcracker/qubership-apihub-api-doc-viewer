@@ -4,26 +4,29 @@ import { SchemaCrawlRule } from '@apihub/abstract-model/types'
 import { areExcludedComponents } from '@apihub/graph-api-model/utils'
 import { buildPointer } from '@netcracker/qubership-apihub-api-unifier'
 import { SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl'
-import objectHash, { NotUndefined } from 'object-hash'
+import { isObject } from '../../../utils'
 
 interface CommonState<T, K extends string, M> {
   parent: IModelTreeNode<T, K, M> | null
   container?: IModelTreeNode<T, K, M>
-  alreadyConvertedMappingStack: Map<HashMd5, IModelTreeNode<T, K, M>>
+  alreadyConvertedMappingStack: Map<unknown, IModelTreeNode<T, K, M>>
 }
 
 export function createCycleGuardHook<T, K extends string, M, S extends CommonState<T, K, M>>(
   tree: ModelTree<T, K, M>
 ): SyncCrawlHook<S, SchemaCrawlRule<any, any>> {
-  return ({ value, state, key, path }) => {
+  return ({ value, state, key, path, rules }) => {
     if (typeof key === 'symbol') {
       return areExcludedComponents(path) ? { done: true } : { value }
     }
 
     const { alreadyConvertedMappingStack, parent, container } = state
-    const valueHash = calculateObjectHash(value)
-    const alreadyExisted = !!valueHash && alreadyConvertedMappingStack.get(valueHash)
+    const alreadyExisted = isObject(value) && 'typeDef' in value
+      ? alreadyConvertedMappingStack.get(value.typeDef)
+      : alreadyConvertedMappingStack.get(value)
+
     if (alreadyExisted) {
+      console.log('alreadyExisted', path.at(-1), isObject(value) ? JSON.stringify(Reflect.ownKeys(value)) : value, rules?.kind)
       const id = '#' + buildPointer(path)
       if (container) {
         container.addNestedNode(tree.createCycledClone(alreadyExisted, id, key, parent))
@@ -35,18 +38,4 @@ export function createCycleGuardHook<T, K extends string, M, S extends CommonSta
 
     return { value: value }
   }
-}
-
-export type HashMd5 = string
-
-export function calculateObjectHash(value: unknown): HashMd5 | null {
-  if (isNotUndefined(value)) {
-    // object hash works only with object keys available in Object.keys() method
-    return objectHash(value, { algorithm: 'sha256' })
-  }
-  return null
-}
-
-function isNotUndefined(value: unknown): value is NotUndefined {
-  return value !== undefined
 }
