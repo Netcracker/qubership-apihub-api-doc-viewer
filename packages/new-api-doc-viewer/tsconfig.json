@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@adv/graph-ql/*": [
+        "./src/graph-ql/*"
+      ],
+      "@adv/json-schema/*": [
+        "./src/json-schema/*"
+      ],
+      "@adv/shared/*": [
+        "./src/shared/*"
+      ],
+      "@netcracker/qubership-apihub-new-api-data-model/*": [
+        "./../new-api-data-model/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    ".jest/**/*.ts"
+  ]
+}

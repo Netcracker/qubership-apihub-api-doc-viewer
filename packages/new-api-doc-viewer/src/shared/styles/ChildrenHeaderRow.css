@@ -1,0 +1,5 @@
+.children-header-row {
+  color: var(--additional-font-color);
+  border-bottom: 1px solid var(--additional-font-color);
+  margin-left: 1px;
+}
