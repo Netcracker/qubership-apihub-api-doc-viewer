@@ -68,10 +68,12 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
     displayMode = DETAILED_DISPLAY_MODE,
   } = props
 
+  console.log('source', source)
   const tree: ModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta> = useMemo(
     () => createGraphApiTree(source),
     [source]
   )
+  console.log('tree', tree)
 
   // TODO 27.12.23 // Diff State!
   const state = useMemo(

@@ -9,6 +9,7 @@ import { GraphApiDiffTreeNode } from '../../diff-tree/types';
 import { areExcludedComponents } from '../../utils';
 import { GraphApiModelTree } from '../model';
 import { GraphApiCrawlRule, GraphApiCrawlState, GraphApiTreeComplexNode, GraphApiTreeNode } from '../types';
+import { visitedTypes } from '@apihub/graph-api-model/common/hooks/cycle-guard';
 
 function shouldCrawlDiff(value: unknown): value is DiffRemove | DiffReplace {
   return isDiff(value) &&
@@ -71,7 +72,7 @@ export function createGraphSchemaTreeCrawlHook(
     if (!rules) {
       return areExcludedComponents(path) ? { done: true } : { value, state }
     }
-    if (!('kind' in rules) || !graphSchemaNodeKinds.includes(rules.kind) || Array.isArray(value)) {
+    if (!rules?.kind || !graphSchemaNodeKinds.includes(rules.kind) || Array.isArray(value)) {
       return areExcludedComponents(path) ? { done: true } : { value, state }
     }
 
@@ -88,7 +89,7 @@ export function createGraphSchemaTreeCrawlHook(
         break;
     }
 
-    const res = tree.createGraphSchemaNode({
+    const result = tree.createGraphSchemaNode({
       id,
       kind,
       key,
@@ -100,24 +101,22 @@ export function createGraphSchemaTreeCrawlHook(
     });
 
     if (container) {
-      container.addNestedNode(res.node);
+      container.addNestedNode(result.node);
     } else {
-      parent?.addChild(res.node);
+      parent?.addChild(result.node);
     }
 
-    if (res.value) {
-      const stack = new Map(state.alreadyConvertedMappingStack);
-      if (isObject(value) && 'typeDef' in value) {
-        stack.set(value.typeDef, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
-      } else {
-        stack.set(value, res.node as GraphApiTreeNode | GraphApiTreeComplexNode);
-      }
-      const newState: GraphApiCrawlState = res.node.type === modelTreeNodeType.simple
-        ? { parent: res.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
-        : { parent, container: res.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
-      return { value: res.value, state: newState };
+    let stack = state.alreadyConvertedMappingStack;
+    if (isObject(result.value) && 'typeDef' in result.value) {
+      visitedTypes.set(result.value.typeDef, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
     } else {
-      return { done: true };
+      stack = new Map(state.alreadyConvertedMappingStack);
+      stack.set(result.value, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
     }
+    const newState: GraphApiCrawlState = result.node.type === modelTreeNodeType.simple
+      ? { parent: result.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
+      : { parent, container: result.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
+
+    return { value: result.value, state: newState };
   };
 }

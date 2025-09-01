@@ -16,8 +16,10 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { GraphQLOperationViewer } from '../components/GraphQLOperationViewer/GraphQLOperationViewer';
-import { graphapi } from './utils/helpers';
 import { prepareGraphApiSchema } from './preprocess';
+import { buildGraphApi, graphapi } from './utils/helpers';
+
+import largeGraphQl from '../mocks/graphql/large/1.graphql?raw';
 
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
@@ -25,7 +27,11 @@ const meta = {
   title: 'Graph Api Viewer',
   component: GraphQLOperationViewer,
   parameters: {},
-  argTypes: {},
+  argTypes: {
+    source: {
+      control: 'object'
+    },
+  },
   args: {
     source: {}
   }
@@ -72,5 +78,26 @@ export const SelfCycled: Story = {
       `,
       circular: true
     }),
+  }
+}
+
+// Store the complex circular object outside of args
+const large1Source = prepareGraphApiSchema({
+  source: buildGraphApi(largeGraphQl),
+  circular: true
+});
+
+export const Large1: Story = {
+  args: {
+    source: 'large1Source' // Use a key instead of the actual object
+  },
+  argTypes: {
+    source: {
+      control: 'select',
+      options: ['large1Source'],
+      mapping: {
+        large1Source: large1Source // Map the key to the actual object
+      }
+    }
   }
 }

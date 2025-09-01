@@ -1,4 +1,4 @@
-import { ModelTree } from '../../abstract/model/model-tree.impl';
+import { MapWithListener, ModelTree } from '../../abstract/model/model-tree.impl';
 import { CreateNodeResult, IModelTreeNode } from '../../abstract/model/types';
 import { UNKNOWN_TYPE, modelTreeNodeType } from "../../abstract/constants";
 import { isOpenApiExtensionKey } from '../../oas-extension-key';
@@ -13,7 +13,7 @@ export class JsonSchemaModelTree<
   K extends string = JsonSchemaNodeKind,
   M extends object = JsonSchemaNodeMeta
 > extends ModelTree<T, K, M> {
-  public nodes: Map<string, IModelTreeNode<T, K, M>> = new Map();
+  public nodes: Map<string, IModelTreeNode<T, K, M>> = new MapWithListener();
 
   constructor(public source: any) {
     super()

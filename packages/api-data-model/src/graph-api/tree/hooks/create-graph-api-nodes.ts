@@ -1,3 +1,4 @@
+import { visitedTypes } from '@apihub/graph-api-model/common/hooks/cycle-guard';
 import { buildPointer } from '@netcracker/qubership-apihub-api-unifier';
 import { GraphApiSchema } from '@netcracker/qubership-apihub-graphapi';
 import { SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl';
@@ -22,7 +23,7 @@ export function createGraphApiTreeCrawlHook(
     if (!rules) {
       return areExcludedComponents(path) ? { done: true } : { value, state }
     }
-    if (!('kind' in rules) || !graphApiNodeKinds.includes(rules.kind)) {
+    if (!rules?.kind || !graphApiNodeKinds.includes(rules.kind)) {
       return areExcludedComponents(path) ? { done: true } : { value, state }
     }
 
@@ -61,19 +62,17 @@ export function createGraphApiTreeCrawlHook(
 
     parent?.addChild(result.node);
 
-    if (result.value) {
-      const stack = new Map(state.alreadyConvertedMappingStack);
-      if (isObject(value) && 'typeDef' in value) {
-        stack.set(value.typeDef, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
-      } else {
-        stack.set(value, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
-      }
-      const newState: GraphApiCrawlState = result.node!.type === modelTreeNodeType.simple
-        ? { parent: result.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
-        : { parent, container: result.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
-      return { value: result.value, state: newState };
+    let stack = state.alreadyConvertedMappingStack;
+    if (isObject(value) && 'typeDef' in value) {
+      visitedTypes.set(value.typeDef, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
     } else {
-      return { done: true };
+      stack = new Map(state.alreadyConvertedMappingStack);
+      stack.set(value, result.node as GraphApiTreeNode | GraphApiTreeComplexNode);
     }
+    const newState: GraphApiCrawlState = result.node!.type === modelTreeNodeType.simple
+      ? { parent: result.node as GraphApiTreeNode, alreadyConvertedMappingStack: stack }
+      : { parent, container: result.node as GraphApiTreeComplexNode, alreadyConvertedMappingStack: stack };
+
+    return { value: result.value, state: newState };
   };
 }

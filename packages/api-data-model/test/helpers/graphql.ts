@@ -32,7 +32,6 @@ export function createGraphApiTreeForTests(source: unknown) {
   }
   const normalizedSchema = normalize(source, options)
   const mergedSource = denormalize(normalizedSchema, options)
-  console.log('<!> Normalization is completed')
   return createGraphApiTree(mergedSource)
 }
 
