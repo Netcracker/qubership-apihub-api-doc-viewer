@@ -52,8 +52,8 @@ export type GraphQLOperationViewerProps = {
 
 export const GraphQLOperationViewer: FC<GraphQLOperationViewerProps> = (props) => {
   return (
-    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="GraphQL Operation Viewer"/>}>
-      <GraphQLOperationViewerInner {...props}/>
+    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="GraphQL Operation Viewer" />}>
+      <GraphQLOperationViewerInner {...props} />
     </ErrorBoundary>
   )
 }
@@ -68,12 +68,14 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
     displayMode = DETAILED_DISPLAY_MODE,
   } = props
 
-  console.log('source', source)
+  const start = new Date().toISOString()
   const tree: ModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta> = useMemo(
     () => createGraphApiTree(source),
     [source]
   )
-  console.log('tree', tree)
+  const end = new Date().toISOString()
+  console.log('start', start)
+  console.log('end', end)
 
   // TODO 27.12.23 // Diff State!
   const state = useMemo(
@@ -82,7 +84,7 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
   )
 
   // console.debug('GraphAPI Schema:', source)
-  // console.debug('Tree Model:', tree)
+  console.debug('Tree Model:', tree)
   // console.debug('State Model:', state)
 
   const root = state.root
@@ -114,7 +116,7 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
               if (isDirectiveNode(child.node) && child.first) {
                 return (
                   <div key={key}>
-                    <CustomDirectivesSectionRow layoutMode={DOCUMENT_LAYOUT_MODE}/>
+                    <CustomDirectivesSectionRow layoutMode={DOCUMENT_LAYOUT_MODE} />
                     <GraphPropNodeViewer
                       state={child}
                       $nodeChange={$childMeta?.$nodeChange}
