@@ -1,4 +1,4 @@
-import { visitedTypes } from '@apihub/graph-api-model/common/hooks/cycle-guard';
+import { visitedTypes } from '../../common/hooks/cycle-guard';
 import { buildPointer } from '@netcracker/qubership-apihub-api-unifier';
 import { GraphApiSchema } from '@netcracker/qubership-apihub-graphapi';
 import { SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl';

@@ -1,4 +1,4 @@
-import { visitedFragments } from '@apihub/graph-api-model/common/hooks/cycle-guard';
+import { visitedFragments } from '../../graph-api/common/hooks/cycle-guard';
 import { ModelTreeComplexNode } from './model-tree-complex-node.impl';
 import { ModelTreeNode } from './model-tree-node.impl';
 import { IModelTree, IModelTreeNode, ModelTreeNodeParams, ModelTreeNodeType } from './types';

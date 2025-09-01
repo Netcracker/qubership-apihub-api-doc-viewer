@@ -9,7 +9,7 @@ import { GraphApiDiffTreeNode } from '../../diff-tree/types';
 import { areExcludedComponents } from '../../utils';
 import { GraphApiModelTree } from '../model';
 import { GraphApiCrawlRule, GraphApiCrawlState, GraphApiTreeComplexNode, GraphApiTreeNode } from '../types';
-import { visitedTypes } from '@apihub/graph-api-model/common/hooks/cycle-guard';
+import { visitedTypes } from '../../common/hooks/cycle-guard';
 
 function shouldCrawlDiff(value: unknown): value is DiffRemove | DiffReplace {
   return isDiff(value) &&
