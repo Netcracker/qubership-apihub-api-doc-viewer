@@ -33,4 +33,8 @@ type Story = StoryObj<typeof meta>;
 export declare const Test: Story;
 export declare const Union: Story;
 export declare const SelfCycled: Story;
+export declare const SelfCycledLong: Story;
+export declare const SameEntityDifferentUsages: Story;
 export declare const Large1: Story;
+export declare const Large4: Story;
+export declare const Large8: Story;
