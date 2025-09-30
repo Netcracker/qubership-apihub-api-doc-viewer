@@ -1,4 +1,4 @@
-import{G as U}from"./GraphQLOperationViewer-e5b16fa1.js";import{g as t}from"./helpers-8101ca0d.js";import{a as s}from"./preprocess-dbe103f7.js";import"./jsx-runtime-beaa2906.js";import"./index-f46741a2.js";import"./ErrorBoundaryFallback-041d04e9.js";import"./index-415bee12.js";import"./buildASTSchema-8eb6b2ac.js";import"./model-53efa318.js";const A={title:"Graph Api Viewer",component:U,parameters:{},argTypes:{},args:{source:{}}},e={args:{source:{},expandedDepth:100}},r={args:{source:s({source:t`
+import{G as U}from"./GraphQLOperationViewer-cffc3796.js";import{g as t}from"./helpers-3a45267d.js";import{a as s}from"./preprocess-dbe103f7.js";import"./jsx-runtime-beaa2906.js";import"./index-f46741a2.js";import"./ErrorBoundaryFallback-041d04e9.js";import"./index-415bee12.js";import"./buildASTSchema-8b988e8d.js";import"./model-53efa318.js";const A={title:"Graph Api Viewer",component:U,parameters:{},argTypes:{},args:{source:{}}},e={args:{source:{},expandedDepth:100}},r={args:{source:s({source:t`
         type Query {
           test: Union
         }
