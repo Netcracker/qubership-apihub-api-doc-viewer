@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import type { FC } from '../../../../../../node_modules/react';
-import { JsonSchemaDiffTreeNode } from '@netcracker/qubership-apihub-api-data-model';
-import { IModelStateNode } from '@netcracker/qubership-apihub-api-state-model';
+import { JsonSchemaDiffTreeNode } from '../../../../../api-data-model/src';
+import { IModelStateNode } from '../../../../../api-state-model/src';
 import { PropsWithDisabledNestingIndicatorTitle } from '../../../types/internal/PropsWithState';
 import { PropsWithChanges } from '../../../types/internal/PropsWithChanges';
 import { NestingIndicatorTitleData } from '../../../types/internal/NestingIndicatorTitleData';

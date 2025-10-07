@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffNodeValue, GraphApiNodeData, GraphSchemaNodeValue, IModelTreeNode, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaNodeKind, JsonSchemaNodeValue } from '@netcracker/qubership-apihub-api-data-model';
+import { DiffNodeValue, GraphApiNodeData, GraphSchemaNodeValue, IModelTreeNode, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaNodeKind, JsonSchemaNodeValue } from '../../../api-data-model/src';
 import { Dispatch, SetStateAction } from '../../../../node_modules/react';
-import { IModelStatePropNode } from '@netcracker/qubership-apihub-api-state-model';
+import { IModelStatePropNode } from '../../../api-state-model/src';
 import { AnyTreeNode } from '../types/aliases/nodes';
 import { ExpandingMode } from '../types/internal/ExpandingMode';
 import { LayoutSide } from '../types/internal/LayoutSide';

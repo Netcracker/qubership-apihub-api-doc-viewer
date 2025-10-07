@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { IModelTreeNode } from '../../../../../api-data-model/src';
 export declare function isOperationNode(node?: IModelTreeNode<any, any, any> | null): boolean;
 export declare function isPropertyNode(node?: IModelTreeNode<any, any, any> | null): boolean;
 export declare function isDirectiveNode(node?: IModelTreeNode<any, any, any> | null): boolean;

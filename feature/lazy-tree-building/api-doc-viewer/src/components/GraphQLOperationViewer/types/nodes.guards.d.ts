@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphApiTreeNode } from '@netcracker/qubership-apihub-api-data-model';
-import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '@netcracker/qubership-apihub-api-state-model';
+import { GraphApiTreeNode } from '../../../../../api-data-model/src';
+import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../../../../../api-state-model/src';
 export declare function isPropNodeState(state: IModelStateNode<GraphApiTreeNode> | null): state is IModelStatePropNode<GraphApiTreeNode>;
 export declare function isCombinerNodeState(state: IModelStateNode<GraphApiTreeNode> | null): state is IModelStateCombinaryNode<GraphApiTreeNode>;

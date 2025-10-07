@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffRecord } from '@netcracker/qubership-apihub-api-data-model';
+import { DiffRecord } from '../../../../api-data-model/src';
 import { Diff } from '@netcracker/qubership-apihub-api-diff';
 import type { FC } from '../../../../../node_modules/react';
 import { LayoutSide } from '../../types/internal/LayoutSide';

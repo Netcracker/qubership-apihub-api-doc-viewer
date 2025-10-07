@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModelTreeNode, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaNodeKind } from '@netcracker/qubership-apihub-api-data-model';
+import { IModelTreeNode, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaNodeKind } from '../../../../../api-data-model/src';
 export type JsonNode = IModelTreeNode<JsonSchemaDiffNodeValue, JsonSchemaNodeKind, JsonSchemaDiffNodeMeta>;

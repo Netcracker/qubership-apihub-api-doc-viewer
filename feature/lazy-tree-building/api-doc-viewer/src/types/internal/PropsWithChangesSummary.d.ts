@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NodeChangesSummary } from '@netcracker/qubership-apihub-api-data-model';
+import { NodeChangesSummary } from '../../../../api-data-model/src';
 import { NodeId } from '../aliases/nodes';
 export type PropsWithNestedChangesSummary = {
     $nestedChangesSummary?: Record<NodeId, NodeChangesSummary>;
