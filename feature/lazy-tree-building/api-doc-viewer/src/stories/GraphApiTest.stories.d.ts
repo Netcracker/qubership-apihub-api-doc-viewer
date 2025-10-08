@@ -19,7 +19,11 @@ declare const meta: {
     title: string;
     component: import('../../../../node_modules/react').FC<import("../components/GraphQLOperationViewer/GraphQLOperationViewer").GraphQLOperationViewerProps>;
     parameters: {};
-    argTypes: {};
+    argTypes: {
+        source: {
+            control: "object";
+        };
+    };
     args: {
         source: {};
     };
@@ -30,3 +34,4 @@ export declare const Test: Story;
 export declare const Union: Story;
 export declare const SelfCycled: Story;
 export declare const Experiment: Story;
+export declare const ShopifyXS: Story;
