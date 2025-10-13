@@ -34,4 +34,3 @@ export declare const Test: Story;
 export declare const Union: Story;
 export declare const SelfCycled: Story;
 export declare const Experiment: Story;
-export declare const ShopifyXS: Story;
