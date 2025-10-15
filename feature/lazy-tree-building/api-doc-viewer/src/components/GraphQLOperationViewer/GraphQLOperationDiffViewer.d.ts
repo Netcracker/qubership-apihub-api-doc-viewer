@@ -24,6 +24,9 @@ export type GraphQLOperationDiffViewerProps = {
     displayMode?: DisplayMode;
     layoutMode?: LayoutMode;
     filters?: ReadonlyArray<DiffType>;
-    diffMetaKey: symbol;
+    metaKeys: {
+        diffsMetaKey: symbol;
+        aggregatedDiffsMetaKey: symbol;
+    };
 };
 export declare const GraphQLOperationDiffViewer: FC<GraphQLOperationDiffViewerProps>;
