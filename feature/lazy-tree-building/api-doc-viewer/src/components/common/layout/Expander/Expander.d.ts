@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 import type { FC } from '../../../../../../../node_modules/react';
-import { ToggleContextMenuHandler } from '../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler';
 export type ExpanderProps = {
     isRoot: boolean;
     isOperation?: boolean;
     isExpandable?: boolean;
     expanded: boolean;
     onToggleExpander: () => void;
-    onToggleContextMenu: ToggleContextMenuHandler;
 };
 export declare const Expander: FC<ExpanderProps>;
