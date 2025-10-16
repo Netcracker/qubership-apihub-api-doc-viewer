@@ -1,0 +1,1 @@
+import{b as o}from"./ErrorBoundaryFallback-1509680e.js";import{b as a}from"./buildASTSchema-75d6b954.js";function i(r){return o(a(r,{noLocation:!0}))}function u(r){return i(r[0])}export{i as b,u as g};
