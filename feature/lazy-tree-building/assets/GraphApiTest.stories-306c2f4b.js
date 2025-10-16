@@ -1,4 +1,4 @@
-import{j as E}from"./_commonjs-dynamic-modules-6308e768.js";import{G as o}from"./GraphQLOperationViewer-703ddba0.js";import{g as p}from"./helpers-f88612b8.js";import{a as c}from"./preprocess-316e0b38.js";import"./index-f46741a2.js";import"./ErrorBoundaryFallback-1509680e.js";import"./index-415bee12.js";import"./buildASTSchema-75d6b954.js";import"./model-bb10a02b.js";const M={title:"Graph Api Viewer",component:o,parameters:{},argTypes:{source:{control:"object"}},args:{source:{}}},e={args:{source:{},expandedDepth:100}},r={args:{source:c({source:p`
+import{j as E}from"./_commonjs-dynamic-modules-6308e768.js";import{G as o}from"./GraphQLOperationViewer-ac800a93.js";import{g as p}from"./helpers-eeb0b86f.js";import{a as c}from"./preprocess-316e0b38.js";import"./index-f46741a2.js";import"./ErrorBoundaryFallback-1509680e.js";import"./index-415bee12.js";import"./buildASTSchema-b59eb4a0.js";import"./model-bb10a02b.js";const M={title:"Graph Api Viewer",component:o,parameters:{},argTypes:{source:{control:"object"}},args:{source:{}}},e={args:{source:{},expandedDepth:100}},r={args:{source:c({source:p`
         type Query {
           test: Union
         }
