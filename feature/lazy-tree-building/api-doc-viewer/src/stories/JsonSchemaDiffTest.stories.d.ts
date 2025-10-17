@@ -29,3 +29,5 @@ type Story = StoryObj<typeof meta>;
 export declare const Test: Story;
 export declare const RenamedProperty: Story;
 export declare const Flags: Story;
+export declare const Enum: Story;
+export declare const AddMinItemsInArrayProperty: Story;

@@ -25,6 +25,9 @@ export type JsonSchemaDiffViewerProps = {
     displayMode?: DisplayMode;
     layoutMode?: LayoutMode;
     filters?: ReadonlyArray<DiffType>;
-    diffMetaKey: symbol;
+    metaKeys: {
+        diffsMetaKey: symbol;
+        aggregatedDiffsMetaKey: symbol;
+    };
 } & PropsWithOverriddenKind & PropsWithTopLevelPropsMediaTypesMap;
 export declare const JsonSchemaDiffViewer: FC<JsonSchemaDiffViewerProps>;
