@@ -1,4 +1,4 @@
-import{j as Lr}from"./_commonjs-dynamic-modules-6308e768.js";import{S as a,D as r,a as t}from"./ErrorBoundaryFallback-1f8fbe38.js";import{G as x}from"./GraphQLOperationDiffViewer-0aa573a5.js";import{p as n}from"./preprocess-142fb67d.js";import{g as e,b as U}from"./helpers-4e50ff26.js";import"./index-f46741a2.js";import"./index-415bee12.js";import"./buildASTSchema-f9c3f9c5.js";import"./model-d2e70025.js";const kr={title:"Graph Api Diff Viewer",component:x,parameters:{},argTypes:{},args:{source:{}}},o={args:{source:n({beforeSource:{},afterSource:{}}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},P=e`
+import{j as H}from"./_commonjs-dynamic-modules-6308e768.js";import{S as a,D as r,a as t}from"./ErrorBoundaryFallback-1f8fbe38.js";import{G as C}from"./GraphQLOperationDiffViewer-0ada28e9.js";import{p as n}from"./preprocess-142fb67d.js";import{g as e,b as o}from"./helpers-51dadb75.js";import"./index-f46741a2.js";import"./index-415bee12.js";import"./buildASTSchema-0abab283.js";import"./model-d2e70025.js";const Xr={title:"Graph Api Diff Viewer",component:C,parameters:{},argTypes:{},args:{source:{}}},c={args:{source:n({beforeSource:{},afterSource:{}}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},x=e`
 type Query {
   deprecatedQuery: Response
   unDeprecatedQuery: Response @deprecated
@@ -32,7 +32,7 @@ enum Enum {
 enum BugEnum {
   deprecated
 }
-`,W=e`
+`,w=e`
 type Query {
   deprecatedQuery: Response @deprecated
   unDeprecatedQuery: Response
@@ -66,7 +66,7 @@ enum Enum {
 enum BugEnum {
   deprecated @deprecated
 }
-`,s={args:{source:n({beforeSource:P,afterSource:W}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},i={args:{source:n({beforeSource:P,afterSource:W}),operationPath:"unDeprecatedQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},c={args:{source:n({beforeSource:P,afterSource:W}),operationPath:"deprecatedWithReasonQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},p={args:{source:n({beforeSource:P,afterSource:W}),operationPath:"unDeprecatedWithReasonQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},u={args:{source:n({beforeSource:e`
+`,p={args:{source:n({beforeSource:x,afterSource:w}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},u={args:{source:n({beforeSource:x,afterSource:w}),operationPath:"unDeprecatedQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},d={args:{source:n({beforeSource:x,afterSource:w}),operationPath:"deprecatedWithReasonQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},f={args:{source:n({beforeSource:x,afterSource:w}),operationPath:"unDeprecatedWithReasonQuery",layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},y={args:{source:n({beforeSource:e`
         type Query {
           test: Enum
         }
@@ -85,7 +85,7 @@ enum BugEnum {
           second
           THIRD
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},d={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},D={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -98,7 +98,7 @@ enum BugEnum {
           second
           third
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},f={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},E={args:{source:n({beforeSource:e`
         type Query {
           test: Enum
         }
@@ -111,7 +111,7 @@ enum BugEnum {
         type Query {
           test: String
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},br=e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},Wr=e`
 type Query {
   test: Enum
 }
@@ -143,7 +143,7 @@ enum Enum {
   removedValueWithCustomDeprecation @deprecated(reason: "Because why")
   valueWithChangedDeprecationReason @deprecated(reason: "Because why")
 }
-`,Br=e`
+`,Vr=e`
 type Query {
   test: Enum
 }
@@ -174,7 +174,7 @@ enum Enum {
   addedValueWithCustomDeprecation @deprecated(reason: "Because why")
   valueWithChangedDeprecationReason @deprecated(reason: "Because why CHANGED")
 }
-`,y={args:{source:n({beforeSource:br,afterSource:Br}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},D={args:{source:n({beforeSource:e`
+`,g={args:{source:n({beforeSource:Wr,afterSource:Vr}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},I={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -190,45 +190,45 @@ enum Enum {
           third @deprecated
           "My value"
           fourth @foo @deprecated(reason: "Because why")
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},E={args:{source:n({beforeSource:e`
-        directive @foo on ENUM_VALUE
-        type Query {
-          test: Enum
-        }
-        enum Enum {
-          first
-          "My Value"
-          second
-          third @deprecated
-          "My value"
-          fourth @foo @deprecated(reason: "Because why")
-        }
-      `,afterSource:e`
-        type Query {
-          test: String
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},g={args:{source:n({beforeSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String
-        }
-      `,afterSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},I={args:{source:n({beforeSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `,afterSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String
         }
       `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},S={args:{source:n({beforeSource:e`
+        directive @foo on ENUM_VALUE
+        type Query {
+          test: Enum
+        }
+        enum Enum {
+          first
+          "My Value"
+          second
+          third @deprecated
+          "My value"
+          fourth @foo @deprecated(reason: "Because why")
+        }
+      `,afterSource:e`
+        type Query {
+          test: String
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},m={args:{source:n({beforeSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String
+        }
+      `,afterSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},_={args:{source:n({beforeSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `,afterSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},F={args:{source:n({beforeSource:e`
         directive @foo on FIELD_DEFINITION
         directive @bar on FIELD_DEFINITION
         type Query {
@@ -240,7 +240,7 @@ enum Enum {
         type Query {
           test: String @foo @bar
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},m={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},M={args:{source:n({beforeSource:e`
         directive @foo on FIELD_DEFINITION
         directive @bar on FIELD_DEFINITION
         type Query {
@@ -252,50 +252,18 @@ enum Enum {
         type Query {
           test: String @bar
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},_={args:{source:n({beforeSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `,afterSource:e`
-        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},F={args:{source:n({beforeSource:e`
-        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `,afterSource:e`
-        directive @foo on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},M={args:{source:n({beforeSource:e`
-        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `,afterSource:e`
-        directive @foo on FIELD_DEFINITION | ARGUMENT_DEFINITION
-        type Query {
-          test: String @foo
-        }
       `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},l={args:{source:n({beforeSource:e`
         directive @foo on FIELD_DEFINITION
         type Query {
           test: String @foo
         }
       `,afterSource:e`
-        "Directive description"
-        directive @foo on FIELD_DEFINITION
+        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
         type Query {
           test: String @foo
         }
       `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},A={args:{source:n({beforeSource:e`
-        "Directive description"
-        directive @foo on FIELD_DEFINITION
+        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
         type Query {
           test: String @foo
         }
@@ -305,6 +273,38 @@ enum Enum {
           test: String @foo
         }
       `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},h={args:{source:n({beforeSource:e`
+        directive @foo on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `,afterSource:e`
+        directive @foo on FIELD_DEFINITION | ARGUMENT_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},K={args:{source:n({beforeSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `,afterSource:e`
+        "Directive description"
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},T={args:{source:n({beforeSource:e`
+        "Directive description"
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `,afterSource:e`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},N={args:{source:n({beforeSource:e`
         "Directive description"
         directive @foo on FIELD_DEFINITION
         type Query {
@@ -316,7 +316,7 @@ enum Enum {
         type Query {
           test: String @foo
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},K={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},v={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -325,7 +325,7 @@ enum Enum {
           test: Union
         }
         union Union = String | Int
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},T={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},G={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -334,7 +334,7 @@ enum Enum {
           test: Union
         }
         union Union = Int | Float
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},v={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},O={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -347,7 +347,7 @@ enum Enum {
           first
           second
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},N={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},Q={args:{source:n({beforeSource:e`
         type Query {
           test: String
         }
@@ -364,7 +364,7 @@ enum Enum {
           third
           fourth
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},G={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},Y={args:{source:n({beforeSource:e`
         type Query {
           test: [String]
         }
@@ -373,37 +373,37 @@ enum Enum {
           test: Union
         }
         union Union = String | Int
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},O={args:{source:n({beforeSource:e`
-        directive @foo(val: String) on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `,afterSource:e`
-        directive @foo(val: String) on FIELD_DEFINITION
-        type Query {
-          test: String @foo(val: "After")
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},Q={args:{source:n({beforeSource:e`
-        directive @foo(val: String) on FIELD_DEFINITION
-        type Query {
-          test: String @foo(val: "Before")
-        }
-      `,afterSource:e`
-        directive @foo(val: String) on FIELD_DEFINITION
-        type Query {
-          test: String @foo
-        }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},Y={args:{source:n({beforeSource:e`
-        directive @foo(val: String = "Default") on FIELD_DEFINITION
-        type Query {
-          test: String @foo(val: "Before")
-        }
-      `,afterSource:e`
-        directive @foo(val: String = "Default") on FIELD_DEFINITION
-        type Query {
-          test: String @foo(val: "After")
-        }
       `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},R={args:{source:n({beforeSource:e`
+        directive @foo(val: String) on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `,afterSource:e`
+        directive @foo(val: String) on FIELD_DEFINITION
+        type Query {
+          test: String @foo(val: "After")
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},L={args:{source:n({beforeSource:e`
+        directive @foo(val: String) on FIELD_DEFINITION
+        type Query {
+          test: String @foo(val: "Before")
+        }
+      `,afterSource:e`
+        directive @foo(val: String) on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},b={args:{source:n({beforeSource:e`
+        directive @foo(val: String = "Default") on FIELD_DEFINITION
+        type Query {
+          test: String @foo(val: "Before")
+        }
+      `,afterSource:e`
+        directive @foo(val: String = "Default") on FIELD_DEFINITION
+        type Query {
+          test: String @foo(val: "After")
+        }
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},B={args:{source:n({beforeSource:e`
         type Query {
           test: Primitive
         }
@@ -413,7 +413,7 @@ enum Enum {
           test: Primitive
         }
         union Primitive = ID | String | Int | Float | Boolean
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},L={args:{source:n({beforeSource:e`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},U={args:{source:n({beforeSource:e`
         type Query {
           test: Entity
         }
@@ -443,7 +443,7 @@ enum Enum {
           login: ID!
           email: String
         }
-      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},b={render:V=>{const C=n({beforeSource:U(`
+      `}),layoutMode:a,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t}}},P={render:s=>{const i=n({beforeSource:o(`
         type Query {
           test: Type
         }
@@ -451,7 +451,7 @@ enum Enum {
         type Type {
           id: ID!
         }
-      `),afterSource:U(`
+      `),afterSource:o(`
         type Query {
           test: Input
         }
@@ -459,7 +459,7 @@ enum Enum {
         input Input {
           id: ID!
         }
-      `),circular:!0});return Lr.jsx(x,{...V,source:C})},args:{expandedDepth:2,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t},layoutMode:"side-by-side-diffs",operationPath:"companyCount"}},B={render:V=>{const C=n({beforeSource:U(`
+      `),circular:!0});return H.jsx(C,{...s,source:i})},args:{expandedDepth:2,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t},layoutMode:"side-by-side-diffs",operationPath:"companyCount"}},W={render:s=>{const i=n({beforeSource:o(`
         type Query {
           test: Fruit
         }
@@ -473,7 +473,7 @@ enum Enum {
           PINEAPPLE
           STRAWBERRY
         }
-      `),afterSource:U(`
+      `),afterSource:o(`
         type Query {
           test: Fruit
         }
@@ -487,7 +487,17 @@ enum Enum {
           PEAR
           STRAWBERRY
         }
-      `),circular:!0});return Lr.jsx(x,{...V,source:C})},args:{expandedDepth:2,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t},layoutMode:"side-by-side-diffs",operationPath:"companyCount"}};var w,H,j;o.parameters={...o.parameters,docs:{...(w=o.parameters)==null?void 0:w.docs,source:{originalSource:`{
+      `),circular:!0});return H.jsx(C,{...s,source:i})},args:{expandedDepth:2,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t},layoutMode:"side-by-side-diffs",operationPath:"companyCount"}},V={render:s=>{const i=n({beforeSource:o(`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      `),afterSource:o(`
+        directive @foo on FIELD_DEFINITION | ENUM_VALUE
+        type Query {
+          test: String @foo
+        }
+      `),circular:!0});return H.jsx(C,{...s,source:i})},args:{expandedDepth:2,metaKeys:{diffsMetaKey:r,aggregatedDiffsMetaKey:t},layoutMode:"side-by-side-diffs"}};var j,k,q;c.parameters={...c.parameters,docs:{...(j=c.parameters)==null?void 0:j.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: {},
@@ -499,7 +509,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(j=(H=o.parameters)==null?void 0:H.docs)==null?void 0:j.source}}};var k,q,z;s.parameters={...s.parameters,docs:{...(k=s.parameters)==null?void 0:k.docs,source:{originalSource:`{
+}`,...(q=(k=c.parameters)==null?void 0:k.docs)==null?void 0:q.source}}};var z,J,X;p.parameters={...p.parameters,docs:{...(z=p.parameters)==null?void 0:z.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: deprecationBefore,
@@ -511,7 +521,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(z=(q=s.parameters)==null?void 0:q.docs)==null?void 0:z.source}}};var J,X,Z;i.parameters={...i.parameters,docs:{...(J=i.parameters)==null?void 0:J.docs,source:{originalSource:`{
+}`,...(X=(J=p.parameters)==null?void 0:J.docs)==null?void 0:X.source}}};var Z,$,ee;u.parameters={...u.parameters,docs:{...(Z=u.parameters)==null?void 0:Z.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: deprecationBefore,
@@ -524,7 +534,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Z=(X=i.parameters)==null?void 0:X.docs)==null?void 0:Z.source}}};var $,ee,re;c.parameters={...c.parameters,docs:{...($=c.parameters)==null?void 0:$.docs,source:{originalSource:`{
+}`,...(ee=($=u.parameters)==null?void 0:$.docs)==null?void 0:ee.source}}};var re,te,ne;d.parameters={...d.parameters,docs:{...(re=d.parameters)==null?void 0:re.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: deprecationBefore,
@@ -537,7 +547,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(re=(ee=c.parameters)==null?void 0:ee.docs)==null?void 0:re.source}}};var te,ne,ae;p.parameters={...p.parameters,docs:{...(te=p.parameters)==null?void 0:te.docs,source:{originalSource:`{
+}`,...(ne=(te=d.parameters)==null?void 0:te.docs)==null?void 0:ne.source}}};var ae,oe,se;f.parameters={...f.parameters,docs:{...(ae=f.parameters)==null?void 0:ae.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: deprecationBefore,
@@ -550,7 +560,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ae=(ne=p.parameters)==null?void 0:ne.docs)==null?void 0:ae.source}}};var oe,se,ie;u.parameters={...u.parameters,docs:{...(oe=u.parameters)==null?void 0:oe.docs,source:{originalSource:`{
+}`,...(se=(oe=f.parameters)==null?void 0:oe.docs)==null?void 0:se.source}}};var ie,ce,pe;y.parameters={...y.parameters,docs:{...(ie=y.parameters)==null?void 0:ie.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -581,7 +591,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ie=(se=u.parameters)==null?void 0:se.docs)==null?void 0:ie.source}}};var ce,pe,ue;d.parameters={...d.parameters,docs:{...(ce=d.parameters)==null?void 0:ce.docs,source:{originalSource:`{
+}`,...(pe=(ce=y.parameters)==null?void 0:ce.docs)==null?void 0:pe.source}}};var ue,de,fe;D.parameters={...D.parameters,docs:{...(ue=D.parameters)==null?void 0:ue.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -606,7 +616,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ue=(pe=d.parameters)==null?void 0:pe.docs)==null?void 0:ue.source}}};var de,fe,ye;f.parameters={...f.parameters,docs:{...(de=f.parameters)==null?void 0:de.docs,source:{originalSource:`{
+}`,...(fe=(de=D.parameters)==null?void 0:de.docs)==null?void 0:fe.source}}};var ye,De,Ee;E.parameters={...E.parameters,docs:{...(ye=E.parameters)==null?void 0:ye.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -631,7 +641,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ye=(fe=f.parameters)==null?void 0:fe.docs)==null?void 0:ye.source}}};var De,Ee,ge;y.parameters={...y.parameters,docs:{...(De=y.parameters)==null?void 0:De.docs,source:{originalSource:`{
+}`,...(Ee=(De=E.parameters)==null?void 0:De.docs)==null?void 0:Ee.source}}};var ge,Ie,Se;g.parameters={...g.parameters,docs:{...(ge=g.parameters)==null?void 0:ge.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: complexEnumBefore,
@@ -643,7 +653,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ge=(Ee=y.parameters)==null?void 0:Ee.docs)==null?void 0:ge.source}}};var Ie,Se,me;D.parameters={...D.parameters,docs:{...(Ie=D.parameters)==null?void 0:Ie.docs,source:{originalSource:`{
+}`,...(Se=(Ie=g.parameters)==null?void 0:Ie.docs)==null?void 0:Se.source}}};var me,_e,Fe;I.parameters={...I.parameters,docs:{...(me=I.parameters)==null?void 0:me.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -672,7 +682,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(me=(Se=D.parameters)==null?void 0:Se.docs)==null?void 0:me.source}}};var _e,Fe,Me;E.parameters={...E.parameters,docs:{...(_e=E.parameters)==null?void 0:_e.docs,source:{originalSource:`{
+}`,...(Fe=(_e=I.parameters)==null?void 0:_e.docs)==null?void 0:Fe.source}}};var Me,le,Ae;S.parameters={...S.parameters,docs:{...(Me=S.parameters)==null?void 0:Me.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -701,7 +711,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Me=(Fe=E.parameters)==null?void 0:Fe.docs)==null?void 0:Me.source}}};var le,Ae,he;g.parameters={...g.parameters,docs:{...(le=g.parameters)==null?void 0:le.docs,source:{originalSource:`{
+}`,...(Ae=(le=S.parameters)==null?void 0:le.docs)==null?void 0:Ae.source}}};var he,Ke,Te;m.parameters={...m.parameters,docs:{...(he=m.parameters)==null?void 0:he.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -723,7 +733,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(he=(Ae=g.parameters)==null?void 0:Ae.docs)==null?void 0:he.source}}};var Ke,Te,ve;I.parameters={...I.parameters,docs:{...(Ke=I.parameters)==null?void 0:Ke.docs,source:{originalSource:`{
+}`,...(Te=(Ke=m.parameters)==null?void 0:Ke.docs)==null?void 0:Te.source}}};var Ne,ve,Ge;_.parameters={..._.parameters,docs:{...(Ne=_.parameters)==null?void 0:Ne.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -745,7 +755,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ve=(Te=I.parameters)==null?void 0:Te.docs)==null?void 0:ve.source}}};var Ne,Ge,Oe;S.parameters={...S.parameters,docs:{...(Ne=S.parameters)==null?void 0:Ne.docs,source:{originalSource:`{
+}`,...(Ge=(ve=_.parameters)==null?void 0:ve.docs)==null?void 0:Ge.source}}};var Oe,Qe,Ye;F.parameters={...F.parameters,docs:{...(Oe=F.parameters)==null?void 0:Oe.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -769,7 +779,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Oe=(Ge=S.parameters)==null?void 0:Ge.docs)==null?void 0:Oe.source}}};var Qe,Ye,Re;m.parameters={...m.parameters,docs:{...(Qe=m.parameters)==null?void 0:Qe.docs,source:{originalSource:`{
+}`,...(Ye=(Qe=F.parameters)==null?void 0:Qe.docs)==null?void 0:Ye.source}}};var Re,Le,be;M.parameters={...M.parameters,docs:{...(Re=M.parameters)==null?void 0:Re.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -793,7 +803,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Re=(Ye=m.parameters)==null?void 0:Ye.docs)==null?void 0:Re.source}}};var Le,be,Be;_.parameters={..._.parameters,docs:{...(Le=_.parameters)==null?void 0:Le.docs,source:{originalSource:`{
+}`,...(be=(Le=M.parameters)==null?void 0:Le.docs)==null?void 0:be.source}}};var Be,Ue,Pe;l.parameters={...l.parameters,docs:{...(Be=l.parameters)==null?void 0:Be.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -815,7 +825,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Be=(be=_.parameters)==null?void 0:be.docs)==null?void 0:Be.source}}};var Ue,Pe,We;F.parameters={...F.parameters,docs:{...(Ue=F.parameters)==null?void 0:Ue.docs,source:{originalSource:`{
+}`,...(Pe=(Ue=l.parameters)==null?void 0:Ue.docs)==null?void 0:Pe.source}}};var We,Ve,Ce;A.parameters={...A.parameters,docs:{...(We=A.parameters)==null?void 0:We.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -837,7 +847,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(We=(Pe=F.parameters)==null?void 0:Pe.docs)==null?void 0:We.source}}};var Ve,Ce,xe;M.parameters={...M.parameters,docs:{...(Ve=M.parameters)==null?void 0:Ve.docs,source:{originalSource:`{
+}`,...(Ce=(Ve=A.parameters)==null?void 0:Ve.docs)==null?void 0:Ce.source}}};var xe,we,He;h.parameters={...h.parameters,docs:{...(xe=h.parameters)==null?void 0:xe.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -859,7 +869,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(xe=(Ce=M.parameters)==null?void 0:Ce.docs)==null?void 0:xe.source}}};var we,He,je;l.parameters={...l.parameters,docs:{...(we=l.parameters)==null?void 0:we.docs,source:{originalSource:`{
+}`,...(He=(we=h.parameters)==null?void 0:we.docs)==null?void 0:He.source}}};var je,ke,qe;K.parameters={...K.parameters,docs:{...(je=K.parameters)==null?void 0:je.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -882,7 +892,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(je=(He=l.parameters)==null?void 0:He.docs)==null?void 0:je.source}}};var ke,qe,ze;A.parameters={...A.parameters,docs:{...(ke=A.parameters)==null?void 0:ke.docs,source:{originalSource:`{
+}`,...(qe=(ke=K.parameters)==null?void 0:ke.docs)==null?void 0:qe.source}}};var ze,Je,Xe;T.parameters={...T.parameters,docs:{...(ze=T.parameters)==null?void 0:ze.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -905,7 +915,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ze=(qe=A.parameters)==null?void 0:qe.docs)==null?void 0:ze.source}}};var Je,Xe,Ze;h.parameters={...h.parameters,docs:{...(Je=h.parameters)==null?void 0:Je.docs,source:{originalSource:`{
+}`,...(Xe=(Je=T.parameters)==null?void 0:Je.docs)==null?void 0:Xe.source}}};var Ze,$e,er;N.parameters={...N.parameters,docs:{...(Ze=N.parameters)==null?void 0:Ze.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -929,7 +939,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Ze=(Xe=h.parameters)==null?void 0:Xe.docs)==null?void 0:Ze.source}}};var $e,er,rr;K.parameters={...K.parameters,docs:{...($e=K.parameters)==null?void 0:$e.docs,source:{originalSource:`{
+}`,...(er=($e=N.parameters)==null?void 0:$e.docs)==null?void 0:er.source}}};var rr,tr,nr;v.parameters={...v.parameters,docs:{...(rr=v.parameters)==null?void 0:rr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -950,7 +960,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(rr=(er=K.parameters)==null?void 0:er.docs)==null?void 0:rr.source}}};var tr,nr,ar;T.parameters={...T.parameters,docs:{...(tr=T.parameters)==null?void 0:tr.docs,source:{originalSource:`{
+}`,...(nr=(tr=v.parameters)==null?void 0:tr.docs)==null?void 0:nr.source}}};var ar,or,sr;G.parameters={...G.parameters,docs:{...(ar=G.parameters)==null?void 0:ar.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -971,7 +981,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ar=(nr=T.parameters)==null?void 0:nr.docs)==null?void 0:ar.source}}};var or,sr,ir;v.parameters={...v.parameters,docs:{...(or=v.parameters)==null?void 0:or.docs,source:{originalSource:`{
+}`,...(sr=(or=G.parameters)==null?void 0:or.docs)==null?void 0:sr.source}}};var ir,cr,pr;O.parameters={...O.parameters,docs:{...(ir=O.parameters)==null?void 0:ir.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -996,7 +1006,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ir=(sr=v.parameters)==null?void 0:sr.docs)==null?void 0:ir.source}}};var cr,pr,ur;N.parameters={...N.parameters,docs:{...(cr=N.parameters)==null?void 0:cr.docs,source:{originalSource:`{
+}`,...(pr=(cr=O.parameters)==null?void 0:cr.docs)==null?void 0:pr.source}}};var ur,dr,fr;Q.parameters={...Q.parameters,docs:{...(ur=Q.parameters)==null?void 0:ur.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1025,7 +1035,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(ur=(pr=N.parameters)==null?void 0:pr.docs)==null?void 0:ur.source}}};var dr,fr,yr;G.parameters={...G.parameters,docs:{...(dr=G.parameters)==null?void 0:dr.docs,source:{originalSource:`{
+}`,...(fr=(dr=Q.parameters)==null?void 0:dr.docs)==null?void 0:fr.source}}};var yr,Dr,Er;Y.parameters={...Y.parameters,docs:{...(yr=Y.parameters)==null?void 0:yr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1046,7 +1056,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(yr=(fr=G.parameters)==null?void 0:fr.docs)==null?void 0:yr.source}}};var Dr,Er,gr;O.parameters={...O.parameters,docs:{...(Dr=O.parameters)==null?void 0:Dr.docs,source:{originalSource:`{
+}`,...(Er=(Dr=Y.parameters)==null?void 0:Dr.docs)==null?void 0:Er.source}}};var gr,Ir,Sr;R.parameters={...R.parameters,docs:{...(gr=R.parameters)==null?void 0:gr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1068,7 +1078,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(gr=(Er=O.parameters)==null?void 0:Er.docs)==null?void 0:gr.source}}};var Ir,Sr,mr;Q.parameters={...Q.parameters,docs:{...(Ir=Q.parameters)==null?void 0:Ir.docs,source:{originalSource:`{
+}`,...(Sr=(Ir=R.parameters)==null?void 0:Ir.docs)==null?void 0:Sr.source}}};var mr,_r,Fr;L.parameters={...L.parameters,docs:{...(mr=L.parameters)==null?void 0:mr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1090,7 +1100,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(mr=(Sr=Q.parameters)==null?void 0:Sr.docs)==null?void 0:mr.source}}};var _r,Fr,Mr;Y.parameters={...Y.parameters,docs:{...(_r=Y.parameters)==null?void 0:_r.docs,source:{originalSource:`{
+}`,...(Fr=(_r=L.parameters)==null?void 0:_r.docs)==null?void 0:Fr.source}}};var Mr,lr,Ar;b.parameters={...b.parameters,docs:{...(Mr=b.parameters)==null?void 0:Mr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1112,7 +1122,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(Mr=(Fr=Y.parameters)==null?void 0:Fr.docs)==null?void 0:Mr.source}}};var lr,Ar,hr;R.parameters={...R.parameters,docs:{...(lr=R.parameters)==null?void 0:lr.docs,source:{originalSource:`{
+}`,...(Ar=(lr=b.parameters)==null?void 0:lr.docs)==null?void 0:Ar.source}}};var hr,Kr,Tr;B.parameters={...B.parameters,docs:{...(hr=B.parameters)==null?void 0:hr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1134,7 +1144,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(hr=(Ar=R.parameters)==null?void 0:Ar.docs)==null?void 0:hr.source}}};var Kr,Tr,vr;L.parameters={...L.parameters,docs:{...(Kr=L.parameters)==null?void 0:Kr.docs,source:{originalSource:`{
+}`,...(Tr=(Kr=B.parameters)==null?void 0:Kr.docs)==null?void 0:Tr.source}}};var Nr,vr,Gr;U.parameters={...U.parameters,docs:{...(Nr=U.parameters)==null?void 0:Nr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1176,7 +1186,7 @@ enum Enum {
       aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
     }
   }
-}`,...(vr=(Tr=L.parameters)==null?void 0:Tr.docs)==null?void 0:vr.source}}};var Nr,Gr,Or;b.parameters={...b.parameters,docs:{...(Nr=b.parameters)==null?void 0:Nr.docs,source:{originalSource:`{
+}`,...(Gr=(vr=U.parameters)==null?void 0:vr.docs)==null?void 0:Gr.source}}};var Or,Qr,Yr;P.parameters={...P.parameters,docs:{...(Or=P.parameters)==null?void 0:Or.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1210,7 +1220,7 @@ enum Enum {
     layoutMode: 'side-by-side-diffs',
     operationPath: 'companyCount'
   }
-}`,...(Or=(Gr=b.parameters)==null?void 0:Gr.docs)==null?void 0:Or.source}}};var Qr,Yr,Rr;B.parameters={...B.parameters,docs:{...(Qr=B.parameters)==null?void 0:Qr.docs,source:{originalSource:`{
+}`,...(Yr=(Qr=P.parameters)==null?void 0:Qr.docs)==null?void 0:Yr.source}}};var Rr,Lr,br;W.parameters={...W.parameters,docs:{...(Rr=W.parameters)==null?void 0:Rr.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1256,4 +1266,31 @@ enum Enum {
     layoutMode: 'side-by-side-diffs',
     operationPath: 'companyCount'
   }
-}`,...(Rr=(Yr=B.parameters)==null?void 0:Yr.docs)==null?void 0:Rr.source}}};const qr=["Test","DeprecatedQuery","UnDeprecatedQuery","DeprecatedWithReasonQuery","UnDeprecatedWithReasonQuery","SimpleEnum","WhollyAddedSimpleEnum","WhollyRemovedSimpleEnum","ComplexEnum","WhollyAddedComplexEnum","WhollyRemovedComplexEnum","WhollyAddedDirective","WhollyRemovedDirective","AppendDirective","PopDirective","AddedDirectiveLocation","RemovedDirectiveLocation","ReplacedDirectiveLocation","AddedDirectiveDescription","RemovedDirectiveDescription","ReplacedDirectiveDescription","StringToStringOrInt","StringToIntOrFloat","StringToStringOrEnum","StringToEnum1OrEnum2","ListToStringOrInt","DirectiveUsageAddedArgValue","DirectiveUsageRemovedArgValue","DirectiveUsageChangedArgValue","ChangedUnion","ChangedObjectiveUnion","TypeToInput","EnumChanges"];export{l as AddedDirectiveDescription,_ as AddedDirectiveLocation,S as AppendDirective,L as ChangedObjectiveUnion,R as ChangedUnion,y as ComplexEnum,s as DeprecatedQuery,c as DeprecatedWithReasonQuery,O as DirectiveUsageAddedArgValue,Y as DirectiveUsageChangedArgValue,Q as DirectiveUsageRemovedArgValue,B as EnumChanges,G as ListToStringOrInt,m as PopDirective,A as RemovedDirectiveDescription,F as RemovedDirectiveLocation,h as ReplacedDirectiveDescription,M as ReplacedDirectiveLocation,u as SimpleEnum,N as StringToEnum1OrEnum2,T as StringToIntOrFloat,v as StringToStringOrEnum,K as StringToStringOrInt,o as Test,b as TypeToInput,i as UnDeprecatedQuery,p as UnDeprecatedWithReasonQuery,D as WhollyAddedComplexEnum,g as WhollyAddedDirective,d as WhollyAddedSimpleEnum,E as WhollyRemovedComplexEnum,I as WhollyRemovedDirective,f as WhollyRemovedSimpleEnum,qr as __namedExportsOrder,kr as default};
+}`,...(br=(Lr=W.parameters)==null?void 0:Lr.docs)==null?void 0:br.source}}};var Br,Ur,Pr;V.parameters={...V.parameters,docs:{...(Br=V.parameters)==null?void 0:Br.docs,source:{originalSource:`{
+  render: args => {
+    const processedSource = prepareGraphApiDiffSchema({
+      beforeSource: buildGraphApi(\`
+        directive @foo on FIELD_DEFINITION
+        type Query {
+          test: String @foo
+        }
+      \`),
+      afterSource: buildGraphApi(\`
+        directive @foo on FIELD_DEFINITION | ENUM_VALUE
+        type Query {
+          test: String @foo
+        }
+      \`),
+      circular: true
+    });
+    return <GraphQLOperationDiffViewer {...args} source={processedSource} />;
+  },
+  args: {
+    expandedDepth: 2,
+    metaKeys: {
+      diffsMetaKey: DIFF_META_KEY,
+      aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY
+    },
+    layoutMode: 'side-by-side-diffs'
+  }
+}`,...(Pr=(Ur=V.parameters)==null?void 0:Ur.docs)==null?void 0:Pr.source}}};const Zr=["Test","DeprecatedQuery","UnDeprecatedQuery","DeprecatedWithReasonQuery","UnDeprecatedWithReasonQuery","SimpleEnum","WhollyAddedSimpleEnum","WhollyRemovedSimpleEnum","ComplexEnum","WhollyAddedComplexEnum","WhollyRemovedComplexEnum","WhollyAddedDirective","WhollyRemovedDirective","AppendDirective","PopDirective","AddedDirectiveLocation","RemovedDirectiveLocation","ReplacedDirectiveLocation","AddedDirectiveDescription","RemovedDirectiveDescription","ReplacedDirectiveDescription","StringToStringOrInt","StringToIntOrFloat","StringToStringOrEnum","StringToEnum1OrEnum2","ListToStringOrInt","DirectiveUsageAddedArgValue","DirectiveUsageRemovedArgValue","DirectiveUsageChangedArgValue","ChangedUnion","ChangedObjectiveUnion","TypeToInput","EnumChanges","DirectiveUsageLocationsChanged"];export{K as AddedDirectiveDescription,l as AddedDirectiveLocation,F as AppendDirective,U as ChangedObjectiveUnion,B as ChangedUnion,g as ComplexEnum,p as DeprecatedQuery,d as DeprecatedWithReasonQuery,R as DirectiveUsageAddedArgValue,b as DirectiveUsageChangedArgValue,V as DirectiveUsageLocationsChanged,L as DirectiveUsageRemovedArgValue,W as EnumChanges,Y as ListToStringOrInt,M as PopDirective,T as RemovedDirectiveDescription,A as RemovedDirectiveLocation,N as ReplacedDirectiveDescription,h as ReplacedDirectiveLocation,y as SimpleEnum,Q as StringToEnum1OrEnum2,G as StringToIntOrFloat,O as StringToStringOrEnum,v as StringToStringOrInt,c as Test,P as TypeToInput,u as UnDeprecatedQuery,f as UnDeprecatedWithReasonQuery,I as WhollyAddedComplexEnum,m as WhollyAddedDirective,D as WhollyAddedSimpleEnum,S as WhollyRemovedComplexEnum,_ as WhollyRemovedDirective,E as WhollyRemovedSimpleEnum,Zr as __namedExportsOrder,Xr as default};
