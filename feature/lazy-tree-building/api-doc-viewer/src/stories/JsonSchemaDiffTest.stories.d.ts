@@ -31,3 +31,4 @@ export declare const RenamedProperty: Story;
 export declare const Flags: Story;
 export declare const Enum: Story;
 export declare const AddMinItemsInArrayProperty: Story;
+export declare const CycledChanged: Story;
