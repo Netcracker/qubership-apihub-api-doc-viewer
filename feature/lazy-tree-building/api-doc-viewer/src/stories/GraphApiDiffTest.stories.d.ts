@@ -60,3 +60,5 @@ export declare const ChangedObjectiveUnion: Story;
 export declare const TypeToInput: Story;
 export declare const EnumChanges: Story;
 export declare const DirectiveUsageLocationsChanged: Story;
+export declare const ChangedCircularMethods: Story;
+export declare const ChangedCircularProperties: Story;
