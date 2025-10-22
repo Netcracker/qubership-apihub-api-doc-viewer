@@ -20,3 +20,4 @@ export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer';
 export * from './types/LayoutMode';
 export * from './types/DisplayMode';
 export { buildOpenApiDiffCause } from './utils/common/changes';
+export type { DiffMetaKeys } from '../../api-data-model/src';
