@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { graphApiNodeKind } from '../../../../api-data-model/src';
 import type { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from '../../types/DisplayMode';
 export type GraphQLOperationViewerProps = {
@@ -22,3 +23,7 @@ export type GraphQLOperationViewerProps = {
     displayMode?: DisplayMode;
 };
 export declare const GraphQLOperationViewer: FC<GraphQLOperationViewerProps>;
+export type SplitOperationPathResult = {
+    operationType: keyof typeof graphApiNodeKind;
+    operationName: string;
+};
