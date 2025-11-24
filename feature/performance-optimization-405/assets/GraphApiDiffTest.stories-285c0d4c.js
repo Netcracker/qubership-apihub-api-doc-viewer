@@ -1,4 +1,4 @@
-import{j as c}from"./_commonjs-dynamic-modules-6308e768.js";import{S as t,D as kr,a as qr}from"./ErrorBoundaryFallback-2d9d02d4.js";import{G as i}from"./GraphQLOperationDiffViewer-2c2d6e55.js";import{p as r}from"./preprocess-8a5a3401.js";import{g as e,b as o}from"./helpers-7b320423.js";import"./index-f46741a2.js";import"./index-415bee12.js";import"./buildASTSchema-953f8d88.js";import"./model-3a422fff.js";const sn={title:"Graph Api Diff Viewer",component:i,parameters:{},argTypes:{},args:{source:{}}},n={diffsMetaKey:kr,aggregatedDiffsMetaKey:qr},p={args:{source:r({beforeSource:{},afterSource:{}}),layoutMode:t,metaKeys:n}},j=e`
+import{j as c}from"./_commonjs-dynamic-modules-6308e768.js";import{S as t,D as Hr,a as kr}from"./ErrorBoundaryFallback-2d9d02d4.js";import{G as i}from"./GraphQLOperationDiffViewer-3960a506.js";import{p as r}from"./preprocess-8a5a3401.js";import{g as e,b as o}from"./helpers-64258b88.js";import"./index-f46741a2.js";import"./index-415bee12.js";import"./buildASTSchema-a8f45669.js";import"./model-3a422fff.js";const sn={title:"Graph Api Diff Viewer",component:i,parameters:{},argTypes:{},args:{source:{}}},n={diffsMetaKey:Hr,aggregatedDiffsMetaKey:kr},p={args:{source:r({beforeSource:{},afterSource:{}}),layoutMode:t,metaKeys:n}},q=e`
 type Query {
   deprecatedQuery: Response
   unDeprecatedQuery: Response @deprecated
@@ -32,7 +32,7 @@ enum Enum {
 enum BugEnum {
   deprecated
 }
-`,H=e`
+`,j=e`
 type Query {
   deprecatedQuery: Response @deprecated
   unDeprecatedQuery: Response
@@ -66,7 +66,7 @@ enum Enum {
 enum BugEnum {
   deprecated @deprecated
 }
-`,u={args:{source:r({beforeSource:j,afterSource:H}),layoutMode:t,metaKeys:n}},d={args:{source:r({beforeSource:j,afterSource:H}),operationPath:"unDeprecatedQuery",layoutMode:t,metaKeys:n}},y={args:{source:r({beforeSource:j,afterSource:H}),operationPath:"deprecatedWithReasonQuery",layoutMode:t,metaKeys:n}},S={args:{source:r({beforeSource:j,afterSource:H}),operationPath:"unDeprecatedWithReasonQuery",layoutMode:t,metaKeys:n}},D={args:{source:r({beforeSource:e`
+`,u={args:{source:r({beforeSource:q,afterSource:j}),layoutMode:t,metaKeys:n}},d={args:{source:r({beforeSource:q,afterSource:j}),operationType:"query",operationName:"unDeprecatedQuery",layoutMode:t,metaKeys:n}},y={args:{source:r({beforeSource:q,afterSource:j}),operationType:"query",operationName:"deprecatedWithReasonQuery",layoutMode:t,metaKeys:n}},S={args:{source:r({beforeSource:q,afterSource:j}),operationType:"query",operationName:"unDeprecatedWithReasonQuery",layoutMode:t,metaKeys:n}},D={args:{source:r({beforeSource:e`
         type Query {
           test: Enum
         }
@@ -85,7 +85,7 @@ enum BugEnum {
           second
           THIRD
         }
-      `}),layoutMode:t,metaKeys:n}},I={args:{source:r({beforeSource:e`
+      `}),layoutMode:t,metaKeys:n}},m={args:{source:r({beforeSource:e`
         type Query {
           test: String
         }
@@ -98,7 +98,7 @@ enum BugEnum {
           second
           third
         }
-      `}),layoutMode:t,metaKeys:n}},E={args:{source:r({beforeSource:e`
+      `}),layoutMode:t,metaKeys:n}},I={args:{source:r({beforeSource:e`
         type Query {
           test: Enum
         }
@@ -174,7 +174,7 @@ enum Enum {
   addedValueWithCustomDeprecation @deprecated(reason: "Because why")
   valueWithChangedDeprecationReason @deprecated(reason: "Because why CHANGED")
 }
-`,m={args:{source:r({beforeSource:zr,afterSource:Jr}),layoutMode:t,metaKeys:n}},f={args:{source:r({beforeSource:e`
+`,E={args:{source:r({beforeSource:zr,afterSource:Jr}),layoutMode:t,metaKeys:n}},f={args:{source:r({beforeSource:e`
         type Query {
           test: String
         }
@@ -443,7 +443,7 @@ enum Enum {
           login: ID!
           email: String
         }
-      `}),layoutMode:t,metaKeys:n}},P={render:a=>{const s=r({beforeSource:o(`
+      `}),layoutMode:t,metaKeys:n}},W={render:a=>{const s=r({beforeSource:o(`
         type Query {
           test: Type
         }
@@ -459,7 +459,7 @@ enum Enum {
         input Input {
           id: ID!
         }
-      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs",operationPath:"companyCount"}},W={render:a=>{const s=r({beforeSource:o(`
+      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs",operationType:"query",operationName:"companyCount"}},P={render:a=>{const s=r({beforeSource:o(`
         type Query {
           test: Fruit
         }
@@ -487,7 +487,7 @@ enum Enum {
           PEAR
           STRAWBERRY
         }
-      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs",operationPath:"companyCount"}},V={render:a=>{const s=r({beforeSource:o(`
+      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs",operationType:"query",operationName:"companyCount"}},V={render:a=>{const s=r({beforeSource:o(`
         directive @foo on FIELD_DEFINITION
         type Query {
           test: String @foo
@@ -549,7 +549,7 @@ enum Enum {
           value: String
           child: CycledEntity
         }
-      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs"}};var k,q,z;p.parameters={...p.parameters,docs:{...(k=p.parameters)==null?void 0:k.docs,source:{originalSource:`{
+      `),circular:!0});return c.jsx(i,{...a,source:s})},args:{expandedDepth:2,metaKeys:n,layoutMode:"side-by-side-diffs"}};var H,k,z;p.parameters={...p.parameters,docs:{...(H=p.parameters)==null?void 0:H.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: {},
@@ -558,7 +558,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(z=(q=p.parameters)==null?void 0:q.docs)==null?void 0:z.source}}};var J,X,Z;u.parameters={...u.parameters,docs:{...(J=u.parameters)==null?void 0:J.docs,source:{originalSource:`{
+}`,...(z=(k=p.parameters)==null?void 0:k.docs)==null?void 0:z.source}}};var J,X,Z;u.parameters={...u.parameters,docs:{...(J=u.parameters)==null?void 0:J.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: deprecationBefore,
@@ -573,7 +573,8 @@ enum Enum {
       beforeSource: deprecationBefore,
       afterSource: deprecationAfter
     }),
-    operationPath: 'unDeprecatedQuery',
+    operationType: 'query',
+    operationName: 'unDeprecatedQuery',
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
@@ -583,7 +584,8 @@ enum Enum {
       beforeSource: deprecationBefore,
       afterSource: deprecationAfter
     }),
-    operationPath: 'deprecatedWithReasonQuery',
+    operationType: 'query',
+    operationName: 'deprecatedWithReasonQuery',
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
@@ -593,7 +595,8 @@ enum Enum {
       beforeSource: deprecationBefore,
       afterSource: deprecationAfter
     }),
-    operationPath: 'unDeprecatedWithReasonQuery',
+    operationType: 'query',
+    operationName: 'unDeprecatedWithReasonQuery',
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
@@ -625,7 +628,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(ue=(pe=D.parameters)==null?void 0:pe.docs)==null?void 0:ue.source}}};var de,ye,Se;I.parameters={...I.parameters,docs:{...(de=I.parameters)==null?void 0:de.docs,source:{originalSource:`{
+}`,...(ue=(pe=D.parameters)==null?void 0:pe.docs)==null?void 0:ue.source}}};var de,ye,Se;m.parameters={...m.parameters,docs:{...(de=m.parameters)==null?void 0:de.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -647,7 +650,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Se=(ye=I.parameters)==null?void 0:ye.docs)==null?void 0:Se.source}}};var De,Ie,Ee;E.parameters={...E.parameters,docs:{...(De=E.parameters)==null?void 0:De.docs,source:{originalSource:`{
+}`,...(Se=(ye=m.parameters)==null?void 0:ye.docs)==null?void 0:Se.source}}};var De,me,Ie;I.parameters={...I.parameters,docs:{...(De=I.parameters)==null?void 0:De.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -669,7 +672,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Ee=(Ie=E.parameters)==null?void 0:Ie.docs)==null?void 0:Ee.source}}};var me,fe,ge;m.parameters={...m.parameters,docs:{...(me=m.parameters)==null?void 0:me.docs,source:{originalSource:`{
+}`,...(Ie=(me=I.parameters)==null?void 0:me.docs)==null?void 0:Ie.source}}};var Ee,fe,ge;E.parameters={...E.parameters,docs:{...(Ee=E.parameters)==null?void 0:Ee.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: complexEnumBefore,
@@ -678,7 +681,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(ge=(fe=m.parameters)==null?void 0:fe.docs)==null?void 0:ge.source}}};var le,_e,Fe;f.parameters={...f.parameters,docs:{...(le=f.parameters)==null?void 0:le.docs,source:{originalSource:`{
+}`,...(ge=(fe=E.parameters)==null?void 0:fe.docs)==null?void 0:ge.source}}};var le,_e,Fe;f.parameters={...f.parameters,docs:{...(le=f.parameters)==null?void 0:le.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -810,7 +813,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Ce=(Be=h.parameters)==null?void 0:Be.docs)==null?void 0:Ce.source}}};var Ue,Ge,Pe;A.parameters={...A.parameters,docs:{...(Ue=A.parameters)==null?void 0:Ue.docs,source:{originalSource:`{
+}`,...(Ce=(Be=h.parameters)==null?void 0:Be.docs)==null?void 0:Ce.source}}};var Ue,Ge,We;A.parameters={...A.parameters,docs:{...(Ue=A.parameters)==null?void 0:Ue.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -829,7 +832,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Pe=(Ge=A.parameters)==null?void 0:Ge.docs)==null?void 0:Pe.source}}};var We,Ve,xe;v.parameters={...v.parameters,docs:{...(We=v.parameters)==null?void 0:We.docs,source:{originalSource:`{
+}`,...(We=(Ge=A.parameters)==null?void 0:Ge.docs)==null?void 0:We.source}}};var Pe,Ve,xe;v.parameters={...v.parameters,docs:{...(Pe=v.parameters)==null?void 0:Pe.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -848,7 +851,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(xe=(Ve=v.parameters)==null?void 0:Ve.docs)==null?void 0:xe.source}}};var we,je,He;N.parameters={...N.parameters,docs:{...(we=N.parameters)==null?void 0:we.docs,source:{originalSource:`{
+}`,...(xe=(Ve=v.parameters)==null?void 0:Ve.docs)==null?void 0:xe.source}}};var we,qe,je;N.parameters={...N.parameters,docs:{...(we=N.parameters)==null?void 0:we.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -867,7 +870,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(He=(je=N.parameters)==null?void 0:je.docs)==null?void 0:He.source}}};var ke,qe,ze;T.parameters={...T.parameters,docs:{...(ke=T.parameters)==null?void 0:ke.docs,source:{originalSource:`{
+}`,...(je=(qe=N.parameters)==null?void 0:qe.docs)==null?void 0:je.source}}};var He,ke,ze;T.parameters={...T.parameters,docs:{...(He=T.parameters)==null?void 0:He.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -887,7 +890,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(ze=(qe=T.parameters)==null?void 0:qe.docs)==null?void 0:ze.source}}};var Je,Xe,Ze;M.parameters={...M.parameters,docs:{...(Je=M.parameters)==null?void 0:Je.docs,source:{originalSource:`{
+}`,...(ze=(ke=T.parameters)==null?void 0:ke.docs)==null?void 0:ze.source}}};var Je,Xe,Ze;M.parameters={...M.parameters,docs:{...(Je=M.parameters)==null?void 0:Je.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1012,7 +1015,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Sr=(yr=R.parameters)==null?void 0:yr.docs)==null?void 0:Sr.source}}};var Dr,Ir,Er;K.parameters={...K.parameters,docs:{...(Dr=K.parameters)==null?void 0:Dr.docs,source:{originalSource:`{
+}`,...(Sr=(yr=R.parameters)==null?void 0:yr.docs)==null?void 0:Sr.source}}};var Dr,mr,Ir;K.parameters={...K.parameters,docs:{...(Dr=K.parameters)==null?void 0:Dr.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1030,7 +1033,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Er=(Ir=K.parameters)==null?void 0:Ir.docs)==null?void 0:Er.source}}};var mr,fr,gr;Y.parameters={...Y.parameters,docs:{...(mr=Y.parameters)==null?void 0:mr.docs,source:{originalSource:`{
+}`,...(Ir=(mr=K.parameters)==null?void 0:mr.docs)==null?void 0:Ir.source}}};var Er,fr,gr;Y.parameters={...Y.parameters,docs:{...(Er=Y.parameters)==null?void 0:Er.docs,source:{originalSource:`{
   args: {
     source: prepareGraphApiDiffSchema({
       beforeSource: graphapi\`
@@ -1145,7 +1148,7 @@ enum Enum {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS
   }
-}`,...(Lr=(Qr=G.parameters)==null?void 0:Qr.docs)==null?void 0:Lr.source}}};var br,Rr,Kr;P.parameters={...P.parameters,docs:{...(br=P.parameters)==null?void 0:br.docs,source:{originalSource:`{
+}`,...(Lr=(Qr=G.parameters)==null?void 0:Qr.docs)==null?void 0:Lr.source}}};var br,Rr,Kr;W.parameters={...W.parameters,docs:{...(br=W.parameters)==null?void 0:br.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1174,9 +1177,10 @@ enum Enum {
     expandedDepth: 2,
     metaKeys: DIFF_META_KEYS,
     layoutMode: 'side-by-side-diffs',
-    operationPath: 'companyCount'
+    operationType: 'query',
+    operationName: 'companyCount'
   }
-}`,...(Kr=(Rr=P.parameters)==null?void 0:Rr.docs)==null?void 0:Kr.source}}};var Yr,Br,Cr;W.parameters={...W.parameters,docs:{...(Yr=W.parameters)==null?void 0:Yr.docs,source:{originalSource:`{
+}`,...(Kr=(Rr=W.parameters)==null?void 0:Rr.docs)==null?void 0:Kr.source}}};var Yr,Br,Cr;P.parameters={...P.parameters,docs:{...(Yr=P.parameters)==null?void 0:Yr.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1217,9 +1221,10 @@ enum Enum {
     expandedDepth: 2,
     metaKeys: DIFF_META_KEYS,
     layoutMode: 'side-by-side-diffs',
-    operationPath: 'companyCount'
+    operationType: 'query',
+    operationName: 'companyCount'
   }
-}`,...(Cr=(Br=W.parameters)==null?void 0:Br.docs)==null?void 0:Cr.source}}};var Ur,Gr,Pr;V.parameters={...V.parameters,docs:{...(Ur=V.parameters)==null?void 0:Ur.docs,source:{originalSource:`{
+}`,...(Cr=(Br=P.parameters)==null?void 0:Br.docs)==null?void 0:Cr.source}}};var Ur,Gr,Wr;V.parameters={...V.parameters,docs:{...(Ur=V.parameters)==null?void 0:Ur.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1243,7 +1248,7 @@ enum Enum {
     metaKeys: DIFF_META_KEYS,
     layoutMode: 'side-by-side-diffs'
   }
-}`,...(Pr=(Gr=V.parameters)==null?void 0:Gr.docs)==null?void 0:Pr.source}}};var Wr,Vr,xr;x.parameters={...x.parameters,docs:{...(Wr=x.parameters)==null?void 0:Wr.docs,source:{originalSource:`{
+}`,...(Wr=(Gr=V.parameters)==null?void 0:Gr.docs)==null?void 0:Wr.source}}};var Pr,Vr,xr;x.parameters={...x.parameters,docs:{...(Pr=x.parameters)==null?void 0:Pr.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1283,7 +1288,7 @@ enum Enum {
     metaKeys: DIFF_META_KEYS,
     layoutMode: 'side-by-side-diffs'
   }
-}`,...(xr=(Vr=x.parameters)==null?void 0:Vr.docs)==null?void 0:xr.source}}};var wr,jr,Hr;w.parameters={...w.parameters,docs:{...(wr=w.parameters)==null?void 0:wr.docs,source:{originalSource:`{
+}`,...(xr=(Vr=x.parameters)==null?void 0:Vr.docs)==null?void 0:xr.source}}};var wr,qr,jr;w.parameters={...w.parameters,docs:{...(wr=w.parameters)==null?void 0:wr.docs,source:{originalSource:`{
   render: args => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(\`
@@ -1323,4 +1328,4 @@ enum Enum {
     metaKeys: DIFF_META_KEYS,
     layoutMode: 'side-by-side-diffs'
   }
-}`,...(Hr=(jr=w.parameters)==null?void 0:jr.docs)==null?void 0:Hr.source}}};const cn=["Test","DeprecatedQuery","UnDeprecatedQuery","DeprecatedWithReasonQuery","UnDeprecatedWithReasonQuery","SimpleEnum","WhollyAddedSimpleEnum","WhollyRemovedSimpleEnum","ComplexEnum","WhollyAddedComplexEnum","WhollyRemovedComplexEnum","WhollyAddedDirective","WhollyRemovedDirective","AppendDirective","PopDirective","AddedDirectiveLocation","RemovedDirectiveLocation","ReplacedDirectiveLocation","AddedDirectiveDescription","RemovedDirectiveDescription","ReplacedDirectiveDescription","StringToStringOrInt","StringToIntOrFloat","StringToStringOrEnum","StringToEnum1OrEnum2","ListToStringOrInt","DirectiveUsageAddedArgValue","DirectiveUsageRemovedArgValue","DirectiveUsageChangedArgValue","ChangedUnion","ChangedObjectiveUnion","TypeToInput","EnumChanges","DirectiveUsageLocationsChanged","ChangedCircularMethods","ChangedCircularProperties"];export{T as AddedDirectiveDescription,A as AddedDirectiveLocation,F as AppendDirective,x as ChangedCircularMethods,w as ChangedCircularProperties,G as ChangedObjectiveUnion,U as ChangedUnion,m as ComplexEnum,u as DeprecatedQuery,y as DeprecatedWithReasonQuery,Y as DirectiveUsageAddedArgValue,C as DirectiveUsageChangedArgValue,V as DirectiveUsageLocationsChanged,B as DirectiveUsageRemovedArgValue,W as EnumChanges,K as ListToStringOrInt,h as PopDirective,M as RemovedDirectiveDescription,v as RemovedDirectiveLocation,O as ReplacedDirectiveDescription,N as ReplacedDirectiveLocation,D as SimpleEnum,R as StringToEnum1OrEnum2,L as StringToIntOrFloat,b as StringToStringOrEnum,Q as StringToStringOrInt,p as Test,P as TypeToInput,d as UnDeprecatedQuery,S as UnDeprecatedWithReasonQuery,f as WhollyAddedComplexEnum,l as WhollyAddedDirective,I as WhollyAddedSimpleEnum,g as WhollyRemovedComplexEnum,_ as WhollyRemovedDirective,E as WhollyRemovedSimpleEnum,cn as __namedExportsOrder,sn as default};
+}`,...(jr=(qr=w.parameters)==null?void 0:qr.docs)==null?void 0:jr.source}}};const cn=["Test","DeprecatedQuery","UnDeprecatedQuery","DeprecatedWithReasonQuery","UnDeprecatedWithReasonQuery","SimpleEnum","WhollyAddedSimpleEnum","WhollyRemovedSimpleEnum","ComplexEnum","WhollyAddedComplexEnum","WhollyRemovedComplexEnum","WhollyAddedDirective","WhollyRemovedDirective","AppendDirective","PopDirective","AddedDirectiveLocation","RemovedDirectiveLocation","ReplacedDirectiveLocation","AddedDirectiveDescription","RemovedDirectiveDescription","ReplacedDirectiveDescription","StringToStringOrInt","StringToIntOrFloat","StringToStringOrEnum","StringToEnum1OrEnum2","ListToStringOrInt","DirectiveUsageAddedArgValue","DirectiveUsageRemovedArgValue","DirectiveUsageChangedArgValue","ChangedUnion","ChangedObjectiveUnion","TypeToInput","EnumChanges","DirectiveUsageLocationsChanged","ChangedCircularMethods","ChangedCircularProperties"];export{T as AddedDirectiveDescription,A as AddedDirectiveLocation,F as AppendDirective,x as ChangedCircularMethods,w as ChangedCircularProperties,G as ChangedObjectiveUnion,U as ChangedUnion,E as ComplexEnum,u as DeprecatedQuery,y as DeprecatedWithReasonQuery,Y as DirectiveUsageAddedArgValue,C as DirectiveUsageChangedArgValue,V as DirectiveUsageLocationsChanged,B as DirectiveUsageRemovedArgValue,P as EnumChanges,K as ListToStringOrInt,h as PopDirective,M as RemovedDirectiveDescription,v as RemovedDirectiveLocation,O as ReplacedDirectiveDescription,N as ReplacedDirectiveLocation,D as SimpleEnum,R as StringToEnum1OrEnum2,L as StringToIntOrFloat,b as StringToStringOrEnum,Q as StringToStringOrInt,p as Test,W as TypeToInput,d as UnDeprecatedQuery,S as UnDeprecatedWithReasonQuery,f as WhollyAddedComplexEnum,l as WhollyAddedDirective,m as WhollyAddedSimpleEnum,g as WhollyRemovedComplexEnum,_ as WhollyRemovedDirective,I as WhollyRemovedSimpleEnum,cn as __namedExportsOrder,sn as default};

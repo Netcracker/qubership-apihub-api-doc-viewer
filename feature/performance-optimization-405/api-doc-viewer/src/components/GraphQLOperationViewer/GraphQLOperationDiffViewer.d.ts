@@ -20,7 +20,8 @@ import { DisplayMode } from '../../types/DisplayMode';
 import { LayoutMode } from '../../types/LayoutMode';
 export type GraphQLOperationDiffViewerProps = {
     source: unknown;
-    operationPath?: string;
+    operationType?: string;
+    operationName?: string;
     expandedDepth?: number;
     displayMode?: DisplayMode;
     layoutMode?: LayoutMode;

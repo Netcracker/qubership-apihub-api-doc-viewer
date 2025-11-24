@@ -1,4 +1,4 @@
-import{j as A}from"./_commonjs-dynamic-modules-6308e768.js";import{c as C,R as k,D as R,s as U,S as _,a as W}from"./ErrorBoundaryFallback-2d9d02d4.js";import{g as z,r as V}from"./index-f46741a2.js";import{G as H}from"./GraphQLOperationDiffViewer-2c2d6e55.js";import{b as Q}from"./graph-api-transformers-f156c660.js";const un="graphql";function Y(o,r,u){const m=`${o}/${r}/${u}`,p=J.get(m);return p?[p.before,p.after]:["",""]}const J=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
+import{j as A}from"./_commonjs-dynamic-modules-6308e768.js";import{c as C,R as k,D as R,s as U,S as _,a as W}from"./ErrorBoundaryFallback-2d9d02d4.js";import{g as z,r as V}from"./index-f46741a2.js";import{G as H}from"./GraphQLOperationDiffViewer-3960a506.js";import{b as Q}from"./graph-api-transformers-b6f29adf.js";const un="graphql";function Y(o,r,u){const m=`${o}/${r}/${u}`,p=J.get(m);return p?[p.before,p.after]:["",""]}const J=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]

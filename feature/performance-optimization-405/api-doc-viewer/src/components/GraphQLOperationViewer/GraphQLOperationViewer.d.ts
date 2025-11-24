@@ -18,7 +18,8 @@ import type { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from '../../types/DisplayMode';
 export type GraphQLOperationViewerProps = {
     source: unknown;
-    operationPath?: string;
+    operationType?: string;
+    operationName?: string;
     expandedDepth?: number;
     displayMode?: DisplayMode;
 };
