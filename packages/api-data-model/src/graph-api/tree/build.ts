@@ -1,8 +1,6 @@
 import { syncCrawl } from '@netcracker/qubership-apihub-json-crawl';
 import { isObject } from '../../utils';
-import { graphApiNodeKind } from '../constants';
 import { graphApiRules } from '../rules';
-import { createLeaveOnlyOneOperationFilter } from '../utils';
 import { createGraphApiTreeCrawlHook } from './hooks/create-graph-api-nodes';
 import { createGraphSchemaTreeCrawlHook } from './hooks/create-graph-api-schema-nodes';
 import { GraphApiModelTree } from './model';
@@ -25,8 +23,6 @@ export function crawlHooksGraphApiTree(tree: GraphApiModelTree): any[] {
 export const createGraphApiTree = (
   mergedSource: unknown,
   maxTreeLevel: number = DEFAULT_MAX_TREE_LEVEL,
-  operationType?: keyof typeof graphApiNodeKind,
-  operationName?: string
 ) => {
   const tree = new GraphApiModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta>(mergedSource)
 
@@ -81,9 +77,6 @@ export const createGraphApiTree = (
       rules: graphApiRules,
     }
   )
-
-  const childrenFilter = createLeaveOnlyOneOperationFilter(operationType, operationName)
-  tree.root?.removeChildrenByCondition(childrenFilter)
 
   return tree
 }

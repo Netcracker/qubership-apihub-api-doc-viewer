@@ -25,7 +25,7 @@ import {
 } from '@netcracker/qubership-apihub-api-data-model'
 import { modelStateNodeType } from '../consts'
 import { GraphSchemaStateCombinaryNode, GraphSchemaStatePropNode } from '../graph-schema'
-import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../types'
+import { CallbackStopExpandingByNode, IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../types'
 import { isGraphApiOperationNode, isGraphApiSchemaNode } from '../utils'
 
 const GRAPH_API_KIND_PRIORITIES: Partial<Record<GraphApiNodeKind, number>> = {
@@ -114,10 +114,11 @@ export class GraphApiState {
   constructor(
     tree: IModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta>,
     expandDepth = 1,
+    stopExpandingByNode?: CallbackStopExpandingByNode,
   ) {
     this.root = tree.root
       ? new GraphApiStatePropNode(tree.root as GraphApiTreeNode, null, true)
       : null
-    this.root?.expand(expandDepth)
+    this.root?.expand(expandDepth, stopExpandingByNode)
   }
 }

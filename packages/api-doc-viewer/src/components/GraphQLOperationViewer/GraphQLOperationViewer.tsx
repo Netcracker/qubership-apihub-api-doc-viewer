@@ -25,7 +25,7 @@ import {
   GraphApiNodeMeta,
   ModelTree
 } from '@netcracker/qubership-apihub-api-data-model'
-import { GraphApiState } from '@netcracker/qubership-apihub-api-state-model'
+import { GraphApiState, isGraphApiOperationNode } from '@netcracker/qubership-apihub-api-state-model'
 import type { FC } from 'react'
 import { useMemo } from 'react'
 import { DEFAULT_EXPANDED_DEPTH } from '../../consts/configuration'
@@ -156,35 +156,58 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
       const windowAsGlobalContainer = window ? window as unknown as Record<PropertyKey, unknown> : undefined
       if (!windowAsGlobalContainer) {
         console.debug('Create tree model and return it as-is')
-        return createGraphApiTree(
-          source,
-          undefined,
-          operationType as keyof typeof graphApiNodeKind | undefined, // FIXME 24.11.25 // Get rid of type assertion
-          operationName,
-        )
+        return createGraphApiTree(source, undefined)
       }
 
       if (!windowAsGlobalContainer.__advTree__) {
         console.debug('Create tree model and bind it to global variable "window"')
-        windowAsGlobalContainer.__advTree__ = createGraphApiTree(
-          source,
-          undefined,
-          operationType as keyof typeof graphApiNodeKind | undefined, // FIXME 24.11.25 // Get rid of type assertion
-          operationName,
-        )
+        windowAsGlobalContainer.__advTree__ = createGraphApiTree(source, undefined)
       }
       console.debug('Return cached tree model already saved in global variable "window"')
       return windowAsGlobalContainer.__advTree__ as ModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta>
     },
-    [operationType, operationName, source]
+    [source]
   )
+
+  const [firstOperationType, firstOperationName] = useMemo(() => {
+    if (!tree.root) {
+      return [undefined, undefined]
+    }
+    const rootChildren = tree.root.children().filter(isGraphApiOperationNode)
+    const firstOperation = rootChildren[0]
+    if (!firstOperation) {
+      return [undefined, undefined]
+    }
+    return [firstOperation.kind, firstOperation.key]
+  }, [tree])
 
   console.debug('Tree Model:', tree)
 
   // TODO 27.12.23 // Diff State!
   const state = useMemo(
-    () => new GraphApiState(tree, expandedDepth),
-    [expandedDepth, tree]
+    () => new GraphApiState(
+      tree,
+      expandedDepth,
+      (node) => {
+        if (!node) {
+          return true
+        }
+        if (!isGraphApiOperationNode(node)) {
+          return false
+        }
+        if (!operationType || !operationName) {
+          return (
+            node.kind !== firstOperationType ||
+            node.key !== firstOperationName
+          )
+        }
+        return (
+          node.kind !== operationType ||
+          node.key !== operationName
+        )
+      },
+    ),
+    [expandedDepth, firstOperationName, firstOperationType, operationName, operationType, tree]
   )
 
   console.debug('State Model:', state)

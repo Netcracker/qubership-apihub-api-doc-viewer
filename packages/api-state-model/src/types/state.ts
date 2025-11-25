@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model'
+import { GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta, IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model'
 import { modelStateNodeType } from '../consts'
 import { NodesChangesSummary } from '../../../api-doc-viewer/src/types/aliases/changes'
 
@@ -55,12 +55,16 @@ export interface IModelStatePropNode<T extends IModelTreeNode<any, any, any>> {
 
   sort(dir?: number): void
 
-  expand(value?: number): void
+  expand(value?: number, stopExpandingByNode?: CallbackStopExpandingByNode): void
 
   collapse(value?: number): void
 
   setSelected(id: string): void
 }
+
+export type CallbackStopExpandingByNode = (
+  node: IModelTreeNode<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta> | null
+) => boolean
 
 export interface IModelStateCombinaryNode<T extends IModelTreeNode<any, any, any>> {
   readonly type: Exclude<ModelStateNodeType, 'basic' | 'expandable'>

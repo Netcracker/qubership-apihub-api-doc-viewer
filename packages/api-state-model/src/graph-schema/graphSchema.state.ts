@@ -17,8 +17,9 @@
 import { GraphApiTreeNode, graphSchemaNodeKind, IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model'
 import { isArgumentsNode, isOutputNode, isUsedDirectivesNode } from '../../../api-doc-viewer/src/utils/nodes'
 import { JsonSchemaState, JsonSchemaStateCombinaryNode, JsonSchemaStatePropNode } from '../json-schema'
-import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../types'
+import { CallbackStopExpandingByNode, IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../types'
 import { BUILT_IN_DIRECTIVE_DEPRECATED } from '@netcracker/qubership-apihub-graphapi'
+import { isModelStatePropNode } from '../utils'
 
 export class GraphSchemaStateCombinaryNode<T extends IModelTreeNode<any, any, any> = GraphApiTreeNode> extends JsonSchemaStateCombinaryNode<T> {
 }
@@ -106,6 +107,14 @@ export class GraphSchemaStatePropNode<T extends IModelTreeNode<any, any, any> = 
     if (value !== this._selected) {
       this._selected = value
       this._children = this.buildChildren()
+    }
+  }
+
+  public expand(value = 1, stopExpandingByNode?: CallbackStopExpandingByNode) {
+    this.expanded = !!value
+
+    if (value > 1 && !('isCycle' in this.node && this.node.isCycle) && !stopExpandingByNode?.(this.node)) {
+      this.children.forEach((child) => isModelStatePropNode(child) && child.expand(value - 1, stopExpandingByNode))
     }
   }
 
