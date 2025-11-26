@@ -189,29 +189,18 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
       tree,
       expandedDepth,
       (node) => {
-        console.debug('[CB] node', node)
         if (!node) {
           return true
         }
-        console.debug('[CB] !isGraphApiOperationNode(node)', !isGraphApiOperationNode(node))
         if (!isGraphApiOperationNode(node)) {
           return false
         }
-        console.debug('[CB] operationType, operationName:', operationType, operationName)
         if (!operationType || !operationName) {
-          console.debug('[CB] FIRST', firstOperationType, firstOperationName, 'result=', (
-            node.kind !== firstOperationType ||
-            node.key !== firstOperationName
-          ))
           return (
             node.kind !== firstOperationType ||
             node.key !== firstOperationName
           )
         }
-        console.debug('[CB] result=', (
-          node.kind !== operationType ||
-          node.key !== operationName
-        ))
         return (
           node.kind !== operationType ||
           node.key !== operationName

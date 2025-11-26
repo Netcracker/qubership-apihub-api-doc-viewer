@@ -44,6 +44,7 @@ export class GraphApiStatePropNode extends GraphSchemaStatePropNode<GraphApiTree
     node: GraphApiTreeNode,
     parent: IModelStatePropNode<GraphApiTreeNode> | null,
     first = false,
+    private stopExpandingByNode?: CallbackStopExpandingByNode,
   ) {
     super(node, parent, first)
     if (isGraphApiSchemaNode(node) || isGraphApiOperationNode(node)) {
@@ -59,6 +60,7 @@ export class GraphApiStatePropNode extends GraphSchemaStatePropNode<GraphApiTree
     const children = this.node
       .expand()
       .children(this.selected)
+      .filter(child => !this.stopExpandingByNode?.(child))
 
     if (children.length === 0) {
       return []
@@ -116,8 +118,8 @@ export class GraphApiState {
     stopExpandingByNode?: CallbackStopExpandingByNode,
   ) {
     this.root = tree.root
-      ? new GraphApiStatePropNode(tree.root as GraphApiTreeNode, null, true)
+      ? new GraphApiStatePropNode(tree.root as GraphApiTreeNode, null, true, stopExpandingByNode)
       : null
-    this.root?.expand(expandDepth, stopExpandingByNode)
+    this.root?.expand(expandDepth)
   }
 }

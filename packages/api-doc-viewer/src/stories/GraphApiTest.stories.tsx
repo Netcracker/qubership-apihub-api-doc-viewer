@@ -145,3 +145,35 @@ export const TwoBranchesSelfCycledInput: Story = {
   },
   args: {}
 }
+
+export const SeveralOps: Story = {
+  render: (args) => {
+    const processedSource = prepareGraphApiSchema({
+      source: graphapi`
+        type Query {
+          first(arg: Arg): Resp
+          second(anotherarg: Int! = 100): Boolean!
+          third(a: String, b: Int, c: Boolean): String!
+        }
+        input Arg {
+          firstArgField: String
+          secondArgField: Int
+        }
+        type Resp {
+          firstRespField: Boolean
+          secondRespField: Float!
+        }
+      `,
+      circular: true
+    });
+    return (
+      <GraphQLOperationViewer
+        {...args}
+        source={processedSource}
+        operationType='query'
+        operationName='first'
+      />
+    );
+  },
+  args: {}
+}

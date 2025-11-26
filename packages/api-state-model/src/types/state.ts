@@ -15,8 +15,8 @@
  */
 
 import { GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta, IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model'
-import { modelStateNodeType } from '../consts'
 import { NodesChangesSummary } from '../../../api-doc-viewer/src/types/aliases/changes'
+import { modelStateNodeType } from '../consts'
 
 export type ModelStateNodeType = keyof typeof modelStateNodeType
 
@@ -55,7 +55,7 @@ export interface IModelStatePropNode<T extends IModelTreeNode<any, any, any>> {
 
   sort(dir?: number): void
 
-  expand(value?: number, stopExpandingByNode?: CallbackStopExpandingByNode): void
+  expand(value?: number): void
 
   collapse(value?: number): void
 
