@@ -113,6 +113,8 @@ export class GraphSchemaStatePropNode<T extends IModelTreeNode<any, any, any> = 
   public expand(value = 1, stopExpandingByNode?: CallbackStopExpandingByNode) {
     this.expanded = !!value
 
+    console.debug(' > nodeid', this.node.id)
+    console.debug(' > !stop:', !stopExpandingByNode?.(this.node))
     if (value > 1 && !('isCycle' in this.node && this.node.isCycle) && !stopExpandingByNode?.(this.node)) {
       this.children.forEach((child) => isModelStatePropNode(child) && child.expand(value - 1, stopExpandingByNode))
     }
