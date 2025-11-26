@@ -48,7 +48,6 @@ export class GraphApiStatePropNode extends GraphSchemaStatePropNode<GraphApiTree
     super(node, parent, first)
     if (isGraphApiSchemaNode(node) || isGraphApiOperationNode(node)) {
       (this as any).type = modelStateNodeType.basic
-      this.expanded = first
     }
   }
 
