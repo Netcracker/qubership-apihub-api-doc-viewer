@@ -1,11 +1,9 @@
 import { CrawlRules, syncCrawl, SyncCrawlHook } from '@netcracker/qubership-apihub-json-crawl';
 import type { DiffMetaKeys } from '../../abstract/diff';
 import { createCycleGuardHook } from '../../abstract/hooks/cycle-guard';
-import { graphApiNodeKind } from '../constants';
 import { graphApiRules } from '../rules';
 import { createGraphSchemaTreeCrawlHook } from '../tree/hooks/create-graph-api-schema-nodes';
 import type { GraphApiNodeKind } from '../tree/types';
-import { createLeaveOnlyOneOperationFilter } from '../utils';
 import { createGraphApiDiffTreeCrawlHook } from './hooks/create-graph-api-nodes';
 import { GraphApiModelDiffTree } from './model';
 import { GraphApiDiffCrawlRule, GraphApiDiffCrawlState, GraphApiDiffNodeData, GraphApiDiffNodeMeta } from './types';
@@ -36,8 +34,6 @@ export function createGraphApiDiffTree(
     state?: GraphApiDiffCrawlState
   },
   maxTreeLevel: number = DEFAULT_MAX_TREE_LEVEL,
-  operationType?: keyof typeof graphApiNodeKind,
-  operationName?: string
 ) {
   const { rules, state } = options ?? {}
 
@@ -91,9 +87,6 @@ export function createGraphApiDiffTree(
     crawlHooksGraphApiDiffTree(tree, metaKeys),
     { state: state ?? defaultState, rules: rules ?? graphApiRules }
   )
-
-  const childrenFilter = createLeaveOnlyOneOperationFilter(operationType, operationName)
-  tree.root?.removeChildrenByCondition(childrenFilter)
 
   return tree
 }

@@ -156,12 +156,12 @@ const GraphQLOperationViewerInner: FC<GraphQLOperationViewerProps> = (props) => 
       const windowAsGlobalContainer = window ? window as unknown as Record<PropertyKey, unknown> : undefined
       if (!windowAsGlobalContainer) {
         console.debug('Create tree model and return it as-is')
-        return createGraphApiTree(source, undefined)
+        return createGraphApiTree(source)
       }
 
       if (!windowAsGlobalContainer.__advTree__) {
         console.debug('Create tree model and bind it to global variable "window"')
-        windowAsGlobalContainer.__advTree__ = createGraphApiTree(source, undefined)
+        windowAsGlobalContainer.__advTree__ = createGraphApiTree(source)
       }
       console.debug('Return cached tree model already saved in global variable "window"')
       return windowAsGlobalContainer.__advTree__ as ModelTree<GraphApiNodeData, GraphApiNodeKind, GraphApiNodeMeta>

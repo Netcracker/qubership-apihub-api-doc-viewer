@@ -16,9 +16,9 @@
 
 import '../../index.css'
 
-import { createGraphApiDiffTree, DiffMetaKeys, DiffNodeMeta, graphApiNodeKind } from '@netcracker/qubership-apihub-api-data-model'
+import { createGraphApiDiffTree, DiffMetaKeys, DiffNodeMeta, GraphApiDiffNodeData, GraphApiDiffNodeMeta, GraphApiNodeKind, ModelTree } from '@netcracker/qubership-apihub-api-data-model'
 import { aggregateDiffsWithRollup, DiffType } from "@netcracker/qubership-apihub-api-diff"
-import { GraphApiState } from '@netcracker/qubership-apihub-api-state-model'
+import { GraphApiState, isGraphApiOperationNode } from '@netcracker/qubership-apihub-api-state-model'
 import type { FC } from 'react'
 import { useMemo } from 'react'
 import { DEFAULT_EXPANDED_DEPTH, DEFAULT_LAYOUT_MODE } from '../../consts/configuration'
@@ -79,24 +79,62 @@ const GraphQLOperationDiffViewerInner: FC<GraphQLOperationDiffViewerProps> = (pr
   aggregateDiffsWithRollup(source, metaKeys.diffsMetaKey, metaKeys.aggregatedDiffsMetaKey)
 
   const tree = useMemo(
-    () => createGraphApiDiffTree(
-      source,
-      metaKeys,
-      undefined,
-      undefined,
-      operationType as keyof typeof graphApiNodeKind | undefined, // FIXME 24.11.25 // Get rid of type assertion
-      operationName,
-    ),
-    [metaKeys, operationName, operationType, source,],
+    () => {
+      const windowAsGlobalContainer = window ? window as unknown as Record<PropertyKey, unknown> : undefined
+      if (!windowAsGlobalContainer) {
+        console.debug('Create tree model and return it as-is')
+        return createGraphApiDiffTree(source, metaKeys)
+      }
+      if (!windowAsGlobalContainer.__advTree__) {
+        console.debug('Create tree model and bind it to global variable "window"')
+        windowAsGlobalContainer.__advTree__ = createGraphApiDiffTree(source, metaKeys)
+      }
+      console.debug('Return cached tree model already saved in global variable "window"')
+      return windowAsGlobalContainer.__advTree__ as ModelTree<GraphApiDiffNodeData, GraphApiNodeKind, GraphApiDiffNodeMeta>
+    },
+    [metaKeys, source],
   )
+
+  const [firstOperationType, firstOperationName] = useMemo(() => {
+    if (!tree.root) {
+      return [undefined, undefined]
+    }
+    const rootChildren = tree.root.children().filter(isGraphApiOperationNode)
+    const firstOperation = rootChildren[0]
+    if (!firstOperation) {
+      return [undefined, undefined]
+    }
+    return [firstOperation.kind, firstOperation.key]
+  }, [tree])
 
   console.debug('Diff Tree Model:', tree)
 
   // TODO 27.12.23 // Diff State!
   const state = useMemo(
     // TODO 09.10.25 // Get rid of "any"
-    () => new GraphApiState(tree as any, expandedDepth),
-    [expandedDepth, tree]
+    () => new GraphApiState(
+      tree as any,
+      expandedDepth,
+      (node) => {
+        if (!node) {
+          return true
+        }
+        if (!isGraphApiOperationNode(node)) {
+          return false
+        }
+        if (!operationType || !operationName) {
+          return (
+            node.kind !== firstOperationType ||
+            node.key !== firstOperationName
+          )
+        }
+        return (
+          node.kind !== operationType ||
+          node.key !== operationName
+        )
+      },
+    ),
+    [expandedDepth, firstOperationName, firstOperationType, operationName, operationType, tree]
   )
 
   console.debug('Diff State Model:', state)
