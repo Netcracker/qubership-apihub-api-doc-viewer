@@ -36,3 +36,4 @@ export declare const SelfCycled: Story;
 export declare const SelfCycledInput: Story;
 export declare const TwoBranchesSelfCycled: Story;
 export declare const TwoBranchesSelfCycledInput: Story;
+export declare const SeveralOps: Story;
