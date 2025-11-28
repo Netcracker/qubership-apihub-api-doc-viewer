@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-export * from './components/JsonSchemaViewer/JsonSchemaViewer'
-export * from './components/JsonSchemaViewer/JsonSchemaDiffViewer'
-export * from './components/GraphQLOperationViewer/GraphQLOperationViewer'
-export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer'
-export * from './types/LayoutMode'
-export * from './types/DisplayMode'
-export { buildOpenApiDiffCause } from './utils/common/changes'
-export type { DiffMetaKeys } from '@netcracker/qubership-apihub-api-data-model'
+import type { Meta, StoryObj } from '@storybook/react';
+import { GraphQLDebugPage } from '../components/GraphQLDebugPage/GraphQLDebugPage';
+
+const meta = {
+  title: 'Debug/GraphQL Debug Page',
+  component: GraphQLDebugPage,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  argTypes: {},
+  args: {}
+} satisfies Meta<typeof GraphQLDebugPage>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {}
+}
