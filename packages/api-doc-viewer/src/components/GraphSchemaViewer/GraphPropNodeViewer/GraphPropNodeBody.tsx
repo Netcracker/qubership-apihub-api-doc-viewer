@@ -177,7 +177,7 @@ export const GraphPropNodeBody: FC<GraphPropNodeBodyProps> = (props) => {
               <Annotations
                 shift={isExpandable && isRoot || isOperation}
                 state={state}
-                $nodeChange={$nodeChange}
+                $nodeChange={$nodeChange ?? $nodeMeta.$nodeChange}
               />
               <Validations
                 shift={isExpandable && isRoot || isOperation}
