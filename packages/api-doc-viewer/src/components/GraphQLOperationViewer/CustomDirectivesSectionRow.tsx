@@ -83,6 +83,7 @@ const CustomDirectiveSectionValue: FC<CustomDirectiveSectionValueProps> = ({ lay
       return (
         <div className="flex flex-row">
           <Content />
+          <Content />
         </div>
       )
     }
