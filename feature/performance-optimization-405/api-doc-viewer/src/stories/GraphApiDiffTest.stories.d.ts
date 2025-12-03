@@ -62,4 +62,4 @@ export declare const EnumChanges: Story;
 export declare const DirectiveUsageLocationsChanged: Story;
 export declare const ChangedCircularMethods: Story;
 export declare const ChangedCircularProperties: Story;
-export declare const BugWithWhollyRemoved: Story;
+export declare const BugWithDeprecationReasonDiffInWhollyRemoved: Story;

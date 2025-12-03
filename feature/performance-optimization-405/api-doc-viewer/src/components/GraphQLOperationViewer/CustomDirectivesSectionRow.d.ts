@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { FC } from '../../../../../node_modules/react';
+import { NodeChange } from '../../../../api-data-model/src';
+import { type FC } from '../../../../../node_modules/react';
 import { LayoutMode } from '../../types/LayoutMode';
 export type CustomDirectivesSectionRowProps = {
     layoutMode: LayoutMode;
+    $nodeChange?: NodeChange;
 };
 export declare const CustomDirectivesSectionRow: FC<CustomDirectivesSectionRowProps>;
