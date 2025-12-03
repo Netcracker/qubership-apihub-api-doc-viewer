@@ -1025,7 +1025,7 @@ export const ChangedCircularProperties: Story = {
   },
 }
 
-export const BugWithWhollyRemoved: Story = {
+export const BugWithDeprecationReasonDiffInWhollyRemoved: Story = {
   render: (args) => {
     const processedSource = prepareGraphApiDiffSchema({
       beforeSource: buildGraphApi(`
