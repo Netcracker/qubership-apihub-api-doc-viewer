@@ -33,9 +33,8 @@ import { GraphCombinerNodeViewer } from '../GraphSchemaViewer/GraphCombinerNodeV
 import { GraphPropNodeViewer } from '../GraphSchemaViewer/GraphPropNodeViewer/GraphPropNodeViewer'
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { CustomDirectivesSectionRow } from './CustomDirectivesSectionRow'
 import { isCombinerNodeState, isPropNodeState } from './types/nodes.guards'
-import { isDirectiveNode, isOperationNode } from './utils/nodes'
+import { isOperationNode } from './utils/nodes'
 
 // FIXME 28.09.23 // Fix generic types
 
@@ -128,22 +127,6 @@ const GraphQLOperationDiffViewerInner: FC<GraphQLOperationDiffViewerProps> = (pr
                       />
                     )
                   }
-
-                  // If it will be necessary to have "Custom Directives" again, uncomment that
-                  // if (isDirectiveNode(child.node) && child.first) {
-                  //   return (
-                  //     <div key={key}>
-                  //       <CustomDirectivesSectionRow
-                  //         layoutMode={layoutMode}
-                  //         $nodeChange={$childMeta?.$nodeChange}
-                  //       />
-                  //       <GraphPropNodeViewer
-                  //         state={child}
-                  //         $nodeChange={$childMeta?.$nodeChange}
-                  //       />
-                  //     </div>
-                  //   )
-                  // }
 
                   return (
                     <GraphPropNodeViewer
