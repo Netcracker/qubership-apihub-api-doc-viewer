@@ -125,7 +125,7 @@ type Fruit {
 
 type Query {
   fruits: [String]
-}`}],["graphql/directives/add-executable-location-to-directive",{before:"directive @limit (offset: Int = 0) on FRAGMENT_DEFINITION",after:"directive @limit (offset: Int = 0) on FRAGMENT_DEFINITION | FIELD"}],["graphql/directives/add-new-schema-location-to-directive",{before:`directive @limit (offset: Int = 0) on FIELD_DEFINITION
+}`}],["graphql/directives/add-new-schema-location-to-directive",{before:`directive @limit (offset: Int = 0) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]
@@ -429,7 +429,7 @@ type Query {
   fruits: [String]
 }`,after:`type Query {
   fruits: [String]
-}`}],["graphql/directives/delete-executable-location-to-directive",{before:"directive @limit (offset: Int = 0) on FRAGMENT_DEFINITION | FIELD",after:"directive @limit (offset: Int = 0) on FRAGMENT_DEFINITION"}],["graphql/directives/delete-schema-directive-with-no-usage",{before:`directive @mock on FIELD_DEFINITION
+}`}],["graphql/directives/delete-schema-directive-with-no-usage",{before:`directive @mock on FIELD_DEFINITION
 
 type Query {
   fruits: [String]
