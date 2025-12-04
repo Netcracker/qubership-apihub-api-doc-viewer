@@ -129,20 +129,21 @@ const GraphQLOperationDiffViewerInner: FC<GraphQLOperationDiffViewerProps> = (pr
                     )
                   }
 
-                  if (isDirectiveNode(child.node) && child.first) {
-                    return (
-                      <div key={key}>
-                        <CustomDirectivesSectionRow
-                          layoutMode={layoutMode}
-                          $nodeChange={$childMeta?.$nodeChange}
-                        />
-                        <GraphPropNodeViewer
-                          state={child}
-                          $nodeChange={$childMeta?.$nodeChange}
-                        />
-                      </div>
-                    )
-                  }
+                  // If it will be necessary to have "Custom Directives" again, uncomment that
+                  // if (isDirectiveNode(child.node) && child.first) {
+                  //   return (
+                  //     <div key={key}>
+                  //       <CustomDirectivesSectionRow
+                  //         layoutMode={layoutMode}
+                  //         $nodeChange={$childMeta?.$nodeChange}
+                  //       />
+                  //       <GraphPropNodeViewer
+                  //         state={child}
+                  //         $nodeChange={$childMeta?.$nodeChange}
+                  //       />
+                  //     </div>
+                  //   )
+                  // }
 
                   return (
                     <GraphPropNodeViewer

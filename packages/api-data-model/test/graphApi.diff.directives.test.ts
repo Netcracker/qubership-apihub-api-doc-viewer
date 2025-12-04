@@ -642,7 +642,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, added location', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, added location', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
     `
@@ -667,7 +668,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, removed location', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, removed location', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION | ENUM_VALUE
     `
@@ -692,7 +694,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, added description', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, added description', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
     `
@@ -717,7 +720,8 @@ describe('directive changes', () => {
     expect(directive!.meta).toHaveProperty('locations', ['FIELD_DEFINITION'])
   })
 
-  it('custom directive definition, removed description', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, removed description', () => {
     const before = graphapi`
       "Description"
       directive @foo on FIELD_DEFINITION
@@ -742,7 +746,8 @@ describe('directive changes', () => {
     expect(directive!.meta).toHaveProperty('locations', ['FIELD_DEFINITION'])
   })
 
-  it('custom directive definition, replaced description', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, replaced description', () => {
     const before = graphapi`
       "Description"
       directive @foo on FIELD_DEFINITION
@@ -770,7 +775,8 @@ describe('directive changes', () => {
     expect(directive!.meta).toHaveProperty('locations', ['FIELD_DEFINITION'])
   })
 
-  it('custom directive definition, added arg', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, added arg', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
     `
@@ -798,7 +804,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, removed arg', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, removed arg', () => {
     const before = graphapi`
       directive @foo(val: String) on FIELD_DEFINITION
     `
@@ -826,7 +833,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, marked as repeatable', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, marked as repeatable', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
     `
@@ -852,7 +860,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('custom directive definition, marked as NOT repeatable', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition, marked as NOT repeatable', () => {
     const before = graphapi`
       directive @foo repeatable on FIELD_DEFINITION
     `
@@ -878,7 +887,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('added custom directive definition', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('added custom directive definition', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
     `
@@ -900,7 +910,8 @@ describe('directive changes', () => {
     })
   })
 
-  it('removed custom directive definition', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('removed custom directive definition', () => {
     const before = graphapi`
       directive @foo on FIELD_DEFINITION
       directive @bar on FIELD_DEFINITION

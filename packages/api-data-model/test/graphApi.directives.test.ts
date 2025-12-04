@@ -106,7 +106,8 @@ describe('GraphAPI. Directives', () => {
     expect(directiveUsage).toBeTruthy()
   })
 
-  it('custom directive definition', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive definition', () => {
     const source = graphapi`
       "Description"
       directive @foo(val: String = "Test") repeatable on FIELD_DEFINITION | ENUM_VALUE
@@ -130,7 +131,8 @@ describe('GraphAPI. Directives', () => {
     expect(arg!.value()).toHaveProperty('default', 'Test')
   })
 
-  it('custom directive with provided value', () => {
+  // Disabled because "Custom Directives" is disabled
+  it.skip('custom directive with provided value', () => {
     const source = graphapi`
       directive @foo(val: String = "Default Value") on FIELD_DEFINITION
       type Query {

@@ -74,13 +74,14 @@ export const graphApiRules: CrawlRules<GraphApiCrawlRule> = {
   '/subscriptions': {
     '/*': () => graphApiOperationRules(graphApiNodeKind.subscription)
   },
-  '/components': {
-    '/directives': {
-      '/*': {
-        '/args': graphApiArgsRules,
-        kind: graphSchemaNodeKind.directive
-      }
-    }
-  },
+  // If it will be necessary to have "Custom Directives" again, uncomment that
+  // '/components': {
+  //   '/directives': {
+  //     '/*': {
+  //       '/args': graphApiArgsRules,
+  //       kind: graphSchemaNodeKind.directive
+  //     }
+  //   }
+  // },
   kind: graphApiNodeKind.schema
 }
