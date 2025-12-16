@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '../../../../../../api-data-model/src';
 export type UseValidationsReturnType = Partial<{
     any: {
         allowedValues?: unknown[];

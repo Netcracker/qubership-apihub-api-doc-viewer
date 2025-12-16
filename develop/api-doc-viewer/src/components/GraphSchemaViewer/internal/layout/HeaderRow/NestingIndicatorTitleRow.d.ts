@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffNodeMeta, DiffNodeValue } from '@netcracker/qubership-apihub-api-data-model';
+import { DiffNodeMeta, DiffNodeValue } from '../../../../../../../api-data-model/src';
 import type { FC } from '../../../../../../../../node_modules/react';
 import { PropsWithShift } from '../../../../../types/internal/PropsWithShift';
 import { LayoutMode } from '../../../../../types/LayoutMode';

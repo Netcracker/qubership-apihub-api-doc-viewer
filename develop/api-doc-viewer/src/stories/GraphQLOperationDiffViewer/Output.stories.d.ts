@@ -37,7 +37,10 @@ declare const meta: {
     };
     args: {
         layoutMode: "side-by-side-diffs";
-        diffMetaKey: symbol;
+        metaKeys: {
+            diffsMetaKey: symbol;
+            aggregatedDiffsMetaKey: symbol;
+        };
     };
 };
 export default meta;

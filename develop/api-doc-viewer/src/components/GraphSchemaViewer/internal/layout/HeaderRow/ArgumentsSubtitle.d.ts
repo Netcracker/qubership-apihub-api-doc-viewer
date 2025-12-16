@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphApiDiffTreeNode, GraphApiTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { GraphApiDiffTreeNode, GraphApiTreeNode } from '../../../../../../../api-data-model/src';
 import { FC } from '../../../../../../../../node_modules/react';
-import { IModelStatePropNode } from '@netcracker/qubership-apihub-api-state-model';
+import { IModelStatePropNode } from '../../../../../../../api-state-model/src';
 import { LayoutMode } from '../../../../../types/LayoutMode';
 import { LayoutSide } from '../../../../../types/internal/LayoutSide';
 type ArgumentsSubTitleProps = {

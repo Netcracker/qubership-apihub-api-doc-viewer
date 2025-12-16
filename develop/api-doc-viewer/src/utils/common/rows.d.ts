@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { IModelTreeNode } from '../../../../api-data-model/src';
 export declare function stringifyItem(item: unknown | undefined): string | undefined;
 export declare function handleSeriesItem(key: string, item: unknown | undefined): string | undefined;
 export declare function isSeriesItemEmpty(item: unknown, replacedItem: unknown): boolean;

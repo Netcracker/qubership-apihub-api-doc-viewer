@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { NodeTypeData } from '../NodeTypeData';
-import { DiffNodeMeta, DiffNodeValue } from '@netcracker/qubership-apihub-api-data-model';
+import { DiffNodeMeta, DiffNodeValue } from '../../../../api-data-model/src';
 export interface NestingIndicatorTitleData {
     nodeTypeData: NodeTypeData;
     nodeDepth: number;

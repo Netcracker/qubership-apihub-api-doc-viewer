@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphApiDiffNodeMeta, GraphApiDiffTreeNode, GraphApiTreeNode, GraphSchemaDiffNodeValue, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '@netcracker/qubership-apihub-api-data-model';
-import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '@netcracker/qubership-apihub-api-state-model';
+import { GraphApiDiffNodeMeta, GraphApiDiffTreeNode, GraphApiTreeNode, GraphSchemaDiffNodeValue, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '../../../../api-data-model/src';
+import { IModelStateCombinaryNode, IModelStateNode, IModelStatePropNode } from '../../../../api-state-model/src';
 import { AnyTreeNode, AnyTreeNodeMeta, AnyTreeNodeValue } from '../aliases/nodes';
 export declare function isRefNode(node: AnyTreeNode | null): boolean;
 export declare function isDiffNodeValue(value?: AnyTreeNodeValue): value is JsonSchemaDiffNodeValue | GraphSchemaDiffNodeValue;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphApiDiffTreeNode, GraphApiNodeData, GraphApiTreeNode, GraphSchemaDiffNodeValue, JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { GraphApiDiffTreeNode, GraphApiNodeData, GraphApiTreeNode, GraphSchemaDiffNodeValue, JsonSchemaDiffNodeValue, JsonSchemaDiffTreeNode } from '../../../api-data-model/src';
 import { GraphPropNodePropsWithState, JsonPropNodePropsWithState } from './internal/PropsWithState';
 export type NodeTypeData = Partial<{
     brokenRef: string;

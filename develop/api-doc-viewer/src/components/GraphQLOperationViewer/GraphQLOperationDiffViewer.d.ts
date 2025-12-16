@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DiffMetaKeys } from '../../../../api-data-model/src';
+import { DiffType } from "@netcracker/qubership-apihub-api-diff";
 import type { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from '../../types/DisplayMode';
 import { LayoutMode } from '../../types/LayoutMode';
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
 export type GraphQLOperationDiffViewerProps = {
     source: unknown;
-    operationPath?: string;
+    operationType?: string;
+    operationName?: string;
     expandedDepth?: number;
     displayMode?: DisplayMode;
     layoutMode?: LayoutMode;
     filters?: ReadonlyArray<DiffType>;
-    diffMetaKey: symbol;
+    metaKeys: DiffMetaKeys;
 };
 export declare const GraphQLOperationDiffViewer: FC<GraphQLOperationDiffViewerProps>;
