@@ -14,7 +14,7 @@ import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
-import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types";
+import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
@@ -206,14 +206,14 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     CommonState<V, K, M>,
     SchemaCrawlRule<K, CommonState<V, K, M>>
   > {
-    return ({ value, path, state, rules }) => {
+    return ({ key, value, path, state, rules }) => {
       if (!rules || !Array.isArray(rules.transformers) || Array.isArray(value)) {
         return
       }
 
       const transformers: SchemaTransformFunc<CommonState<V, K, M>>[] = rules.transformers ?? []
       const transformedValue = transformers.reduce(
-        (accumulatedTransformedValue, transform) => transform(accumulatedTransformedValue, source, path, state),
+        (accumulatedTransformedValue, transform) => transform(key, accumulatedTransformedValue, source, path, state),
         value
       )
 

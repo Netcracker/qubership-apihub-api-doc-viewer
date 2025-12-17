@@ -1,6 +1,9 @@
 import { CrawlRules } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../../../../model/async-api/types/node-kind";
-import { ASYNC_API_TRANSFORMERS } from "../transformers";
+import { inlineBindingParameters } from "../transformers/inline-binding-params";
+import { inlineJsoPropertyParameters } from "../transformers/inline-jso-property-params";
+import { liftAddressTransformer } from "../transformers/lift-address";
+import { renameMessageParams } from "../transformers/rename-message-params";
 import { AsyncApiCrawlRule } from "./types";
 
 export function getAsyncApiCrawlRules(
@@ -9,7 +12,10 @@ export function getAsyncApiCrawlRules(
   return {
     // Specification
     '/operations': {
-      '/*': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.OPERATION),
+      '/*': () => ({
+        ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.OPERATION),
+        transformers: [liftAddressTransformer],
+      }),
     },
     // Operation
     '/channel': {
@@ -17,14 +23,21 @@ export function getAsyncApiCrawlRules(
     },
     '/bindings': {
       '/*': {
-        '/*': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.JSO_PROPERTY),
+        '/*': () => ({
+          kind: AsyncApiTreeNodeKinds.JSO_PROPERTY,
+          transformers: [inlineJsoPropertyParameters],
+        }),
         kind: AsyncApiTreeNodeKinds.BINDING,
+        transformers: [inlineBindingParameters],
       },
       kind: AsyncApiTreeNodeKinds.BINDINGS,
       complex: true,
     },
     '/messages': {
-      '/*': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE),
+      '/*': () => ({
+        ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE),
+        transformers: [renameMessageParams],
+      }),
       kind: AsyncApiTreeNodeKinds.MESSAGES,
       complex: true,
     },
@@ -36,6 +49,5 @@ export function getAsyncApiCrawlRules(
       kind: AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD,
     },
     kind,
-    transformers: ASYNC_API_TRANSFORMERS,
   }
 }
