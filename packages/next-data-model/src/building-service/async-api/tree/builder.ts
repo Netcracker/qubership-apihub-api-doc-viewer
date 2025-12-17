@@ -7,7 +7,7 @@ import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-d
 import { AsyncApiNodeJsoPropertyValueType, AsyncApiNodeJsoPropertyValueTypesList } from "@apihub/next-data-model/model/async-api/types/node-value-type";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeParams, TreeNodeType, TreeNodeTypes } from "../../../model/abstract/tree/tree-node.interface";
+import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject, isString } from "../../../utilities";
 import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
@@ -240,11 +240,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
       const { parent, container } = state;
       const id = '#' + buildPointer(path);
-      const { kind } = rules;
+      const { kind, complex = false } = rules;
 
       const treeNode = container
-        ? this.createNodeFromRaw(id, key, kind, { value: value, newDataLevel: true, container: container, parent: container.parent })
-        : this.createNodeFromRaw(id, key, kind, { value: value, newDataLevel: true, container: null, parent: parent })
+        ? this.createNodeFromRaw(id, key, kind, complex, { value: value, newDataLevel: true, container: container, parent: container.parent })
+        : this.createNodeFromRaw(id, key, kind, complex, { value: value, newDataLevel: true, container: null, parent: parent })
 
       if (!treeNode) {
         return;
@@ -286,15 +286,15 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     id: NodeId,
     key: NodeKey,
     kind: AsyncApiTreeNodeKind,
+    complex: boolean,
     params: TreeNodeParams<UnknownObject | null, string, UnknownObject>
   ): AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode | undefined {
-    const { value, parent, container, newDataLevel } = params
+    const { parent, container, newDataLevel } = params
 
-    const complexityType = this.getNodeComplexityType(value)
-    if (complexityType !== TreeNodeTypes.SIMPLE) {
+    if (complex) {
       const nodeMeta = this.createNodeMeta(key, params)
       const extendedParams: ComplexAsyncApiTreeNodeParams = {
-        type: complexityType,
+        type: TreeNodeComplexityTypes.COMPLEX,
         parent: parent && this.isAsyncApiSimpleTreeNode(parent) ? parent : null, // just type guard
         container: container && this.isAsyncApiComplexTreeNode(container) ? container : null,
         value: null,
@@ -304,14 +304,14 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       return this.tree.createComplexNode(id, key, kind, false, extendedParams)
     }
 
-    const nodeValue = this.createNodeValue(key, {
+    const nodeValue = this.createNodeValue(key, kind, {
       ...params,
       parent: parent,
       container: container,
     })
     const nodeMeta = this.createNodeMeta(key, params)
     const extendedParams: SimpleAsyncApiTreeNodeParams = {
-      type: TreeNodeTypes.SIMPLE,
+      type: TreeNodeComplexityTypes.SIMPLE,
       parent: parent && this.isAsyncApiSimpleTreeNode(parent) ? parent : null, // just type guard
       container: container && this.isAsyncApiComplexTreeNode(container) ? container : null,
       value: nodeValue,
@@ -329,12 +329,14 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const { value, parent = null } = params
 
     return {
+      ...this.isValueWithBrokenRef(value) ? { brokenRef: `${value.$ref}` } : {},
       _fragment: value,
     }
   }
 
   protected createNodeValue(
     key: NodeKey,
+    kind: AsyncApiTreeNodeKind,
     params: TreeNodeParams<UnknownObject | null, string, UnknownObject>,
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
@@ -346,7 +348,35 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       return null
     }
 
-    return null
+    switch(kind) {
+      case AsyncApiTreeNodeKinds.OPERATION:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>>(
+          value, 
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.BINDING:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
+          value, 
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.JSO_PROPERTY:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>>(
+          value, 
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.CHANNEL:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>>(
+          value, 
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>>(
+          value, 
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      default:
+        return null
+    }
   }
 
   /* Type guards */
@@ -359,7 +389,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   }
 
   private isAsyncApiSimpleTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is AsyncApiSimpleTreeNode {
-    return node.type === TreeNodeTypes.SIMPLE
+    return node.type === TreeNodeComplexityTypes.SIMPLE
   }
 
   private isAsyncApiComplexTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is AsyncApiComplexTreeNode {
@@ -375,8 +405,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   // Complexity type detection
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private getNodeComplexityType(value: unknown): TreeNodeType {
-    return TreeNodeTypes.SIMPLE
+  private getNodeComplexityType(value: unknown): TreeNodeComplexityType {
+    return TreeNodeComplexityTypes.SIMPLE
   }
 }
 

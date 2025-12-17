@@ -1,6 +1,6 @@
 import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
 import { SimpleTreeNode } from "./simple-node.impl";
-import { ComplexTreeNodeParams, ComplexTreeNodeType, ITreeNode } from "./tree-node.interface";
+import { ComplexTreeNodeParams, ITreeNode, TreeNodeComplexityTypes } from "./tree-node.interface";
 
 export class ComplexTreeNode<
   V extends UnknownObject | null,
@@ -8,7 +8,7 @@ export class ComplexTreeNode<
   M extends UnknownObject,
 > extends SimpleTreeNode<V, K, M> {
 
-  public readonly type: ComplexTreeNodeType
+  public readonly type: typeof TreeNodeComplexityTypes.COMPLEX
 
   constructor(
     public readonly id: NodeId = '#',

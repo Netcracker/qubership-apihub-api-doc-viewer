@@ -43,10 +43,12 @@ export function getAsyncApiCrawlRules(
     },
     // Message
     '/headers': {
-      kind: AsyncApiTreeNodeKinds.MESSAGE_HEADERS
+      kind: AsyncApiTreeNodeKinds.JSO_PROPERTY,
+      transformers: [inlineJsoPropertyParameters],
     },
     '/payload': {
-      kind: AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD,
+      kind: AsyncApiTreeNodeKinds.JSO_PROPERTY,
+      transformers: [inlineJsoPropertyParameters],
     },
     kind,
   }

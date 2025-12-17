@@ -1,20 +1,17 @@
 import { NodeId, NodeKey, UnknownObject } from "../../../utility-types"
 
-export const TreeNodeTypes = {
+export const TreeNodeComplexityTypes = {
   SIMPLE: 'simple',
-  ONE_OF: 'oneOf',
-  ANY_OF: 'anyOf',
-  ALL_OF: 'allOf',
+  COMPLEX: 'complex',
 } as const
-export type TreeNodeType = (typeof TreeNodeTypes)[keyof typeof TreeNodeTypes]
-export type ComplexTreeNodeType = Exclude<TreeNodeType, typeof TreeNodeTypes.SIMPLE>
+export type TreeNodeComplexityType = (typeof TreeNodeComplexityTypes)[keyof typeof TreeNodeComplexityTypes]
 
 export type TreeNodeParams<
   V extends UnknownObject | null,
   K extends string,
   M extends UnknownObject,
 > = {
-  type?: TreeNodeType
+  type?: TreeNodeComplexityType
   value: V | null
   meta?: M
   parent: ITreeNode<V, K, M> | null
@@ -27,7 +24,7 @@ export type SimpleTreeNodeParams<
   K extends string,
   M extends UnknownObject,
 > = TreeNodeParams<V, K, M> & {
-  type: typeof TreeNodeTypes.SIMPLE
+  type: typeof TreeNodeComplexityTypes.SIMPLE
 }
 
 export type ComplexTreeNodeParams<
@@ -35,7 +32,7 @@ export type ComplexTreeNodeParams<
   K extends string,
   M extends UnknownObject,
 > = TreeNodeParams<V, K, M> & {
-  type: Exclude<TreeNodeType, typeof TreeNodeTypes.SIMPLE>
+  type: typeof TreeNodeComplexityTypes.COMPLEX
 }
 
 export interface ITreeNode<
@@ -46,7 +43,7 @@ export interface ITreeNode<
   id: NodeId
   key: NodeKey
   kind: K
-  type: TreeNodeType
+  type: TreeNodeComplexityType
   newDataLevel: boolean
   parent: ITreeNode | null
   container: ITreeNode | null

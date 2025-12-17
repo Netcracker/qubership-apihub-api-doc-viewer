@@ -1,6 +1,6 @@
 import { UnknownObject, NodeId, NodeKey } from "../../../utility-types";
 import { ComplexTreeNode } from "./complex-node.impl";
-import { ITreeNode, TreeNodeParams, TreeNodeType, TreeNodeTypes } from "./tree-node.interface";
+import { ITreeNode, TreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes } from "./tree-node.interface";
 
 export class SimpleTreeNode<
   V extends UnknownObject | null,
@@ -8,7 +8,7 @@ export class SimpleTreeNode<
   M extends UnknownObject,
 > implements ITreeNode<V, K, M> {
 
-  public readonly type: TreeNodeType
+  public readonly type: TreeNodeComplexityType
   public readonly parent: ITreeNode | null
   public readonly container: ITreeNode | null
   public readonly newDataLevel: boolean
@@ -27,7 +27,7 @@ export class SimpleTreeNode<
     nodeParams: TreeNodeParams<V, K, M>,
   ) {
     const {
-      type = TreeNodeTypes.SIMPLE,
+      type = TreeNodeComplexityTypes.SIMPLE,
       value = null,
       parent = null,
       container = null,

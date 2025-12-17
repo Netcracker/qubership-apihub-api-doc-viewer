@@ -18,6 +18,7 @@ export abstract class TreeBuilder<
     id: NodeId,
     key: NodeKey,
     kind: K,
+    complex: boolean,
     params: TreeNodeParams<V, K, M>
   ): ITreeNode<V, K, M> | undefined;
 
@@ -28,6 +29,7 @@ export abstract class TreeBuilder<
 
   protected abstract createNodeValue(
     key: NodeKey,
+    kind: string,
     params: TreeNodeParams<V, K, M>,
   ): V | null;
 

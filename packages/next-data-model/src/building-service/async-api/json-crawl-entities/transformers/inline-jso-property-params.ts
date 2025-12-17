@@ -28,10 +28,20 @@ function getValueType(value: unknown): string {
     if (Array.isArray(value)) {
       return 'array'
     }
-    if ('type' in value && typeof value.type === 'string') {
+    if (isJsonSchema(value)) {
       return 'jsonSchema'
     }
     return 'object'
   }
   return 'unknown'
+}
+
+function isJsonSchema(value: unknown): boolean {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  if ('type' in value && typeof value.type === 'string') {
+    return true
+  }
+  return false
 }
