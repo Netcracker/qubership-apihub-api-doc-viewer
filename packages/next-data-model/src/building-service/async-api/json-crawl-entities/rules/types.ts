@@ -4,6 +4,7 @@ import { SchemaTransformFunc } from "../transformers/types";
 
 export type SchemaCrawlRule<K extends string, S> = {
   kind: K;
+  complex?: boolean;
   transformers?: SchemaTransformFunc<S>[];
 };
 
