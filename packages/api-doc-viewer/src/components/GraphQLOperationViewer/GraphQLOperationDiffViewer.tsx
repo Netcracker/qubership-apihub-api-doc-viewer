@@ -111,7 +111,14 @@ const GraphQLOperationDiffViewerInner: FC<GraphQLOperationDiffViewerProps> = (pr
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={layoutMode}>
           <LevelContext.Provider value={0}>
-            <div style={{ marginLeft: 0 }}>
+            {/* Styles are WA due to several samples in compatibility suites */}
+            <div style={{
+              marginLeft: 0,
+              width: root.children.length ? undefined : '100%',
+              height: root.children.length ? undefined : 1,
+              minHeight: 1,
+              minWidth: 1,
+            }}>
               {root.children.map((child, index) => {
                 const key = `root-children-${index}`
 
