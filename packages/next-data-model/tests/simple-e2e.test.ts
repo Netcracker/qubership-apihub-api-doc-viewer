@@ -1,8 +1,11 @@
 import { TreeNodeComplexityTypes } from "../src/model/abstract/tree/tree-node.interface"
 import { AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
 import { createAsyncApiTreeForTests } from "./helpers/create-async-api-tree-for-tests"
+import { simplifyConsole } from "./helpers/simplify-console"
 
 describe('Simple E2E test', () => {
+  simplifyConsole()
+
   const asyncApiKafkaSource = {
     "asyncapi": "3.0.0",
     "info": {
