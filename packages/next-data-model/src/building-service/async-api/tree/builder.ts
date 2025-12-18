@@ -232,7 +232,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
         return { done: true };
       }
-      if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind) || Array.isArray(value)) {
+      if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind)) {
         // equivalent to "continue" operator within loop operators
         // means "keep going deeper in the original object"
         return;
@@ -242,9 +242,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       const id = '#' + buildPointer(path);
       const { kind, complex = false } = rules;
 
-      const treeNode = container
-        ? this.createNodeFromRaw(id, key, kind, complex, { value: value, newDataLevel: true, container: container, parent: container.parent })
-        : this.createNodeFromRaw(id, key, kind, complex, { value: value, newDataLevel: true, container: null, parent: parent })
+      const params = container
+        ? { value: Array.isArray(value) ? null : value, newDataLevel: true, container: container, parent: container.parent }
+        : { value: Array.isArray(value) ? null : value, newDataLevel: true, container: null, parent: parent }
+
+      const treeNode = this.createNodeFromRaw(id, key, kind, complex, params)
 
       if (!treeNode) {
         return;
@@ -252,8 +254,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
       if (container) {
         container.addNestedNode(treeNode);
-      }
-      if (parent) {
+      } else if (parent) {
         parent.addChildNode(treeNode);
       }
 
