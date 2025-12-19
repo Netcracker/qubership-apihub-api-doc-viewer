@@ -1,8 +1,1 @@
-/**
- * Creates a tree structure
- * @returns null
- */
-export function createTree(): null {
-  return null;
-}
-
+export { AsyncApiTreeBuilder } from "./building-service/async-api/tree/builder"

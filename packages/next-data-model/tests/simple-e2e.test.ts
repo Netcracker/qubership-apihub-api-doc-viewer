@@ -7,89 +7,89 @@ describe('Simple E2E test', () => {
   simplifyConsole()
 
   const asyncApiKafkaSource = {
-    "asyncapi": "3.0.0",
-    "info": {
-      "title": "example-event-service",
-      "version": "1.0.0",
+    asyncapi: "3.0.0",
+    info: {
+      title: "example-event-service",
+      version: "1.0.0",
       "x-generator": "springwolf"
     },
-    "defaultContentType": "application/json",
-    "servers": {
+    defaultContentType: "application/json",
+    servers: {
       "kafka-main": {
-        "host": "kafka-host",
-        "protocol": "kafka"
+        host: "kafka-host",
+        protocol: "kafka"
       }
     },
-    "channels": {
+    channels: {
       "customer-change-topic": {
-        "address": "customer-change-topic",
-        "description": "Channel for customer change notifications",
-        "messages": {
-          "BaseEventMessage": {
-            "$ref": "#/components/messages/BaseEventMessage"
+        address: "customer-change-topic",
+        description: "Channel for customer change notifications",
+        messages: {
+          BaseEventMessage: {
+            $ref: "#/components/messages/BaseEventMessage"
           }
         },
-        "servers": [
+        servers: [
           {
-            "$ref": "#/servers/kafka-main"
+            $ref: "#/servers/kafka-main"
           }
         ],
-        "bindings": {}
+        bindings: {}
       }
     },
-    "components": {
-      "schemas": {
-        "HeadersExample": {
-          "title": "HeadersExample",
-          "type": "object",
-          "properties": {
+    components: {
+      schemas: {
+        HeadersExample: {
+          title: "HeadersExample",
+          type: "object",
+          properties: {
             "X-Idempotency-Key": {
-              "type": "string"
+              type: "string"
             }
           },
-          "examples": [
+          examples: [
             {
               "X-Idempotency-Key": "string"
             }
           ]
         },
-        "BaseEvent": {
-          "title": "BaseEvent",
-          "type": "object",
-          "properties": {
-            "currentInstance": {
-              "type": "object",
-              "description": "New data state"
+        BaseEvent: {
+          title: "BaseEvent",
+          type: "object",
+          properties: {
+            currentInstance: {
+              type: "object",
+              description: "New data state"
             },
-            "currentModelVersion": {
-              "type": "integer",
-              "description": "Model Version",
-              "format": "int32"
+            currentModelVersion: {
+              type: "integer",
+              description: "Model Version",
+              format: "int32"
             },
-            "previousInstance": {
-              "type": "object",
-              "description": "Previous data state"
+            previousInstance: {
+              type: "object",
+              description: "Previous data state"
             },
-            "resourceAction": {
-              "type": "string",
-              "description": "Resource Action"
+            resourceAction: {
+              type: "string",
+              description: "Resource Action"
             },
-            "resourceType": {
-              "type": "string",
-              "description": "Resource Type"
+            resourceType: {
+              type: "string",
+              description: "Resource Type"
             }
           },
-          "description": "Base event to describe Customer's data changes",
-          "examples": [
+          description: "Base event to describe Customer's data changes",
+          examples: [
             {
-              "currentInstance": {},
-              "currentModelVersion": 0,
-              "previousInstance": {},
-              "resourceAction": "string",
-              "resourceType": "string"
+              currentInstance: {},
+              currentModelVersion: 0,
+              previousInstance: {},
+              resourceAction: "string",
+              resourceType: "string"
             }
           ],
-          "required": [
+          required: [
             "currentInstance",
             "currentModelVersion",
             "previousInstance",
@@ -98,43 +98,43 @@ describe('Simple E2E test', () => {
           ]
         }
       },
-      "messages": {
-        "BaseEventMessage": {
-          "headers": {
-            "$ref": "#/components/schemas/HeadersExample"
+      messages: {
+        BaseEventMessage: {
+          headers: {
+            $ref: "#/components/schemas/HeadersExample"
           },
-          "payload": {
-            "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
-            "schema": {
-              "$ref": "#/components/schemas/BaseEvent"
+          payload: {
+            schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+            schema: {
+              $ref: "#/components/schemas/BaseEvent"
             }
           },
-          "name": "BaseEventMessage",
-          "title": "BaseEvent",
-          "bindings": {
-            "kafka": {
-              "bindingVersion": "0.5.0"
+          name: "BaseEventMessage",
+          title: "BaseEvent",
+          bindings: {
+            kafka: {
+              bindingVersion: "0.5.0"
             }
           }
         }
       }
     },
-    "operations": {
+    operations: {
       "customer-change-topic_send_BaseEvent": {
-        "action": "send",
-        "channel": {
-          "$ref": "#/channels/customer-change-topic"
+        action: "send",
+        channel: {
+          $ref: "#/channels/customer-change-topic"
         },
-        "title": "Customer change topic send",
-        "description": "Send events about Customer's data changes",
-        "bindings": {
-          "kafka": {
-            "bindingVersion": "0.5.0"
+        title: "Customer change topic send",
+        description: "Send events about Customer's data changes",
+        bindings: {
+          kafka: {
+            bindingVersion: "0.5.0"
           }
         },
-        "messages": [
+        messages: [
           {
-            "$ref": "#/channels/customer-change-topic/messages/BaseEventMessage"
+            $ref: "#/channels/customer-change-topic/messages/BaseEventMessage"
           }
         ]
       }
