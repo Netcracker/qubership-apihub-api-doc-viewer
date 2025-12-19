@@ -207,7 +207,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     SchemaCrawlRule<K, CommonState<V, K, M>>
   > {
     return ({ key, value, path, state, rules }) => {
-      if (!rules || !Array.isArray(rules.transformers) || Array.isArray(value)) {
+      if (!rules || !Array.isArray(rules.transformers)) {
         return
       }
 
