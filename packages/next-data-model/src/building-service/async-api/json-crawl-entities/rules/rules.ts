@@ -23,6 +23,9 @@ export function getAsyncApiCrawlRules(
     },
     '/bindings': {
       '/*': {
+        '/protocol': { // Exclude synthetic property made by transformer
+          kind: undefined,
+        },
         '/*': () => ({
           kind: AsyncApiTreeNodeKinds.JSO_PROPERTY,
           transformers: [inlineJsoPropertyParameters],

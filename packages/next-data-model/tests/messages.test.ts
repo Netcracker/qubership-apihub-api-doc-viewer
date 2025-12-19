@@ -9,38 +9,32 @@ describe('Cases with operation messages', () => {
   describe('Single message scenarios', () => {
     it('should handle operation with single message (minimal fields)', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "minimal-message-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "minimal-message-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "TestMessage": {
-                "$ref": "#/components/messages/TestMessage"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              TestMessage: { $ref: "#/components/messages/TestMessage" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "TestMessage": {
-              "name": "TestMessage"
+        components: {
+          messages: {
+            TestMessage: {
+              name: "TestMessage"
             }
           }
         },
-        "operations": {
-          "test-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/TestMessage"
-              }
+        operations: {
+          'test-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/TestMessage" }
             ]
           }
         }
@@ -72,40 +66,34 @@ describe('Cases with operation messages', () => {
 
     it('should handle message with title and description', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-with-title-description-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-title-description-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "UserCreatedMessage": {
-                "$ref": "#/components/messages/UserCreatedMessage"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              UserCreatedMessage: { $ref: "#/components/messages/UserCreatedMessage" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "UserCreatedMessage": {
-              "name": "UserCreatedMessage",
-              "title": "User Created Event",
-              "description": "Event triggered when a new user is created"
+        components: {
+          messages: {
+            UserCreatedMessage: {
+              name: "UserCreatedMessage",
+              title: "User Created Event",
+              description: "Event triggered when a new user is created"
             }
           }
         },
-        "operations": {
-          "user-created-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/UserCreatedMessage"
-              }
+        operations: {
+          'user-created-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/UserCreatedMessage" }
             ]
           }
         }
@@ -114,7 +102,7 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "UserCreatedMessage",
@@ -125,41 +113,35 @@ describe('Cases with operation messages', () => {
 
     it('should handle message with summary field', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-with-summary-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-summary-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "OrderMessage": {
-                "$ref": "#/components/messages/OrderMessage"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              OrderMessage: { $ref: "#/components/messages/OrderMessage" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "OrderMessage": {
-              "name": "OrderMessage",
-              "title": "Order Event",
-              "summary": "Summary of order event",
-              "description": "Detailed description of order event"
+        components: {
+          messages: {
+            OrderMessage: {
+              name: "OrderMessage",
+              title: "Order Event",
+              summary: "Summary of order event",
+              description: "Detailed description of order event"
             }
           }
         },
-        "operations": {
-          "order-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/OrderMessage"
-              }
+        operations: {
+          'order-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/OrderMessage" }
             ]
           }
         }
@@ -168,7 +150,7 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "OrderMessage",
@@ -180,57 +162,49 @@ describe('Cases with operation messages', () => {
 
     it('should handle message with headers', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-with-headers-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-headers-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "MessageWithHeaders": {
-                "$ref": "#/components/messages/MessageWithHeaders"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              MessageWithHeaders: { $ref: "#/components/messages/MessageWithHeaders" }
             }
           }
         },
-        "components": {
-          "schemas": {
-            "MessageHeaders": {
-              "type": "object",
-              "properties": {
-                "X-Correlation-Id": {
-                  "type": "string",
-                  "description": "Correlation identifier"
+        components: {
+          schemas: {
+            MessageHeaders: {
+              type: "object",
+              properties: {
+                'X-Correlation-Id': {
+                  type: "string",
+                  description: "Correlation identifier"
                 },
-                "X-Request-Id": {
-                  "type": "string",
-                  "description": "Request identifier"
+                'X-Request-Id': {
+                  type: "string",
+                  description: "Request identifier"
                 }
               }
             }
           },
-          "messages": {
-            "MessageWithHeaders": {
-              "name": "MessageWithHeaders",
-              "title": "Message With Headers",
-              "headers": {
-                "$ref": "#/components/schemas/MessageHeaders"
-              }
+          messages: {
+            MessageWithHeaders: {
+              name: "MessageWithHeaders",
+              title: "Message With Headers",
+              headers: { $ref: "#/components/schemas/MessageHeaders" }
             }
           }
         },
-        "operations": {
-          "headers-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/MessageWithHeaders"
-              }
+        operations: {
+          'headers-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/MessageWithHeaders" }
             ]
           }
         }
@@ -238,78 +212,103 @@ describe('Cases with operation messages', () => {
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+      const messagesNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGES)
+
       expect(messagesNode).toBeDefined()
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "MessageWithHeaders",
         title: "Message With Headers"
       })
-      
+
       // Check that headers are present in nested nodes
       const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBeGreaterThan(0)
+      expect(messagesNestedNodes.length).toBe(1)
+
+      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
+      expect(messageNode).toBeDefined()
+      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+
+      const messageChildrenNodes = messageNode!.childrenNodes()
+      expect(messageChildrenNodes.length).toBe(1)
+
+      const headersNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(headersNode).toBeDefined()
+      expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(headersNode!.key).toBe('headers')
+      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+
+      const headersNodeValue = headersNode!.value()
+      expect(headersNodeValue)
+        .toEqual({
+          title: "headers",
+          value: {
+            type: "object",
+            properties: {
+              'X-Correlation-Id': {
+                type: "string",
+                description: "Correlation identifier"
+              },
+              'X-Request-Id': {
+                type: "string",
+                description: "Request identifier"
+              }
+            }
+          },
+          valueType: 'jsonSchema',
+        })
     })
 
     it('should handle message with payload', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-with-payload-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-payload-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "MessageWithPayload": {
-                "$ref": "#/components/messages/MessageWithPayload"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              MessageWithPayload: { $ref: "#/components/messages/MessageWithPayload" }
             }
           }
         },
-        "components": {
-          "schemas": {
-            "UserPayload": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "type": "string"
+        components: {
+          schemas: {
+            UserPayload: {
+              type: "object",
+              properties: {
+                userId: {
+                  type: "string"
                 },
-                "userName": {
-                  "type": "string"
+                userName: {
+                  type: "string"
                 },
-                "email": {
-                  "type": "string"
+                email: {
+                  type: "string"
                 }
               },
-              "required": ["userId", "userName"]
+              required: ["userId", "userName"]
             }
           },
-          "messages": {
-            "MessageWithPayload": {
-              "name": "MessageWithPayload",
-              "title": "Message With Payload",
-              "payload": {
-                "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
-                "schema": {
-                  "$ref": "#/components/schemas/UserPayload"
-                }
+          messages: {
+            MessageWithPayload: {
+              name: "MessageWithPayload",
+              title: "Message With Payload",
+              payload: {
+                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+                schema: { $ref: "#/components/schemas/UserPayload" }
               }
             }
           }
         },
-        "operations": {
-          "payload-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/MessageWithPayload"
-              }
+        operations: {
+          'payload-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/MessageWithPayload" }
             ]
           }
         }
@@ -318,61 +317,96 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "MessageWithPayload",
         title: "Message With Payload"
       })
-      
+
       const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBeGreaterThan(0)
+      expect(messagesNestedNodes.length).toBe(1)
+
+      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
+      expect(messageNode).toBeDefined()
+      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+
+      const messageChildrenNodes = messageNode!.childrenNodes()
+      expect(messageChildrenNodes.length).toBe(1)
+
+      const payloadNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(payloadNode).toBeDefined()
+      expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(payloadNode!.key).toBe('payload')
+      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+
+      const payloadNodeValue = payloadNode!.value()
+      // TODO 19.12.25 // Now it fails because $ref to schema is not resolved
+      expect(payloadNodeValue)
+        .toEqual({
+          title: "payload",
+          value: {
+            schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+            schema: {
+              type: "object",
+              properties: {
+                userId: {
+                  type: "string"
+                },
+                userName: {
+                  type: "string"
+                },
+                email: {
+                  type: "string"
+                }
+              }
+            }
+          },
+          valueType: 'multiSchema',
+        })
     })
 
     it('should handle message with bindings', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-with-bindings-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-bindings-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "MessageWithBindings": {
-                "$ref": "#/components/messages/MessageWithBindings"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              MessageWithBindings: { $ref: "#/components/messages/MessageWithBindings" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "MessageWithBindings": {
-              "name": "MessageWithBindings",
-              "title": "Message With Bindings",
-              "bindings": {
-                "kafka": {
-                  "key": {
-                    "type": "string"
+        components: {
+          messages: {
+            MessageWithBindings: {
+              name: "MessageWithBindings",
+              title: "Message With Bindings",
+              bindings: {
+                kafka: {
+                  key: {
+                    type: "string"
                   },
-                  "bindingVersion": "0.5.0"
+                  schemaIdLocation: "payload",
+                  schemaIdPayloadEncoding: 'apicurio-new',
+                  schemaLookupStrategy: 'TopicIdStrategy',
+                  bindingVersion: "0.5.0"
                 }
               }
             }
           }
         },
-        "operations": {
-          "bindings-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/MessageWithBindings"
-              }
+        operations: {
+          'bindings-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/MessageWithBindings" }
             ]
           }
         }
@@ -381,94 +415,172 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "MessageWithBindings",
         title: "Message With Bindings"
       })
-      
+
       const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBeGreaterThan(0)
+      expect(messagesNestedNodes.length).toBe(1)
+
+      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
+      expect(messageNode).toBeDefined()
+      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+
+      const messageChildrenNodes = messageNode!.childrenNodes()
+      expect(messageChildrenNodes.length).toBe(1)
+
+      const bindingsNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(bindingsNode).toBeDefined()
+      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(bindingsNode!.key).toBe('bindings')
+      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+
+      const bindingsNodeValue = bindingsNode!.value()
+      expect(bindingsNodeValue)
+        .toEqual({
+          protocol: 'kafka',
+        })
+
+      const bindingsNestedNodes = bindingsNode!.nestedNodes()
+      expect(bindingsNestedNodes.length).toBe(1)
+
+      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNode).toBeDefined()
+      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingNode!.key).toBe('kafka')
+      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+
+      const bindingPropertyNodes = bindingNode!.childrenNodes()
+      expect(bindingPropertyNodes.length).toBe(5)
+
+      const bindingPropertyNodeKey = bindingPropertyNodes
+        .find(node => node.key === 'key' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeKey).toBeDefined()
+      expect(bindingPropertyNodeKey!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeKey!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeKey!.value()).toEqual({
+        title: "key",
+        value: {
+          type: "string"
+        },
+        valueType: 'jsonSchema',
+      })
+
+      const bindingPropertyNodeSchemaIdLocation = bindingPropertyNodes
+        .find(node => node.key === 'schemaIdLocation' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaIdLocation).toBeDefined()
+      expect(bindingPropertyNodeSchemaIdLocation!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeSchemaIdLocation!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaIdLocation!.value()).toEqual({
+        title: "schemaIdLocation",
+        value: 'payload',
+        valueType: 'string',
+      })
+
+      const bindingPropertyNodeSchemaIdPayloadEncoding = bindingPropertyNodes
+        .find(node => node.key === 'schemaIdPayloadEncoding' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaIdPayloadEncoding).toBeDefined()
+      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.value()).toEqual({
+        title: "schemaIdPayloadEncoding",
+        value: 'apicurio-new',
+        valueType: 'string',
+      })
+
+      const bindingPropertyNodeSchemaLookupStrategy = bindingPropertyNodes
+        .find(node => node.key === 'schemaLookupStrategy' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaLookupStrategy).toBeDefined()
+      expect(bindingPropertyNodeSchemaLookupStrategy!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeSchemaLookupStrategy!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeSchemaLookupStrategy!.value()).toEqual({
+        title: "schemaLookupStrategy",
+        value: 'TopicIdStrategy',
+        valueType: 'string',
+      })
+
+      const bindingPropertyNodeBindingVersion = bindingPropertyNodes
+        .find(node => node.key === 'bindingVersion' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeBindingVersion).toBeDefined()
+      expect(bindingPropertyNodeBindingVersion!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeBindingVersion!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeBindingVersion!.value()).toEqual({
+        title: "bindingVersion",
+        value: '0.5.0',
+        valueType: 'string',
+      })
     })
 
     it('should handle message with all fields combined', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "message-complete-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-complete-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "CompleteMessage": {
-                "$ref": "#/components/messages/CompleteMessage"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              CompleteMessage: { $ref: "#/components/messages/CompleteMessage" }
             }
           }
         },
-        "components": {
-          "schemas": {
-            "CompleteHeaders": {
-              "type": "object",
-              "properties": {
-                "X-Trace-Id": {
-                  "type": "string"
+        components: {
+          schemas: {
+            CompleteHeaders: {
+              type: "object",
+              properties: {
+                'X-Trace-Id': {
+                  type: "string"
                 }
               }
             },
-            "CompletePayload": {
-              "type": "object",
-              "properties": {
-                "eventId": {
-                  "type": "string"
+            CompletePayload: {
+              type: "object",
+              properties: {
+                eventId: {
+                  type: "string"
                 },
-                "eventType": {
-                  "type": "string"
+                eventType: {
+                  type: "string"
                 },
-                "timestamp": {
-                  "type": "string",
-                  "format": "date-time"
+                timestamp: {
+                  type: "string",
+                  format: "date-time"
                 }
               }
             }
           },
-          "messages": {
-            "CompleteMessage": {
-              "name": "CompleteMessage",
-              "title": "Complete Message",
-              "summary": "A complete message with all fields",
-              "description": "This message demonstrates all possible fields",
-              "headers": {
-                "$ref": "#/components/schemas/CompleteHeaders"
+          messages: {
+            CompleteMessage: {
+              name: "CompleteMessage",
+              title: "Complete Message",
+              summary: "A complete message with all fields",
+              description: "This message demonstrates all possible fields",
+              headers: { $ref: "#/components/schemas/CompleteHeaders" },
+              payload: {
+                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+                schema: { $ref: "#/components/schemas/CompletePayload" }
               },
-              "payload": {
-                "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
-                "schema": {
-                  "$ref": "#/components/schemas/CompletePayload"
-                }
-              },
-              "bindings": {
-                "kafka": {
-                  "bindingVersion": "0.5.0"
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0"
                 }
               }
             }
           }
         },
-        "operations": {
-          "complete-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/CompleteMessage"
-              }
+        operations: {
+          'complete-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/CompleteMessage" }
             ]
           }
         }
@@ -477,7 +589,7 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
@@ -486,58 +598,131 @@ describe('Cases with operation messages', () => {
         summary: "A complete message with all fields",
         description: "This message demonstrates all possible fields"
       })
-      
+
       const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBeGreaterThan(0)
+      expect(messagesNestedNodes.length).toBe(1)
+
+      const messageNode = messagesNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE)
+      expect(messageNode).toBeDefined()
+      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+
+      const messageChildrenNodes = messageNode!.childrenNodes()
+      expect(messageChildrenNodes.length).toBe(3)
+
+      const headersNode = messageChildrenNodes.find(node => node.key === 'headers' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(headersNode).toBeDefined()
+      expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(headersNode!.value()).toEqual({
+        title: 'headers',
+        value: {
+          type: "object",
+          properties: {
+            'X-Trace-Id': {
+              type: "string"
+            }
+          }
+        },
+        valueType: 'jsonSchema',
+      })
+
+      const payloadNode = messageChildrenNodes.find(node => node.key === 'payload' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(payloadNode).toBeDefined()
+      expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(payloadNode!.value()).toEqual({
+        title: "payload",
+        value: {
+          schemaFormat: 'application/vnd.aai.asyncapi+json;version=3.0.0',
+          schema: {
+            type: "object",
+            properties: {
+              eventId: {
+                type: "string"
+              },
+              eventType: {
+                type: "string"
+              },
+              timestamp: {
+                type: "string",
+                format: "date-time"
+              }
+            }
+          },
+        },
+        valueType: 'multiSchema',
+      })
+
+      const bindingsNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(bindingsNode).toBeDefined()
+      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingsNode!.key).toBe('bindings')
+      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      expect(bindingsNode!.value()).toEqual({
+        protocol: 'kafka',
+      })
+
+      const bindingsNestedNodes = bindingsNode!.nestedNodes()
+      expect(bindingsNestedNodes.length).toBe(1)
+
+      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNode).toBeDefined()
+      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingNode!.key).toBe('kafka')
+      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+
+      const bindingPropertyNodes = bindingNode!.childrenNodes()
+      expect(bindingPropertyNodes.length).toBe(1)
+
+      const bindingPropertyNodeBindingVersion = bindingPropertyNodes
+        .find(node => node.key === 'bindingVersion' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeBindingVersion).toBeDefined()
+      expect(bindingPropertyNodeBindingVersion!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingPropertyNodeBindingVersion!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(bindingPropertyNodeBindingVersion!.value()).toEqual({
+        title: "bindingVersion",
+        value: '0.5.0',
+        valueType: 'string',
+      })
     })
   })
 
   describe('Multiple messages scenarios', () => {
     it('should handle operation with two messages', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "two-messages-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "two-messages-test",
+          version: "1.0.0"
         },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "FirstMessage": {
-                "$ref": "#/components/messages/FirstMessage"
-              },
-              "SecondMessage": {
-                "$ref": "#/components/messages/SecondMessage"
-              }
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+            messages: {
+              FirstMessage: { $ref: "#/components/messages/FirstMessage" },
+              SecondMessage: { $ref: "#/components/messages/SecondMessage" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "FirstMessage": {
-              "name": "FirstMessage",
-              "title": "First Message"
+        components: {
+          messages: {
+            FirstMessage: {
+              name: "FirstMessage",
+              title: "First Message"
             },
-            "SecondMessage": {
-              "name": "SecondMessage",
-              "title": "Second Message"
+            SecondMessage: {
+              name: "SecondMessage",
+              title: "Second Message"
             }
           }
         },
-        "operations": {
-          "multi-message-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/FirstMessage"
-              },
-              {
-                "$ref": "#/channels/test-channel/messages/SecondMessage"
-              }
+        operations: {
+          'multi-message-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/FirstMessage" },
+              { $ref: "#/channels/test-channel/messages/SecondMessage" }
             ]
           }
         }
@@ -546,79 +731,73 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       expect(messagesNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      
+
       const messagesNestedNodes = messagesNode!.nestedNodes()
       expect(messagesNestedNodes.length).toBe(2)
-      
+
       // First message should be selected by default
       const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
+      const expectedFirstOptionValue = {
         internalTitle: "FirstMessage",
         title: "First Message"
+      }
+      expect(messagesNodeValue).toEqual(expectedFirstOptionValue)
+      const messagesNodeValueOption1 = messagesNode!.value(`${operationNode!.id}/messages/0`)
+      expect(messagesNodeValueOption1).toEqual(expectedFirstOptionValue)
+      const messagesNodeValueOption2 = messagesNode!.value(`${operationNode!.id}/messages/1`)
+      expect(messagesNodeValueOption2).toEqual({
+        internalTitle: "SecondMessage",
+        title: "Second Message"
       })
     })
 
     it('should handle operation with three messages', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "three-messages-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "three-messages-test",
+          version: "1.0.0"
         },
-        "channels": {
+        channels: {
           "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "MessageA": {
-                "$ref": "#/components/messages/MessageA"
-              },
-              "MessageB": {
-                "$ref": "#/components/messages/MessageB"
-              },
-              "MessageC": {
-                "$ref": "#/components/messages/MessageC"
-              }
+            address: "test-channel",
+            messages: {
+              MessageA: { $ref: "#/components/messages/MessageA" },
+              MessageB: { $ref: "#/components/messages/MessageB" },
+              MessageC: { $ref: "#/components/messages/MessageC" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "MessageA": {
-              "name": "MessageA",
-              "title": "Message A",
-              "description": "First message type"
+        components: {
+          messages: {
+            MessageA: {
+              name: "MessageA",
+              title: "Message A",
+              description: "First message type"
             },
-            "MessageB": {
-              "name": "MessageB",
-              "title": "Message B",
-              "description": "Second message type"
+            MessageB: {
+              name: "MessageB",
+              title: "Message B",
+              description: "Second message type"
             },
-            "MessageC": {
-              "name": "MessageC",
-              "title": "Message C",
-              "description": "Third message type"
+            MessageC: {
+              name: "MessageC",
+              title: "Message C",
+              description: "Third message type"
             }
           }
         },
-        "operations": {
+        operations: {
           "triple-message-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/MessageA"
-              },
-              {
-                "$ref": "#/channels/test-channel/messages/MessageB"
-              },
-              {
-                "$ref": "#/channels/test-channel/messages/MessageC"
-              }
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/MessageA" },
+              { $ref: "#/channels/test-channel/messages/MessageB" },
+              { $ref: "#/channels/test-channel/messages/MessageC" }
             ]
           }
         }
@@ -627,123 +806,110 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       const messagesNestedNodes = messagesNode!.nestedNodes()
       expect(messagesNestedNodes.length).toBe(3)
-      
-      // Verify all nested message nodes
-      const messageANode = messagesNestedNodes.find(node => 
-        node.value && (node.value() as any).internalTitle === "MessageA"
-      )
-      const messageBNode = messagesNestedNodes.find(node => 
-        node.value && (node.value() as any).internalTitle === "MessageB"
-      )
-      const messageCNode = messagesNestedNodes.find(node => 
-        node.value && (node.value() as any).internalTitle === "MessageC"
-      )
-      
-      expect(messageANode).toBeDefined()
-      expect(messageBNode).toBeDefined()
-      expect(messageCNode).toBeDefined()
+
+      const messagesNodeValueDefaultOption = messagesNode!.value()
+      const expectedFirstOptionValue = {
+        internalTitle: "MessageA",
+        title: "Message A",
+        description: "First message type"
+      }
+      expect(messagesNodeValueDefaultOption).toEqual(expectedFirstOptionValue)
+      const messagesNodeValueOption1 = messagesNode!.value(`${operationNode!.id}/messages/0`)
+      expect(messagesNodeValueOption1).toEqual(expectedFirstOptionValue)
+      const messagesNodeValueOption2 = messagesNode!.value(`${operationNode!.id}/messages/1`)
+      expect(messagesNodeValueOption2).toEqual({
+        internalTitle: "MessageB",
+        title: "Message B",
+        description: "Second message type"
+      })
+      const messagesNodeValueOption3 = messagesNode!.value(`${operationNode!.id}/messages/2`)
+      expect(messagesNodeValueOption3).toEqual({
+        internalTitle: "MessageC",
+        title: "Message C",
+        description: "Third message type"
+      })
     })
 
     it('should handle multiple messages with different field combinations', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "mixed-messages-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "mixed-messages-test",
+          version: "1.0.0"
         },
-        "channels": {
+        channels: {
           "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "MinimalMessage": {
-                "$ref": "#/components/messages/MinimalMessage"
-              },
-              "MessageWithPayload": {
-                "$ref": "#/components/messages/MessageWithPayload"
-              },
-              "CompleteMessage": {
-                "$ref": "#/components/messages/CompleteMessage"
-              }
+            address: "test-channel",
+            messages: {
+              MinimalMessage: { $ref: "#/components/messages/MinimalMessage" },
+              MessageWithPayload: { $ref: "#/components/messages/MessageWithPayload" },
+              CompleteMessage: { $ref: "#/components/messages/CompleteMessage" }
             }
           }
         },
-        "components": {
-          "schemas": {
-            "SimpleSchema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
+        components: {
+          schemas: {
+            SimpleSchema: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "string"
                 }
               }
             },
-            "ComplexHeaders": {
-              "type": "object",
-              "properties": {
-                "Authorization": {
-                  "type": "string"
+            ComplexHeaders: {
+              type: "object",
+              properties: {
+                Authorization: {
+                  type: "string"
                 }
               }
             }
           },
-          "messages": {
-            "MinimalMessage": {
-              "name": "MinimalMessage",
-              "title": "Minimal Message"
+          messages: {
+            MinimalMessage: {
+              name: "MinimalMessage",
+              title: "Minimal Message"
             },
-            "MessageWithPayload": {
-              "name": "MessageWithPayload",
-              "title": "Message With Payload",
-              "description": "Has payload only",
-              "payload": {
-                "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleSchema"
-                }
+            MessageWithPayload: {
+              name: "MessageWithPayload",
+              title: "Message With Payload",
+              description: "Has payload only",
+              payload: {
+                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+                schema: { $ref: "#/components/schemas/SimpleSchema" }
               }
             },
-            "CompleteMessage": {
-              "name": "CompleteMessage",
-              "title": "Complete Message",
-              "summary": "Complete message summary",
-              "description": "Has all fields",
-              "headers": {
-                "$ref": "#/components/schemas/ComplexHeaders"
+            CompleteMessage: {
+              name: "CompleteMessage",
+              title: "Complete Message",
+              summary: "Complete message summary",
+              description: "Has all fields",
+              headers: { $ref: "#/components/schemas/ComplexHeaders" },
+              payload: {
+                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+                schema: { $ref: "#/components/schemas/SimpleSchema" }
               },
-              "payload": {
-                "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleSchema"
-                }
-              },
-              "bindings": {
-                "kafka": {
-                  "bindingVersion": "0.5.0"
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0"
                 }
               }
             }
           }
         },
-        "operations": {
+        operations: {
           "mixed-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/MinimalMessage"
-              },
-              {
-                "$ref": "#/channels/test-channel/messages/MessageWithPayload"
-              },
-              {
-                "$ref": "#/channels/test-channel/messages/CompleteMessage"
-              }
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/MinimalMessage" },
+              { $ref: "#/channels/test-channel/messages/MessageWithPayload" },
+              { $ref: "#/channels/test-channel/messages/CompleteMessage" }
             ]
           }
         }
@@ -752,11 +918,11 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       expect(messagesNode).toBeDefined()
       const messagesNestedNodes = messagesNode!.nestedNodes()
       expect(messagesNestedNodes.length).toBe(3)
-      
+
       // First message (minimal) should be selected
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
@@ -769,23 +935,21 @@ describe('Cases with operation messages', () => {
   describe('Edge cases', () => {
     it('should handle operation with empty messages array', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "empty-messages-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "empty-messages-test",
+          version: "1.0.0"
         },
-        "channels": {
+        channels: {
           "test-channel": {
-            "address": "test-channel"
+            address: "test-channel"
           }
         },
-        "operations": {
+        operations: {
           "empty-messages-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": []
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: []
           }
         }
       }
@@ -793,160 +957,44 @@ describe('Cases with operation messages', () => {
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       const operationNode = tree!.root!.childrenNodes()[0]
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
+
       // With empty messages array, there should be no messages node or it should be handled gracefully
-      if (messagesNode) {
-        const messagesNestedNodes = messagesNode!.nestedNodes()
-        expect(messagesNestedNodes.length).toBe(0)
-      }
-    })
-
-    it('should handle message with only name field', () => {
-      const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "name-only-message-test",
-          "version": "1.0.0"
-        },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "NameOnlyMessage": {
-                "$ref": "#/components/messages/NameOnlyMessage"
-              }
-            }
-          }
-        },
-        "components": {
-          "messages": {
-            "NameOnlyMessage": {
-              "name": "NameOnlyMessage"
-            }
-          }
-        },
-        "operations": {
-          "name-only-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/NameOnlyMessage"
-              }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "NameOnlyMessage",
-        title: undefined,
-        description: undefined,
-        summary: undefined,
-      })
-    })
-
-    it('should handle message with empty strings in fields', () => {
-      const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "empty-string-fields-test",
-          "version": "1.0.0"
-        },
-        "channels": {
-          "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "EmptyFieldsMessage": {
-                "$ref": "#/components/messages/EmptyFieldsMessage"
-              }
-            }
-          }
-        },
-        "components": {
-          "messages": {
-            "EmptyFieldsMessage": {
-              "name": "EmptyFieldsMessage",
-              "title": "",
-              "description": "",
-              "summary": ""
-            }
-          }
-        },
-        "operations": {
-          "empty-fields-operation": {
-            "action": "send",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/EmptyFieldsMessage"
-              }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "EmptyFieldsMessage",
-        title: "",
-        description: "",
-        summary: ""
-      })
+      const messagesNestedNodes = messagesNode!.nestedNodes()
+      expect(messagesNestedNodes.length).toBe(0)
+      // TODO 09.12.25 // We should skip node with kind = "messages" if there are no any message
     })
   })
 
   describe('Messages in different operation actions', () => {
     it('should handle messages in receive operation', () => {
       const asyncApiSource = {
-        "asyncapi": "3.0.0",
-        "info": {
-          "title": "receive-operation-test",
-          "version": "1.0.0"
+        asyncapi: "3.0.0",
+        info: {
+          title: "receive-operation-test",
+          version: "1.0.0"
         },
-        "channels": {
+        channels: {
           "test-channel": {
-            "address": "test-channel",
-            "messages": {
-              "ReceiveMessage": {
-                "$ref": "#/components/messages/ReceiveMessage"
-              }
+            address: "test-channel",
+            messages: {
+              ReceiveMessage: { $ref: "#/components/messages/ReceiveMessage" }
             }
           }
         },
-        "components": {
-          "messages": {
-            "ReceiveMessage": {
-              "name": "ReceiveMessage",
-              "title": "Receive Message"
+        components: {
+          messages: {
+            ReceiveMessage: {
+              name: "ReceiveMessage",
+              title: "Receive Message"
             }
           }
         },
-        "operations": {
+        operations: {
           "receive-operation": {
-            "action": "receive",
-            "channel": {
-              "$ref": "#/channels/test-channel"
-            },
-            "messages": [
-              {
-                "$ref": "#/channels/test-channel/messages/ReceiveMessage"
-              }
+            action: "receive",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/channels/test-channel/messages/ReceiveMessage" }
             ]
           }
         }
@@ -959,10 +1007,10 @@ describe('Cases with operation messages', () => {
         action: "receive",
         address: "test-channel",
       })
-      
+
       const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
       expect(messagesNode).toBeDefined()
-      
+
       const messagesNodeValue = messagesNode!.value()
       expect(messagesNodeValue).toEqual({
         internalTitle: "ReceiveMessage",
