@@ -1,5 +1,6 @@
 import { CrawlRules } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../../../../model/async-api/types/node-kind";
+import { defaultChannelAddressTransformer } from "../transformers/default-channel-address";
 import { inlineBindingParameters } from "../transformers/inline-binding-params";
 import { inlineJsoPropertyParameters } from "../transformers/inline-jso-property-params";
 import { liftAddressTransformer } from "../transformers/lift-address";
@@ -18,9 +19,13 @@ export function getAsyncApiCrawlRules(
       }),
     },
     // Operation
-    '/channel': {
-      kind: AsyncApiTreeNodeKinds.CHANNEL,
-    },
+    '/channel': () => ({
+      ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.CHANNEL),
+      '/messages': {
+        kind: undefined, // Exclude channel messages
+      },
+      transformers: [defaultChannelAddressTransformer],
+    }),
     '/bindings': {
       '/*': {
         '/protocol': { // Exclude synthetic property made by transformer

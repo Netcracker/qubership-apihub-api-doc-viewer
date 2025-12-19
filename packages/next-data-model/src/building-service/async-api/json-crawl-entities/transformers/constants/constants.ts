@@ -1,0 +1,1 @@
+export const UNKNOWN_ADDRESS = 'UNKNOWN ADDRESS (NULL)'
