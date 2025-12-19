@@ -66,4 +66,9 @@ export type GraphApiDiffSchemaOptions = {
 };
 export declare function prepareGraphApiDiffSchema(options: GraphApiDiffSchemaOptions): unknown;
 export declare function generateSyntheticObjectPropsFromArray(...arr: Record<PropertyKey, unknown>[]): Record<PropertyKey, unknown>;
+type AsyncApiDocumentOptions = {
+    source: unknown;
+    circular?: boolean;
+};
+export declare function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown;
 export {};
