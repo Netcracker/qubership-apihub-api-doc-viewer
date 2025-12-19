@@ -177,6 +177,9 @@ describe('Bindings', () => {
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(kafkaBindingNode!.key).toBe('kafka')
       expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(kafkaBindingNode!.value()).toEqual({
+        protocol: 'kafka',
+      })
 
       const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
       expect(kafkaBindingPropertyNodes.length).toBe(2)
@@ -206,6 +209,9 @@ describe('Bindings', () => {
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(amqpBindingNode!.key).toBe('amqp')
       expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(amqpBindingNode!.value()).toEqual({
+        protocol: 'amqp',
+      })
 
       const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
       expect(amqpBindingPropertyNodes.length).toBe(7)
@@ -443,6 +449,9 @@ describe('Bindings', () => {
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(kafkaBindingNode!.key).toBe('kafka')
       expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(kafkaBindingNode!.value()).toEqual({
+        protocol: 'kafka',
+      })
 
       const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
       expect(kafkaBindingPropertyNodes.length).toBe(3)
@@ -477,6 +486,9 @@ describe('Bindings', () => {
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(amqpBindingNode!.key).toBe('amqp')
       expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(amqpBindingNode!.value()).toEqual({
+        protocol: 'amqp',
+      })
 
       const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
       expect(amqpBindingPropertyNodes.length).toBe(3)
@@ -730,6 +742,9 @@ describe('Bindings', () => {
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(kafkaBindingNode!.key).toBe('kafka')
       expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(kafkaBindingNode!.value()).toEqual({
+        protocol: 'kafka',
+      })
 
       const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
       expect(kafkaBindingPropertyNodes.length).toBe(3)
@@ -766,6 +781,9 @@ describe('Bindings', () => {
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(amqpBindingNode!.key).toBe('amqp')
       expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(amqpBindingNode!.value()).toEqual({
+        protocol: 'amqp',
+      })
 
       const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
       expect(amqpBindingPropertyNodes.length).toBe(3)
