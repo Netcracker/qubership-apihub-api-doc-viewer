@@ -5,12 +5,13 @@ import { NestingHorizontalIndicator } from "../common/NestingIndicator";
 type ExpanderProps = {
   expandable: boolean
   expanded?: boolean
-  onClickExpander?: () => void
   level: number
 }
 
+const EMPTY_CALLBACK = () => {}
+
 export const Expander: FC<ExpanderProps> = (props) => {
-  const { expandable, expanded, onClickExpander, level } = props
+  const { expandable, expanded, level } = props
 
   const hasHorizontalLine = level > 0
 
@@ -21,8 +22,8 @@ export const Expander: FC<ExpanderProps> = (props) => {
   return (
     <div className={`flex flex-row items-center justify-center ${hasHorizontalLine ? 'gap-3' : ''}`}>
       {hasHorizontalLine && <NestingHorizontalIndicator short={expandable} />}
-      {expandable && expanded !== undefined && onClickExpander && (
-        <ExpandingCaret onToggle={onClickExpander} expanded={expanded} />
+      {expandable && expanded !== undefined && (
+        <ExpandingCaret onToggle={EMPTY_CALLBACK} expanded={expanded} />
       )}
     </div>
   )

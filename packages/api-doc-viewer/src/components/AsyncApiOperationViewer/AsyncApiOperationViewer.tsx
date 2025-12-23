@@ -5,12 +5,16 @@ import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
+import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
+import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, memo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
-import { OperationNodeViewer } from "./OperationNode";
+import { OperationNodeViewer } from "./OperationNodeViewer";
+
+import '../../index.css';
 
 type AsyncApiOperationViewerProps = {
   source: unknown
@@ -43,15 +47,18 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     }
 
     const operations = root.childrenNodes()
-    const operationNode = operations.find(current => {
-      const value = current.value()
-      return (
-        current.key === operationName &&
-        current.kind === AsyncApiTreeNodeKinds.OPERATION &&
-        isOperationNodeValue(value) &&
-        value.action === operationType
-      )
-    })
+    const operationNode = operations.find(
+      (current): current is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta> => {
+        if (!isOperationNode(current)) {
+          return false
+        }
+        const value = current.value()
+        return (
+          current.key === operationName &&
+          value?.action === operationType
+        )
+      }
+    )
     if (!operationNode) {
       return null
     }
@@ -69,13 +76,8 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     )
   })
 
-function isOperationNodeValue(
-  value: AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-): value is AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> {
-  return (
-    value !== null &&
-    'action' in value &&
-    typeof value.action === 'string' &&
-    (value.action === 'send' || value.action === 'receive')
-  )
+function isOperationNode(
+  node: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
+): node is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta> {
+  return node.kind === AsyncApiTreeNodeKinds.OPERATION
 }

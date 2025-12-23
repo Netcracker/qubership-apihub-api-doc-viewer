@@ -53,12 +53,14 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
   const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
   return (
-    <div className={`flex flex-row gap-5 ${width}`}>
+    <div
+      className={`flex flex-row gap-2 ${expandable ? 'hover:cursor-pointer' : ''} ${width}`}
+      onClick={onClickExpander}
+    >
       <NestingIndicator level={level} />
       <Expander
         expandable={expandable}
         expanded={expanded}
-        onClickExpander={onClickExpander}
         level={level}
       />
       <TitleRowValue {...props} />
@@ -79,7 +81,7 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
   const resolvedValue = useMemo(() => resolveValue(value, diff), [diff, value])
 
   return (
-    <div className={`${FONT_SIZE_MAP[variant]}`}>
+    <div className={`font-Inter-Medium ${FONT_SIZE_MAP[variant]} ${variant !== TitleVariant.body ? 'font-bold' : ''}`}>
       {resolvedValue}
     </div>
   )
