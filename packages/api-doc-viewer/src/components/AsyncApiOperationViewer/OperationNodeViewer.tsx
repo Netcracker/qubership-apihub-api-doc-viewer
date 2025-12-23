@@ -1,13 +1,15 @@
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC } from "react";
+import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
+import { AddressRow } from "./AddressRow";
 import { BindingsNodeViewer } from "./BindingsNodeViewer";
 import { ChannelNodeViewer } from "./ChannelNodeViewer";
-import { TitleRow } from "./TitleRow";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
-import { AddressRow } from "./AddressRow";
+import { TitleRow } from "./TitleRow";
 
 type OperationNodeViewerProps = {
   node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta>
@@ -16,13 +18,15 @@ type OperationNodeViewerProps = {
 export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const { node } = props
 
+  const layoutMode = useLayoutMode()
+
   const value = node.value()
   const operationChildren = node.childrenNodes()
 
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
-        value='Operation Title'
+        value={value?.title ?? ''}
         expandable={false}
         level={0}
         variant='h1'
@@ -30,6 +34,13 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       <AddressRow
         action={value?.action ?? ''}
         address={value?.address ?? ''}
+      />
+      <DescriptionRow
+        value={value?.description ?? ''}
+        fontSize='base'
+        disablePaddingLeft={true}
+        level={0}
+        layoutMode={layoutMode}
       />
       <OperationChildrenViewer
         children={operationChildren}

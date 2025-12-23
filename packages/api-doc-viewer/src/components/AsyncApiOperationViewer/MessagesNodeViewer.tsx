@@ -12,26 +12,18 @@ type MessagesNodeViewerProps = {
 export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
   const { node, level } = props
 
-  const [expanded, setExpanded] = useState(true)
-  const onClickExpander = useCallback(() => {
-    setExpanded(prev => !prev)
-  }, [])
-
   return (
     <div>
       <TitleRow
         value='Messages'
         expandable={false}
-        expanded={expanded}
-        onClickExpander={onClickExpander}
+        expanded={true}
         level={level}
         variant='h2'
       />
-      {expanded && (
-        <div>
-          Messages content
-        </div>
-      )}
+      <div>
+        Messages content
+      </div>
     </div>
   )
 

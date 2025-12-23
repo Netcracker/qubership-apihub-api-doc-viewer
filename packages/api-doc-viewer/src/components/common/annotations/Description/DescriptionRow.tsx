@@ -69,7 +69,11 @@ function shortenDescription(description: string, isExpanded: boolean): [IsExpand
 
 export type DescriptionRowProps = PropsWithoutChangesSummary<
   PropsWithShift &
-  { value: string } &
+  {
+    value: string
+    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' // TODO: Just a WA before the component is refactored
+    disablePaddingLeft?: boolean // TODO: Just a WA before the component is refactored
+  } &
   PropsWithChanges
 >
 
@@ -77,6 +81,8 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
     shift = false,
     value,
+    fontSize = 'xs',
+    disablePaddingLeft = false,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -120,11 +126,12 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-5 ${disablePaddingLeft ? 'pl-0' : (shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT)} ${width}`}>
         <NestingIndicator level={level} />
         <div className="text-xs font-normal py-1">
           <Value
             value={value}
+            fontSize={fontSize}
             expanded={expanded}
             setIsExpandable={setIsExpandable}
             // diffs
@@ -136,6 +143,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
           {isInlineDiffsLayoutMode && itemReplaced && (
             <Value
               value={value}
+              fontSize={fontSize}
               expanded={expanded}
               setIsExpandable={setIsExpandable}
               // diffs
@@ -208,6 +216,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
 type ValueProps = {
   value: string
+  fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl'
   expanded?: boolean
   setIsExpandable?: Dispatch<SetStateAction<boolean>>
   // diffs
@@ -219,6 +228,7 @@ type ValueProps = {
 
 const Value: FC<ValueProps> = props => {
   const {
+    fontSize = 'xs',
     expanded = false,
     setIsExpandable,
     // diffs
@@ -279,7 +289,7 @@ const Value: FC<ValueProps> = props => {
 
   return (
     <ReactMarkdown
-      className={`markdown text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown text-${fontSize} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}

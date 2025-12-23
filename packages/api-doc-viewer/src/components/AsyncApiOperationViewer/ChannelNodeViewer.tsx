@@ -4,6 +4,8 @@ import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useCallback, useState } from "react"
 import { TitleRow } from "./TitleRow"
+import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 
 type ChannelNodeViewerProps = {
   node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL> | null, typeof AsyncApiTreeNodeKinds.CHANNEL, AsyncApiNodeMeta>
@@ -12,27 +14,27 @@ type ChannelNodeViewerProps = {
 
 export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
   const { node, level } = props
+  
+  const layoutMode = useLayoutMode()
 
-  const [expanded, setExpanded] = useState(true)
-  const onClickExpander = useCallback(() => {
-    setExpanded(prev => !prev)
-  }, [])
+  const value = node.value()
 
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
         value='Channel'
         expandable={false}
-        expanded={expanded}
-        onClickExpander={onClickExpander}
+        expanded={true}
         level={level}
         variant='h2'
       />
-      {expanded && (
-        <div>
-          Channel content
-        </div>
-      )}
+      <DescriptionRow
+        value={value?.description ?? ''}
+        fontSize='base'
+        disablePaddingLeft={true}
+        level={level}
+        layoutMode={layoutMode}
+      />
     </div>
   )
 }
