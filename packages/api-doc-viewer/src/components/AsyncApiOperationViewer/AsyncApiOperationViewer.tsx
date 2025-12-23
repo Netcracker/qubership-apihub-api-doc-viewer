@@ -1,9 +1,16 @@
+import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration";
+import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext";
+import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext";
+import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
-import { FC } from "react";
-import { memo } from "react";
+import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
+import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
+import { FC, memo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
-import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
+import { OperationNodeViewer } from "./OperationNode";
 
 type AsyncApiOperationViewerProps = {
   source: unknown
@@ -23,12 +30,52 @@ export const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps> =
 
 const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
-    const { source, operationType, operationName, displayMode } = props
+    const { source, operationType, operationName, displayMode = DEFAULT_DISPLAY_MODE } = props
 
     const treeBuilder = new AsyncApiTreeBuilder(source)
     const tree = treeBuilder.build()
 
     console.debug('[AsyncAPI] Tree:', tree)
 
-    return <div>Hello, Async API!</div>
+    const root = tree.root
+    if (!root) {
+      return null
+    }
+
+    const operations = root.childrenNodes()
+    const operationNode = operations.find(current => {
+      const value = current.value()
+      return (
+        current.key === operationName &&
+        current.kind === AsyncApiTreeNodeKinds.OPERATION &&
+        isOperationNodeValue(value) &&
+        value.action === operationType
+      )
+    })
+    if (!operationNode) {
+      return null
+    }
+
+    return (
+      <DisplayModeContext.Provider value={displayMode}>
+        <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
+          <LevelContext.Provider value={0}>
+            <OperationNodeViewer
+              node={operationNode}
+            />
+          </LevelContext.Provider>
+        </LayoutModeContext.Provider>
+      </DisplayModeContext.Provider>
+    )
   })
+
+function isOperationNodeValue(
+  value: AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+): value is AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> {
+  return (
+    value !== null &&
+    'action' in value &&
+    typeof value.action === 'string' &&
+    (value.action === 'send' || value.action === 'receive')
+  )
+}

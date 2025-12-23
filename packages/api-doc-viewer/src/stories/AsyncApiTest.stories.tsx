@@ -184,5 +184,7 @@ export const KafkaE2E: Story = {
     source: prepareAsyncApiDocument({
       source: KAFKA_E2E_SOURCE,
     }),
+    operationName: 'customer-change-topic_send_BaseEvent',
+    operationType: 'send',
   }
 }
