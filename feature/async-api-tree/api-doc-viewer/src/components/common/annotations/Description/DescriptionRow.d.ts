@@ -22,10 +22,13 @@ import { LayoutMode } from '../../../../types/LayoutMode';
 import { PropsWithoutChangesSummary } from "../../../../types/PropsWithoutChangesSummary";
 export type DescriptionRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     value: string;
+    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+    disablePaddingLeft?: boolean;
 } & PropsWithChanges>;
 export declare const DescriptionRow: FC<DescriptionRowProps>;
 type ValueProps = {
     value: string;
+    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
     expanded?: boolean;
     setIsExpandable?: Dispatch<SetStateAction<boolean>>;
     enableDiffs: boolean;
