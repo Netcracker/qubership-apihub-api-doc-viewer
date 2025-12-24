@@ -1,0 +1,10 @@
+import { AsyncApiTreeNode } from '../../../../next-data-model/src/model/async-api/types/aliases';
+import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/async-api/types/node-kind';
+export declare function isOperationNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION>;
+export declare function isChannelNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>;
+export declare function isMessagesNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES>;
+export declare function isMessageNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>;
+export declare function isHeadersNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
+export declare function isPayloadNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
+export declare function isBindingsNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
+export declare function isBindingNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>;
