@@ -3,8 +3,8 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import type { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { FC, memo, ReactElement, useMemo } from "react"
-import { NestingIndicator } from "../common/NestingIndicator"
 import { Expander } from "./Expander"
+import { LevelIndicator } from "./LevelIndicator"
 
 const TitleVariant = {
   h1: 'h1',
@@ -57,13 +57,15 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
     <div
       className={`flex flex-row items-center gap-2 ${width}`}
     >
-      <NestingIndicator level={level} />
-      <Expander
-        expandable={expandable}
-        expanded={expanded}
-        onClick={onClickExpander}
-        level={level}
-      />
+      <div className='flex flex-row items-stretch h-full'>
+        <LevelIndicator level={level} />
+        <Expander
+          expandable={expandable}
+          expanded={expanded}
+          onClick={onClickExpander}
+          level={level}
+        />
+      </div>
       <TitleRowValue {...props} />
       {subheader?.(layoutSide)}
     </div>
