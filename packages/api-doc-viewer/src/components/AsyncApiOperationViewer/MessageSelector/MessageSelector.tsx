@@ -3,13 +3,13 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC } from "react"
 import "../styles/styles.css"
 
-type BindingSelectorProps = {
-  options: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>[]
-  selectedOption: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null
-  onSelectOption: (option: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>) => void
+type MessageSelectorProps = {
+  options: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>[]
+  selectedOption: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE> | null
+  onSelectOption: (option: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>) => void
 }
 
-export const BindingSelector: FC<BindingSelectorProps> = (props) => {
+export const MessageSelector: FC<MessageSelectorProps> = (props) => {
   const { options, selectedOption, onSelectOption } = props
 
   if (options.length === 0) {
@@ -33,7 +33,7 @@ export const BindingSelector: FC<BindingSelectorProps> = (props) => {
               onSelectOption(option)
             }}
           >
-            {optionValue.protocol}
+            {optionValue.title ?? optionValue.internalTitle ?? 'unknown'}
           </button>
         )
       })}

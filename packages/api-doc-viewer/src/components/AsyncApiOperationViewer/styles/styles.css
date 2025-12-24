@@ -1,4 +1,4 @@
-button.button-binding-selector-option {
+button.button-selector-option {
   /* bg-slate-100 */
   background-color: rgb(241, 245, 249);
   border: 1px solid #e0e0e0;
@@ -7,16 +7,16 @@ button.button-binding-selector-option {
   cursor: pointer;
 }
 
-button.button-binding-selector-option:hover {
+button.button-selector-option:hover {
   /* bg-slate-200 */
   background-color: rgb(226, 232, 240);
 }
 
-button.button-binding-selector-option:focus {
+button.button-selector-option:focus {
   outline: none;
 }
 
-button.button-binding-selector-option.selected {
+button.button-selector-option.selected {
   /* bg-slate-300 */
   background-color: rgb(203, 213, 225);
 }
