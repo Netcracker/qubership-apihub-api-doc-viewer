@@ -22,6 +22,7 @@ type TitleRowProps = {
   onClickExpander?: () => void
   level: number
   variant: TitleVariant
+  subheader?: (layoutSide: LayoutSide) => ReactElement
 }
 
 export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
@@ -45,7 +46,7 @@ type TitleRowContentProps = TitleRowProps & {
 }
 
 const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { value, diff, expandable, expanded, onClickExpander, level, variant, layoutSide } = props
+  const { value, diff, expandable, expanded, onClickExpander, level, variant, layoutSide, subheader } = props
 
   const layoutMode = useLayoutMode()
   const isSideBySideDiffsLayoutMode = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
@@ -54,7 +55,7 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
 
   return (
     <div
-      className={`flex flex-row gap-2 ${expandable ? 'hover:cursor-pointer' : ''} ${width}`}
+      className={`flex flex-row items-center gap-2 ${expandable ? 'hover:cursor-pointer' : ''} ${width}`}
       onClick={onClickExpander}
     >
       <NestingIndicator level={level} />
@@ -64,6 +65,7 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
         level={level}
       />
       <TitleRowValue {...props} />
+      {subheader?.(layoutSide)}
     </div>
   )
 })
@@ -100,7 +102,7 @@ const TitleRowContainer: FC<TitleRowProps> = memo<TitleRowProps>((props) => {
 
   if (sideBySideLayout) {
     return (
-      <div className='flex flex-row relative'>
+      <div className='flex flex-row'>
         <TitleRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />
         <TitleRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
       </div>
@@ -108,7 +110,7 @@ const TitleRowContainer: FC<TitleRowProps> = memo<TitleRowProps>((props) => {
   }
 
   return (
-    <div className='flex flex-row relative'>
+    <div className='flex flex-row'>
       <TitleRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
     </div>
   )

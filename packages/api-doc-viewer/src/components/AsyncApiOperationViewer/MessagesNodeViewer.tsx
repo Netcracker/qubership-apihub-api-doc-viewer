@@ -1,11 +1,10 @@
-import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { FC, useState, useCallback } from "react"
+import { FC } from "react"
 import { TitleRow } from "./TitleRow"
 
 type MessagesNodeViewerProps = {
-  node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGES> | null, typeof AsyncApiTreeNodeKinds.MESSAGES, AsyncApiNodeMeta>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES>
   level: number
 }
 

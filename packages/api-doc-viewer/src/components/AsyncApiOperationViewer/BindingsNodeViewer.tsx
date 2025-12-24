@@ -1,12 +1,12 @@
-import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
+import { LayoutSide } from "@apihub/types/internal/LayoutSide";
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { BindingSelector } from "./BindingSelector/BindingSelector";
 import { TitleRow } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
-  node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS> | null, typeof AsyncApiTreeNodeKinds.BINDINGS, AsyncApiNodeMeta>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
   level: number
 }
 
@@ -17,7 +17,25 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const onClickExpander = useCallback(() => {
     setExpanded(prev => !prev)
   }, [])
-  
+
+  const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
+  const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
+  const [selectedBinding, setSelectedBinding] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null>(null)
+
+  useEffect(() => {
+    if (bindingSelectorOptions.length > 0 && selectedBinding === null) {
+      setSelectedBinding(bindingSelectorOptions[0])
+    }
+  }, [bindingSelectorOptions, selectedBinding])
+
+  const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
+    <BindingSelector
+      options={bindingSelectorOptions}
+      selectedOption={selectedBinding}
+      onSelectOption={setSelectedBinding}
+    />
+  ), [bindingSelectorOptions, selectedBinding])
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -27,6 +45,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         onClickExpander={onClickExpander}
         level={level}
         variant='h3'
+        subheader={titleRowSubheader}
       />
       {expanded && (
         <div>
@@ -35,4 +54,10 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       )}
     </div>
   )
+}
+
+function isBindingNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> {
+  return node.kind === AsyncApiTreeNodeKinds.BINDING
 }

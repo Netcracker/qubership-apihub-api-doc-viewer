@@ -1,6 +1,7 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
-import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC } from "react";
@@ -50,7 +51,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
 }
 
 type OperationChildrenViewerProps = {
-  children: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>[]
+  children: AsyncApiTreeNode[]
 }
 
 const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
@@ -75,19 +76,19 @@ const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
 }
 
 function isBindingsNode(
-  node: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
-): node is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS> | null, typeof AsyncApiTreeNodeKinds.BINDINGS, AsyncApiNodeMeta> {
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> {
   return node.kind === AsyncApiTreeNodeKinds.BINDINGS
 }
 
 function isChannelNode(
-  node: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
-): node is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL> | null, typeof AsyncApiTreeNodeKinds.CHANNEL, AsyncApiNodeMeta> {
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL> {
   return node.kind === AsyncApiTreeNodeKinds.CHANNEL
 }
 
 function isMessagesNode(
-  node: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
-): node is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGES> | null, typeof AsyncApiTreeNodeKinds.MESSAGES, AsyncApiNodeMeta> {
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES> {
   return node.kind === AsyncApiTreeNodeKinds.MESSAGES
 }

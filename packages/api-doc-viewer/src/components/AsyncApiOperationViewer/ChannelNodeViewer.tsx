@@ -1,14 +1,12 @@
-import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
-import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta"
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { FC, useCallback, useState } from "react"
-import { TitleRow } from "./TitleRow"
-import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { FC } from "react"
+import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
+import { TitleRow } from "./TitleRow"
 
 type ChannelNodeViewerProps = {
-  node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL> | null, typeof AsyncApiTreeNodeKinds.CHANNEL, AsyncApiNodeMeta>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
   level: number
 }
 
