@@ -5,15 +5,14 @@ import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
-import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
-import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
+import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
 import { OperationNodeViewer } from "./OperationNodeViewer";
 
+import { isOperationNode } from "@apihub/utils/async-api/node-type-checkers";
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import '../../index.css';
 
 type AsyncApiOperationViewerProps = {
@@ -48,7 +47,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
 
     const operations = root.childrenNodes()
     const operationNode = operations.find(
-      (current): current is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta> => {
+      (current): current is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION> => {
         if (!isOperationNode(current)) {
           return false
         }
@@ -75,9 +74,3 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
       </DisplayModeContext.Provider>
     )
   })
-
-function isOperationNode(
-  node: ITreeNode<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
-): node is ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta> {
-  return node.kind === AsyncApiTreeNodeKinds.OPERATION
-}

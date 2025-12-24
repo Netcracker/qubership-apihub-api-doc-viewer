@@ -55,13 +55,13 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
 
   return (
     <div
-      className={`flex flex-row items-center gap-2 ${expandable ? 'hover:cursor-pointer' : ''} ${width}`}
-      onClick={onClickExpander}
+      className={`flex flex-row items-center gap-2 ${width}`}
     >
       <NestingIndicator level={level} />
       <Expander
         expandable={expandable}
         expanded={expanded}
+        onClick={onClickExpander}
         level={level}
       />
       <TitleRowValue {...props} />
@@ -78,12 +78,19 @@ const FONT_SIZE_MAP: Record<TitleVariant, string> = {
 }
 
 const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { value, diff, variant } = props
+  const { value, diff, variant, expandable, onClickExpander } = props
 
   const resolvedValue = useMemo(() => resolveValue(value, diff), [diff, value])
 
+  const classes = useMemo(() => ([
+    'font-Inter-Medium',
+    FONT_SIZE_MAP[variant],
+    variant !== TitleVariant.body ? 'font-bold' : '',
+    expandable ? 'hover:cursor-pointer' : '',
+  ].join(' ')), [])
+
   return (
-    <div className={`font-Inter-Medium ${FONT_SIZE_MAP[variant]} ${variant !== TitleVariant.body ? 'font-bold' : ''}`}>
+    <div className={classes} onClick={onClickExpander}>
       {resolvedValue}
     </div>
   )

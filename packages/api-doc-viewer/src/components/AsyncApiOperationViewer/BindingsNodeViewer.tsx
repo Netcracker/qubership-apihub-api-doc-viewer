@@ -1,4 +1,5 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
+import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -54,10 +55,4 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       )}
     </div>
   )
-}
-
-function isBindingNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> {
-  return node.kind === AsyncApiTreeNodeKinds.BINDING
 }

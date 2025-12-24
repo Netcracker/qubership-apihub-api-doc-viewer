@@ -1,9 +1,11 @@
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useCallback, useEffect, useState } from "react"
-import { TitleRow } from "./TitleRow"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { MessageSelector } from "./MessageSelector/MessageSelector"
+import { TitleRow } from "./TitleRow"
+import { MessageNodeViewer } from "./MessageNodeViewer"
 
 type MessagesNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES>
@@ -41,16 +43,11 @@ export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
         variant='h2'
         subheader={titleRowSubheader}
       />
-      <div>
-        Messages content
-      </div>
+      {selectedMessage && (
+        <MessageNodeViewer
+          node={selectedMessage}
+        />
+      )}
     </div>
   )
-
-}
-
-function isMessageNode(
-  node: AsyncApiTreeNode,
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE> {
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGE
 }

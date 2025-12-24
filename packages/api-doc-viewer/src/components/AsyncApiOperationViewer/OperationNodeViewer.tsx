@@ -1,4 +1,5 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
+import { isBindingsNode, isChannelNode, isMessagesNode } from "@apihub/utils/async-api/node-type-checkers";
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
@@ -73,22 +74,4 @@ const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
       })}
     </div>
   )
-}
-
-function isBindingsNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> {
-  return node.kind === AsyncApiTreeNodeKinds.BINDINGS
-}
-
-function isChannelNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL> {
-  return node.kind === AsyncApiTreeNodeKinds.CHANNEL
-}
-
-function isMessagesNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES> {
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGES
 }
