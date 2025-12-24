@@ -5,13 +5,14 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
 import { AddressRow } from "./AddressRow";
 import { BindingsNodeViewer } from "./BindingsNodeViewer";
 import { ChannelNodeViewer } from "./ChannelNodeViewer";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
 import { TitleRow } from "./TitleRow";
+import { sortNodesByDisplayPriority } from "@apihub/utils/async-api/node-sorting-by-display-priority";
 
 type OperationNodeViewerProps = {
   node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta>
@@ -23,7 +24,12 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const layoutMode = useLayoutMode()
 
   const value = node.value()
-  const operationChildren = node.childrenNodes()
+  const operationChildren = useMemo(() => (
+    sortNodesByDisplayPriority(
+      AsyncApiTreeNodeKinds.OPERATION, 
+      node.childrenNodes(),
+    )
+  ), [node])
 
   return (
     <div className="flex flex-col gap-1">

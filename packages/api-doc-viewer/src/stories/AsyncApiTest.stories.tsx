@@ -147,6 +147,7 @@ const KAFKA_E2E_SOURCE = {
             $ref: "#/components/schemas/BaseEvent"
           }
         },
+        description: "Base event to describe Customer's data changes",
         name: "BaseEventMessage",
         title: "BaseEvent",
         bindings: {

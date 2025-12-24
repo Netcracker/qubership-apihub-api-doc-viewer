@@ -26,22 +26,27 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       {messageDescription && (
         <DescriptionRow
           value={messageDescription}
+          level={1}
         />
       )}
       {bindingsChild && (
         <BindingsNodeViewer
           node={bindingsChild}
-          level={0}
+          level={1}
         />
       )}
       {headersChild && (
         <JsoPropertyNodeViewer
           node={headersChild}
+          expandable={true}
+          level={1}
         />
       )}
       {payloadChild && (
         <JsoPropertyNodeViewer
           node={payloadChild}
+          expandable={true}
+          level={1}
         />
       )}
     </div>

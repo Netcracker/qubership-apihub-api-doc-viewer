@@ -5,12 +5,15 @@ import { TitleRow } from "./TitleRow"
 
 type JsoPropertyNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>
+  expandable: boolean
+  expanded?: boolean
+  level: number
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, expandable, expanded: initialExpanded, level } = props
 
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(initialExpanded ?? false)
   const onClickExpander = useCallback(() => {
     setExpanded(prevExpanded => !prevExpanded)
   }, [])
@@ -19,10 +22,10 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     <div className="flex flex-col gap-3">
       <TitleRow
         value={capitalizeFirstLetter(node.key)}
-        expandable={true}
+        expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        level={0}
+        level={level}
         variant='h3'
       />
       {expanded && (
