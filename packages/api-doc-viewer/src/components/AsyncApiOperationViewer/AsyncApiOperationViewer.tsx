@@ -38,6 +38,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     const treeBuilder = new AsyncApiTreeBuilder(source)
     const tree = treeBuilder.build()
 
+    console.debug('[AsyncAPI] Source:', source)
     console.debug('[AsyncAPI] Tree:', tree)
 
     const root = tree.root

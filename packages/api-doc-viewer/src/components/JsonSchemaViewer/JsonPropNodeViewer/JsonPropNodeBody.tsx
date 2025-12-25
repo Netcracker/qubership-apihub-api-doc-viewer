@@ -39,6 +39,7 @@ import { Annotations } from '../../common/annotations/Annotations'
 import { HeaderRow } from '../internal/layout/HeaderRow'
 import { Validations } from '../internal/validations/Validations'
 import { isPropNodeState } from '../types/nodes.guards'
+import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
 
 export type JsonPropNodeBodyProps = PropsWithoutChangesSummary<
   JsonPropNodePropsWithState &
@@ -91,11 +92,13 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
   // Common data
   const isRoot = isRootNode(node)
 
+  const customizationOptions = useCustomizationOptions()
+
   return (
     <div className="flex flex-col">
       {!disableNestingHeader && (
         <HeaderRow
-          nodeTitleData={buildNodeTitleData({ node, nodeValue, nodeMeta })}
+          nodeTitleData={buildNodeTitleData({ node, nodeValue, nodeMeta, customizationOptions })}
           nodeTypeData={buildNodeTypeData({ node, nodeValue })}
           isCircularRef={node.isCycle}
           readOnly={nodeMeta?.readOnly}
