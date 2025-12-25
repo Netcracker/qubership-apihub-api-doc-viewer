@@ -1,0 +1,1 @@
+import{b as o}from"./NestingIndicatorTitleRow-f47b395c.js";import{b as a}from"./buildASTSchema-c9419e63.js";function i(r){return o(a(r,{noLocation:!0}))}function u(r){return i(r[0])}export{i as b,u as g};
