@@ -1,11 +1,8 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { sortNodesByDisplayPriority } from "@apihub/utils/async-api/node-sorting-by-display-priority";
 import { isBindingsNode, isChannelNode, isMessagesNode } from "@apihub/utils/async-api/node-type-checkers";
-import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-meta";
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
 import { AddressRow } from "./AddressRow";
@@ -15,7 +12,7 @@ import { MessagesNodeViewer } from "./MessagesNodeViewer";
 import { TitleRow } from "./TitleRow";
 
 type OperationNodeViewerProps = {
-  node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION>
 }
 
 export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {

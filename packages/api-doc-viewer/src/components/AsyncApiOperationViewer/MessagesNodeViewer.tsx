@@ -25,6 +25,7 @@ export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
     }
   }, [messagesOptions, selectedMessage])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
     <MessageSelector
       options={messagesOptions}

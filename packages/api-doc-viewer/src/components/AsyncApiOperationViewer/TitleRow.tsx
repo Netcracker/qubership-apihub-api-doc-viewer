@@ -26,8 +26,6 @@ type TitleRowProps = {
 }
 
 export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
-  const { value, diff, expandable, expanded = false, onClickExpander, level, variant } = props
-
   const layoutMode = useLayoutMode()
 
   if (layoutMode === INLINE_DIFFS_LAYOUT_MODE) {
@@ -46,7 +44,7 @@ type TitleRowContentProps = TitleRowProps & {
 }
 
 const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { value, diff, expandable, expanded, onClickExpander, level, variant, layoutSide, subheader } = props
+  const { expandable, expanded, onClickExpander, level, layoutSide, subheader } = props
 
   const layoutMode = useLayoutMode()
   const isSideBySideDiffsLayoutMode = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
@@ -91,7 +89,7 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
     FONT_SIZE_MAP[variant],
     variant !== TitleVariant.body ? 'font-bold' : '',
     expandable ? 'hover:cursor-pointer' : '',
-  ].join(' ')), [])
+  ].join(' ')), [expandable, variant])
 
   return (
     <div className={classes} onClick={onClickExpander}>
@@ -100,13 +98,12 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
   )
 })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function resolveValue(currentValue?: string, diff?: Diff): string | ReactElement | undefined {
   return currentValue
 }
 
 const TitleRowContainer: FC<TitleRowProps> = memo<TitleRowProps>((props) => {
-  const { value, diff, expandable, expanded, onClickExpander, level, variant } = props
-
   const layoutMode = useLayoutMode()
 
   const sideBySideLayout = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE

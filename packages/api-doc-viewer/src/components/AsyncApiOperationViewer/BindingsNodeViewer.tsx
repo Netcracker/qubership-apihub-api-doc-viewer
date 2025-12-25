@@ -39,6 +39,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     }
   }, [bindingSelectorOptions, selectedBinding])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
     <BindingSelector
       options={bindingSelectorOptions}
