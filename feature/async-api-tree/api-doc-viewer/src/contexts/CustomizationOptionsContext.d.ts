@@ -3,4 +3,5 @@ export declare const CustomizationOptionsContext: import('../../../../node_modul
 export declare function useCustomizationOptions(): CutomizationOptions | undefined;
 export type CutomizationOptions = {
     headerRowTitle?: string;
+    headerRowFontSize?: 'default' | 'body' | 'h1' | 'h2' | 'h3';
 };
