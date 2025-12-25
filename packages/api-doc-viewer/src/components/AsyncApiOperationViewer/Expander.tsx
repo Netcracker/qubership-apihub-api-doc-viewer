@@ -21,7 +21,7 @@ export const Expander: FC<ExpanderProps> = (props) => {
   }
 
   return (
-    <div className={`flex flex-row items-center justify-center ${hasHorizontalLine ? 'gap-3' : ''}`}>
+    <div className={`flex flex-row items-center justify-center ${hasHorizontalLine ? 'gap-1' : ''}`}>
       {hasHorizontalLine && <NestingHorizontalIndicator short={expandable} />}
       {expandable && expanded !== undefined && (
         <ExpandingCaret onToggle={onClick ?? EMPTY_CALLBACK} expanded={expanded} />

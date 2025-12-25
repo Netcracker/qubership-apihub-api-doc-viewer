@@ -53,19 +53,21 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
 
   const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
+  const showLevelAndExpanderGroup = level > 0 || expandable
+
   return (
-    <div
-      className={`flex flex-row items-center gap-2 ${width}`}
-    >
-      <div className='flex flex-row items-stretch h-full'>
-        <LevelIndicator level={level} />
-        <Expander
-          expandable={expandable}
-          expanded={expanded}
-          onClick={onClickExpander}
-          level={level}
-        />
-      </div>
+    <div className={`flex flex-row items-center gap-2 ${width}`}>
+      {showLevelAndExpanderGroup && (
+        <div className='flex flex-row items-stretch h-full'>
+          <LevelIndicator level={level} />
+          <Expander
+            expandable={expandable}
+            expanded={expanded}
+            onClick={onClickExpander}
+            level={level}
+          />
+        </div>
+      )}
       <TitleRowValue {...props} />
       {subheader?.(layoutSide)}
     </div>
