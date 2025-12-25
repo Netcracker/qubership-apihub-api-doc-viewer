@@ -33,8 +33,8 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
       />
       <DescriptionRow
         value={value?.description ?? ''}
-        fontSize='base'
-        disablePaddingLeft={true}
+        // fontSize='base'
+        // disablePaddingLeft={true}
         level={level}
         layoutMode={layoutMode}
       />

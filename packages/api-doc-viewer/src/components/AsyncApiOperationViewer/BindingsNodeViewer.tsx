@@ -61,7 +61,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       />
       {expanded && (
         <div>
-          Bindings content
+          There will be JsoViewer to display bindings content.
         </div>
       )}
     </div>

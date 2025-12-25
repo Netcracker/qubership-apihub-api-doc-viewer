@@ -42,8 +42,8 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       />
       <DescriptionRow
         value={value?.description ?? ''}
-        fontSize='base'
-        disablePaddingLeft={true}
+        // fontSize='base'
+        // disablePaddingLeft={true}
         level={0}
         layoutMode={layoutMode}
       />
