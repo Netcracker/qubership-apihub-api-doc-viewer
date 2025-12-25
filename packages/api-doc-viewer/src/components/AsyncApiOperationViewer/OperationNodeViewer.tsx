@@ -1,4 +1,5 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
+import { sortNodesByDisplayPriority } from "@apihub/utils/async-api/node-sorting-by-display-priority";
 import { isBindingsNode, isChannelNode, isMessagesNode } from "@apihub/utils/async-api/node-type-checkers";
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
@@ -12,7 +13,6 @@ import { BindingsNodeViewer } from "./BindingsNodeViewer";
 import { ChannelNodeViewer } from "./ChannelNodeViewer";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
 import { TitleRow } from "./TitleRow";
-import { sortNodesByDisplayPriority } from "@apihub/utils/async-api/node-sorting-by-display-priority";
 
 type OperationNodeViewerProps = {
   node: ITreeNode<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION> | null, typeof AsyncApiTreeNodeKinds.OPERATION, AsyncApiNodeMeta>
@@ -34,7 +34,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
-        value={value?.title ?? ''}
+        value={value?.title ?? node.key.toString() ?? 'No title'}
         expandable={false}
         level={0}
         variant='h1'
@@ -68,7 +68,7 @@ const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
     <div className="flex flex-col gap-1">
       {children.map(child => {
         if (isBindingsNode(child)) {
-          return <BindingsNodeViewer key={child.key} node={child} level={0} />
+          return <BindingsNodeViewer key={child.key} node={child} relatedTo={AsyncApiTreeNodeKinds.OPERATION} level={0} />
         }
         if (isChannelNode(child)) {
           return <ChannelNodeViewer key={child.key} node={child} level={0} />

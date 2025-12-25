@@ -435,7 +435,7 @@ describe('Cases with channel', () => {
       const operationNodeValue = operationNode.value()
       expect(operationNodeValue).toEqual({
         action: "send",
-        address: 'UNKNOWN ADDRESS (NULL)',
+        address: '<address unknown>',
       })
 
       const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)

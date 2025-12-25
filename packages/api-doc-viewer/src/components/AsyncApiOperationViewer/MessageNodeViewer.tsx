@@ -32,6 +32,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       {bindingsChild && (
         <BindingsNodeViewer
           node={bindingsChild}
+          relatedTo={AsyncApiTreeNodeKinds.MESSAGE}
           level={1}
         />
       )}

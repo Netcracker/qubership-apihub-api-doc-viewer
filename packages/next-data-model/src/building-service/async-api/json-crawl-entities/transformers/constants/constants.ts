@@ -1,1 +1,1 @@
-export const UNKNOWN_ADDRESS = 'UNKNOWN ADDRESS (NULL)'
+export const UNKNOWN_ADDRESS = '<address unknown>'
