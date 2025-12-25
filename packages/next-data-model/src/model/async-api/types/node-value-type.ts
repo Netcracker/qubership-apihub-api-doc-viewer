@@ -5,6 +5,7 @@ export const AsyncApiNodeJsoPropertyValueTypes = {
   OBJECT: 'object',
   ARRAY: 'array',
   JSON_SCHEMA: 'jsonSchema',
+  MULTI_SCHEMA: 'multiSchema',
 } as const
 
 export type AsyncApiNodeJsoPropertyValueType = typeof AsyncApiNodeJsoPropertyValueTypes[keyof typeof AsyncApiNodeJsoPropertyValueTypes]
