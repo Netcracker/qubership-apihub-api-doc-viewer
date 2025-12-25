@@ -33,7 +33,9 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandedDepth={2}
         displayMode={displayMode}
         customizationOptions={{
-          headerRowTitle: capitalizeFirstLetter(node.key)
+          headerRowTitle: capitalizeFirstLetter(node.key),
+          // TODO 25.12.25 // Temporarily disabled
+          // headerRowFontSize: 'h3'
         }}
       />
     )
@@ -47,7 +49,9 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandedDepth={2}
         displayMode={displayMode}
         customizationOptions={{
-          headerRowTitle: capitalizeFirstLetter(node.key)
+          headerRowTitle: capitalizeFirstLetter(node.key),
+          // TODO 25.12.25 // Temporarily disabled
+          // headerRowFontSize: 'h3'
         }}
       />
     )

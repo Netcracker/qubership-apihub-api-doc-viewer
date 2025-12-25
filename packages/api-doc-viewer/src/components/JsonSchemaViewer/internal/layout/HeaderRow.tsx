@@ -58,6 +58,7 @@ import { Expander } from '../../../common/layout/Expander/Expander'
 import { CircularRefIcon } from '../../../kit/icons/CircularRefIcon'
 // import { UxContextMenu } from '../../../kit/ux/UxContextMenu/UxContextMenu'
 // import { ToggleContextMenuHandlerOptions } from '../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler'
+import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { UxMarkerPanel } from '../../../kit/ux/UxMarkerPanel/UxMarkerPanel'
 import { UxTooltip } from '../../../kit/ux/UxTooltip/UxTooltip'
@@ -106,6 +107,8 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     $nodeChange,
     $nodeChangesSummary,
   } = props
+
+  const customizationOptions = useCustomizationOptions()
 
   const isNodeChanged = !!$nodeChange
 
@@ -175,7 +178,12 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
 
     const SubHeader: FC = () => <>
       {nodeTypeData && (
-        <div className="text-xs font-normal text-slate-500">
+        <div className={[
+          `${!customizationOptions?.headerRowFontSize || customizationOptions?.headerRowFontSize === 'default' || !isRoot
+            ? 'text-xs'
+            : `text-${customizationOptions!.headerRowFontSize}`}`,
+          'font-normal text-slate-500',
+        ].join(' ')}>
           <NodeType
             {...nodeTypeData}
             showNullable={true}
@@ -234,13 +242,19 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
             isExpandable={isExpandable}
             expanded={expanded}
             onToggleExpander={onToggleExpander}
-            // onToggleContextMenu={onToggleContextMenu}
+          // onToggleContextMenu={onToggleContextMenu}
           />
           <div className="flex flex-row items-center gap-2 pt-2 pb-1">
             <div
-              className={`text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}
+              className={[
+                `${!customizationOptions?.headerRowFontSize || customizationOptions?.headerRowFontSize === 'default' || !isRoot
+                  ? 'text-xs'
+                  : `text-${customizationOptions!.headerRowFontSize}`}`,
+                'text-black font-Inter-Medium',
+                isExpandable ? 'hover:cursor-pointer' : ''
+              ].join(' ')}
               onClick={isExpandable ? onToggleExpander : undefined}
-              // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
+            // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
             >
               <NodeTitle
                 {...nodeTitleData}

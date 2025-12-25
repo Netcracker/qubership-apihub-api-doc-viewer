@@ -99,7 +99,7 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
       {!disableNestingHeader && (
         <HeaderRow
           nodeTitleData={buildNodeTitleData({ node, nodeValue, nodeMeta, customizationOptions })}
-          nodeTypeData={buildNodeTypeData({ node, nodeValue })}
+          nodeTypeData={buildNodeTypeData({ node, nodeValue, customizationOptions })}
           isCircularRef={node.isCycle}
           readOnly={nodeMeta?.readOnly}
           writeOnly={nodeMeta?.writeOnly}
