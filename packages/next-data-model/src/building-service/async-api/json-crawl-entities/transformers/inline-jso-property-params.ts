@@ -2,38 +2,50 @@ import { JSON_SCHEMA_NODE_TYPES, JSON_SCHEMA_PROPERTY_ADDITIONAL_ITEMS, JSON_SCH
 import { isObject } from "../../../../utilities"
 import { AsyncApiTreeCrawlState } from "../state/types"
 import { SchemaTransformFunc } from "./types/types"
+import { AsyncApiNodeJsoPropertyValueType, AsyncApiNodeJsoPropertyValueTypes } from "@apihub/next-data-model/model/async-api/types/node-value-type"
 
 export const inlineJsoPropertyParameters: SchemaTransformFunc<AsyncApiTreeCrawlState> = (key, value) => {
+  const valueType = getValueType(value)
+  const isPrimitive = isPrimitiveValue(valueType)
   return {
     title: typeof key === 'symbol' ? key.toString() : `${key}`,
     value: value,
     valueType: getValueType(value),
+    isPrimitive: isPrimitive,
   }
 }
 
-function getValueType(value: unknown): string {
+function isPrimitiveValue(valueType: AsyncApiNodeJsoPropertyValueType): boolean {
+  return (
+    valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA && 
+    valueType !== AsyncApiNodeJsoPropertyValueTypes.OBJECT
+  )
+}
+
+function getValueType(value: unknown): AsyncApiNodeJsoPropertyValueType {
   if (typeof value === 'string') {
-    return 'string'
+    return AsyncApiNodeJsoPropertyValueTypes.STRING
   }
   if (typeof value === 'number') {
-    return 'number'
+    return AsyncApiNodeJsoPropertyValueTypes.NUMBER
   }
   if (typeof value === 'boolean') {
-    return 'boolean'
+    return AsyncApiNodeJsoPropertyValueTypes.BOOLEAN
   }
   if (typeof value === 'object' && value !== null) {
     if (Array.isArray(value)) {
-      return 'array'
+      return AsyncApiNodeJsoPropertyValueTypes.ARRAY
     }
     if (isJsonSchema(value)) {
-      return 'jsonSchema'
+      return AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA
     }
     if (isMultiSchema(value)) {
-      return 'multiSchema'
+      return AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
     }
-    return 'object'
+    return AsyncApiNodeJsoPropertyValueTypes.OBJECT
   }
-  return 'unknown'
+  return AsyncApiNodeJsoPropertyValueTypes.UNKNOWN
 }
 
 function isJsonSchema(value: unknown): boolean {

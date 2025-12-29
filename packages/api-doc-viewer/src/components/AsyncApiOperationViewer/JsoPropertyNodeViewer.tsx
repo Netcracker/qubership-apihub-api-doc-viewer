@@ -1,23 +1,26 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { isJsoPropertyNode } from "@apihub/utils/async-api/node-type-checkers"
+import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
 import { FC, useCallback, useState } from "react"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
-import { TitleRow } from "./TitleRow"
-import { isObject } from "@netcracker/qubership-apihub-json-crawl"
-import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { TitleRow, TitleVariant } from "./TitleRow"
 
 type JsoPropertyNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>
   expandable: boolean
   expanded?: boolean
-  level: number
+  titleVariant?: TitleVariant
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
-  const { node, expandable, expanded: initialExpanded, level } = props
+  const { node, expandable, expanded: initialExpanded, titleVariant = TitleVariant.h3 } = props
 
   const displayMode = useDisplayMode()
+  const level = useLevelContext()
 
   const [expanded, setExpanded] = useState(initialExpanded ?? false)
   const onClickExpander = useCallback(() => {
@@ -57,6 +60,8 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     )
   }
 
+  const childrenProperties = node.childrenNodes()
+
   return (
     <div className="flex flex-col gap-3">
       <TitleRow
@@ -64,14 +69,40 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        level={level}
-        variant='h3'
+        variant={titleVariant}
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        subheader={(layoutSide) => {
+          switch (nodeValue?.valueType) {
+            case 'string':
+            case 'number':
+            case 'boolean':
+              return (
+                <span className="text-slate-500 text-xs">
+                  {`${nodeValue?.value}`}
+                </span>
+              )
+          }
+          return <></>
+        }}
       />
-      {expanded && (
-        <div>
-          Here will be content
-        </div>
-      )}
+      {expanded && childrenProperties.map(childProperty => {
+        if (!isJsoPropertyNode(childProperty)) {
+          return null
+        }
+        const childNodeValue = childProperty.value()
+        const nextLevel = level + 1
+        return (
+          <LevelContext.Provider value={nextLevel}>
+            <JsoPropertyNodeViewer
+              key={childProperty.id}
+              node={childProperty}
+              expandable={childNodeValue?.isPrimitive ?? false}
+              expanded={expanded}
+              titleVariant={titleVariant}
+            />
+          </LevelContext.Provider>
+        )
+      })}
     </div>
   )
 }

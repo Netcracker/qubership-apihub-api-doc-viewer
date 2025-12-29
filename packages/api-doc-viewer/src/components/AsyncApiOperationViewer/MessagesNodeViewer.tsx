@@ -3,17 +3,16 @@ import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useCallback, useEffect, useState } from "react"
+import { MessageNodeViewer } from "./MessageNodeViewer"
 import { MessageSelector } from "./MessageSelector/MessageSelector"
 import { TitleRow } from "./TitleRow"
-import { MessageNodeViewer } from "./MessageNodeViewer"
 
 type MessagesNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES>
-  level: number
 }
 
 export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
-  const { node, level } = props
+  const { node } = props
 
   const [selectedMessage, setSelectedMessage] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE> | null>(null)
   const messages: AsyncApiTreeNode[] = node.nestedNodes()
@@ -40,7 +39,6 @@ export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
         value='Messages'
         expandable={false}
         expanded={true}
-        level={level}
         variant='h2'
         subheader={titleRowSubheader}
       />

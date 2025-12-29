@@ -38,6 +38,7 @@ export type AsyncApiTreeNodeValueTypeBinding = AsyncApiTreeNodeValueBase & {
 export type AsyncApiTreeNodeValueTypeJsoProperty = AsyncApiTreeNodeValueBase & {
   readonly value: unknown
   readonly valueType: AsyncApiNodeJsoPropertyValueType
+  readonly isPrimitive: boolean
 }
 
 export type AsyncApiTreeNodeValueTypeChannel = AsyncApiTreeNodeValueBase

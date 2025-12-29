@@ -142,10 +142,7 @@ const KAFKA_E2E_SOURCE = {
           $ref: "#/components/schemas/HeadersExample"
         },
         payload: {
-          schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
-          schema: {
-            $ref: "#/components/schemas/BaseEvent"
-          }
+          $ref: "#/components/schemas/BaseEvent"
         },
         description: "Base event to describe Customer's data changes",
         name: "BaseEventMessage",

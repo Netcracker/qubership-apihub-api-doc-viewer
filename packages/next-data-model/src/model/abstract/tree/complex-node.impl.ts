@@ -44,7 +44,7 @@ export class ComplexTreeNode<
     return nestedNode?.value() ?? null;
   }
 
-  public children(nestedNodeId?: NodeId) {
+  public childrenNodes(nestedNodeId?: NodeId) {
     const nestedNode = this.findNestedNode(nestedNodeId, true);
     return nestedNode?.childrenNodes() ?? [];
   }

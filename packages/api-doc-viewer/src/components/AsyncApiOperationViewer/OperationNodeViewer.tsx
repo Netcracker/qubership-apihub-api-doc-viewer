@@ -33,7 +33,6 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       <TitleRow
         value={value?.title ?? node.key.toString() ?? 'No title'}
         expandable={false}
-        level={0}
         variant='h1'
       />
       <AddressRow
@@ -44,7 +43,6 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
         value={value?.description ?? ''}
         // fontSize='base'
         // disablePaddingLeft={true}
-        level={0}
         layoutMode={layoutMode}
       />
       <OperationChildrenViewer
@@ -65,13 +63,13 @@ const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
     <div className="flex flex-col gap-1">
       {children.map(child => {
         if (isBindingsNode(child)) {
-          return <BindingsNodeViewer key={child.key} node={child} relatedTo={AsyncApiTreeNodeKinds.OPERATION} level={0} />
+          return <BindingsNodeViewer key={child.key} node={child} relatedTo={AsyncApiTreeNodeKinds.OPERATION} />
         }
         if (isChannelNode(child)) {
-          return <ChannelNodeViewer key={child.key} node={child} level={0} />
+          return <ChannelNodeViewer key={child.key} node={child} />
         }
         if (isMessagesNode(child)) {
-          return <MessagesNodeViewer key={child.key} node={child} level={0} />
+          return <MessagesNodeViewer key={child.key} node={child} />
         }
         return null
       })}

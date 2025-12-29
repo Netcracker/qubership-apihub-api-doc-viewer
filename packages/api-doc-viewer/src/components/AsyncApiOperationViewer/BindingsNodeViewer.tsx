@@ -1,15 +1,16 @@
+import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
-import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isBindingNode, isJsoPropertyNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { BindingSelector } from "./BindingSelector/BindingSelector";
-import { TitleRow } from "./TitleRow";
+import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer";
+import { TitleRow, TitleVariant } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
   relatedTo: AsyncApiTreeNodeKind
-  level: number
 }
 
 const DEFAULT_SECTION_TITLE = 'Bindings'
@@ -22,16 +23,19 @@ const SECTION_TITLE_MAP: Map<AsyncApiTreeNodeKind | null, string> = new Map([
 ])
 
 export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
-  const { node, relatedTo, level } = props
+  const { node, relatedTo } = props
+
+  const level = useLevelContext()
 
   const [expanded, setExpanded] = useState(true)
   const onClickExpander = useCallback(() => {
     setExpanded(prev => !prev)
   }, [])
 
+  const [selectedBinding, setSelectedBinding] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null>(null)
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
-  const [selectedBinding, setSelectedBinding] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null>(null)
+  const bindingChildren: AsyncApiTreeNode[] = node.childrenNodes(selectedBinding?.id)
 
   useEffect(() => {
     if (bindingSelectorOptions.length > 0 && selectedBinding === null) {
@@ -55,15 +59,27 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         expandable={true}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        level={level}
         variant='h3'
         subheader={titleRowSubheader}
       />
-      {expanded && (
-        <div>
-          There will be JsoViewer to display bindings content.
-        </div>
-      )}
+      {expanded && bindingChildren.map(bindingChild => {
+        if (!isJsoPropertyNode(bindingChild)) {
+          return null
+        }
+        const bindingChildValue = bindingChild.value()
+        const nextLevel = level + 1
+        return (
+          <LevelContext.Provider value={nextLevel}>
+            <JsoPropertyNodeViewer
+              key={bindingChild.id}
+              node={bindingChild}
+              expandable={bindingChildValue?.isPrimitive ?? false}
+              expanded={true}
+              titleVariant={TitleVariant.h4}
+            />
+          </LevelContext.Provider>
+        )
+      })}
     </div>
   )
 }

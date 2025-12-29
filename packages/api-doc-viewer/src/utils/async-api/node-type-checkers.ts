@@ -48,3 +48,9 @@ export function isBindingNode(
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> {
   return node.kind === AsyncApiTreeNodeKinds.BINDING;
 }
+
+export function isJsoPropertyNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY> {
+  return node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY;
+}

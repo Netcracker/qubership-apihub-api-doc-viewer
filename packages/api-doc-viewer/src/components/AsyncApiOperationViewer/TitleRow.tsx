@@ -1,4 +1,5 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import type { Diff } from "@netcracker/qubership-apihub-api-diff"
@@ -6,13 +7,14 @@ import { FC, memo, ReactElement, useMemo } from "react"
 import { Expander } from "./Expander"
 import { LevelIndicator } from "./LevelIndicator"
 
-const TitleVariant = {
+export const TitleVariant = {
   h1: 'h1',
   h2: 'h2',
   h3: 'h3',
+  h4: 'h4',
   body: 'body',
 } as const
-type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant]
+export type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant]
 
 type TitleRowProps = {
   value?: string // Document Mode
@@ -20,7 +22,6 @@ type TitleRowProps = {
   expandable: boolean
   expanded?: boolean
   onClickExpander?: () => void
-  level: number
   variant: TitleVariant
   subheader?: (layoutSide: LayoutSide) => ReactElement
 }
@@ -44,7 +45,9 @@ type TitleRowContentProps = TitleRowProps & {
 }
 
 const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { expandable, expanded, onClickExpander, level, layoutSide, subheader } = props
+  const { expandable, expanded, onClickExpander, layoutSide, subheader } = props
+
+  const level = useLevelContext()
 
   const layoutMode = useLayoutMode()
   const isSideBySideDiffsLayoutMode = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
@@ -72,10 +75,11 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
   )
 })
 
-const FONT_SIZE_MAP: Record<TitleVariant, string> = {
-  [TitleVariant.h1]: 'text-xl',
-  [TitleVariant.h2]: 'text-lg',
-  [TitleVariant.h3]: 'text-base',
+const FONT_STYLES_MAP: Record<TitleVariant, string> = {
+  [TitleVariant.h1]: 'text-xl font-bold',
+  [TitleVariant.h2]: 'text-lg font-bold',
+  [TitleVariant.h3]: 'text-base font-bold',
+  [TitleVariant.h4]: 'text-xs font-bold',
   [TitleVariant.body]: 'text-xs',
 }
 
@@ -86,8 +90,7 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
 
   const classes = useMemo(() => ([
     'font-Inter-Medium',
-    FONT_SIZE_MAP[variant],
-    variant !== TitleVariant.body ? 'font-bold' : '',
+    FONT_STYLES_MAP[variant],
     expandable ? 'hover:cursor-pointer' : '',
   ].join(' ')), [expandable, variant])
 

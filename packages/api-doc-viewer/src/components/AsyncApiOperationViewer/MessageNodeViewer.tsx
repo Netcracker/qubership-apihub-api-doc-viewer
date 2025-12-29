@@ -35,21 +35,18 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         <BindingsNodeViewer
           node={bindingsChild}
           relatedTo={AsyncApiTreeNodeKinds.MESSAGE}
-          level={1}
         />
       )}
       {headersChild && (
         <JsoPropertyNodeViewer
           node={headersChild}
           expandable={true}
-          level={1}
         />
       )}
       {payloadChild && (
         <JsoPropertyNodeViewer
           node={payloadChild}
           expandable={true}
-          level={1}
         />
       )}
     </div>

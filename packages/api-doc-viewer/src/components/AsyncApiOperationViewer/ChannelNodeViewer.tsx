@@ -1,4 +1,5 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
@@ -7,12 +8,12 @@ import { TitleRow } from "./TitleRow"
 
 type ChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
-  level: number
 }
 
 export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
-  const { node, level } = props
+  const { node } = props
   
+  const level = useLevelContext()
   const layoutMode = useLayoutMode()
 
   const value = node.value()
@@ -28,15 +29,14 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
         value={sectionTitle}
         expandable={false}
         expanded={true}
-        level={level}
         variant='h2'
       />
       <DescriptionRow
         value={value?.description ?? ''}
         // fontSize='base'
         // disablePaddingLeft={true}
-        level={level}
         layoutMode={layoutMode}
+        level={level}
       />
     </div>
   )

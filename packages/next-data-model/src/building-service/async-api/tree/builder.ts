@@ -7,7 +7,7 @@ import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-d
 import { AsyncApiNodeJsoPropertyValueType, AsyncApiNodeJsoPropertyValueTypesList } from "@apihub/next-data-model/model/async-api/types/node-value-type";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes } from "../../../model/abstract/tree/tree-node.interface";
+import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject, isString } from "../../../utilities";
 import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
@@ -258,6 +258,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         parent.addChildNode(treeNode);
       }
 
+      if (isObject(value) && value.isPrimitive) {
+        // Prevent from falling into infinite loop due to transformed primitives into objects
+        return { done: true };
+      }
+
       const newCache = new Map(state.alreadyConvertedValuesCache);
       newCache.set(value, treeNode);
 
@@ -349,30 +354,30 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       return null
     }
 
-    switch(kind) {
+    switch (kind) {
       case AsyncApiTreeNodeKinds.OPERATION:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>>(
-          value, 
+          value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
       case AsyncApiTreeNodeKinds.BINDING:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
-          value, 
+          value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
       case AsyncApiTreeNodeKinds.JSO_PROPERTY:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>>(
-          value, 
+          value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
       case AsyncApiTreeNodeKinds.CHANNEL:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>>(
-          value, 
+          value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
       case AsyncApiTreeNodeKinds.MESSAGE:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>>(
-          value, 
+          value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
       default:
