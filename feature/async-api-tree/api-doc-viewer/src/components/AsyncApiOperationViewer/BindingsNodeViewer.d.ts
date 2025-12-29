@@ -4,7 +4,6 @@ import { FC } from '../../../../../node_modules/react';
 type BindingsNodeViewerProps = {
     node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
     relatedTo: AsyncApiTreeNodeKind;
-    level: number;
 };
 export declare const BindingsNodeViewer: FC<BindingsNodeViewerProps>;
 export {};

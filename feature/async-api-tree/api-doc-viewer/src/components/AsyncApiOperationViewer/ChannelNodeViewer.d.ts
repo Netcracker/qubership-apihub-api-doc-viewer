@@ -3,7 +3,6 @@ import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/asy
 import { FC } from '../../../../../node_modules/react';
 type ChannelNodeViewerProps = {
     node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>;
-    level: number;
 };
 export declare const ChannelNodeViewer: FC<ChannelNodeViewerProps>;
 export {};

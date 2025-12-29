@@ -8,3 +8,4 @@ export declare function isHeadersNode(node: AsyncApiTreeNode): node is AsyncApiT
 export declare function isPayloadNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
 export declare function isBindingsNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
 export declare function isBindingNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>;
+export declare function isJsoPropertyNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
