@@ -5,6 +5,9 @@ import { inlineJsoPropertyParameters } from "../transformers/inline-jso-property
 
 export function getJsoCrawlRules(): CrawlRules<JsoCrawlRule> {
   return {
+    '/value': () => ({
+      '/*': () => getJsoCrawlRules(),
+    }),
     transformers: [inlineJsoPropertyParameters],
     kind: JsoTreeNodeKinds.PROPERTY,
   }

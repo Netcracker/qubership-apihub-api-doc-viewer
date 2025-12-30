@@ -47,15 +47,23 @@ import {
 } from "@netcracker/qubership-apihub-api-unifier"
 import { isObject } from "../../../../utilities"
 import { JsoTreeCrawlState } from "../state/types"
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value"
 
-export const inlineJsoPropertyParameters: SchemaTransformFunc<JsoTreeCrawlState> = (key, value) => {
+export const inlineJsoPropertyParameters: SchemaTransformFunc<JsoTreeCrawlState> = (key, value): JsoTreeNodeValue => {
   const valueType = getValueType(value)
   const isPrimitive = isPrimitiveValue(valueType)
   return {
-    title: typeof key === 'symbol' ? key.toString() : `${key}`,
+    title:
+      key === undefined || key === null
+        ? ''
+        : typeof key === 'symbol'
+          ? key.toString()
+          : `${key}`,
     value: value,
     valueType: getValueType(value),
     isPrimitive: isPrimitive,
+    isArrayItem: typeof key === 'number' && key >= 0,
+    isPredefinedValueSet: valueType === JsoPropertyValueTypes.BOOLEAN || valueType === JsoPropertyValueTypes.NULL,
   }
 }
 
@@ -63,7 +71,8 @@ function isPrimitiveValue(valueType: JsoPropertyValueType): boolean {
   return (
     valueType !== JsoPropertyValueTypes.JSON_SCHEMA &&
     valueType !== JsoPropertyValueTypes.MULTI_SCHEMA &&
-    valueType !== JsoPropertyValueTypes.OBJECT
+    valueType !== JsoPropertyValueTypes.OBJECT &&
+    valueType !== JsoPropertyValueTypes.ARRAY
   )
 }
 
@@ -77,7 +86,10 @@ function getValueType(value: unknown): JsoPropertyValueType {
   if (typeof value === 'boolean') {
     return JsoPropertyValueTypes.BOOLEAN
   }
-  if (typeof value === 'object' && value !== null) {
+  if (typeof value === 'object') {
+    if (value === null) {
+      return JsoPropertyValueTypes.NULL
+    }
     if (Array.isArray(value)) {
       return JsoPropertyValueTypes.ARRAY
     }

@@ -35,7 +35,7 @@ export class JsoTreeBuilder extends TreeBuilder<
   public readonly tree: JsoTree;
 
   private static readonly JSO_TREE_NODE_VALUE_PROPS: (keyof JsoTreeNodeValueBase)[] = [
-    'value', 'valueType', 'isPrimitive', 'isArrayItem', 'isPredefinedValueSet'
+    'title', 'value', 'valueType', 'isPrimitive', 'isArrayItem', 'isPredefinedValueSet'
   ]
 
   constructor(
@@ -274,7 +274,7 @@ export class JsoTreeBuilder extends TreeBuilder<
     if (value === undefined || value === null) {
       return null
     }
-    
+
     if (!isObject(value)) {
       return null
     }
