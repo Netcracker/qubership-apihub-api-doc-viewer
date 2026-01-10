@@ -1,4 +1,4 @@
-import{j as T}from"./_commonjs-dynamic-modules-6308e768.js";import{c as W,P as z,D as N,s as H,S as V,a as Y}from"./ErrorBoundaryFallback-9d599c59.js";import{g as J,r as Z}from"./index-f46741a2.js";import{G as nn}from"./GraphQLOperationDiffViewer-61d3c4c4.js";import{b as R}from"./graph-api-transformers-9f9eeea0.js";const D="openapi",vn="graphql",en=["3.0.0","3.0.0"],E=(s,r)=>{const a=/^openapi:\s*.*$/m;if(!a.test(s))throw new Error('Invalid OpenAPI sample: missing root "openapi" field');return s.replace(a,`openapi: ${r}`)},tn=(s,r)=>{const a=`${D}/${s}/${r}`;if(!M.has(a))throw new Error(`Unknown compatibility suite case: (${D}, ${s}, ${r})`);const p=X.get(a);return p?p.versionPairs:[en]},sn=(s,r,a,p)=>{const i=`${s}/${r}/${a}`,m=M.get(i);if(!m)return["",""];if(s!==D){if(p!==void 0)throw new Error(`openApiVersionPair is supported only for OpenAPI cases: (${s}, ${r}, ${a})`);return[m.before,m.after]}if(p===void 0)return[m.before,m.after];if(!tn(r,a).some(b=>b[0]===p[0]&&b[1]===p[1]))throw new Error(`Unsupported OpenAPI version pair [${p[0]}, ${p[1]}] for case (${s}, ${r}, ${a})`);return X.has(i)?[E(m.before,p[0]),E(m.after,p[1])]:[m.before,m.after]},M=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
+import{j as T}from"./_commonjs-dynamic-modules-6308e768.js";import{c as V,P as H,D as Q,s as Y,S as J,a as Z}from"./ErrorBoundaryFallback-9d599c59.js";import{g as nn,r as en}from"./index-f46741a2.js";import{G as tn}from"./GraphQLOperationDiffViewer-61d3c4c4.js";import{b as R}from"./graph-api-transformers-9f9eeea0.js";const N="openapi",sn="graphql",pn="/",M=(e,s,p)=>[e,s,p].join(pn),on=["3.0.0","3.0.0"],rn=["unversioned","unversioned"],an={[N]:{defaultPair:on,patchSamples:(e,s,p)=>[E(e,p[0]),E(s,p[1])]},[sn]:{defaultPair:rn}},X=e=>{const s=an[e];if(!s)throw new Error(`Unknown suiteType for VersionPairPolicy lookup: ${e}`);return s},C=(e,s)=>{var p;if(e===N)return(p=ln.get(s))==null?void 0:p.versionPairs},E=(e,s)=>{const p=/^openapi:\s*.*$/m;if(!p.test(e))throw new Error('Invalid OpenAPI sample: missing root "openapi" field');return e.replace(p,`openapi: ${s}`)},mn=(e,s,p)=>{const a=M(e,s,p);if(!k.has(a))throw new Error(`Unknown compatibility suite case: (${e}, ${s}, ${p})`);const r=X(e),m=C(e,a);return m||[r.defaultPair]},cn=(e,s,p,a)=>{const r=M(e,s,p),m=k.get(r);if(!m)return["",""];if(a===void 0)return[m.before,m.after];const h=X(e);if(!h.patchSamples)throw new Error(`specificationVersionPair is currently supported only for OpenAPI cases: (${e}, ${s}, ${p})`);if(!mn(e,s,p).some(x=>x[0]===a[0]&&x[1]===a[1]))throw new Error(`Unsupported specificationVersionPair [${a[0]}, ${a[1]}] for case (${e}, ${s}, ${p})`);return C(e,r)?h.patchSamples(m.before,m.after,a):[m.before,m.after]},k=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]
@@ -14293,10 +14293,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`,after:`openapi: 3.1.0
+          type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -14324,10 +14322,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`}],["openapi/parameters-schema/add-union-type",{before:`openapi: 3.1.0
+          type: string`}],["openapi/parameters-schema/add-union-type",{before:`openapi: 3.1.0
 info:
   title: Change to union type
   version: 1.0.0
@@ -20368,10 +20364,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`,after:`openapi: 3.1.0
+          type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -20399,10 +20393,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`}],["openapi/request-body-schema/add-union-type",{before:`openapi: 3.1.0
+          type: string`}],["openapi/request-body-schema/add-union-type",{before:`openapi: 3.1.0
 info:
   title: Change to union type
   version: 1.0.0
@@ -24480,11 +24472,9 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               petId:
                 type: integer
-                format: int64
-                example: 198772`,after:`openapi: 3.1.0
+                format: int64`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -24512,11 +24502,9 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               petId:
                 type: integer
-                format: int64
-                example: 198772`}],["openapi/request-body/change-overriden-description",{before:`openapi: 3.1.0
+                format: int64`}],["openapi/request-body/change-overriden-description",{before:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -24672,11 +24660,9 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               petId:
                 type: integer
-                format: int64
-                example: 198772`,after:`openapi: 3.1.0
+                format: int64`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -24703,11 +24689,9 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               petId:
                 type: integer
-                format: int64
-                example: 198772`}],["openapi/request/add-allowReserved-with-default-value-for-requestBody-parameter-encoding",{before:`openapi: 3.0.0
+                format: int64`}],["openapi/request/add-allowReserved-with-default-value-for-requestBody-parameter-encoding",{before:`openapi: 3.0.0
 info:
   title: test
   version: 0.1.0
@@ -26967,10 +26951,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`,after:`openapi: 3.1.0
+          type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -26997,10 +26979,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`}],["openapi/response-body-schema/add-union-type",{before:`openapi: 3.1.0
+          type: string`}],["openapi/response-body-schema/add-union-type",{before:`openapi: 3.1.0
 info:
   title: Change to union type
   version: 1.0.0
@@ -30723,10 +30703,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`,after:`openapi: 3.1.0
+          type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -30753,10 +30731,8 @@ components:
         id:
           type: integer
           format: int64
-          example: 10
         name:
-          type: string
-          example: doggie`}],["openapi/response-headers-schema/add-union-type",{before:`openapi: 3.1.0
+          type: string`}],["openapi/response-headers-schema/add-union-type",{before:`openapi: 3.1.0
 info:
   title: Change to union type
   version: 1.0.0
@@ -31306,10 +31282,8 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               name:
-                type: string
-                example: doggie`,after:`openapi: 3.1.0
+                type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -31342,10 +31316,8 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               name:
-                type: string
-                example: doggie`}],["openapi/response/add-required-attribute-with-default-value-for-header",{before:`openapi: 3.0.0
+                type: string`}],["openapi/response/add-required-attribute-with-default-value-for-header",{before:`openapi: 3.0.0
 info:
   title: test
   version: 0.1.0
@@ -31771,10 +31743,8 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               name:
-                type: string
-                example: doggie`,after:`openapi: 3.1.0
+                type: string`,after:`openapi: 3.1.0
 info:
   title: Swagger Petstore - OpenAPI 3.1
   version: 1.0.12
@@ -31806,10 +31776,8 @@ components:
               id:
                 type: integer
                 format: int64
-                example: 10
               name:
-                type: string
-                example: doggie`}],["openapi/response/remove-required-attribute-with-default-value-from-header",{before:`openapi: 3.0.0
+                type: string`}],["openapi/response/remove-required-attribute-with-default-value-from-header",{before:`openapi: 3.0.0
 info:
   title: test
   version: 0.1.0
@@ -32014,4 +31982,4 @@ paths:
         '200':
           description: changed value
           content: { }
-`}]]),X=new Map([["openapi/general-operation-parameters/add-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/add-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-inline-path-item-to-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-ref-path-item-to-inline",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/add-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-summary-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/remove-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/parameters-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}]]);var C={exports:{}};(function(s){(function(){function r(n,t){document.addEventListener?n.addEventListener("scroll",t,!1):n.attachEvent("scroll",t)}function a(n){document.body?n():document.addEventListener?document.addEventListener("DOMContentLoaded",function t(){document.removeEventListener("DOMContentLoaded",t),n()}):document.attachEvent("onreadystatechange",function t(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",t),n())})}function p(n){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(n)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function i(n,t){n.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+t+";"}function m(n){var t=n.g.offsetWidth,e=t+100;return n.j.style.width=e+"px",n.i.scrollLeft=e,n.h.scrollLeft=n.h.scrollWidth+100,n.l!==t?(n.l=t,!0):!1}function x(n,t){function e(){var c=h;m(c)&&c.g.parentNode!==null&&t(c.l)}var h=n;r(n.h,e),r(n.i,e),m(n)}function w(n,t,e){t=t||{},e=e||window,this.family=n,this.style=t.style||"normal",this.weight=t.weight||"normal",this.stretch=t.stretch||"normal",this.context=e}var I=null,b=null,F=null,A=null;function k(n){return b===null&&(L(n)&&/Apple/.test(window.navigator.vendor)?(n=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),b=!!n&&603>parseInt(n[1],10)):b=!1),b}function L(n){return A===null&&(A=!!n.document.fonts),A}function v(n,t){var e=n.style,h=n.weight;if(F===null){var c=document.createElement("div");try{c.style.font="condensed 100px sans-serif"}catch{}F=c.style.font!==""}return[e,h,F?n.stretch:"","100px",t].join(" ")}w.prototype.load=function(n,t){var e=this,h=n||"BESbswy",c=0,O=t||3e3,G=new Date().getTime();return new Promise(function($,Q){if(L(e.context)&&!k(e.context)){var U=new Promise(function(j,q){function f(){new Date().getTime()-G>=O?q(Error(""+O+"ms timeout exceeded")):e.context.document.fonts.load(v(e,'"'+e.family+'"'),h).then(function(g){1<=g.length?j():setTimeout(f,25)},q)}f()}),_=new Promise(function(j,q){c=setTimeout(function(){q(Error(""+O+"ms timeout exceeded"))},O)});Promise.race([_,U]).then(function(){clearTimeout(c),$(e)},Q)}else a(function(){function j(){var o;(o=y!=-1&&u!=-1||y!=-1&&d!=-1||u!=-1&&d!=-1)&&((o=y!=u&&y!=d&&u!=d)||(I===null&&(o=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),I=!!o&&(536>parseInt(o[1],10)||parseInt(o[1],10)===536&&11>=parseInt(o[2],10))),o=I&&(y==S&&u==S&&d==S||y==P&&u==P&&d==P||y==B&&u==B&&d==B)),o=!o),o&&(l.parentNode!==null&&l.parentNode.removeChild(l),clearTimeout(c),$(e))}function q(){if(new Date().getTime()-G>=O)l.parentNode!==null&&l.parentNode.removeChild(l),Q(Error(""+O+"ms timeout exceeded"));else{var o=e.context.document.hidden;(o===!0||o===void 0)&&(y=f.g.offsetWidth,u=g.g.offsetWidth,d=K.g.offsetWidth,j()),c=setTimeout(q,50)}}var f=new p(h),g=new p(h),K=new p(h),y=-1,u=-1,d=-1,S=-1,P=-1,B=-1,l=document.createElement("div");l.dir="ltr",i(f,v(e,"sans-serif")),i(g,v(e,"serif")),i(K,v(e,"monospace")),l.appendChild(f.g),l.appendChild(g.g),l.appendChild(K.g),e.context.document.body.appendChild(l),S=f.g.offsetWidth,P=g.g.offsetWidth,B=K.g.offsetWidth,q(),x(f,function(o){y=o,j()}),i(f,v(e,'"'+e.family+'",sans-serif')),x(g,function(o){u=o,j()}),i(g,v(e,'"'+e.family+'",serif')),x(K,function(o){d=o,j()}),i(K,v(e,'"'+e.family+'",monospace'))})})},s.exports=w})()})(C);var pn=C.exports;const on=J(pn),rn=Symbol("synthetic-title"),an={validate:!0,liftCombiners:!0,syntheticTitleFlag:rn,unify:!0,allowNotValidSyntheticChanges:!0},mn=(s,r)=>{const i=W(s,r,{...an,beforeSource:s,afterSource:r,mode:z,metaKey:N});return cn(i.merged)&&(i.merged.toJSON=()=>H(i.merged)),i};function cn(s){return s!=null&&typeof s=="object"}const ln=["Inter"],fn={diffsMetaKey:N,aggregatedDiffsMetaKey:Y};function yn({before:s,after:r}){const{merged:a}=mn(R(s),R(r)),[p,i]=Z.useState(!1),m=ln.map(x=>new on(x).load(null,1e4));return Promise.all(m).then(()=>{i(!0)}),p?T.jsx(nn,{layoutMode:V,metaKeys:fn,source:a}):T.jsx(T.Fragment,{})}function On(s,r,a){const[p,i]=sn(s,r,a);return{before:p,after:i}}yn.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{yn as G,vn as T,On as g};
+`}]]),ln=new Map([["openapi/general-operation-parameters/add-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/add-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-inline-path-item-to-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-ref-path-item-to-inline",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/headers/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/headers/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/operation-parameters/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/operation-parameters/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/add-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-summary-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/remove-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/parameters-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}]]);var U={exports:{}};(function(e){(function(){function s(n,o){document.addEventListener?n.addEventListener("scroll",o,!1):n.attachEvent("scroll",o)}function p(n){document.body?n():document.addEventListener?document.addEventListener("DOMContentLoaded",function o(){document.removeEventListener("DOMContentLoaded",o),n()}):document.attachEvent("onreadystatechange",function o(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",o),n())})}function a(n){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(n)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function r(n,o){n.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+o+";"}function m(n){var o=n.g.offsetWidth,t=o+100;return n.j.style.width=t+"px",n.i.scrollLeft=t,n.h.scrollLeft=n.h.scrollWidth+100,n.l!==o?(n.l=o,!0):!1}function h(n,o){function t(){var c=g;m(c)&&c.g.parentNode!==null&&o(c.l)}var g=n;s(n.h,t),s(n.i,t),m(n)}function F(n,o,t){o=o||{},t=t||window,this.family=n,this.style=o.style||"normal",this.weight=o.weight||"normal",this.stretch=o.stretch||"normal",this.context=t}var S=null,I=null,x=null,A=null;function _(n){return I===null&&(D(n)&&/Apple/.test(window.navigator.vendor)?(n=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),I=!!n&&603>parseInt(n[1],10)):I=!1),I}function D(n){return A===null&&(A=!!n.document.fonts),A}function v(n,o){var t=n.style,g=n.weight;if(x===null){var c=document.createElement("div");try{c.style.font="condensed 100px sans-serif"}catch{}x=c.style.font!==""}return[t,g,x?n.stretch:"","100px",o].join(" ")}F.prototype.load=function(n,o){var t=this,g=n||"BESbswy",c=0,O=o||3e3,L=new Date().getTime();return new Promise(function(G,$){if(D(t.context)&&!_(t.context)){var W=new Promise(function(j,q){function f(){new Date().getTime()-L>=O?q(Error(""+O+"ms timeout exceeded")):t.context.document.fonts.load(v(t,'"'+t.family+'"'),g).then(function(b){1<=b.length?j():setTimeout(f,25)},q)}f()}),z=new Promise(function(j,q){c=setTimeout(function(){q(Error(""+O+"ms timeout exceeded"))},O)});Promise.race([z,W]).then(function(){clearTimeout(c),G(t)},$)}else p(function(){function j(){var i;(i=y!=-1&&u!=-1||y!=-1&&d!=-1||u!=-1&&d!=-1)&&((i=y!=u&&y!=d&&u!=d)||(S===null&&(i=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),S=!!i&&(536>parseInt(i[1],10)||parseInt(i[1],10)===536&&11>=parseInt(i[2],10))),i=S&&(y==P&&u==P&&d==P||y==B&&u==B&&d==B||y==w&&u==w&&d==w)),i=!i),i&&(l.parentNode!==null&&l.parentNode.removeChild(l),clearTimeout(c),G(t))}function q(){if(new Date().getTime()-L>=O)l.parentNode!==null&&l.parentNode.removeChild(l),$(Error(""+O+"ms timeout exceeded"));else{var i=t.context.document.hidden;(i===!0||i===void 0)&&(y=f.g.offsetWidth,u=b.g.offsetWidth,d=K.g.offsetWidth,j()),c=setTimeout(q,50)}}var f=new a(g),b=new a(g),K=new a(g),y=-1,u=-1,d=-1,P=-1,B=-1,w=-1,l=document.createElement("div");l.dir="ltr",r(f,v(t,"sans-serif")),r(b,v(t,"serif")),r(K,v(t,"monospace")),l.appendChild(f.g),l.appendChild(b.g),l.appendChild(K.g),t.context.document.body.appendChild(l),P=f.g.offsetWidth,B=b.g.offsetWidth,w=K.g.offsetWidth,q(),h(f,function(i){y=i,j()}),r(f,v(t,'"'+t.family+'",sans-serif')),h(b,function(i){u=i,j()}),r(b,v(t,'"'+t.family+'",serif')),h(K,function(i){d=i,j()}),r(K,v(t,'"'+t.family+'",monospace'))})})},e.exports=F})()})(U);var fn=U.exports;const yn=nn(fn),un=Symbol("synthetic-title"),dn={validate:!0,liftCombiners:!0,syntheticTitleFlag:un,unify:!0,allowNotValidSyntheticChanges:!0},hn=(e,s)=>{const r=V(e,s,{...dn,beforeSource:e,afterSource:s,mode:H,metaKey:Q});return gn(r.merged)&&(r.merged.toJSON=()=>Y(r.merged)),r};function gn(e){return e!=null&&typeof e=="object"}const bn=["Inter"],vn={diffsMetaKey:Q,aggregatedDiffsMetaKey:Z};function On({before:e,after:s}){const{merged:p}=hn(R(e),R(s)),[a,r]=en.useState(!1),m=bn.map(h=>new yn(h).load(null,1e4));return Promise.all(m).then(()=>{r(!0)}),a?T.jsx(tn,{layoutMode:J,metaKeys:vn,source:p}):T.jsx(T.Fragment,{})}function Sn(e,s,p){const[a,r]=cn(e,s,p);return{before:a,after:r}}On.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{On as G,sn as T,Sn as g};
