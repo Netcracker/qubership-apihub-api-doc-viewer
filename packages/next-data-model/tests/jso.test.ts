@@ -64,11 +64,11 @@ describe('JSO Tree', () => {
         isStudent: true,
       }
     }
-    
+
     const builder = new JsoTreeBuilder(jso)
     const tree: JsoTree | undefined = builder.build()
     const root = tree?.root
-    
+
     expect(root).toBeDefined()
 
     const properties = root!.childrenNodes()
@@ -130,7 +130,7 @@ describe('JSO Tree', () => {
     const jso = {
       names: ['John', 'Jane', 'Jim'],
     }
-    
+
     const builder = new JsoTreeBuilder(jso)
     const tree: JsoTree | undefined = builder.build()
     const root = tree?.root
@@ -199,7 +199,7 @@ describe('JSO Tree', () => {
         }
       }
     }
-    
+
     const builder = new JsoTreeBuilder(jso)
     const tree: JsoTree | undefined = builder.build()
     const root = tree?.root
@@ -267,7 +267,7 @@ describe('JSO Tree', () => {
       isArrayItem: false,
       isPredefinedValueSet: false,
     })
-    
+
     const city = addressProperties.find(property => property.key === 'city')
     expect(city).toBeDefined()
     expect(city!.value()).toEqual({
@@ -277,6 +277,105 @@ describe('JSO Tree', () => {
       isPrimitive: true,
       isArrayItem: false,
       isPredefinedValueSet: false,
+    })
+  })
+
+  // JSON Schema
+
+  describe('Properties with kind = JSON Schema', () => {
+    function testJsonSchemaProperty(jso: { schema: Record<string, unknown> }) {
+      const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+      const root = tree?.root
+
+      expect(root).toBeDefined()
+
+      const schema = root!.childrenNodes().find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(0)
+
+      const schemaNested = schema!.nestedNodes()
+      expect(schemaNested).toHaveLength(0)
+    }
+
+    it('should build JSO tree from JSO with JSON Schema property (type = string)', () => {
+      const jso = {
+        schema: {
+          type: 'string',
+          format: 'email',
+          description: 'Email address',
+          examples: ['john.doe@example.com'],
+        }
+      }
+
+      testJsonSchemaProperty(jso)
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = number)', () => {
+      const jso = {
+        schema: {
+          type: 'number',
+          description: 'Age',
+          examples: [30],
+          minimum: 18,
+          maximum: 100,
+          multipleOf: 2,
+        }
+      }
+
+      testJsonSchemaProperty(jso)
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = boolean)', () => {
+      const jso = {
+        schema: {
+          type: 'boolean',
+          description: 'Is student',
+          examples: [false, true],
+          default: true,
+        }
+      }
+
+      testJsonSchemaProperty(jso)
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = object)', () => {
+      const jso = {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+        }
+      }
+
+      testJsonSchemaProperty(jso)
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = array)', () => {
+      const jso = {
+        schema: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Names',
+          examples: [['John', 'Jane', 'Jim']],
+          minItems: 3,
+          maxItems: 10,
+          uniqueItems: true,
+        }
+      }
+
+      testJsonSchemaProperty(jso)
     })
   })
 })

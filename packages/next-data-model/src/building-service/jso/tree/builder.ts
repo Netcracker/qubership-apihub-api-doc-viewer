@@ -4,6 +4,7 @@ import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/types/node-value";
+import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -183,7 +184,7 @@ export class JsoTreeBuilder extends TreeBuilder<
         parent.addChildNode(treeNode);
       }
 
-      if (isObject(value) && value.isPrimitive) {
+      if (isObject(value) && (value.isPrimitive || value.valueType === JsoPropertyValueTypes.JSON_SCHEMA)) {
         // Prevent from falling into infinite loop due to transformed primitives into objects
         return { done: true };
       }
