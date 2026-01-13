@@ -65,3 +65,18 @@ export const Cycled: Story = {
     })
   }
 }
+
+export const Extensions: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        format: 'date-time',
+        description: 'Date Time in Range',
+        'x-min-date': '2026-01-01',
+        'x-max-date': '2026-12-31',
+      }
+    })
+  }
+}

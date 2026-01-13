@@ -71,9 +71,9 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
     [expandedDepth, tree]
   )
 
-  // console.debug('Schema: ', schema)
-  // console.debug('Tree Model: ', tree)
-  // console.debug('State Model: ', state)
+  console.debug('Schema: ', schema)
+  console.debug('Tree Model: ', tree)
+  console.debug('State Model: ', state)
 
   const root = state.root
   let content = null
