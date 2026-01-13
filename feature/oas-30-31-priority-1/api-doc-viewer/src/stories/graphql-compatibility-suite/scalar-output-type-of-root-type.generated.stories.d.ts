@@ -8,7 +8,6 @@ export declare const AddEnumValueInOutputType: Story;
 export declare const AddListTypeForOutputType: Story;
 export declare const ChangeDescriptionForEnumValueInOutputType: Story;
 export declare const ChangeOutputType: Story;
-export declare const ChangeOutputTypeFromEnumToString: Story;
 export declare const DeleteDescriptionForEnumValueInOutputType: Story;
 export declare const MarkMandatoryOutputTypeAsOptional: Story;
 export declare const MarkOptionalOutputTypeAsMandatory: Story;

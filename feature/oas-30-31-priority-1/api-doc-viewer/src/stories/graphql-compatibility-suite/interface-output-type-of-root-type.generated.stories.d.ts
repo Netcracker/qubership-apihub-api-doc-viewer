@@ -8,7 +8,6 @@ export declare const AddDescriptionForOutputInterface: Story;
 export declare const AddEnumValueOfFieldInOutputInterface: Story;
 export declare const AddNewFieldInOutputInterface: Story;
 export declare const ChangeFieldTypeOfOutputInterface: Story;
-export declare const ChangeFieldTypeOfOutputInterfaceFromEnumToString: Story;
 export declare const DeleteDescriptionForFieldOfOutputInterface: Story;
 export declare const DeleteDescriptionOfOutputInterface: Story;
 export declare const MarkMandatoryFieldOfOutputInterfaceAsOptional: Story;
