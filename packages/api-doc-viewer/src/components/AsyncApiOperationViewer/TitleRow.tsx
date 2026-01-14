@@ -23,6 +23,7 @@ type TitleRowProps = {
   expanded?: boolean
   onClickExpander?: () => void
   variant: TitleVariant
+  enableMainHeader?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
 }
 
@@ -45,7 +46,7 @@ type TitleRowContentProps = TitleRowProps & {
 }
 
 const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { expandable, expanded, onClickExpander, layoutSide, subheader } = props
+  const { expandable, expanded, onClickExpander, layoutSide, enableMainHeader = true, subheader } = props
 
   const level = useLevelContext()
 
@@ -69,7 +70,7 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
           />
         </div>
       )}
-      <TitleRowValue {...props} />
+      {enableMainHeader && <TitleRowValue {...props} />}
       {subheader?.(layoutSide)}
     </div>
   )

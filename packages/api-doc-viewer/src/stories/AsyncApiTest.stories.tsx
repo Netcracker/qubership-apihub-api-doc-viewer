@@ -156,6 +156,28 @@ const KAFKA_E2E_SOURCE = {
             arr: [1, 2, 3],
             obj: {
               key: "value"
+            },
+            sch: {
+              type: "object",
+              properties: {
+                aaa: {
+                  type: "string",
+                  description: "AAA",
+                  minLength: 1,
+                  maxLength: 10
+                },
+                bbb: {
+                  type: "integer",
+                  description: "BBB",
+                  minimum: 1,
+                  maximum: 100
+                },
+                ccc: {
+                  type: "boolean",
+                  description: "CCC",
+                  default: true
+                }
+              }
             }
           }
         }

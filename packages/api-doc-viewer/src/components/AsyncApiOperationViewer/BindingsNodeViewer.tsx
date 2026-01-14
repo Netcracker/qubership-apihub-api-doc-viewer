@@ -31,8 +31,10 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
   const selectedBindingValue = selectedBinding?.value()
-  const bindingValue = selectedBindingValue?.binding ?? null
-  const bindingVersion = useMemo(() => selectedBindingValue?.version ?? null, [selectedBindingValue])
+  const {
+    version: bindingVersion = null,
+    binding: bindingValue = null,
+  } = selectedBindingValue ?? {}
 
   useEffect(() => {
     if (bindingSelectorOptions.length > 0 && selectedBinding === null) {

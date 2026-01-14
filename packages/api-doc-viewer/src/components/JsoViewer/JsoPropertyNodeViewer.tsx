@@ -1,5 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
@@ -27,6 +28,25 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   }, [])
 
   const nodeValue = node.value()
+
+  const subheader = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (layoutSide: LayoutSide) => {
+      switch (nodeValue?.valueType) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+          return (
+            <span className="text-slate-500 text-xs">
+              {`${nodeValue?.value}`}
+            </span>
+          )
+      }
+      return <></>
+    },
+    [nodeValue]
+  )
+
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = nodeValue.value
     return (
@@ -69,20 +89,8 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={titleVariant}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        subheader={(layoutSide) => {
-          switch (nodeValue?.valueType) {
-            case 'string':
-            case 'number':
-            case 'boolean':
-              return (
-                <span className="text-slate-500 text-xs">
-                  {`${nodeValue?.value}`}
-                </span>
-              )
-          }
-          return <></>
-        }}
+        enableMainHeader={!nodeValue?.isArrayItem}
+        subheader={subheader}
       />
       {expanded && childrenProperties.map(childProperty => {
         const childNodeValue = childProperty.value()
@@ -94,7 +102,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
           >
             <JsoPropertyNodeViewer
               node={childProperty}
-              expandable={childNodeValue?.isPrimitive ?? false}
+              expandable={!childNodeValue?.isPrimitive}
               expanded={expanded}
               titleVariant={titleVariant}
             />
