@@ -13,6 +13,7 @@ import { TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
 type JsoViewerProps = {
   source: object | null
   displayMode?: DisplayMode
+  initialLevel?: number
 }
 
 export const JsoViewer: FC<JsoViewerProps> =
@@ -25,7 +26,7 @@ export const JsoViewer: FC<JsoViewerProps> =
   })
 
 const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
-  const { source, displayMode = DEFAULT_DISPLAY_MODE } = props
+  const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0 } = props
 
   if (source === null) {
     return null
@@ -50,16 +51,18 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
   return (
     <DisplayModeContext.Provider value={displayMode}>
       <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
-        <LevelContext.Provider value={0}>
-          {jsoProperties.map(jsoProperty => (
-            <JsoPropertyNodeViewer
-              key={jsoProperty.id}
-              node={jsoProperty}
-              expandable={!jsoProperty.value()?.isPrimitive}
-              expanded={true}
-              titleVariant={TitleVariant.body}
-            />
-          ))}
+        <LevelContext.Provider value={initialLevel}>
+          <div data-testId='jso-viewer'>
+            {jsoProperties.map(jsoProperty => (
+              <JsoPropertyNodeViewer
+                key={jsoProperty.id}
+                node={jsoProperty}
+                expandable={!jsoProperty.value()?.isPrimitive}
+                expanded={true}
+                titleVariant={TitleVariant.body}
+              />
+            ))}
+          </div>
         </LevelContext.Provider>
       </LayoutModeContext.Provider>
     </DisplayModeContext.Provider>

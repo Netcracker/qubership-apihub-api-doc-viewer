@@ -68,6 +68,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       <JsoViewer
         source={bindingValue}
         displayMode={displayMode}
+        initialLevel={1}
       />
     </div>
   )

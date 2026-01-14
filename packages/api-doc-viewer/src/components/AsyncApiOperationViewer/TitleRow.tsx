@@ -93,6 +93,7 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
     'font-Inter-Medium',
     FONT_STYLES_MAP[variant],
     expandable ? 'hover:cursor-pointer' : '',
+    variant === TitleVariant.body ? 'py-1' : '',
   ].join(' ')), [expandable, variant])
 
   return (

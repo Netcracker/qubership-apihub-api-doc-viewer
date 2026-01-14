@@ -37,7 +37,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         case 'number':
         case 'boolean':
           return (
-            <span className="text-slate-500 text-xs">
+            <span className="text-slate-500 text-xs py-1">
               {`${nodeValue?.value}`}
             </span>
           )
@@ -82,7 +82,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   const childrenProperties = node.childrenNodes()
 
   return (
-    <div className="flex flex-col gap-3">
+    <div data-testId='jso-property-node-viewer' className="flex flex-col">
       <TitleRow
         value={capitalizeFirstLetter(node.key)}
         expandable={expandable}
