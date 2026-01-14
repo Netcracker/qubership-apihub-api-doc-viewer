@@ -4,8 +4,7 @@ export declare function isOperationNode(node: AsyncApiTreeNode): node is AsyncAp
 export declare function isChannelNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>;
 export declare function isMessagesNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES>;
 export declare function isMessageNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>;
-export declare function isHeadersNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
-export declare function isPayloadNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;
+export declare function isHeadersNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>;
+export declare function isPayloadNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>;
 export declare function isBindingsNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
 export declare function isBindingNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>;
-export declare function isJsoPropertyNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>;

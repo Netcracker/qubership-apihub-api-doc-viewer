@@ -16,6 +16,7 @@ type TitleRowProps = {
     expanded?: boolean;
     onClickExpander?: () => void;
     variant: TitleVariant;
+    enableMainHeader?: boolean;
     subheader?: (layoutSide: LayoutSide) => ReactElement;
 };
 export declare const TitleRow: FC<TitleRowProps>;
