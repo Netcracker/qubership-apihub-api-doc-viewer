@@ -34,8 +34,9 @@ export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValu
 }
 
 export interface AsyncApiTreeNodeValueTypeBinding {
-  readonly protocol: string
   readonly binding: Record<string, unknown>
+  readonly version: string
+  readonly protocol: string
 }
 
 export interface AsyncApiTreeNodeValueTypeJsoProperty extends AsyncApiTreeNodeValueBase {

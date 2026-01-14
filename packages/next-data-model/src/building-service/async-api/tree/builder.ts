@@ -94,8 +94,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>)[]
       case AsyncApiTreeNodeKinds.BINDING:
         return [
-          'protocol',
           'binding',
+          'version',
+          'protocol',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
       case AsyncApiTreeNodeKinds.CHANNEL:
         return AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]

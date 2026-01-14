@@ -6,8 +6,10 @@ export const inlineBindingParameters: SchemaTransformFunc<AsyncApiTreeCrawlState
   if (!isObject(value) || isArray(value)) {
     return value
   }
+  const { bindingVersion, ...restValue } = value
   return {
-    binding: value,
+    binding: restValue,
+    version: bindingVersion,
     protocol: typeof key === 'symbol' ? key.toString() : `${key}`,
   }
 }

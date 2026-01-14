@@ -30,7 +30,9 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const [selectedBinding, setSelectedBinding] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null>(null)
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
-  const bindingValue = selectedBinding?.value()?.binding ?? null
+  const selectedBindingValue = selectedBinding?.value()
+  const bindingValue = selectedBindingValue?.binding ?? null
+  const bindingVersion = useMemo(() => selectedBindingValue?.version ?? null, [selectedBindingValue])
 
   useEffect(() => {
     if (bindingSelectorOptions.length > 0 && selectedBinding === null) {
@@ -56,6 +58,11 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant='h3'
         subheader={titleRowSubheader}
       />
+      {bindingVersion && (
+        <span className='font-Inter-Medium font-bold text-sm'>
+          Version: {bindingVersion}
+        </span>
+      )}
       <JsoViewer
         source={bindingValue}
         displayMode={displayMode}
