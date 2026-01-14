@@ -1,9 +1,12 @@
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isBindingsNode, isHeadersNode, isPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
+import { TitleRow } from "./TitleRow"
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -11,6 +14,8 @@ type MessageNodeViewerProps = {
 
 export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const { node } = props
+
+  const displayMode = useDisplayMode()
 
   const messageValue = node.value()
   const messageDescription = messageValue?.description ?? ''
@@ -26,8 +31,8 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         <DescriptionRow
           value={messageDescription}
           level={1}
-          // fontSize='base'
-          // disablePaddingLeft={true}
+        // fontSize='base'
+        // disablePaddingLeft={true}
         />
       )}
       {bindingsChild && (
@@ -37,10 +42,30 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       {headersChild && (
-        null // TODO: There will be JSON Schema Viewer invocation here
+        <div className="flex flex-col gap-1">
+          <TitleRow
+            value="Headers"
+            variant="h3"
+            expandable={false}
+          />
+          <JsonSchemaViewer
+            schema={headersChild.value()?.schema}
+            displayMode={displayMode}
+          />
+        </div>
       )}
       {payloadChild && (
-        null // TODO: There will be JSON Schema Viewer invocation here
+        <div className="flex flex-col gap-1">
+          <TitleRow
+            value="Payload"
+            variant="h3"
+            expandable={false}
+          />
+          <JsonSchemaViewer
+            schema={payloadChild.value()?.schema}
+            displayMode={displayMode}
+          />
+        </div>
       )}
     </div>
   )

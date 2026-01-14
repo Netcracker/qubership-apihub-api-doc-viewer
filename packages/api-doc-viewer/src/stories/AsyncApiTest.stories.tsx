@@ -149,7 +149,14 @@ const KAFKA_E2E_SOURCE = {
         title: "BaseEvent",
         bindings: {
           kafka: {
-            bindingVersion: "0.5.0"
+            bindingVersion: "0.5.0",
+            num: 123,
+            str: "string",
+            bool: true,
+            arr: [1, 2, 3],
+            obj: {
+              key: "value"
+            }
           }
         }
       }

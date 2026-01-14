@@ -88,9 +88,11 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         const childNodeValue = childProperty.value()
         const nextLevel = level + 1
         return (
-          <LevelContext.Provider value={nextLevel}>
+          <LevelContext.Provider
+            key={childProperty.id}
+            value={nextLevel}
+          >
             <JsoPropertyNodeViewer
-              key={childProperty.id}
               node={childProperty}
               expandable={childNodeValue?.isPrimitive ?? false}
               expanded={expanded}

@@ -219,7 +219,7 @@ export class JsoTreeBuilder extends TreeBuilder<
     key: NodeKey,
     kind: JsoTreeNodeKind,
     complex: boolean,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>
+    params: TreeNodeParams<object | null, string, object>
   ): JsoSimpleTreeNode | JsoComplexTreeNode | undefined {
     const { parent, container, newDataLevel } = params
 
@@ -255,7 +255,7 @@ export class JsoTreeBuilder extends TreeBuilder<
 
   protected createNodeMeta(
     key: NodeKey,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>,
+    params: TreeNodeParams<object | null, string, object>,
   ): JsoTreeNodeMeta {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { value, parent = null } = params
@@ -268,7 +268,7 @@ export class JsoTreeBuilder extends TreeBuilder<
   protected createNodeValue(
     key: NodeKey,
     kind: JsoTreeNodeKind,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>,
+    params: TreeNodeParams<object | null, string, object>,
   ): JsoTreeNodeValue | null {
     const { value } = params
 
@@ -293,11 +293,11 @@ export class JsoTreeBuilder extends TreeBuilder<
     return isObject(value) && Object.keys(value).every(key => JsoTreeBuilder.JSO_TREE_NODE_VALUE_PROPS.includes(key as keyof JsoTreeNodeValueBase))
   }
 
-  private isJsoSimpleTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is JsoSimpleTreeNode {
+  private isJsoSimpleTreeNode(node: ITreeNode<object | null, string, object>): node is JsoSimpleTreeNode {
     return node.type === TreeNodeComplexityTypes.SIMPLE
   }
 
-  private isJsoComplexTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is JsoComplexTreeNode {
+  private isJsoComplexTreeNode(node: ITreeNode<object | null, string, object>): node is JsoComplexTreeNode {
     return !this.isJsoSimpleTreeNode(node)
   }
 }
