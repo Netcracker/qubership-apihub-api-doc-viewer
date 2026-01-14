@@ -1,10 +1,10 @@
-import { UnknownObject, NodeId, NodeKey } from "../../../utility-types";
+import { NodeId, NodeKey } from "../../../utility-types";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams } from "./tree-node.interface";
 
 export interface ITree<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > {
   root: ITreeNode<V, K, M> | null;
   nodes: Map<NodeId, ITreeNode<V, K, M>>;

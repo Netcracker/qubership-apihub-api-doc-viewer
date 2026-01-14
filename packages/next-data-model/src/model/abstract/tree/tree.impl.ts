@@ -1,13 +1,13 @@
-import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
+import { NodeId, NodeKey } from "../../../utility-types";
 import { ComplexTreeNode } from "./complex-node.impl";
 import { SimpleTreeNode } from "./simple-node.impl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams } from "./tree-node.interface";
 import { ITree } from "./tree.interface";
 
 export class Tree<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 >
   implements ITree<V, K, M> {
   public readonly nodes: Map<NodeId, ITreeNode<V, K, M>> = new Map()

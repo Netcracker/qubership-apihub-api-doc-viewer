@@ -4,9 +4,9 @@ import { isObject } from "../../../utilities";
 import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
 
 export abstract class TreeBuilder<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > {
   public readonly tree: ITree<V, K, M> | null = null;
 
@@ -37,10 +37,10 @@ export abstract class TreeBuilder<
 
   // Pick up arbitary props by keys
 
-  protected pick<TargetType extends UnknownObject>(
+  protected pick<TargetType extends object>(
     source: UnknownObject | null,
     keys: readonly (keyof TargetType)[],
-  ): Partial<TargetType> | null {
+  ): TargetType | null {
     if (!isObject(source)) {
       return null
     }
@@ -59,14 +59,14 @@ export abstract class TreeBuilder<
         target[keyStr] = value
       }
     }
-    return this.isPartialOf<TargetType>(target, keys) ? target : null
+    return this.isPartialOf<TargetType>(target, keys) ? target as TargetType : null
   }
 
-  protected isPartialOf<T extends UnknownObject>(
+  protected isPartialOf<T extends object>(
     obj: UnknownObject,
     keys: readonly (keyof T)[],
   ): obj is Partial<T> {
     // All keys in obj should be from the provided keys set
-    return Object.keys(obj).every(k => keys.includes(k))
+    return Object.keys(obj).every(k => keys.includes(k as keyof T))
   }
 }

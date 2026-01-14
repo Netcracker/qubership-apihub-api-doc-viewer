@@ -27,17 +27,9 @@ export function getAsyncApiCrawlRules(
       transformers: [defaultChannelAddressTransformer],
     }),
     '/bindings': {
-      '/*': {
-        '/protocol': { // Exclude synthetic property made by transformer
-          kind: undefined,
-          transformers: [],
-        },
-        '/**': () => ({
-          kind: AsyncApiTreeNodeKinds.JSO_PROPERTY,
-          transformers: [inlineJsoPropertyParameters],
-        }),
+      '/*': { // TODO: get rid of these sub-rules
         kind: AsyncApiTreeNodeKinds.BINDING,
-        transformers: [inlineBindingParameters],
+        transformers: [inlineBindingParameters], // TODO: should move all binding content into field "binding"
       },
       kind: AsyncApiTreeNodeKinds.BINDINGS,
       complex: true,

@@ -5,7 +5,7 @@ export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
   T extends typeof AsyncApiTreeNodeKinds.ROOT
   ? AsyncApiTreeNodeValueTypeRoot
   : T extends typeof AsyncApiTreeNodeKinds.OPERATION
-  ? AsyncApiTreeNodeValueOperation
+  ? AsyncApiTreeNodeValueTypeOperation
   : T extends typeof AsyncApiTreeNodeKinds.BINDING
   ? AsyncApiTreeNodeValueTypeBinding
   : T extends typeof AsyncApiTreeNodeKinds.JSO_PROPERTY
@@ -16,33 +16,34 @@ export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
   ? AsyncApiTreeNodeValueTypeMessage
   : never
 
-export type AsyncApiTreeNodeValueBase = {
+export interface AsyncApiTreeNodeValueBase {
   readonly title?: string
   readonly description?: string
   readonly summary?: string
 }
 
-export type AsyncApiTreeNodeValueTypeRoot = AsyncApiTreeNodeValueBase
+export interface AsyncApiTreeNodeValueTypeRoot extends AsyncApiTreeNodeValueBase {}
 
-export type AsyncApiTreeNodeValueOperation = AsyncApiTreeNodeValueBase & {
+export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValueBase {
   readonly title: string
   readonly description: string
   readonly action: string
   readonly address: string | null
 }
 
-export type AsyncApiTreeNodeValueTypeBinding = AsyncApiTreeNodeValueBase & {
+export interface AsyncApiTreeNodeValueTypeBinding {
   readonly protocol: string
+  readonly binding: Record<string, unknown>
 }
 
-export type AsyncApiTreeNodeValueTypeJsoProperty = AsyncApiTreeNodeValueBase & {
+export interface AsyncApiTreeNodeValueTypeJsoProperty extends AsyncApiTreeNodeValueBase {
   readonly value: unknown
   readonly valueType: AsyncApiNodeJsoPropertyValueType
   readonly isPrimitive: boolean
 }
 
-export type AsyncApiTreeNodeValueTypeChannel = AsyncApiTreeNodeValueBase
+export interface AsyncApiTreeNodeValueTypeChannel extends AsyncApiTreeNodeValueBase {}
 
-export type AsyncApiTreeNodeValueTypeMessage = AsyncApiTreeNodeValueBase & {
+export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase {
   readonly internalTitle: string
 }

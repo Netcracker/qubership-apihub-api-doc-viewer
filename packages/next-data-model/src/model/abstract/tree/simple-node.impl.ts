@@ -1,11 +1,11 @@
-import { UnknownObject, NodeId, NodeKey } from "../../../utility-types";
+import { NodeId, NodeKey } from "../../../utility-types";
 import { ComplexTreeNode } from "./complex-node.impl";
-import { ITreeNode, TreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes } from "./tree-node.interface";
+import { ITreeNode, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "./tree-node.interface";
 
 export class SimpleTreeNode<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > implements ITreeNode<V, K, M> {
 
   public readonly type: TreeNodeComplexityType

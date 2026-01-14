@@ -2,12 +2,12 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta"
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value"
 import { ITreeNode } from "../../../../model/abstract/tree/tree-node.interface"
-import { CrawlerIterationValue, UnknownObject } from "../../../../utility-types"
+import { CrawlerIterationValue } from "../../../../utility-types"
 
 export interface CommonState<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject> {
+  M extends object> {
   parent: ITreeNode<V, K, M> | null
   container: ITreeNode<V, K, M> | null
   alreadyConvertedValuesCache: Map<CrawlerIterationValue, ITreeNode<V, K, M>>

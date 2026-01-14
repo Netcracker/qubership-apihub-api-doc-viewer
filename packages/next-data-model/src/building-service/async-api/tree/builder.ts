@@ -8,8 +8,8 @@ import { AsyncApiNodeJsoPropertyValueType, AsyncApiNodeJsoPropertyValueTypesList
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
-import { isObject, isString } from "../../../utilities";
-import { NodeId, NodeKey, UnknownObject } from "../../../utility-types";
+import { isObject, isObjectWithStringKeys, isString } from "../../../utilities";
+import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
@@ -92,8 +92,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>)[]
       case AsyncApiTreeNodeKinds.BINDING:
         return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'protocol',
+          'binding',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
       case AsyncApiTreeNodeKinds.JSO_PROPERTY:
         return [
@@ -152,9 +152,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   /* Crawlhooks-builders */
 
   private instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop<
-    V extends UnknownObject | null,
+    V extends object | null,
     K extends string,
-    M extends UnknownObject,
+    M extends object,
   >(): SyncCrawlHook<
     CommonState<V, K, M>,
     SchemaCrawlRule<K, CommonState<V, K, M>>
@@ -197,9 +197,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   }
 
   private instantiateHookUnifyingValue<
-    V extends UnknownObject | null,
+    V extends object | null,
     K extends string,
-    M extends UnknownObject
+    M extends object
   >(
     source: unknown
   ): SyncCrawlHook<
@@ -293,7 +293,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     key: NodeKey,
     kind: AsyncApiTreeNodeKind,
     complex: boolean,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>
+    params: TreeNodeParams<object | null, string, object>
   ): AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode | undefined {
     const { parent, container, newDataLevel } = params
 
@@ -329,7 +329,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   protected createNodeMeta(
     key: NodeKey,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>,
+    params: TreeNodeParams<object | null, string, object>,
   ): AsyncApiNodeMeta {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { value, parent = null } = params
@@ -343,14 +343,14 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   protected createNodeValue(
     key: NodeKey,
     kind: AsyncApiTreeNodeKind,
-    params: TreeNodeParams<UnknownObject | null, string, UnknownObject>,
+    params: TreeNodeParams<object | null, string, object>,
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
 
     if (value === undefined || value === null) {
       return null
     }
-    if (!isObject(value)) {
+    if (!isObjectWithStringKeys(value)) {
       return null
     }
 
@@ -394,11 +394,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     return AsyncApiNodeJsoPropertyValueTypesList.some(allowedType => allowedType === maybeType)
   }
 
-  private isAsyncApiSimpleTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is AsyncApiSimpleTreeNode {
+  private isAsyncApiSimpleTreeNode(node: ITreeNode<object | null, string, object>): node is AsyncApiSimpleTreeNode {
     return node.type === TreeNodeComplexityTypes.SIMPLE
   }
 
-  private isAsyncApiComplexTreeNode(node: ITreeNode<UnknownObject | null, string, UnknownObject>): node is AsyncApiComplexTreeNode {
+  private isAsyncApiComplexTreeNode(node: ITreeNode<object | null, string, object>): node is AsyncApiComplexTreeNode {
     return !this.isAsyncApiSimpleTreeNode(node)
   }
 

@@ -1,4 +1,4 @@
-import { NodeId, NodeKey, UnknownObject } from "../../../utility-types"
+import { NodeId, NodeKey } from "../../../utility-types"
 
 export const TreeNodeComplexityTypes = {
   SIMPLE: 'simple',
@@ -7,9 +7,9 @@ export const TreeNodeComplexityTypes = {
 export type TreeNodeComplexityType = (typeof TreeNodeComplexityTypes)[keyof typeof TreeNodeComplexityTypes]
 
 export type TreeNodeParams<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > = {
   type?: TreeNodeComplexityType
   value: V | null
@@ -20,25 +20,25 @@ export type TreeNodeParams<
 }
 
 export type SimpleTreeNodeParams<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > = TreeNodeParams<V, K, M> & {
   type: typeof TreeNodeComplexityTypes.SIMPLE
 }
 
 export type ComplexTreeNodeParams<
-  V extends UnknownObject | null,
+  V extends object | null,
   K extends string,
-  M extends UnknownObject,
+  M extends object,
 > = TreeNodeParams<V, K, M> & {
   type: typeof TreeNodeComplexityTypes.COMPLEX
 }
 
 export interface ITreeNode<
-  V extends UnknownObject | null = UnknownObject | null,
+  V extends object | null = object | null,
   K extends string = string,
-  M extends UnknownObject = UnknownObject,
+  M extends object = object,
 > {
   id: NodeId
   key: NodeKey

@@ -7,7 +7,7 @@ export const inlineBindingParameters: SchemaTransformFunc<AsyncApiTreeCrawlState
     return value
   }
   return {
-    ...value,
+    binding: value,
     protocol: typeof key === 'symbol' ? key.toString() : `${key}`,
   }
 }
