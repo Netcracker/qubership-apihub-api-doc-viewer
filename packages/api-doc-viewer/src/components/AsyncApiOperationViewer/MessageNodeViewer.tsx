@@ -4,7 +4,6 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -38,16 +37,10 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       {headersChild && (
-        <JsoPropertyNodeViewer
-          node={headersChild}
-          expandable={true}
-        />
+        null // TODO: There will be JSON Schema Viewer invocation here
       )}
       {payloadChild && (
-        <JsoPropertyNodeViewer
-          node={payloadChild}
-          expandable={true}
-        />
+        null // TODO: There will be JSON Schema Viewer invocation here
       )}
     </div>
   )

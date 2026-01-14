@@ -8,12 +8,14 @@ export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
   ? AsyncApiTreeNodeValueTypeOperation
   : T extends typeof AsyncApiTreeNodeKinds.BINDING
   ? AsyncApiTreeNodeValueTypeBinding
-  : T extends typeof AsyncApiTreeNodeKinds.JSO_PROPERTY
-  ? AsyncApiTreeNodeValueTypeJsoProperty
   : T extends typeof AsyncApiTreeNodeKinds.CHANNEL
   ? AsyncApiTreeNodeValueTypeChannel
   : T extends typeof AsyncApiTreeNodeKinds.MESSAGE
   ? AsyncApiTreeNodeValueTypeMessage
+  : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
+  ? AsyncApiTreeNodeValueTypeMessageHeaders
+  : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
+  ? AsyncApiTreeNodeValueTypeMessagePayload
   : never
 
 export interface AsyncApiTreeNodeValueBase {
@@ -47,3 +49,12 @@ export interface AsyncApiTreeNodeValueTypeChannel extends AsyncApiTreeNodeValueB
 export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase {
   readonly internalTitle: string
 }
+
+export interface AsyncApiTreeNodeValueTypeMultiSchema extends AsyncApiTreeNodeValueBase {
+  readonly schema: object
+  readonly schemaFormat?: string
+}
+
+export interface AsyncApiTreeNodeValueTypeMessageHeaders extends AsyncApiTreeNodeValueTypeMultiSchema {}
+
+export interface AsyncApiTreeNodeValueTypeMessagePayload extends AsyncApiTreeNodeValueTypeMultiSchema {}

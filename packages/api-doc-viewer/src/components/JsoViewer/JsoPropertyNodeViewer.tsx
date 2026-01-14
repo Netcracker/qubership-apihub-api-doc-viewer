@@ -1,16 +1,15 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { isJsoPropertyNode } from "@apihub/utils/async-api/node-type-checkers"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
-import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
 import { FC, useCallback, useState } from "react"
+import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
-import { TitleRow, TitleVariant } from "./TitleRow"
 
 type JsoPropertyNodeViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>
+  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
   expandable: boolean
   expanded?: boolean
   titleVariant?: TitleVariant
@@ -86,9 +85,6 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         }}
       />
       {expanded && childrenProperties.map(childProperty => {
-        if (!isJsoPropertyNode(childProperty)) {
-          return null
-        }
         const childNodeValue = childProperty.value()
         const nextLevel = level + 1
         return (

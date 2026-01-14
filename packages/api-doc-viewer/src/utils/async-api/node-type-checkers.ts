@@ -27,14 +27,14 @@ export function isMessageNode(
 
 export function isHeadersNode(
   node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY> {
-  return node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY && node.key === 'headers';
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS && node.key === 'headers';
 }
 
 export function isPayloadNode(
   node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY> {
-  return node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY && node.key === 'payload';
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD && node.key === 'payload';
 }
 
 export function isBindingsNode(
@@ -47,10 +47,4 @@ export function isBindingNode(
   node: AsyncApiTreeNode
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> {
   return node.kind === AsyncApiTreeNodeKinds.BINDING;
-}
-
-export function isJsoPropertyNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY> {
-  return node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY;
 }

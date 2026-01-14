@@ -22,7 +22,6 @@ type AnyAsyncApiNodeValueKey =
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>;
 
@@ -58,7 +57,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       | typeof AsyncApiTreeNodeKinds.OPERATION
       | typeof AsyncApiTreeNodeKinds.BINDINGS
       | typeof AsyncApiTreeNodeKinds.BINDING
-      | typeof AsyncApiTreeNodeKinds.JSO_PROPERTY
       | typeof AsyncApiTreeNodeKinds.CHANNEL
       | typeof AsyncApiTreeNodeKinds.MESSAGE
   ): (keyof AsyncApiTreeNodeValue<
@@ -66,7 +64,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     | typeof AsyncApiTreeNodeKinds.OPERATION
     | typeof AsyncApiTreeNodeKinds.BINDINGS
     | typeof AsyncApiTreeNodeKinds.BINDING
-    | typeof AsyncApiTreeNodeKinds.JSO_PROPERTY
     | typeof AsyncApiTreeNodeKinds.CHANNEL
     | typeof AsyncApiTreeNodeKinds.MESSAGE
   >)[]
@@ -76,7 +73,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   ): (keyof AsyncApiTreeNodeValue<
     | typeof AsyncApiTreeNodeKinds.OPERATION
   >)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.JSO_PROPERTY): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.CHANNEL): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
   // General fallback signature
@@ -95,12 +91,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           'protocol',
           'binding',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
-      case AsyncApiTreeNodeKinds.JSO_PROPERTY:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-          'value', // TODO: No such field in raw spec!
-          'valueType', // TODO: No such field in raw spec!
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>)[]
       case AsyncApiTreeNodeKinds.CHANNEL:
         return AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
       case AsyncApiTreeNodeKinds.MESSAGE:
@@ -362,11 +352,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         )
       case AsyncApiTreeNodeKinds.BINDING:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.JSO_PROPERTY:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.JSO_PROPERTY>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )

@@ -1,12 +1,11 @@
-import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext";
+import { useLevelContext } from "@apihub/contexts/LevelContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
-import { isBindingNode, isJsoPropertyNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { BindingSelector } from "./BindingSelector/BindingSelector";
-import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer";
-import { TitleRow, TitleVariant } from "./TitleRow";
+import { TitleRow } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
@@ -62,24 +61,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant='h3'
         subheader={titleRowSubheader}
       />
-      {expanded && bindingChildren.map(bindingChild => {
-        if (!isJsoPropertyNode(bindingChild)) {
-          return null
-        }
-        const bindingChildValue = bindingChild.value()
-        const nextLevel = level + 1
-        return (
-          <LevelContext.Provider value={nextLevel}>
-            <JsoPropertyNodeViewer
-              key={bindingChild.id}
-              node={bindingChild}
-              expandable={bindingChildValue?.isPrimitive ?? false}
-              expanded={true}
-              titleVariant={TitleVariant.h4}
-            />
-          </LevelContext.Provider>
-        )
-      })}
+      {/* TODO: There will be JSO Viewer invocation here */}
     </div>
   )
 }
