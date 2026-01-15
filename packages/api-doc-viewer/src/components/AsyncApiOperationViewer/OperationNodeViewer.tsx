@@ -60,7 +60,7 @@ const OperationChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
   const { children } = props
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-5">
       {children.map(child => {
         if (isBindingsNode(child)) {
           return <BindingsNodeViewer key={child.key} node={child} relatedTo={AsyncApiTreeNodeKinds.OPERATION} />

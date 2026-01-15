@@ -39,6 +39,7 @@ export type JsonSchemaViewerProps = {
   displayMode?: DisplayMode
 } & PropsWithOverriddenKind & PropsWithTopLevelPropsMediaTypesMap & {
   customizationOptions?: CutomizationOptions
+  initialLevel?: number
 }
 
 export const JsonSchemaViewer: FC<JsonSchemaViewerProps> = (props) => {
@@ -59,6 +60,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
     topLevelPropsMediaTypes,
     // Integration with AsyncAPI (and OpenAPI in future)
     customizationOptions = {},
+    initialLevel = 0,
   } = props
 
   const tree = useMemo(
@@ -102,7 +104,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
     <CustomizationOptionsContext.Provider value={customizationOptions}>
       <TopLevelPropsMediaTypesContext.Provider value={topLevelPropsMediaTypes}>
         <DisplayModeContext.Provider value={displayMode}>
-          <LevelContext.Provider value={0}>
+          <LevelContext.Provider value={initialLevel}>
             {content}
           </LevelContext.Provider>
         </DisplayModeContext.Provider>

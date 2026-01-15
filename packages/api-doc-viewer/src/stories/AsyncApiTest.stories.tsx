@@ -178,6 +178,23 @@ const KAFKA_E2E_SOURCE = {
                   default: true
                 }
               }
+            },
+            nestedObj: {
+              obj: {
+                aaa: 1234,
+                bbb: true,
+                empty: null,
+                arr: [1, 2, 3],
+                sch: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    description: 'Array item',
+                    minLength: 1,
+                    maxLength: 10
+                  }
+                }
+              }
             }
           }
         }

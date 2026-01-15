@@ -5,6 +5,8 @@ import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
+import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useState } from "react"
 import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
@@ -15,6 +17,8 @@ type JsoPropertyNodeViewerProps = {
   expanded?: boolean
   titleVariant?: TitleVariant
 }
+
+const JSON_SCHEMA_VIEWER_OFFSET = -27
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
   const { node, expandable, expanded: initialExpanded, titleVariant = TitleVariant.h3 } = props
@@ -48,34 +52,42 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   )
 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
-    const schema = nodeValue.value
+    const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <JsonSchemaViewer
-        schema={schema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        customizationOptions={{
-          headerRowTitle: capitalizeFirstLetter(node.key),
-          // TODO 25.12.25 // Temporarily disabled
-          // headerRowFontSize: 'h3'
-        }}
-      />
+      <div style={{ marginLeft: JSON_SCHEMA_VIEWER_OFFSET }}> {/* This offset is WA until JSON Schema Viewer is uniformed with JSO Viewer */}
+        <JsonSchemaViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+            // TODO 25.12.25 // Temporarily disabled
+            // headerRowFontSize: 'h3'
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
+        />
+      </div>
     )
   }
 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
-    const schema = isObject(nodeValue.value) && 'schema' in nodeValue.value ? nodeValue.value.schema : undefined
+    const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <JsonSchemaViewer
-        schema={schema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        customizationOptions={{
-          headerRowTitle: capitalizeFirstLetter(node.key),
-          // TODO 25.12.25 // Temporarily disabled
-          // headerRowFontSize: 'h3'
-        }}
-      />
+      <div style={{ marginLeft: JSON_SCHEMA_VIEWER_OFFSET }}> {/* This offset is WA until JSON Schema Viewer is uniformed with JSO Viewer */}
+        <JsonSchemaViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+            // TODO 25.12.25 // Temporarily disabled
+            // headerRowFontSize: 'h3'
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
+        />
+      </div>
     )
   }
 
@@ -84,7 +96,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   return (
     <div data-testId='jso-property-node-viewer' className="flex flex-col">
       <TitleRow
-        value={capitalizeFirstLetter(node.key)}
+        value={`${node.key}`}
         expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
@@ -113,6 +125,15 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   )
 }
 
-function capitalizeFirstLetter(str: string | number) {
-  return str.toString().charAt(0).toUpperCase() + str.toString().slice(1)
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: JsoTreeNodeValueBase,
+): object | undefined {
+  if (nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
+    return undefined
+  }
+
+  return isObject(nodeValue.value)
+    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
+    : undefined
 }

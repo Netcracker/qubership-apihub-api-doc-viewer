@@ -77,8 +77,8 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
 })
 
 const FONT_STYLES_MAP: Record<TitleVariant, string> = {
-  [TitleVariant.h1]: 'text-xl font-bold',
-  [TitleVariant.h2]: 'text-lg font-bold',
+  [TitleVariant.h1]: 'text-3xl font-bold',
+  [TitleVariant.h2]: 'text-xl font-bold',
   [TitleVariant.h3]: 'text-base font-bold',
   [TitleVariant.h4]: 'text-xs font-bold',
   [TitleVariant.body]: 'text-xs',
