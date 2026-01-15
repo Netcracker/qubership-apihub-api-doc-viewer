@@ -48,6 +48,15 @@ export const Cycled: Story = {
         properties: {
           a: { $ref: '#/components/schemas/A' },
           b: { $ref: '#/components/schemas/A' },
+          c: {
+            type: 'string'
+          },
+          d: {
+            type: 'object',
+            properties: {
+              e: { type: 'number' }
+            }
+          }
         }
       },
       target: REQUEST_BODY_TARGET,

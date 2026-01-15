@@ -310,46 +310,48 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-col ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
-        <div className="flex flex-row relative">
-          <LevelIndicator level={level} />
-          {/* <NestingIndicator level={level} /> */}
-          <Expander
-            isRoot={isRoot}
-            isOperation={isOperation}
-            isExpandable={isExpandable}
-            expanded={expanded}
-            onToggleExpander={onToggleExpander}
-          // onToggleContextMenu={onToggleContextMenu}
-          />
-          <div className="flex flex-row items-center gap-2 pt-2 pb-1">
-            <div
-              className={`flex flex-row gap-2 text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}
-              onClick={isExpandable ? onToggleExpander : undefined}
-            // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
-            >
-              {method && (
-                <UxBadge
-                  text={method.toUpperCase()}
-                  colorSchema={OPERATION_METHOD_COLOR_SCHEMAS_MAP[method]}
-                />
-              )}
-              <NodeTitle
-                {...nodeTitleData}
-                showNullable={nullabilityPosition === NULLABILITY_POSITION_NODE}
-                // diffs
-                layoutMode={layoutMode}
-                layoutSide={layoutSide}
-                nullableChange={changeForNullable}
+      <div className={`flex flex-row gap-2 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+        {!isOperation && (
+          <div className="flex flex-row relative">
+            <LevelIndicator level={level} />
+            {/* <NestingIndicator level={level} /> */}
+            <Expander
+              isRoot={isRoot}
+              isOperation={isOperation}
+              isExpandable={isExpandable}
+              expanded={expanded}
+              onToggleExpander={onToggleExpander}
+              // onToggleContextMenu={onToggleContextMenu}
+            />
+          </div>
+        )}
+        <div className="flex flex-row items-center gap-2 pt-2 pb-1">
+          <div
+            className={`flex flex-row gap-2 text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}
+            onClick={isExpandable ? onToggleExpander : undefined}
+          // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
+          >
+            {method && (
+              <UxBadge
+                text={method.toUpperCase()}
+                colorSchema={OPERATION_METHOD_COLOR_SCHEMAS_MAP[method]}
               />
-            </div>
-            {!noSubHeader && <SubHeader />}
-            {/* <UxContextMenu
+            )}
+            <NodeTitle
+              {...nodeTitleData}
+              showNullable={nullabilityPosition === NULLABILITY_POSITION_NODE}
+              // diffs
+              layoutMode={layoutMode}
+              layoutSide={layoutSide}
+              nullableChange={changeForNullable}
+            />
+          </div>
+          {!noSubHeader && <SubHeader />}
+          {/* <UxContextMenu
               visible={contextMenuOpen}
               onClickAway={() => onToggleContextMenu({ open: false })}
               menuItems={contextMenuItems}
             /> */}
-          </div>
         </div>
       </div>
     )

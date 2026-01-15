@@ -19,7 +19,7 @@ import { DiffAction, DiffType } from '@netcracker/qubership-apihub-api-diff'
 import type { FC } from 'react'
 import { useCallback /*, useState */ } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../consts/changes'
-import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT } from '../../../../consts/configuration'
+import { DEFAULT_LAYOUT_MODE } from '../../../../consts/configuration'
 // import {
 //   COLLAPSE_ALL_MENU_ITEM,
 //   EXPAND_ALL_MENU_ITEM,
@@ -234,18 +234,20 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-row gap-2 ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
-        <div className="flex flex-row relative">
-          <LevelIndicator level={level} />
-          {/* <NestingIndicator level={level} /> */}
-          <Expander
-            isRoot={isRoot}
-            isExpandable={isExpandable}
-            expanded={expanded}
-            onToggleExpander={onToggleExpander}
-          // onToggleContextMenu={onToggleContextMenu}
-          />
-        </div>
+      <div className={`flex flex-row gap-2 ${width}`}>
+        {(!isRoot || isExpandable) && (
+          <div className="flex flex-row relative">
+            <LevelIndicator level={level} />
+            {/* <NestingIndicator level={level} /> */}
+            <Expander
+              isRoot={isRoot}
+              isExpandable={isExpandable}
+              expanded={expanded}
+              onToggleExpander={onToggleExpander}
+              // onToggleContextMenu={onToggleContextMenu}
+            />
+          </div>
+        )}
         <div className="flex flex-row items-center gap-2 pt-2 pb-1">
           <div
             className={[
