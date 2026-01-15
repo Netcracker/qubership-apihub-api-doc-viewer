@@ -30,9 +30,8 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       {messageDescription && (
         <DescriptionRow
           value={messageDescription}
-          level={1}
-        // fontSize='base'
-        // disablePaddingLeft={true}
+          level={0}
+          // fontSize='base'
         />
       )}
       {bindingsChild && (

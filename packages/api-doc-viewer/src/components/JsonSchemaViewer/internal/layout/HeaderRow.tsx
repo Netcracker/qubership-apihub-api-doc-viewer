@@ -234,7 +234,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-col ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-2 ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <div className="flex flex-row relative">
           <LevelIndicator level={level} />
           {/* <NestingIndicator level={level} /> */}
@@ -245,35 +245,35 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
             onToggleExpander={onToggleExpander}
           // onToggleContextMenu={onToggleContextMenu}
           />
-          <div className="flex flex-row items-center gap-2 pt-2 pb-1">
-            <div
-              className={[
-                `${!customizationOptions?.headerRowFontSize || customizationOptions?.headerRowFontSize === 'default' || !isRoot
-                  ? 'text-xs'
-                  : `text-${customizationOptions!.headerRowFontSize}`}`,
-                'text-black font-Inter-Medium',
-                isExpandable ? 'hover:cursor-pointer' : ''
-              ].join(' ')}
-              onClick={isExpandable ? onToggleExpander : undefined}
-            // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
-            >
-              <NodeTitle
-                {...nodeTitleData}
-                showRequired={true} // to BWC with GraphQL
-                // diffs
-                layoutMode={layoutMode}
-                layoutSide={layoutSide}
-                requiredChange={$metaChanges?.required}
-                titleChange={$nodeChange}
-              />
-            </div>
-            {!noSubHeader && <SubHeader />}
-            {/* <UxContextMenu
+        </div>
+        <div className="flex flex-row items-center gap-2 pt-2 pb-1">
+          <div
+            className={[
+              `${!customizationOptions?.headerRowFontSize || customizationOptions?.headerRowFontSize === 'default' || !isRoot
+                ? 'text-xs'
+                : `text-${customizationOptions!.headerRowFontSize}`}`,
+              'text-black font-Inter-Medium',
+              isExpandable ? 'hover:cursor-pointer' : ''
+            ].join(' ')}
+            onClick={isExpandable ? onToggleExpander : undefined}
+          // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
+          >
+            <NodeTitle
+              {...nodeTitleData}
+              showRequired={true} // to BWC with GraphQL
+              // diffs
+              layoutMode={layoutMode}
+              layoutSide={layoutSide}
+              requiredChange={$metaChanges?.required}
+              titleChange={$nodeChange}
+            />
+          </div>
+          {!noSubHeader && <SubHeader />}
+          {/* <UxContextMenu
               visible={contextMenuOpen}
               onClickAway={() => onToggleContextMenu({ open: false })}
               menuItems={contextMenuItems}
             /> */}
-          </div>
         </div>
       </div>
     )

@@ -72,7 +72,6 @@ export type DescriptionRowProps = PropsWithoutChangesSummary<
   {
     value: string
     fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' // TODO: Just a WA before the component is refactored
-    disablePaddingLeft?: boolean // TODO: Just a WA before the component is refactored
   } &
   PropsWithChanges
 >
@@ -82,7 +81,6 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     shift = false,
     value,
     fontSize = 'xs',
-    disablePaddingLeft = false,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -126,7 +124,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-row gap-5 ${disablePaddingLeft ? 'pl-0' : (shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT)} ${width}`}>
+      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         {/* <NestingIndicator level={level} /> */}
         <div className="text-xs font-normal py-1">

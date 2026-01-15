@@ -12,14 +12,14 @@ type ChannelNodeViewerProps = {
 
 export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
   const { node } = props
-  
+
   const level = useLevelContext()
   const layoutMode = useLayoutMode()
 
   const value = node.value()
 
   const sectionTitle = useMemo(
-    () => `Channel ${value?.title ?? node.key.toString() ?? ''}`.trim(), 
+    () => `Channel ${value?.title ?? node.key.toString() ?? ''}`.trim(),
     [value, node],
   )
 
@@ -34,7 +34,6 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
       <DescriptionRow
         value={value?.description ?? ''}
         // fontSize='base'
-        // disablePaddingLeft={true}
         layoutMode={layoutMode}
         level={level}
       />

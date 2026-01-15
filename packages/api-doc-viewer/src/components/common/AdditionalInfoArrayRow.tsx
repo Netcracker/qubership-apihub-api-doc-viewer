@@ -151,7 +151,7 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
     const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         {/* <NestingIndicator level={level}/> */}
         <div className="flex flex-row flex-wrap items-start gap-2 py-1">

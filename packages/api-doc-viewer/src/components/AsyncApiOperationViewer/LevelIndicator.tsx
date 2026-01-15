@@ -13,6 +13,7 @@ export const LevelIndicator: FC<LevelIndicatorProps> = (props) => {
   return (
     <div
       data-name="LevelIndicator"
+      className="pl-5"
       style={{
         display: 'flex',
         gap: 24,
