@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { GraphApiDiffTreeNode } from '../../../../../../../api-data-model/src';
-import type { FC } from '../../../../../../../../node_modules/react';
 import { IModelStatePropNode } from '../../../../../../../api-state-model/src';
+import type { FC } from '../../../../../../../../node_modules/react';
 import { NodeTitleData } from '../../../../../types/NodeTitleData';
 import { NodeTypeData } from '../../../../../types/NodeTypeData';
 import { PropsWithChanges } from '../../../../../types/internal/PropsWithChanges';

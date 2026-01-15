@@ -24,5 +24,6 @@ export type JsonSchemaViewerProps = {
     displayMode?: DisplayMode;
 } & PropsWithOverriddenKind & PropsWithTopLevelPropsMediaTypesMap & {
     customizationOptions?: CutomizationOptions;
+    initialLevel?: number;
 };
 export declare const JsonSchemaViewer: FC<JsonSchemaViewerProps>;

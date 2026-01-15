@@ -23,7 +23,6 @@ import { PropsWithoutChangesSummary } from "../../../../types/PropsWithoutChange
 export type DescriptionRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     value: string;
     fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
-    disablePaddingLeft?: boolean;
 } & PropsWithChanges>;
 export declare const DescriptionRow: FC<DescriptionRowProps>;
 type ValueProps = {
