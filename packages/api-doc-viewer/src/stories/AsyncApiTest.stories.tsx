@@ -176,6 +176,27 @@ const KAFKA_E2E_SOURCE = {
                   type: "boolean",
                   description: "CCC",
                   default: true
+                },
+                combinerSch: {
+                  oneOf: [
+                    {
+                      type: 'string',
+                      description: 'String',
+                      minLength: 1,
+                      maxLength: 10
+                    },
+                    {
+                      type: 'number',
+                      description: 'Number',
+                      minimum: 1,
+                      maximum: 100
+                    },
+                    {
+                      type: 'boolean',
+                      description: 'Boolean',
+                      default: true
+                    }
+                  ]
                 }
               }
             },
@@ -193,6 +214,27 @@ const KAFKA_E2E_SOURCE = {
                     minLength: 1,
                     maxLength: 10
                   }
+                },
+                combinerSch: {
+                  oneOf: [
+                    {
+                      type: 'string',
+                      description: 'String',
+                      minLength: 1,
+                      maxLength: 10
+                    },
+                    {
+                      type: 'object',
+                      properties: {
+                        aaa: {
+                          type: 'string',
+                          description: 'AAA',
+                          minLength: 1,
+                          maxLength: 10
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }

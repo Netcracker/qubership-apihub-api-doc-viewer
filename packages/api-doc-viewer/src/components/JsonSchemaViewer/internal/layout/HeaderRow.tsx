@@ -47,7 +47,6 @@ import {
   toChangesList
 } from '../../../../utils/common/changes'
 // import { defaultOnContextMenu } from '../../../../utils/common/event-handlers'
-import { NestingIndicator } from '../../../common/NestingIndicator'
 import { NodeTitle } from '../../../common/NodeTitle'
 import { NodeType } from '../../../common/NodeType'
 import { DiffBadge } from '../../../common/diffs/DiffBadge'
@@ -58,6 +57,7 @@ import { Expander } from '../../../common/layout/Expander/Expander'
 import { CircularRefIcon } from '../../../kit/icons/CircularRefIcon'
 // import { UxContextMenu } from '../../../kit/ux/UxContextMenu/UxContextMenu'
 // import { ToggleContextMenuHandlerOptions } from '../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler'
+import { LevelIndicator } from '@apihub/components/AsyncApiOperationViewer/LevelIndicator'
 import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { UxMarkerPanel } from '../../../kit/ux/UxMarkerPanel/UxMarkerPanel'
@@ -236,7 +236,8 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     return (
       <div className={`flex flex-col ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <div className="flex flex-row relative">
-          <NestingIndicator level={level} />
+          <LevelIndicator level={level} />
+          {/* <NestingIndicator level={level} /> */}
           <Expander
             isRoot={isRoot}
             isExpandable={isExpandable}

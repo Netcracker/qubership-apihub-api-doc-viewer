@@ -110,9 +110,23 @@ function isJsonSchema(value: unknown): boolean {
   }
 
   const hasFieldTypeFromJsonSchema = (
-    'type' in value &&
-    typeof value.type === 'string' &&
-    JSON_SCHEMA_NODE_TYPES.some(type => type === value.type)
+    (
+      JSON_SCHEMA_PROPERTY_TYPE in value &&
+      typeof value.type === 'string' &&
+      JSON_SCHEMA_NODE_TYPES.some(type => type === value.type)
+    ) || (
+      JSON_SCHEMA_PROPERTY_ONE_OF in value &&
+      Array.isArray(value.oneOf) &&
+      value.oneOf.every(item => isJsonSchema(item))
+    ) || (
+      JSON_SCHEMA_PROPERTY_ANY_OF in value &&
+      Array.isArray(value.anyOf) &&
+      value.anyOf.every(item => isJsonSchema(item))
+    ) || (
+      JSON_SCHEMA_PROPERTY_ALL_OF in value &&
+      Array.isArray(value.allOf) &&
+      value.allOf.every(item => isJsonSchema(item))
+    )
   )
   const JSON_SCHEMA_PROPERTY_KEYS = new Set([
     JSON_SCHEMA_PROPERTY_TITLE,

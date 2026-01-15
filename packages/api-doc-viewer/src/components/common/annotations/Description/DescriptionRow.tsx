@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
@@ -48,7 +49,6 @@ import {
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge';
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
-import { NestingIndicator } from '../../NestingIndicator';
 import './Description.css';
 
 const OVERFLOW_LINES_AMOUNT = 5
@@ -127,7 +127,8 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
     return (
       <div className={`flex flex-row gap-5 ${disablePaddingLeft ? 'pl-0' : (shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT)} ${width}`}>
-        <NestingIndicator level={level} />
+        <LevelIndicator level={level} />
+        {/* <NestingIndicator level={level} /> */}
         <div className="text-xs font-normal py-1">
           <Value
             value={value}

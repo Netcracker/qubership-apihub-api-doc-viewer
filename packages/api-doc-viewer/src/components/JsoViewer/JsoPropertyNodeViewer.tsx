@@ -18,7 +18,7 @@ type JsoPropertyNodeViewerProps = {
   titleVariant?: TitleVariant
 }
 
-const JSON_SCHEMA_VIEWER_OFFSET = -27
+const JSON_SCHEMA_VIEWER_OFFSET = -27 + 19
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
   const { node, expandable, expanded: initialExpanded, titleVariant = TitleVariant.h3 } = props
