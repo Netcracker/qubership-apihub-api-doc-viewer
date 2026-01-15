@@ -95,7 +95,7 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
     // FIXME 28.11.23 // Fix this component when it's clear how $changes for deprecation reason are provided not in enum
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         {/* <NestingIndicator level={level} /> */}
         <div className="inline-block py-1">
