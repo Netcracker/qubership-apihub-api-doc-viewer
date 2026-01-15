@@ -49,7 +49,7 @@ export const Expander: FC<ExpanderProps> = (props) => {
       {expanderElement && (
         <div
           data-name="ExpanderContainer"
-          className='flex flex-row items-center pt-1'
+          className='flex flex-row items-center pt-1.5'
           // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
         >
           {expanderElement}
