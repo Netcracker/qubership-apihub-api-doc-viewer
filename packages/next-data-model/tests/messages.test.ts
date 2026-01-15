@@ -232,17 +232,16 @@ describe('Cases with operation messages', () => {
       const messageChildrenNodes = messageNode!.childrenNodes()
       expect(messageChildrenNodes.length).toBe(1)
 
-      const headersNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      const headersNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
       expect(headersNode).toBeDefined()
       expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(headersNode!.key).toBe('headers')
-      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
 
       const headersNodeValue = headersNode!.value()
       expect(headersNodeValue)
         .toEqual({
-          title: "headers",
-          value: {
+          schema: {
             type: "object",
             properties: {
               'X-Correlation-Id': {
@@ -255,7 +254,7 @@ describe('Cases with operation messages', () => {
               }
             }
           },
-          valueType: 'jsonSchema',
+          schemaFormat: null,
         })
     })
 
@@ -335,35 +334,32 @@ describe('Cases with operation messages', () => {
       const messageChildrenNodes = messageNode!.childrenNodes()
       expect(messageChildrenNodes.length).toBe(1)
 
-      const payloadNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      const payloadNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode).toBeDefined()
       expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(payloadNode!.key).toBe('payload')
-      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
 
       const payloadNodeValue = payloadNode!.value()
       // TODO 19.12.25 // Now it fails because $ref to schema is not resolved
       expect(payloadNodeValue)
         .toEqual({
-          title: "payload",
-          value: {
-            schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
-            schema: {
-              type: "object",
-              properties: {
-                userId: {
-                  type: "string"
-                },
-                userName: {
-                  type: "string"
-                },
-                email: {
-                  type: "string"
-                }
+          schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+          schema: {
+            type: "object",
+            required: ["userId", "userName"],
+            properties: {
+              userId: {
+                type: "string"
+              },
+              userName: {
+                type: "string"
+              },
+              email: {
+                type: "string"
               }
             }
-          },
-          valueType: 'multiSchema',
+          }
         })
     })
 
@@ -443,6 +439,15 @@ describe('Cases with operation messages', () => {
       expect(bindingsNodeValue)
         .toEqual({
           protocol: 'kafka',
+          version: '0.5.0',
+          binding: {
+            key: {
+              type: "string"
+            },
+            schemaIdLocation: "payload",
+            schemaIdPayloadEncoding: 'apicurio-new',
+            schemaLookupStrategy: 'TopicIdStrategy',
+          },
         })
 
       const bindingsNestedNodes = bindingsNode!.nestedNodes()
@@ -455,64 +460,7 @@ describe('Cases with operation messages', () => {
       expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
 
       const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(5)
-
-      const bindingPropertyNodeKey = bindingPropertyNodes
-        .find(node => node.key === 'key' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeKey).toBeDefined()
-      expect(bindingPropertyNodeKey!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeKey!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeKey!.value()).toEqual({
-        title: "key",
-        value: {
-          type: "string"
-        },
-        valueType: 'jsonSchema',
-      })
-
-      const bindingPropertyNodeSchemaIdLocation = bindingPropertyNodes
-        .find(node => node.key === 'schemaIdLocation' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaIdLocation).toBeDefined()
-      expect(bindingPropertyNodeSchemaIdLocation!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeSchemaIdLocation!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaIdLocation!.value()).toEqual({
-        title: "schemaIdLocation",
-        value: 'payload',
-        valueType: 'string',
-      })
-
-      const bindingPropertyNodeSchemaIdPayloadEncoding = bindingPropertyNodes
-        .find(node => node.key === 'schemaIdPayloadEncoding' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaIdPayloadEncoding).toBeDefined()
-      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaIdPayloadEncoding!.value()).toEqual({
-        title: "schemaIdPayloadEncoding",
-        value: 'apicurio-new',
-        valueType: 'string',
-      })
-
-      const bindingPropertyNodeSchemaLookupStrategy = bindingPropertyNodes
-        .find(node => node.key === 'schemaLookupStrategy' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaLookupStrategy).toBeDefined()
-      expect(bindingPropertyNodeSchemaLookupStrategy!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeSchemaLookupStrategy!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeSchemaLookupStrategy!.value()).toEqual({
-        title: "schemaLookupStrategy",
-        value: 'TopicIdStrategy',
-        valueType: 'string',
-      })
-
-      const bindingPropertyNodeBindingVersion = bindingPropertyNodes
-        .find(node => node.key === 'bindingVersion' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeBindingVersion).toBeDefined()
-      expect(bindingPropertyNodeBindingVersion!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeBindingVersion!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeBindingVersion!.value()).toEqual({
-        title: "bindingVersion",
-        value: '0.5.0',
-        valueType: 'string',
-      })
+      expect(bindingPropertyNodes.length).toBe(0)
     })
 
     it('should handle message with all fields combined', () => {
@@ -609,13 +557,12 @@ describe('Cases with operation messages', () => {
       const messageChildrenNodes = messageNode!.childrenNodes()
       expect(messageChildrenNodes.length).toBe(3)
 
-      const headersNode = messageChildrenNodes.find(node => node.key === 'headers' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      const headersNode = messageChildrenNodes.find(node => node.key === 'headers' && node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
       expect(headersNode).toBeDefined()
       expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
       expect(headersNode!.value()).toEqual({
-        title: 'headers',
-        value: {
+        schema: {
           type: "object",
           properties: {
             'X-Trace-Id': {
@@ -623,43 +570,41 @@ describe('Cases with operation messages', () => {
             }
           }
         },
-        valueType: 'jsonSchema',
+        schemaFormat: null,
       })
 
-      const payloadNode = messageChildrenNodes.find(node => node.key === 'payload' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      const payloadNode = messageChildrenNodes.find(node => node.key === 'payload' && node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode).toBeDefined()
       expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
+      expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode!.value()).toEqual({
-        title: "payload",
-        value: {
-          schemaFormat: 'application/vnd.aai.asyncapi+json;version=3.0.0',
-          schema: {
-            type: "object",
-            properties: {
-              eventId: {
-                type: "string"
-              },
-              eventType: {
-                type: "string"
-              },
-              timestamp: {
-                type: "string",
-                format: "date-time"
-              }
+        schemaFormat: 'application/vnd.aai.asyncapi+json;version=3.0.0',
+        schema: {
+          type: "object",
+          properties: {
+            eventId: {
+              type: "string"
+            },
+            eventType: {
+              type: "string"
+            },
+            timestamp: {
+              type: "string",
+              format: "date-time"
             }
-          },
+          }
         },
-        valueType: 'multiSchema',
       })
 
       const bindingsNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
       expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
       expect(bindingsNode!.key).toBe('bindings')
       expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
       expect(bindingsNode!.value()).toEqual({
         protocol: 'kafka',
+        version: '0.5.0',
+        binding: {},
       })
 
       const bindingsNestedNodes = bindingsNode!.nestedNodes()
@@ -672,18 +617,7 @@ describe('Cases with operation messages', () => {
       expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
 
       const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(1)
-
-      const bindingPropertyNodeBindingVersion = bindingPropertyNodes
-        .find(node => node.key === 'bindingVersion' && node.kind === AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeBindingVersion).toBeDefined()
-      expect(bindingPropertyNodeBindingVersion!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingPropertyNodeBindingVersion!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-      expect(bindingPropertyNodeBindingVersion!.value()).toEqual({
-        title: "bindingVersion",
-        value: '0.5.0',
-        valueType: 'string',
-      })
+      expect(bindingPropertyNodes.length).toBe(0)
     })
   })
 

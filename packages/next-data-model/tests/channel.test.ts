@@ -230,7 +230,13 @@ describe('Cases with channel', () => {
 
       const bindingsNodeValue = bindingsNode!.value()
       expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka'
+        protocol: 'kafka',
+        version: '0.5.0',
+        binding: {
+          topic: "user-events",
+          partitions: 3,
+          replicas: 2,
+        },
       })
 
       const bindingsNestedNodes = bindingsNode!.nestedNodes()
@@ -242,17 +248,7 @@ describe('Cases with channel', () => {
       expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
 
       const bindingPropertyNodes = kafkaBindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBeGreaterThan(0)
-
-      const topicProperty = bindingPropertyNodes.find(node => node.key === 'topic')
-      expect(topicProperty).toBeDefined()
-      expect(topicProperty!.kind).toBe(AsyncApiTreeNodeKinds.JSO_PROPERTY)
-
-      const partitionsProperty = bindingPropertyNodes.find(node => node.key === 'partitions')
-      expect(partitionsProperty).toBeDefined()
-
-      const replicasProperty = bindingPropertyNodes.find(node => node.key === 'replicas')
-      expect(replicasProperty).toBeDefined()
+      expect(bindingPropertyNodes.length).toBe(0)
     })
 
     it('should handle channel with multiple protocol bindings', () => {

@@ -192,6 +192,8 @@ describe('Simple E2E test', () => {
     expect(bindingsNodeValue)
       .toEqual({ // first binding selection
         protocol: 'kafka',
+        version: '0.5.0',
+        binding: {},
       })
     const bindingsChildren = bindingsNode!.childrenNodes()
     const bindingsNestedNodes = bindingsNode!.nestedNodes()
@@ -211,7 +213,7 @@ describe('Simple E2E test', () => {
       })
     const messagesChildren = messagesNode!.childrenNodes()
     const messagesNestedNodes = messagesNode!.nestedNodes()
-    expect(messagesChildren.length).toBe(0)
+    expect(messagesChildren.length).toBe(3) // headers, payload, bindings of 1-st message
     expect(messagesNestedNodes.length).toBe(1)
   })
 })

@@ -486,7 +486,7 @@ describe('jsonschema transformation tests', () => {
         parent: tree.root,
         meta: { brokenRef: '#/defs/id' },
       }])
-      expect(children?.[0].value()).toEqual({})
+      expect(children?.[0].value()).toEqual({ extensions: [] })
     })
 
     it('should create tree for jsonSchema with broken refs in allOf', () => {
@@ -514,7 +514,7 @@ describe('jsonschema transformation tests', () => {
         { id: '#/allOf/1', type: 'simple', parent: null },
         { id: '#/allOf/2', type: 'simple', parent: null },
       ])
-      expect(nested?.[2].value()).toEqual({})
+      expect(nested?.[2].value()).toEqual({ extensions: [] })
     })
   })
 

@@ -174,9 +174,9 @@ describe('Inline JSO property parameters', () => {
       it('should detect null value as UNKNOWN', () => {
         const result = inlineJsoPropertyParameters('key', null)
         expect(result.value).toBe(null)
-        expect(result.valueType).toBe(JsoPropertyValueTypes.UNKNOWN)
+        expect(result.valueType).toBe(JsoPropertyValueTypes.NULL)
         expect(result.isPrimitive).toBe(true)
-        expect(result.isPredefinedValueSet).toBe(false)
+        expect(result.isPredefinedValueSet).toBe(true)
       })
 
       it('should detect undefined value as UNKNOWN', () => {
