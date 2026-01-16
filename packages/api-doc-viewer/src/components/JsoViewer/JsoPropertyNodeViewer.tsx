@@ -52,36 +52,40 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <JsonSchemaViewer
-        schema={schema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        customizationOptions={{
-          headerRowTitle: `${node.key}`,
-          // TODO 25.12.25 // Temporarily disabled
-          // headerRowFontSize: 'h3'
-        }}
-        initialLevel={level - 1}
-        overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
-      />
+      <div className='-ml-2'>
+        <JsonSchemaViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+            // TODO 25.12.25 // Temporarily disabled
+            // headerRowFontSize: 'h3'
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
+        />
+      </div>
     )
   }
 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <JsonSchemaViewer
-        schema={schema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        customizationOptions={{
-          headerRowTitle: `${node.key}`,
-          // TODO 25.12.25 // Temporarily disabled
-          // headerRowFontSize: 'h3'
-        }}
-        initialLevel={level - 1}
-        overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
-      />
+      <div className='-ml-2'>
+        <JsonSchemaViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+            // TODO 25.12.25 // Temporarily disabled
+            // headerRowFontSize: 'h3'
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
+        />
+      </div>
     )
   }
 
