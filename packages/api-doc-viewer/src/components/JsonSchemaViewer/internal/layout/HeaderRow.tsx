@@ -19,7 +19,7 @@ import { DiffAction, DiffType } from '@netcracker/qubership-apihub-api-diff'
 import type { FC } from 'react'
 import { useCallback /*, useState */ } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../consts/changes'
-import { DEFAULT_LAYOUT_MODE } from '../../../../consts/configuration'
+import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT, SHIFTED_ROW_PADDING_LEFT } from '../../../../consts/configuration'
 // import {
 //   COLLAPSE_ALL_MENU_ITEM,
 //   EXPAND_ALL_MENU_ITEM,
@@ -234,7 +234,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-row gap-2 ${width}`}>
+      <div className={`flex flex-row gap-2 ${isRoot && !isExpandable ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         {(!isRoot || isExpandable) && (
           <div className="flex flex-row relative">
             <LevelIndicator level={level} />

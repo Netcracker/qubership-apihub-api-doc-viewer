@@ -126,12 +126,12 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
             <div data-name="Content" className="flex flex-col">
               {/* TODO 01.11.23 // "shift" is a WA, find way better */}
               <Annotations
-                shift={isExpandable && isRoot}
+                shift={isRoot}
                 state={state}
                 $nodeChange={$nodeChange}
               />
               <Validations
-                shift={isExpandable && isRoot}
+                shift={isRoot}
                 state={state}
                 $nodeChange={$nodeChange}
               />

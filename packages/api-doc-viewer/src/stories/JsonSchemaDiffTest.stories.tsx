@@ -260,3 +260,53 @@ export const CycledChanged: Story = {
     metaKeys: DIFF_META_KEYS,
   }
 }
+
+export const PrimitiveChanged: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'string',
+        description: 'Removed description',
+        minLength: 1,
+        maxLength: 100,
+      },
+      afterSchema: {
+        type: 'string',
+        format: 'format',
+        maxLength: 55,
+      },
+
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ObjectiveHeaderChanged: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          removedProperty: {
+            type: 'string',
+          },
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        title: 'Added title',
+        properties: {
+          addedProperty: {
+            type: 'string',
+          },
+        }
+      },
+
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}

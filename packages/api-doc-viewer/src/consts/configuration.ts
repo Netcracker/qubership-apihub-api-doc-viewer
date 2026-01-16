@@ -27,8 +27,8 @@ export const DEFAULT_ROW_DEPTH = 0
 
 // Layout
 
-export const DEFAULT_ROW_PADDING_LEFT = 'pl-0'
-export const SHIFTED_ROW_PADDING_LEFT = 'pl-5'
+export const DEFAULT_ROW_PADDING_LEFT = 'pl-2'
+export const SHIFTED_ROW_PADDING_LEFT = 'pl-7'
 
 // Defaults & Placeholders
 
