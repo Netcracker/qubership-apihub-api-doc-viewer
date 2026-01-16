@@ -32,3 +32,5 @@ export declare const Flags: Story;
 export declare const Enum: Story;
 export declare const AddMinItemsInArrayProperty: Story;
 export declare const CycledChanged: Story;
+export declare const PrimitiveChanged: Story;
+export declare const ObjectiveHeaderChanged: Story;
