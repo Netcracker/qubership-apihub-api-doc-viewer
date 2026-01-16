@@ -40,6 +40,7 @@ import { HeaderRow } from '../internal/layout/HeaderRow'
 import { Validations } from '../internal/validations/Validations'
 import { isPropNodeState } from '../types/nodes.guards'
 import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
+import { Extensions } from '../internal/extensions/Extensions'
 
 export type JsonPropNodeBodyProps = PropsWithoutChangesSummary<
   JsonPropNodePropsWithState &
@@ -94,6 +95,9 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
 
   const customizationOptions = useCustomizationOptions()
 
+  // Extensions (OpenAPI only)
+  const extensions = nodeValue?.extensions ?? []
+
   return (
     <div className="flex flex-col">
       {!disableNestingHeader && (
@@ -134,6 +138,10 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
                 shift={isRoot}
                 state={state}
                 $nodeChange={$nodeChange}
+              />
+              <Extensions
+                shift={isRoot}
+                extensions={extensions}
               />
             </div>
           )}
