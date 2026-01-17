@@ -4,11 +4,10 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
-import { AsyncApiNodeJsoPropertyValueType, AsyncApiNodeJsoPropertyValueTypesList } from "@apihub/next-data-model/model/async-api/types/node-value-type";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
-import { isObject, isObjectWithStringKeys, isString } from "../../../utilities";
+import { isObject, isObjectWithStringKeys } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
@@ -398,13 +397,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   }
 
   /* Type guards */
-
-  private isAsyncApiNodeType(maybeType: unknown): maybeType is AsyncApiNodeJsoPropertyValueType {
-    if (!maybeType || !isString(maybeType)) {
-      return false
-    }
-    return AsyncApiNodeJsoPropertyValueTypesList.some(allowedType => allowedType === maybeType)
-  }
 
   private isAsyncApiSimpleTreeNode(node: ITreeNode<object | null, string, object>): node is AsyncApiSimpleTreeNode {
     return node.type === TreeNodeComplexityTypes.SIMPLE

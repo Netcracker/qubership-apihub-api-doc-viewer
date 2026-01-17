@@ -1,5 +1,5 @@
+import { SpecificationExtensionKey } from "../../specification-extension-key"
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "./node-kind"
-import { AsyncApiNodeJsoPropertyValueType } from "./node-value-type"
 
 export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
   T extends typeof AsyncApiTreeNodeKinds.ROOT
@@ -24,6 +24,10 @@ export interface AsyncApiTreeNodeValueBase {
   readonly summary?: string
 }
 
+interface AsyncApiTreeNodeValueWithExtensions {
+  readonly extensions: Array<{ [K in SpecificationExtensionKey]: unknown }>
+}
+
 export interface AsyncApiTreeNodeValueTypeRoot extends AsyncApiTreeNodeValueBase {}
 
 export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValueBase {
@@ -33,25 +37,19 @@ export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValu
   readonly address: string | null
 }
 
-export interface AsyncApiTreeNodeValueTypeBinding {
+export interface AsyncApiTreeNodeValueTypeBinding extends AsyncApiTreeNodeValueWithExtensions {
   readonly binding: Record<string, unknown>
   readonly version: string
   readonly protocol: string
 }
 
-export interface AsyncApiTreeNodeValueTypeJsoProperty extends AsyncApiTreeNodeValueBase {
-  readonly value: unknown
-  readonly valueType: AsyncApiNodeJsoPropertyValueType
-  readonly isPrimitive: boolean
-}
+export interface AsyncApiTreeNodeValueTypeChannel extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {}
 
-export interface AsyncApiTreeNodeValueTypeChannel extends AsyncApiTreeNodeValueBase {}
-
-export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase {
+export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {
   readonly internalTitle: string
 }
 
-export interface AsyncApiTreeNodeValueTypeMultiSchema extends AsyncApiTreeNodeValueBase {
+interface AsyncApiTreeNodeValueTypeMultiSchema extends AsyncApiTreeNodeValueBase {
   readonly schema: object
   readonly schemaFormat?: string
 }

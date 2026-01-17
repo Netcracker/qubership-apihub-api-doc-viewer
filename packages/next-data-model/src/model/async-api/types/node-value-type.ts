@@ -10,5 +10,3 @@ export const AsyncApiNodeJsoPropertyValueTypes = {
 } as const
 
 export type AsyncApiNodeJsoPropertyValueType = typeof AsyncApiNodeJsoPropertyValueTypes[keyof typeof AsyncApiNodeJsoPropertyValueTypes]
-
-export const AsyncApiNodeJsoPropertyValueTypesList = Object.values(AsyncApiNodeJsoPropertyValueTypes)
