@@ -34,3 +34,5 @@ export declare const AddMinItemsInArrayProperty: Story;
 export declare const CycledChanged: Story;
 export declare const PrimitiveChanged: Story;
 export declare const ObjectiveHeaderChanged: Story;
+export declare const ExtensionsOnPrimitive: Story;
+export declare const ExtensionsOnObject: Story;
