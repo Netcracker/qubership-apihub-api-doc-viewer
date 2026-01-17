@@ -25,12 +25,12 @@ export interface AsyncApiTreeNodeValueBase {
 }
 
 interface AsyncApiTreeNodeValueWithExtensions {
-  readonly extensions: Array<{ [K in SpecificationExtensionKey]: unknown }>
+  readonly extensions: Record<SpecificationExtensionKey, unknown>
 }
 
 export interface AsyncApiTreeNodeValueTypeRoot extends AsyncApiTreeNodeValueBase {}
 
-export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValueBase {
+export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {
   readonly title: string
   readonly description: string
   readonly action: string

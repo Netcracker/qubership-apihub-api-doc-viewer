@@ -90,19 +90,25 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'action',
           'address', // TODO: From channel!
+          'extensions',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>)[]
       case AsyncApiTreeNodeKinds.BINDING:
         return [
           'binding',
           'version',
           'protocol',
+          'extensions',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
       case AsyncApiTreeNodeKinds.CHANNEL:
-        return AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
+        return [
+          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
+          'extensions',
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
       case AsyncApiTreeNodeKinds.MESSAGE:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'internalTitle',
+          'extensions',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
       case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
         return [

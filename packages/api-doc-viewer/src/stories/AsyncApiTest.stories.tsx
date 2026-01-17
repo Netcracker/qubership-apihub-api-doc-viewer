@@ -72,7 +72,45 @@ const KAFKA_E2E_SOURCE = {
           $ref: "#/servers/kafka-main"
         }
       ],
-      bindings: {}
+      bindings: {},
+      // Extensions
+      'x-string-extension': 'value',
+      'x-integer-extension': 1,
+      'x-boolean-extension': true,
+      'x-number-extension': 1.0,
+      'x-array-extension': [1, 2, 3],
+      'x-object-extension': {
+        key: 'value',
+      },
+    }
+  },
+  operations: {
+    "customer-change-topic_send_BaseEvent": {
+      action: "send",
+      channel: {
+        $ref: "#/channels/customer-change-topic"
+      },
+      title: "Customer change topic send",
+      description: "Send events about Customer's data changes",
+      bindings: {
+        kafka: {
+          bindingVersion: "0.5.0"
+        }
+      },
+      messages: [
+        {
+          $ref: "#/channels/customer-change-topic/messages/BaseEventMessage"
+        }
+      ],
+      // Extensions
+      'x-string-extension': 'value',
+      'x-integer-extension': 1,
+      'x-boolean-extension': true,
+      'x-number-extension': 1.0,
+      'x-array-extension': [1, 2, 3],
+      'x-object-extension': {
+        key: 'value',
+      },
     }
   },
   components: {
@@ -237,32 +275,30 @@ const KAFKA_E2E_SOURCE = {
                   ]
                 }
               }
-            }
+            },
+            // Extensions
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
           }
-        }
+        },
+        // Extensions
+        'x-string-extension': 'value',
+        'x-integer-extension': 1,
+        'x-boolean-extension': true,
+        'x-number-extension': 1.0,
+        'x-array-extension': [1, 2, 3],
+        'x-object-extension': {
+          key: 'value',
+        },
       }
     }
   },
-  operations: {
-    "customer-change-topic_send_BaseEvent": {
-      action: "send",
-      channel: {
-        $ref: "#/channels/customer-change-topic"
-      },
-      title: "Customer change topic send",
-      description: "Send events about Customer's data changes",
-      bindings: {
-        kafka: {
-          bindingVersion: "0.5.0"
-        }
-      },
-      messages: [
-        {
-          $ref: "#/channels/customer-change-topic/messages/BaseEventMessage"
-        }
-      ]
-    }
-  }
 }
 
 export const KafkaE2E: Story = {

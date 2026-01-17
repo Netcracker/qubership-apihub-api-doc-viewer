@@ -9,6 +9,7 @@ import { AddressRow } from "./AddressRow";
 import { BindingsNodeViewer } from "./BindingsNodeViewer";
 import { ChannelNodeViewer } from "./ChannelNodeViewer";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
+import { SpecificationExtensions } from "./SpecificationExtensions";
 import { TitleRow } from "./TitleRow";
 
 type OperationNodeViewerProps = {
@@ -28,6 +29,11 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
     )
   ), [node])
 
+  const operationExtensions = useMemo(
+    () => value?.extensions ?? {},
+    [value?.extensions],
+  )
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -43,6 +49,10 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
         value={value?.description ?? ''}
         // fontSize='base'
         layoutMode={layoutMode}
+      />
+      <SpecificationExtensions
+        values={operationExtensions}
+        kind={AsyncApiTreeNodeKinds.OPERATION}
       />
       <OperationChildrenViewer
         children={operationChildren}

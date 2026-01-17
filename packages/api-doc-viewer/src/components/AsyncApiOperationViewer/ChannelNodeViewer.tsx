@@ -5,6 +5,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { TitleRow } from "./TitleRow"
+import { SpecificationExtensions } from "./SpecificationExtensions"
 
 type ChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
@@ -23,6 +24,11 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
     [value, node],
   )
 
+  const channelExtensions = useMemo(
+    () => value?.extensions ?? {},
+    [value?.extensions],
+  )
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -36,6 +42,10 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
         // fontSize='base'
         layoutMode={layoutMode}
         level={level}
+      />
+      <SpecificationExtensions
+        values={channelExtensions}
+        kind={AsyncApiTreeNodeKinds.CHANNEL}
       />
     </div>
   )

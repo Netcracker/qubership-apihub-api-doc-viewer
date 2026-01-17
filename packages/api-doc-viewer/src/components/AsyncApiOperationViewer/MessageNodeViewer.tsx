@@ -2,11 +2,12 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isBindingsNode, isHeadersNode, isPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { TitleRow } from "./TitleRow"
+import { SpecificationExtensions } from "./SpecificationExtensions"
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -25,6 +26,11 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const headersChild = messageChildren.find(isHeadersNode)
   const payloadChild = messageChildren.find(isPayloadNode)
 
+  const messageExtensions = useMemo(
+    () => messageValue?.extensions ?? {},
+    [messageValue?.extensions],
+  )
+
   return (
     <div className="flex flex-col gap-3">
       {messageDescription && (
@@ -34,6 +40,10 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           // fontSize='base'
         />
       )}
+      <SpecificationExtensions
+        values={messageExtensions}
+        kind={AsyncApiTreeNodeKinds.MESSAGE}
+      />
       {bindingsChild && (
         <BindingsNodeViewer
           node={bindingsChild}
