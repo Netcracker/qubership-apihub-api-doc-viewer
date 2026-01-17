@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
@@ -48,7 +49,6 @@ import {
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge';
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
-import { NestingIndicator } from '../../NestingIndicator';
 import './Description.css';
 
 const OVERFLOW_LINES_AMOUNT = 5
@@ -69,7 +69,10 @@ function shortenDescription(description: string, isExpanded: boolean): [IsExpand
 
 export type DescriptionRowProps = PropsWithoutChangesSummary<
   PropsWithShift &
-  { value: string } &
+  {
+    value: string
+    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' // TODO: Just a WA before the component is refactored
+  } &
   PropsWithChanges
 >
 
@@ -77,6 +80,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
     shift = false,
     value,
+    fontSize = 'xs',
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -120,11 +124,13 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
-        <NestingIndicator level={level} />
+      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+        <LevelIndicator level={level} />
+        {/* <NestingIndicator level={level} /> */}
         <div className="text-xs font-normal py-1">
           <Value
             value={value}
+            fontSize={fontSize}
             expanded={expanded}
             setIsExpandable={setIsExpandable}
             // diffs
@@ -136,6 +142,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
           {isInlineDiffsLayoutMode && itemReplaced && (
             <Value
               value={value}
+              fontSize={fontSize}
               expanded={expanded}
               setIsExpandable={setIsExpandable}
               // diffs
@@ -208,6 +215,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
 type ValueProps = {
   value: string
+  fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl'
   expanded?: boolean
   setIsExpandable?: Dispatch<SetStateAction<boolean>>
   // diffs
@@ -219,6 +227,7 @@ type ValueProps = {
 
 const Value: FC<ValueProps> = props => {
   const {
+    fontSize = 'xs',
     expanded = false,
     setIsExpandable,
     // diffs
@@ -279,7 +288,7 @@ const Value: FC<ValueProps> = props => {
 
   return (
     <ReactMarkdown
-      className={`markdown text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown text-${fontSize} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}

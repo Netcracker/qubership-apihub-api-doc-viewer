@@ -48,6 +48,15 @@ export const Cycled: Story = {
         properties: {
           a: { $ref: '#/components/schemas/A' },
           b: { $ref: '#/components/schemas/A' },
+          c: {
+            type: 'string'
+          },
+          d: {
+            type: 'object',
+            properties: {
+              e: { type: 'number' }
+            }
+          }
         }
       },
       target: REQUEST_BODY_TARGET,
@@ -62,6 +71,118 @@ export const Cycled: Story = {
         }
       },
       circular: true,
+    })
+  }
+}
+
+export const ExtensionsFirstLevel: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        format: 'date-time',
+        description: 'Date Time in Range',
+        'x-min-date': '2026-01-01',
+        'x-max-date': '2026-12-31',
+      }
+    })
+  }
+}
+
+export const ExtensionsSecondLevel: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Date Time in Range',
+            'x-min-date': '2026-01-01',
+            'x-max-date': '2026-12-31',
+          }
+        }
+      }
+    })
+  }
+}
+
+export const MultiLevelExtensionsFirstLevel: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        format: 'date-time',
+        description: 'Date Time in Range',
+        'x-date': {
+          min: '2026-01-01',
+          max: '2026-12-31',
+        },
+        'x-date-time': {
+          min: '2026-01-01T00:00:00Z',
+          max: '2026-12-31T23:59:59Z',
+        },
+      }
+    })
+  }
+}
+
+export const MultiLevelExtensionsSecondLevel: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Date Time in Range',
+            'x-date': {
+              min: '2026-01-01',
+              max: '2026-12-31',
+            },
+            'x-date-time': {
+              min: '2026-01-01T00:00:00Z',
+              max: '2026-12-31T23:59:59Z',
+            },
+          }
+        }
+      }
+    })
+  }
+}
+
+export const CombinationOfDifferentExtensionsSecondLevel: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'array',
+        'x-sort-order': 'asc',
+        'x-sort-keys': ['date', 'time'],
+        items: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Date Time in Range',
+          'x-default-timezone': 'UTC',
+          'x-allowed-timezones': ['UTC', 'America/New_York', 'Europe/Paris', 'Asia/Tokyo'],
+          'x-range': {
+            min: {
+              date: '2026-01-01',
+              time: '00:00:00Z',
+            },
+            max: {
+              date: '2026-12-31',
+              time: '23:59:59Z',
+            },
+          },
+        }
+      }
     })
   }
 }

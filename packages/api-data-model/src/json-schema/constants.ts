@@ -26,7 +26,7 @@ export const jsonSchemaNodeMetaProps: (keyof JsonSchemaNodeMeta)[] = [
 ]
 
 export const jsonSchemaCommonProps: (keyof IJsonSchemaBaseType)[] = [
-  'type', 'description', 'title', 'enum', 'default', 'examples', 'nullable'
+  'type', 'description', 'title', 'enum', 'default', 'examples', 'nullable', 'extensions'
 ]
 
 export const jsonSchemaNodeValueProps: Record<JsonSchemaNodeType, readonly string[]> = {
