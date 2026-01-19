@@ -37,7 +37,6 @@ export const SpecificationExtensions: FC<SpecificationExtensionsProps> = (props)
     }
   }, [kind])
 
-
   return <>
     <TitleRow
       value={title}

@@ -10,7 +10,7 @@ import { FC } from "react";
 
 type ExtensionsProps = {
   shift?: boolean
-  extensions: IJsonSchemaBaseType['extensions']
+  extensions: NonNullable<IJsonSchemaBaseType['extensions']>
 }
 
 export const Extensions: FC<ExtensionsProps> = (props) => {
@@ -19,10 +19,6 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
   const layoutMode = useLayoutMode()
   const inlineDiffsLayout = layoutMode === INLINE_DIFFS_LAYOUT_MODE
   const sideBySideDiffsLayout = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
-
-  if (extensions.length === 0) {
-    return null
-  }
 
   if (inlineDiffsLayout) {
     return null // TODO: Not supported yet
@@ -46,11 +42,12 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
 
 type ExtensionsContentProps = {
   shift?: boolean
-  extensions: IJsonSchemaBaseType['extensions']
+  extensions: NonNullable<IJsonSchemaBaseType['extensions']>
   layoutSide: LayoutSide
 }
 
 const ExtensionsContent: FC<ExtensionsContentProps> = (props) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { shift = false, extensions, layoutSide } = props
 
   const level = useLevelContext()

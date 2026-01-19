@@ -96,7 +96,7 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
   const customizationOptions = useCustomizationOptions()
 
   // Extensions (OpenAPI only)
-  const extensions = nodeValue?.extensions ?? []
+  const extensions = nodeValue?.extensions
 
   return (
     <div className="flex flex-col">
@@ -139,10 +139,12 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
                 state={state}
                 $nodeChange={$nodeChange}
               />
-              <Extensions
-                shift={isRoot}
-                extensions={extensions}
-              />
+              {extensions && (
+                <Extensions
+                  shift={isRoot}
+                  extensions={extensions}
+                />
+              )}
             </div>
           )}
         </div>
