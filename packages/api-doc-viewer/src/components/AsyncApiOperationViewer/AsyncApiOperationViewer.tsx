@@ -54,8 +54,10 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
         }
         const value = current.value()
         return (
-          current.key === operationName &&
-          value?.action === operationType
+          !operationName || !operationType || (
+            current.key === operationName &&
+            value?.action === operationType
+          )
         )
       }
     )
