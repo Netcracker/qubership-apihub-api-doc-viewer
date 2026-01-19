@@ -24,6 +24,9 @@ export function transformJsonSchemaExtensions(value: unknown): unknown {
   }
   const allKeys = Reflect.ownKeys(value)
   const extensionKeys = allKeys.filter((key): key is string => typeof key === 'string' && key.startsWith('x-'))
+  if (extensionKeys.length === 0) {
+    return value
+  }
   const extensionKeysSet = new Set(extensionKeys)
   const extensions = extensionKeys.map(extensionKey => {
     const extensionValue = value[extensionKey]
