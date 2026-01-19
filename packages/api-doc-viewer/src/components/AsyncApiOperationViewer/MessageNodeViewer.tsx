@@ -5,9 +5,10 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { TitleRow } from "./TitleRow"
 import { SpecificationExtensions } from "./SpecificationExtensions"
+import { TitleRow } from "./TitleRow"
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -34,11 +35,13 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   return (
     <div className="flex flex-col gap-3">
       {messageDescription && (
-        <DescriptionRow
-          value={messageDescription}
-          level={0}
-          // fontSize='base'
-        />
+        <Aligner>
+          <DescriptionRow
+            value={messageDescription}
+            level={0}
+            // fontSize='base'
+          />
+        </Aligner>
       )}
       <SpecificationExtensions
         values={messageExtensions}
@@ -57,10 +60,12 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
             variant="h3"
             expandable={false}
           />
-          <JsonSchemaViewer
-            schema={headersChild.value()?.schema}
-            displayMode={displayMode}
-          />
+          <Aligner>
+            <JsonSchemaViewer
+              schema={headersChild.value()?.schema}
+              displayMode={displayMode}
+            />
+          </Aligner>
         </div>
       )}
       {payloadChild && (
@@ -70,10 +75,12 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
             variant="h3"
             expandable={false}
           />
-          <JsonSchemaViewer
-            schema={payloadChild.value()?.schema}
-            displayMode={displayMode}
-          />
+          <Aligner>
+            <JsonSchemaViewer
+              schema={payloadChild.value()?.schema}
+              displayMode={displayMode}
+            />
+          </Aligner>
         </div>
       )}
     </div>

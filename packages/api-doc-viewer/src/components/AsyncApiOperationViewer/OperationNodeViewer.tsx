@@ -11,6 +11,7 @@ import { ChannelNodeViewer } from "./ChannelNodeViewer";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
 import { SpecificationExtensions } from "./SpecificationExtensions";
 import { TitleRow } from "./TitleRow";
+import { Aligner } from "../JsoViewer/Aligner";
 
 type OperationNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION>
@@ -24,7 +25,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const value = node.value()
   const operationChildren = useMemo(() => (
     sortNodesByDisplayPriority(
-      AsyncApiTreeNodeKinds.OPERATION, 
+      AsyncApiTreeNodeKinds.OPERATION,
       node.childrenNodes(),
     )
   ), [node])
@@ -45,11 +46,13 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
         action={value?.action ?? ''}
         address={value?.address ?? ''}
       />
-      <DescriptionRow
-        value={value?.description ?? ''}
-        // fontSize='base'
-        layoutMode={layoutMode}
-      />
+      <Aligner>
+        <DescriptionRow
+          value={value?.description ?? ''}
+          // fontSize='base'
+          layoutMode={layoutMode}
+        />
+      </Aligner>
       <SpecificationExtensions
         values={operationExtensions}
         kind={AsyncApiTreeNodeKinds.OPERATION}

@@ -10,6 +10,7 @@ import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-ty
 import { FC, useCallback, useState } from "react"
 import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { Aligner } from "./Aligner"
 
 type JsoPropertyNodeViewerProps = {
   node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
@@ -52,7 +53,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <div className='-ml-2'>
+      <Aligner>
         <JsonSchemaViewer
           schema={schema}
           expandedDepth={2}
@@ -65,14 +66,14 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
           initialLevel={level - 1}
           overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
         />
-      </div>
+      </Aligner>
     )
   }
 
   if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
-      <div className='-ml-2'>
+      <Aligner>
         <JsonSchemaViewer
           schema={schema}
           expandedDepth={2}
@@ -85,7 +86,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
           initialLevel={level - 1}
           overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
         />
-      </div>
+      </Aligner>
     )
   }
 

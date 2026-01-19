@@ -4,8 +4,9 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
-import { TitleRow } from "./TitleRow"
+import { Aligner } from "../JsoViewer/Aligner"
 import { SpecificationExtensions } from "./SpecificationExtensions"
+import { TitleRow } from "./TitleRow"
 
 type ChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
@@ -37,12 +38,14 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
         expanded={true}
         variant='h2'
       />
-      <DescriptionRow
-        value={value?.description ?? ''}
-        // fontSize='base'
-        layoutMode={layoutMode}
-        level={level}
-      />
+      <Aligner>
+        <DescriptionRow
+          value={value?.description ?? ''}
+          // fontSize='base'
+          layoutMode={layoutMode}
+          level={level}
+        />
+      </Aligner>
       <SpecificationExtensions
         values={channelExtensions}
         kind={AsyncApiTreeNodeKinds.CHANNEL}
