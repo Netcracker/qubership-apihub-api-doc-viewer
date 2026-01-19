@@ -17,7 +17,7 @@ export const MessageSelector: FC<MessageSelectorProps> = (props) => {
   }
 
   return (
-    <div>
+    <div className='flex flex-row gap-2'>
       {options.map((option) => {
         const optionValue = option.value()
         if (!optionValue) {

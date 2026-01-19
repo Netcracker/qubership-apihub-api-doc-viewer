@@ -6,8 +6,8 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubersh
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BindingSelector } from "./BindingSelector/BindingSelector";
-import { TitleRow } from "./TitleRow";
 import { SpecificationExtensions } from "./SpecificationExtensions";
+import { TitleRow } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
@@ -52,11 +52,6 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     />
   ), [bindingSelectorOptions, selectedBinding])
 
-  const bindingExtensions = useMemo(
-    () => selectedBindingValue?.extensions ?? {},
-    [selectedBindingValue?.extensions],
-  )
-
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -71,10 +66,12 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           Version: {bindingVersion}
         </span>
       )}
-      <SpecificationExtensions
-        values={bindingExtensions}
-        kind={AsyncApiTreeNodeKinds.BINDING}
-      />
+      {selectedBindingValue?.extensions && (
+        <SpecificationExtensions
+          values={selectedBindingValue.extensions}
+          kind={AsyncApiTreeNodeKinds.BINDING}
+        />
+      )}
       <JsoViewer
         source={bindingValue}
         displayMode={displayMode}

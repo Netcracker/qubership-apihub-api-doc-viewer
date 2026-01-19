@@ -310,3 +310,1792 @@ export const KafkaE2E: Story = {
     operationType: 'send',
   }
 }
+
+export const SendOperationWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-nothing": {
+            action: "send",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithTitle: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-title": {
+            action: "send",
+            title: "Send Operation With Title",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-title',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-description": {
+            action: "send",
+            description: "Description of Send Operation With Description",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithTitleAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-title-and-description": {
+            action: "send",
+            title: "Send Operation With Title And Description",
+            description: "Description of Send Operation With Title And Description",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-title-and-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-nothing": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-nothing',
+    operationType: 'send',
+  }
+}
+
+
+export const SendOperationWithRootLevelChannelWithTitle: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-title": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            title: "Title of First Channel",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-title',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-description": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            description: "Description of First Channel",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithTitleAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-title-and-description": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            title: "Title of First Channel",
+            description: "Description of First Channel",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-title-and-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithBindingWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-binding-with-nothing": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-binding-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithDescriptionAndBindingWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-description-and-binding-with-nothing": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            description: "Description of First Channel",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-description-and-binding-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithTwoBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-two-bindings": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                key: {
+                  type: "string",
+                  description: "Partitioning key for the message",
+                  minLength: 1,
+                },
+                schemaIdLocation: "header",
+                schemaIdPayloadEncoding: "application/json",
+                schemaLookupStrategy: "topicNameStrategy",
+              },
+              rabbitmq: {
+                contentEncoding: "application/json",
+                messageType: "orders.created",
+                bindingVersion: "0.2.0",
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-two-bindings',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithDescriptionAndRootLevelChannelWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-description-and-root-level-channel-with-nothing": {
+            action: "send",
+            description: "Description of Send Operation With Description And Root Level Channel With Nothing",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-description-and-root-level-channel-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithBindingsKafkaWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-bindings-kafka": {
+            action: "send",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-bindings-kafka',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithBindingsKafkaWithOnlyPrimitiveProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-bindings-kafka-with-only-primitive-props": {
+            action: "send",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                num: 123,
+                str: "string",
+                bool: true,
+                // TODO: api-unifier removes "null" value during normalization
+                empty: null,
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-bindings-kafka-with-only-primitive-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithBindingsKafkaWithObjectProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-bindings-kafka-with-object-props": {
+            action: "send",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                num: 1111,
+                str: "string",
+                bool: true,
+                // TODO: api-unifier removes "null" value during normalization
+                empty: null,
+                obj: {
+                  key: "string value"
+                },
+                arr: [1, 2, 3],
+                complexObj: {
+                  nestedObj: {
+                    aaa: 2222,
+                    bbb: false,
+                    ccc: 'aaabbb',
+                    // TODO: api-unifier removes "null" value during normalization
+                    empty: null,
+                    arr: [1, 2],
+                  }
+                },
+                complexArr: [
+                  {
+                    aaa: 3333,
+                    bbb: true,
+                    ccc: 'bbbccc',
+                    // TODO: api-unifier removes "null" value during normalization
+                    empty: null,
+                    arr: [2, 3],
+                    nestedObj: {
+                      aaa: 4444,
+                      bbb: false,
+                      // TODO: api-unifier removes "null" value during normalization
+                      empty: null,
+                      arr: [3, 4],
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-bindings-kafka-with-object-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithBindingsKafkaWithSchemaProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-bindings-kafka-with-schema-props": {
+            action: "send",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                stringSch: {
+                  type: 'string',
+                  description: 'String schema',
+                  minLength: 1,
+                  maxLength: 10
+                },
+                nestedStringSch: {
+                  stringSch: {
+                    type: 'string',
+                    description: 'Nested string schema',
+                    minLength: 7,
+                    maxLength: 70
+                  }
+                },
+                numberSch: {
+                  type: 'number',
+                  description: 'Number schema',
+                  minimum: 1,
+                  maximum: 100,
+                },
+                nestedNumberSch: {
+                  numberSch: {
+                    type: 'number',
+                    description: 'Nested number schema',
+                    minimum: 7,
+                    maximum: 700,
+                  }
+                },
+                booleanSch: {
+                  type: 'boolean',
+                  description: 'Boolean schema',
+                  default: true,
+                },
+                nestedBooleanSch: {
+                  booleanSch: {
+                    type: 'boolean',
+                    description: 'Nested boolean schema',
+                    default: false,
+                  }
+                },
+                arraySch: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    description: 'Array string item',
+                    minLength: 1,
+                    maxLength: 10
+                  }
+                },
+                nestedArraySch: {
+                  arraySch: {
+                    type: 'array',
+                    description: 'Nested array schema',
+                    items: {
+                      type: 'number',
+                      description: 'Nested array number item',
+                      minimum: 4,
+                      maximum: 444,
+                    }
+                  }
+                },
+                objectSch: {
+                  type: 'object',
+                  properties: {
+                    aaa: {
+                      type: 'string',
+                      description: 'Object string property',
+                      enum: ['aaa', 'bbb', 'ccc'],
+                    }
+                  }
+                },
+                nestedObjectSch: {
+                  objectSch: {
+                    type: 'object',
+                    description: 'Nested object schema',
+                    properties: {
+                      aaa: {
+                        type: 'number',
+                        description: 'Nested object number property',
+                        minimum: 1,
+                        exclusiveMinimum: true,
+                        maximum: 100,
+                        exclusiveMaximum: true,
+                        multipleOf: 10,
+                      }
+                    }
+                  }
+                },
+                nestedSchemasInArray: [
+                  {
+                    type: 'string',
+                    description: 'Nested string schema in array',
+                    minLength: 1,
+                    maxLength: 10
+                  },
+                  {
+                    type: 'number',
+                    description: 'Nested number schema in array',
+                    minimum: 1,
+                    exclusiveMinimum: true,
+                    maximum: 100,
+                    exclusiveMaximum: true,
+                    multipleOf: 10,
+                  },
+                  {
+                    type: 'boolean',
+                    description: 'Nested boolean schema in array',
+                    default: true,
+                  },
+                  {
+                    type: 'object',
+                    description: 'Nested object schema in array',
+                    properties: {
+                      aaa: {
+                        type: 'number',
+                        minimum: 1,
+                      }
+                    }
+                  },
+                  {
+                    type: 'array',
+                    description: 'Nested array schema in array',
+                    items: {
+                      type: 'integer',
+                      maximum: 100,
+                      multipleOf: 10,
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-bindings-kafka-with-schema-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationTwoBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-two-bindings": {
+            action: "send",
+            bindings: {
+              kafka: {
+                clientId: "order-producer",
+                groupId: "order-processing",
+                bindingVersion: "0.4.0",
+              },
+              amqp: {
+                mandatory: true,
+                priority: 5,
+                deliveryMode: 2,
+                expiration: 60000,
+                userId: "svc-order",
+                bindingVersion: "0.3.0",
+              },
+            }
+          }
+        }
+      }
+    }),
+    operationName: 'send-operation-two-bindings',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithDescriptionAndBindingsWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-description-and-bindings-with-nothing": {
+            action: "send",
+            description: "Description of Send Operation With Description And Bindings With Nothing",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-description-and-bindings-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithName: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-name": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-name',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithTitle: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-title": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+              title: "Base Event Message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-title',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-description": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+              description: "Description of Base Event Message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithNameAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-name-and-description": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+              description: "Description of Base Event Message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-name-and-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithTitleAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-title-and-description": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+              title: "Base Event Message",
+              description: "Description of Base Event Message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-title-and-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithNameAndTitleAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-name-and-title-and-description": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            BaseEventMessage: {
+              name: "base-event-message",
+              title: "Base Event Message",
+              description: "Description of Base Event Message",
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-message-with-name-and-title-and-description',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithPrimitiveHeaders: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-primitive-headers": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            HeadersExample: {
+              type: "string",
+              description: "Primitive header example",
+              minLength: 1,
+              maxLength: 10,
+              examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+            }
+          },
+          messages: {
+            BaseEventMessage: {
+              headers: { $ref: "#/components/schemas/HeadersExample" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-primitive-headers',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithObjectiveHeaders: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-objective-headers": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/BaseEventMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            HeadersExample: {
+              type: "object",
+              description: "Headers example",
+              properties: {
+                "X-Idempotency-Key": {
+                  type: "string",
+                }
+              }
+            }
+          },
+          messages: {
+            BaseEventMessage: {
+              headers: { $ref: "#/components/schemas/HeadersExample" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-objective-headers',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithPrimitivePayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-primitive-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Status: {
+              type: "string",
+              description: "Status enum example",
+              enum: ['not_started', 'in_progress', 'failed', 'success']
+            }
+          },
+          messages: {
+            StatusMessage: {
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-primitive-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithObjectivePayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-objective-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Status: {
+              type: "object",
+              description: "Status enum example",
+              properties: {
+                status: {
+                  type: "string",
+                  description: "Status enum example",
+                  enum: ['not_started', 'in_progress', 'failed', 'success']
+                }
+              }
+            }
+          },
+          messages: {
+            StatusMessage: {
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-objective-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithPrimitiveHeadersAndPayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-primitive-headers-and-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Identifier: {
+              type: "string",
+              description: "Identifier example",
+              minLength: 1,
+              maxLength: 10,
+              examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+            },
+            Status: {
+              type: "string",
+              description: "Status enum example",
+              enum: ['not_started', 'in_progress', 'failed', 'success']
+            }
+          },
+          messages: {
+            StatusMessage: {
+              headers: { $ref: "#/components/schemas/Identifier" },
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      }
+    }),
+    operationName: 'send-operation-with-message-with-primitive-headers-and-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithObjectiveHeadersAndPayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-objective-headers-and-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Identifier: {
+              type: "object",
+              description: "Identifier example",
+              properties: {
+                identifier: {
+                  type: "string",
+                  description: "Identifier example",
+                  minLength: 1,
+                  maxLength: 10,
+                  examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+                }
+              }
+            },
+            Status: {
+              type: "object",
+              description: "Status enum example",
+              properties: {
+                status: {
+                  type: "string",
+                  description: "Status enum example",
+                  enum: ['not_started', 'in_progress', 'failed', 'success']
+                }
+              }
+            }
+          },
+          messages: {
+            StatusMessage: {
+              headers: { $ref: "#/components/schemas/Identifier" },
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-objective-headers-and-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithPrimitiveHeadersAndObjectivePayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-primitive-headers-and-objective-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Identifier: {
+              type: "string",
+              description: "Identifier example",
+              minLength: 1,
+              maxLength: 10,
+              examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+            },
+            Status: {
+              type: "object",
+              description: "Status enum example",
+              properties: {
+                status: {
+                  type: "string",
+                  description: "Status enum example",
+                  enum: ['not_started', 'in_progress', 'failed', 'success']
+                }
+              }
+            }
+          },
+          messages: {
+            StatusMessage: {
+              headers: { $ref: "#/components/schemas/Identifier" },
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-primitive-headers-and-objective-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithObjectiveHeadersAndPrimitivePayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-objective-headers-and-primitive-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Identifier: {
+              type: "object",
+              description: "Identifier example",
+              properties: {
+                identifier: {
+                  type: "string",
+                  description: "Identifier example",
+                  minLength: 1,
+                  maxLength: 10,
+                  examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+                }
+              }
+            },
+            Status: {
+              type: "string",
+              description: "Status enum example",
+              enum: ['not_started', 'in_progress', 'failed', 'success']
+            }
+          },
+          messages: {
+            StatusMessage: {
+              headers: { $ref: "#/components/schemas/Identifier" },
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-objective-headers-and-primitive-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithBindingsWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-bindings-with-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-bindings-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithBindingsWithPrimitiveProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-bindings-with-primitive-props": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  num: 123,
+                  str: "string",
+                  bool: true,
+                  // TODO: api-unifier removes "null" value during normalization
+                  empty: null,
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-bindings-with-primitive-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithBindingsWithObjectProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-bindings-with-object-props": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  obj: {
+                    key: "string value"
+                  },
+                  arr: [1, 2, 3],
+                  complexObj: {
+                    nestedObj: {
+                      aaa: 2222,
+                      bbb: false,
+                      ccc: 'aaabbb',
+                      // TODO: api-unifier removes "null" value during normalization
+                      empty: null,
+                      arr: [1, 2],
+                    }
+                  },
+                  complexArr: [
+                    {
+                      aaa: 3333,
+                      bbb: true,
+                      ccc: 'bbbccc',
+                      // TODO: api-unifier removes "null" value during normalization
+                      empty: null,
+                      arr: [2, 3],
+                      nestedObj: {
+                        aaa: 4444,
+                        bbb: false,
+                        // TODO: api-unifier removes "null" value during normalization
+                        empty: null,
+                        arr: [3, 4],
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-bindings-with-object-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithBindingsWithSchemaProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-bindings-with-schema-props": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  stringSch: {
+                    type: 'string',
+                    description: 'String schema',
+                    minLength: 1,
+                    maxLength: 10
+                  },
+                  nestedStringSch: {
+                    stringSch: {
+                      type: 'string',
+                      description: 'Nested string schema',
+                      minLength: 7,
+                      maxLength: 70
+                    }
+                  },
+                  numberSch: {
+                    type: 'number',
+                    description: 'Number schema',
+                    minimum: 1,
+                    maximum: 100,
+                  },
+                  nestedNumberSch: {
+                    numberSch: {
+                      type: 'number',
+                      description: 'Nested number schema',
+                      minimum: 7,
+                      maximum: 700,
+                    }
+                  },
+                  booleanSch: {
+                    type: 'boolean',
+                    description: 'Boolean schema',
+                    default: true,
+                  },
+                  nestedBooleanSch: {
+                    booleanSch: {
+                      type: 'boolean',
+                      description: 'Nested boolean schema',
+                      default: false,
+                    }
+                  },
+                  arraySch: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      description: 'Array string item',
+                      minLength: 1,
+                      maxLength: 10
+                    }
+                  },
+                  nestedArraySch: {
+                    arraySch: {
+                      type: 'array',
+                      description: 'Nested array schema',
+                      items: {
+                        type: 'number',
+                        description: 'Nested array number item',
+                        minimum: 4,
+                        maximum: 444,
+                      }
+                    }
+                  },
+                  objectSch: {
+                    type: 'object',
+                    properties: {
+                      aaa: {
+                        type: 'string',
+                        description: 'Object string property',
+                        enum: ['aaa', 'bbb', 'ccc'],
+                      }
+                    }
+                  },
+                  nestedObjectSch: {
+                    objectSch: {
+                      type: 'object',
+                      description: 'Nested object schema',
+                      properties: {
+                        aaa: {
+                          type: 'number',
+                          description: 'Nested object number property',
+                          minimum: 1,
+                          exclusiveMinimum: true,
+                          maximum: 100,
+                          exclusiveMaximum: true,
+                          multipleOf: 10,
+                        }
+                      }
+                    }
+                  },
+                  nestedSchemasInArray: [
+                    {
+                      type: 'string',
+                      description: 'Nested string schema in array',
+                      minLength: 1,
+                      maxLength: 10
+                    },
+                    {
+                      type: 'number',
+                      description: 'Nested number schema in array',
+                      minimum: 1,
+                      exclusiveMinimum: true,
+                      maximum: 100,
+                      exclusiveMaximum: true,
+                      multipleOf: 10,
+                    },
+                    {
+                      type: 'boolean',
+                      description: 'Nested boolean schema in array',
+                      default: true,
+                    },
+                    {
+                      type: 'object',
+                      description: 'Nested object schema in array',
+                      properties: {
+                        aaa: {
+                          type: 'number',
+                          minimum: 1,
+                        }
+                      }
+                    },
+                    {
+                      type: 'array',
+                      description: 'Nested array schema in array',
+                      items: {
+                        type: 'integer',
+                        maximum: 100,
+                        multipleOf: 10,
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-bindings-with-schema-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithTwoBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-two-bindings": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  key: {
+                    type: "string",
+                    description: "Partitioning key for the message",
+                    minLength: 1,
+                  },
+                  schemaIdLocation: "header",
+                  schemaIdPayloadEncoding: "application/json",
+                  schemaLookupStrategy: "topicNameStrategy",
+                },
+                rabbitmq: {
+                  contentEncoding: "application/json",
+                  messageType: "orders.created",
+                  bindingVersion: "0.2.0",
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-two-bindings',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithDescriptionAndHeaders: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-description-and-headers": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          schemas: {
+            Identifier: {
+              type: "string",
+              description: "Identifier example",
+              minLength: 1,
+              maxLength: 10,
+              examples: ["1234567890", "abcdefghij", "ABCDEFGHIJ"]
+            }
+          },
+          messages: {
+            StatusMessage: {
+              description: "Status message description",
+              headers: {
+                $ref: "#/components/schemas/Identifier"
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-description-and-headers',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithDescriptionAndPayload: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-description-and-payload": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              description: "Status message description",
+              payload: { $ref: "#/components/schemas/Status" },
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-description-and-payload',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMessageWithDescriptionAndBindingWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-description-and-binding-with-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              description: "Status message description",
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-with-description-and-binding-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithTwoMessagesWithNames: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-two-messages-with-names": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" },
+              { $ref: "#/components/messages/IdentifierMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              name: "StatusMessage",
+            },
+            IdentifierMessage: {
+              name: "IdentifierMessage",
+            },
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-two-messages-with-names',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithDescriptionAndMessageWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-description-and-message-with-nothing": {
+            action: "send",
+            description: "Description of Send Operation With Description And Message With Nothing",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        messages: {
+          StatusMessage: {
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-description-and-message-with-nothing',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithMinimalOverallStructure: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-minimal-overall-structure": {
+            action: "send",
+            description: "Description of Send Operation With Minimal Overall Structure",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" },
+              { $ref: "#/components/messages/AnotherStatusMessage" }
+            ],
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                property: "kafka-property",
+              },
+              rabbitmq: {
+                bindingVersion: "0.2.0",
+                property: "rabbitmq-property",
+              }
+            }
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            description: "Description of First Channel",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                property: "kafka-property",
+              },
+              rabbitmq: {
+                bindingVersion: "0.2.0",
+                property: "rabbitmq-property",
+              }
+            }
+          }
+        },
+        components: {
+          schemas: {
+            Identifier1: {
+              type: "string",
+              description: "Identifier example",
+              minLength: 1,
+              maxLength: 10,
+            },
+            Status1: {
+              type: "object",
+              description: "Status example",
+              properties: {
+                status: {
+                  type: 'string',
+                  description: 'Status example',
+                  enum: ['not_started', 'in_progress', 'failed', 'success']
+                }
+              }
+            },
+            Identifier2: {
+              type: 'object',
+              description: 'Identifier example',
+              properties: {
+                identifier: {
+                  type: 'string',
+                  description: 'Identifier example',
+                }
+              }
+            },
+            Status2: {
+              type: 'string',
+              description: 'Status example',
+              enum: ['not_started', 'in_progress', 'failed', 'success']
+            }
+          },
+          messages: {
+            StatusMessage: {
+              name: "StatusMessage",
+              description: "Description of Status Message",
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  property: "kafka-property",
+                },
+                rabbitmq: {
+                  bindingVersion: "0.2.0",
+                  property: "rabbitmq-property",
+                }
+              },
+              headers: {
+                $ref: "#/components/schemas/Identifier1"
+              },
+              payload: {
+                $ref: "#/components/schemas/Status1"
+              }
+            },
+            AnotherStatusMessage: {
+              name: "AnotherStatusMessage",
+              description: "Description of Another Status Message",
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.2.0",
+                  property: "kafka-property",
+                },
+                rabbitmq: {
+                  bindingVersion: "0.5.0",
+                  property: "rabbitmq-property",
+                }
+              },
+              headers: {
+                $ref: "#/components/schemas/Identifier2"
+              },
+              payload: {
+                $ref: "#/components/schemas/Status2"
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-minimal-overall-structure',
+    operationType: 'send',
+  }
+}
+
+export const ReceiveOperationWithNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "receive-operation-with-nothing": {
+            action: "receive",
+          }
+        }
+      },
+    }),
+    operationName: 'receive-operation-with-nothing',
+    operationType: 'receive',
+  }
+}

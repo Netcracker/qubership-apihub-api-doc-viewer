@@ -5,13 +5,13 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useMemo } from "react";
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
+import { Aligner } from "../JsoViewer/Aligner";
 import { AddressRow } from "./AddressRow";
 import { BindingsNodeViewer } from "./BindingsNodeViewer";
 import { ChannelNodeViewer } from "./ChannelNodeViewer";
 import { MessagesNodeViewer } from "./MessagesNodeViewer";
 import { SpecificationExtensions } from "./SpecificationExtensions";
 import { TitleRow } from "./TitleRow";
-import { Aligner } from "../JsoViewer/Aligner";
 
 type OperationNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION>
@@ -29,11 +29,6 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       node.childrenNodes(),
     )
   ), [node])
-
-  const operationExtensions = useMemo(
-    () => value?.extensions ?? {},
-    [value?.extensions],
-  )
 
   return (
     <div className="flex flex-col gap-1">
@@ -53,10 +48,12 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
           layoutMode={layoutMode}
         />
       </Aligner>
-      <SpecificationExtensions
-        values={operationExtensions}
-        kind={AsyncApiTreeNodeKinds.OPERATION}
-      />
+      {value?.extensions && (
+        <SpecificationExtensions
+          values={value.extensions}
+          kind={AsyncApiTreeNodeKinds.OPERATION}
+        />
+      )}
       <OperationChildrenViewer
         children={operationChildren}
       />

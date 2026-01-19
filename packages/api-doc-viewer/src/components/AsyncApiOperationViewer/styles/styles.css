@@ -1,9 +1,11 @@
 button.button-selector-option {
   /* bg-slate-100 */
-  background-color: rgb(241, 245, 249);
-  border: 1px solid #e0e0e0;
+  background-color: white;
+  border: 1px solid #8F9EB4;
+  color: #8F9EB4;
   border-radius: 4px;
-  padding: 4px 8px;
+  padding: 0px 8px 2px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -18,5 +20,6 @@ button.button-selector-option:focus {
 
 button.button-selector-option.selected {
   /* bg-slate-300 */
-  background-color: rgb(203, 213, 225);
+  background-color: #8F9EB4;
+  color: white;
 }

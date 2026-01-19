@@ -16,7 +16,7 @@ export function getAsyncApiCrawlRules(
     '/operations': {
       '/*': () => ({
         ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.OPERATION),
-        transformers: [liftAddressTransformer, aggregateSpecificationExtensions],
+        transformers: [liftAddressTransformer, defaultChannelAddressTransformer, aggregateSpecificationExtensions],
       }),
     },
     // Operation

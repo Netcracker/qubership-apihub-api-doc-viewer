@@ -17,7 +17,7 @@ export const BindingSelector: FC<BindingSelectorProps> = (props) => {
   }
 
   return (
-    <div>
+    <div className='flex flex-row gap-2'>
       {options.map((option) => {
         const optionValue = option.value()
         if (!optionValue) {
