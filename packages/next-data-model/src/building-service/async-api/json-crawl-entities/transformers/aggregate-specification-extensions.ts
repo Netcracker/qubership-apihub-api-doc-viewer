@@ -9,6 +9,9 @@ export const aggregateSpecificationExtensions: SchemaTransformFunc<AsyncApiTreeC
   }
   const allKeys = Reflect.ownKeys(value)
   const extensionKeys = allKeys.filter((key): key is string => typeof key === 'string' && key.startsWith('x-'))
+  if (extensionKeys.length === 0) {
+    return value
+  }
   const extensionKeysSet = new Set(extensionKeys)
   const extensions = extensionKeys.reduce((acc, extensionKey) => {
     const extensionValue = value[extensionKey]

@@ -25,7 +25,7 @@ export interface AsyncApiTreeNodeValueBase {
 }
 
 interface AsyncApiTreeNodeValueWithExtensions {
-  readonly extensions: Record<SpecificationExtensionKey, unknown>
+  readonly extensions?: Record<SpecificationExtensionKey, unknown>
 }
 
 export interface AsyncApiTreeNodeValueTypeRoot extends AsyncApiTreeNodeValueBase {}
