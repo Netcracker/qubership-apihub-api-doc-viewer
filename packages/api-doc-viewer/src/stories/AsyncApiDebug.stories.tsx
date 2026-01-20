@@ -104,6 +104,7 @@ export const Debug: Story = {
 
     return (
       <AsyncApiOperationViewer
+        key={sourceText}
         {...viewerArgs}
         source={prepareAsyncApiDocument({ source: parsedSource })}
       />
