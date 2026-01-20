@@ -100,13 +100,12 @@ export const Debug: Story = {
       parsedSource = {}
     }
 
-    // Custom transformation placeholder: replace with your own logic as needed.
-    const transformedSource = parsedSource
+    console.debug('Parsed source:', parsedSource)
 
     return (
       <AsyncApiOperationViewer
         {...viewerArgs}
-        source={prepareAsyncApiDocument({ source: transformedSource })}
+        source={prepareAsyncApiDocument({ source: parsedSource })}
       />
     )
   }
