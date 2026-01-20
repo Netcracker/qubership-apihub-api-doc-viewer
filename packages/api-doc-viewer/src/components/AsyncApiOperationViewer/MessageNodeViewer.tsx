@@ -20,7 +20,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const displayMode = useDisplayMode()
 
   const messageValue = node.value()
-  const messageDescription = messageValue?.description ?? ''
+  const description = messageValue?.description ?? messageValue?.summary ?? ''
 
   const messageChildren: AsyncApiTreeNode[] = node.childrenNodes()
   const bindingsChild = messageChildren.find(isBindingsNode)
@@ -29,10 +29,10 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
 
   return (
     <div className="flex flex-col gap-1">
-      {messageDescription && (
+      {description && (
         <Aligner>
           <DescriptionRow
-            value={messageDescription}
+            value={description}
             level={0}
           // fontSize='base'
           />

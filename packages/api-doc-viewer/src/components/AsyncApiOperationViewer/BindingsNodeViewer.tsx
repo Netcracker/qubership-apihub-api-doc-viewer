@@ -33,7 +33,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
   const selectedBindingValue = selectedBinding?.value()
   const {
-    version: bindingVersion = null,
+    version: bindingVersion = 'latest',
     binding: bindingValue = null,
   } = selectedBindingValue ?? {}
 

@@ -30,6 +30,8 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
 
   const channelChildren = node.childrenNodes()
 
+  const description = value?.description ?? value?.summary ?? ''
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -38,10 +40,10 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
         expanded={true}
         variant='h2'
       />
-      {value?.description && (
+      {description && (
         <Aligner>
           <DescriptionRow
-            value={value.description}
+            value={description}
             // fontSize='base'
             layoutMode={layoutMode}
             level={level}

@@ -39,7 +39,7 @@ export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValu
 
 export interface AsyncApiTreeNodeValueTypeBinding extends AsyncApiTreeNodeValueWithExtensions {
   readonly binding: Record<string, unknown>
-  readonly version: string
+  readonly version?: string
   readonly protocol: string
 }
 

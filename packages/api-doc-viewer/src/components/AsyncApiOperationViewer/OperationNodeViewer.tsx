@@ -30,6 +30,8 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
     )
   ), [node])
 
+  const description = value?.description ?? value?.summary ?? ''
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -41,13 +43,15 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
         action={value?.action ?? ''}
         address={value?.address ?? ''}
       />
-      <Aligner>
-        <DescriptionRow
-          value={value?.description ?? value?.summary ?? ''}
-          // fontSize='base'
-          layoutMode={layoutMode}
-        />
-      </Aligner>
+      {description && (
+        <Aligner>
+          <DescriptionRow
+            value={description}
+            // fontSize='base'
+            layoutMode={layoutMode}
+          />
+        </Aligner>
+      )}
       {value?.extensions && (
         <SpecificationExtensions
           values={value.extensions}

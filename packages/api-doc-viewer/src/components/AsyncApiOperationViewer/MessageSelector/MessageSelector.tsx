@@ -19,8 +19,10 @@ export const MessageSelector: FC<MessageSelectorProps> = (props) => {
   return (
     <div className='flex flex-row gap-2'>
       {options.map((option) => {
+        const optionKey = option.key.toString()
         const optionValue = option.value()
-        if (!optionValue) {
+        const optionTitle = optionValue?.title ?? optionValue?.internalTitle ?? optionKey
+        if (!optionTitle) {
           return null
         }
         return (
@@ -33,7 +35,7 @@ export const MessageSelector: FC<MessageSelectorProps> = (props) => {
               onSelectOption(option)
             }}
           >
-            {optionValue.title ?? optionValue.internalTitle ?? 'unknown'}
+            {optionTitle}
           </button>
         )
       })}
