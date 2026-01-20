@@ -16,6 +16,7 @@
 
 import { AsyncApiOperationViewer } from '@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 import type { Meta, StoryObj } from '@storybook/react';
+import YAML from 'js-yaml';
 import type { ComponentProps } from 'react';
 import { prepareAsyncApiDocument } from './preprocess';
 
@@ -79,10 +80,23 @@ export const Debug: Story = {
   },
   render: (args) => {
     const { sourceText, ...viewerArgs } = args
-    let parsedSource: unknown = {}
+
+    let parsedSource: unknown = undefined
     try {
       parsedSource = JSON.parse(sourceText)
-    } catch {
+    } catch (error) {
+      console.error('Cannot parse JSON:', error)
+      parsedSource = undefined
+    }
+    try {
+      if (!parsedSource) {
+        parsedSource = YAML.load(sourceText)
+      }
+    } catch (error) {
+      console.error('Cannot parse YAML:', error)
+      parsedSource = undefined
+    }
+    if (!parsedSource) {
       parsedSource = {}
     }
 
