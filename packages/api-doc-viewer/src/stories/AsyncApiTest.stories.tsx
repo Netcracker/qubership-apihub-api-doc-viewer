@@ -311,6 +311,41 @@ export const KafkaE2E: Story = {
   }
 }
 
+const BINDING_WITH_PRIMITIVE_PROPS = {
+  bindingVersion: "0.5.0",
+  num: 123,
+  str: "string",
+}
+
+const BINDING_WITH_OBJECT_PROPS = {
+  bindingVersion: "0.5.0",
+  obj: { str: "string value" },
+  complexObj: {
+    nestedObj: { num: 2222 }
+  },
+}
+
+const BINDING_WITH_SCHEMA_PROPS = {
+  bindingVersion: "0.5.0",
+  notSchema: true,
+  stringSch: {
+    type: 'string',
+    description: 'String schema',
+    minLength: 1,
+    maxLength: 10
+  },
+  objectSch: {
+    type: 'object',
+    properties: {
+      str: {
+        type: 'string',
+        description: 'Object string property',
+        enum: ['aaa', 'bbb', 'ccc'],
+      }
+    }
+  },
+}
+
 export const SendOperationWithNothing: Story = {
   args: {
     source: prepareAsyncApiDocument({
@@ -518,6 +553,96 @@ export const SendOperationWithRootLevelChannelWithBindingWithNothing: Story = {
   }
 }
 
+export const SendOperationWithRootLevelChannelWithBindingWithPrimitiveProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-binding-with-primitive-props": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            bindings: {
+              kafka: {
+                ...BINDING_WITH_PRIMITIVE_PROPS,
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-binding-with-primitive-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithBindingWithObjectProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-binding-with-object-props": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            bindings: {
+              kafka: {
+                ...BINDING_WITH_OBJECT_PROPS,
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-binding-with-object-props',
+    operationType: 'send',
+  }
+}
+
+export const SendOperationWithRootLevelChannelWithBindingWithSchemaProps: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-with-binding-with-schema-props": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+            bindings: {
+              kafka: {
+                ...BINDING_WITH_SCHEMA_PROPS,
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-root-level-channel-with-binding-with-schema-props',
+    operationType: 'send',
+  }
+}
+
 export const SendOperationWithRootLevelChannelWithDescriptionAndBindingWithNothing: Story = {
   args: {
     source: prepareAsyncApiDocument({
@@ -650,12 +775,7 @@ export const SendOperationWithBindingsKafkaWithOnlyPrimitiveProps: Story = {
             action: "send",
             bindings: {
               kafka: {
-                bindingVersion: "0.5.0",
-                num: 123,
-                str: "string",
-                bool: true,
-                // TODO: api-unifier removes "null" value during normalization
-                empty: null,
+                ...BINDING_WITH_PRIMITIVE_PROPS,
               }
             }
           }
@@ -677,43 +797,7 @@ export const SendOperationWithBindingsKafkaWithObjectProps: Story = {
             action: "send",
             bindings: {
               kafka: {
-                bindingVersion: "0.5.0",
-                num: 1111,
-                str: "string",
-                bool: true,
-                // TODO: api-unifier removes "null" value during normalization
-                empty: null,
-                obj: {
-                  key: "string value"
-                },
-                arr: [1, 2, 3],
-                complexObj: {
-                  nestedObj: {
-                    aaa: 2222,
-                    bbb: false,
-                    ccc: 'aaabbb',
-                    // TODO: api-unifier removes "null" value during normalization
-                    empty: null,
-                    arr: [1, 2],
-                  }
-                },
-                complexArr: [
-                  {
-                    aaa: 3333,
-                    bbb: true,
-                    ccc: 'bbbccc',
-                    // TODO: api-unifier removes "null" value during normalization
-                    empty: null,
-                    arr: [2, 3],
-                    nestedObj: {
-                      aaa: 4444,
-                      bbb: false,
-                      // TODO: api-unifier removes "null" value during normalization
-                      empty: null,
-                      arr: [3, 4],
-                    }
-                  }
-                ]
+                ...BINDING_WITH_OBJECT_PROPS,
               }
             }
           }
@@ -735,136 +819,7 @@ export const SendOperationWithBindingsKafkaWithSchemaProps: Story = {
             action: "send",
             bindings: {
               kafka: {
-                bindingVersion: "0.5.0",
-                stringSch: {
-                  type: 'string',
-                  description: 'String schema',
-                  minLength: 1,
-                  maxLength: 10
-                },
-                nestedStringSch: {
-                  stringSch: {
-                    type: 'string',
-                    description: 'Nested string schema',
-                    minLength: 7,
-                    maxLength: 70
-                  }
-                },
-                numberSch: {
-                  type: 'number',
-                  description: 'Number schema',
-                  minimum: 1,
-                  maximum: 100,
-                },
-                nestedNumberSch: {
-                  numberSch: {
-                    type: 'number',
-                    description: 'Nested number schema',
-                    minimum: 7,
-                    maximum: 700,
-                  }
-                },
-                booleanSch: {
-                  type: 'boolean',
-                  description: 'Boolean schema',
-                  default: true,
-                },
-                nestedBooleanSch: {
-                  booleanSch: {
-                    type: 'boolean',
-                    description: 'Nested boolean schema',
-                    default: false,
-                  }
-                },
-                arraySch: {
-                  type: 'array',
-                  items: {
-                    type: 'string',
-                    description: 'Array string item',
-                    minLength: 1,
-                    maxLength: 10
-                  }
-                },
-                nestedArraySch: {
-                  arraySch: {
-                    type: 'array',
-                    description: 'Nested array schema',
-                    items: {
-                      type: 'number',
-                      description: 'Nested array number item',
-                      minimum: 4,
-                      maximum: 444,
-                    }
-                  }
-                },
-                objectSch: {
-                  type: 'object',
-                  properties: {
-                    aaa: {
-                      type: 'string',
-                      description: 'Object string property',
-                      enum: ['aaa', 'bbb', 'ccc'],
-                    }
-                  }
-                },
-                nestedObjectSch: {
-                  objectSch: {
-                    type: 'object',
-                    description: 'Nested object schema',
-                    properties: {
-                      aaa: {
-                        type: 'number',
-                        description: 'Nested object number property',
-                        minimum: 1,
-                        exclusiveMinimum: true,
-                        maximum: 100,
-                        exclusiveMaximum: true,
-                        multipleOf: 10,
-                      }
-                    }
-                  }
-                },
-                nestedSchemasInArray: [
-                  {
-                    type: 'string',
-                    description: 'Nested string schema in array',
-                    minLength: 1,
-                    maxLength: 10
-                  },
-                  {
-                    type: 'number',
-                    description: 'Nested number schema in array',
-                    minimum: 1,
-                    exclusiveMinimum: true,
-                    maximum: 100,
-                    exclusiveMaximum: true,
-                    multipleOf: 10,
-                  },
-                  {
-                    type: 'boolean',
-                    description: 'Nested boolean schema in array',
-                    default: true,
-                  },
-                  {
-                    type: 'object',
-                    description: 'Nested object schema in array',
-                    properties: {
-                      aaa: {
-                        type: 'number',
-                        minimum: 1,
-                      }
-                    }
-                  },
-                  {
-                    type: 'array',
-                    description: 'Nested array schema in array',
-                    items: {
-                      type: 'integer',
-                      maximum: 100,
-                      multipleOf: 10,
-                    }
-                  }
-                ]
+                ...BINDING_WITH_SCHEMA_PROPS,
               }
             }
           }
@@ -1515,12 +1470,7 @@ export const SendOperationWithMessageWithBindingsWithPrimitiveProps: Story = {
             StatusMessage: {
               bindings: {
                 kafka: {
-                  bindingVersion: "0.5.0",
-                  num: 123,
-                  str: "string",
-                  bool: true,
-                  // TODO: api-unifier removes "null" value during normalization
-                  empty: null,
+                  ...BINDING_WITH_PRIMITIVE_PROPS,
                 }
               }
             }
@@ -1551,38 +1501,7 @@ export const SendOperationWithMessageWithBindingsWithObjectProps: Story = {
             StatusMessage: {
               bindings: {
                 kafka: {
-                  bindingVersion: "0.5.0",
-                  obj: {
-                    key: "string value"
-                  },
-                  arr: [1, 2, 3],
-                  complexObj: {
-                    nestedObj: {
-                      aaa: 2222,
-                      bbb: false,
-                      ccc: 'aaabbb',
-                      // TODO: api-unifier removes "null" value during normalization
-                      empty: null,
-                      arr: [1, 2],
-                    }
-                  },
-                  complexArr: [
-                    {
-                      aaa: 3333,
-                      bbb: true,
-                      ccc: 'bbbccc',
-                      // TODO: api-unifier removes "null" value during normalization
-                      empty: null,
-                      arr: [2, 3],
-                      nestedObj: {
-                        aaa: 4444,
-                        bbb: false,
-                        // TODO: api-unifier removes "null" value during normalization
-                        empty: null,
-                        arr: [3, 4],
-                      }
-                    }
-                  ]
+                  ...BINDING_WITH_OBJECT_PROPS,
                 }
               }
             }
@@ -1613,136 +1532,7 @@ export const SendOperationWithMessageWithBindingsWithSchemaProps: Story = {
             StatusMessage: {
               bindings: {
                 kafka: {
-                  bindingVersion: "0.5.0",
-                  stringSch: {
-                    type: 'string',
-                    description: 'String schema',
-                    minLength: 1,
-                    maxLength: 10
-                  },
-                  nestedStringSch: {
-                    stringSch: {
-                      type: 'string',
-                      description: 'Nested string schema',
-                      minLength: 7,
-                      maxLength: 70
-                    }
-                  },
-                  numberSch: {
-                    type: 'number',
-                    description: 'Number schema',
-                    minimum: 1,
-                    maximum: 100,
-                  },
-                  nestedNumberSch: {
-                    numberSch: {
-                      type: 'number',
-                      description: 'Nested number schema',
-                      minimum: 7,
-                      maximum: 700,
-                    }
-                  },
-                  booleanSch: {
-                    type: 'boolean',
-                    description: 'Boolean schema',
-                    default: true,
-                  },
-                  nestedBooleanSch: {
-                    booleanSch: {
-                      type: 'boolean',
-                      description: 'Nested boolean schema',
-                      default: false,
-                    }
-                  },
-                  arraySch: {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                      description: 'Array string item',
-                      minLength: 1,
-                      maxLength: 10
-                    }
-                  },
-                  nestedArraySch: {
-                    arraySch: {
-                      type: 'array',
-                      description: 'Nested array schema',
-                      items: {
-                        type: 'number',
-                        description: 'Nested array number item',
-                        minimum: 4,
-                        maximum: 444,
-                      }
-                    }
-                  },
-                  objectSch: {
-                    type: 'object',
-                    properties: {
-                      aaa: {
-                        type: 'string',
-                        description: 'Object string property',
-                        enum: ['aaa', 'bbb', 'ccc'],
-                      }
-                    }
-                  },
-                  nestedObjectSch: {
-                    objectSch: {
-                      type: 'object',
-                      description: 'Nested object schema',
-                      properties: {
-                        aaa: {
-                          type: 'number',
-                          description: 'Nested object number property',
-                          minimum: 1,
-                          exclusiveMinimum: true,
-                          maximum: 100,
-                          exclusiveMaximum: true,
-                          multipleOf: 10,
-                        }
-                      }
-                    }
-                  },
-                  nestedSchemasInArray: [
-                    {
-                      type: 'string',
-                      description: 'Nested string schema in array',
-                      minLength: 1,
-                      maxLength: 10
-                    },
-                    {
-                      type: 'number',
-                      description: 'Nested number schema in array',
-                      minimum: 1,
-                      exclusiveMinimum: true,
-                      maximum: 100,
-                      exclusiveMaximum: true,
-                      multipleOf: 10,
-                    },
-                    {
-                      type: 'boolean',
-                      description: 'Nested boolean schema in array',
-                      default: true,
-                    },
-                    {
-                      type: 'object',
-                      description: 'Nested object schema in array',
-                      properties: {
-                        aaa: {
-                          type: 'number',
-                          minimum: 1,
-                        }
-                      }
-                    },
-                    {
-                      type: 'array',
-                      description: 'Nested array schema in array',
-                      items: {
-                        type: 'integer',
-                        maximum: 100,
-                        multipleOf: 10,
-                      }
-                    }
-                  ]
+                  ...BINDING_WITH_SCHEMA_PROPS,
                 }
               }
             }
@@ -2612,6 +2402,84 @@ export const DefaultMessageDescriptionIfSummaryAndDescription: Story = {
       },
     }),
     operationName: 'send-operation-with-default-message-description-if-summary-and-description',
+    operationType: 'send',
+  }
+}
+
+export const DefaultOperationBindingVersionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-operation-binding-version-if-nothing": {
+            action: "send",
+            bindings: {
+              kafka: {
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-operation-binding-version-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultChannelBindingVersionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-channel-binding-version-if-nothing": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            }
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            bindings: {
+              kafka: {
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-channel-binding-version-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageBindingVersionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-binding-version-if-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              bindings: {
+                kafka: {},
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-message-binding-version-if-nothing',
     operationType: 'send',
   }
 }
