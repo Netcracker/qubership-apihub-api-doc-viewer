@@ -30,7 +30,7 @@ export function getAsyncApiCrawlRules(
     '/bindings': {
       '/*': { // TODO: get rid of these sub-rules
         kind: AsyncApiTreeNodeKinds.BINDING,
-        transformers: [aggregateSpecificationExtensions, inlineBindingParameters], // TODO: should move all binding content into field "binding"
+        transformers: [inlineBindingParameters], // TODO: should move all binding content into field "binding"
       },
       kind: AsyncApiTreeNodeKinds.BINDINGS,
       complex: true,

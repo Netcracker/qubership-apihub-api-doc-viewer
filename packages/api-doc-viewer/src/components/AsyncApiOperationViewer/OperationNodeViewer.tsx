@@ -43,7 +43,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       />
       <Aligner>
         <DescriptionRow
-          value={value?.description ?? ''}
+          value={value?.description ?? value?.summary ?? ''}
           // fontSize='base'
           layoutMode={layoutMode}
         />
