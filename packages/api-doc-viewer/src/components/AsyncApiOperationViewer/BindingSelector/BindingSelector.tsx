@@ -26,7 +26,7 @@ export const BindingSelector: FC<BindingSelectorProps> = (props) => {
         return (
           <button
             key={option.id}
-            className={`button-selector-option ${selectedOption === option ? 'selected' : ''}`}
+            className={`button-selector-option button-selector-option_secondary ${selectedOption === option ? 'selected' : ''}`}
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()

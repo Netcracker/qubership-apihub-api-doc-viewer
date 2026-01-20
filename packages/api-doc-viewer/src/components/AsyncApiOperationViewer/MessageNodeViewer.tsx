@@ -34,7 +34,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           <DescriptionRow
             value={description}
             level={0}
-          // fontSize='base'
+            fontSize='secondary'
           />
         </Aligner>
       )}

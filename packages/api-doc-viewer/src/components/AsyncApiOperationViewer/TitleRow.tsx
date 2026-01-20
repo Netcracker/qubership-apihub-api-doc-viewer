@@ -76,29 +76,32 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
   )
 })
 
-const FONT_STYLES_MAP: Record<TitleVariant, string> = {
-  [TitleVariant.h1]: 'text-2xl font-bold',
-  [TitleVariant.h2]: 'text-xl font-bold',
-  [TitleVariant.h3]: 'text-lg font-bold',
-  [TitleVariant.h4]: 'text-base font-bold',
-  [TitleVariant.body]: 'text-xs',
-}
-
 const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
   const { value, diff, variant, expandable, onClickExpander } = props
 
-  const resolvedValue = useMemo(() => resolveValue(value, diff), [diff, value])
+  const resolvedValue = useMemo(
+    () => resolveValue(value, diff),
+    [diff, value],
+  )
 
-  const classes = useMemo(() => ([
-    'font-Inter-Medium',
-    FONT_STYLES_MAP[variant],
-    expandable ? 'hover:cursor-pointer' : '',
-    variant === TitleVariant.body ? 'py-1' : '',
-  ].join(' ')), [expandable, variant])
+  const styledResolvedValue = useMemo(() => {
+    switch (variant) {
+      case TitleVariant.h1:
+        return <h1>{resolvedValue}</h1>
+      case TitleVariant.h2:
+        return <h2>{resolvedValue}</h2>
+      case TitleVariant.h3:
+        return <h3>{resolvedValue}</h3>
+      case TitleVariant.h4:
+        return <h4>{resolvedValue}</h4>
+      case TitleVariant.body:
+        return <span>{resolvedValue}</span>
+    }
+  }, [resolvedValue, variant])
 
   return (
-    <div className={classes} onClick={onClickExpander}>
-      {resolvedValue}
+    <div className={`font-Inter-Medium ${expandable ? 'hover:cursor-pointer' : ''}`} onClick={onClickExpander}>
+      {styledResolvedValue}
     </div>
   )
 })

@@ -28,7 +28,7 @@ export const MessageSelector: FC<MessageSelectorProps> = (props) => {
         return (
           <button
             key={option.id}
-            className={`button-selector-option ${selectedOption === option ? 'selected' : ''}`}
+            className={`button-selector-option button-selector-option_primary ${selectedOption === option ? 'selected' : ''}`}
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()

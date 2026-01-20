@@ -18,7 +18,7 @@ import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/Level
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { DEFAULT_STRIKETHROUGH_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../../consts/changes';
@@ -71,7 +71,7 @@ export type DescriptionRowProps = PropsWithoutChangesSummary<
   PropsWithShift &
   {
     value: string
-    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' // TODO: Just a WA before the component is refactored
+    fontSize?: 'primary' | 'secondary' | 'legacy'
   } &
   PropsWithChanges
 >
@@ -80,7 +80,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
     shift = false,
     value,
-    fontSize = 'xs',
+    fontSize = 'legacy',
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -127,7 +127,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
       <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         {/* <NestingIndicator level={level} /> */}
-        <div className="text-xs font-normal py-1">
+        <div className="py-1">
           <Value
             value={value}
             fontSize={fontSize}
@@ -215,7 +215,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
 type ValueProps = {
   value: string
-  fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl'
+  fontSize?: 'primary' | 'secondary' | 'legacy'
   expanded?: boolean
   setIsExpandable?: Dispatch<SetStateAction<boolean>>
   // diffs
@@ -227,7 +227,7 @@ type ValueProps = {
 
 const Value: FC<ValueProps> = props => {
   const {
-    fontSize = 'xs',
+    fontSize = 'legacy',
     expanded = false,
     setIsExpandable,
     // diffs
@@ -286,9 +286,22 @@ const Value: FC<ValueProps> = props => {
     setIsExpandable?.(isExpandable)
   }, [isExpandable, setIsExpandable]);
 
+  const fontSizeClass = useMemo(() => {
+    switch (fontSize) {
+      case 'primary':
+        return 'description-row_primary'
+      case 'secondary':
+        return 'description-row_secondary'
+      case 'legacy':
+        return 'text-xs'
+      default:
+        return ''
+    }
+  }, [fontSize])
+
   return (
     <ReactMarkdown
-      className={`markdown text-${fontSize} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown ${fontSizeClass} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}

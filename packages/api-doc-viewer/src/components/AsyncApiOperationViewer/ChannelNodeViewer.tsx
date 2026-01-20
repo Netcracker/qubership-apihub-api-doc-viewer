@@ -1,14 +1,14 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { FC, useMemo } from "react"
+import { FC } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { Aligner } from "../JsoViewer/Aligner"
+import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { SpecificationExtensions } from "./SpecificationExtensions"
 import { TitleRow } from "./TitleRow"
-import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 
 type ChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
@@ -22,11 +22,7 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
 
   const value = node.value()
 
-  const sectionTitle = useMemo(
-    // TODO: api-unifier does NOT resolves synthetic title?
-    () => `Channel ${value?.title ?? node.key.toString() ?? ''}`.trim(),
-    [value, node],
-  )
+  const channelTitle = value?.title ?? node.key.toString() ?? ''
 
   const channelChildren = node.childrenNodes()
 
@@ -35,16 +31,23 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
-        value={sectionTitle}
+        value='Channel'
         expandable={false}
         expanded={true}
         variant='h2'
+        subheader={() => {
+          return (
+            <button className='button-selector-option button-selector-option_primary button-selector-option_disabled selected'>
+              {channelTitle}
+            </button>
+          )
+        }}
       />
       {description && (
         <Aligner>
           <DescriptionRow
             value={description}
-            // fontSize='base'
+            fontSize='secondary'
             layoutMode={layoutMode}
             level={level}
           />
