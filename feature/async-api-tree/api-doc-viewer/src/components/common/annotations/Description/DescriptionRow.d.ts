@@ -22,12 +22,12 @@ import { LayoutMode } from '../../../../types/LayoutMode';
 import { PropsWithoutChangesSummary } from "../../../../types/PropsWithoutChangesSummary";
 export type DescriptionRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     value: string;
-    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+    fontSize?: 'primary' | 'secondary' | 'legacy';
 } & PropsWithChanges>;
 export declare const DescriptionRow: FC<DescriptionRowProps>;
 type ValueProps = {
     value: string;
-    fontSize?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+    fontSize?: 'primary' | 'secondary' | 'legacy';
     expanded?: boolean;
     setIsExpandable?: Dispatch<SetStateAction<boolean>>;
     enableDiffs: boolean;
