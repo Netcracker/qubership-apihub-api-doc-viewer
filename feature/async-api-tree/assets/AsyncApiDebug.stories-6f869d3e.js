@@ -43,7 +43,7 @@ import{j as mn}from"./_commonjs-dynamic-modules-6308e768.js";import{A as be}from
       "action": "send"
     }
   }
-}`,operationName:"test-operation",operationType:"send"},render:e=>{const{sourceText:n,...r}=e;let l;try{l=JSON.parse(n)}catch(i){console.error("Cannot parse JSON:",i),l=void 0}try{l||(l=Ri.load(n))}catch(i){console.error("Cannot parse YAML:",i),l=void 0}return(!l||typeof l!="object")&&(l={}),console.debug("Parsed source:",l),mn.jsx(be,{...r,source:xn({source:l})})}};var we,Se,Ee;H.parameters={...H.parameters,docs:{...(we=H.parameters)==null?void 0:we.docs,source:{originalSource:`{
+}`,operationName:"",operationType:""},render:e=>{const{sourceText:n,...r}=e;let l;try{l=JSON.parse(n)}catch(i){console.error("Cannot parse JSON:",i),l=void 0}try{l||(l=Ri.load(n))}catch(i){console.error("Cannot parse YAML:",i),l=void 0}return(!l||typeof l!="object")&&(l={}),console.debug("Parsed source:",l),mn.jsx(be,{...r,source:xn({source:l})})}};var we,Se,Ee;H.parameters={...H.parameters,docs:{...(we=H.parameters)==null?void 0:we.docs,source:{originalSource:`{
   args: {
     sourceText: \`{
   "asyncapi": "3.0.0",
@@ -53,8 +53,8 @@ import{j as mn}from"./_commonjs-dynamic-modules-6308e768.js";import{A as be}from
     }
   }
 }\`,
-    operationName: 'test-operation',
-    operationType: 'send'
+    operationName: '',
+    operationType: ''
   },
   render: args => {
     const {
