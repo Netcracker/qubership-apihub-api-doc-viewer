@@ -75,8 +75,8 @@ export const Debug: Story = {
     }
   }
 }`,
-    operationName: 'test-operation',
-    operationType: 'send',
+    operationName: '',
+    operationType: '',
   },
   render: (args) => {
     const { sourceText, ...viewerArgs } = args
