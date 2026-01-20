@@ -96,7 +96,7 @@ export const Debug: Story = {
       console.error('Cannot parse YAML:', error)
       parsedSource = undefined
     }
-    if (!parsedSource) {
+    if (!parsedSource || typeof parsedSource !== 'object') {
       parsedSource = {}
     }
 
