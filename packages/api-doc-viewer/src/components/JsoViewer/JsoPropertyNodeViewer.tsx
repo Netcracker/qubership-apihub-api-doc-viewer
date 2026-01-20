@@ -40,7 +40,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         case 'number':
         case 'boolean':
           return (
-            <span className={`text-slate-500 text-xs mt-0.5 pb-0.5 ${nodeValue?.isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
+            <span className={`text-slate-500 mt-0.5 pt-0 pb-0.5 ${nodeValue?.isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
               {`${nodeValue?.value}`}
             </span>
           )

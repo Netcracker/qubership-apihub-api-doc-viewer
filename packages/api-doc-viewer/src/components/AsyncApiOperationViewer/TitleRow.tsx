@@ -85,25 +85,23 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
   )
 
   const styledResolvedValue = useMemo(() => {
+    const commonStyles = `font-Inter-Medium ${expandable ? 'hover:cursor-pointer' : ''}`
+    const commonProps = { className: commonStyles, onClick: onClickExpander }
     switch (variant) {
       case TitleVariant.h1:
-        return <h1>{resolvedValue}</h1>
+        return <h1 {...commonProps}>{resolvedValue}</h1>
       case TitleVariant.h2:
-        return <h2>{resolvedValue}</h2>
+        return <h2 {...commonProps}>{resolvedValue}</h2>
       case TitleVariant.h3:
-        return <h3>{resolvedValue}</h3>
+        return <h3 {...commonProps}>{resolvedValue}</h3>
       case TitleVariant.h4:
-        return <h4>{resolvedValue}</h4>
+        return <h4 {...commonProps}>{resolvedValue}</h4>
       case TitleVariant.body:
-        return <span>{resolvedValue}</span>
+        return <span {...commonProps}>{resolvedValue}</span>
     }
-  }, [resolvedValue, variant])
+  }, [resolvedValue, variant, expandable, onClickExpander])
 
-  return (
-    <div className={`font-Inter-Medium ${expandable ? 'hover:cursor-pointer' : ''}`} onClick={onClickExpander}>
-      {styledResolvedValue}
-    </div>
-  )
+  return styledResolvedValue
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
