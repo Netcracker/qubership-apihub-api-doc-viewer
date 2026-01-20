@@ -2099,3 +2099,519 @@ export const ReceiveOperationWithNothing: Story = {
     operationType: 'receive',
   }
 }
+
+// Special cases for AsyncAPI specification extensions
+
+const extensions: Record<string, unknown> = {
+  'x-first': 'first',
+  'x-second': [1, 2, 3],
+  'x-third': {
+    fourth: 'fourth',
+  },
+}
+
+export const ExtensionsInOperation: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-operation-extensions": {
+            action: "send",
+            ...extensions,
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-operation-extensions',
+    operationType: 'send',
+  }
+}
+
+export const ExtensionsInChannel: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-extensions": {
+            title: 'Channel With Extensions',
+            description: 'Description of Channel With Extensions',
+            ...extensions,
+          }
+        },
+        operations: {
+          "send-operation-with-channel-extensions": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-extensions"
+            },
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-channel-extensions',
+    operationType: 'send',
+  }
+}
+
+export const ExtensionsInMessage: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-extensions": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              name: 'StatusMessage',
+              description: 'Description of Status Message',
+              ...extensions,
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-extensions',
+    operationType: 'send',
+  }
+}
+
+export const ExtensionsInOperationBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-operation-bindings-extensions": {
+            action: "send",
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                predefinedProperty: "kafka-property",
+                ...extensions,
+              }
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-operation-bindings-extensions',
+    operationType: 'send',
+  }
+}
+
+export const ExtensionsInChannelBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-bindings-extensions": {
+            title: 'Channel With Bindings Extensions',
+            description: 'Description of Channel With Bindings Extensions',
+            bindings: {
+              kafka: {
+                bindingVersion: "0.5.0",
+                predefinedProperty: "kafka-property",
+                ...extensions,
+              }
+            }
+          }
+        },
+        operations: {
+          "send-operation-with-channel-bindings-extensions": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-bindings-extensions"
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-channel-bindings-extensions',
+    operationType: 'send',
+  }
+}
+
+export const ExtensionsInMessageBindings: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-bindings-extensions": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              name: 'StatusMessage',
+              description: 'Description of Status Message',
+              bindings: {
+                kafka: {
+                  bindingVersion: "0.5.0",
+                  predefinedProperty: "kafka-property",
+                  ...extensions,
+                }
+              }
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-message-bindings-extensions',
+    operationType: 'send',
+  }
+}
+
+// Special cases for defaults
+
+export const DefaultOperationTitle: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-operation-title": {
+            action: "send",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-operation-title',
+    operationType: 'send',
+  }
+}
+
+export const DefaultOperationDescriptionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-operation-description-if-nothing": {
+            action: "send",
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-operation-description-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultOperationDescriptionIfSummary: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-operation-description-if-summary": {
+            action: "send",
+            summary: 'Summary of Operation',
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-operation-description-if-summary',
+    operationType: 'send',
+  }
+}
+
+export const DefaultOperationDescriptionIfSummaryAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-operation-description-if-summary-and-description": {
+            action: "send",
+            summary: 'Summary of Operation',
+            description: 'Description of Operation',
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-operation-description-if-summary-and-description',
+    operationType: 'send',
+  }
+}
+
+export const DefaultChannelTitle: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-default-channel-title": {
+            description: 'Description of Channel With Default Title',
+          }
+        },
+        operations: {
+          "send-operation-with-default-channel-title": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-default-channel-title"
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-channel-title',
+    operationType: 'send',
+  }
+}
+
+export const DefaultChannelDescriptionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-default-channel-description-if-nothing": {
+            title: 'Channel Title',
+          }
+        },
+        operations: {
+          "send-operation-with-default-channel-description-if-nothing": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-default-channel-description-if-nothing"
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-channel-description-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultChannelDescriptionIfSummary: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-default-channel-description-if-summary": {
+            summary: 'Summary of Channel',
+          }
+        },
+        operations: {
+          "send-operation-with-default-channel-description-if-summary": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-default-channel-description-if-summary"
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-channel-description-if-summary',
+    operationType: 'send',
+  }
+}
+
+export const DefaultChannelDescriptionIfSummaryAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        channels: {
+          "channel-with-default-channel-description-if-summary-and-description": {
+            summary: 'Summary of Channel',
+            description: 'Description of Channel',
+          }
+        },
+        operations: {
+          "send-operation-with-default-channel-description-if-summary-and-description": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/channel-with-default-channel-description-if-summary-and-description"
+            }
+          }
+        }
+      },
+    }),
+    operationName: 'send-operation-with-default-channel-description-if-summary-and-description',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageTitleIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-title-if-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              description: 'Description of Status Message',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-title-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageTitleIfName: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-title-if-name": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              name: 'StatusMessage',
+              description: 'Description of Status Message',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-title-if-name',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageTitleIfTitleAndName: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-title-if-title-and-name": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              title: 'Status Message Title',
+              name: 'status-message-name',
+              description: 'Description of Status Message',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-title-if-title-and-name',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageDescriptionIfNothing: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-description-if-nothing": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ],
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              title: 'Status Message Title',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-description-if-nothing',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageDescriptionIfSummary: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-description-if-summary": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ],
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              summary: 'Summary of Status Message',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-description-if-summary',
+    operationType: 'send',
+  }
+}
+
+export const DefaultMessageDescriptionIfSummaryAndDescription: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-default-message-description-if-summary-and-description": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" }
+            ],
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              summary: 'Summary of Status Message',
+              description: 'Description of Status Message',
+            }
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-default-message-description-if-summary-and-description',
+    operationType: 'send',
+  }
+}
