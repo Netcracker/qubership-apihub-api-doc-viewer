@@ -38,12 +38,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>
 
-export const Test: Story = {
-  args: {
-    source: {},
-  }
-}
-
 const KAFKA_E2E_SOURCE = {
   asyncapi: "3.0.0",
   info: {

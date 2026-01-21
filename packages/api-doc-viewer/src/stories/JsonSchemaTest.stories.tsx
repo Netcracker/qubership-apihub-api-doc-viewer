@@ -34,12 +34,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>
 
-export const Test: Story = {
-  args: {
-    schema: {}
-  }
-}
-
 export const Cycled: Story = {
   args: {
     schema: prepareJsonSchema({
@@ -181,6 +175,22 @@ export const CombinationOfDifferentExtensionsSecondLevel: Story = {
               time: '23:59:59Z',
             },
           },
+        }
+      }
+    })
+  }
+}
+
+export const BugWithAdditionalPropertiesFalse: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'object',
+        description: 'Test',
+        additionalProperties: false,
+        properties: {
+          a: { type: 'string' },
         }
       }
     })
