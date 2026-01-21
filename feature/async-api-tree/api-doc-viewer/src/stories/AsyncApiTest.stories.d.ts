@@ -35,7 +35,6 @@ declare const meta: {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export declare const Test: Story;
 export declare const KafkaE2E: Story;
 export declare const SendOperationWithNothing: Story;
 export declare const SendOperationWithTitle: Story;

@@ -26,10 +26,10 @@ declare const meta: {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export declare const Test: Story;
 export declare const Cycled: Story;
 export declare const ExtensionsFirstLevel: Story;
 export declare const ExtensionsSecondLevel: Story;
 export declare const MultiLevelExtensionsFirstLevel: Story;
 export declare const MultiLevelExtensionsSecondLevel: Story;
 export declare const CombinationOfDifferentExtensionsSecondLevel: Story;
+export declare const BugWithAdditionalPropertiesFalse: Story;
