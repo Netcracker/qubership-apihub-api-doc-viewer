@@ -32,4 +32,7 @@ export declare const ExtensionsSecondLevel: Story;
 export declare const MultiLevelExtensionsFirstLevel: Story;
 export declare const MultiLevelExtensionsSecondLevel: Story;
 export declare const CombinationOfDifferentExtensionsSecondLevel: Story;
-export declare const BugWithAdditionalPropertiesFalse: Story;
+export declare const AdditionalPropertiesFalse: Story;
+export declare const AdditionalItemsFalse: Story;
+export declare const NewLineCharacterInEnum: Story;
+export declare const NonAsciiCharactersInEnum: Story;
