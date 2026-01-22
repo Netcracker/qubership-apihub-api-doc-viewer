@@ -62,7 +62,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         subheader={titleRowSubheader}
       />
       {bindingVersion && (
-        <span className='font-Inter-Medium font-bold mb-1'>
+        <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
           Version: {bindingVersion}
         </span>
       )}

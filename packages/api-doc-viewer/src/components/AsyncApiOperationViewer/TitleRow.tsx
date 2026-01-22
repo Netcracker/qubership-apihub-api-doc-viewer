@@ -85,7 +85,7 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
   )
 
   const styledResolvedValue = useMemo(() => {
-    const commonStyles = `font-Inter-Medium ${expandable ? 'hover:cursor-pointer' : ''}`
+    const commonStyles = `title-row font-Inter-Medium text-black ${expandable ? 'hover:cursor-pointer' : ''}`
     const commonProps = { className: commonStyles, onClick: onClickExpander }
     switch (variant) {
       case TitleVariant.h1:

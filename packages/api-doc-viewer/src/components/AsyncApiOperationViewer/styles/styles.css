@@ -40,30 +40,46 @@ button.button-selector-option.selected {
   font-weight: 600;
 }
 
-h1 {
+h1.title-row {
   font-size: 24px;
   font-weight: 600;
 }
 
-h2 {
+h2.title-row {
   font-size: 20px;
   font-weight: 600;
 }
 
-h3 {
+h3.title-row {
   font-size: 15px;
   font-weight: 600;
 }
 
-h4 {
+h4.title-row {
   font-size: 13px;
   font-weight: 600;
 }
 
-span {
+span.title-row {
   font-size: 13px;
   font-weight: 400;
   padding: 4px 0;
+}
+
+span.binding-version {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.jso-property .title-row {
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+.jso-property .subheader {
+  font-size: 12px;
+  padding-bottom: 2px;
 }
 
 .description-row_primary {
