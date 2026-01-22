@@ -181,17 +181,61 @@ export const CombinationOfDifferentExtensionsSecondLevel: Story = {
   }
 }
 
-export const BugWithAdditionalPropertiesFalse: Story = {
+export const AdditionalPropertiesFalse: Story = {
   args: {
     schema: prepareJsonSchema({
       target: REQUEST_BODY_TARGET,
       schema: {
         type: 'object',
-        description: 'Test',
+        description: 'Bug with additionalProperties = false',
         additionalProperties: false,
         properties: {
           a: { type: 'string' },
         }
+      }
+    })
+  }
+}
+
+export const AdditionalItemsFalse: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'array',
+        description: 'Bug with additionalItems = false',
+        additionalItems: false,
+        items: {
+          type: 'string',
+          description: 'String Item',
+        }
+      }
+    })
+  }
+}
+
+export const NewLineCharacterInEnum: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        description: 'Bug with new line character in enum',
+        enum: ['\n', '\r', '\r\n']
+      }
+    })
+  }
+}
+
+
+export const NonAsciiCharactersInEnum: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        description: 'Bug with new line character in enum',
+        enum: ['©', '®', 'µ']
       }
     })
   }
