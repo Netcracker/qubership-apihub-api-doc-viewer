@@ -34,7 +34,7 @@ export const MessagesNodeViewer: FC<MessagesNodeViewerProps> = (props) => {
   ), [messagesOptions, selectedMessage])
 
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       <TitleRow
         value='Messages'
         expandable={false}
