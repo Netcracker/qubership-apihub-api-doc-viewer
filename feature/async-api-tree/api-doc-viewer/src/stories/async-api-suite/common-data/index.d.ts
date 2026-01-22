@@ -35,3 +35,45 @@ export declare const BINDING_WITH_SCHEMA_PROPS: {
         };
     };
 };
+export declare const BINDINGS_WITH_SCHEMA_FOO_REF: {
+    kafka: {
+        bindingVersion: string;
+        foo: {
+            $ref: string;
+        };
+    };
+};
+export declare const CIRCULAR_SCHEMA_KIND_A: {
+    foo: {
+        properties: {
+            bar: {
+                properties: {
+                    foo: {
+                        $ref: string;
+                    };
+                };
+            };
+        };
+    };
+};
+export declare const CIRCULAR_SCHEMA_KIND_B: {
+    foo: {
+        properties: {
+            bar: {
+                $ref: string;
+            };
+        };
+    };
+    bar: {
+        properties: {
+            foo: {
+                $ref: string;
+            };
+        };
+    };
+    summary: {
+        items: {
+            $ref: string;
+        }[];
+    };
+};
