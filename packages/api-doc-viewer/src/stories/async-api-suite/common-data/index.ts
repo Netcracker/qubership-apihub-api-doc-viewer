@@ -40,3 +40,43 @@ export const BINDING_WITH_SCHEMA_PROPS = {
     }
   },
 }
+
+export const BINDINGS_WITH_SCHEMA_FOO_REF = {
+  kafka: {
+    bindingVersion: "0.5.0",
+    foo: {
+      $ref: '#/components/schemas/foo'
+    }
+  }
+}
+
+export const CIRCULAR_SCHEMA_KIND_A = {
+  foo: {
+    properties: {
+      bar: {
+        properties: {
+          foo: { $ref: '#/components/schemas/foo' },
+        },
+      },
+    },
+  },
+}
+
+export const CIRCULAR_SCHEMA_KIND_B = {
+  foo: {
+    properties: {
+      bar: { $ref: '#/components/schemas/bar' },
+    },
+  },
+  bar: {
+    properties: {
+      foo: { $ref: '#/components/schemas/foo' },
+    },
+  },
+  summary: {
+    items: [
+      { $ref: '#/components/schemas/foo' },
+      { $ref: '#/components/schemas/bar' },
+    ],
+  },
+}
