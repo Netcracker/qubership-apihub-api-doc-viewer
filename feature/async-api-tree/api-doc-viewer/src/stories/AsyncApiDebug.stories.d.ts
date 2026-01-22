@@ -22,12 +22,7 @@ type StoryArgs = ComponentProps<typeof AsyncApiOperationViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<{
-        source: unknown;
-        operationType?: string | undefined;
-        operationName?: string | undefined;
-        displayMode?: import("..").DisplayMode | undefined;
-    }>;
+    component: import('../../../../node_modules/react').FC<import('../components/AsyncApiOperationViewer/AsyncApiOperationViewer').AsyncApiOperationViewerProps>;
     argTypes: {
         source: {
             control: {
