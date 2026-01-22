@@ -15,7 +15,7 @@ import { isOperationNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import '../../index.css';
 
-type AsyncApiOperationViewerProps = {
+export type AsyncApiOperationViewerProps = {
   source: unknown
   operationType?: string // send, receive
   operationName?: string // e.g. send-fruit, receive-fruit
