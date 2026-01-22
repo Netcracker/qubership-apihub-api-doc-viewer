@@ -6,7 +6,7 @@ import { DisplayMode } from "@apihub/types/DisplayMode";
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
 import { OperationNodeViewer } from "./OperationNodeViewer";
@@ -24,6 +24,10 @@ export type AsyncApiOperationViewerProps = {
 
 export const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
+    if (props.source === null) {
+      return null
+    }
+
     return (
       <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="Async API Operation Viewer" />}>
         <AsyncApiOperationViewerInner {...props} />
@@ -35,8 +39,8 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
     const { source, operationType, operationName, displayMode = DEFAULT_DISPLAY_MODE } = props
 
-    const treeBuilder = new AsyncApiTreeBuilder(source)
-    const tree = treeBuilder.build()
+    const treeBuilder = useMemo(() => new AsyncApiTreeBuilder(source), [source])
+    const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
 
     console.debug('[AsyncAPI] Source:', source)
     console.debug('[AsyncAPI] Tree:', tree)

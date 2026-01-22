@@ -3,7 +3,7 @@ import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext } from "@apihub/contexts/LevelContext"
 import { JsoTreeBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree/builder"
-import { FC, memo } from "react"
+import { FC, memo, useMemo } from "react"
 import { DisplayMode, DOCUMENT_LAYOUT_MODE } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
@@ -18,6 +18,10 @@ type JsoViewerProps = {
 
 export const JsoViewer: FC<JsoViewerProps> =
   memo<JsoViewerProps>(props => {
+    if (props.source === null) {
+      return null
+    }
+
     return (
       <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSO Viewer" />}>
         <JsoViewerInner {...props} />
@@ -28,12 +32,8 @@ export const JsoViewer: FC<JsoViewerProps> =
 const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
   const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0 } = props
 
-  if (source === null) {
-    return null
-  }
-
-  const builder = new JsoTreeBuilder(source)
-  const tree = builder.build()
+  const builder = useMemo(() => new JsoTreeBuilder(source), [source])
+  const tree = useMemo(() => builder.build(), [builder])
 
   console.debug('[JSO] Source:', source)
   console.debug('[JSO] Tree:', tree)
