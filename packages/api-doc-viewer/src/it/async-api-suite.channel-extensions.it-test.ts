@@ -14,7 +14,10 @@ describe('AsyncAPI - Channel Extensions', () => {
   })
 
   it('ExtensionsInChannel', async () => {
-    story = await storyPage(page, 'async-api-suite-channels--extensions-in-channel')
+    story = await storyPage(
+      page, 
+      'async-api-suite-channel-extensions--extensions-in-channel'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,7 +25,7 @@ describe('AsyncAPI - Channel Extensions', () => {
   it('ExtensionsInChannelBindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--extensions-in-channel-bindings'
+      'async-api-suite-channel-extensions--extensions-in-channel-bindings'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

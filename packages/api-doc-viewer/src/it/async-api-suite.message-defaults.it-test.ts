@@ -16,14 +16,17 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageTitleIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-title-if-nothing'
+      'async-api-suite-message-defaults--default-message-title-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
   it('DefaultMessageTitleIfName', async () => {
-    story = await storyPage(page, 'async-api-suite-messages--default-message-title-if-name')
+    story = await storyPage(
+      page, 
+      'async-api-suite-message-defaults--default-message-title-if-name'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -31,7 +34,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageTitleIfTitleAndName', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-title-if-title-and-name'
+      'async-api-suite-message-defaults--default-message-title-if-title-and-name'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -40,7 +43,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageDescriptionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-description-if-nothing'
+      'async-api-suite-message-defaults--default-message-description-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -49,7 +52,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageDescriptionIfSummary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-description-if-summary'
+      'async-api-suite-message-defaults--default-message-description-if-summary'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -58,7 +61,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageDescriptionIfSummaryAndDescription', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-description-if-summary-and-description'
+      'async-api-suite-message-defaults--default-message-description-if-summary-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -67,7 +70,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultOperationBindingVersionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-operation-binding-version-if-nothing'
+      'async-api-suite-message-defaults--default-operation-binding-version-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -76,7 +79,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultChannelBindingVersionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-channel-binding-version-if-nothing'
+      'async-api-suite-message-defaults--default-channel-binding-version-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -85,7 +88,7 @@ describe('AsyncAPI - Message Defaults', () => {
   it('DefaultMessageBindingVersionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--default-message-binding-version-if-nothing'
+      'async-api-suite-message-defaults--default-message-binding-version-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

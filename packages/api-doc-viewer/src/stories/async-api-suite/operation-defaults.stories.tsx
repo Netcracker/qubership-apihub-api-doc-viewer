@@ -5,7 +5,7 @@ import { prepareAsyncApiDocument } from '../preprocess';
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Async Api Suite/Operations',
+  title: 'Async Api Suite/Operation Defaults',
   component: AsyncApiOperationViewer,
   parameters: {},
   argTypes: {

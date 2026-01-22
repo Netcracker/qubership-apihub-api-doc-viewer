@@ -14,7 +14,10 @@ describe('AsyncAPI - Message Extensions', () => {
   })
 
   it('ExtensionsInMessage', async () => {
-    story = await storyPage(page, 'async-api-suite-messages--extensions-in-message')
+    story = await storyPage(
+      page,
+      'async-api-suite-message-extensions--extensions-in-message'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,7 +25,7 @@ describe('AsyncAPI - Message Extensions', () => {
   it('ExtensionsInMessageBindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--extensions-in-message-bindings'
+      'async-api-suite-message-extensions--extensions-in-message-bindings'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

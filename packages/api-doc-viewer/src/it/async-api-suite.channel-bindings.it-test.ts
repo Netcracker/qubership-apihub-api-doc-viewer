@@ -16,7 +16,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('empty-binding', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-binding-with-nothing'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-binding-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('primitive-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-binding-with-primitive-props'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-binding-with-primitive-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('object-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-binding-with-object-props'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-binding-with-object-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('schema-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-binding-with-schema-props'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-binding-with-schema-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('channel-description-and-empty-binding', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-description-and-binding-with-nothing'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-description-and-binding-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('AsyncAPI - Channel Bindings', () => {
   it('2-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--send-operation-with-root-level-channel-with-two-bindings'
+      'async-api-suite-channel-bindings--send-operation-with-root-level-channel-with-two-bindings'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

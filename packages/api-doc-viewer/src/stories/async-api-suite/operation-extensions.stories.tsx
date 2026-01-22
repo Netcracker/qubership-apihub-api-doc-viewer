@@ -6,7 +6,7 @@ import { EXTENSIONS } from './common-data';
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Async Api Suite/Operations',
+  title: 'Async Api Suite/Operation Extensions',
   component: AsyncApiOperationViewer,
   parameters: {},
   argTypes: {

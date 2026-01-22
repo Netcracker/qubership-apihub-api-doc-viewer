@@ -16,7 +16,7 @@ describe('AsyncAPI - Message General', () => {
   it('empty-message', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-nothing'
+      'async-api-suite-message--send-operation-with-message-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI - Message General', () => {
   it('name', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-name'
+      'async-api-suite-message--send-operation-with-message-with-name'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI - Message General', () => {
   it('title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-title'
+      'async-api-suite-message--send-operation-with-message-with-title'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI - Message General', () => {
   it('description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-description'
+      'async-api-suite-message--send-operation-with-message-with-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI - Message General', () => {
   it('name-and-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-name-and-description'
+      'async-api-suite-message--send-operation-with-message-with-name-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('AsyncAPI - Message General', () => {
   it('title-and-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-title-and-description'
+      'async-api-suite-message--send-operation-with-message-with-title-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -70,7 +70,7 @@ describe('AsyncAPI - Message General', () => {
   it('name-and-title-and-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-name-and-title-and-description'
+      'async-api-suite-message--send-operation-with-message-with-name-and-title-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -79,7 +79,7 @@ describe('AsyncAPI - Message General', () => {
   it('primitive-headers', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-primitive-headers'
+      'async-api-suite-message--send-operation-with-message-with-primitive-headers'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -88,7 +88,7 @@ describe('AsyncAPI - Message General', () => {
   it('objective-headers', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-objective-headers'
+      'async-api-suite-message--send-operation-with-message-with-objective-headers'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -97,7 +97,7 @@ describe('AsyncAPI - Message General', () => {
   it('primitive-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-primitive-payload'
+      'async-api-suite-message--send-operation-with-message-with-primitive-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -106,7 +106,7 @@ describe('AsyncAPI - Message General', () => {
   it('objective-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-objective-payload'
+      'async-api-suite-message--send-operation-with-message-with-objective-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -115,7 +115,7 @@ describe('AsyncAPI - Message General', () => {
   it('primitive-headers-and-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-primitive-headers-and-payload'
+      'async-api-suite-message--send-operation-with-message-with-primitive-headers-and-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -124,7 +124,7 @@ describe('AsyncAPI - Message General', () => {
   it('objective-headers-and-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-objective-headers-and-payload'
+      'async-api-suite-message--send-operation-with-message-with-objective-headers-and-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -133,7 +133,7 @@ describe('AsyncAPI - Message General', () => {
   it('primitive-headers-and-objective-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-primitive-headers-and-objective-payload'
+      'async-api-suite-message--send-operation-with-message-with-primitive-headers-and-objective-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -142,7 +142,7 @@ describe('AsyncAPI - Message General', () => {
   it('objective-headers-and-primitive-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-objective-headers-and-primitive-payload'
+      'async-api-suite-message--send-operation-with-message-with-objective-headers-and-primitive-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -151,7 +151,7 @@ describe('AsyncAPI - Message General', () => {
   it('message-description-and-headers', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-description-and-headers'
+      'async-api-suite-message--send-operation-with-message-with-description-and-headers'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -160,7 +160,7 @@ describe('AsyncAPI - Message General', () => {
   it('message-description-and-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-description-and-payload'
+      'async-api-suite-message--send-operation-with-message-with-description-and-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -169,7 +169,7 @@ describe('AsyncAPI - Message General', () => {
   it('operation-description-and-empty-message', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-description-and-message-with-nothing'
+      'async-api-suite-message--send-operation-with-description-and-message-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -178,7 +178,7 @@ describe('AsyncAPI - Message General', () => {
   it('2-messages-with-names', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-two-messages-with-names'
+      'async-api-suite-message--send-operation-with-two-messages-with-names'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

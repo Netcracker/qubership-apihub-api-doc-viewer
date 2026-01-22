@@ -14,7 +14,10 @@ describe('AsyncAPI - Channel Defaults', () => {
   })
 
   it('DefaultChannelTitle', async () => {
-    story = await storyPage(page, 'async-api-suite-channels--default-channel-title')
+    story = await storyPage(
+      page, 
+      'async-api-suite-channel-defaults--default-channel-title'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,7 +25,7 @@ describe('AsyncAPI - Channel Defaults', () => {
   it('DefaultChannelDescriptionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--default-channel-description-if-nothing'
+      'async-api-suite-channel-defaults--default-channel-description-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -31,7 +34,7 @@ describe('AsyncAPI - Channel Defaults', () => {
   it('DefaultChannelDescriptionIfSummary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--default-channel-description-if-summary'
+      'async-api-suite-channel-defaults--default-channel-description-if-summary'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -40,7 +43,7 @@ describe('AsyncAPI - Channel Defaults', () => {
   it('DefaultChannelDescriptionIfSummaryAndDescription', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channels--default-channel-description-if-summary-and-description'
+      'async-api-suite-channel-defaults--default-channel-description-if-summary-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

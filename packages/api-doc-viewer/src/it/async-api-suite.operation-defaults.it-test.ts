@@ -14,7 +14,10 @@ describe('AsyncAPI - Operation Defaults', () => {
   })
 
   it('DefaultOperationTitle', async () => {
-    story = await storyPage(page, 'async-api-suite-operations--default-operation-title')
+    story = await storyPage(
+      page, 
+      'async-api-suite-operation-defaults--default-operation-title'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,7 +25,7 @@ describe('AsyncAPI - Operation Defaults', () => {
   it('DefaultOperationDescriptionIfNothing', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--default-operation-description-if-nothing'
+      'async-api-suite-operation-defaults--default-operation-description-if-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -31,7 +34,7 @@ describe('AsyncAPI - Operation Defaults', () => {
   it('DefaultOperationDescriptionIfSummary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--default-operation-description-if-summary'
+      'async-api-suite-operation-defaults--default-operation-description-if-summary'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -40,7 +43,7 @@ describe('AsyncAPI - Operation Defaults', () => {
   it('DefaultOperationDescriptionIfSummaryAndDescr', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--default-operation-description-if-summary-and-description'
+      'async-api-suite-operation-defaults--default-operation-description-if-summary-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

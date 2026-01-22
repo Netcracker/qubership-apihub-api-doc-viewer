@@ -16,7 +16,7 @@ describe('AsyncAPI - Channel General', () => {
   it('empty-channel', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channel-general--send-operation-with-root-level-channel-with-nothing'
+      'async-api-suite-channel--send-operation-with-root-level-channel-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI - Channel General', () => {
   it('title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channel-general--send-operation-with-root-level-channel-with-title'
+      'async-api-suite-channel--send-operation-with-root-level-channel-with-title'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI - Channel General', () => {
   it('description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channel-general--send-operation-with-root-level-channel-with-description'
+      'async-api-suite-channel--send-operation-with-root-level-channel-with-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI - Channel General', () => {
   it('title-and-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channel-general--send-operation-with-root-level-channel-with-title-and-description'
+      'async-api-suite-channel--send-operation-with-root-level-channel-with-title-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI - Channel General', () => {
   it('operation-description-and-empty-channel', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-channel-general--send-operation-with-description-and-root-level-channel-with-nothing'
+      'async-api-suite-channel--send-operation-with-description-and-root-level-channel-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

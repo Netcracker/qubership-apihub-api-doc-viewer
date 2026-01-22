@@ -16,7 +16,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('empty-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-bindings-with-nothing'
+      'async-api-suite-message-bindings--send-operation-with-message-with-bindings-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('primitive-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-bindings-with-primitive-props'
+      'async-api-suite-message-bindings--send-operation-with-message-with-bindings-with-primitive-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('object-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-bindings-with-object-props'
+      'async-api-suite-message-bindings--send-operation-with-message-with-bindings-with-object-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('schema-props', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-bindings-with-schema-props'
+      'async-api-suite-message-bindings--send-operation-with-message-with-bindings-with-schema-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('message-description-and-empty-binding', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-description-and-binding-with-nothing'
+      'async-api-suite-message-bindings--send-operation-with-message-with-description-and-binding-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('AsyncAPI - Message Bindings', () => {
   it('2-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-messages--send-operation-with-message-with-two-bindings'
+      'async-api-suite-message-bindings--send-operation-with-message-with-two-bindings'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

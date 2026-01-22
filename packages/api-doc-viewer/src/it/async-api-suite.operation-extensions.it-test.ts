@@ -14,7 +14,10 @@ describe('AsyncAPI - Operation Extensions', () => {
   })
 
   it('ExtensionsInOperation', async () => {
-    story = await storyPage(page, 'async-api-suite-operations--extensions-in-operation')
+    story = await storyPage(
+      page, 
+      'async-api-suite-operation-extensions--extensions-in-operation'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,7 +25,7 @@ describe('AsyncAPI - Operation Extensions', () => {
   it('ExtensionsInOperationBindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--extensions-in-operation-bindings'
+      'async-api-suite-operation-extensions--extensions-in-operation-bindings'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

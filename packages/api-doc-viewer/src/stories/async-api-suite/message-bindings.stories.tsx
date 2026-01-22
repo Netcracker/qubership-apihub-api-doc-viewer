@@ -6,7 +6,7 @@ import { BINDING_WITH_OBJECT_PROPS, BINDING_WITH_PRIMITIVE_PROPS, BINDING_WITH_S
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Async Api Suite/Messages',
+  title: 'Async Api Suite/Message Bindings',
   component: AsyncApiOperationViewer,
   parameters: {},
   argTypes: {

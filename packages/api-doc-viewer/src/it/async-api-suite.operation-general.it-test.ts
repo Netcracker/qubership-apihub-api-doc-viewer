@@ -14,7 +14,10 @@ describe('AsyncAPI - Operation General', () => {
   })
 
   it('empty-operation-with-send-action', async () => {
-    story = await storyPage(page, 'async-api-suite-operations--send-operation-with-nothing')
+    story = await storyPage(
+      page,
+      'async-api-suite-operation--send-operation-with-nothing'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -22,14 +25,17 @@ describe('AsyncAPI - Operation General', () => {
   it('empty-operation-with-receive-action', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--receive-operation-with-nothing'
+      'async-api-suite-operation--receive-operation-with-nothing'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
   it('title', async () => {
-    story = await storyPage(page, 'async-api-suite-operations--send-operation-with-title')
+    story = await storyPage(
+      page,
+      'async-api-suite-operation--send-operation-with-title'
+    )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
@@ -37,7 +43,7 @@ describe('AsyncAPI - Operation General', () => {
   it('description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--send-operation-with-description'
+      'async-api-suite-operation--send-operation-with-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -46,7 +52,7 @@ describe('AsyncAPI - Operation General', () => {
   it('title-and-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-operations--send-operation-with-title-and-description'
+      'async-api-suite-operation--send-operation-with-title-and-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
