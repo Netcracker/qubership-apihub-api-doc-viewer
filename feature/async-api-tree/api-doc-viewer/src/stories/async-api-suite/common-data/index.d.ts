@@ -77,3 +77,9 @@ export declare const CIRCULAR_SCHEMA_KIND_B: {
         }[];
     };
 };
+export declare const JSON_SCHEMA_IN_EXTENSIONS: {
+    'x-json-schema': {
+        type: string;
+        description: string;
+    };
+};

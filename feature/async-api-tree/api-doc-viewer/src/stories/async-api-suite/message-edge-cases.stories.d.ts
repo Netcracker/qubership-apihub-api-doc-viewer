@@ -35,3 +35,4 @@ export declare const HeadersMultiformatWithCircularRefKindB: Story;
 export declare const PayloadMultiformatWithRef: Story;
 export declare const PayloadMultiformatWithCircularRefKindA: Story;
 export declare const PayloadMultiformatWithCircularRefKindB: Story;
+export declare const JsonSchemaInExtensions: Story;

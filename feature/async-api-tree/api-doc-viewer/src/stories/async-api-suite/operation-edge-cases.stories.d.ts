@@ -23,3 +23,4 @@ type Story = StoryObj<typeof meta>;
 export declare const BindingWithRef: Story;
 export declare const BindingWithCircularRefKindA: Story;
 export declare const BindingWithCircularRefKindB: Story;
+export declare const JsonSchemaInExtensions: Story;
