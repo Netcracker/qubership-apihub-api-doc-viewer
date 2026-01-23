@@ -21,6 +21,7 @@ declare const meta: {
         source: object | null;
         displayMode?: import("..").DisplayMode | undefined;
         initialLevel?: number | undefined;
+        supportJsonSchema?: boolean | undefined;
     }>;
     parameters: {};
     argTypes: {

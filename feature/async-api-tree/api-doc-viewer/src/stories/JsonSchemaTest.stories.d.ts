@@ -36,3 +36,4 @@ export declare const AdditionalPropertiesFalse: Story;
 export declare const AdditionalItemsFalse: Story;
 export declare const NewLineCharacterInEnum: Story;
 export declare const NonAsciiCharactersInEnum: Story;
+export declare const JsonSchemaInExtensions: Story;

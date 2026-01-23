@@ -7,6 +7,7 @@ type JsoPropertyNodeViewerProps = {
     expandable: boolean;
     expanded?: boolean;
     titleVariant?: TitleVariant;
+    supportJsonSchema?: boolean;
 };
 export declare const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps>;
 export {};
