@@ -33,7 +33,7 @@ export const JsoViewer: FC<JsoViewerProps> =
 const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
   const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0, supportJsonSchema = false } = props
 
-  const builder = useMemo(() => new JsoTreeBuilder(source), [source])
+  const builder = useMemo(() => new JsoTreeBuilder(source, supportJsonSchema), [source, supportJsonSchema])
   const tree = useMemo(() => builder.build(), [builder])
 
   console.debug('[JSO] Source:', source)

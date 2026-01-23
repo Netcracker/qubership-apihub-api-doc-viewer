@@ -80,3 +80,10 @@ export const CIRCULAR_SCHEMA_KIND_B = {
     ],
   },
 }
+
+export const JSON_SCHEMA_IN_EXTENSIONS = {
+  'x-json-schema': {
+    type: 'string',
+    description: 'Json Schema in extensions',
+  }
+}

@@ -1,7 +1,7 @@
 import { AsyncApiOperationViewer } from '@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 import { prepareAsyncApiDocument } from '../preprocess';
-import { CIRCULAR_SCHEMA_KIND_A, CIRCULAR_SCHEMA_KIND_B, BINDINGS_WITH_SCHEMA_FOO_REF } from './common-data';
+import { CIRCULAR_SCHEMA_KIND_A, CIRCULAR_SCHEMA_KIND_B, BINDINGS_WITH_SCHEMA_FOO_REF, JSON_SCHEMA_IN_EXTENSIONS } from './common-data';
 
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
@@ -356,7 +356,6 @@ export const PayloadWithCircularRefKindB: Story = {
   }
 }
 
-
 // Headers (Multiformat Schema)
 
 export const HeadersMultiformatWithRef: Story = {
@@ -588,5 +587,37 @@ export const PayloadMultiformatWithCircularRefKindB: Story = {
         }
       }
     }),
+  }
+}
+
+// Json Schema in extensions
+
+export const JsonSchemaInExtensions: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "json-schema-in-extensions": {
+            action: "send",
+            channel: { $ref: "#/channels/first-channel-key" },
+            messages: [
+              { $ref: '#/messages/first-message-key' },
+            ]
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+          }
+        },
+        messages: {
+          'first-message-key': {
+            title: 'First Message Key',
+            ...JSON_SCHEMA_IN_EXTENSIONS,
+          }
+        },
+      }
+    })
   }
 }

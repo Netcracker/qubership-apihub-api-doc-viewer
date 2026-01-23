@@ -41,6 +41,7 @@ export class JsoTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
+    private readonly supportJsonSchema: boolean = false,
   ) {
     super()
     this.tree = new JsoTree();
@@ -184,7 +185,7 @@ export class JsoTreeBuilder extends TreeBuilder<
         parent.addChildNode(treeNode);
       }
 
-      if (isObject(value) && (value.isPrimitive || value.valueType === JsoPropertyValueTypes.JSON_SCHEMA)) {
+      if (isObject(value) && (value.isPrimitive || this.supportJsonSchema && value.valueType === JsoPropertyValueTypes.JSON_SCHEMA)) {
         // Prevent from falling into infinite loop due to transformed primitives into objects
         return { done: true };
       }
