@@ -282,9 +282,562 @@ describe('JSO Tree', () => {
 
   // JSON Schema
 
-  describe('Properties with kind = JSON Schema', () => {
-    function testJsonSchemaProperty(jso: { schema: Record<string, unknown> }) {
+  describe('Properties with kind = JSON Schema (supportJsonSchema = false)', () => {
+    it('should build JSO tree from JSO with JSON Schema property (type = string)', () => {
+      const jso = {
+        schema: {
+          type: 'string',
+          format: 'email',
+          description: 'Email address',
+          examples: ['john.doe@example.com'],
+        }
+      }
+
       const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+
+      const root = tree?.root
+      expect(root).toBeDefined()
+
+      const rootChildren = root!.childrenNodes()
+      expect(rootChildren).toHaveLength(1)
+
+      const schema = rootChildren.find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(4)
+
+      const schemaNested = schema!.nestedNodes()
+      expect(schemaNested).toHaveLength(0)
+
+      const type = schemaChildren.find(node => node.key === 'type')
+      expect(type).toBeDefined()
+      expect(type!.value()).toEqual({
+        title: 'type',
+        value: 'string',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const format = schemaChildren.find(node => node.key === 'format')
+      expect(format).toBeDefined()
+      expect(format!.value()).toEqual({
+        title: 'format',
+        value: 'email',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const description = schemaChildren.find(node => node.key === 'description')
+      expect(description).toBeDefined()
+      expect(description!.value()).toEqual({
+        title: 'description',
+        value: 'Email address',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examples = schemaChildren.find(node => node.key === 'examples')
+      expect(examples).toBeDefined()
+      expect(examples!.value()).toEqual({
+        title: 'examples',
+        value: ['john.doe@example.com'],
+        valueType: JsoPropertyValueTypes.ARRAY,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examplesChildren = examples!.childrenNodes()
+      expect(examplesChildren).toHaveLength(1)
+
+      const example = examplesChildren.find(node => node.key === 0)
+      expect(example).toBeDefined()
+      expect(example!.value()).toEqual({
+        title: '0',
+        value: 'john.doe@example.com',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: true,
+        isPredefinedValueSet: false,
+      })
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = number)', () => {
+      const jso = {
+        schema: {
+          type: 'number',
+          description: 'Age',
+          examples: [30],
+          minimum: 18,
+          maximum: 100,
+          multipleOf: 2,
+        }
+      }
+
+      const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+
+      const root = tree?.root
+      expect(root).toBeDefined()
+
+      const rootChildren = root!.childrenNodes()
+      expect(rootChildren).toHaveLength(1)
+
+      const schema = rootChildren.find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(6)
+
+      const schemaNested = schema!.nestedNodes()
+      expect(schemaNested).toHaveLength(0)
+      
+      const type = schemaChildren.find(node => node.key === 'type')
+      expect(type).toBeDefined()
+      expect(type!.value()).toEqual({
+        title: 'type',
+        value: 'number',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const description = schemaChildren.find(node => node.key === 'description')
+      expect(description).toBeDefined()
+      expect(description!.value()).toEqual({
+        title: 'description',
+        value: 'Age',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examples = schemaChildren.find(node => node.key === 'examples')
+      expect(examples).toBeDefined()
+      expect(examples!.value()).toEqual({
+        title: 'examples',
+        value: [30],
+        valueType: JsoPropertyValueTypes.ARRAY,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examplesChildren = examples!.childrenNodes()
+      expect(examplesChildren).toHaveLength(1)
+
+      const example = examplesChildren.find(node => node.key === 0)
+      expect(example).toBeDefined()
+      expect(example!.value()).toEqual({
+        title: '0',
+        value: 30,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: true,
+        isPredefinedValueSet: false,
+      })
+
+      const minimum = schemaChildren.find(node => node.key === 'minimum')
+      expect(minimum).toBeDefined()
+      expect(minimum!.value()).toEqual({
+        title: 'minimum',
+        value: 18,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const maximum = schemaChildren.find(node => node.key === 'maximum')
+      expect(maximum).toBeDefined()
+      expect(maximum!.value()).toEqual({
+        title: 'maximum',
+        value: 100,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const multipleOf = schemaChildren.find(node => node.key === 'multipleOf')
+      expect(multipleOf).toBeDefined()
+      expect(multipleOf!.value()).toEqual({
+        title: 'multipleOf',
+        value: 2,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = boolean)', () => {
+      const jso = {
+        schema: {
+          type: 'boolean',
+          description: 'Is student',
+          examples: [false, true],
+          default: true,
+        }
+      }
+
+      const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+
+      const root = tree?.root
+      expect(root).toBeDefined()
+
+      const rootChildren = root!.childrenNodes()
+      expect(rootChildren).toHaveLength(1)
+
+      const schema = rootChildren.find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(4)
+
+      const schemaNested = schema!.nestedNodes()
+      expect(schemaNested).toHaveLength(0)
+      
+      const type = schemaChildren.find(node => node.key === 'type')
+      expect(type).toBeDefined()
+      expect(type!.value()).toEqual({
+        title: 'type',
+        value: 'boolean',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const description = schemaChildren.find(node => node.key === 'description')
+      expect(description).toBeDefined()
+      expect(description!.value()).toEqual({
+        title: 'description',
+        value: 'Is student',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examples = schemaChildren.find(node => node.key === 'examples')
+      expect(examples).toBeDefined()
+      expect(examples!.value()).toEqual({
+        title: 'examples',
+        value: [false, true],
+        valueType: JsoPropertyValueTypes.ARRAY,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examplesChildren = examples!.childrenNodes()
+      expect(examplesChildren).toHaveLength(2)
+
+      const example1 = examplesChildren.find(node => node.key === 0)
+      expect(example1).toBeDefined()
+      expect(example1!.value()).toEqual({
+        title: '0',
+        value: false,
+        valueType: JsoPropertyValueTypes.BOOLEAN,
+        isPrimitive: true,
+        isArrayItem: true,
+        isPredefinedValueSet: true,
+      })
+
+      const example2 = examplesChildren.find(node => node.key === 1)
+      expect(example2).toBeDefined()
+      expect(example2!.value()).toEqual({
+        title: '1',
+        value: true,
+        valueType: JsoPropertyValueTypes.BOOLEAN,
+        isPrimitive: true,
+        isArrayItem: true,
+        isPredefinedValueSet: true,
+      })
+
+      const _default = schemaChildren.find(node => node.key === 'default')
+      expect(_default).toBeDefined()
+      expect(_default!.value()).toEqual({
+        title: 'default',
+        value: true,
+        valueType: JsoPropertyValueTypes.BOOLEAN,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: true,
+      })
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = object)', () => {
+      const jso = {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+        }
+      }
+
+      const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+
+      const root = tree?.root
+      expect(root).toBeDefined()
+
+      const rootChildren = root!.childrenNodes()
+      expect(rootChildren).toHaveLength(1)
+      
+      const schema = rootChildren.find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(2)
+
+      const _type = schemaChildren.find(node => node.key === 'type')
+      expect(_type).toBeDefined()
+      expect(_type!.value()).toEqual({
+        title: 'type',
+        value: 'object',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const properties = schemaChildren.find(node => node.key === 'properties')
+      expect(properties).toBeDefined()
+      expect(properties!.value()).toEqual({
+        title: 'properties',
+        value: {
+          name: { type: 'string' },
+        },
+        valueType: JsoPropertyValueTypes.OBJECT,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const propertiesChildren = properties!.childrenNodes()
+      expect(propertiesChildren).toHaveLength(1)
+
+      const name = propertiesChildren.find(node => node.key === 'name')
+      expect(name).toBeDefined()
+      expect(name!.value()).toEqual({
+        title: 'name',
+        value: { type: 'string' },
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const nameChildren = name!.childrenNodes()
+      expect(nameChildren).toHaveLength(1)
+
+      const type = nameChildren.find(node => node.key === 'type')
+      expect(type).toBeDefined()
+      expect(type!.value()).toEqual({
+        title: 'type',
+        value: 'string',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+    })
+
+    it('should build JSO tree from JSO with JSON Schema property (type = array)', () => {
+      const jso = {
+        schema: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Names',
+          examples: [['John', 'Jane', 'Jim']],
+          minItems: 3,
+          maxItems: 10,
+          uniqueItems: true,
+        }
+      }
+
+      const builder = new JsoTreeBuilder(jso)
+      const tree: JsoTree | undefined = builder.build()
+
+      const root = tree?.root
+      expect(root).toBeDefined()
+
+      const rootChildren = root!.childrenNodes()
+      expect(rootChildren).toHaveLength(1)
+      
+      const schema = rootChildren.find(node => node.key === 'schema')
+      expect(schema).toBeDefined()
+      expect(schema!.value()).toEqual({
+        title: 'schema',
+        value: jso.schema,
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const schemaChildren = schema!.childrenNodes()
+      expect(schemaChildren).toHaveLength(7)
+
+      const schemaNested = schema!.nestedNodes()
+      expect(schemaNested).toHaveLength(0)
+      
+      const type1 = schemaChildren.find(node => node.key === 'type')
+      expect(type1).toBeDefined()
+      expect(type1!.value()).toEqual({
+        title: 'type',
+        value: 'array',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const items = schemaChildren.find(node => node.key === 'items')
+      expect(items).toBeDefined()
+      expect(items!.value()).toEqual({
+        title: 'items',
+        value: { type: 'string' },
+        valueType: JsoPropertyValueTypes.JSON_SCHEMA,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const itemsChildren = items!.childrenNodes()
+      expect(itemsChildren).toHaveLength(1)
+
+      const type2 = itemsChildren.find(node => node.key === 'type')
+      expect(type2).toBeDefined()
+      expect(type2!.value()).toEqual({
+        title: 'type',
+        value: 'string',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const description = schemaChildren.find(node => node.key === 'description')
+      expect(description).toBeDefined()
+      expect(description!.value()).toEqual({
+        title: 'description',
+        value: 'Names',
+        valueType: JsoPropertyValueTypes.STRING,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examples = schemaChildren.find(node => node.key === 'examples')
+      expect(examples).toBeDefined()
+      expect(examples!.value()).toEqual({
+        title: 'examples',
+        value: [['John', 'Jane', 'Jim']],
+        valueType: JsoPropertyValueTypes.ARRAY,
+        isPrimitive: false,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const examplesChildren = examples!.childrenNodes()
+      expect(examplesChildren).toHaveLength(1)
+
+      const example = examplesChildren.find(node => node.key === 0)
+      expect(example).toBeDefined()
+      expect(example!.value()).toEqual({
+        title: '0',
+        value: ['John', 'Jane', 'Jim'],
+        valueType: JsoPropertyValueTypes.ARRAY,
+        isPrimitive: false,
+        isArrayItem: true,
+        isPredefinedValueSet: false,
+      })
+
+      const minItems = schemaChildren.find(node => node.key === 'minItems')
+      expect(minItems).toBeDefined()
+      expect(minItems!.value()).toEqual({
+        title: 'minItems',
+        value: 3,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const maxItems = schemaChildren.find(node => node.key === 'maxItems')
+      expect(maxItems).toBeDefined()
+      expect(maxItems!.value()).toEqual({
+        title: 'maxItems',
+        value: 10,
+        valueType: JsoPropertyValueTypes.NUMBER,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: false,
+      })
+
+      const uniqueItems = schemaChildren.find(node => node.key === 'uniqueItems')
+      expect(uniqueItems).toBeDefined()
+      expect(uniqueItems!.value()).toEqual({
+        title: 'uniqueItems',
+        value: true,
+        valueType: JsoPropertyValueTypes.BOOLEAN,
+        isPrimitive: true,
+        isArrayItem: false,
+        isPredefinedValueSet: true,
+      })
+    })
+  })
+
+  describe('Properties with kind = JSON Schema (supportJsonSchema = true)', () => {
+    function testJsonSchemaProperty(jso: { schema: Record<string, unknown> }) {
+      const builder = new JsoTreeBuilder(jso, true)
       const tree: JsoTree | undefined = builder.build()
       const root = tree?.root
 
