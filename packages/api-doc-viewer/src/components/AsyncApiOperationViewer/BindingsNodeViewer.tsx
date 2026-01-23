@@ -76,6 +76,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         source={bindingValue}
         displayMode={displayMode}
         initialLevel={1}
+        supportJsonSchema={true}
       />
     </div>
   )

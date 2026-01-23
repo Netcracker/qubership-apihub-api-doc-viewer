@@ -17,10 +17,17 @@ type JsoPropertyNodeViewerProps = {
   expandable: boolean
   expanded?: boolean
   titleVariant?: TitleVariant
+  supportJsonSchema?: boolean
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
-  const { node, expandable, expanded: initialExpanded, titleVariant = TitleVariant.h3 } = props
+  const {
+    node,
+    expandable,
+    expanded: initialExpanded,
+    titleVariant = TitleVariant.h3,
+    supportJsonSchema = false
+  } = props
 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
@@ -50,7 +57,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     [nodeValue]
   )
 
-  if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
+  if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
       <Aligner>
@@ -70,7 +77,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     )
   }
 
-  if (nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
+  if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
       <Aligner>

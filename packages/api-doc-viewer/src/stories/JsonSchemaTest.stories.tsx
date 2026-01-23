@@ -240,3 +240,20 @@ export const NonAsciiCharactersInEnum: Story = {
     })
   }
 }
+
+export const JsonSchemaInExtensions: Story = {
+  args: {
+    schema: prepareJsonSchema({
+      target: REQUEST_BODY_TARGET,
+      schema: {
+        type: 'string',
+        description: 'Json Schema in extensions',
+        'x-json-schema': {
+          type: 'string',
+          description: 'Json Schema in extensions',
+          minLength: 10,
+        }
+      }
+    })
+  }
+}

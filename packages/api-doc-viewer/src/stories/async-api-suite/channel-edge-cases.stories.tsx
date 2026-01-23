@@ -61,7 +61,6 @@ export const BindingWithRef: Story = {
 export const BindingWithCircularRefKindA: Story = {
   args: {
     source: prepareAsyncApiDocument({
-      circular: true,
       source: {
         asyncapi: "3.0.0",
         operations: {
@@ -87,7 +86,6 @@ export const BindingWithCircularRefKindA: Story = {
 export const BindingWithCircularRefKindB: Story = {
   args: {
     source: prepareAsyncApiDocument({
-      circular: true,
       source: {
         asyncapi: "3.0.0",
         operations: {

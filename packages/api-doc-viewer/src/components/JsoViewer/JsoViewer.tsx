@@ -14,6 +14,7 @@ type JsoViewerProps = {
   source: object | null
   displayMode?: DisplayMode
   initialLevel?: number
+  supportJsonSchema?: boolean
 }
 
 export const JsoViewer: FC<JsoViewerProps> =
@@ -30,7 +31,7 @@ export const JsoViewer: FC<JsoViewerProps> =
   })
 
 const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
-  const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0 } = props
+  const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0, supportJsonSchema = false } = props
 
   const builder = useMemo(() => new JsoTreeBuilder(source), [source])
   const tree = useMemo(() => builder.build(), [builder])
@@ -60,6 +61,7 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
                 expandable={!jsoProperty.value()?.isPrimitive}
                 expanded={true}
                 titleVariant={TitleVariant.body}
+                supportJsonSchema={supportJsonSchema}
               />
             ))}
           </div>
