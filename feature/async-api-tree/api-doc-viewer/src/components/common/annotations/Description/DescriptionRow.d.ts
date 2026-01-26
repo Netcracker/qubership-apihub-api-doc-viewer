@@ -40,10 +40,12 @@ export type DescriptionExpanderProps = Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
+    fontSize?: 'primary' | 'secondary' | 'legacy';
 }>;
 export declare const DescriptionExpander: FC<Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
+    fontSize?: "primary" | "secondary" | "legacy" | undefined;
 }>>;
 export {};
