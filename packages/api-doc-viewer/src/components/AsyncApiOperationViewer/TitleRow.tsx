@@ -45,6 +45,8 @@ type TitleRowContentProps = TitleRowProps & {
   layoutSide: LayoutSide
 }
 
+const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
+
 const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
   const { expandable, expanded, onClickExpander, layoutSide, enableMainHeader = true, subheader } = props
 
@@ -58,7 +60,7 @@ const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((pr
   const showLevelAndExpanderGroup = level > 0 || expandable
 
   return (
-    <div className={`flex flex-row items-center gap-2 ${width}`}>
+    <div className={`flex flex-row items-center gap-2 ${width}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       {showLevelAndExpanderGroup && (
         <div className='flex flex-row items-stretch h-full'>
           <LevelIndicator level={level} />
