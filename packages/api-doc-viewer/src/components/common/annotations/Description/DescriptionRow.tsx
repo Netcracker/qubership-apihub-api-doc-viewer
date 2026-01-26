@@ -18,7 +18,7 @@ import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/Level
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { DEFAULT_STRIKETHROUGH_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../../consts/changes';
@@ -156,6 +156,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
             isExpandable={isExpandable}
             expanded={expanded}
             setExpanded={setExpanded}
+            fontSize={fontSize}
           />
         </div>
       </div>
@@ -286,22 +287,9 @@ const Value: FC<ValueProps> = props => {
     setIsExpandable?.(isExpandable)
   }, [isExpandable, setIsExpandable]);
 
-  const fontSizeClass = useMemo(() => {
-    switch (fontSize) {
-      case 'primary':
-        return 'description-row_primary'
-      case 'secondary':
-        return 'description-row_secondary'
-      case 'legacy':
-        return 'text-xs'
-      default:
-        return ''
-    }
-  }, [fontSize])
-
   return (
     <ReactMarkdown
-      className={`markdown ${fontSizeClass} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}
@@ -315,14 +303,16 @@ export type DescriptionExpanderProps = Partial<{
   isExpandable: boolean
   expanded: boolean
   setExpanded: Dispatch<SetStateAction<boolean>>
+  fontSize?: 'primary' | 'secondary' | 'legacy'
 }>
 
 const Expander: FC<DescriptionExpanderProps> = props => {
-  const { isExpandable, expanded, setExpanded } = props
+  const { isExpandable, expanded, setExpanded, fontSize = 'legacy' } = props
+
   return <>
     {isExpandable && (
       <div className="mt-2">
-        <a className="text-blue-600 hover:text-blue-500 hover:cursor-pointer"
+        <a className={`${getFontSizeClass(fontSize)} text-blue-600 hover:text-blue-500 hover:cursor-pointer`}
           onClick={() => setExpanded?.(!expanded)}
         >
           {!expanded ? 'Show all description' : 'Collapse description'}
@@ -333,3 +323,16 @@ const Expander: FC<DescriptionExpanderProps> = props => {
 }
 
 export const DescriptionExpander = Expander
+
+function getFontSizeClass(fontSize: 'primary' | 'secondary' | 'legacy'): string {
+  switch (fontSize) {
+    case 'primary':
+      return 'description-row_primary'
+    case 'secondary':
+      return 'description-row_secondary'
+    case 'legacy':
+      return 'text-xs'
+    default:
+      return ''
+  }
+}
