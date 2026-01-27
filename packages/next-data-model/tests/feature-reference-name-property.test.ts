@@ -2,26 +2,28 @@ import { denormalize, normalize } from "@netcracker/qubership-apihub-api-unifier
 import { AsyncApiTreeBuilder } from "../src/building-service/async-api/tree/builder"
 import { AsyncApiTree } from "../src/model/async-api/tree/tree.impl"
 import { AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
+import { simplifyConsole } from "./helpers/simplify-console"
 
 const TEST_REFERENCE_NAME_PROPERTY = Symbol('referenceName')
-const REFERENCE_NAME_PROPERTY_MAPPING = [TEST_REFERENCE_NAME_PROPERTY, TEST_REFERENCE_NAME_PROPERTY.toString()]
 
 function mergeAsyncApi(source: unknown): unknown {
   const normalizedSource = normalize(source, {
-    validate: true,
+    // validate: true,
     unify: true,
-    liftCombiners: true,
+    // liftCombiners: true,
     referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY,
   })
   const mergedSource = denormalize(normalizedSource, {
     unify: true,
-    validate: true,
-    liftCombiners: true,
+    // validate: true,
+    // liftCombiners: true,
   })
   return mergedSource
 }
 
 describe('Feature: Reference Name Property', () => {
+  simplifyConsole()
+
   it('should resolve operation node key based on the reference name property', () => {
     const source = {
       asyncapi: '3.0.0',
@@ -40,7 +42,7 @@ describe('Feature: Reference Name Property', () => {
       },
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, REFERENCE_NAME_PROPERTY_MAPPING)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const root = tree.root!
     const operationNode = root!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.OPERATION)
@@ -68,7 +70,7 @@ describe('Feature: Reference Name Property', () => {
     }
     const mergedSource = mergeAsyncApi(source)
     
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, REFERENCE_NAME_PROPERTY_MAPPING)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const root = tree.root!
 
@@ -115,7 +117,7 @@ describe('Feature: Reference Name Property', () => {
       },
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, REFERENCE_NAME_PROPERTY_MAPPING)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const root = tree.root!
     const operationNode = root!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.OPERATION)

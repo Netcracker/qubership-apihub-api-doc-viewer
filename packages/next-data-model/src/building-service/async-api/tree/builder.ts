@@ -4,7 +4,6 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
-import { ReferenceNameMapping } from "@apihub/next-data-model/model/async-api/types/reference-name-property-mapping";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -128,7 +127,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
-    private readonly referenceNamePropertyMapping?: ReferenceNameMapping
+    private readonly referenceNamePropertyKey?: symbol
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -310,10 +309,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
    * @returns resolved node key.
    */
   private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
-    if (this.referenceNamePropertyMapping) {
-      const [originalKey, mappedKey] = this.referenceNamePropertyMapping
-      if (isObject(value) && value[originalKey]) {
-        return mappedKey
+    if (this.referenceNamePropertyKey) {
+      if (isObject(value) && value[this.referenceNamePropertyKey]) {
+        const nodeKeyCandidate = value[this.referenceNamePropertyKey]
+        if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
+          return nodeKeyCandidate
+        }
       }
     }
     return key
