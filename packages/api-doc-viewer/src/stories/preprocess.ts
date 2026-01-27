@@ -24,6 +24,7 @@ import { denormalize, normalize, NormalizeOptions, RefErrorType, stringifyCyclic
 import { ObjectUtils } from '../utils/common/objects'
 
 const syntheticTitleFlag = Symbol('syntheticTitle')
+const referenceNameFlag = Symbol('referenceName')
 
 const DEFAULT_NORMALIZE_OPTIONS: NormalizeOptions = {
   syntheticTitleFlag: syntheticTitleFlag,
@@ -423,13 +424,12 @@ type AsyncApiDocumentOptions = {
 export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
   const { source, circular = false } = options
   const normalizedSchema = normalize(source, {
-    syntheticTitleFlag: syntheticTitleFlag,
+    referenceNameProperty: referenceNameFlag,
     unify: true,
     validate: true,
     liftCombiners: true,
   })
   const mergedSchema = denormalize(normalizedSchema, {
-    syntheticTitleFlag: syntheticTitleFlag,
     unify: true,
     validate: true,
     liftCombiners: true,

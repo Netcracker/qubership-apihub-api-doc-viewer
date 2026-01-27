@@ -4,6 +4,7 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
+import { ReferenceNameMapping } from "@apihub/next-data-model/model/async-api/types/reference-name-property-mapping";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -127,6 +128,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
+    private readonly referenceNamePropertyMapping?: ReferenceNameMapping
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -196,8 +198,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         return { value }
       }
 
-      const id = '#' + buildPointer(path)
-      const cycledClone = this.tree.createCycledClone(alreadyExisted, id, key, parent)
+      const nodeId = '#' + buildPointer(path)
+      const nodeKey = this.resolveNodeKey(key, value);
+      const cycledClone = this.tree.createCycledClone(alreadyExisted, nodeId, nodeKey, parent)
       if (container) {
         container.addNestedNode(cycledClone)
       }
@@ -251,14 +254,15 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       }
 
       const { parent, container } = state;
-      const id = '#' + buildPointer(path);
+      const nodeId = '#' + buildPointer(path);
+      const nodeKey = this.resolveNodeKey(key, value);
       const { kind, complex = false } = rules;
 
       const params = container
         ? { value: Array.isArray(value) ? null : value, newDataLevel: true, container: container, parent: container.parent }
         : { value: Array.isArray(value) ? null : value, newDataLevel: true, container: null, parent: parent }
 
-      const treeNode = this.createNodeFromRaw(id, key, kind, complex, params)
+      const treeNode = this.createNodeFromRaw(nodeId, nodeKey, kind, complex, params)
 
       if (!treeNode) {
         return;
@@ -296,6 +300,23 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
       return { value: value, state: newState };
     };
+  }
+
+  /**
+   * Picks up the node key found in the reference if mapping is provided.
+   * Otherwise, returns the original key.
+   * @param key - crawl hook key.
+   * @param value - crawl hook value.
+   * @returns resolved node key.
+   */
+  private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
+    if (this.referenceNamePropertyMapping) {
+      const [originalKey, mappedKey] = this.referenceNamePropertyMapping
+      if (isObject(value) && value[originalKey]) {
+        return mappedKey
+      }
+    }
+    return key
   }
 
   /* Atomic builders */

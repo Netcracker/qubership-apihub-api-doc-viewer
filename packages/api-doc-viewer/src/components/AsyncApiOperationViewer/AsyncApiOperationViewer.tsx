@@ -13,6 +13,7 @@ import { OperationNodeViewer } from "./OperationNodeViewer";
 
 import { isOperationNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { ReferenceNameMapping } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/reference-name-property-mapping";
 import '../../index.css';
 
 export type AsyncApiOperationViewerProps = {
@@ -20,6 +21,7 @@ export type AsyncApiOperationViewerProps = {
   operationType?: string // send, receive
   operationName?: string // e.g. send-fruit, receive-fruit
   displayMode?: DisplayMode
+  referenceNamePropertyMapping?: ReferenceNameMapping
 }
 
 export const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps> =
@@ -37,9 +39,18 @@ export const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps> =
 
 const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
-    const { source, operationType, operationName, displayMode = DEFAULT_DISPLAY_MODE } = props
+    const {
+      source,
+      operationType,
+      operationName,
+      displayMode = DEFAULT_DISPLAY_MODE,
+      referenceNamePropertyMapping,
+    } = props
 
-    const treeBuilder = useMemo(() => new AsyncApiTreeBuilder(source), [source])
+    const treeBuilder = useMemo(
+      () => new AsyncApiTreeBuilder(source, referenceNamePropertyMapping),
+      [source, referenceNamePropertyMapping]
+    )
     const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
 
     console.debug('[AsyncAPI] Source:', source)
