@@ -151,3 +151,27 @@ export const SendOperationWithDescriptionAndRootLevelChannelWithNothing: Story =
     operationType: 'send',
   }
 }
+
+export const SendOperationWithRootLevelChannelAndEnabledReferenceNameProperty: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-root-level-channel-and-enabled-reference-name-property": {
+            action: "send",
+            channel: {
+              $ref: "#/channels/first-channel-key"
+            },
+          }
+        },
+        channels: {
+          "first-channel-key": {
+            address: "first-channel-address",
+          }
+        }
+      },
+      enableReferenceName: true,
+    }),
+  }
+}

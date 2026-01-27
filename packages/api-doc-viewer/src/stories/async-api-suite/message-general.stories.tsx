@@ -679,3 +679,29 @@ export const SendOperationWithDescriptionAndMessageWithNothing: Story = {
     operationType: 'send',
   }
 }
+
+export const SendOperationWithMessageWithNothingAndEnabledReferenceNameProperty: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-message-with-nothing-and-enabled-reference-name-property": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/FirstMessage" },
+              { $ref: "#/components/messages/SecondMessage" },
+            ],
+          }
+        },
+        components: {
+          messages: {
+            FirstMessage: {},
+            SecondMessage: {}
+          }
+        }
+      },
+      enableReferenceName: true,
+    }),
+  }
+}

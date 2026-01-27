@@ -419,20 +419,21 @@ export function generateSyntheticObjectPropsFromArray(...arr: Record<PropertyKey
 type AsyncApiDocumentOptions = {
   source: unknown
   circular?: boolean
+  enableReferenceName?: true
 }
 
 export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
-  const { source, circular = false } = options
+  const { source, circular = false, enableReferenceName } = options
   const normalizedSchema = normalize(source, {
-    referenceNameProperty: referenceNameFlag,
+    referenceNameProperty: enableReferenceName ? referenceNameFlag : undefined,
     unify: true,
-    validate: true,
-    liftCombiners: true,
+    validate: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
+    liftCombiners: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
   })
   const mergedSchema = denormalize(normalizedSchema, {
     unify: true,
-    validate: true,
-    liftCombiners: true,
+    validate: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
+    liftCombiners: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
   })
   if (circular && isObject(mergedSchema)) {
     mergedSchema.toJSON = () => stringifyCyclicJso(mergedSchema)
