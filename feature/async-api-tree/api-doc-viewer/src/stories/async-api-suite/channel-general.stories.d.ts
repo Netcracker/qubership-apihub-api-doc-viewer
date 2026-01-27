@@ -20,3 +20,4 @@ export declare const SendOperationWithRootLevelChannelWithTitle: Story;
 export declare const SendOperationWithRootLevelChannelWithDescription: Story;
 export declare const SendOperationWithRootLevelChannelWithTitleAndDescription: Story;
 export declare const SendOperationWithDescriptionAndRootLevelChannelWithNothing: Story;
+export declare const SendOperationWithRootLevelChannelAndEnabledReferenceNameProperty: Story;
