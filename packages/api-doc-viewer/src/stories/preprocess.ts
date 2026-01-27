@@ -425,12 +425,14 @@ type AsyncApiDocumentOptions = {
 export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
   const { source, circular = false, enableReferenceName } = options
   const normalizedSchema = normalize(source, {
+    syntheticTitleFlag: syntheticTitleFlag,
     referenceNameProperty: enableReferenceName ? referenceNameFlag : undefined,
     unify: true,
     validate: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
     liftCombiners: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
   })
   const mergedSchema = denormalize(normalizedSchema, {
+    syntheticTitleFlag: syntheticTitleFlag,
     unify: true,
     validate: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
     liftCombiners: !enableReferenceName, // TODO: Temporarily until fix in qubership-apihub-api-unifier is ready
