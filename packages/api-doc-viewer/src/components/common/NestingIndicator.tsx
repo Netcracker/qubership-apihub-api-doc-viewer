@@ -31,9 +31,9 @@ export const NestingIndicator: FC<NestingIndicatorProps> = (props) => {
           {Array(level).fill(0).map((value, index, array) => {
             const key = `NestingIndicator-${index}`
             if (lastInvisible && index === array.length - 1) {
-              return <div key={key} className="w-5"/>
+              return <div key={key} className="w-5" />
             }
-            return <NestingVerticalIndicator key={key}/>
+            return <NestingVerticalIndicator key={key} />
           })}
         </div>
       )}
@@ -52,7 +52,7 @@ const NestingVerticalIndicator: FC = () => {
 export const NestingHorizontalIndicator: FC<{ short?: boolean }> = (props) => {
   const { short = false } = props
   return (
-    <div className="bg-slate-400 h-px" style={{ width: short ? '4px' : '16px' }}>
+    <div className="bg-slate-400 h-px" style={{ width: short ? 4 : 16 }}>
     </div>
   )
 }
@@ -60,7 +60,7 @@ export const NestingHorizontalIndicator: FC<{ short?: boolean }> = (props) => {
 export const NestingIndicatorTitle: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className="text-xs text-slate-400 border-b border-slate-400 w-max pt-1"
-         style={{ marginLeft: '-1px' }}
+      style={{ marginLeft: '-1px' }}
     >
       {children}
     </div>

@@ -247,7 +247,10 @@ export function hasNoValidationsAndAnnotations(node?: AnyTreeNode | null): boole
   const arePatternsProvidedIfNecessary = !isPatternProperty || !!node?.key
   const areAllowedPropertyNamesProvidedIfNecessary = !isAdditionalProperty || !!(node?.parent?.value() as IJsonSchemaObjectType)?.propertyNames
 
-  let result = noAnnotations && noValidations
+  // No extensions
+  const noExtensions = !nodeValue?.extensions
+
+  let result = noAnnotations && noValidations && noExtensions
 
   if (isAdditionalProperty) {
     result &&= !areAllowedPropertyNamesProvidedIfNecessary
