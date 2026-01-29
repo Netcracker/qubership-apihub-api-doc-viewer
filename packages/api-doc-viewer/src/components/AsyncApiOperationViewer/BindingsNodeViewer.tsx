@@ -6,7 +6,6 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@netcracker/qubersh
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BindingSelector } from "./BindingSelector/BindingSelector";
-import { SpecificationExtensions } from "./SpecificationExtensions";
 import { TitleRow } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
@@ -65,12 +64,6 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
           Version: {bindingVersion}
         </span>
-      )}
-      {selectedBindingValue?.extensions && (
-        <SpecificationExtensions
-          values={selectedBindingValue.extensions}
-          kind={AsyncApiTreeNodeKinds.BINDING}
-        />
       )}
       <JsoViewer
         source={bindingValue}
