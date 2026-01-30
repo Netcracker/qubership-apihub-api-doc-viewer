@@ -22,6 +22,7 @@ import {
 } from '@netcracker/qubership-apihub-api-diff'
 import { denormalize, normalize, NormalizeOptions, RefErrorType, stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
 import { ObjectUtils } from '../utils/common/objects'
+import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite/common-data'
 
 const syntheticTitleFlag = Symbol('syntheticTitle')
 
@@ -422,7 +423,7 @@ type AsyncApiDocumentOptions = {
 }
 
 export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
-  const { source, circular = false, referenceNamePropertyKey } = options
+  const { source, circular = false, referenceNamePropertyKey = TEST_REFERENCE_NAME_PROPERTY } = options
   const normalizedSchema = normalize(source, {
     syntheticTitleFlag: syntheticTitleFlag,
     referenceNameProperty: referenceNamePropertyKey,

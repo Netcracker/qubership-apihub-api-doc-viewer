@@ -4,6 +4,7 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
+import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -13,7 +14,7 @@ import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
-import { transformOperationOrientedSpecToMessageOrientedSpec } from "../json-crawl-entities/transformers/transform-operation-oriented-spec-to-message-oriented-spec";
+import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
 import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
@@ -152,7 +153,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const { operationType, operationKey, messageKey } = this.operationKeys
 
     // TODO: Encapsulate this
-    const preparedSource = transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
+    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
 
     console.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
@@ -170,6 +171,141 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     )
 
     return this.tree;
+  }
+
+  // General transformer
+
+  private transformOperationOrientedSpecToMessageOrientedSpec(
+    source: unknown,
+    operationType?: string, // action (send, receive)
+    operationKey?: string, // id (key) to the necessary operation in source
+    messageKey?: string, // id (key) to the necessary message in source
+  ): unknown {
+    if (!this.isAsyncApiSpecification(source)) {
+      return source
+    }
+
+    if (!this.referenceNamePropertyKey) {
+      console.error('Reference name property key is not provided. Cannot find operation, channel or message by id (key) in source without key of reference name property.')
+      return source
+    }
+
+    const operations: v3.OperationsObject = source.operations ?? {}
+
+    let firstOperationType: string | undefined
+    let firstOperationKey: string | undefined
+    let firstOperationMessageKey: string | undefined
+    if (!operationType || !operationKey || !messageKey) {
+      console.error('Operation type (action), key or message key is not provided. Looking for first operation, channel and message in source...')
+      firstOperationKey = Object.keys(operations).at(0)
+      if (firstOperationKey) {
+        const firstOperationCandidate = operations[firstOperationKey]
+        const firstOperation = !this.isReferenceObject(firstOperationCandidate) ? firstOperationCandidate : null
+        if (firstOperation) {
+          // First Operation Type (Action)
+          firstOperationType = firstOperation.action
+          // First Message
+          const firstOperationMessagesCandidate = firstOperation.messages?.[0]
+          const firstOperationMessage = !this.isReferenceObject(firstOperationMessagesCandidate) ? firstOperationMessagesCandidate : null
+          if (firstOperationMessage) {
+            const key = (firstOperationMessage as Record<PropertyKey, unknown>)[this.referenceNamePropertyKey]
+            firstOperationMessageKey = typeof key === 'string' ? key : undefined
+          }
+        }
+      }
+      if (!firstOperationKey || !firstOperationType || !firstOperationMessageKey) {
+        console.error('Cannot find first operation, channel or message in source.')
+        return source
+      }
+      console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationType, firstOperationMessageKey)
+      operationType = firstOperationType
+      operationKey = firstOperationKey
+      messageKey = firstOperationMessageKey
+    }
+
+    const operation: v3.OperationObject | undefined = Object.entries(operations)
+      .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
+        const [currentOperationKey, currentOperation] = currentOperationEntry
+        return (
+          !this.isReferenceObject(currentOperation) &&
+          currentOperation.action === operationType &&
+          currentOperationKey === operationKey
+        )
+      })
+      .map(([, operation]) => operation)
+      .at(0)
+
+    if (!operation) {
+      console.error(`Cannot find operation with key (id) = ${operationKey}, type (action) = ${operationType}`)
+      return source
+    }
+
+    const operationChannel: v3.ChannelObject = !this.isReferenceObject(operation.channel) ? operation.channel : {}
+    const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
+      .filter((message): message is v3.MessageObject => !this.isReferenceObject(message))
+    const operationMessage: v3.MessageObject | undefined = operationMessages
+      .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey!] === messageKey)
+
+    if (!operationMessage) {
+      console.error(`Cannot find message with key (id) = ${messageKey}`)
+      return source
+    }
+
+    const operationExtensions = this.copyExtensions(operation)
+    const operationChannelExtensions = this.copyExtensions(operationChannel)
+    const operationMessageExtensions = this.copyExtensions(operationMessage)
+
+    const messageOrientedOperation: Record<PropertyKey, unknown> = {
+      title: operationMessage.title,
+      internalTitle: operationMessage?.name,
+      action: operation.action,
+      address: operationChannel.address ?? UNKNOWN_ADDRESS,
+      summary: operationMessage.summary,
+      description: operationMessage.description,
+      data: {
+        content: {
+          ...operationMessage.headers ? { headers: operationMessage.headers } : {},
+          ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
+          ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
+          ...operationMessage.payload ? { payload: operationMessage.payload } : {},
+        },
+        channel: {
+          title: operationChannel.title,
+          summary: operationChannel.summary,
+          description: operationChannel.description,
+          ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
+          ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
+          ...operationChannel.parameters ? { parameters: operationChannel.parameters } : {},
+        },
+        operation: {
+          title: operation.title,
+          summary: operation.summary,
+          description: operation.description,
+          ...operationExtensions ? { extensions: operationExtensions } : {},
+        },
+      }
+    }
+    return messageOrientedOperation
+  }
+
+  private copyExtensions(source: v3.MessageObject): v3.SpecificationExtensions | undefined {
+    const extensionKeys = Object.keys(source)
+      .filter((key): key is keyof v3.SpecificationExtensions => key.startsWith('x-'))
+    if (extensionKeys.length === 0) {
+      return undefined
+    }
+    return extensionKeys.reduce((extensions, key) => {
+      extensions[key] = source[key]
+      return extensions
+    }, {} as v3.SpecificationExtensions)
+  }
+
+  private isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
+    return typeof value === 'object' && value !== null && 'asyncapi' in value && typeof value.asyncapi === 'string'
+  }
+
+  private isReferenceObject(value: unknown): value is v3.ReferenceObject {
+    return typeof value === 'object' && value !== null && '$ref' in value && typeof value.$ref === 'string'
   }
 
   /* Crawlhooks-builders */
