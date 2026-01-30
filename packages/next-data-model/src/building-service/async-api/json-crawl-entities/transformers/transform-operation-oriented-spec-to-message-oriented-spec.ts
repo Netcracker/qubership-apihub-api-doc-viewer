@@ -1,7 +1,7 @@
-import { ChannelObject, isAsyncApiSpecification, isReferenceObject, MessageObject, OperationObject, OperationsObject, SpecificationExtensions } from "@apihub/next-data-model/model/async-api/types/async-api-specification";
 import { AsyncApiTreeCrawlState } from "../state/types";
 import { UNKNOWN_ADDRESS } from "./constants/constants";
 import { SchemaTransformFunc } from "./types/types";
+import type { v3 } from "@asyncapi/parser/esm/spec-types";
 
 export function createTransformerOperationOrientedSpecToMessageOrientedSpec(
   operationType: string, // action (send, receive)
@@ -16,9 +16,9 @@ export function createTransformerOperationOrientedSpecToMessageOrientedSpec(
       return value
     }
 
-    const operations: OperationsObject = value.operations ?? {}
-    const operation: OperationObject | undefined = Object.entries(operations)
-      .filter((operationEntry): operationEntry is [string, OperationObject] => {
+    const operations: v3.OperationsObject = value.operations ?? {}
+    const operation: v3.OperationObject | undefined = Object.entries(operations)
+      .filter((operationEntry): operationEntry is [string, v3.OperationObject] => {
         const [operationId, operation] = operationEntry
         return (
           !isReferenceObject(operation) &&
@@ -33,11 +33,11 @@ export function createTransformerOperationOrientedSpecToMessageOrientedSpec(
       return value
     }
 
-    const operationChannel: ChannelObject = !isReferenceObject(operation.channel) ? operation.channel : {}
-    const operationMessages: MessageObject[] = (operation.messages ?? [])
-      .filter((message): message is MessageObject => !isReferenceObject(message))
-    const operationMessage: MessageObject | undefined = operationMessages
-      .find((message: MessageObject) => (message as Record<PropertyKey, unknown>)[Symbol('referenceName')] === messageKey)
+    const operationChannel: v3.ChannelObject = !isReferenceObject(operation.channel) ? operation.channel : {}
+    const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
+      .filter((message): message is v3.MessageObject => !isReferenceObject(message))
+    const operationMessage: v3.MessageObject | undefined = operationMessages
+      .find((message: v3.MessageObject) => (message as Record<PropertyKey, unknown>)[Symbol('referenceName')] === messageKey)
 
     if (!operationMessage) {
       console.error('Cannot find message with key (id) =', messageKey)
@@ -82,14 +82,22 @@ export function createTransformerOperationOrientedSpecToMessageOrientedSpec(
   }
 }
 
-function copyExtensions(source: MessageObject): SpecificationExtensions | undefined {
+function copyExtensions(source: v3.MessageObject): v3.SpecificationExtensions | undefined {
   const extensionKeys = Object.keys(source)
-    .filter((key): key is keyof SpecificationExtensions => key.startsWith('x-'))
+    .filter((key): key is keyof v3.SpecificationExtensions => key.startsWith('x-'))
   if (extensionKeys.length === 0) {
     return undefined
   }
   return extensionKeys.reduce((extensions, key) => {
     extensions[key] = source[key]
     return extensions
-  }, {} as SpecificationExtensions)
+  }, {} as v3.SpecificationExtensions)
+}
+
+function isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
+  return typeof value === 'object' && value !== null && 'asyncapi' in value && typeof value.asyncapi === 'string'
+}
+
+function isReferenceObject(value: unknown): value is v3.ReferenceObject {
+  return typeof value === 'object' && value !== null && '$ref' in value && typeof value.$ref === 'string'
 }
