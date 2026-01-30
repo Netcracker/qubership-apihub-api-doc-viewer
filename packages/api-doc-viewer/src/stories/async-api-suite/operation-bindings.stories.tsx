@@ -40,7 +40,7 @@ export const SendOperationWithBindingsKafkaWithNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-bindings-kafka',
+    operationKey: 'send-operation-with-bindings-kafka',
     operationType: 'send',
   }
 }
@@ -62,7 +62,7 @@ export const SendOperationWithBindingsKafkaWithOnlyPrimitiveProps: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-bindings-kafka-with-only-primitive-props',
+    operationKey: 'send-operation-with-bindings-kafka-with-only-primitive-props',
     operationType: 'send',
   }
 }
@@ -84,7 +84,7 @@ export const SendOperationWithBindingsKafkaWithObjectProps: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-bindings-kafka-with-object-props',
+    operationKey: 'send-operation-with-bindings-kafka-with-object-props',
     operationType: 'send',
   }
 }
@@ -106,7 +106,7 @@ export const SendOperationWithBindingsKafkaWithSchemaProps: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-bindings-kafka-with-schema-props',
+    operationKey: 'send-operation-with-bindings-kafka-with-schema-props',
     operationType: 'send',
   }
 }
@@ -138,7 +138,7 @@ export const SendOperationTwoBindings: Story = {
         }
       }
     }),
-    operationName: 'send-operation-two-bindings',
+    operationKey: 'send-operation-two-bindings',
     operationType: 'send',
   }
 }
@@ -161,7 +161,7 @@ export const SendOperationWithDescriptionAndBindingsWithNothing: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-description-and-bindings-with-nothing',
+    operationKey: 'send-operation-with-description-and-bindings-with-nothing',
     operationType: 'send',
   }
 }

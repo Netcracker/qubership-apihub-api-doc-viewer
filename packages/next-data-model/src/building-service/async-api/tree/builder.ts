@@ -14,6 +14,7 @@ import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
 import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
+import { transformOperationOrientedSpecToMessageOrientedSpec } from "../json-crawl-entities/transformers/transform-operation-oriented-spec-to-message-oriented-spec";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
@@ -123,7 +124,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
-    private readonly referenceNamePropertyKey?: symbol
+    private readonly operationKeys: Partial<{
+      operationType: string // send, receive
+      operationKey: string // e.g. send-fruit, receive-fruit
+      messageKey: string // e.g. send-fruit-message, receive-fruit-message
+    }>,
+    private readonly referenceNamePropertyKey?: symbol,
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -142,11 +148,21 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
+    const { operationType, operationKey, messageKey } = this.operationKeys
+
+    if (!operationType || !operationKey || !messageKey) {
+      return this.tree; // TODO: Support absent operation keys
+    }
+
+    const preparedSource = transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
+
+    console.debug('[AsyncAPI] Prepared Source:', preparedSource)
+
     syncCrawl<AsyncApiTreeCrawlState, AsyncApiCrawlRule>(
-      this.source,
+      preparedSource,
       [
         this.instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop(),
-        this.instantiateHookUnifyingValue(this.source),
+        this.instantiateHookUnifyingValue(preparedSource),
         this.instantiateHookCreatingAsyncApiTreeNodes(),
       ],
       {

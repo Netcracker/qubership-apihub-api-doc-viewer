@@ -44,7 +44,7 @@ export const SendOperationWithMessageWithNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-nothing',
+    operationKey: 'send-operation-with-message-with-nothing',
     operationType: 'send',
   }
 }
@@ -71,7 +71,7 @@ export const SendOperationWithMessageWithName: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-name',
+    operationKey: 'send-operation-with-message-with-name',
     operationType: 'send',
   }
 }
@@ -99,7 +99,7 @@ export const SendOperationWithMessageWithTitle: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-title',
+    operationKey: 'send-operation-with-message-with-title',
     operationType: 'send',
   }
 }
@@ -127,7 +127,7 @@ export const SendOperationWithMessageWithDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-description',
+    operationKey: 'send-operation-with-message-with-description',
     operationType: 'send',
   }
 }
@@ -155,7 +155,7 @@ export const SendOperationWithMessageWithNameAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-name-and-description',
+    operationKey: 'send-operation-with-message-with-name-and-description',
     operationType: 'send',
   }
 }
@@ -184,7 +184,7 @@ export const SendOperationWithMessageWithTitleAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-title-and-description',
+    operationKey: 'send-operation-with-message-with-title-and-description',
     operationType: 'send',
   }
 }
@@ -213,7 +213,7 @@ export const SendOperationWithMessageWithNameAndTitleAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-message-with-name-and-title-and-description',
+    operationKey: 'send-operation-with-message-with-name-and-title-and-description',
     operationType: 'send',
   }
 }
@@ -249,7 +249,7 @@ export const SendOperationWithMessageWithPrimitiveHeaders: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-primitive-headers',
+    operationKey: 'send-operation-with-message-with-primitive-headers',
     operationType: 'send',
   }
 }
@@ -287,7 +287,7 @@ export const SendOperationWithMessageWithObjectiveHeaders: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-objective-headers',
+    operationKey: 'send-operation-with-message-with-objective-headers',
     operationType: 'send',
   }
 }
@@ -321,7 +321,7 @@ export const SendOperationWithMessageWithPrimitivePayload: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-primitive-payload',
+    operationKey: 'send-operation-with-message-with-primitive-payload',
     operationType: 'send',
   }
 }
@@ -361,7 +361,7 @@ export const SendOperationWithMessageWithObjectivePayload: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-objective-payload',
+    operationKey: 'send-operation-with-message-with-objective-payload',
     operationType: 'send',
   }
 }
@@ -403,7 +403,7 @@ export const SendOperationWithMessageWithPrimitiveHeadersAndPayload: Story = {
         },
       }
     }),
-    operationName: 'send-operation-with-message-with-primitive-headers-and-payload',
+    operationKey: 'send-operation-with-message-with-primitive-headers-and-payload',
     operationType: 'send',
   }
 }
@@ -457,7 +457,7 @@ export const SendOperationWithMessageWithObjectiveHeadersAndPayload: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-objective-headers-and-payload',
+    operationKey: 'send-operation-with-message-with-objective-headers-and-payload',
     operationType: 'send',
   }
 }
@@ -505,7 +505,7 @@ export const SendOperationWithMessageWithPrimitiveHeadersAndObjectivePayload: St
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-primitive-headers-and-objective-payload',
+    operationKey: 'send-operation-with-message-with-primitive-headers-and-objective-payload',
     operationType: 'send',
   }
 }
@@ -553,7 +553,7 @@ export const SendOperationWithMessageWithObjectiveHeadersAndPrimitivePayload: St
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-objective-headers-and-primitive-payload',
+    operationKey: 'send-operation-with-message-with-objective-headers-and-primitive-payload',
     operationType: 'send',
   }
 }
@@ -592,7 +592,7 @@ export const SendOperationWithMessageWithDescriptionAndHeaders: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-description-and-headers',
+    operationKey: 'send-operation-with-message-with-description-and-headers',
     operationType: 'send',
   }
 }
@@ -620,7 +620,7 @@ export const SendOperationWithMessageWithDescriptionAndPayload: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-description-and-payload',
+    operationKey: 'send-operation-with-message-with-description-and-payload',
     operationType: 'send',
   }
 }
@@ -651,7 +651,7 @@ export const SendOperationWithTwoMessagesWithNames: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-two-messages-with-names',
+    operationKey: 'send-operation-with-two-messages-with-names',
     operationType: 'send',
   }
 }
@@ -676,7 +676,7 @@ export const SendOperationWithDescriptionAndMessageWithNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-description-and-message-with-nothing',
+    operationKey: 'send-operation-with-description-and-message-with-nothing',
     operationType: 'send',
   }
 }

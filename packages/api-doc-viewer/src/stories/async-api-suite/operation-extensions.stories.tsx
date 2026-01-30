@@ -36,7 +36,7 @@ export const ExtensionsInOperation: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-operation-extensions',
+    operationKey: 'send-operation-with-operation-extensions',
     operationType: 'send',
   }
 }
@@ -60,7 +60,7 @@ export const ExtensionsInOperationBindings: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-operation-bindings-extensions',
+    operationKey: 'send-operation-with-operation-bindings-extensions',
     operationType: 'send',
   }
 }

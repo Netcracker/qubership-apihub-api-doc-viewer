@@ -49,7 +49,7 @@ export const SendOperationWithMessageWithBindingsWithNothing: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-bindings-with-nothing',
+    operationKey: 'send-operation-with-message-with-bindings-with-nothing',
     operationType: 'send',
   }
 }
@@ -80,7 +80,7 @@ export const SendOperationWithMessageWithBindingsWithPrimitiveProps: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-bindings-with-primitive-props',
+    operationKey: 'send-operation-with-message-with-bindings-with-primitive-props',
     operationType: 'send',
   }
 }
@@ -111,7 +111,7 @@ export const SendOperationWithMessageWithBindingsWithObjectProps: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-bindings-with-object-props',
+    operationKey: 'send-operation-with-message-with-bindings-with-object-props',
     operationType: 'send',
   }
 }
@@ -142,7 +142,7 @@ export const SendOperationWithMessageWithBindingsWithSchemaProps: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-bindings-with-schema-props',
+    operationKey: 'send-operation-with-message-with-bindings-with-schema-props',
     operationType: 'send',
   }
 }
@@ -186,7 +186,7 @@ export const SendOperationWithMessageWithTwoBindings: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-two-bindings',
+    operationKey: 'send-operation-with-message-with-two-bindings',
     operationType: 'send',
   }
 }
@@ -218,7 +218,7 @@ export const SendOperationWithMessageWithDescriptionAndBindingWithNothing: Story
         },
       },
     }),
-    operationName: 'send-operation-with-message-with-description-and-binding-with-nothing',
+    operationKey: 'send-operation-with-message-with-description-and-binding-with-nothing',
     operationType: 'send',
   }
 }

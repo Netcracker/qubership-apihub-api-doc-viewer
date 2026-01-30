@@ -34,7 +34,7 @@ export const DefaultOperationTitle: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-operation-title',
+    operationKey: 'send-operation-with-default-operation-title',
     operationType: 'send',
   }
 }
@@ -53,7 +53,7 @@ export const DefaultOperationDescriptionIfNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-operation-description-if-nothing',
+    operationKey: 'send-operation-with-default-operation-description-if-nothing',
     operationType: 'send',
   }
 }
@@ -71,7 +71,7 @@ export const DefaultOperationDescriptionIfSummary: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-operation-description-if-summary',
+    operationKey: 'send-operation-with-default-operation-description-if-summary',
     operationType: 'send',
   }
 }
@@ -90,7 +90,7 @@ export const DefaultOperationDescriptionIfSummaryAndDescription: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-operation-description-if-summary-and-description',
+    operationKey: 'send-operation-with-default-operation-description-if-summary-and-description',
     operationType: 'send',
   }
 }

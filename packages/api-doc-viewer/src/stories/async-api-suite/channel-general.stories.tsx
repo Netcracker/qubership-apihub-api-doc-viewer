@@ -43,7 +43,7 @@ export const SendOperationWithRootLevelChannelWithNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-nothing',
+    operationKey: 'send-operation-with-root-level-channel-with-nothing',
     operationType: 'send',
   }
 }
@@ -69,7 +69,7 @@ export const SendOperationWithRootLevelChannelWithTitle: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-title',
+    operationKey: 'send-operation-with-root-level-channel-with-title',
     operationType: 'send',
   }
 }
@@ -95,7 +95,7 @@ export const SendOperationWithRootLevelChannelWithDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-description',
+    operationKey: 'send-operation-with-root-level-channel-with-description',
     operationType: 'send',
   }
 }
@@ -122,7 +122,7 @@ export const SendOperationWithRootLevelChannelWithTitleAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-title-and-description',
+    operationKey: 'send-operation-with-root-level-channel-with-title-and-description',
     operationType: 'send',
   }
 }
@@ -148,7 +148,7 @@ export const SendOperationWithDescriptionAndRootLevelChannelWithNothing: Story =
         }
       },
     }),
-    operationName: 'send-operation-with-description-and-root-level-channel-with-nothing',
+    operationKey: 'send-operation-with-description-and-root-level-channel-with-nothing',
     operationType: 'send',
   }
 }

@@ -42,7 +42,7 @@ export const DefaultChannelTitle: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-channel-title',
+    operationKey: 'send-operation-with-default-channel-title',
     operationType: 'send',
   }
 }
@@ -67,7 +67,7 @@ export const DefaultChannelDescriptionIfNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-channel-description-if-nothing',
+    operationKey: 'send-operation-with-default-channel-description-if-nothing',
     operationType: 'send',
   }
 }
@@ -92,7 +92,7 @@ export const DefaultChannelDescriptionIfSummary: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-channel-description-if-summary',
+    operationKey: 'send-operation-with-default-channel-description-if-summary',
     operationType: 'send',
   }
 }
@@ -118,7 +118,7 @@ export const DefaultChannelDescriptionIfSummaryAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-channel-description-if-summary-and-description',
+    operationKey: 'send-operation-with-default-channel-description-if-summary-and-description',
     operationType: 'send',
   }
 }

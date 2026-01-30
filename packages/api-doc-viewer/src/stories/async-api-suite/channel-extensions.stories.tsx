@@ -45,7 +45,7 @@ export const ExtensionsInChannel: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-channel-extensions',
+    operationKey: 'send-operation-with-channel-extensions',
     operationType: 'send',
   }
 }
@@ -78,7 +78,7 @@ export const ExtensionsInChannelBindings: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-channel-bindings-extensions',
+    operationKey: 'send-operation-with-channel-bindings-extensions',
     operationType: 'send',
   }
 }

@@ -44,7 +44,7 @@ export const DefaultMessageTitleIfNothing: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-title-if-nothing',
+    operationKey: 'send-operation-with-default-message-title-if-nothing',
     operationType: 'send',
   }
 }
@@ -72,7 +72,7 @@ export const DefaultMessageTitleIfName: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-title-if-name',
+    operationKey: 'send-operation-with-default-message-title-if-name',
     operationType: 'send',
   }
 }
@@ -101,7 +101,7 @@ export const DefaultMessageTitleIfTitleAndName: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-title-if-title-and-name',
+    operationKey: 'send-operation-with-default-message-title-if-title-and-name',
     operationType: 'send',
   }
 }
@@ -128,7 +128,7 @@ export const DefaultMessageDescriptionIfNothing: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-description-if-nothing',
+    operationKey: 'send-operation-with-default-message-description-if-nothing',
     operationType: 'send',
   }
 }
@@ -155,7 +155,7 @@ export const DefaultMessageDescriptionIfSummary: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-description-if-summary',
+    operationKey: 'send-operation-with-default-message-description-if-summary',
     operationType: 'send',
   }
 }
@@ -183,7 +183,7 @@ export const DefaultMessageDescriptionIfSummaryAndDescription: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-default-message-description-if-summary-and-description',
+    operationKey: 'send-operation-with-default-message-description-if-summary-and-description',
     operationType: 'send',
   }
 }
@@ -204,7 +204,7 @@ export const DefaultOperationBindingVersionIfNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-operation-binding-version-if-nothing',
+    operationKey: 'send-operation-with-default-operation-binding-version-if-nothing',
     operationType: 'send',
   }
 }
@@ -232,7 +232,7 @@ export const DefaultChannelBindingVersionIfNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-channel-binding-version-if-nothing',
+    operationKey: 'send-operation-with-default-channel-binding-version-if-nothing',
     operationType: 'send',
   }
 }
@@ -261,7 +261,7 @@ export const DefaultMessageBindingVersionIfNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-default-message-binding-version-if-nothing',
+    operationKey: 'send-operation-with-default-message-binding-version-if-nothing',
     operationType: 'send',
   }
 }

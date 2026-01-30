@@ -48,7 +48,7 @@ export const SendOperationWithRootLevelChannelWithBindingWithNothing: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-binding-with-nothing',
+    operationKey: 'send-operation-with-root-level-channel-with-binding-with-nothing',
     operationType: 'send',
   }
 }
@@ -78,7 +78,7 @@ export const SendOperationWithRootLevelChannelWithBindingWithPrimitiveProps: Sto
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-binding-with-primitive-props',
+    operationKey: 'send-operation-with-root-level-channel-with-binding-with-primitive-props',
     operationType: 'send',
   }
 }
@@ -108,7 +108,7 @@ export const SendOperationWithRootLevelChannelWithBindingWithObjectProps: Story 
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-binding-with-object-props',
+    operationKey: 'send-operation-with-root-level-channel-with-binding-with-object-props',
     operationType: 'send',
   }
 }
@@ -138,7 +138,7 @@ export const SendOperationWithRootLevelChannelWithBindingWithSchemaProps: Story 
         }
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-binding-with-schema-props',
+    operationKey: 'send-operation-with-root-level-channel-with-binding-with-schema-props',
     operationType: 'send',
   }
 }
@@ -169,7 +169,7 @@ export const SendOperationWithRootLevelChannelWithDescriptionAndBindingWithNothi
         },
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-description-and-binding-with-nothing',
+    operationKey: 'send-operation-with-root-level-channel-with-description-and-binding-with-nothing',
     operationType: 'send',
   }
 }
@@ -212,7 +212,7 @@ export const SendOperationWithRootLevelChannelWithTwoBindings: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-root-level-channel-with-two-bindings',
+    operationKey: 'send-operation-with-root-level-channel-with-two-bindings',
     operationType: 'send',
   }
 }

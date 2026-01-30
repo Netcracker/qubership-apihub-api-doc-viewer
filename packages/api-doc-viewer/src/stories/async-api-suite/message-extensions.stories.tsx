@@ -47,7 +47,7 @@ export const ExtensionsInMessage: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-extensions',
+    operationKey: 'send-operation-with-message-extensions',
     operationType: 'send',
   }
 }
@@ -82,7 +82,7 @@ export const ExtensionsInMessageBindings: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-message-bindings-extensions',
+    operationKey: 'send-operation-with-message-bindings-extensions',
     operationType: 'send',
   }
 }

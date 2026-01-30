@@ -34,7 +34,7 @@ export const SendOperationWithNothing: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-nothing',
+    operationKey: 'send-operation-with-nothing',
     operationType: 'send',
   }
 }
@@ -52,7 +52,7 @@ export const SendOperationWithTitle: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-title',
+    operationKey: 'send-operation-with-title',
     operationType: 'send',
   }
 }
@@ -70,7 +70,7 @@ export const SendOperationWithDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-description',
+    operationKey: 'send-operation-with-description',
     operationType: 'send',
   }
 }
@@ -89,7 +89,7 @@ export const SendOperationWithTitleAndDescription: Story = {
         }
       },
     }),
-    operationName: 'send-operation-with-title-and-description',
+    operationKey: 'send-operation-with-title-and-description',
     operationType: 'send',
   }
 }
@@ -106,7 +106,7 @@ export const ReceiveOperationWithNothing: Story = {
         }
       },
     }),
-    operationName: 'receive-operation-with-nothing',
+    operationKey: 'receive-operation-with-nothing',
     operationType: 'receive',
   }
 }

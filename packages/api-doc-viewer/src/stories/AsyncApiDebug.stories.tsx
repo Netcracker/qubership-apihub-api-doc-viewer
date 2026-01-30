@@ -75,7 +75,7 @@ export const Debug: Story = {
     }
   }
 }`,
-    operationName: '',
+    operationKey: '',
     operationType: '',
   },
   render: (args) => {

@@ -284,7 +284,7 @@ export const KafkaRealExample: Story = {
     source: prepareAsyncApiDocument({
       source: KAFKA_REAL_EXAMPLE_SOURCE,
     }),
-    operationName: 'customer-change-topic_send_BaseEvent',
+    operationKey: 'customer-change-topic_send_BaseEvent',
     operationType: 'send',
   }
 }
@@ -413,7 +413,7 @@ export const MinimalOverallStructure: Story = {
         },
       },
     }),
-    operationName: 'send-operation-with-minimal-overall-structure',
+    operationKey: 'send-operation-with-minimal-overall-structure',
     operationType: 'send',
   }
 }
