@@ -412,3 +412,32 @@ export function generateSyntheticObjectPropsFromArray(...arr: Record<PropertyKey
   }
   return object
 }
+
+// Async API 3.0
+
+type AsyncApiDocumentOptions = {
+  source: unknown
+  circular?: boolean
+  referenceNamePropertyKey?: symbol
+}
+
+export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
+  const { source, circular = false, referenceNamePropertyKey } = options
+  const normalizedSchema = normalize(source, {
+    syntheticTitleFlag: syntheticTitleFlag,
+    referenceNameProperty: referenceNamePropertyKey,
+    unify: true,
+    validate: true,
+    liftCombiners: true,
+  })
+  const mergedSchema = denormalize(normalizedSchema, {
+    syntheticTitleFlag: syntheticTitleFlag,
+    unify: true,
+    validate: true,
+    liftCombiners: true,
+  })
+  if (circular && isObject(mergedSchema)) {
+    mergedSchema.toJSON = () => stringifyCyclicJso(mergedSchema)
+  }
+  return mergedSchema
+}
