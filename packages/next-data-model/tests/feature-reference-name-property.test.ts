@@ -8,15 +8,15 @@ const TEST_REFERENCE_NAME_PROPERTY = Symbol('referenceName')
 
 function mergeAsyncApi(source: unknown): unknown {
   const normalizedSource = normalize(source, {
-    // validate: true,
+    validate: true,
     unify: true,
-    // liftCombiners: true,
+    liftCombiners: true,
     referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY,
   })
   const mergedSource = denormalize(normalizedSource, {
     unify: true,
-    // validate: true,
-    // liftCombiners: true,
+    validate: true,
+    liftCombiners: true,
   })
   return mergedSource
 }
