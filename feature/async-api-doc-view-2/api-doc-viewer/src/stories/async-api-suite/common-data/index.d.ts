@@ -83,3 +83,4 @@ export declare const JSON_SCHEMA_IN_EXTENSIONS: {
         description: string;
     };
 };
+export declare const TEST_REFERENCE_NAME_PROPERTY: unique symbol;

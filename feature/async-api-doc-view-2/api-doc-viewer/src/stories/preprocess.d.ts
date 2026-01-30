@@ -69,7 +69,7 @@ export declare function generateSyntheticObjectPropsFromArray(...arr: Record<Pro
 type AsyncApiDocumentOptions = {
     source: unknown;
     circular?: boolean;
-    enableReferenceName?: true;
+    referenceNamePropertyKey?: symbol;
 };
 export declare function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown;
 export {};
