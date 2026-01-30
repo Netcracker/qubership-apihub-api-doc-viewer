@@ -13,8 +13,8 @@ import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
-import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 import { transformOperationOrientedSpecToMessageOrientedSpec } from "../json-crawl-entities/transformers/transform-operation-oriented-spec-to-message-oriented-spec";
+import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
@@ -146,14 +146,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       alreadyConvertedValuesCache: new Map(),
     }
 
+    // TODO: Encapsulate this
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
     const { operationType, operationKey, messageKey } = this.operationKeys
 
-    if (!operationType || !operationKey || !messageKey) {
-      return this.tree; // TODO: Support absent operation keys
-    }
-
+    // TODO: Encapsulate this
     const preparedSource = transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
 
     console.debug('[AsyncAPI] Prepared Source:', preparedSource)

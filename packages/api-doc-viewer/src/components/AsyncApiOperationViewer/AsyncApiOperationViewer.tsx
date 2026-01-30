@@ -59,6 +59,10 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
       return null
     }
 
+    if (Math.random() > -1) {
+      return null
+    }
+
     return (
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
