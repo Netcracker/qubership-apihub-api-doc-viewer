@@ -1,49 +1,39 @@
 import { CrawlRules } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../../../../model/async-api/types/node-kind";
-import { aggregateSpecificationExtensions } from "../transformers/aggregate-specification-extensions";
-import { defaultChannelAddressTransformer } from "../transformers/default-channel-address";
 import { inlineBindingParameters } from "../transformers/inline-binding-params";
-import { liftAddressTransformer } from "../transformers/lift-address";
-import { renameMessageParams } from "../transformers/rename-message-params";
 import { unifyParamsWithSchema } from "../transformers/unify-params-with-schema";
 import { AsyncApiCrawlRule } from "./types";
+import { collectRawValues } from "../transformers/collect-raw-values";
 
-export function getAsyncApiCrawlRules(
-  kind: AsyncApiTreeNodeKind = AsyncApiTreeNodeKinds.ROOT,
-): CrawlRules<AsyncApiCrawlRule> {
+export function getAsyncApiCrawlRules(kind: AsyncApiTreeNodeKind): CrawlRules<AsyncApiCrawlRule> {
   return {
-    // Specification
-    '/operations': {
-      '/*': () => ({
-        ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.OPERATION),
-        transformers: [liftAddressTransformer, defaultChannelAddressTransformer, aggregateSpecificationExtensions],
-      }),
+    '/data': {
+      '/content': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE_CONTENT),
+      '/channel': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE_CHANNEL),
+      '/operation': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE_OPERATION),
+      kind: AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR,
+      complex: true,
     },
-    // Operation
-    '/channel': () => ({
-      ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.CHANNEL),
-      '/messages': {
-        kind: undefined, // Exclude channel messages
-      },
-      transformers: [defaultChannelAddressTransformer, aggregateSpecificationExtensions],
-    }),
+    // Channel Parameters
+    '/parameters': {
+      kind: AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS,
+      transformers: [collectRawValues],
+    },
+    // Message/Channel/Operation Extensions
+    '/extensions': {
+      kind: AsyncApiTreeNodeKinds.EXTENSIONS,
+      transformers: [collectRawValues],
+    },
+    // Message/Channel/Operation Bindings
     '/bindings': {
-      '/*': { // TODO: get rid of these sub-rules
+      '/*': {
         kind: AsyncApiTreeNodeKinds.BINDING,
-        transformers: [inlineBindingParameters], // TODO: should move all binding content into field "binding"
+        transformers: [inlineBindingParameters],
       },
       kind: AsyncApiTreeNodeKinds.BINDINGS,
       complex: true,
     },
-    '/messages': {
-      '/*': () => ({
-        ...getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE),
-        transformers: [renameMessageParams, aggregateSpecificationExtensions],
-      }),
-      kind: AsyncApiTreeNodeKinds.MESSAGES,
-      complex: true,
-    },
-    // Message
+    // Message Content
     '/headers': {
       kind: AsyncApiTreeNodeKinds.MESSAGE_HEADERS,
       transformers: [unifyParamsWithSchema],

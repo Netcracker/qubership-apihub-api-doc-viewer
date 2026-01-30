@@ -55,11 +55,11 @@ export function createTransformerOperationOrientedSpecToMessageOrientedSpec(
       address: operationChannel.address ?? UNKNOWN_ADDRESS,
       summary: operationMessage.summary,
       description: operationMessage.description,
-      ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
       data: {
         content: {
-          ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
           ...operationMessage.headers ? { headers: operationMessage.headers } : {},
+          ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
+          ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
           ...operationMessage.payload ? { payload: operationMessage.payload } : {},
         },
         channel: {

@@ -2,16 +2,18 @@ import { SpecificationExtensionKey } from "../../specification-extension-key"
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "./node-kind"
 
 export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
-  T extends typeof AsyncApiTreeNodeKinds.ROOT
-  ? AsyncApiTreeNodeValueTypeRoot
-  : T extends typeof AsyncApiTreeNodeKinds.OPERATION
-  ? AsyncApiTreeNodeValueTypeOperation
-  : T extends typeof AsyncApiTreeNodeKinds.BINDING
+  T extends typeof AsyncApiTreeNodeKinds.BINDING
   ? AsyncApiTreeNodeValueTypeBinding
-  : T extends typeof AsyncApiTreeNodeKinds.CHANNEL
-  ? AsyncApiTreeNodeValueTypeChannel
+  : T extends typeof AsyncApiTreeNodeKinds.EXTENSIONS
+  ? AsyncApiTreeNodeValueTypeExtensions
   : T extends typeof AsyncApiTreeNodeKinds.MESSAGE
   ? AsyncApiTreeNodeValueTypeMessage
+  : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+  ? AsyncApiTreeNodeValueTypeMessageChannel
+  : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS
+  ? AsyncApiTreeNodeValueTypeChannelParameters
+  : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
+  ? AsyncApiTreeNodeValueTypeMessageOperation
   : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
   ? AsyncApiTreeNodeValueTypeMessageHeaders
   : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
@@ -24,36 +26,39 @@ export interface AsyncApiTreeNodeValueBase {
   readonly summary?: string
 }
 
-interface AsyncApiTreeNodeValueWithExtensions {
-  readonly extensions?: Record<SpecificationExtensionKey, unknown>
-}
-
-export interface AsyncApiTreeNodeValueTypeRoot extends AsyncApiTreeNodeValueBase {}
-
-export interface AsyncApiTreeNodeValueTypeOperation extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {
-  readonly title: string
-  readonly description: string
-  readonly action: string
-  readonly address: string | null
-}
-
-export interface AsyncApiTreeNodeValueTypeBinding extends AsyncApiTreeNodeValueWithExtensions {
+export interface AsyncApiTreeNodeValueTypeBinding {
   readonly binding: Record<string, unknown>
   readonly version?: string
   readonly protocol: string
 }
 
-export interface AsyncApiTreeNodeValueTypeChannel extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {}
-
-export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase, AsyncApiTreeNodeValueWithExtensions {
-  readonly internalTitle: string
+interface AsyncApiTreeNodeValueWithRawValues {
+  readonly rawValues: Record<string, unknown>
 }
+
+export interface AsyncApiTreeNodeValueTypeExtensions extends AsyncApiTreeNodeValueWithRawValues {
+  readonly rawValues: Record<SpecificationExtensionKey, unknown>
+}
+
+export interface AsyncApiTreeNodeValueTypeMessage extends AsyncApiTreeNodeValueBase {
+  readonly internalTitle: string
+  readonly action: string
+  readonly address: string | null
+}
+
+export interface AsyncApiTreeNodeValueTypeMessageChannel extends AsyncApiTreeNodeValueBase { }
+
+export interface AsyncApiTreeNodeValueTypeChannelParameters extends AsyncApiTreeNodeValueWithRawValues {
+  readonly rawValues: Record<string, unknown>
+ }
+
+export interface AsyncApiTreeNodeValueTypeMessageOperation extends AsyncApiTreeNodeValueBase { }
 
 interface AsyncApiTreeNodeValueTypeMultiSchema extends AsyncApiTreeNodeValueBase {
   readonly schema: object
   readonly schemaFormat?: string
 }
 
-export interface AsyncApiTreeNodeValueTypeMessageHeaders extends AsyncApiTreeNodeValueTypeMultiSchema {}
+export interface AsyncApiTreeNodeValueTypeMessageHeaders extends AsyncApiTreeNodeValueTypeMultiSchema { }
 
-export interface AsyncApiTreeNodeValueTypeMessagePayload extends AsyncApiTreeNodeValueTypeMultiSchema {}
+export interface AsyncApiTreeNodeValueTypeMessagePayload extends AsyncApiTreeNodeValueTypeMultiSchema { }

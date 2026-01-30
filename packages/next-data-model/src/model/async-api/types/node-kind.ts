@@ -1,13 +1,15 @@
 export const AsyncApiTreeNodeKinds = {
-  ROOT: 'root',
-  OPERATION: 'operation',
-  BINDINGS: 'bindings',
   BINDING: 'binding',
-  CHANNEL: 'channel',
-  MESSAGES: 'messages',
+  BINDINGS: 'bindings',
+  EXTENSIONS: 'extensions',
   MESSAGE: 'message',
+  MESSAGE_CHANNEL: 'channel',
+  MESSAGE_CHANNEL_PARAMETERS: 'channelParameters',
+  MESSAGE_CONTENT: 'messageContent',
   MESSAGE_HEADERS: 'messageHeaders',
+  MESSAGE_OPERATION: 'operation',
   MESSAGE_PAYLOAD: 'messagePayload',
+  MESSAGE_SECTION_SELECTOR: 'messageSectionSelector',
 } as const
 
 export const AsyncApiTreeNodeKindsList: AsyncApiTreeNodeKind[] = Object.values(AsyncApiTreeNodeKinds)
