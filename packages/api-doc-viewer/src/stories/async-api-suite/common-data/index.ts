@@ -87,3 +87,5 @@ export const JSON_SCHEMA_IN_EXTENSIONS = {
     description: 'Json Schema in extensions',
   }
 }
+
+export const TEST_REFERENCE_NAME_PROPERTY = Symbol('test-reference-name-property')
