@@ -1,6 +1,7 @@
 import { AsyncApiOperationViewer } from '@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 import { prepareAsyncApiDocument } from '../preprocess';
+import { TEST_REFERENCE_NAME_PROPERTY } from './common-data';
 
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
@@ -171,7 +172,8 @@ export const SendOperationWithRootLevelChannelAndEnabledReferenceNameProperty: S
           }
         }
       },
-      enableReferenceName: true,
+      referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
     }),
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
