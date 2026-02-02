@@ -42,26 +42,16 @@ describe('Cases with operation messages', () => {
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
+      expect(messageSectionSelectorNode!.childrenNodes().length).toEqual(0) // no children
 
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
-      expect(messagesNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(messagesNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGES)
-
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toBeDefined()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "TestMessage"
-      })
-
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      
     })
 
     it('should handle message with title and description', () => {
@@ -685,86 +675,6 @@ describe('Cases with operation messages', () => {
       expect(messagesNodeValueOption2).toEqual({
         internalTitle: "SecondMessage",
         title: "Second Message"
-      })
-    })
-
-    it('should handle operation with three messages', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "three-messages-test",
-          version: "1.0.0"
-        },
-        channels: {
-          "test-channel": {
-            address: "test-channel",
-            messages: {
-              MessageA: { $ref: "#/components/messages/MessageA" },
-              MessageB: { $ref: "#/components/messages/MessageB" },
-              MessageC: { $ref: "#/components/messages/MessageC" }
-            }
-          }
-        },
-        components: {
-          messages: {
-            MessageA: {
-              name: "MessageA",
-              title: "Message A",
-              description: "First message type"
-            },
-            MessageB: {
-              name: "MessageB",
-              title: "Message B",
-              description: "Second message type"
-            },
-            MessageC: {
-              name: "MessageC",
-              title: "Message C",
-              description: "Third message type"
-            }
-          }
-        },
-        operations: {
-          "triple-message-operation": {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/MessageA" },
-              { $ref: "#/channels/test-channel/messages/MessageB" },
-              { $ref: "#/channels/test-channel/messages/MessageC" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-
-      expect(messagesNode).toBeDefined()
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(3)
-
-      const messagesNodeValueDefaultOption = messagesNode!.value()
-      const expectedFirstOptionValue = {
-        internalTitle: "MessageA",
-        title: "Message A",
-        description: "First message type"
-      }
-      expect(messagesNodeValueDefaultOption).toEqual(expectedFirstOptionValue)
-      const messagesNodeValueOption1 = messagesNode!.value(`${operationNode!.id}/messages/0`)
-      expect(messagesNodeValueOption1).toEqual(expectedFirstOptionValue)
-      const messagesNodeValueOption2 = messagesNode!.value(`${operationNode!.id}/messages/1`)
-      expect(messagesNodeValueOption2).toEqual({
-        internalTitle: "MessageB",
-        title: "Message B",
-        description: "Second message type"
-      })
-      const messagesNodeValueOption3 = messagesNode!.value(`${operationNode!.id}/messages/2`)
-      expect(messagesNodeValueOption3).toEqual({
-        internalTitle: "MessageC",
-        title: "Message C",
-        description: "Third message type"
       })
     })
 

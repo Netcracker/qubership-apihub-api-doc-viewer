@@ -125,7 +125,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
-    private readonly operationKeys: Partial<{
+    private readonly operationKeys?: Partial<{
       operationType: string // send, receive
       operationKey: string // e.g. send-fruit, receive-fruit
       messageKey: string // e.g. send-fruit-message, receive-fruit-message
@@ -150,7 +150,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     // TODO: Encapsulate this
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
-    const { operationType, operationKey, messageKey } = this.operationKeys
+    const { operationType, operationKey, messageKey } = this.operationKeys ?? {}
 
     // TODO: Encapsulate this
     const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
@@ -281,6 +281,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           title: operation.title,
           summary: operation.summary,
           description: operation.description,
+          ...operation.bindings ? { bindings: operation.bindings } : {},
           ...operationExtensions ? { extensions: operationExtensions } : {},
         },
       }

@@ -402,50 +402,6 @@ describe('Cases with channel', () => {
     })
   })
 
-  describe('Channel with null address', () => {
-    it('should handle channel with null address', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "channel-null-address-test",
-          version: "1.0.0"
-        },
-        channels: {
-          'dynamic-channel': {
-            address: null,
-            title: "Dynamic Channel",
-            description: "Channel with dynamically determined address"
-          }
-        },
-        operations: {
-          'dynamic-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/dynamic-channel" }
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: '<address unknown>',
-      })
-
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Dynamic Channel",
-        description: "Channel with dynamically determined address",
-        address: undefined, // Channel address is lifted to operation
-      })
-    })
-  })
-
   describe('Channels in different operation actions', () => {
     it('should handle channel in receive operation', () => {
       const asyncApiSource = {
@@ -675,6 +631,48 @@ describe('Cases with channel', () => {
   })
 
   describe('Edge cases and special scenarios', () => {
+    it('should handle channel with null address', () => {
+      const asyncApiSource = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "channel-null-address-test",
+          version: "1.0.0"
+        },
+        channels: {
+          'dynamic-channel': {
+            address: null,
+            title: "Dynamic Channel",
+            description: "Channel with dynamically determined address"
+          }
+        },
+        operations: {
+          'dynamic-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/dynamic-channel" }
+          }
+        }
+      }
+
+      const tree = createAsyncApiTreeForTests(asyncApiSource)
+      const operationNode = tree!.root!.childrenNodes()[0]
+
+      const operationNodeValue = operationNode.value()
+      expect(operationNodeValue).toEqual({
+        action: "send",
+        address: '<address unknown>',
+      })
+
+      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
+      expect(channelNode).toBeDefined()
+
+      const channelNodeValue = channelNode!.value()
+      expect(channelNodeValue).toEqual({
+        title: "Dynamic Channel",
+        description: "Channel with dynamically determined address",
+        address: undefined, // Channel address is lifted to operation
+      })
+    })
+
     it('should handle channel with only description (no title)', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
