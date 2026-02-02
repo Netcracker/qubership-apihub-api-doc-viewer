@@ -42,16 +42,26 @@ describe('Cases with operation messages', () => {
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
+
       const messageNode = tree?.root ?? null
       expect(messageNode).not.toBeNull()
 
+      expect(messageNode!.value()).toEqual({
+        internalTitle: "TestMessage",
+        action: "send",
+        address: "test-channel",
+      })
+
       const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
       expect(messageSectionSelectorNode).not.toBeNull()
+
       const sectionNodes = messageSectionSelectorNode!.nestedNodes()
       expect(sectionNodes.length).toBe(3)
-      expect(messageSectionSelectorNode!.childrenNodes().length).toEqual(0) // no children
+      expect(messageSectionSelectorNode!.childrenNodes().length).toBe(0) // no children
 
-      
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
     })
 
     it('should handle message with title and description', () => {
@@ -72,7 +82,6 @@ describe('Cases with operation messages', () => {
         components: {
           messages: {
             UserCreatedMessage: {
-              name: "UserCreatedMessage",
               title: "User Created Event",
               description: "Event triggered when a new user is created"
             }
@@ -90,15 +99,28 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
+      expect(tree).toBeDefined()
 
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "UserCreatedMessage",
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      expect(messageNode!.value()).toEqual({
         title: "User Created Event",
-        description: "Event triggered when a new user is created"
+        description: "Event triggered when a new user is created",
+        action: "send",
+        address: "test-channel",
       })
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
+
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
+      expect(messageSectionSelectorNode!.childrenNodes().length).toBe(0) // no children
+
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
     })
 
     it('should handle message with summary field', () => {
@@ -119,10 +141,7 @@ describe('Cases with operation messages', () => {
         components: {
           messages: {
             OrderMessage: {
-              name: "OrderMessage",
-              title: "Order Event",
               summary: "Summary of order event",
-              description: "Detailed description of order event"
             }
           }
         },
@@ -138,16 +157,27 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
+      expect(tree).toBeDefined()
 
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "OrderMessage",
-        title: "Order Event",
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      expect(messageNode!.value()).toEqual({
         summary: "Summary of order event",
-        description: "Detailed description of order event"
+        action: "send",
+        address: "test-channel",
       })
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
+
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
+      expect(messageSectionSelectorNode!.childrenNodes().length).toBe(0) // no children
+
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
     })
 
     it('should handle message with headers', () => {
@@ -184,7 +214,6 @@ describe('Cases with operation messages', () => {
           messages: {
             MessageWithHeaders: {
               name: "MessageWithHeaders",
-              title: "Message With Headers",
               headers: { $ref: "#/components/schemas/MessageHeaders" }
             }
           }
@@ -201,51 +230,50 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGES)
+      expect(tree).toBeDefined()
 
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      expect(messageNode!.value()).toEqual({
         internalTitle: "MessageWithHeaders",
-        title: "Message With Headers"
+        action: "send",
+        address: "test-channel",
       })
 
-      // Check that headers are present in nested nodes
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
 
-      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
-      expect(messageNode).toBeDefined()
-      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
 
-      const messageChildrenNodes = messageNode!.childrenNodes()
-      expect(messageChildrenNodes.length).toBe(1)
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
 
-      const headersNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
-      expect(headersNode).toBeDefined()
+      const contentSectionChildrenNodes = contentSectionNode!.childrenNodes()
+      expect(contentSectionChildrenNodes.length).toBe(1)
+      const headersNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS) ?? null
+      expect(headersNode).not.toBeNull()
       expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(headersNode!.key).toBe('headers')
       expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
-
-      const headersNodeValue = headersNode!.value()
-      expect(headersNodeValue)
-        .toEqual({
-          schema: {
-            type: "object",
-            properties: {
-              'X-Correlation-Id': {
-                type: "string",
-                description: "Correlation identifier"
-              },
-              'X-Request-Id': {
-                type: "string",
-                description: "Request identifier"
-              }
+      expect(headersNode!.value()).toEqual({
+        schema: {
+          type: "object",
+          properties: {
+            'X-Correlation-Id': {
+              type: "string",
+              description: "Correlation identifier"
+            },
+            'X-Request-Id': {
+              type: "string",
+              description: "Request identifier"
             }
-          },
-          schemaFormat: null,
-        })
+          }
+        },
+        schemaFormat: null,
+      })
     })
 
     it('should handle message with payload', () => {
@@ -284,7 +312,6 @@ describe('Cases with operation messages', () => {
           messages: {
             MessageWithPayload: {
               name: "MessageWithPayload",
-              title: "Message With Payload",
               payload: {
                 schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
                 schema: { $ref: "#/components/schemas/UserPayload" }
@@ -304,153 +331,52 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
+      expect(tree).toBeDefined()
 
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      expect(messageNode!.value()).toEqual({
         internalTitle: "MessageWithPayload",
-        title: "Message With Payload"
+        action: "send",
+        address: "test-channel",
       })
 
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
 
-      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
-      expect(messageNode).toBeDefined()
-      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
 
-      const messageChildrenNodes = messageNode!.childrenNodes()
-      expect(messageChildrenNodes.length).toBe(1)
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
 
-      const payloadNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
-      expect(payloadNode).toBeDefined()
+      const contentSectionChildrenNodes = contentSectionNode!.childrenNodes()
+      expect(contentSectionChildrenNodes.length).toBe(1)
+      const payloadNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD) ?? null
+      expect(payloadNode).not.toBeNull()
       expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(payloadNode!.key).toBe('payload')
       expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
-
-      const payloadNodeValue = payloadNode!.value()
-      // TODO 19.12.25 // Now it fails because $ref to schema is not resolved
-      expect(payloadNodeValue)
-        .toEqual({
-          schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
-          schema: {
-            type: "object",
-            required: ["userId", "userName"],
-            properties: {
-              userId: {
-                type: "string"
-              },
-              userName: {
-                type: "string"
-              },
-              email: {
-                type: "string"
-              }
-            }
-          }
-        })
-    })
-
-    it('should handle message with bindings', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "message-with-bindings-test",
-          version: "1.0.0"
-        },
-        channels: {
-          'test-channel': {
-            address: "test-channel",
-            messages: {
-              MessageWithBindings: { $ref: "#/components/messages/MessageWithBindings" }
-            }
-          }
-        },
-        components: {
-          messages: {
-            MessageWithBindings: {
-              name: "MessageWithBindings",
-              title: "Message With Bindings",
-              bindings: {
-                kafka: {
-                  key: {
-                    type: "string"
-                  },
-                  schemaIdLocation: "payload",
-                  schemaIdPayloadEncoding: 'apicurio-new',
-                  schemaLookupStrategy: 'TopicIdStrategy',
-                  bindingVersion: "0.5.0"
-                }
-              }
-            }
-          }
-        },
-        operations: {
-          'bindings-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/MessageWithBindings" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "MessageWithBindings",
-        title: "Message With Bindings"
-      })
-
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
-
-      const messageNode = messagesNode?.findNestedNode(`${operationNode.id}/messages/0`)
-      expect(messageNode).toBeDefined()
-      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
-
-      const messageChildrenNodes = messageNode!.childrenNodes()
-      expect(messageChildrenNodes.length).toBe(1)
-
-      const bindingsNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
-
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue)
-        .toEqual({
-          protocol: 'kafka',
-          version: '0.5.0',
-          binding: {
-            key: {
+      expect(payloadNode!.value()).toEqual({
+        schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+        schema: {
+          type: "object",
+          properties: {
+            userId: {
               type: "string"
             },
-            schemaIdLocation: "payload",
-            schemaIdPayloadEncoding: 'apicurio-new',
-            schemaLookupStrategy: 'TopicIdStrategy',
+            userName: {
+              type: "string"
+            },
+            email: {
+              type: "string"
+            }
           },
-        })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(bindingNode).toBeDefined()
-      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingNode!.key).toBe('kafka')
-      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
+          required: ["userId", "userName"]
+        },
+      })
     })
 
     it('should handle message with all fields combined', () => {
@@ -525,31 +451,37 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
+      expect(tree).toBeDefined()
 
-      expect(messagesNode).toBeDefined()
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      expect(messageNode!.value()).toEqual({
         internalTitle: "CompleteMessage",
         title: "Complete Message",
         summary: "A complete message with all fields",
-        description: "This message demonstrates all possible fields"
+        description: "This message demonstrates all possible fields",
+        action: "send",
+        address: "test-channel",
       })
 
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR) ?? null
+      expect(messageSectionSelectorNode).not.toBeNull()
 
-      const messageNode = messagesNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE)
-      expect(messageNode).toBeDefined()
-      expect(messageNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE)
+      const sectionNodes = messageSectionSelectorNode!.nestedNodes()
+      expect(sectionNodes.length).toBe(3)
 
-      const messageChildrenNodes = messageNode!.childrenNodes()
-      expect(messageChildrenNodes.length).toBe(3)
+      const contentSectionNode = sectionNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT) ?? null
+      expect(contentSectionNode).not.toBeNull()
+      expect(contentSectionNode!.value()).toBeNull()
 
-      const headersNode = messageChildrenNodes.find(node => node.key === 'headers' && node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
-      expect(headersNode).toBeDefined()
+      const contentSectionChildrenNodes = contentSectionNode!.childrenNodes()
+      expect(contentSectionChildrenNodes.length).toBe(3)
+
+      const headersNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS) ?? null
+      expect(headersNode).not.toBeNull()
       expect(headersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(headersNode!.key).toBe('headers')
       expect(headersNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_HEADERS)
       expect(headersNode!.value()).toEqual({
         schema: {
@@ -563,12 +495,13 @@ describe('Cases with operation messages', () => {
         schemaFormat: null,
       })
 
-      const payloadNode = messageChildrenNodes.find(node => node.key === 'payload' && node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
-      expect(payloadNode).toBeDefined()
+      const payloadNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD) ?? null
+      expect(payloadNode).not.toBeNull()
       expect(payloadNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(payloadNode!.key).toBe('payload')
       expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode!.value()).toEqual({
-        schemaFormat: 'application/vnd.aai.asyncapi+json;version=3.0.0',
+        schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
         schema: {
           type: "object",
           properties: {
@@ -586,230 +519,23 @@ describe('Cases with operation messages', () => {
         },
       })
 
-      const bindingsNode = messageChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
+      const bindingsNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS) ?? null
+      expect(bindingsNode).not.toBeNull()
       expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode!.value()).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
-        binding: {},
-      })
 
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(bindingNode).toBeDefined()
+      const bindingNodes = bindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      const bindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING) ?? null
+      expect(bindingNode).not.toBeNull()
       expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
       expect(bindingNode!.key).toBe('kafka')
-      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
-    })
-  })
-
-  describe('Multiple messages scenarios', () => {
-    it('should handle operation with two messages', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "two-messages-test",
-          version: "1.0.0"
-        },
-        channels: {
-          'test-channel': {
-            address: "test-channel",
-            messages: {
-              FirstMessage: { $ref: "#/components/messages/FirstMessage" },
-              SecondMessage: { $ref: "#/components/messages/SecondMessage" }
-            }
-          }
-        },
-        components: {
-          messages: {
-            FirstMessage: {
-              name: "FirstMessage",
-              title: "First Message"
-            },
-            SecondMessage: {
-              name: "SecondMessage",
-              title: "Second Message"
-            }
-          }
-        },
-        operations: {
-          'multi-message-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/FirstMessage" },
-              { $ref: "#/channels/test-channel/messages/SecondMessage" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-
-      expect(messagesNode).toBeDefined()
-      expect(messagesNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(2)
-
-      // First message should be selected by default
-      const messagesNodeValue = messagesNode!.value()
-      const expectedFirstOptionValue = {
-        internalTitle: "FirstMessage",
-        title: "First Message"
-      }
-      expect(messagesNodeValue).toEqual(expectedFirstOptionValue)
-      const messagesNodeValueOption1 = messagesNode!.value(`${operationNode!.id}/messages/0`)
-      expect(messagesNodeValueOption1).toEqual(expectedFirstOptionValue)
-      const messagesNodeValueOption2 = messagesNode!.value(`${operationNode!.id}/messages/1`)
-      expect(messagesNodeValueOption2).toEqual({
-        internalTitle: "SecondMessage",
-        title: "Second Message"
+      expect(bindingNode!.value()).toEqual({
+        binding: {},
+        version: "0.5.0",
+        protocol: "kafka",
       })
     })
 
-    it('should handle multiple messages with different field combinations', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "mixed-messages-test",
-          version: "1.0.0"
-        },
-        channels: {
-          "test-channel": {
-            address: "test-channel",
-            messages: {
-              MinimalMessage: { $ref: "#/components/messages/MinimalMessage" },
-              MessageWithPayload: { $ref: "#/components/messages/MessageWithPayload" },
-              CompleteMessage: { $ref: "#/components/messages/CompleteMessage" }
-            }
-          }
-        },
-        components: {
-          schemas: {
-            SimpleSchema: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "string"
-                }
-              }
-            },
-            ComplexHeaders: {
-              type: "object",
-              properties: {
-                Authorization: {
-                  type: "string"
-                }
-              }
-            }
-          },
-          messages: {
-            MinimalMessage: {
-              name: "MinimalMessage",
-              title: "Minimal Message"
-            },
-            MessageWithPayload: {
-              name: "MessageWithPayload",
-              title: "Message With Payload",
-              description: "Has payload only",
-              payload: {
-                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
-                schema: { $ref: "#/components/schemas/SimpleSchema" }
-              }
-            },
-            CompleteMessage: {
-              name: "CompleteMessage",
-              title: "Complete Message",
-              summary: "Complete message summary",
-              description: "Has all fields",
-              headers: { $ref: "#/components/schemas/ComplexHeaders" },
-              payload: {
-                schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
-                schema: { $ref: "#/components/schemas/SimpleSchema" }
-              },
-              bindings: {
-                kafka: {
-                  bindingVersion: "0.5.0"
-                }
-              }
-            }
-          }
-        },
-        operations: {
-          "mixed-operation": {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/MinimalMessage" },
-              { $ref: "#/channels/test-channel/messages/MessageWithPayload" },
-              { $ref: "#/channels/test-channel/messages/CompleteMessage" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-
-      expect(messagesNode).toBeDefined()
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(3)
-
-      // First message (minimal) should be selected
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "MinimalMessage",
-        title: "Minimal Message"
-      })
-    })
-  })
-
-  describe('Edge cases', () => {
-    it('should handle operation with empty messages array', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "empty-messages-test",
-          version: "1.0.0"
-        },
-        channels: {
-          "test-channel": {
-            address: "test-channel"
-          }
-        },
-        operations: {
-          "empty-messages-operation": {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: []
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-
-      // With empty messages array, there should be no messages node or it should be handled gracefully
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(0)
-      // TODO 09.12.25 // We should skip node with kind = "messages" if there are no any message
-    })
-  })
-
-  describe('Messages in different operation actions', () => {
     it('should handle messages in receive operation', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
@@ -829,7 +555,6 @@ describe('Cases with operation messages', () => {
           messages: {
             ReceiveMessage: {
               name: "ReceiveMessage",
-              title: "Receive Message"
             }
           }
         },
@@ -845,20 +570,75 @@ describe('Cases with operation messages', () => {
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
+      expect(tree).toBeDefined()
+
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+      expect(messageNode!.value()).toEqual({
+        internalTitle: "ReceiveMessage",
         action: "receive",
         address: "test-channel",
       })
+    })
+  })
 
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
+  describe('Multiple messages scenarios', () => {
+    it('should handle operation with two messages', () => {
+      const asyncApiSource = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "two-messages-test",
+          version: "1.0.0"
+        },
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+          }
+        },
+        operations: {
+          'multi-message-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/components/messages/FirstMessage" },
+              { $ref: "#/components/messages/SecondMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            FirstMessage: {
+              name: "FirstMessage",
+            },
+            SecondMessage: {
+              name: "SecondMessage",
+            }
+          }
+        },
+      }
 
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "ReceiveMessage",
-        title: "Receive Message"
+      const treeWithFirstMessage = createAsyncApiTreeForTests(asyncApiSource)
+      expect(treeWithFirstMessage).toBeDefined()
+      const firstMessageNode = treeWithFirstMessage?.root ?? null
+      expect(firstMessageNode).not.toBeNull()
+      expect(firstMessageNode!.value()).toEqual({
+        internalTitle: "FirstMessage",
+        action: "send",
+        address: "test-channel",
+      })
+
+      const treeWithSecondMessage = createAsyncApiTreeForTests(asyncApiSource, {
+        messageKey: "SecondMessage",
+        operationKey: "multi-message-operation",
+        operationType: "send",
+      })
+      expect(treeWithSecondMessage).toBeDefined()
+      const secondMessageNode = treeWithSecondMessage?.root ?? null
+      expect(secondMessageNode).not.toBeNull()
+      expect(secondMessageNode!.value()).toEqual({
+        internalTitle: "SecondMessage",
+        action: "send",
+        address: "test-channel",
       })
     })
   })

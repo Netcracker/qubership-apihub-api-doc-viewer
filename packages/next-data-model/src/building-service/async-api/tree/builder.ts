@@ -274,12 +274,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const messageOrientedOperation: Record<PropertyKey, unknown> = {
       ...(messageReferenceNameProperty ?? {}),
       id: messageKey,
-      title: operationMessage.title,
-      internalTitle: operationMessage?.name,
+      ...(operationMessage.name ? { internalTitle: operationMessage.name } : {}),
+      ...(operationMessage.title ? { title: operationMessage.title } : {}),
+      ...(operationMessage.summary ? { summary: operationMessage.summary } : {}),
+      ...(operationMessage.description ? { description: operationMessage.description } : {}),
       action: operation.action,
       address: operationChannel.address ?? UNKNOWN_ADDRESS,
-      summary: operationMessage.summary,
-      description: operationMessage.description,
       data: {
         content: {
           ...operationMessage.headers ? { headers: operationMessage.headers } : {},
@@ -289,9 +289,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         },
         channel: {
           ...(channelReferenceNameProperty ?? {}),
-          title: operationChannel.title,
-          summary: operationChannel.summary,
-          description: operationChannel.description,
+          ...(operationChannel.title ? { title: operationChannel.title } : {}),
+          ...(operationChannel.summary ? { summary: operationChannel.summary } : {}),
+          ...(operationChannel.description ? { description: operationChannel.description } : {}),
           ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
           ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
           ...operationChannel.parameters ? { parameters: operationChannel.parameters } : {},
@@ -299,9 +299,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         operation: {
           ...(operationReferenceNameProperty ?? {}),
           id: operationKey,
-          title: operation.title,
-          summary: operation.summary,
-          description: operation.description,
+          ...(operation.title ? { title: operation.title } : {}),
+          ...(operation.summary ? { summary: operation.summary } : {}),
+          ...(operation.description ? { description: operation.description } : {}),
           ...operation.bindings ? { bindings: operation.bindings } : {},
           ...operationExtensions ? { extensions: operationExtensions } : {},
         },
