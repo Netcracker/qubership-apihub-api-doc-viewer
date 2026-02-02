@@ -272,6 +272,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const operationReferenceNameProperty = pickReferenceNameProperty(operation)
 
     const messageOrientedOperation: Record<PropertyKey, unknown> = {
+      ...(messageReferenceNameProperty ?? {}),
+      id: messageKey,
       title: operationMessage.title,
       internalTitle: operationMessage?.name,
       action: operation.action,
@@ -280,14 +282,13 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       description: operationMessage.description,
       data: {
         content: {
-          ...messageReferenceNameProperty ? { [this.referenceNamePropertyKey!]: messageReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
           ...operationMessage.headers ? { headers: operationMessage.headers } : {},
           ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
           ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
           ...operationMessage.payload ? { payload: operationMessage.payload } : {},
         },
         channel: {
-          ...channelReferenceNameProperty ? { [this.referenceNamePropertyKey!]: channelReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
+          ...(channelReferenceNameProperty ?? {}),
           title: operationChannel.title,
           summary: operationChannel.summary,
           description: operationChannel.description,
@@ -296,7 +297,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...operationChannel.parameters ? { parameters: operationChannel.parameters } : {},
         },
         operation: {
-          ...operationReferenceNameProperty ? { [this.referenceNamePropertyKey!]: operationReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
+          ...(operationReferenceNameProperty ?? {}),
+          id: operationKey,
           title: operation.title,
           summary: operation.summary,
           description: operation.description,
@@ -475,13 +477,17 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
    * @returns resolved node key.
    */
   private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
-    if (this.referenceNamePropertyKey) {
-      if (isObject(value) && value[this.referenceNamePropertyKey]) {
-        const nodeKeyCandidate = value[this.referenceNamePropertyKey]
-        if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
-          return nodeKeyCandidate
-        }
+    if (!isObject(value)) {
+      return key
+    }
+    if (this.referenceNamePropertyKey && value[this.referenceNamePropertyKey]) {
+      const nodeKeyCandidate = value[this.referenceNamePropertyKey]
+      if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
+        return nodeKeyCandidate
       }
+    }
+    if ('id' in value && typeof value.id === 'string') {
+      return value.id
     }
     return key
   }

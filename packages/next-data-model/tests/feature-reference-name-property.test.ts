@@ -21,6 +21,22 @@ function mergeAsyncApi(source: unknown): unknown {
   return mergedSource
 }
 
+const COMPONENTS_WITH_MESSAGES = {
+  components: {
+    messages: {
+      'test-message': {
+        name: "TestMessage",
+      }
+    }
+  }
+}
+
+const SINGLE_MESSAGE_USAGE = {
+  messages: [
+    { $ref: "#/components/messages/test-message" }
+  ]
+}
+
 describe('Feature: Reference Name Property', () => {
   simplifyConsole()
 
@@ -29,10 +45,7 @@ describe('Feature: Reference Name Property', () => {
       asyncapi: '3.0.0',
       operations: {
         'test-operation': {
-          action: 'send',
-          channel: {
-            $ref: '#/channels/test-channel',
-          },
+          $ref: '#/components/operations/test-operation',
         },
       },
       channels: {
@@ -40,14 +53,61 @@ describe('Feature: Reference Name Property', () => {
           title: 'Test channel',
         },
       },
+      components: {
+        ...COMPONENTS_WITH_MESSAGES.components,
+        operations: {
+          'test-operation': {
+            action: 'send',
+            channel: {
+              $ref: '#/channels/test-channel',
+            },
+            ...SINGLE_MESSAGE_USAGE,
+          },
+        }
+      },
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
-    const root = tree.root!
-    const operationNode = root!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.OPERATION)
-    expect(operationNode).toBeDefined()
-    expect(operationNode!.key).toBe('test-operation')
+    const messageNode = tree.root ?? null
+    expect(messageNode).not.toBeNull()
+
+    const selectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+    const sections = selectorNode!.nestedNodes()
+    const operationSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+    expect(operationSection?.key).toBe('test-operation')
+  })
+
+  it('should resolve operation node key based on the id property if reference name property is not present', () => {
+    const source = {
+      asyncapi: '3.0.0',
+      operations: {
+        'test-operation': {
+          title: 'Test operation',
+          action: 'send',
+          channel: {
+            $ref: '#/channels/test-channel',
+          },
+          ...SINGLE_MESSAGE_USAGE,
+        },
+      },
+      channels: {
+        'test-channel': {
+          title: 'Test channel',
+        },
+      },
+      ...COMPONENTS_WITH_MESSAGES,
+    }
+    const mergedSource = mergeAsyncApi(source)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const tree: AsyncApiTree = treeBuilder.build()
+    const messageNode = tree.root ?? null
+    expect(messageNode).not.toBeNull()
+
+    const selectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+    const sections = selectorNode!.nestedNodes()
+    const operationSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+    expect(operationSection?.key).toBe('test-operation')
   })
 
   it('should resolve channel node key based on the reference name property', () => {
@@ -60,6 +120,7 @@ describe('Feature: Reference Name Property', () => {
           channel: {
             $ref: '#/channels/test-channel',
           },
+          ...SINGLE_MESSAGE_USAGE,
         },
       },
       channels: {
@@ -67,19 +128,19 @@ describe('Feature: Reference Name Property', () => {
           description: 'Test channel without title',
         },
       },
+      ...COMPONENTS_WITH_MESSAGES,
     }
     const mergedSource = mergeAsyncApi(source)
-    
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
-    const root = tree.root!
+    const messageNode = tree.root ?? null
+    expect(messageNode).not.toBeNull()
 
-    const operationNode = root!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.OPERATION)
-    expect(operationNode).toBeDefined()
-
-    const channelNode = operationNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-    expect(channelNode).toBeDefined()
-    expect(channelNode!.key).toBe('test-channel')
+    const selectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+    const sections = selectorNode!.nestedNodes()
+    const channelSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+    expect(channelSection?.key).toBe('test-channel')
   })
 
   it('should resolve message node key based on the reference name property', () => {
@@ -117,18 +178,23 @@ describe('Feature: Reference Name Property', () => {
       },
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
-    const tree: AsyncApiTree = treeBuilder.build()
-    const root = tree.root!
-    const operationNode = root!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.OPERATION)
-    expect(operationNode).toBeDefined()
 
-    const messagesNode = operationNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGES)
-    const messageFirstNode = messagesNode?.nestedNodes()[0]
-    const messageSecondNode = messagesNode?.nestedNodes()[1]
-    expect(messageFirstNode).toBeDefined()
-    expect(messageFirstNode!.key).toBe('test-message-1')
-    expect(messageSecondNode).toBeDefined()
-    expect(messageSecondNode!.key).toBe('test-message-2')
+    function test(tree: AsyncApiTree | null, messageKey: string) {
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+      expect(messageNode!.key).toBe(messageKey)
+    }
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const tree: AsyncApiTree = treeBuilder.build()
+    test(tree, 'test-message-1')
+
+    const treeWithSpecificMessageBuilder = new AsyncApiTreeBuilder(mergedSource, {
+      messageKey: 'test-message-2',
+      operationKey: 'test-operation',
+      operationType: 'send',
+    }, TEST_REFERENCE_NAME_PROPERTY)
+    const treeWithSpecificMessage = treeWithSpecificMessageBuilder.build()
+    test(treeWithSpecificMessage, 'test-message-2')
   })
 })
