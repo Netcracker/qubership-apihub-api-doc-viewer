@@ -3,13 +3,17 @@ import { isObject } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeBuilder } from "../../src/building-service/async-api/tree/builder";
 import { AsyncApiTree } from "../../src/model/async-api/tree/tree.impl";
 
-const REFERENCE_NAME_PROPERTY_KEY = Symbol('referenceName')
+export const TEST_REFERENCE_NAME_PROPERTY_KEY = Symbol('referenceName')
 
 const NORMALIZATION_OPTIONS = {
-  referenceNameProperty: REFERENCE_NAME_PROPERTY_KEY
+  referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY
 }
 
-export function createAsyncApiTreeForTests(source: unknown): AsyncApiTree | null {
+export function createAsyncApiTreeForTests(source: unknown, operationKeys?: Partial<{
+  operationType: string // send, receive
+  operationKey: string // e.g. send-fruit, receive-fruit
+  messageKey: string // e.g. send-fruit-message, receive-fruit-message
+}>): AsyncApiTree | null {
   if (!isObject(source)) {
     return null
   }
@@ -17,6 +21,6 @@ export function createAsyncApiTreeForTests(source: unknown): AsyncApiTree | null
   const normalizedSource = normalize(source, NORMALIZATION_OPTIONS)
   const mergedSource = denormalize(normalizedSource)
 
-  const builder = new AsyncApiTreeBuilder(mergedSource, undefined, REFERENCE_NAME_PROPERTY_KEY)
+  const builder = new AsyncApiTreeBuilder(mergedSource, operationKeys, TEST_REFERENCE_NAME_PROPERTY_KEY)
   return builder.build()
 }

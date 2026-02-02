@@ -255,6 +255,22 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const operationChannelExtensions = this.copyExtensions(operationChannel)
     const operationMessageExtensions = this.copyExtensions(operationMessage)
 
+    const pickReferenceNameProperty = (source: unknown): Record<PropertyKey, unknown> | undefined => {
+      if (!isObject(source)) {
+        return undefined
+      }
+      if (!this.referenceNamePropertyKey) {
+        return undefined
+      }
+      return {
+        [this.referenceNamePropertyKey]: source[this.referenceNamePropertyKey],
+      }
+    }
+
+    const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
+    const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
+    const operationReferenceNameProperty = pickReferenceNameProperty(operation)
+
     const messageOrientedOperation: Record<PropertyKey, unknown> = {
       title: operationMessage.title,
       internalTitle: operationMessage?.name,
@@ -264,12 +280,14 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       description: operationMessage.description,
       data: {
         content: {
+          ...messageReferenceNameProperty ? { [this.referenceNamePropertyKey!]: messageReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
           ...operationMessage.headers ? { headers: operationMessage.headers } : {},
           ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
           ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
           ...operationMessage.payload ? { payload: operationMessage.payload } : {},
         },
         channel: {
+          ...channelReferenceNameProperty ? { [this.referenceNamePropertyKey!]: channelReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
           title: operationChannel.title,
           summary: operationChannel.summary,
           description: operationChannel.description,
@@ -278,6 +296,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...operationChannel.parameters ? { parameters: operationChannel.parameters } : {},
         },
         operation: {
+          ...operationReferenceNameProperty ? { [this.referenceNamePropertyKey!]: operationReferenceNameProperty[this.referenceNamePropertyKey!] } : {},
           title: operation.title,
           summary: operation.summary,
           description: operation.description,
