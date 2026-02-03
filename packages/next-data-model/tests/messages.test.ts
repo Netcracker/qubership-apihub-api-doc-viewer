@@ -360,7 +360,7 @@ describe('Cases with operation messages', () => {
       expect(payloadNode!.key).toBe('payload')
       expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode!.value()).toEqual({
-        schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+        schemaFormat: null,
         schema: {
           type: "object",
           properties: {
@@ -501,7 +501,7 @@ describe('Cases with operation messages', () => {
       expect(payloadNode!.key).toBe('payload')
       expect(payloadNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD)
       expect(payloadNode!.value()).toEqual({
-        schemaFormat: "application/vnd.aai.asyncapi+json;version=3.0.0",
+        schemaFormat: null,
         schema: {
           type: "object",
           properties: {

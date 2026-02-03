@@ -316,9 +316,9 @@ describe('Cases with channel', () => {
             parameters: {
               userId: {
                 description: "User identifier",
-                schema: {
-                  type: "string"
-                }
+                default: "testUser001",
+                examples: ["testUser001", "testUser002", "testUser003"],
+                location: "$user.id"
               }
             }
           }
@@ -366,9 +366,9 @@ describe('Cases with channel', () => {
         rawValues: {
           userId: {
             description: "User identifier",
-            schema: {
-              type: "string"
-            }
+            default: "testUser001",
+            examples: ["testUser001", "testUser002", "testUser003"],
+            location: "$user.id"
           }
         }
       })
@@ -390,9 +390,9 @@ describe('Cases with channel', () => {
             parameters: {
               tenantId: {
                 description: "Tenant identifier",
-                schema: {
-                  type: "string"
-                }
+                default: "testTenant001",
+                examples: ["testTenant001", "testTenant002", "testTenant003"],
+                location: "$tenant.id"
               }
             },
             messages: {
@@ -487,9 +487,9 @@ describe('Cases with channel', () => {
         rawValues: {
           tenantId: {
             description: "Tenant identifier",
-            schema: {
-              type: "string"
-            }
+            default: "testTenant001",
+            examples: ["testTenant001", "testTenant002", "testTenant003"],
+            location: "$tenant.id"
           }
         }
       })

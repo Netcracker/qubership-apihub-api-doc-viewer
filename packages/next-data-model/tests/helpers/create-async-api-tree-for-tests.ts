@@ -1,12 +1,14 @@
-import { denormalize, normalize } from "@netcracker/qubership-apihub-api-unifier";
+import { denormalize, normalize, NormalizeOptions } from "@netcracker/qubership-apihub-api-unifier";
 import { isObject } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeBuilder } from "../../src/building-service/async-api/tree/builder";
 import { AsyncApiTree } from "../../src/model/async-api/tree/tree.impl";
 
 export const TEST_REFERENCE_NAME_PROPERTY_KEY = Symbol('referenceName')
 
-const NORMALIZATION_OPTIONS = {
-  referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY
+const NORMALIZATION_OPTIONS: NormalizeOptions = {
+  unify: true,
+  validate: true,
+  liftCombiners: true,
 }
 
 export function createAsyncApiTreeForTests(source: unknown, operationKeys?: Partial<{
@@ -18,8 +20,8 @@ export function createAsyncApiTreeForTests(source: unknown, operationKeys?: Part
     return null
   }
 
-  const normalizedSource = normalize(source, NORMALIZATION_OPTIONS)
-  const mergedSource = denormalize(normalizedSource)
+  const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+  const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
   const builder = new AsyncApiTreeBuilder(mergedSource, operationKeys, TEST_REFERENCE_NAME_PROPERTY_KEY)
   return builder.build()
