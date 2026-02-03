@@ -642,4 +642,96 @@ describe('Cases with operation messages', () => {
       })
     })
   })
+
+  describe('Message Extensions', () => {
+    it('should handle message with extensions', () => {
+      const source = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "message-with-extensions-test",
+          version: "1.0.0"
+        },
+        channels: {
+          'test-channel': {
+            address: "test-channel",
+          }
+        },
+        operations: {
+          'test-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            messages: [
+              { $ref: "#/components/messages/TestMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            TestMessage: {
+              name: "TestMessageName",
+              'x-first': "first",
+              'x-second': {
+                a: 1,
+                b: '2',
+                c: true,
+                d: [1, 2, 3],
+                e: {
+                  f: 'g',
+                  h: 4,
+                  i: false,
+                  j: [4, 5, 6],
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const tree = createAsyncApiTreeForTests(source)
+      expect(tree).toBeDefined()
+
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
+      expect(messageNode!.value()).toEqual({
+        internalTitle: "TestMessageName",
+        action: "send",
+        address: "test-channel",
+      })
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      expect(contentSectionNode).toBeDefined()
+      expect(contentSectionNode!.value()).toBeNull()
+
+      const contentSectionChildrenNodes = contentSectionNode!.childrenNodes()
+      expect(contentSectionChildrenNodes.length).toBe(1)
+
+      const extensionsNode = contentSectionChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.EXTENSIONS)
+      expect(extensionsNode).toBeDefined()
+      expect(extensionsNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(extensionsNode!.key).toBe('extensions')
+      expect(extensionsNode!.value()).toEqual({
+        rawValues: {
+          'x-first': "first",
+          'x-second': {
+            a: 1,
+            b: '2',
+            c: true,
+            d: [1, 2, 3],
+            e: {
+              f: 'g',
+              h: 4,
+              i: false,
+              j: [4, 5, 6],
+            }
+          },
+        }
+      })
+    })
+  })
 })
