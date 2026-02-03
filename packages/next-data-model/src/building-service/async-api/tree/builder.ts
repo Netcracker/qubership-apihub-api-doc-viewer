@@ -182,12 +182,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     messageKey?: string, // id (key) to the necessary message in source
   ): unknown {
     if (!this.isAsyncApiSpecification(source)) {
-      return source
+      return null
     }
 
     if (!this.referenceNamePropertyKey) {
       console.error('Reference name property key is not provided. Cannot find operation, channel or message by id (key) in source without key of reference name property.')
-      return source
+      return null
     }
 
     const operations: v3.OperationsObject = source.operations ?? {}
@@ -215,7 +215,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       }
       if (!firstOperationKey || !firstOperationType || !firstOperationMessageKey) {
         console.error('Cannot find first operation, channel or message in source.')
-        return source
+        return null
       }
       console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationType, firstOperationMessageKey)
       operationType = firstOperationType
@@ -237,7 +237,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     if (!operation) {
       console.error(`Cannot find operation with key (id) = ${operationKey}, type (action) = ${operationType}`)
-      return source
+      return null
     }
 
     const operationChannel: v3.ChannelObject = !this.isReferenceObject(operation.channel) ? operation.channel : {}
@@ -248,7 +248,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     if (!operationMessage) {
       console.error(`Cannot find message with key (id) = ${messageKey}`)
-      return source
+      return null
     }
 
     const operationExtensions = this.copyExtensions(operation)
@@ -414,6 +414,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
         return { done: true };
       }
+      // if (isObject(value) && Reflect.ownKeys(value).length === 0) {
+        // return { done: true }; // exit on empty object
+      // }
       if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind)) {
         // equivalent to "continue" operator within loop operators
         // means "keep going deeper in the original object"
