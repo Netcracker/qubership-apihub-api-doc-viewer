@@ -2,8 +2,11 @@ import { denormalize, normalize, NormalizeOptions } from "@netcracker/qubership-
 import { AsyncApiTreeBuilder } from "../src/building-service/async-api/tree/builder"
 import { TreeNodeComplexityTypes } from "../src/model/abstract/tree/tree-node.interface"
 import { AsyncApiTree } from "../src/model/async-api/tree/tree.impl"
-import { AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
 import { TEST_REFERENCE_NAME_PROPERTY_KEY } from "./helpers/create-async-api-tree-for-tests"
+import { SimpleTreeNode } from "../src/model/abstract/tree/simple-node.impl"
+import { AsyncApiNodeMeta } from "../src/model/async-api/types/node-meta"
+import { AsyncApiTreeNodeValue } from "../src/model/async-api/types/node-value"
 
 const COMPONENTS_WITH_MESSAGES = {
   components: {
@@ -238,5 +241,241 @@ describe('AsyncAPI Data Model API', () => {
     const operationSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
     expect(operationSection).toBeDefined()
     expect(operationSection!.value()).toEqual(operationValue)
+  })
+
+  it('test proxy API (method "findNestedNode") for MESSAGE_SECTION_SELECTOR', () => {
+    const source = {
+      asyncapi: "3.0.0",
+      info: {
+        title: "test-asyncapi",
+        version: "1.0.0"
+      },
+      channels: {
+        'test-channel': {
+          address: "test-channel",
+          description: "test channel description",
+          summary: "test channel summary",
+        }
+      },
+      operations: {
+        'test-operation': {
+          action: "send",
+          description: "test operation description",
+          summary: "test operation summary",
+          channel: { $ref: "#/channels/test-channel" },
+          ...SINGLE_MESSAGE_USAGE,
+        }
+      },
+      ...COMPONENTS_WITH_MESSAGES,
+    }
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const tree: AsyncApiTree | null = treeBuilder.build()
+    expect(tree).not.toBeNull()
+
+    const messageNode = tree!.root
+    expect(messageNode).toBeDefined()
+
+    const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+
+    const implicitContentSectionNode = messageSectionSelectorNode!.findNestedNode()
+    const explicitContentSectionNode = messageSectionSelectorNode!.findNestedNode('#/data/content')
+    const channelSectionNode = messageSectionSelectorNode!.findNestedNode('#/data/channel')
+    const operationSectionNode = messageSectionSelectorNode!.findNestedNode('#/data/operation')
+
+    expect(implicitContentSectionNode).toBeDefined()
+    expect(explicitContentSectionNode).toBeDefined()
+    expect(implicitContentSectionNode).toBe(explicitContentSectionNode)
+
+    expect(channelSectionNode).toBeDefined()
+    expect(operationSectionNode).toBeDefined()
+
+    expect(implicitContentSectionNode).not.toBe(channelSectionNode)
+    expect(implicitContentSectionNode).not.toBe(operationSectionNode)
+    expect(channelSectionNode).not.toBe(operationSectionNode)
+  })
+
+  it('test proxy API (method "addNestedNode") for MESSAGE_SECTION_SELECTOR', () => {
+    const source = {
+      asyncapi: "3.0.0",
+      info: {
+        title: "test-asyncapi",
+        version: "1.0.0"
+      },
+      channels: {
+        'test-channel': {
+          address: "test-channel",
+          description: "test channel description",
+          summary: "test channel summary",
+        }
+      },
+      operations: {
+        'test-operation': {
+          action: "send",
+          description: "test operation description",
+          summary: "test operation summary",
+          channel: { $ref: "#/channels/test-channel" },
+          ...SINGLE_MESSAGE_USAGE,
+        }
+      },
+      ...COMPONENTS_WITH_MESSAGES,
+    }
+
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const tree: AsyncApiTree | null = treeBuilder.build()
+    expect(tree).not.toBeNull()
+
+    const messageNode = tree!.root
+    expect(messageNode).toBeDefined()
+
+    const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+    expect(messageSectionSelectorNode).toBeDefined()
+
+    const bindingsSectionCandidate = new SimpleTreeNode<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiNodeMeta
+    >(
+      '#/data/bindings',
+      'test-nested-node',
+      AsyncApiTreeNodeKinds.BINDINGS,
+      false,
+      {
+        value: null,
+        parent: messageSectionSelectorNode!,
+        container: messageSectionSelectorNode!,
+        newDataLevel: true,
+        meta: {},
+      },
+    )
+    messageSectionSelectorNode!.addNestedNode(bindingsSectionCandidate)
+
+    const sections = messageSectionSelectorNode!.nestedNodes()
+    expect(sections.length).toBe(4)
+    const bindingsSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+    expect(bindingsSection).toBe(bindingsSectionCandidate)
+  })
+
+  it('test proxy API (method "addChildNode") for MESSAGE', () => {
+    const source = {
+      asyncapi: "3.0.0",
+      info: {
+        title: "test-asyncapi",
+        version: "1.0.0"
+      },
+      channels: {
+        'test-channel': {
+          address: "test-channel",
+          description: "test channel description",
+          summary: "test channel summary",
+        }
+      },
+      operations: {
+        'test-operation': {
+          action: "send",
+          description: "test operation description",
+          summary: "test operation summary",
+          channel: { $ref: "#/channels/test-channel" },
+          ...SINGLE_MESSAGE_USAGE,
+        }
+      },
+      ...COMPONENTS_WITH_MESSAGES,
+    }
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const tree: AsyncApiTree | null = treeBuilder.build()
+    expect(tree).not.toBeNull()
+
+    const messageNode = tree!.root
+    expect(messageNode).toBeDefined()
+
+    const messageChildrenNodes = messageNode!.childrenNodes()
+    expect(messageChildrenNodes.length).toBe(1)
+
+    const newChildNodeCandidate = new SimpleTreeNode<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiNodeMeta
+    >(
+      '#/new-child-node',
+      'test-new-child-node',
+      AsyncApiTreeNodeKinds.BINDINGS,
+      false,
+      {
+        value: null,
+        parent: messageNode!,
+        container: messageNode!,
+        newDataLevel: true,
+        meta: {},
+      },
+    )
+    messageNode!.addChildNode(newChildNodeCandidate)
+
+    const childrenNodes = messageNode!.childrenNodes()
+    expect(childrenNodes.length).toBe(2)
+    const newChildNode = childrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+    expect(newChildNode).toBe(newChildNodeCandidate)
+  })
+
+  it('test proxy API (method meta) for BINDINGS', () => {
+    const source = {
+      asyncapi: "3.0.0",
+      info: {
+        title: "test-asyncapi",
+        version: "1.0.0"
+      },
+      channels: {
+        'test-channel': {
+          address: "test-channel",
+          description: "test channel description",
+          summary: "test channel summary",
+        }
+      },
+      operations: {
+        'test-operation': {
+          action: "send",
+          description: "test operation description",
+          summary: "test operation summary",
+          channel: { $ref: "#/channels/test-channel" },
+          ...SINGLE_MESSAGE_USAGE,
+          bindings: {
+            $ref: "#/components/bindings/test-binding"
+          }
+        }
+      },
+      ...COMPONENTS_WITH_MESSAGES,
+    }
+
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
+
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const tree: AsyncApiTree | null = treeBuilder.build()
+    expect(tree).not.toBeNull()
+
+    const messageNode = tree!.root
+    expect(messageNode).toBeDefined()
+
+    const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+    expect(messageSectionSelectorNode).toBeDefined()
+
+    const sections = messageSectionSelectorNode!.nestedNodes()
+    const operationSection = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+    expect(operationSection).toBeDefined()
+    const operationBindingsNode = operationSection!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+    expect(operationBindingsNode).toBeDefined()
+    expect(operationBindingsNode!.meta()).toEqual({
+      brokenRef: "#/components/bindings/test-binding",
+      _fragment: {
+        $ref: "#/components/bindings/test-binding",
+      },
+    })
   })
 })
