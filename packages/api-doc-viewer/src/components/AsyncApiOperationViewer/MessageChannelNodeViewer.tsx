@@ -7,14 +7,13 @@ import { FC } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { SpecificationExtensions } from "./SpecificationExtensions"
 import { TitleRow } from "./TitleRow"
 
-type ChannelNodeViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL>
+type MessageChannelNodeViewerProps = {
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
 }
 
-export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
+export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (props) => {
   const { node } = props
 
   const level = useLevelContext()
@@ -54,12 +53,6 @@ export const ChannelNodeViewer: FC<ChannelNodeViewerProps> = (props) => {
         </Aligner>
       )}
       <ChannelChildrenViewer children={channelChildren} />
-      {value?.extensions && (
-        <SpecificationExtensions
-          values={value.extensions}
-          kind={AsyncApiTreeNodeKinds.CHANNEL}
-        />
-      )}
     </div>
   )
 }
@@ -79,8 +72,11 @@ const ChannelChildrenViewer: FC<ChannelChildrenViewerProps> = (props) => {
     <div className="flex flex-col gap-5">
       {children.map(child => {
         if (isBindingsNode(child)) {
-          return <BindingsNodeViewer key={child.key} node={child} relatedTo={AsyncApiTreeNodeKinds.CHANNEL} />
+          return <BindingsNodeViewer key={child.key} node={child} />
         }
+        // TODO: Add parameters viewer
+        // TODO: Add extensions viewer
+        return null
       })}
     </div>
   )

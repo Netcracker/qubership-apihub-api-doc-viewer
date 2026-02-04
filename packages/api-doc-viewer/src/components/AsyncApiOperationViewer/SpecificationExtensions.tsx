@@ -13,21 +13,6 @@ type SpecificationExtensionsProps = {
 export const SpecificationExtensions: FC<SpecificationExtensionsProps> = (props) => {
   const { values, kind } = props
 
-  const title = useMemo(() => {
-    switch (kind) {
-      case AsyncApiTreeNodeKinds.OPERATION:
-        return 'Operation Extensions'
-      case AsyncApiTreeNodeKinds.CHANNEL:
-        return 'Channel Extensions'
-      case AsyncApiTreeNodeKinds.MESSAGE:
-        return 'Message Extensions'
-      case AsyncApiTreeNodeKinds.BINDING:
-        return 'Binding Extensions'
-      default:
-        return 'Extensions'
-    }
-  }, [kind])
-
   const variant = useMemo(() => {
     switch (kind) {
       case AsyncApiTreeNodeKinds.BINDING:
@@ -39,7 +24,7 @@ export const SpecificationExtensions: FC<SpecificationExtensionsProps> = (props)
 
   return <>
     <TitleRow
-      value={title}
+      value='Extensions'
       expandable={false}
       variant={variant}
     />

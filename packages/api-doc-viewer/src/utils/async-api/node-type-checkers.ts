@@ -1,28 +1,34 @@
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 
-export function isOperationNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION> {
-  return node.kind === AsyncApiTreeNodeKinds.OPERATION;
-}
-
-export function isChannelNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.CHANNEL> {
-  return node.kind === AsyncApiTreeNodeKinds.CHANNEL;
-}
-
-export function isMessagesNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGES> {
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGES;
-}
-
 export function isMessageNode(
   node: AsyncApiTreeNode
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE> {
   return node.kind === AsyncApiTreeNodeKinds.MESSAGE;
+}
+
+export function isMessageSectionSelectorNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR;
+}
+
+export function isMessageContentNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT;
+}
+
+export function isMessageChannelNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL;
+}
+
+export function isMessageOperationNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION;
 }
 
 export function isHeadersNode(

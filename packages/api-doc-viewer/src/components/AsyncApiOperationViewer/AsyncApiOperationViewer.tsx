@@ -8,9 +8,10 @@ import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
-import { OperationNodeViewer } from "./OperationNodeViewer";
+import { MessageNodeViewer } from "./MessageNodeViewer";
 
 import '../../index.css';
+import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
 
 export type AsyncApiOperationViewerProps = {
   source: unknown
@@ -55,7 +56,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     console.debug('[AsyncAPI] Tree:', tree)
 
     const messageNode = tree?.root
-    if (!messageNode) {
+    if (!messageNode || !isMessageNode(messageNode)) {
       return null
     }
 
@@ -63,7 +64,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
           <LevelContext.Provider value={0}>
-            <OperationNodeViewer
+            <MessageNodeViewer
               node={messageNode}
             />
           </LevelContext.Provider>
