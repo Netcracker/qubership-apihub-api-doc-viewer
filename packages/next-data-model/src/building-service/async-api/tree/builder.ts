@@ -251,6 +251,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       return null
     }
 
+    if (!operation || !operationChannel || !operationMessage) {
+      console.error('AsyncAPI operation in APIHUB must contain three items: operation, channel and message. They must be linked to each other.')
+      return null
+    }
+    
     const operationExtensions = this.copyExtensions(operation)
     const operationChannelExtensions = this.copyExtensions(operationChannel)
     const operationMessageExtensions = this.copyExtensions(operationMessage)

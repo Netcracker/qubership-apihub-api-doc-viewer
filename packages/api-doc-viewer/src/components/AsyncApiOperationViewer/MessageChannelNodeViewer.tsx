@@ -9,6 +9,7 @@ import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { TitleRow } from "./TitleRow"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
+import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -50,9 +51,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
 
       {children.length > 0 && (
         <div className="flex flex-col gap-2">
-          {parametersChild && (
-            <h3>Parameters Node Viewer TBA</h3>
-          )}
+          {parametersChild && <MessageChannelParametersNodeViewer node={parametersChild} />}
           {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}
           {bindingsChild && <BindingsNodeViewer node={bindingsChild} />}
         </div>

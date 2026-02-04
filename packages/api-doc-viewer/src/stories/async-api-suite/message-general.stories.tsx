@@ -44,8 +44,7 @@ export const SendOperationWithMessageWithNothing: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-nothing',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -71,8 +70,7 @@ export const SendOperationWithMessageWithName: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-name',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -99,8 +97,7 @@ export const SendOperationWithMessageWithTitle: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-title',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -127,8 +124,7 @@ export const SendOperationWithMessageWithDescription: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-description',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -155,8 +151,7 @@ export const SendOperationWithMessageWithNameAndDescription: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-name-and-description',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -184,8 +179,7 @@ export const SendOperationWithMessageWithTitleAndDescription: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-title-and-description',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -213,8 +207,7 @@ export const SendOperationWithMessageWithNameAndTitleAndDescription: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-message-with-name-and-title-and-description',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -249,8 +242,7 @@ export const SendOperationWithMessageWithPrimitiveHeaders: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-primitive-headers',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -287,8 +279,7 @@ export const SendOperationWithMessageWithObjectiveHeaders: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-objective-headers',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -321,8 +312,7 @@ export const SendOperationWithMessageWithPrimitivePayload: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-primitive-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -361,8 +351,7 @@ export const SendOperationWithMessageWithObjectivePayload: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-objective-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -403,8 +392,7 @@ export const SendOperationWithMessageWithPrimitiveHeadersAndPayload: Story = {
         },
       }
     }),
-    operationKey: 'send-operation-with-message-with-primitive-headers-and-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -457,8 +445,7 @@ export const SendOperationWithMessageWithObjectiveHeadersAndPayload: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-objective-headers-and-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -505,8 +492,7 @@ export const SendOperationWithMessageWithPrimitiveHeadersAndObjectivePayload: St
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-primitive-headers-and-objective-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -553,8 +539,7 @@ export const SendOperationWithMessageWithObjectiveHeadersAndPrimitivePayload: St
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-objective-headers-and-primitive-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -592,8 +577,7 @@ export const SendOperationWithMessageWithDescriptionAndHeaders: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-description-and-headers',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -620,8 +604,7 @@ export const SendOperationWithMessageWithDescriptionAndPayload: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-message-with-description-and-payload',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -651,8 +634,7 @@ export const SendOperationWithTwoMessagesWithNames: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-two-messages-with-names',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -676,8 +658,7 @@ export const SendOperationWithDescriptionAndMessageWithNothing: Story = {
         }
       },
     }),
-    operationKey: 'send-operation-with-description-and-message-with-nothing',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }
 
@@ -702,7 +683,6 @@ export const SendOperationWithMessageWithNothingAndEnabledReferenceNameProperty:
           }
         }
       },
-      referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
     }),
     referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
