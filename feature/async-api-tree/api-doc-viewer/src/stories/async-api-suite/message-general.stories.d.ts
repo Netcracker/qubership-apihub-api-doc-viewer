@@ -33,5 +33,6 @@ export declare const SendOperationWithMessageWithObjectiveHeadersAndPrimitivePay
 export declare const SendOperationWithMessageWithDescriptionAndHeaders: Story;
 export declare const SendOperationWithMessageWithDescriptionAndPayload: Story;
 export declare const SendOperationWithTwoMessagesWithNames: Story;
+export declare const SendOperationWithTwoMessages: Story;
 export declare const SendOperationWithDescriptionAndMessageWithNothing: Story;
 export declare const SendOperationWithMessageWithNothingAndEnabledReferenceNameProperty: Story;
