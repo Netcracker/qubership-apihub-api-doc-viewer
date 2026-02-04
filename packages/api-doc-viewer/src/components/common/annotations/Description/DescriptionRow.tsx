@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
@@ -48,7 +49,6 @@ import {
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge';
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
-import { NestingIndicator } from '../../NestingIndicator';
 import './Description.css';
 
 const OVERFLOW_LINES_AMOUNT = 5
@@ -69,7 +69,10 @@ function shortenDescription(description: string, isExpanded: boolean): [IsExpand
 
 export type DescriptionRowProps = PropsWithoutChangesSummary<
   PropsWithShift &
-  { value: string } &
+  {
+    value: string
+    fontSize?: 'primary' | 'secondary' | 'legacy'
+  } &
   PropsWithChanges
 >
 
@@ -77,6 +80,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
     shift = false,
     value,
+    fontSize = 'legacy',
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -120,11 +124,13 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
-        <NestingIndicator level={level} />
-        <div className="text-xs font-normal py-1">
+      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+        <LevelIndicator level={level} />
+        {/* <NestingIndicator level={level} /> */}
+        <div className="py-1">
           <Value
             value={value}
+            fontSize={fontSize}
             expanded={expanded}
             setIsExpandable={setIsExpandable}
             // diffs
@@ -136,6 +142,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
           {isInlineDiffsLayoutMode && itemReplaced && (
             <Value
               value={value}
+              fontSize={fontSize}
               expanded={expanded}
               setIsExpandable={setIsExpandable}
               // diffs
@@ -149,6 +156,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
             isExpandable={isExpandable}
             expanded={expanded}
             setExpanded={setExpanded}
+            fontSize={fontSize}
           />
         </div>
       </div>
@@ -208,6 +216,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
 type ValueProps = {
   value: string
+  fontSize?: 'primary' | 'secondary' | 'legacy'
   expanded?: boolean
   setIsExpandable?: Dispatch<SetStateAction<boolean>>
   // diffs
@@ -219,6 +228,7 @@ type ValueProps = {
 
 const Value: FC<ValueProps> = props => {
   const {
+    fontSize = 'legacy',
     expanded = false,
     setIsExpandable,
     // diffs
@@ -279,7 +289,7 @@ const Value: FC<ValueProps> = props => {
 
   return (
     <ReactMarkdown
-      className={`markdown text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}
@@ -293,14 +303,16 @@ export type DescriptionExpanderProps = Partial<{
   isExpandable: boolean
   expanded: boolean
   setExpanded: Dispatch<SetStateAction<boolean>>
+  fontSize?: 'primary' | 'secondary' | 'legacy'
 }>
 
 const Expander: FC<DescriptionExpanderProps> = props => {
-  const { isExpandable, expanded, setExpanded } = props
+  const { isExpandable, expanded, setExpanded, fontSize = 'legacy' } = props
+
   return <>
     {isExpandable && (
       <div className="mt-2">
-        <a className="text-blue-600 hover:text-blue-500 hover:cursor-pointer"
+        <a className={`${getFontSizeClass(fontSize)} text-blue-600 hover:text-blue-500 hover:cursor-pointer`}
           onClick={() => setExpanded?.(!expanded)}
         >
           {!expanded ? 'Show all description' : 'Collapse description'}
@@ -311,3 +323,16 @@ const Expander: FC<DescriptionExpanderProps> = props => {
 }
 
 export const DescriptionExpander = Expander
+
+function getFontSizeClass(fontSize: 'primary' | 'secondary' | 'legacy'): string {
+  switch (fontSize) {
+    case 'primary':
+      return 'description-row_primary'
+    case 'secondary':
+      return 'description-row_secondary'
+    case 'legacy':
+      return 'text-xs'
+    default:
+      return ''
+  }
+}

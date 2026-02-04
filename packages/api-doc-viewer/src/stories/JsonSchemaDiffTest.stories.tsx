@@ -260,3 +260,137 @@ export const CycledChanged: Story = {
     metaKeys: DIFF_META_KEYS,
   }
 }
+
+export const PrimitiveChanged: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'string',
+        description: 'Removed description',
+        minLength: 1,
+        maxLength: 100,
+      },
+      afterSchema: {
+        type: 'string',
+        format: 'format',
+        maxLength: 55,
+      },
+
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ObjectiveHeaderChanged: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          removedProperty: {
+            type: 'string',
+          },
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        title: 'Added title',
+        properties: {
+          addedProperty: {
+            type: 'string',
+          },
+        }
+      },
+
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ExtensionsOnPrimitive: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'string',
+        'x-string-extension': 'value',
+        'x-integer-extension': 1,
+        'x-boolean-extension': true,
+        'x-number-extension': 1.0,
+        'x-array-extension': [1, 2, 3],
+        'x-object-extension': {
+          key: 'value',
+        },
+        'x-removed-extension': 'removed value',
+        'x-changed-extension': true,
+      },
+      afterSchema: {
+        type: 'string',
+        'x-string-extension': 'value',
+        'x-integer-extension': 1,
+        'x-boolean-extension': true,
+        'x-number-extension': 1.0,
+        'x-array-extension': [1, 2, 3],
+        'x-object-extension': {
+          key: 'value',
+        },
+        'x-added-extension': 42,
+        'x-changed-extension': false,
+      },
+
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+
+export const ExtensionsOnObject: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-removed-extension': 'removed value',
+            'x-changed-extension': true,
+          }
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
