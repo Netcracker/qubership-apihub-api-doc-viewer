@@ -656,6 +656,57 @@ export const SendOperationWithTwoMessagesWithNames: Story = {
   }
 }
 
+export const SendOperationWithTwoMessages: Story = {
+  args: {
+    source: prepareAsyncApiDocument({
+      source: {
+        asyncapi: "3.0.0",
+        operations: {
+          "send-operation-with-two-messages": {
+            action: "send",
+            messages: [
+              { $ref: "#/components/messages/StatusMessage" },
+              { $ref: "#/components/messages/IdentifierMessage" }
+            ]
+          }
+        },
+        components: {
+          messages: {
+            StatusMessage: {
+              name: "StatusMessage",
+              description: "Status message description",
+              headers: {
+                type: 'object',
+                properties: {
+                  identifier: {
+                    type: 'string',
+                    description: 'Identifier',
+                  }
+                }
+              }
+            },
+            IdentifierMessage: {
+              name: "IdentifierMessage",
+              description: "Identifier message description",
+              payload: {
+                type: 'object',
+                properties: {
+                  identifier: {
+                    type: 'string',
+                    description: 'Identifier',
+                  }
+                }
+              }
+            },
+          }
+        },
+      },
+    }),
+    operationName: 'send-operation-with-two-messages',
+    operationType: 'send',
+  }
+}
+
 export const SendOperationWithDescriptionAndMessageWithNothing: Story = {
   args: {
     source: prepareAsyncApiDocument({
