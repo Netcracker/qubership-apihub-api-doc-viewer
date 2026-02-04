@@ -30,19 +30,12 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const extensionsChild = children.find(isExtensionsNode)
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <TitleRow
-        value='Channel'
+        value={title}
         expandable={false}
         expanded={true}
         variant='h2'
-        subheader={() => {
-          return (
-            <button className='button-selector-option button-selector-option_primary button-selector-option_disabled selected'>
-              {title}
-            </button>
-          )
-        }}
       />
       {description && (
         <Aligner>
@@ -56,7 +49,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
 
       {children.length > 0 && (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
           {parametersChild && (
             <h3>Parameters Node Viewer TBA</h3>
           )}
