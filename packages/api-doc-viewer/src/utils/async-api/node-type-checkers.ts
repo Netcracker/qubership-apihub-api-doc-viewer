@@ -1,6 +1,8 @@
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 
+// Message
+
 export function isMessageNode(
   node: AsyncApiTreeNode
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE> {
@@ -19,10 +21,28 @@ export function isMessageContentNode(
   return node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT;
 }
 
+export function isMessageContentHeadersNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS && node.key === 'headers';
+}
+
+export function isMessageContentPayloadNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD && node.key === 'payload';
+}
+
 export function isMessageChannelNode(
   node: AsyncApiTreeNode
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL> {
   return node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL;
+}
+
+export function isMessageChannelParametersNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS> {
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS;
 }
 
 export function isMessageOperationNode(
@@ -31,16 +51,12 @@ export function isMessageOperationNode(
   return node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION;
 }
 
-export function isHeadersNode(
-  node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> {
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_HEADERS && node.key === 'headers';
-}
+// Shared
 
-export function isPayloadNode(
+export function isExtensionsNode(
   node: AsyncApiTreeNode
-): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> {
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD && node.key === 'payload';
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS> {
+  return node.kind === AsyncApiTreeNodeKinds.EXTENSIONS;
 }
 
 export function isBindingsNode(
@@ -53,4 +69,14 @@ export function isBindingNode(
   node: AsyncApiTreeNode
 ): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> {
   return node.kind === AsyncApiTreeNodeKinds.BINDING;
+}
+
+export function isMessageSectionNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
+> {
+  return isMessageContentNode(node) || isMessageChannelNode(node) || isMessageOperationNode(node);
 }

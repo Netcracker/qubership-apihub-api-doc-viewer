@@ -1,11 +1,12 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { isBindingsNode, isHeadersNode, isPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
+import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessageContentPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
+import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { TitleRow } from "./TitleRow"
 
 type MessageContentNodeViewerProps = {
@@ -18,18 +19,13 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const displayMode = useDisplayMode()
 
   const messageChildren: AsyncApiTreeNode[] = node.childrenNodes()
+  const headersChild = messageChildren.find(isMessageContentHeadersNode)
+  const extensionsChild = messageChildren.find(isExtensionsNode)
   const bindingsChild = messageChildren.find(isBindingsNode)
-  const headersChild = messageChildren.find(isHeadersNode)
-  const payloadChild = messageChildren.find(isPayloadNode)
+  const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
   return (
     <div className="flex flex-col gap-1">
-      {/* TODO: Add extensions viewer */}
-      {bindingsChild && (
-        <BindingsNodeViewer
-          node={bindingsChild}
-        />
-      )}
       {headersChild && (
         <div className="flex flex-col gap-1">
           <TitleRow
@@ -44,6 +40,16 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             />
           </Aligner>
         </div>
+      )}
+      {extensionsChild && (
+        <ExtensionsNodeViewer
+          node={extensionsChild}
+        />
+      )}
+      {bindingsChild && (
+        <BindingsNodeViewer
+          node={bindingsChild}
+        />
       )}
       {payloadChild && (
         <div className="flex flex-col gap-1">

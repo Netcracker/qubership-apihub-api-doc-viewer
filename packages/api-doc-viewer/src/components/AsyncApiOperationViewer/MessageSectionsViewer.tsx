@@ -3,6 +3,8 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Selector, SelectorOption } from "./Selector/Selector";
+import { MessageSectionViewer } from "./MessageSectionViewer";
+import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
 
 type MessageSectionsViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
@@ -35,10 +37,8 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         onSelectOption={setSelectedSection}
         variant="primary"
       />
-      {selectedSection && (
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">{selectedSection.title}</h3>
-        </div>
+      {selectedSection && isMessageSectionNode(selectedSection.node) && (
+        <MessageSectionViewer node={selectedSection.node} />
       )}
     </div>
   )

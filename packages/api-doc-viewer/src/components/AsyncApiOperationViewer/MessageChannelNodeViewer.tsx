@@ -1,6 +1,6 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
-import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
+import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode } from "@apihub/utils/async-api/node-type-checkers"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
@@ -8,6 +8,7 @@ import { DescriptionRow } from "../common/annotations/Description/DescriptionRow
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { TitleRow } from "./TitleRow"
+import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -20,12 +21,13 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const layoutMode = useLayoutMode()
 
   const value = node.value()
-
-  const channelTitle = value?.title ?? node.key.toString() ?? ''
-
-  const channelChildren = node.childrenNodes()
-
+  const title = value?.title ?? node.key.toString() ?? ''
   const description = value?.description ?? value?.summary ?? ''
+
+  const children: AsyncApiTreeNode[] = node.childrenNodes()
+  const bindingsChild = children.find(isBindingsNode)
+  const parametersChild = children.find(isMessageChannelParametersNode)
+  const extensionsChild = children.find(isExtensionsNode)
 
   return (
     <div className="flex flex-col gap-1">
@@ -37,7 +39,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         subheader={() => {
           return (
             <button className='button-selector-option button-selector-option_primary button-selector-option_disabled selected'>
-              {channelTitle}
+              {title}
             </button>
           )
         }}
@@ -52,32 +54,16 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           />
         </Aligner>
       )}
-      <ChannelChildrenViewer children={channelChildren} />
-    </div>
-  )
-}
 
-type ChannelChildrenViewerProps = {
-  children: AsyncApiTreeNode[]
-}
-
-const ChannelChildrenViewer: FC<ChannelChildrenViewerProps> = (props) => {
-  const { children } = props
-
-  if (children.length === 0) {
-    return null
-  }
-
-  return (
-    <div className="flex flex-col gap-5">
-      {children.map(child => {
-        if (isBindingsNode(child)) {
-          return <BindingsNodeViewer key={child.key} node={child} />
-        }
-        // TODO: Add parameters viewer
-        // TODO: Add extensions viewer
-        return null
-      })}
+      {children.length > 0 && (
+        <div className="flex flex-col gap-5">
+          {parametersChild && (
+            <h3>Parameters Node Viewer TBA</h3>
+          )}
+          {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}
+          {bindingsChild && <BindingsNodeViewer node={bindingsChild} />}
+        </div>
+      )}
     </div>
   )
 }
