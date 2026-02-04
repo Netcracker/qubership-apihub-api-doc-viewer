@@ -5,7 +5,7 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
-import { BindingSelector } from "./BindingSelector/BindingSelector";
+import { Selector, SelectorOption } from "./Selector/Selector";
 import { TitleRow } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
@@ -17,10 +17,15 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
 
-  const [selectedBinding, setSelectedBinding] = useState<AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | null>(null)
+  const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
-  const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode), [bindingNodes])
-  const selectedBindingValue = selectedBinding?.value()
+  const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode).map(bindingNode => ({
+    title: bindingNode.value()?.protocol ?? '',
+    node: bindingNode,
+  })), [bindingNodes])
+
+  const selectedBindingNode = selectedBinding?.node && isBindingNode(selectedBinding.node) ? selectedBinding.node : null
+  const selectedBindingValue = selectedBindingNode?.value()
   const {
     version: bindingVersion = 'latest',
     binding: bindingValue = null,
@@ -34,10 +39,11 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
-    <BindingSelector
+    <Selector
       options={bindingSelectorOptions}
       selectedOption={selectedBinding}
       onSelectOption={setSelectedBinding}
+      variant='secondary'
     />
   ), [bindingSelectorOptions, selectedBinding])
 
