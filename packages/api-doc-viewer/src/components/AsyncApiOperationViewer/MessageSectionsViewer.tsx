@@ -35,7 +35,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         options={sectionSelectorOptions}
         selectedOption={selectedSection}
         onSelectOption={setSelectedSection}
-        variant="primary"
+        variant="secondary"
       />
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <MessageSectionViewer node={selectedSection.node} />

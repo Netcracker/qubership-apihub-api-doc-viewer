@@ -24,7 +24,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const description = value?.description ?? value?.summary ?? ''
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <TitleRow
         value={value?.title ?? node.key.toString() ?? '<No message title>'}
         expandable={false}

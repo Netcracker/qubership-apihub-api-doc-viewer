@@ -55,7 +55,7 @@ const AddressRowContent: FC<AddressRowProps> = (props) => {
   const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
   return (
-    <div className={`address-row font-Inter-Medium ${width} my-2`}>
+    <div className={`address-row font-Inter-Medium ${width}`}>
       <div className='flex flex-row items-center w-max p-3 bg-slate-100 rounded-md gap-3'>
         <div className={`font-bold px-2 py-1 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
           {action.toUpperCase()}
