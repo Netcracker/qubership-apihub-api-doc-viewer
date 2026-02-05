@@ -28,7 +28,7 @@ type StoryArgs = ComponentProps<typeof AsyncApiOperationViewer> & {
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Async Api Viewer (Debug)',
+  title: 'Debug/Async Api Viewer',
   component: AsyncApiOperationViewer,
   argTypes: {
     source: {

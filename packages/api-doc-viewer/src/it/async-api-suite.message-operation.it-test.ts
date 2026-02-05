@@ -21,7 +21,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('operation-id', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--operation-id'
+      'async-api-suite-message-operation--operation-id'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -31,7 +31,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--title'
+      'async-api-suite-message-operation--title'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -41,7 +41,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--description'
+      'async-api-suite-message-operation--description'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -51,7 +51,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--summary'
+      'async-api-suite-message-operation--summary'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -61,7 +61,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--extensions'
+      'async-api-suite-message-operation--extensions'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -71,7 +71,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--bindings-one-option'
+      'async-api-suite-message-operation--bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -81,7 +81,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('bindings-two-options-selected-first', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--bindings-two-options-selected-first'
+      'async-api-suite-message-operation--bindings-two-options-selected-first'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -91,7 +91,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('bindings-two-options-selected-second', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--bindings-two-options-selected-second'
+      'async-api-suite-message-operation--bindings-two-options-selected-second'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -101,7 +101,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('description-summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--description-summary'
+      'async-api-suite-message-operation--description-summary'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -111,7 +111,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('description-extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--description-extensions'
+      'async-api-suite-message-operation--description-extensions'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -121,7 +121,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('description-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--description-bindings-one-option'
+      'async-api-suite-message-operation--description-bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -131,7 +131,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
   it('extensions-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-operation--extensions-bindings-one-option'
+      'async-api-suite-message-operation--extensions-bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToOperationSection()

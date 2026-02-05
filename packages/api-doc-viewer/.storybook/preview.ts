@@ -26,7 +26,17 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['graphql-compatibility-suite', '*']
+        order: [
+          'Debug',
+          'GraphQL Operation Viewer',
+          'GraphQL Operation Diff Viewer',
+          'graphql-compatibility-suite', 
+          'Json Schema Viewer',
+          'Json Schema Diff Viewer',
+          'Async API Suite',
+          'JSO Suite',
+          '*'
+        ]
       }
     }
   },

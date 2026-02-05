@@ -16,7 +16,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('message-id-send', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--message-id-send'
+      'async-api-suite-message--message-id-send'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('message-id-receive', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--message-id-receive'
+      'async-api-suite-message--message-id-receive'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('name', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--name'
+      'async-api-suite-message--name'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--title'
+      'async-api-suite-message--title'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('name-title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--name-title'
+      'async-api-suite-message--name-title'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('address', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--address'
+      'async-api-suite-message--address'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -70,7 +70,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('address-description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--address-description'
+      'async-api-suite-message--address-description'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -79,7 +79,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('address-summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--address-summary'
+      'async-api-suite-message--address-summary'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -88,7 +88,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
   it('address-description-summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message--address-description-summary'
+      'async-api-suite-message--address-description-summary'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

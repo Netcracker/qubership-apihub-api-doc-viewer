@@ -21,7 +21,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('channel-id', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--channel-id'
+      'async-api-suite-message-channel--channel-id'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -31,7 +31,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--title'
+      'async-api-suite-message-channel--title'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -41,7 +41,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('address', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--address'
+      'async-api-suite-message-channel--address'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -51,7 +51,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('description', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--description'
+      'async-api-suite-message-channel--description'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -61,7 +61,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--summary'
+      'async-api-suite-message-channel--summary'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -71,7 +71,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('address-parameters', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--address-parameters'
+      'async-api-suite-message-channel--address-parameters'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -81,7 +81,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--extensions'
+      'async-api-suite-message-channel--extensions'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -91,7 +91,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--bindings-one-option'
+      'async-api-suite-message-channel--bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -101,7 +101,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('bindings-two-options-selected-first', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--bindings-two-options-selected-first'
+      'async-api-suite-message-channel--bindings-two-options-selected-first'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -111,7 +111,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('bindings-two-options-selected-second', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--bindings-two-options-selected-second'
+      'async-api-suite-message-channel--bindings-two-options-selected-second'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -121,7 +121,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('description-summary', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--description-summary'
+      'async-api-suite-message-channel--description-summary'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -131,7 +131,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('description-address-parameters', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--description-address-parameters'
+      'async-api-suite-message-channel--description-address-parameters'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -141,7 +141,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('description-extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--description-extensions'
+      'async-api-suite-message-channel--description-extensions'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -151,7 +151,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('description-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--description-bindings-one-option'
+      'async-api-suite-message-channel--description-bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -161,7 +161,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('address-parameters-extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--address-parameters-extensions'
+      'async-api-suite-message-channel--address-parameters-extensions'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -171,7 +171,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('address-parameters-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--address-parameters-bindings-one-option'
+      'async-api-suite-message-channel--address-parameters-bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -181,7 +181,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it('extensions-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--extensions-bindings-one-option'
+      'async-api-suite-message-channel--extensions-bindings-one-option'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -191,7 +191,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it.skip('edge-broken-ref-address-parameter', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--edge-broken-ref-address-parameter'
+      'async-api-suite-message-channel--edge-broken-ref-address-parameter'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -201,7 +201,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
   it.skip('edge-broken-ref-server-out-of-scope', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-channel--edge-broken-ref-server-out-of-scope'
+      'async-api-suite-message-channel--edge-broken-ref-server-out-of-scope'
     )
     component = await story.viewComponent()
     await switchToChannelSection()

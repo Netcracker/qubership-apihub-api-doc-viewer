@@ -16,7 +16,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('headers', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--headers'
+      'async-api-suite-message-content--headers'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('headers-multi-schema-object', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--headers-multi-schema-object'
+      'async-api-suite-message-content--headers-multi-schema-object'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--extensions'
+      'async-api-suite-message-content--extensions'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--bindings-one-option'
+      'async-api-suite-message-content--bindings-one-option'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('bindings-two-options-selected-first', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--bindings-two-options-selected-first'
+      'async-api-suite-message-content--bindings-two-options-selected-first'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('bindings-two-options-selected-second', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--bindings-two-options-selected-second'
+      'async-api-suite-message-content--bindings-two-options-selected-second'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -70,7 +70,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--payload'
+      'async-api-suite-message-content--payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -79,7 +79,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('payload-multi-schema-object', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--payload-multi-schema-object'
+      'async-api-suite-message-content--payload-multi-schema-object'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -88,7 +88,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('headers-extensions', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--headers-extensions'
+      'async-api-suite-message-content--headers-extensions'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -97,7 +97,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('headers-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--headers-bindings-one-option'
+      'async-api-suite-message-content--headers-bindings-one-option'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -106,7 +106,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('headers-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--headers-payload'
+      'async-api-suite-message-content--headers-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -115,7 +115,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('extensions-bindings-one-option', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--extensions-bindings-one-option'
+      'async-api-suite-message-content--extensions-bindings-one-option'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -124,7 +124,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('extensions-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--extensions-payload'
+      'async-api-suite-message-content--extensions-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -133,7 +133,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
   it('bindings-one-option-payload', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-2-message-content--bindings-one-option-payload'
+      'async-api-suite-message-content--bindings-one-option-payload'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

@@ -20,7 +20,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'JSO Suite (General)',
+  title: 'JSO Suite/General',
   component: JsoViewer,
   parameters: {},
   argTypes: {

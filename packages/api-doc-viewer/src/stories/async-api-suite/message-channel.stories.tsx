@@ -7,7 +7,7 @@ import { prepareAsyncApiDocument } from "../preprocess";
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Async Api Suite 2/Message Channel',
+  title: 'Async API Suite/Message Channel',
   component: AsyncApiOperationViewer,
   parameters: {},
   argTypes: {
