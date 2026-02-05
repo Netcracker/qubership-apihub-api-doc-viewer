@@ -5,6 +5,7 @@ import "../styles/styles.css"
 export type SelectorOption = {
   title: string
   node: AsyncApiTreeNode
+  testId?: string
 }
 
 type SelectorProps = {
@@ -27,6 +28,7 @@ export const Selector: FC<SelectorProps> = (props) => {
         return (
           <button
             key={option.node.id}
+            data-testid={option.testId}
             className={`button-selector-option button-selector-option_${variant} ${selectedOption === option ? 'selected' : ''}`}
             onClick={(event) => {
               event.preventDefault()

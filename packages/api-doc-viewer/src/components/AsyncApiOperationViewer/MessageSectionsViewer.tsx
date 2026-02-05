@@ -19,7 +19,11 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   const [selectedSection, setSelectedSection] = useState<SelectorOption | null>(null)
   const sectionNodes: AsyncApiTreeNode[] = node.nestedNodes()
   const sectionSelectorOptions = useMemo(
-    () => sectionNodes.map(node => ({ node: node, title: getMessageSectionTitle(node) })),
+    () => sectionNodes.map(node => ({
+      node: node,
+      title: getMessageSectionTitle(node),
+      testId: getMessageSectionTestId(node)
+    })),
     [sectionNodes]
   )
 
@@ -38,7 +42,9 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         variant="secondary"
       />
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
-        <MessageSectionViewer node={selectedSection.node} />
+        <div data-testid={`${selectedSection.testId}-section`}>
+          <MessageSectionViewer node={selectedSection.node} />
+        </div>
       )}
     </div>
   )
@@ -54,5 +60,18 @@ function getMessageSectionTitle(node: AsyncApiTreeNode): string {
       return 'Operation'
     default:
       return 'Unknown'
+  }
+}
+
+function getMessageSectionTestId(node: AsyncApiTreeNode): string {
+  switch (node.kind) {
+    case AsyncApiTreeNodeKinds.MESSAGE_CONTENT:
+      return 'message-content'
+    case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
+      return 'message-channel'
+    case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
+      return 'message-operation'
+    default:
+      return 'unknown'
   }
 }
