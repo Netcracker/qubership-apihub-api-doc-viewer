@@ -2,7 +2,7 @@
 
 import { AsyncApiOperationViewer } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer";
 import type { Meta, StoryObj } from '@storybook/react';
-import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/common-data";
+import { TEST_REFERENCE_NAME_PROPERTY } from "./shared-test-data";
 import { prepareAsyncApiDocument } from "../preprocess";
 
 // eslint-disable-next-line storybook/story-exports
