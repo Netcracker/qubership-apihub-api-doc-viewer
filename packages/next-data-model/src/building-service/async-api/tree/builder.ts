@@ -214,7 +214,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         }
       }
       if (!firstOperationKey || !firstOperationType || !firstOperationMessageKey) {
-        console.error('Cannot find first operation, channel or message in source.')
+        !firstOperationKey && console.error('Cannot find first operation in source.')
+        !firstOperationType && console.error('Cannot find first operation type in source.')
+        !firstOperationMessageKey && console.error('Cannot find first operation message key in source.')
         return null
       }
       console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationType, firstOperationMessageKey)

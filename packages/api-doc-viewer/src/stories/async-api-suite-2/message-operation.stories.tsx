@@ -1,0 +1,172 @@
+// It's necessary because storybook doesn't render nested stories without this empty story
+
+import { AsyncApiOperationViewer } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer";
+import type { Meta, StoryObj } from '@storybook/react';
+import { EXTENSIONS, TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/common-data";
+import { prepareAsyncApiDocument } from "../preprocess";
+
+// eslint-disable-next-line storybook/story-exports
+const meta = {
+  title: 'Async Api Suite 2/Message Operation',
+  component: AsyncApiOperationViewer,
+  parameters: {},
+  argTypes: {
+    source: {
+      control: 'object'
+    }
+  },
+  args: {
+    source: {}
+  }
+} satisfies Meta<typeof AsyncApiOperationViewer>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>
+
+const OPERATION_KEY = 'OperationID';
+const CHANNEL_KEY = 'ChannelID';
+const MESSAGE_KEY = 'MessageID';
+
+type OperationContent = {
+  title?: string;
+  description?: string;
+  summary?: string;
+  bindings?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+type SourceOptions = {
+  operation: OperationContent;
+  operationType?: 'send' | 'receive';
+};
+
+const createSource = ({ operation, operationType = 'send' }: SourceOptions) => ({
+  asyncapi: "3.0.0",
+  operations: {
+    [OPERATION_KEY]: {
+      action: operationType,
+      channel: { $ref: `#/channels/${CHANNEL_KEY}` },
+      messages: [{ $ref: `#/channels/${CHANNEL_KEY}/messages/${MESSAGE_KEY}` }],
+      ...operation,
+    }
+  },
+  channels: {
+    [CHANNEL_KEY]: {
+      messages: {
+        [MESSAGE_KEY]: {
+          name: "Message Name",
+        }
+      },
+    }
+  }
+});
+
+const createStory = (source: ReturnType<typeof createSource>): Story => ({
+  args: {
+    source: prepareAsyncApiDocument({ source }),
+    operationKey: OPERATION_KEY,
+    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
+  }
+});
+
+export const OperationId: Story = createStory(createSource({
+  operation: {},
+}));
+
+export const Title: Story = createStory(createSource({
+  operation: {
+    title: "Operation Title",
+  },
+}));
+
+export const Description: Story = createStory(createSource({
+  operation: {
+    description: "Operation description",
+  },
+}));
+
+export const Summary: Story = createStory(createSource({
+  operation: {
+    summary: "Operation summary",
+  },
+}));
+
+export const Extensions: Story = createStory(createSource({
+  operation: {
+    ...EXTENSIONS,
+  },
+}));
+
+export const BindingsOneOption: Story = createStory(createSource({
+  operation: {
+    bindings: {
+      kafka: {
+        bindingVersion: "0.5.0",
+      }
+    },
+  },
+}));
+
+export const BindingsTwoOptionsSelectedFirst: Story = createStory(createSource({
+  operation: {
+    bindings: {
+      kafka: {
+        bindingVersion: "0.5.0",
+      },
+      mqtt: {
+        bindingVersion: "0.2.0",
+      },
+    },
+  },
+}));
+
+export const BindingsTwoOptionsSelectedSecond: Story = createStory(createSource({
+  operation: {
+    bindings: {
+      kafka: {
+        bindingVersion: "0.5.0",
+      },
+      mqtt: {
+        bindingVersion: "0.2.0",
+      },
+    },
+  },
+}));
+
+export const DescriptionSummary: Story = createStory(createSource({
+  operation: {
+    description: "Operation description",
+    summary: "Operation summary",
+  },
+}));
+
+export const DescriptionExtensions: Story = createStory(createSource({
+  operation: {
+    description: "Operation description",
+    ...EXTENSIONS,
+  },
+}));
+
+export const DescriptionBindingsOneOption: Story = createStory(createSource({
+  operation: {
+    description: "Operation description",
+    bindings: {
+      kafka: {
+        bindingVersion: "0.5.0",
+      }
+    },
+  },
+}));
+
+export const ExtensionsBindingsOneOption: Story = createStory(createSource({
+  operation: {
+    ...EXTENSIONS,
+    bindings: {
+      kafka: {
+        bindingVersion: "0.5.0",
+      }
+    },
+  },
+}));
