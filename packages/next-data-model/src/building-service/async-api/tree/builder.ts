@@ -255,7 +255,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       console.error('AsyncAPI operation in APIHUB must contain three items: operation, channel and message. They must be linked to each other.')
       return null
     }
-    
+
     const operationExtensions = this.copyExtensions(operation)
     const operationChannelExtensions = this.copyExtensions(operationChannel)
     const operationMessageExtensions = this.copyExtensions(operationMessage)
@@ -299,7 +299,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...(operationChannel.description ? { description: operationChannel.description } : {}),
           ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
           ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
-          ...operationChannel.parameters ? { parameters: operationChannel.parameters } : {},
+          ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
         },
         operation: {
           ...(operationReferenceNameProperty ?? {}),
@@ -313,6 +313,17 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       }
     }
     return messageOrientedOperation
+  }
+
+  private transformParametersToJsonSchema(parameters: v3.ParametersObject): v3.SchemaObject {
+    const newParameters: Record<string, v3.SchemaObject> = {}
+    for (const [parameterName, parameterValue] of Object.entries(parameters)) {
+      if (this.isReferenceObject(parameterValue)) {
+        continue
+      }
+      newParameters[parameterName] = { type: 'string', ...parameterValue }
+    }
+    return newParameters
   }
 
   private copyExtensions(source: v3.MessageObject): v3.SpecificationExtensions | undefined {
@@ -420,7 +431,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         return { done: true };
       }
       // if (isObject(value) && Reflect.ownKeys(value).length === 0) {
-        // return { done: true }; // exit on empty object
+      // return { done: true }; // exit on empty object
       // }
       if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind)) {
         // equivalent to "continue" operator within loop operators

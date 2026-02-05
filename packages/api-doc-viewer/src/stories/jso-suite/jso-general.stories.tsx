@@ -26,10 +26,14 @@ const meta = {
   argTypes: {
     source: {
       control: 'object'
+    },
+    supportJsonSchema: {
+      control: 'boolean'
     }
   },
   args: {
-    source: {}
+    source: {},
+    supportJsonSchema: true,
   }
 } satisfies Meta<typeof JsoViewer>;
 

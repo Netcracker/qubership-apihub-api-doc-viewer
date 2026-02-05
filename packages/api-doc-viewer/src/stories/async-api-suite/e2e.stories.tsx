@@ -415,7 +415,6 @@ export const MinimalOverallStructure: Story = {
         },
       },
     }),
-    operationKey: 'send-operation-with-minimal-overall-structure',
-    operationType: 'send',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 }

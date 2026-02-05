@@ -24,6 +24,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
     <JsoViewer
       source={addressParameters}
       initialLevel={1}
+      supportJsonSchema={true}
     />
   </>
 }
