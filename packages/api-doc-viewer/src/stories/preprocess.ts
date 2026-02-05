@@ -22,7 +22,7 @@ import {
 } from '@netcracker/qubership-apihub-api-diff'
 import { denormalize, normalize, NormalizeOptions, RefErrorType, stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
 import { ObjectUtils } from '../utils/common/objects'
-import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite-2/shared-test-data'
+import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite/shared-test-data'
 
 const syntheticTitleFlag = Symbol('syntheticTitle')
 
