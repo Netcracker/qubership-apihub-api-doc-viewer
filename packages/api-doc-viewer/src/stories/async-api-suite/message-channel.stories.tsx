@@ -227,10 +227,26 @@ export const ExtensionsBindingsOneOption: Story = createStory(createSource({
   },
 }));
 
+export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
+  channel: {
+    bindings: { $ref: "#/components/bindings/not-existing-bindings" },
+  },
+}));
+
 export const EdgeBrokenRefAddressParameter: Story = createStory(createSource({
-  channel: {},
+  channel: {
+    parameters: {
+      param1: {
+        $ref: "#/components/parameters/not-existing-parameter",
+      },
+    },
+  },
 }));
 
 export const EdgeBrokenRefServerOutOfScope: Story = createStory(createSource({
-  channel: {},
+  channel: {
+    servers: [
+      { $ref: "#/components/servers/not-existing-server" },
+    ]
+  },
 }));
