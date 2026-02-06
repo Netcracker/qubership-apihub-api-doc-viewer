@@ -420,11 +420,13 @@ type AsyncApiDocumentOptions = {
   source: unknown
   circular?: boolean
   referenceNamePropertyKey?: symbol
+  storyName?: string
 }
 
 export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown {
-  const { source, circular = false, referenceNamePropertyKey = TEST_REFERENCE_NAME_PROPERTY } = options
-  console.debug('[AsyncAPI] Raw source:', source)
+  const { source, circular = false, referenceNamePropertyKey = TEST_REFERENCE_NAME_PROPERTY, storyName } = options
+  storyName && console.debug(`[AsyncAPI] STORY: ${storyName}`)
+  storyName && console.debug('[AsyncAPI] Raw source:', source)
   const normalizedSchema = normalize(source, {
     syntheticTitleFlag: syntheticTitleFlag,
     referenceNameProperty: referenceNamePropertyKey,
@@ -432,14 +434,14 @@ export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unkno
     validate: true,
     liftCombiners: true,
   })
-  console.debug('[AsyncAPI] Normalized schema:', normalizedSchema)
+  storyName && console.debug('[AsyncAPI] Normalized schema:', normalizedSchema)
   const mergedSchema = denormalize(normalizedSchema, {
     syntheticTitleFlag: syntheticTitleFlag,
     unify: true,
     validate: true,
     liftCombiners: true,
   })
-  console.debug('[AsyncAPI] Merged schema:', mergedSchema)
+  storyName && console.debug('[AsyncAPI] Merged schema:', mergedSchema)
   if (circular && isObject(mergedSchema)) {
     mergedSchema.toJSON = () => stringifyCyclicJso(mergedSchema)
   }

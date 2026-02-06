@@ -7,6 +7,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { TitleRow } from "./TitleRow";
+import { BrokenRefViewer } from "./BrokenRefViewer";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
@@ -16,6 +17,9 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const { node } = props
 
   const displayMode = useDisplayMode()
+
+  const bindingsNodeMeta = node.meta()
+  const brokenRef = bindingsNodeMeta?.brokenRef
 
   const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
@@ -48,13 +52,17 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
-    <Selector
-      options={bindingSelectorOptions}
-      selectedOption={selectedBinding}
-      onSelectOption={setSelectedBinding}
-      variant='secondary'
-    />
-  ), [bindingSelectorOptions, selectedBinding])
+    brokenRef ? (
+      <BrokenRefViewer value={brokenRef} />
+    ) : (
+      <Selector
+        options={bindingSelectorOptions}
+        selectedOption={selectedBinding}
+        onSelectOption={setSelectedBinding}
+        variant='secondary'
+      />
+    )
+  ), [bindingSelectorOptions, brokenRef, selectedBinding])
 
   return (
     <div className="flex flex-col gap-1">
@@ -65,19 +73,21 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant='h3'
         subheader={titleRowSubheader}
       />
-      <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
-        {bindingVersion && (
-          <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
-            Version: {bindingVersion}
-          </span>
-        )}
-        <JsoViewer
-          source={bindingValue}
-          displayMode={displayMode}
-          initialLevel={1}
-          supportJsonSchema={true}
-        />
-      </div>
+      {!brokenRef && (
+        <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
+          {bindingVersion && (
+            <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
+              Version: {bindingVersion}
+            </span>
+          )}
+          <JsoViewer
+            source={bindingValue}
+            displayMode={displayMode}
+            initialLevel={1}
+            supportJsonSchema={true}
+          />
+        </div>
+      )}
     </div>
   )
 }

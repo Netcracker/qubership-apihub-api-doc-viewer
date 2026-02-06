@@ -99,9 +99,9 @@ const createSource = ({ message, operationType = 'send' }: SourceOptions) => ({
   }
 });
 
-const createStory = (source: ReturnType<typeof createSource>): Story => ({
+const createStory = (source: ReturnType<typeof createSource>, storyName?: string): Story => ({
   args: {
-    source: prepareAsyncApiDocument({ source }),
+    source: prepareAsyncApiDocument({ source, storyName }),
     operationKey: OPERATION_KEY,
     operationType: 'send',
     messageKey: MESSAGE_KEY,
@@ -233,4 +233,4 @@ export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
   message: {
     bindings: { $ref: "#/components/bindings/not-existing-bindings" },
   },
-}));
+}), 'edge-case-broken-ref-bindings');
