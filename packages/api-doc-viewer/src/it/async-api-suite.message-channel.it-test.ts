@@ -18,6 +18,11 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     await page.waitForSelector('[data-testid="message-channel-section"]', { visible: true })
   }
 
+  async function switchToSecondBindingOption() {
+    await page.click('[data-testid="binding-1"]')
+    await page.waitForSelector('[data-testid="binding-1-content"]', { visible: true })
+  }
+
   it('channel-id', async () => {
     story = await storyPage(
       page,
@@ -115,6 +120,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await switchToSecondBindingOption()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 

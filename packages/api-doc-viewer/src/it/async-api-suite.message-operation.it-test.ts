@@ -18,6 +18,11 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
     await page.waitForSelector('[data-testid="message-operation-section"]', { visible: true })
   }
 
+  async function switchToSecondBindingOption() {
+    await page.click('[data-testid="binding-1"]')
+    await page.waitForSelector('[data-testid="binding-1-content"]', { visible: true })
+  }
+
   it('operation-id', async () => {
     story = await storyPage(
       page,
@@ -95,6 +100,7 @@ describe('AsyncAPI Suite 2 - Message Operation', () => {
     )
     component = await story.viewComponent()
     await switchToOperationSection()
+    await switchToSecondBindingOption()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 

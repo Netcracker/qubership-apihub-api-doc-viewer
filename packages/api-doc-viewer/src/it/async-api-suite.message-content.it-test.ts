@@ -13,6 +13,11 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
     await jestPuppeteer.resetPage()
   })
 
+  async function switchToSecondBindingOption() {
+    await page.click('[data-testid="binding-1"]')
+    await page.waitForSelector('[data-testid="binding-1-content"]', { visible: true })
+  }
+
   it('headers', async () => {
     story = await storyPage(
       page,
@@ -64,6 +69,7 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
       'async-api-suite-message-content--bindings-two-options-selected-second'
     )
     component = await story.viewComponent()
+    await switchToSecondBindingOption()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 

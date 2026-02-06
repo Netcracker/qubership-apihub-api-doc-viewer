@@ -19,10 +19,19 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
   const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
-  const bindingSelectorOptions = useMemo(() => bindingNodes.filter(isBindingNode).map(bindingNode => ({
-    title: bindingNode.value()?.protocol ?? '',
-    node: bindingNode,
-  })), [bindingNodes])
+  const bindingSelectorOptions = useMemo(() => (
+    bindingNodes
+      .filter(isBindingNode)
+      .map((bindingNode, index) => {
+        const protocol = bindingNode.value()?.protocol ?? ''
+        const testId = `binding-${index}`
+        return {
+          title: protocol,
+          node: bindingNode,
+          testId: testId,
+        }
+      })
+  ), [bindingNodes])
 
   const selectedBindingNode = selectedBinding?.node && isBindingNode(selectedBinding.node) ? selectedBinding.node : null
   const selectedBindingValue = selectedBindingNode?.value()
@@ -56,17 +65,19 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant='h3'
         subheader={titleRowSubheader}
       />
-      {bindingVersion && (
-        <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
-          Version: {bindingVersion}
-        </span>
-      )}
-      <JsoViewer
-        source={bindingValue}
-        displayMode={displayMode}
-        initialLevel={1}
-        supportJsonSchema={true}
-      />
+      <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
+        {bindingVersion && (
+          <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
+            Version: {bindingVersion}
+          </span>
+        )}
+        <JsoViewer
+          source={bindingValue}
+          displayMode={displayMode}
+          initialLevel={1}
+          supportJsonSchema={true}
+        />
+      </div>
     </div>
   )
 }
