@@ -194,17 +194,27 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it.skip('edge-broken-ref-address-parameter', async () => {
+  it.skip('edge-case-broken-ref-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-message-channel--edge-broken-ref-address-parameter'
+      'async-api-suite-message-channel--edge-case-broken-ref-bindings'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it.skip('edge-broken-ref-server-out-of-scope', async () => {
+  it.skip('edge-case-broken-ref-address-parameter', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--edge-case-broken-ref-address-parameter'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it.skip('edge-case-broken-ref-server-out-of-scope', async () => {
     story = await storyPage(
       page,
       'async-api-suite-message-channel--edge-broken-ref-server-out-of-scope'

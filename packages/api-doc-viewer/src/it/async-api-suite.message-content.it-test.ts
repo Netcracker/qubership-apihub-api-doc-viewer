@@ -144,4 +144,13 @@ describe('AsyncAPI Suite 2 - Message Content', () => {
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
+
+  it.skip('edge-case-broken-ref-bindings', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-content--edge-case-broken-ref-bindings'
+    )
+    component = await story.viewComponent()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
 })

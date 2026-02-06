@@ -233,7 +233,7 @@ export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
   },
 }));
 
-export const EdgeBrokenRefAddressParameter: Story = createStory(createSource({
+export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource({
   channel: {
     parameters: {
       param1: {
@@ -243,7 +243,7 @@ export const EdgeBrokenRefAddressParameter: Story = createStory(createSource({
   },
 }));
 
-export const EdgeBrokenRefServerOutOfScope: Story = createStory(createSource({
+export const EdgeCaseBrokenRefServerOutOfScope: Story = createStory(createSource({
   channel: {
     servers: [
       { $ref: "#/components/servers/not-existing-server" },
