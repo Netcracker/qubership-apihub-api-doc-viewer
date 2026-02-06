@@ -245,17 +245,21 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const operationChannel: v3.ChannelObject = !this.isReferenceObject(operation.channel) ? operation.channel : {}
     const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
       .filter((message): message is v3.MessageObject => !this.isReferenceObject(message))
-    const operationMessage: v3.MessageObject | undefined = operationMessages
+    let operationMessage: v3.MessageObject | undefined = operationMessages
       .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey!] === messageKey)
 
-    if (!operationMessage) {
-      console.error(`Cannot find message with key (id) = ${messageKey}`)
+    if (!operationChannel) {
+      console.error('Cannot find channel in the operation', operation)
       return null
     }
 
-    if (!operation || !operationChannel || !operationMessage) {
-      console.error('AsyncAPI operation in APIHUB must contain three items: operation, channel and message. They must be linked to each other.')
-      return null
+    if (!operationMessage) {
+      const channelMessage = operationChannel.messages?.[messageKey]
+      operationMessage = !this.isReferenceObject(channelMessage) ? channelMessage : undefined
+      if (!operationMessage) {
+        console.error(`Cannot find message with key (id) = ${messageKey}`)
+        return null
+      }
     }
 
     const operationExtensions = this.copyExtensions(operation)

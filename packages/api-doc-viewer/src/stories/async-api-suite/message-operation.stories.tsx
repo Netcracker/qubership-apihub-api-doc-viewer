@@ -67,6 +67,7 @@ const createStory = (source: ReturnType<typeof createSource>): Story => ({
     source: prepareAsyncApiDocument({ source }),
     operationKey: OPERATION_KEY,
     operationType: 'send',
+    messageKey: MESSAGE_KEY,
     referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
 });
