@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffRecord, NodeChange, NodeChangesSummary } from '@netcracker/qubership-apihub-api-data-model';
+import { DiffRecord, NodeChange, NodeChangesSummary } from '../../../../api-data-model/src';
 import { Diff, DiffAdd, DiffRemove, DiffRename, DiffReplace, DiffType } from '@netcracker/qubership-apihub-api-diff';
-import { IModelStateNode } from '@netcracker/qubership-apihub-api-state-model';
+import { IModelStateNode } from '../../../../api-state-model/src';
 import { LayoutMode } from '../../types/LayoutMode';
 import { LayoutSide } from '../../types/internal/LayoutSide';
 export declare function diffAdd(diff?: Diff): diff is DiffAdd;

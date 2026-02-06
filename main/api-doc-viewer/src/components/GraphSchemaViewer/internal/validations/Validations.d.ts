@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphApiNodeData, GraphSchemaNodeValue } from '@netcracker/qubership-apihub-api-data-model';
+import { GraphApiNodeData, GraphSchemaNodeValue } from '../../../../../../api-data-model/src';
 import type { FC } from '../../../../../../../node_modules/react';
 import { PropsWithChanges } from '../../../../types/internal/PropsWithChanges';
 import { PropsWithNodeValue } from '../../../../types/internal/PropsWithNodeValue';

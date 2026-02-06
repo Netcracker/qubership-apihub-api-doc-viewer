@@ -15,7 +15,7 @@
  */
 import { FC, PropsWithChildren } from '../../../../node_modules/react';
 import { LayoutSide } from '../types/internal/LayoutSide';
-import { IModelTreeNode } from '@netcracker/qubership-apihub-api-data-model';
+import { IModelTreeNode } from '../../../api-data-model/src';
 type Value = LayoutSide | undefined;
 type SetValue = ((stateNode?: IModelTreeNode<any, any, any>) => void) | undefined;
 type NoSubHeaderContextProviderProps = PropsWithChildren & {

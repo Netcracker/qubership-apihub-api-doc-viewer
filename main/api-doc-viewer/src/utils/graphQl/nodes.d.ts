@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IModelStatePropNode } from "@netcracker/qubership-apihub-api-state-model";
+import { IModelStatePropNode } from '../../../../api-state-model/src';
 export declare function hasChildren(stateNode?: IModelStatePropNode<any>): boolean;
 export declare function hasAnnotationsOrValidations(kind: 'openapi' | 'graphapi', stateNode?: IModelStatePropNode<any>): boolean;
