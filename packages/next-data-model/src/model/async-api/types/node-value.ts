@@ -18,6 +18,8 @@ export type AsyncApiTreeNodeValue<T extends AsyncApiTreeNodeKind> =
   ? AsyncApiTreeNodeValueTypeMessageHeaders
   : T extends typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
   ? AsyncApiTreeNodeValueTypeMessagePayload
+  : T extends typeof AsyncApiTreeNodeKinds.SERVER
+  ? AsyncApiTreeNodeValueTypeServer
   : never
 
 export interface AsyncApiTreeNodeValueBase {
@@ -50,7 +52,7 @@ export interface AsyncApiTreeNodeValueTypeMessageChannel extends AsyncApiTreeNod
 
 export interface AsyncApiTreeNodeValueTypeChannelParameters extends AsyncApiTreeNodeValueWithRawValues {
   readonly rawValues: Record<string, unknown>
- }
+}
 
 export interface AsyncApiTreeNodeValueTypeMessageOperation extends AsyncApiTreeNodeValueBase { }
 
@@ -62,3 +64,8 @@ interface AsyncApiTreeNodeValueTypeMultiSchema extends AsyncApiTreeNodeValueBase
 export interface AsyncApiTreeNodeValueTypeMessageHeaders extends AsyncApiTreeNodeValueTypeMultiSchema { }
 
 export interface AsyncApiTreeNodeValueTypeMessagePayload extends AsyncApiTreeNodeValueTypeMultiSchema { }
+
+export interface AsyncApiTreeNodeValueTypeServer extends AsyncApiTreeNodeValueBase {
+  readonly host: string
+  readonly protocol: string
+}

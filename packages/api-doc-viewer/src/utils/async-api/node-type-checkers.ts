@@ -80,3 +80,15 @@ export function isMessageSectionNode(
 > {
   return isMessageContentNode(node) || isMessageChannelNode(node) || isMessageOperationNode(node);
 }
+
+export function isServersNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVERS> {
+  return node.kind === AsyncApiTreeNodeKinds.SERVERS;
+}
+
+export function isServerNode(
+  node: AsyncApiTreeNode
+): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER> {
+  return node.kind === AsyncApiTreeNodeKinds.SERVER;
+}

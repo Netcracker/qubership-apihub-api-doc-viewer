@@ -10,6 +10,8 @@ export const AsyncApiTreeNodeKinds = {
   MESSAGE_OPERATION: 'operation',
   MESSAGE_PAYLOAD: 'messagePayload',
   MESSAGE_SECTION_SELECTOR: 'messageSectionSelector',
+  SERVER: 'server',
+  SERVERS: 'servers',
 } as const
 
 export const AsyncApiTreeNodeKindsList: AsyncApiTreeNodeKind[] = Object.values(AsyncApiTreeNodeKinds)

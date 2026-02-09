@@ -64,9 +64,9 @@ const createSource = ({ channel, operationType = 'send' }: SourceOptions) => ({
   }
 });
 
-const createStory = (source: ReturnType<typeof createSource>): Story => ({
+const createStory = (source: ReturnType<typeof createSource>, storyName?: string): Story => ({
   args: {
-    source: prepareAsyncApiDocument({ source }),
+    source: prepareAsyncApiDocument({ source, storyName }),
     operationKey: OPERATION_KEY,
     operationType: 'send',
     messageKey: MESSAGE_KEY,
@@ -154,6 +154,38 @@ export const BindingsTwoOptionsSelectedSecond: Story = createStory(createSource(
   },
 }));
 
+export const ServersOneServer: Story = createStory(createSource({
+  channel: {
+    servers: [
+      {
+        title: "Server Title",
+        host: "localhost",
+        protocol: "http",
+        description: "The HTTP server to connect to",
+      },
+    ],
+  },
+}));
+
+export const ServersTwoServers: Story = createStory(createSource({
+  channel: {
+    servers: [
+      {
+        title: "Kafka Server Title",
+        host: "kafka.server.com",
+        protocol: "kafka",
+        description: "The Kafka server to connect to",
+      },
+      {
+        title: "AMQP Server Title",
+        host: "amqp.server.com",
+        protocol: "amqp",
+        description: "The AMQP server to connect to",
+      },
+    ],
+  },
+}));
+
 export const DescriptionSummary: Story = createStory(createSource({
   channel: {
     description: "Channel description",
@@ -190,6 +222,20 @@ export const DescriptionBindingsOneOption: Story = createStory(createSource({
   },
 }));
 
+export const DescriptionServersOneServer: Story = createStory(createSource({
+  channel: {
+    description: "Channel description",
+    servers: [
+      {
+        title: "Server Title",
+        host: "localhost",
+        protocol: "http",
+        description: "The HTTP server to connect to",
+      },
+    ],
+  },
+}));
+
 export const AddressParametersExtensions: Story = createStory(createSource({
   channel: {
     parameters: {
@@ -216,6 +262,24 @@ export const AddressParametersBindingsOneOption: Story = createStory(createSourc
   },
 }));
 
+export const AddressParametersServersOneServer: Story = createStory(createSource({
+  channel: {
+    parameters: {
+      param1: {
+        description: "Parameter description",
+      },
+    },
+    servers: [
+      {
+        title: "Server Title",
+        host: "localhost",
+        protocol: "http",
+        description: "The HTTP server to connect to",
+      },
+    ],
+  },
+}));
+
 export const ExtensionsBindingsOneOption: Story = createStory(createSource({
   channel: {
     ...EXTENSIONS,
@@ -224,6 +288,20 @@ export const ExtensionsBindingsOneOption: Story = createStory(createSource({
         bindingVersion: "0.5.0",
       }
     },
+  },
+}));
+
+export const ExtensionsServersOneServer: Story = createStory(createSource({
+  channel: {
+    ...EXTENSIONS,
+    servers: [
+      {
+        title: "Server Title",
+        host: "localhost",
+        protocol: "http",
+        description: "The HTTP server to connect to",
+      },
+    ],
   },
 }));
 
@@ -236,12 +314,12 @@ export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
 export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource({
   channel: {
     parameters: {
-      param1: {
+      notExistingParameter: {
         $ref: "#/components/parameters/not-existing-parameter",
       },
     },
   },
-}));
+}), 'edge-case-broken-ref-address-parameter');
 
 export const EdgeCaseBrokenRefServerOutOfScope: Story = createStory(createSource({
   channel: {

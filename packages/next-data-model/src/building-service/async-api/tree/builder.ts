@@ -27,6 +27,7 @@ type AnyAsyncApiNodeValueKey =
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>
 
 type SimpleAsyncApiTreeNodeParams = SimpleTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -64,6 +65,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
       | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
       | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
+      | typeof AsyncApiTreeNodeKinds.SERVER
   ): (keyof AsyncApiTreeNodeValue<
     | typeof AsyncApiTreeNodeKinds.BINDING
     | typeof AsyncApiTreeNodeKinds.EXTENSIONS
@@ -73,6 +75,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
     | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
     | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
+    | typeof AsyncApiTreeNodeKinds.SERVER
   >)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.BINDING): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.EXTENSIONS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>)[]
@@ -82,6 +85,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.SERVER): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
 
   // General fallback signature
   public static getAsyncApiTreeNodeValueProps(type: AsyncApiTreeNodeKind): AnyAsyncApiNodeValueKey[] {
@@ -118,6 +122,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           'schema',
           'schemaFormat',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+      case AsyncApiTreeNodeKinds.SERVER:
+        return [
+          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
+          'host',
+          'protocol',
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
       default:
         return []
     }
@@ -306,6 +316,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
           ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
           ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
+          ...operationChannel.servers ? { servers: operationChannel.servers } : {},
         },
         operation: {
           ...(operationReferenceNameProperty ?? {}),
@@ -623,6 +634,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         )
       case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.SERVER:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )

@@ -19,6 +19,12 @@ export function getAsyncApiCrawlRules(kind: AsyncApiTreeNodeKind): CrawlRules<As
       kind: AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS,
       transformers: [collectRawValues],
     },
+    '/servers': {
+      '/*': {
+        kind: AsyncApiTreeNodeKinds.SERVER,
+      },
+      kind: AsyncApiTreeNodeKinds.SERVERS,
+    },
     // Message/Channel/Operation Extensions
     '/extensions': {
       kind: AsyncApiTreeNodeKinds.EXTENSIONS,
