@@ -15,9 +15,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   return (
     <div className='flex flex-col gap-2 message-channel-server-node'>
-      <span className='title-row'>{value?.title}</span>
-      <span className='subheader'>{value?.protocol}://{value?.host}</span>
-      <span className='description'>{value?.description}</span>
+      <span className='font-Inter-Bolder server-header'>{value?.title}</span>
+      <span className='font-Inter-Medium server-subheader'>{value?.protocol}://{value?.host}</span>
+      <span className='font-Inter server-description'>{value?.description}</span>
     </div>
   )
 })

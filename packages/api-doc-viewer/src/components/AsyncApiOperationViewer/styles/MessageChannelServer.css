@@ -5,19 +5,19 @@
   border: 1px solid #E0E5EB;
 }
 
-.message-channel-server-node .title-row {
+.message-channel-server-node .server-header {
   font-size: 12px;
   font-weight: 600;
   color: black;
 }
 
-.message-channel-server-node .subheader {
+.message-channel-server-node .server-subheader {
   font-size: 12px;
   font-weight: 500;
   color: black;
 }
 
-.message-channel-server-node .description {
+.message-channel-server-node .server-description {
   font-size: 12px;
   font-weight: 400;
   color: black;
