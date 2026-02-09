@@ -52,16 +52,14 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const titleRowSubheader = useCallback((layoutSide: LayoutSide) => (
-    brokenRef ? (
-      <BrokenRefViewer value={brokenRef} />
-    ) : (
+    !brokenRef ? (
       <Selector
         options={bindingSelectorOptions}
         selectedOption={selectedBinding}
         onSelectOption={setSelectedBinding}
         variant='secondary'
       />
-    )
+    ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
 
   return (
@@ -73,6 +71,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant='h3'
         subheader={titleRowSubheader}
       />
+      {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && (
         <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
           {bindingVersion && (

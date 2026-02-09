@@ -319,12 +319,12 @@ export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource
       },
     },
   },
-}), 'edge-case-broken-ref-address-parameter');
+}));
 
-export const EdgeCaseBrokenRefServerOutOfScope: Story = createStory(createSource({
+export const EdgeCaseBrokenRefServer: Story = createStory(createSource({
   channel: {
     servers: [
       { $ref: "#/components/servers/not-existing-server" },
     ]
   },
-}));
+}), 'edge-case-broken-ref-server');
