@@ -112,6 +112,17 @@ export const AddressParameters: Story = createStory(createSource({
   },
 }));
 
+export const AddressParametersWithLocation: Story = createStory(createSource({
+  channel: {
+    parameters: {
+      param1: {
+        description: "Parameter description",
+        location: '$.message.headers.correlationId',
+      },
+    },
+  },
+}));
+
 export const Extensions: Story = createStory(createSource({
   channel: {
     ...EXTENSIONS,

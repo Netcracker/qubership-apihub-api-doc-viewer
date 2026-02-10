@@ -83,6 +83,16 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
+  it('address-parameters-with-location', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--address-parameters-with-location'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
   it('extensions', async () => {
     story = await storyPage(
       page,
