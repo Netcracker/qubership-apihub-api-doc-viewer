@@ -124,6 +124,26 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
+  it('servers-one-server', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('servers-two-servers', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-two-servers'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
   it('description-summary', async () => {
     story = await storyPage(
       page,
@@ -164,6 +184,16 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
+  it('description-servers-one-server', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--description-servers-one-server'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
   it('address-parameters-extensions', async () => {
     story = await storyPage(
       page,
@@ -184,6 +214,16 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
+  it('address-parameters-servers-one-server', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--address-parameters-servers-one-server'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
   it('extensions-bindings-one-option', async () => {
     story = await storyPage(
       page,
@@ -194,7 +234,17 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it.skip('edge-case-broken-ref-bindings', async () => {
+  it('extensions-servers-one-server', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--extensions-servers-one-server'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('edge-case-broken-ref-bindings', async () => {
     story = await storyPage(
       page,
       'async-api-suite-message-channel--edge-case-broken-ref-bindings'
@@ -204,7 +254,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it.skip('edge-case-broken-ref-address-parameter', async () => {
+  it('edge-case-broken-ref-address-parameter', async () => {
     story = await storyPage(
       page,
       'async-api-suite-message-channel--edge-case-broken-ref-address-parameter'
@@ -214,10 +264,10 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it.skip('edge-case-broken-ref-server-out-of-scope', async () => {
+  it('edge-case-broken-ref-server', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-message-channel--edge-broken-ref-server-out-of-scope'
+      'async-api-suite-message-channel--edge-case-broken-ref-server'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
