@@ -3,12 +3,18 @@
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #E0E5EB;
+  width: 500px;
+  min-width: 500px;
+  max-width: 500px;
 }
 
 .message-channel-server-node .server-element {
   font-family: 'Inter Variable';
   font-size: 12px;
   color: black;
+  text-wrap: wrap;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .message-channel-server-node .server-element.server-header {
