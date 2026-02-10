@@ -132,6 +132,8 @@ export const BindingsOneOption: Story = createStory(createSource({
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.created",
+        clientId: "api-doc-viewer-client",
       }
     },
   },
@@ -142,9 +144,11 @@ export const BindingsTwoOptionsSelectedFirst: Story = createStory(createSource({
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.first",
       },
       mqtt: {
         bindingVersion: "0.2.0",
+        clientId: "mqtt-client-01",
       },
     },
   },
@@ -155,9 +159,11 @@ export const BindingsTwoOptionsSelectedSecond: Story = createStory(createSource(
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.second",
       },
       mqtt: {
         bindingVersion: "0.2.0",
+        clientId: "mqtt-client-02",
       },
     },
   },
@@ -188,6 +194,8 @@ export const HeadersBindingsOneOption: Story = createStory(createSource({
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.headers",
+        clientId: "api-doc-viewer-client",
       }
     },
   },
@@ -206,6 +214,8 @@ export const ExtensionsBindingsOneOption: Story = createStory(createSource({
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.extension",
+        clientId: "api-doc-viewer-client",
       }
     },
   },
@@ -223,6 +233,8 @@ export const BindingsOneOptionPayload: Story = createStory(createSource({
     bindings: {
       kafka: {
         bindingVersion: "0.5.0",
+        topic: "events.message.payload",
+        clientId: "api-doc-viewer-client",
       }
     },
     payload: PAYLOAD_SCHEMA,
