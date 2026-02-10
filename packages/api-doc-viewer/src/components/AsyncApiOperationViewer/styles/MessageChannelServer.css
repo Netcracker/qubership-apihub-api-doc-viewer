@@ -5,20 +5,20 @@
   border: 1px solid #E0E5EB;
 }
 
-.message-channel-server-node .server-header {
+.message-channel-server-node .server-element {
+  font-family: 'Inter Variable';
   font-size: 12px;
+  color: black;
+}
+
+.message-channel-server-node .server-element.server-header {
   font-weight: 600;
-  color: black;
 }
 
-.message-channel-server-node .server-subheader {
-  font-size: 12px;
+.message-channel-server-node .server-element.server-subheader {
   font-weight: 500;
-  color: black;
 }
 
-.message-channel-server-node .server-description {
-  font-size: 12px;
+.message-channel-server-node .server-element.server-description {
   font-weight: 400;
-  color: black;
 }

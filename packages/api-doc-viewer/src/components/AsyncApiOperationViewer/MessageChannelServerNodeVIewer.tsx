@@ -21,9 +21,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     <div className='flex flex-col gap-2 message-channel-server-node'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && <>
-        <span className='font-Inter-Bolder server-header'>{value?.title}</span>
-        <span className='font-Inter-Medium server-subheader'>{value?.protocol}://{value?.host}</span>
-        <span className='font-Inter server-description'>{value?.description}</span>
+        <span className='server-element server-header'>{value?.title}</span>
+        <span className='server-element server-subheader'>{value?.protocol}://{value?.host}</span>
+        <span className='server-element server-description'>{value?.description}</span>
       </>}
     </div>
   )
