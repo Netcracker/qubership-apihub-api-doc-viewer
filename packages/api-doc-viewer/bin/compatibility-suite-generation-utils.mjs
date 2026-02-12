@@ -1,4 +1,5 @@
 import { mkdirSync, rmSync } from 'fs'
+import { camelCase, upperFirst } from 'lodash-es'
 import path from 'path'
 import { exit } from 'process'
 import { fileURLToPath } from 'url'
@@ -9,7 +10,7 @@ export const CS_LABEL = 'compatibility-suite'
  * Guard: do not run generators when installed as a transitive dependency (inside node_modules).
  * Call this at the top of every generator script.
  */
-export function exitIfInsideNodeModules(importMetaUrl) {
+export const exitIfInsideNodeModules = (importMetaUrl) => {
   const __filename = fileURLToPath(importMetaUrl)
   const __dirname = path.dirname(__filename)
   // bin/ is 1 level under package root; package root is 3 levels under node_modules
@@ -22,25 +23,16 @@ export function exitIfInsideNodeModules(importMetaUrl) {
 /**
  * Wipes and re-creates a directory.
  */
-export function resetDirectory(dirPath) {
+export const resetDirectory = (dirPath) => {
   rmSync(dirPath, { recursive: true, force: true })
   mkdirSync(dirPath, { recursive: true })
 }
 
 /**
- * Converts a kebab-case (or mixed) string to PascalCase.
+ * Converts a string to PascalCase via lodash.
  */
-export function toPascalCase(str) {
-  return str
-    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-    .map(x => x.slice(0, 1).toUpperCase() + x.slice(1).toLowerCase())
-    .join('')
-}
+export const toPascalCase = (str) => upperFirst(camelCase(str))
 
-export function makeFilePrefix(specType) {
-  return `${specType}-${CS_LABEL}`
-}
+export const makeFilePrefix = (specType) => `${specType}-${CS_LABEL}`
 
-export function makeMetaId(specType, suiteId) {
-  return `${specType}-${CS_LABEL}-${suiteId}`
-}
+export const makeMetaId = (specType, suiteId) => `${specType}-${CS_LABEL}-${suiteId}`
