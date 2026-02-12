@@ -1,4 +1,5 @@
 import { writeFileSync } from 'fs'
+import { kebabCase } from 'lodash-es'
 import {
   exitIfInsideNodeModules,
   makeFilePrefix,
@@ -8,7 +9,7 @@ import {
 
 exitIfInsideNodeModules(import.meta.url)
 
-const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL } = await import(
+const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL, TEST_SPEC_TYPE_ASYNC_API } = await import(
   '@netcracker/qubership-apihub-compatibility-suites'
 )
 
@@ -23,10 +24,16 @@ const TEST_GENERATION_CONFIGS = [
       'apply-schema-directive-to-union',
     ]),
   },
+  {
+    specType: TEST_SPEC_TYPE_ASYNC_API,
+    // skipSuiteIds: new Set(['operation-reply-object-message-headers-receive']),
+  },
 ]
 
-function printTestFile(metaId, testIds) {
-  const testIdsLiteral = testIds.map(id => `  '${id}',`).join('\n')
+// Storybook sanitizes PascalCase export names to kebab-case story IDs.
+// We pre-compute kebab-case at generation time (like apispec-view).
+const printTestFile = (metaId, testIds) => {
+  const testIdsLiteral = testIds.map(id => `  '${kebabCase(id)}',`).join('\n')
 
   return `import path from 'path'
 import { storyPage } from '../service/storybook-service'
@@ -59,11 +66,14 @@ resetDirectory(TESTS_OUT_DIR)
 
 for (const config of TEST_GENERATION_CONFIGS) {
   const suites = getCompatibilitySuites(config.specType)
+  let generated = 0
   for (const [suiteId, testIds] of suites.entries()) {
+    if (config.skipSuiteIds?.has(suiteId)) continue
     const metaId = makeMetaId(config.specType, suiteId)
     const filtered = testIds.filter(id => !config.skipTestIds || !config.skipTestIds.has(id))
     const filePath = `${TESTS_OUT_DIR}/${makeFilePrefix(config.specType)}-${suiteId}.generated.it-test.ts`
     writeFileSync(filePath, printTestFile(metaId, filtered))
+    generated++
   }
-  console.log(`Generated ${suites.size} test file(s) for ${config.specType}`)
+  console.log(`Generated ${generated}/${suites.size} test file(s) for ${config.specType}`)
 }

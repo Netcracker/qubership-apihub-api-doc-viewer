@@ -9,7 +9,7 @@ import {
 
 exitIfInsideNodeModules(import.meta.url)
 
-const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL } = await import(
+const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL, TEST_SPEC_TYPE_ASYNC_API } = await import(
   '@netcracker/qubership-apihub-compatibility-suites'
 )
 
@@ -25,13 +25,26 @@ const STORY_GENERATION_CONFIGS = [
     storyArgsTypeName: 'GraphQLCompatibilitySuiteStoryArgs',
     storyArgsGetter: 'getStoryArgs',
   },
+  {
+    specType: TEST_SPEC_TYPE_ASYNC_API,
+    specTypeConst: 'TEST_SPEC_TYPE_ASYNC_API',
+    displayName: 'AsyncAPI',
+    storyComponentName: 'AsyncApiStoryComponent',
+    storyArgsTypeName: 'AsyncApiCompatibilitySuiteStoryArgs',
+    storyArgsGetter: 'getAsyncApiStoryArgs',
+  },
 ]
 
-function printStoryFile(config, suiteId, testIds) {
+const printStoryFile = (config, suiteId, testIds) => {
   const metaId = makeMetaId(config.specType, suiteId)
-  const storyLines = testIds
-    .map(testId => `export const ${toPascalCase(testId)}: Story = makeStory('${testId}')`)
-    .join('\n')
+  const stories = testIds
+    .map((testId) => {
+      return `export const ${toPascalCase(testId)}: Story = {
+  name: '${testId}',
+  args: ${config.storyArgsGetter}(${config.specTypeConst}, SUITE_ID, '${testId}'),
+}`
+    })
+    .join('\n\n')
 
   return `import '../../index'
 import type { Meta, StoryObj } from '@storybook/react'
@@ -41,6 +54,7 @@ import { ${config.specTypeConst} } from '@netcracker/qubership-apihub-compatibil
 const meta: Meta<${config.storyArgsTypeName}> = {
   id: '${metaId}',
   title: '${config.displayName} Compatibility Suite/${suiteId}',
+  render: ${config.storyComponentName},
 }
 
 export default meta
@@ -48,15 +62,7 @@ type Story = StoryObj<typeof meta>
 
 const SUITE_ID = '${suiteId}'
 
-function makeStory(testId: string): Story {
-  return {
-    name: testId,
-    render: ${config.storyComponentName},
-    args: ${config.storyArgsGetter}(${config.specTypeConst}, SUITE_ID, testId),
-  }
-}
-
-${storyLines}
+${stories}
 `
 }
 
