@@ -1,0 +1,34 @@
+import"./AsyncApiOperationViewer-5374a7aa.js";import"./GraphQLOperationViewer-3d9e1054.js";import"./GraphQLOperationDiffViewer-781ce75b.js";import"./GraphPropNodeViewer-28195d99.js";import{G as J,a as e,b as o}from"./compatibility-suite-utils-01d69233.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./index-415bee12.js";import"./js-yaml-38530ef5.js";import"./graph-api-transformers-14a7db95.js";import"./buildASTSchema-f14864f0.js";const ie={id:"graphql-compatibility-suite-union-output-type-of-root-type",title:"GraphQL Compatibility Suite/union-output-type-of-root-type",render:J},n="union-output-type-of-root-type",t={name:"add-field-description-in-object-type-from-union-type",args:e(o,n,"add-field-description-in-object-type-from-union-type")},r={name:"add-new-field-in-object-type-from-union-type",args:e(o,n,"add-new-field-in-object-type-from-union-type")},i={name:"add-object-type-in-union-type",args:e(o,n,"add-object-type-in-union-type")},p={name:"change-field-type-in-object-type-from-union-type",args:e(o,n,"change-field-type-in-object-type-from-union-type")},a={name:"change-object-type-in-union-type",args:e(o,n,"change-object-type-in-union-type")},s={name:"delete-field-description-in-object-type-from-union-type",args:e(o,n,"delete-field-description-in-object-type-from-union-type")},c={name:"mark-mandatory-field-as-optional-in-object-type-from-union-type",args:e(o,n,"mark-mandatory-field-as-optional-in-object-type-from-union-type")},y={name:"mark-optional-field-as-mandatory-in-object-type-from-union-type",args:e(o,n,"mark-optional-field-as-mandatory-in-object-type-from-union-type")},m={name:"remove-field-in-object-type-from-union-type",args:e(o,n,"remove-field-in-object-type-from-union-type")},d={name:"remove-object-type-from-union-type",args:e(o,n,"remove-object-type-from-union-type")},T={name:"update-field-description-in-object-type-from-union-type",args:e(o,n,"update-field-description-in-object-type-from-union-type")};var u,l,f;t.parameters={...t.parameters,docs:{...(u=t.parameters)==null?void 0:u.docs,source:{originalSource:`{
+  name: 'add-field-description-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'add-field-description-in-object-type-from-union-type')
+}`,...(f=(l=t.parameters)==null?void 0:l.docs)==null?void 0:f.source}}};var g,b,j;r.parameters={...r.parameters,docs:{...(g=r.parameters)==null?void 0:g.docs,source:{originalSource:`{
+  name: 'add-new-field-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'add-new-field-in-object-type-from-union-type')
+}`,...(j=(b=r.parameters)==null?void 0:b.docs)==null?void 0:j.source}}};var _,S,E;i.parameters={...i.parameters,docs:{...(_=i.parameters)==null?void 0:_.docs,source:{originalSource:`{
+  name: 'add-object-type-in-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'add-object-type-in-union-type')
+}`,...(E=(S=i.parameters)==null?void 0:S.docs)==null?void 0:E.source}}};var I,P,U;p.parameters={...p.parameters,docs:{...(I=p.parameters)==null?void 0:I.docs,source:{originalSource:`{
+  name: 'change-field-type-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'change-field-type-in-object-type-from-union-type')
+}`,...(U=(P=p.parameters)==null?void 0:P.docs)==null?void 0:U.source}}};var A,F,O;a.parameters={...a.parameters,docs:{...(A=a.parameters)==null?void 0:A.docs,source:{originalSource:`{
+  name: 'change-object-type-in-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'change-object-type-in-union-type')
+}`,...(O=(F=a.parameters)==null?void 0:F.docs)==null?void 0:O.source}}};var D,C,R;s.parameters={...s.parameters,docs:{...(D=s.parameters)==null?void 0:D.docs,source:{originalSource:`{
+  name: 'delete-field-description-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'delete-field-description-in-object-type-from-union-type')
+}`,...(R=(C=s.parameters)==null?void 0:C.docs)==null?void 0:R.source}}};var h,G,L;c.parameters={...c.parameters,docs:{...(h=c.parameters)==null?void 0:h.docs,source:{originalSource:`{
+  name: 'mark-mandatory-field-as-optional-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'mark-mandatory-field-as-optional-in-object-type-from-union-type')
+}`,...(L=(G=c.parameters)==null?void 0:G.docs)==null?void 0:L.source}}};var Q,k,v;y.parameters={...y.parameters,docs:{...(Q=y.parameters)==null?void 0:Q.docs,source:{originalSource:`{
+  name: 'mark-optional-field-as-mandatory-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'mark-optional-field-as-mandatory-in-object-type-from-union-type')
+}`,...(v=(k=y.parameters)==null?void 0:k.docs)==null?void 0:v.source}}};var H,Y,M;m.parameters={...m.parameters,docs:{...(H=m.parameters)==null?void 0:H.docs,source:{originalSource:`{
+  name: 'remove-field-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'remove-field-in-object-type-from-union-type')
+}`,...(M=(Y=m.parameters)==null?void 0:Y.docs)==null?void 0:M.source}}};var w,x,N;d.parameters={...d.parameters,docs:{...(w=d.parameters)==null?void 0:w.docs,source:{originalSource:`{
+  name: 'remove-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'remove-object-type-from-union-type')
+}`,...(N=(x=d.parameters)==null?void 0:x.docs)==null?void 0:N.source}}};var q,z,B;T.parameters={...T.parameters,docs:{...(q=T.parameters)==null?void 0:q.docs,source:{originalSource:`{
+  name: 'update-field-description-in-object-type-from-union-type',
+  args: getStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'update-field-description-in-object-type-from-union-type')
+}`,...(B=(z=T.parameters)==null?void 0:z.docs)==null?void 0:B.source}}};const pe=["AddFieldDescriptionInObjectTypeFromUnionType","AddNewFieldInObjectTypeFromUnionType","AddObjectTypeInUnionType","ChangeFieldTypeInObjectTypeFromUnionType","ChangeObjectTypeInUnionType","DeleteFieldDescriptionInObjectTypeFromUnionType","MarkMandatoryFieldAsOptionalInObjectTypeFromUnionType","MarkOptionalFieldAsMandatoryInObjectTypeFromUnionType","RemoveFieldInObjectTypeFromUnionType","RemoveObjectTypeFromUnionType","UpdateFieldDescriptionInObjectTypeFromUnionType"];export{t as AddFieldDescriptionInObjectTypeFromUnionType,r as AddNewFieldInObjectTypeFromUnionType,i as AddObjectTypeInUnionType,p as ChangeFieldTypeInObjectTypeFromUnionType,a as ChangeObjectTypeInUnionType,s as DeleteFieldDescriptionInObjectTypeFromUnionType,c as MarkMandatoryFieldAsOptionalInObjectTypeFromUnionType,y as MarkOptionalFieldAsMandatoryInObjectTypeFromUnionType,m as RemoveFieldInObjectTypeFromUnionType,d as RemoveObjectTypeFromUnionType,T as UpdateFieldDescriptionInObjectTypeFromUnionType,pe as __namedExportsOrder,ie as default};
