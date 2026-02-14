@@ -1,4 +1,4 @@
-import{j as I}from"./_commonjs-dynamic-modules-6308e768.js";import{x as fe,y as le,D as L,w as de,S as ye,a as W}from"./GraphPropNodeViewer-28195d99.js";import{g as he,r as Y}from"./index-f46741a2.js";import{j as X}from"./js-yaml-38530ef5.js";import{G as ge}from"./GraphQLOperationDiffViewer-781ce75b.js";import{b as k}from"./graph-api-transformers-14a7db95.js";const z=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
+import{j as q}from"./_commonjs-dynamic-modules-6308e768.js";import{x as fe,y as le,D as L,w as de,S as ye,a as W}from"./GraphPropNodeViewer-28195d99.js";import{g as he,r as Y}from"./index-f46741a2.js";import{j as X}from"./js-yaml-38530ef5.js";import{G as ge}from"./GraphQLOperationDiffViewer-781ce75b.js";import{b as k}from"./graph-api-transformers-14a7db95.js";const z=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]
@@ -18084,7 +18084,7 @@ properties:
 xml:
   prefix: "p2"
   namespace: "http://example.com/schema"
-`}}]]),H=new Map([["asyncapi/operation-message-headers",`asyncapi: 3.0.0
+`}}]]),H=new Map([["asyncapi/operation-message-headers-receive",`asyncapi: 3.0.0
 info:
   title: asyncapi schema case (generated)
   version: 1.0.0
@@ -18107,7 +18107,30 @@ operations:
       $ref: "#/channels/requestChannel"
     messages:
       - $ref: "#/channels/requestChannel/messages/requestMessage"
-`],["asyncapi/operation-message-payload",`asyncapi: 3.0.0
+`],["asyncapi/operation-message-headers-send",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["asyncapi/operation-message-payload-receive",`asyncapi: 3.0.0
 info:
   title: asyncapi schema case (generated)
   version: 1.0.0
@@ -18125,7 +18148,25 @@ operations:
       $ref: "#/channels/requestChannel"
     messages:
       - $ref: "#/channels/requestChannel/messages/requestMessage"
-`],["asyncapi/operation-reply-object-message-headers",`asyncapi: 3.0.0
+`],["asyncapi/operation-message-payload-send",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["asyncapi/operation-reply-object-message-headers-receive",`asyncapi: 3.0.0
 info:
   title: asyncapi schema case (generated)
   version: 1.0.0
@@ -18159,7 +18200,41 @@ operations:
         $ref: "#/channels/replyChannel"
       messages:
         - $ref: "#/channels/replyChannel/messages/replyMessage"
-`],["asyncapi/operation-reply-object-message-payload",`asyncapi: 3.0.0
+`],["asyncapi/operation-reply-object-message-headers-send",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-reply-object-message-payload-receive",`asyncapi: 3.0.0
 info:
   title: asyncapi schema case (generated)
   version: 1.0.0
@@ -18179,6 +18254,35 @@ channels:
 operations:
   operation1:
     action: receive
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-reply-object-message-payload-send",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: send
     channel:
       $ref: "#/channels/requestChannel"
     messages:
@@ -18246,16 +18350,16 @@ paths:
             X-Header-1:
               schema:
                 __SCHEMA__
-`]]),ve=["3.0.0","3.0.0"],U=(e,n)=>{const t=/^openapi:\s*.*$/m;if(!t.test(e))throw new Error(`Invalid OpenAPI sample: missing root "openapi" field. Sample start: ${e.slice(0,100)}...`);return e.replace(t,`openapi: ${n}`)},G="openapi",J="graphql",Z="asyncapi",ee="/",Q=(e,n,t)=>[e,n,t].join(ee),ne=(e,n)=>[e,n].join(ee),xe=["parameters-schema","request-body-schema","response-body-schema","response-headers-schema"],Ie=["operation-message-payload","operation-message-headers","operation-reply-object-message-payload","operation-reply-object-message-headers"],qe={[G]:xe,[J]:[],[Z]:Ie},Se=(e,n)=>qe[e].includes(n),E="__SCHEMA__",R=e=>e.replace(/\r\n/g,`
+`]]),ve=["3.0.0","3.0.0"],U=(e,n)=>{const t=/^openapi:\s*.*$/m;if(!t.test(e))throw new Error(`Invalid OpenAPI sample: missing root "openapi" field. Sample start: ${e.slice(0,100)}...`);return e.replace(t,`openapi: ${n}`)},G="openapi",J="graphql",Z="asyncapi",ee="/",Q=(e,n,t)=>[e,n,t].join(ee),ne=(e,n)=>[e,n].join(ee),xe=["parameters-schema","request-body-schema","response-body-schema","response-headers-schema"],qe=["operation-message-headers-receive","operation-message-headers-send","operation-message-payload-receive","operation-message-payload-send","operation-reply-object-message-headers-receive","operation-reply-object-message-headers-send","operation-reply-object-message-payload-receive","operation-reply-object-message-payload-send"],Ie={[G]:xe,[J]:[],[Z]:qe},Se=(e,n)=>Ie[e].includes(n),E="__SCHEMA__",R=e=>e.replace(/\r\n/g,`
 `),Oe=(e,n)=>{const t=R(e).trimEnd();return t?n?n+t.replace(/\n(?=.)/g,`
-${n}`):t:""},je=(e,n)=>{var q;const t=R(e),p=t.split(`
-`),s=p.map((d,S)=>d.trim()===E?S:-1).filter(d=>d!==-1);if(s.length===0)throw new Error(`Template placeholder '${E}' not found. Template start: ${t.slice(0,120)}...`);if(s.length>1)throw new Error(`Template placeholder '${E}' must appear only once. Found ${s.length} occurrences. Template start: ${t.slice(0,120)}...`);const m=s[0],c=((q=p[m].match(/^\s*/))==null?void 0:q[0])??"",l=Oe(n,c);return l?(p.splice(m,1,...l.split(`
+${n}`):t:""},je=(e,n)=>{var I;const t=R(e),p=t.split(`
+`),r=p.map((d,S)=>d.trim()===E?S:-1).filter(d=>d!==-1);if(r.length===0)throw new Error(`Template placeholder '${E}' not found. Template start: ${t.slice(0,120)}...`);if(r.length>1)throw new Error(`Template placeholder '${E}' must appear only once. Found ${r.length} occurrences. Template start: ${t.slice(0,120)}...`);const m=r[0],c=((I=p[m].match(/^\s*/))==null?void 0:I[0])??"",l=Oe(n,c);return l?(p.splice(m,1,...l.split(`
 `)),p.join(`
 `)):(p.splice(m,1),p.join(`
 `))},Pe=(e,n)=>{const t=je(e,n.schema);return`${R(t).trimEnd()}
-`},te=(e,n)=>Se(e,n)?H.has(ne(e,n)):!1,V=(e,n,t,p)=>{const s=ne(e,n),m=H.get(s);if(!m)throw new Error(`Schema-scope template not found: ${s}`);const c=$.get(t);if(!c)throw new Error(`JSON schema case not found: ${t}`);const l=c[p];return Pe(m,l)},Ke=["3.0.0","3.0.0"],Fe=["unversioned","unversioned"],Ae=(e,n,t)=>te(e,n)&&$.has(t),we=(e,n,t)=>{const p=Q(e,n,t),s=z.get(p);if(s)return[s.before,s.after];if(!te(e,n))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);if(!$.has(t))throw new Error(`Unknown JSON schema case '${t}' for schema scope (${e}, ${n})`);const m=V(e,n,t,"before"),c=V(e,n,t,"after");return[m,c]},De={[G]:{defaultPair:ve,patchSamples:(e,n,t)=>[U(e,t[0]),U(n,t[1])]},[J]:{defaultPair:Fe},[Z]:{defaultPair:Ke}},re=e=>{const n=De[e];if(!n)throw new Error(`Unknown suiteType for VersionPairPolicy lookup: ${e}`);return n},se=(e,n)=>{var t;if(e===G)return(t=be.get(n))==null?void 0:t.versionPairs},Be=(e,n,t)=>{const p=Q(e,n,t);if(!z.has(p)&&!Ae(e,n,t))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);const s=re(e);return se(e,p)??[s.defaultPair]},pe=(e,n,t,p)=>{const s=we(e,n,t);if(p===void 0)return s;const m=re(e),[c,l]=p;if(!Be(e,n,t).some(w=>w[0]===c&&w[1]===l))throw new Error(`Unsupported specificationVersionPair [${c}, ${l}] for case (${e}, ${n}, ${t})`);if(!m.patchSamples)return s;const S=Q(e,n,t);return se(e,S)?m.patchSamples(s[0],s[1],p):s};var oe={exports:{}};(function(e){(function(){function n(r,a){document.addEventListener?r.addEventListener("scroll",a,!1):r.attachEvent("scroll",a)}function t(r){document.body?r():document.addEventListener?document.addEventListener("DOMContentLoaded",function a(){document.removeEventListener("DOMContentLoaded",a),r()}):document.attachEvent("onreadystatechange",function a(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",a),r())})}function p(r){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(r)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function s(r,a){r.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+a+";"}function m(r){var a=r.g.offsetWidth,o=a+100;return r.j.style.width=o+"px",r.i.scrollLeft=o,r.h.scrollLeft=r.h.scrollWidth+100,r.l!==a?(r.l=a,!0):!1}function c(r,a){function o(){var u=v;m(u)&&u.g.parentNode!==null&&a(u.l)}var v=r;n(r.h,o),n(r.i,o),m(r)}function l(r,a,o){a=a||{},o=o||window,this.family=r,this.style=a.style||"normal",this.weight=a.weight||"normal",this.stretch=a.stretch||"normal",this.context=o}var q=null,d=null,S=null,A=null;function w(r){return d===null&&(M(r)&&/Apple/.test(window.navigator.vendor)?(r=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),d=!!r&&603>parseInt(r[1],10)):d=!1),d}function M(r){return A===null&&(A=!!r.document.fonts),A}function O(r,a){var o=r.style,v=r.weight;if(S===null){var u=document.createElement("div");try{u.style.font="condensed 100px sans-serif"}catch{}S=u.style.font!==""}return[o,v,S?r.stretch:"","100px",a].join(" ")}l.prototype.load=function(r,a){var o=this,v=r||"BESbswy",u=0,j=a||3e3,N=new Date().getTime();return new Promise(function(C,_){if(M(o.context)&&!w(o.context)){var ce=new Promise(function(P,K){function y(){new Date().getTime()-N>=j?K(Error(""+j+"ms timeout exceeded")):o.context.document.fonts.load(O(o,'"'+o.family+'"'),v).then(function(x){1<=x.length?P():setTimeout(y,25)},K)}y()}),ue=new Promise(function(P,K){u=setTimeout(function(){K(Error(""+j+"ms timeout exceeded"))},j)});Promise.race([ue,ce]).then(function(){clearTimeout(u),C(o)},_)}else t(function(){function P(){var i;(i=h!=-1&&g!=-1||h!=-1&&b!=-1||g!=-1&&b!=-1)&&((i=h!=g&&h!=b&&g!=b)||(q===null&&(i=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),q=!!i&&(536>parseInt(i[1],10)||parseInt(i[1],10)===536&&11>=parseInt(i[2],10))),i=q&&(h==D&&g==D&&b==D||h==B&&g==B&&b==B||h==T&&g==T&&b==T)),i=!i),i&&(f.parentNode!==null&&f.parentNode.removeChild(f),clearTimeout(u),C(o))}function K(){if(new Date().getTime()-N>=j)f.parentNode!==null&&f.parentNode.removeChild(f),_(Error(""+j+"ms timeout exceeded"));else{var i=o.context.document.hidden;(i===!0||i===void 0)&&(h=y.g.offsetWidth,g=x.g.offsetWidth,b=F.g.offsetWidth,P()),u=setTimeout(K,50)}}var y=new p(v),x=new p(v),F=new p(v),h=-1,g=-1,b=-1,D=-1,B=-1,T=-1,f=document.createElement("div");f.dir="ltr",s(y,O(o,"sans-serif")),s(x,O(o,"serif")),s(F,O(o,"monospace")),f.appendChild(y.g),f.appendChild(x.g),f.appendChild(F.g),o.context.document.body.appendChild(f),D=y.g.offsetWidth,B=x.g.offsetWidth,T=F.g.offsetWidth,K(),c(y,function(i){h=i,P()}),s(y,O(o,'"'+o.family+'",sans-serif')),c(x,function(i){g=i,P()}),s(x,O(o,'"'+o.family+'",serif')),c(F,function(i){b=i,P()}),s(F,O(o,'"'+o.family+'",monospace'))})})},e.exports=l})()})(oe);var Te=oe.exports;const Ee=he(Te),ae=Y.memo(e=>I.jsx("div",{children:I.jsx("h1",{children:"Async API Operation Diff Viewer"})}));ae.__docgenInfo={description:"",methods:[],displayName:"AsyncApiOperationDiffViewer",props:{source:{required:!0,tsType:{name:"unknown"},description:""},operationType:{required:!1,tsType:{name:"string"},description:""},operationKey:{required:!1,tsType:{name:"string"},description:""},messageKey:{required:!1,tsType:{name:"string"},description:""},displayMode:{required:!1,tsType:{name:"union",raw:`| typeof SIMPLE_DISPLAY_MODE
+`},te=(e,n)=>Se(e,n)?H.has(ne(e,n)):!1,V=(e,n,t,p)=>{const r=ne(e,n),m=H.get(r);if(!m)throw new Error(`Schema-scope template not found: ${r}`);const c=$.get(t);if(!c)throw new Error(`JSON schema case not found: ${t}`);const l=c[p];return Pe(m,l)},Ke=["3.0.0","3.0.0"],Fe=["unversioned","unversioned"],Ae=(e,n,t)=>te(e,n)&&$.has(t),we=(e,n,t)=>{const p=Q(e,n,t),r=z.get(p);if(r)return[r.before,r.after];if(!te(e,n))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);if(!$.has(t))throw new Error(`Unknown JSON schema case '${t}' for schema scope (${e}, ${n})`);const m=V(e,n,t,"before"),c=V(e,n,t,"after");return[m,c]},De={[G]:{defaultPair:ve,patchSamples:(e,n,t)=>[U(e,t[0]),U(n,t[1])]},[J]:{defaultPair:Fe},[Z]:{defaultPair:Ke}},se=e=>{const n=De[e];if(!n)throw new Error(`Unknown suiteType for VersionPairPolicy lookup: ${e}`);return n},re=(e,n)=>{var t;if(e===G)return(t=be.get(n))==null?void 0:t.versionPairs},Be=(e,n,t)=>{const p=Q(e,n,t);if(!z.has(p)&&!Ae(e,n,t))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);const r=se(e);return re(e,p)??[r.defaultPair]},pe=(e,n,t,p)=>{const r=we(e,n,t);if(p===void 0)return r;const m=se(e),[c,l]=p;if(!Be(e,n,t).some(w=>w[0]===c&&w[1]===l))throw new Error(`Unsupported specificationVersionPair [${c}, ${l}] for case (${e}, ${n}, ${t})`);if(!m.patchSamples)return r;const S=Q(e,n,t);return re(e,S)?m.patchSamples(r[0],r[1],p):r};var oe={exports:{}};(function(e){(function(){function n(s,a){document.addEventListener?s.addEventListener("scroll",a,!1):s.attachEvent("scroll",a)}function t(s){document.body?s():document.addEventListener?document.addEventListener("DOMContentLoaded",function a(){document.removeEventListener("DOMContentLoaded",a),s()}):document.attachEvent("onreadystatechange",function a(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",a),s())})}function p(s){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(s)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function r(s,a){s.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+a+";"}function m(s){var a=s.g.offsetWidth,o=a+100;return s.j.style.width=o+"px",s.i.scrollLeft=o,s.h.scrollLeft=s.h.scrollWidth+100,s.l!==a?(s.l=a,!0):!1}function c(s,a){function o(){var u=v;m(u)&&u.g.parentNode!==null&&a(u.l)}var v=s;n(s.h,o),n(s.i,o),m(s)}function l(s,a,o){a=a||{},o=o||window,this.family=s,this.style=a.style||"normal",this.weight=a.weight||"normal",this.stretch=a.stretch||"normal",this.context=o}var I=null,d=null,S=null,A=null;function w(s){return d===null&&(M(s)&&/Apple/.test(window.navigator.vendor)?(s=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),d=!!s&&603>parseInt(s[1],10)):d=!1),d}function M(s){return A===null&&(A=!!s.document.fonts),A}function O(s,a){var o=s.style,v=s.weight;if(S===null){var u=document.createElement("div");try{u.style.font="condensed 100px sans-serif"}catch{}S=u.style.font!==""}return[o,v,S?s.stretch:"","100px",a].join(" ")}l.prototype.load=function(s,a){var o=this,v=s||"BESbswy",u=0,j=a||3e3,N=new Date().getTime();return new Promise(function(C,_){if(M(o.context)&&!w(o.context)){var ce=new Promise(function(P,K){function y(){new Date().getTime()-N>=j?K(Error(""+j+"ms timeout exceeded")):o.context.document.fonts.load(O(o,'"'+o.family+'"'),v).then(function(x){1<=x.length?P():setTimeout(y,25)},K)}y()}),ue=new Promise(function(P,K){u=setTimeout(function(){K(Error(""+j+"ms timeout exceeded"))},j)});Promise.race([ue,ce]).then(function(){clearTimeout(u),C(o)},_)}else t(function(){function P(){var i;(i=h!=-1&&g!=-1||h!=-1&&b!=-1||g!=-1&&b!=-1)&&((i=h!=g&&h!=b&&g!=b)||(I===null&&(i=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),I=!!i&&(536>parseInt(i[1],10)||parseInt(i[1],10)===536&&11>=parseInt(i[2],10))),i=I&&(h==D&&g==D&&b==D||h==B&&g==B&&b==B||h==T&&g==T&&b==T)),i=!i),i&&(f.parentNode!==null&&f.parentNode.removeChild(f),clearTimeout(u),C(o))}function K(){if(new Date().getTime()-N>=j)f.parentNode!==null&&f.parentNode.removeChild(f),_(Error(""+j+"ms timeout exceeded"));else{var i=o.context.document.hidden;(i===!0||i===void 0)&&(h=y.g.offsetWidth,g=x.g.offsetWidth,b=F.g.offsetWidth,P()),u=setTimeout(K,50)}}var y=new p(v),x=new p(v),F=new p(v),h=-1,g=-1,b=-1,D=-1,B=-1,T=-1,f=document.createElement("div");f.dir="ltr",r(y,O(o,"sans-serif")),r(x,O(o,"serif")),r(F,O(o,"monospace")),f.appendChild(y.g),f.appendChild(x.g),f.appendChild(F.g),o.context.document.body.appendChild(f),D=y.g.offsetWidth,B=x.g.offsetWidth,T=F.g.offsetWidth,K(),c(y,function(i){h=i,P()}),r(y,O(o,'"'+o.family+'",sans-serif')),c(x,function(i){g=i,P()}),r(x,O(o,'"'+o.family+'",serif')),c(F,function(i){b=i,P()}),r(F,O(o,'"'+o.family+'",monospace'))})})},e.exports=l})()})(oe);var Te=oe.exports;const Ee=he(Te),ae=Y.memo(e=>q.jsx("div",{children:q.jsx("h1",{children:"Async API Operation Diff Viewer"})}));ae.__docgenInfo={description:"",methods:[],displayName:"AsyncApiOperationDiffViewer",props:{source:{required:!0,tsType:{name:"unknown"},description:""},operationType:{required:!1,tsType:{name:"string"},description:""},operationKey:{required:!1,tsType:{name:"string"},description:""},messageKey:{required:!1,tsType:{name:"string"},description:""},displayMode:{required:!1,tsType:{name:"union",raw:`| typeof SIMPLE_DISPLAY_MODE
 | typeof DETAILED_DISPLAY_MODE`,elements:[{name:"SIMPLE_DISPLAY_MODE"},{name:"DETAILED_DISPLAY_MODE"}]},description:""},metaKeys:{required:!0,tsType:{name:"signature",type:"object",raw:`{
   entityKeyMetaKey: symbol;
   diffsMetaKey: symbol;
   aggregatedDiffsMetaKey: symbol;
-}`,signature:{properties:[{key:"entityKeyMetaKey",value:{name:"symbol",required:!0}},{key:"diffsMetaKey",value:{name:"symbol",required:!0}},{key:"aggregatedDiffsMetaKey",value:{name:"symbol",required:!0}}]}},description:""},displayedDiffTypes:{required:!1,tsType:{name:"ReadonlyArray",elements:[{name:"DiffType"}],raw:"ReadonlyArray<DiffType>"},description:""}}};const Le=Symbol("synthetic-title"),$e={validate:!0,liftCombiners:!0,syntheticTitleFlag:Le,unify:!0,allowNotValidSyntheticChanges:!0},ie=(e,n)=>{const s=fe(e,n,{...$e,beforeSource:e,afterSource:n,mode:le,metaKey:L});return Ge(s.merged)&&(s.merged.toJSON=()=>de(s.merged)),s};function Ge(e){return e!=null&&typeof e=="object"}const Qe=["Inter"];function me(){const[e,n]=Y.useState(!1),t=Qe.map(p=>new Ee(p).load(null,1e4));return Promise.all(t).then(()=>{n(!0)}),e}const Re={diffsMetaKey:L,aggregatedDiffsMetaKey:W};function Me({before:e,after:n}){const{merged:t}=ie(k(e),k(n));return me()?I.jsx(ge,{layoutMode:ye,metaKeys:Re,source:t}):I.jsx(I.Fragment,{})}function ze(e,n,t){const[p,s]=pe(e,n,t);return{before:p,after:s}}const Ne=Symbol("entity-key"),Ce={diffsMetaKey:L,aggregatedDiffsMetaKey:W,entityKeyMetaKey:Ne};function _e({before:e,after:n}){if(!me())return I.jsx(I.Fragment,{});const p=X.load(e),s=X.load(n),{merged:m}=ie(p,s);return I.jsx(ae,{source:m,metaKeys:Ce})}function He(e,n,t){const[p,s]=pe(e,n,t);return{before:p,after:s}}Me.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};_e.__docgenInfo={description:"",methods:[],displayName:"AsyncApiStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{_e as A,Me as G,Z as T,ze as a,J as b,He as g};
+}`,signature:{properties:[{key:"entityKeyMetaKey",value:{name:"symbol",required:!0}},{key:"diffsMetaKey",value:{name:"symbol",required:!0}},{key:"aggregatedDiffsMetaKey",value:{name:"symbol",required:!0}}]}},description:""},displayedDiffTypes:{required:!1,tsType:{name:"ReadonlyArray",elements:[{name:"DiffType"}],raw:"ReadonlyArray<DiffType>"},description:""}}};const Le=Symbol("synthetic-title"),$e={validate:!0,liftCombiners:!0,syntheticTitleFlag:Le,unify:!0,allowNotValidSyntheticChanges:!0},ie=(e,n)=>{const r=fe(e,n,{...$e,beforeSource:e,afterSource:n,mode:le,metaKey:L});return Ge(r.merged)&&(r.merged.toJSON=()=>de(r.merged)),r};function Ge(e){return e!=null&&typeof e=="object"}const Qe=["Inter"];function me(){const[e,n]=Y.useState(!1),t=Qe.map(p=>new Ee(p).load(null,1e4));return Promise.all(t).then(()=>{n(!0)}),e}const Re={diffsMetaKey:L,aggregatedDiffsMetaKey:W};function Me({before:e,after:n}){const{merged:t}=ie(k(e),k(n));return me()?q.jsx(ge,{layoutMode:ye,metaKeys:Re,source:t}):q.jsx(q.Fragment,{})}function ze(e,n,t){const[p,r]=pe(e,n,t);return{before:p,after:r}}const Ne=Symbol("entity-key"),Ce={diffsMetaKey:L,aggregatedDiffsMetaKey:W,entityKeyMetaKey:Ne};function _e({before:e,after:n}){if(!me())return q.jsx(q.Fragment,{});const p=X.load(e),r=X.load(n),{merged:m}=ie(p,r);return q.jsx(ae,{source:m,metaKeys:Ce})}function He(e,n,t){const[p,r]=pe(e,n,t);return{before:p,after:r}}Me.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};_e.__docgenInfo={description:"",methods:[],displayName:"AsyncApiStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{_e as A,Me as G,Z as T,ze as a,J as b,He as g};
