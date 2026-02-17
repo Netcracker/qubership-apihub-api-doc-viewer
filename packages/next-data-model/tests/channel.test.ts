@@ -365,6 +365,7 @@ describe('Cases with channel', () => {
       expect(parametersNode!.value()).toEqual({
         rawValues: {
           userId: {
+            type: 'string',
             description: "User identifier",
             default: "testUser001",
             examples: ["testUser001", "testUser002", "testUser003"],
@@ -486,6 +487,7 @@ describe('Cases with channel', () => {
       expect(parametersNode!.value()).toEqual({
         rawValues: {
           tenantId: {
+            type: 'string',
             description: "Tenant identifier",
             default: "testTenant001",
             examples: ["testTenant001", "testTenant002", "testTenant003"],
