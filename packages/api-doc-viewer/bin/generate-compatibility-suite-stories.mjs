@@ -23,7 +23,7 @@ const STORY_GENERATION_CONFIGS = [
     displayName: 'GraphQL',
     storyComponentName: 'GraphQLStoryComponent',
     storyArgsTypeName: 'GraphQLCompatibilitySuiteStoryArgs',
-    storyArgsGetter: 'getStoryArgs',
+    storyArgsGetter: 'getGraphQLStoryArgs',
   },
   {
     specType: TEST_SPEC_TYPE_ASYNC_API,

@@ -74,7 +74,7 @@ export function GraphQLStoryComponent({ before, after }: GraphQLCompatibilitySui
   )
 }
 
-export function getStoryArgs(
+export function getGraphQLStoryArgs(
   suiteType: TestSpecType,
   suiteId: string,
   testId: string,
