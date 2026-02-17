@@ -20,6 +20,7 @@ export declare const GREATER_THAN_OR_EQUAL_SIGN: string;
 export declare const DEFAULT_VALUE_LABEL = "Default";
 export declare const PROVIDED_VALUE_LABEL = "Value";
 export declare const EXAMPLES_LABEL = "Examples";
+export declare const LOCATION_LABEL = "Location";
 export declare const ITEMS_COUNT_LABEL = "Items count";
 export declare const UNIQUE_ITEMS_LABEL = "Unique items";
 export declare const ALLOWED_ADDITIONAL_PROPERTY_NAMES_LABEL = "Allowed additional property names";

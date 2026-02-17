@@ -70,6 +70,7 @@ type AsyncApiDocumentOptions = {
     source: unknown;
     circular?: boolean;
     referenceNamePropertyKey?: symbol;
+    storyName?: string;
 };
 export declare function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown;
 export {};

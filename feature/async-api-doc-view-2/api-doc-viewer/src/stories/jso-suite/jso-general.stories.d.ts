@@ -28,9 +28,13 @@ declare const meta: {
         source: {
             control: "object";
         };
+        supportJsonSchema: {
+            control: "boolean";
+        };
     };
     args: {
         source: {};
+        supportJsonSchema: true;
     };
 };
 export default meta;

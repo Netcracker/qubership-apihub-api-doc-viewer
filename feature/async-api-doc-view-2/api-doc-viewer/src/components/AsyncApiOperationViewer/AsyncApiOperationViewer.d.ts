@@ -3,7 +3,8 @@ import { FC } from '../../../../../node_modules/react';
 export type AsyncApiOperationViewerProps = {
     source: unknown;
     operationType?: string;
-    operationName?: string;
+    operationKey?: string;
+    messageKey?: string;
     displayMode?: DisplayMode;
     referenceNamePropertyKey?: symbol;
 };
