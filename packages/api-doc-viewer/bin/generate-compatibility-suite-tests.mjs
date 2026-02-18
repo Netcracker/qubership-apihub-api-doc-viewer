@@ -27,14 +27,14 @@ const TEST_GENERATION_CONFIGS = [
   {
     specType: TEST_SPEC_TYPE_ASYNC_API,
     skipSuiteIds: new Set([
-      'operation-message-headers-receive',
-      'operation-message-headers-send',
-      'operation-message-payload-receive',
-      'operation-message-payload-send',
-      'operation-reply-object-message-headers-receive',
-      'operation-reply-object-message-headers-send',
-      'operation-reply-object-message-payload-receive',
-      'operation-reply-object-message-payload-send',
+      'operation-receive-message-headers',
+      'operation-send-message-headers',
+      'operation-receive-message-payload',
+      'operation-send-message-payload',
+      'operation-reply-receive-message-headers',
+      'operation-reply-send-message-headers',
+      'operation-reply-receive-message-payload',
+      'operation-reply-send-message-payload',
     ]),
   },
 ]
