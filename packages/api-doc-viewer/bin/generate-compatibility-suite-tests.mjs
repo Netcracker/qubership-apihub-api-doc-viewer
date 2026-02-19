@@ -9,6 +9,7 @@ import {
 
 exitIfInsideNodeModules(import.meta.url)
 
+// Dynamic import: must run after exitIfInsideNodeModules static import breaks the UI component build
 const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL } = await import(
   '@netcracker/qubership-apihub-compatibility-suites'
 )
