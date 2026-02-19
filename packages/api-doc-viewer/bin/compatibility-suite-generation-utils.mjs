@@ -35,4 +35,4 @@ export const toPascalCase = (str) => upperFirst(camelCase(str))
 
 export const makeFilePrefix = (specType) => `${specType}-${CS_LABEL}`
 
-export const makeMetaId = (specType, suiteId) => `${specType}-${CS_LABEL}-${suiteId}`
+export const makeMetaId = (specType, suiteId) => `${makeFilePrefix(specType)}-${suiteId}`
