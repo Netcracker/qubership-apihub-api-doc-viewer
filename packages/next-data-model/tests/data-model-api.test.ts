@@ -110,7 +110,7 @@ describe('AsyncAPI Data Model API', () => {
       ...COMPONENTS_WITH_MESSAGES,
     }
 
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
@@ -202,7 +202,7 @@ describe('AsyncAPI Data Model API', () => {
       ...COMPONENTS_WITH_MESSAGES,
     }
 
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
@@ -268,7 +268,7 @@ describe('AsyncAPI Data Model API', () => {
       },
       ...COMPONENTS_WITH_MESSAGES,
     }
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
@@ -323,7 +323,7 @@ describe('AsyncAPI Data Model API', () => {
       ...COMPONENTS_WITH_MESSAGES,
     }
 
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
@@ -386,7 +386,7 @@ describe('AsyncAPI Data Model API', () => {
       },
       ...COMPONENTS_WITH_MESSAGES,
     }
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
@@ -453,7 +453,7 @@ describe('AsyncAPI Data Model API', () => {
       ...COMPONENTS_WITH_MESSAGES,
     }
 
-    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
+    const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
     const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)

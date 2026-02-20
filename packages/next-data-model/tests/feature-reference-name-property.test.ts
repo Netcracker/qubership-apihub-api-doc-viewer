@@ -11,7 +11,7 @@ function mergeAsyncApi(source: unknown): unknown {
     validate: true,
     unify: true,
     liftCombiners: true,
-    referenceNameProperty: TEST_REFERENCE_NAME_PROPERTY,
+    lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY,
   })
   const mergedSource = denormalize(normalizedSource, {
     unify: true,
