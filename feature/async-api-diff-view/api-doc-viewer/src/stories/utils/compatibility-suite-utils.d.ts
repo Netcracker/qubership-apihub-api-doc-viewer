@@ -20,3 +20,9 @@ export type GraphQLCompatibilitySuiteStoryArgs = {
 };
 export declare function GraphQLStoryComponent({ before, after }: GraphQLCompatibilitySuiteStoryArgs): import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export declare function getGraphQLStoryArgs(suiteType: TestSpecType, suiteId: string, testId: string): GraphQLCompatibilitySuiteStoryArgs;
+export type AsyncApiCompatibilitySuiteStoryArgs = {
+    before: string;
+    after: string;
+};
+export declare function AsyncApiStoryComponent({ before, after }: AsyncApiCompatibilitySuiteStoryArgs): import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare function getAsyncApiStoryArgs(suiteType: TestSpecType, suiteId: string, testId: string): AsyncApiCompatibilitySuiteStoryArgs;

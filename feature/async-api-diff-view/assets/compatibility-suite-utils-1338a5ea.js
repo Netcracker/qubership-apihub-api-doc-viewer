@@ -1,4 +1,4 @@
-import{j as L}from"./_commonjs-dynamic-modules-6308e768.js";import{x as sn,y as pn,D as U,w as on,S as an,a as mn}from"./GraphPropNodeViewer-6e707ea9.js";import{g as cn,r as un}from"./index-f46741a2.js";import{G as fn}from"./GraphQLOperationDiffViewer-cbd25613.js";import{b as X}from"./graph-api-transformers-6e38e61b.js";const V=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
+import{j as q}from"./_commonjs-dynamic-modules-6308e768.js";import{x as fe,y as le,D as L,w as de,S as ye,a as W}from"./GraphPropNodeViewer-6e707ea9.js";import{g as he,r as Y}from"./index-f46741a2.js";import{j as X}from"./js-yaml-38530ef5.js";import{G as ge}from"./GraphQLOperationDiffViewer-cbd25613.js";import{b as k}from"./graph-api-transformers-6e38e61b.js";const z=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]
@@ -16768,7 +16768,7 @@ paths:
         '200':
           description: changed value
           content: { }
-`}]]),ln=new Map([["openapi/general-operation-parameters/add-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/add-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-inline-path-item-to-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-ref-path-item-to-inline",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/headers/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/headers/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/operation-parameters/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/operation-parameters/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/add-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-summary-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/remove-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/parameters-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-headers-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-headers-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}]]),E=new Map([["add-all-of",{before:{schema:`type: object
+`}]]),be=new Map([["openapi/general-operation-parameters/add-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/add-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/remove-unused-method-in-path-item",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-inline-path-item-to-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/general-operation-parameters/replace-ref-path-item-to-inline",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/headers/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/headers/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/headers/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/operation-parameters/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/operation-parameters/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/operation-parameters/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/add-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-overriden-summary",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/change-referenced-summary-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-examples/remove-overriden-summary",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/parameters-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/parameters-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/parameters-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/parameters-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/parameters-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/request-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/request-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/request-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/request-body/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/request-body/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/request-body/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-examples/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-examples/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-examples/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-body-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-body-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-body-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-body-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-body-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-null-to-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/add-sibling-description-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/add-union-type",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-referenced-enum-when-sibling-exists-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/change-sibling-enum-for-ref",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/mark-schema-value-as-non-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-headers-schema/mark-schema-value-as-nullable",{versionPairs:[["3.0.0","3.0.0"]]}],["openapi/response-headers-schema/nullable-equivalent-to-null",{versionPairs:[["3.0.0","3.1.0"]]}],["openapi/response-headers-schema/remove-null-from-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/remove-sibling-maxLength-for-ref",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/remove-union-type",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}],["openapi/response-headers-schema/reorder-types-in-union-type",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response-headers-schema/union-type-equivalent-to-any-of",{versionPairs:[["3.0.0","3.1.0"],["3.1.0","3.1.0"]]}],["openapi/response/add-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.0.0","3.1.0"]]}],["openapi/response/change-overriden-description",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/change-referenced-description-when-overridden-exists",{versionPairs:[["3.1.0","3.1.0"]]}],["openapi/response/remove-overriden-description",{versionPairs:[["3.1.0","3.1.0"],["3.1.0","3.0.0"]]}]]),$=new Map([["add-all-of",{before:{schema:`type: object
 properties:
   prop1:
     type: string
@@ -18084,7 +18084,215 @@ properties:
 xml:
   prefix: "p2"
   namespace: "http://example.com/schema"
-`}}]]),W=new Map([["openapi/parameters-schema",`openapi: 3.0.4
+`}}]]),H=new Map([["asyncapi/operation-receive-message-headers",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: receive
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["asyncapi/operation-receive-message-payload",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: receive
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["asyncapi/operation-reply-receive-message-headers",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: receive
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-reply-receive-message-payload",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: receive
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-reply-send-message-headers",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-reply-send-message-payload",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          type: object
+  replyChannel:
+    address: test/reply
+    messages:
+      replyMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+    reply:
+      channel:
+        $ref: "#/channels/replyChannel"
+      messages:
+        - $ref: "#/channels/replyChannel/messages/replyMessage"
+`],["asyncapi/operation-send-message-headers",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        headers:
+          type: object
+          properties:
+            header1:
+              __SCHEMA__
+        payload:
+          type: object
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["asyncapi/operation-send-message-payload",`asyncapi: 3.0.0
+info:
+  title: asyncapi schema case (generated)
+  version: 1.0.0
+channels:
+  requestChannel:
+    address: test/request
+    messages:
+      requestMessage:
+        payload:
+          __SCHEMA__
+operations:
+  operation1:
+    action: send
+    channel:
+      $ref: "#/channels/requestChannel"
+    messages:
+      - $ref: "#/channels/requestChannel/messages/requestMessage"
+`],["openapi/parameters-schema",`openapi: 3.0.4
 info:
   title: openapi schema case (generated)
   version: 1.0.0
@@ -18142,11 +18350,16 @@ paths:
             X-Header-1:
               schema:
                 __SCHEMA__
-`]]),dn=["3.0.0","3.0.0"],_=(n,e)=>{const t=/^openapi:\s*.*$/m;if(!t.test(n))throw new Error(`Invalid OpenAPI sample: missing root "openapi" field. Sample start: ${n.slice(0,100)}...`);return n.replace(t,`openapi: ${e}`)},G="openapi",z="graphql",H="/",$=(n,e,t)=>[n,e,t].join(H),Y=(n,e)=>[n,e].join(H),yn=["parameters-schema","request-body-schema","response-body-schema","response-headers-schema"],hn={[G]:yn,[z]:[]},gn=(n,e)=>hn[n].includes(e),T="__SCHEMA__",Q=n=>n.replace(/\r\n/g,`
-`),bn=(n,e)=>{const t=Q(n).trimEnd();return t?e?e+t.replace(/\n(?=.)/g,`
-${e}`):t:""},vn=(n,e)=>{var I;const t=Q(n),o=t.split(`
-`),s=o.map((d,O)=>d.trim()===T?O:-1).filter(d=>d!==-1);if(s.length===0)throw new Error(`Template placeholder '${T}' not found. Template start: ${t.slice(0,120)}...`);if(s.length>1)throw new Error(`Template placeholder '${T}' must appear only once. Found ${s.length} occurrences. Template start: ${t.slice(0,120)}...`);const m=s[0],c=((I=o[m].match(/^\s*/))==null?void 0:I[0])??"",l=bn(e,c);return l?(o.splice(m,1,...l.split(`
-`)),o.join(`
-`)):(o.splice(m,1),o.join(`
-`))},xn=(n,e)=>{const t=vn(n,e.schema);return`${Q(t).trimEnd()}
-`},J=(n,e)=>gn(n,e)?W.has(Y(n,e)):!1,k=(n,e,t,o)=>{const s=Y(n,e),m=W.get(s);if(!m)throw new Error(`Schema suite template not found: ${s}`);const c=E.get(t);if(!c)throw new Error(`JSON schema case not found: ${t}`);const l=c[o];return xn(m,l)},In=["unversioned","unversioned"],On=(n,e,t)=>J(n,e)&&E.has(t),Sn=(n,e,t)=>{const o=$(n,e,t),s=V.get(o);if(s)return[s.before,s.after];if(!J(n,e))throw new Error(`Unknown compatibility suite case: (${n}, ${e}, ${t})`);if(!E.has(t))throw new Error(`Unknown JSON schema case '${t}' for schema suite (${n}, ${e})`);const m=k(n,e,t,"before"),c=k(n,e,t,"after");return[m,c]},qn={[G]:{defaultPair:dn,patchSamples:(n,e,t)=>[_(n,t[0]),_(e,t[1])]},[z]:{defaultPair:In}},Z=n=>{const e=qn[n];if(!e)throw new Error(`Unknown suiteType for VersionPairPolicy lookup: ${n}`);return e},nn=(n,e)=>{var t;if(n===G)return(t=ln.get(e))==null?void 0:t.versionPairs},jn=(n,e,t)=>{const o=$(n,e,t);if(!V.has(o)&&!On(n,e,t))throw new Error(`Unknown compatibility suite case: (${n}, ${e}, ${t})`);const s=Z(n);return nn(n,o)??[s.defaultPair]},Pn=(n,e,t,o)=>{const s=Sn(n,e,t);if(o===void 0)return s;const m=Z(n),[c,l]=o;if(!jn(n,e,t).some(w=>w[0]===c&&w[1]===l))throw new Error(`Unsupported specificationVersionPair [${c}, ${l}] for case (${n}, ${e}, ${t})`);if(!m.patchSamples)return s;const O=$(n,e,t);return nn(n,O)?m.patchSamples(s[0],s[1],o):s};var en={exports:{}};(function(n){(function(){function e(r,i){document.addEventListener?r.addEventListener("scroll",i,!1):r.attachEvent("scroll",i)}function t(r){document.body?r():document.addEventListener?document.addEventListener("DOMContentLoaded",function i(){document.removeEventListener("DOMContentLoaded",i),r()}):document.attachEvent("onreadystatechange",function i(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",i),r())})}function o(r){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(r)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function s(r,i){r.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+i+";"}function m(r){var i=r.g.offsetWidth,p=i+100;return r.j.style.width=p+"px",r.i.scrollLeft=p,r.h.scrollLeft=r.h.scrollWidth+100,r.l!==i?(r.l=i,!0):!1}function c(r,i){function p(){var u=v;m(u)&&u.g.parentNode!==null&&i(u.l)}var v=r;e(r.h,p),e(r.i,p),m(r)}function l(r,i,p){i=i||{},p=p||window,this.family=r,this.style=i.style||"normal",this.weight=i.weight||"normal",this.stretch=i.stretch||"normal",this.context=p}var I=null,d=null,O=null,F=null;function w(r){return d===null&&(R(r)&&/Apple/.test(window.navigator.vendor)?(r=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),d=!!r&&603>parseInt(r[1],10)):d=!1),d}function R(r){return F===null&&(F=!!r.document.fonts),F}function S(r,i){var p=r.style,v=r.weight;if(O===null){var u=document.createElement("div");try{u.style.font="condensed 100px sans-serif"}catch{}O=u.style.font!==""}return[p,v,O?r.stretch:"","100px",i].join(" ")}l.prototype.load=function(r,i){var p=this,v=r||"BESbswy",u=0,q=i||3e3,N=new Date().getTime();return new Promise(function(M,C){if(R(p.context)&&!w(p.context)){var tn=new Promise(function(j,P){function y(){new Date().getTime()-N>=q?P(Error(""+q+"ms timeout exceeded")):p.context.document.fonts.load(S(p,'"'+p.family+'"'),v).then(function(x){1<=x.length?j():setTimeout(y,25)},P)}y()}),rn=new Promise(function(j,P){u=setTimeout(function(){P(Error(""+q+"ms timeout exceeded"))},q)});Promise.race([rn,tn]).then(function(){clearTimeout(u),M(p)},C)}else t(function(){function j(){var a;(a=h!=-1&&g!=-1||h!=-1&&b!=-1||g!=-1&&b!=-1)&&((a=h!=g&&h!=b&&g!=b)||(I===null&&(a=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),I=!!a&&(536>parseInt(a[1],10)||parseInt(a[1],10)===536&&11>=parseInt(a[2],10))),a=I&&(h==A&&g==A&&b==A||h==D&&g==D&&b==D||h==B&&g==B&&b==B)),a=!a),a&&(f.parentNode!==null&&f.parentNode.removeChild(f),clearTimeout(u),M(p))}function P(){if(new Date().getTime()-N>=q)f.parentNode!==null&&f.parentNode.removeChild(f),C(Error(""+q+"ms timeout exceeded"));else{var a=p.context.document.hidden;(a===!0||a===void 0)&&(h=y.g.offsetWidth,g=x.g.offsetWidth,b=K.g.offsetWidth,j()),u=setTimeout(P,50)}}var y=new o(v),x=new o(v),K=new o(v),h=-1,g=-1,b=-1,A=-1,D=-1,B=-1,f=document.createElement("div");f.dir="ltr",s(y,S(p,"sans-serif")),s(x,S(p,"serif")),s(K,S(p,"monospace")),f.appendChild(y.g),f.appendChild(x.g),f.appendChild(K.g),p.context.document.body.appendChild(f),A=y.g.offsetWidth,D=x.g.offsetWidth,B=K.g.offsetWidth,P(),c(y,function(a){h=a,j()}),s(y,S(p,'"'+p.family+'",sans-serif')),c(x,function(a){g=a,j()}),s(x,S(p,'"'+p.family+'",serif')),c(K,function(a){b=a,j()}),s(K,S(p,'"'+p.family+'",monospace'))})})},n.exports=l})()})(en);var Kn=en.exports;const Fn=cn(Kn),wn=Symbol("synthetic-title"),An={validate:!0,liftCombiners:!0,syntheticTitleFlag:wn,unify:!0,allowNotValidSyntheticChanges:!0},Dn=(n,e)=>{const s=sn(n,e,{...An,beforeSource:n,afterSource:e,mode:pn,metaKey:U});return Bn(s.merged)&&(s.merged.toJSON=()=>on(s.merged)),s};function Bn(n){return n!=null&&typeof n=="object"}const Ln=["Inter"];function Tn(){const[n,e]=un.useState(!1),t=Ln.map(o=>new Fn(o).load(null,1e4));return Promise.all(t).then(()=>{e(!0)}),n}const En={diffsMetaKey:U,aggregatedDiffsMetaKey:mn};function Gn({before:n,after:e}){const{merged:t}=Dn(X(n),X(e));return Tn()?L.jsx(fn,{layoutMode:an,metaKeys:En,source:t}):L.jsx(L.Fragment,{})}function Cn(n,e,t){const[o,s]=Pn(n,e,t);return{before:o,after:s}}Gn.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{Gn as G,z as T,Cn as g};
+`]]),ve=["3.0.0","3.0.0"],U=(e,n)=>{const t=/^openapi:\s*.*$/m;if(!t.test(e))throw new Error(`Invalid OpenAPI sample: missing root "openapi" field. Sample start: ${e.slice(0,100)}...`);return e.replace(t,`openapi: ${n}`)},G="openapi",J="graphql",Z="asyncapi",ee="/",Q=(e,n,t)=>[e,n,t].join(ee),ne=(e,n)=>[e,n].join(ee),xe=["parameters-schema","request-body-schema","response-body-schema","response-headers-schema"],qe=["operation-receive-message-headers","operation-send-message-headers","operation-receive-message-payload","operation-send-message-payload","operation-reply-receive-message-headers","operation-reply-send-message-headers","operation-reply-receive-message-payload","operation-reply-send-message-payload"],Ie={[G]:xe,[J]:[],[Z]:qe},Se=(e,n)=>Ie[e].includes(n),E="__SCHEMA__",R=e=>e.replace(/\r\n/g,`
+`),Oe=(e,n)=>{const t=R(e).trimEnd();return t?n?n+t.replace(/\n(?=.)/g,`
+${n}`):t:""},je=(e,n)=>{var I;const t=R(e),p=t.split(`
+`),r=p.map((d,S)=>d.trim()===E?S:-1).filter(d=>d!==-1);if(r.length===0)throw new Error(`Template placeholder '${E}' not found. Template start: ${t.slice(0,120)}...`);if(r.length>1)throw new Error(`Template placeholder '${E}' must appear only once. Found ${r.length} occurrences. Template start: ${t.slice(0,120)}...`);const m=r[0],c=((I=p[m].match(/^\s*/))==null?void 0:I[0])??"",l=Oe(n,c);return l?(p.splice(m,1,...l.split(`
+`)),p.join(`
+`)):(p.splice(m,1),p.join(`
+`))},Pe=(e,n)=>{const t=je(e,n.schema);return`${R(t).trimEnd()}
+`},te=(e,n)=>Se(e,n)?H.has(ne(e,n)):!1,V=(e,n,t,p)=>{const r=ne(e,n),m=H.get(r);if(!m)throw new Error(`Schema suite template not found: ${r}`);const c=$.get(t);if(!c)throw new Error(`JSON schema case not found: ${t}`);const l=c[p];return Pe(m,l)},Ke=["3.0.0","3.0.0"],Fe=["unversioned","unversioned"],Ae=(e,n,t)=>te(e,n)&&$.has(t),we=(e,n,t)=>{const p=Q(e,n,t),r=z.get(p);if(r)return[r.before,r.after];if(!te(e,n))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);if(!$.has(t))throw new Error(`Unknown JSON schema case '${t}' for schema suite (${e}, ${n})`);const m=V(e,n,t,"before"),c=V(e,n,t,"after");return[m,c]},De={[G]:{defaultPair:ve,patchSamples:(e,n,t)=>[U(e,t[0]),U(n,t[1])]},[J]:{defaultPair:Fe},[Z]:{defaultPair:Ke}},se=e=>{const n=De[e];if(!n)throw new Error(`Unknown suiteType for VersionPairPolicy lookup: ${e}`);return n},re=(e,n)=>{var t;if(e===G)return(t=be.get(n))==null?void 0:t.versionPairs},Be=(e,n,t)=>{const p=Q(e,n,t);if(!z.has(p)&&!Ae(e,n,t))throw new Error(`Unknown compatibility suite case: (${e}, ${n}, ${t})`);const r=se(e);return re(e,p)??[r.defaultPair]},pe=(e,n,t,p)=>{const r=we(e,n,t);if(p===void 0)return r;const m=se(e),[c,l]=p;if(!Be(e,n,t).some(w=>w[0]===c&&w[1]===l))throw new Error(`Unsupported specificationVersionPair [${c}, ${l}] for case (${e}, ${n}, ${t})`);if(!m.patchSamples)return r;const S=Q(e,n,t);return re(e,S)?m.patchSamples(r[0],r[1],p):r};var oe={exports:{}};(function(e){(function(){function n(s,a){document.addEventListener?s.addEventListener("scroll",a,!1):s.attachEvent("scroll",a)}function t(s){document.body?s():document.addEventListener?document.addEventListener("DOMContentLoaded",function a(){document.removeEventListener("DOMContentLoaded",a),s()}):document.attachEvent("onreadystatechange",function a(){(document.readyState=="interactive"||document.readyState=="complete")&&(document.detachEvent("onreadystatechange",a),s())})}function p(s){this.g=document.createElement("div"),this.g.setAttribute("aria-hidden","true"),this.g.appendChild(document.createTextNode(s)),this.h=document.createElement("span"),this.i=document.createElement("span"),this.m=document.createElement("span"),this.j=document.createElement("span"),this.l=-1,this.h.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.i.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.j.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;",this.m.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;",this.h.appendChild(this.m),this.i.appendChild(this.j),this.g.appendChild(this.h),this.g.appendChild(this.i)}function r(s,a){s.g.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+a+";"}function m(s){var a=s.g.offsetWidth,o=a+100;return s.j.style.width=o+"px",s.i.scrollLeft=o,s.h.scrollLeft=s.h.scrollWidth+100,s.l!==a?(s.l=a,!0):!1}function c(s,a){function o(){var u=v;m(u)&&u.g.parentNode!==null&&a(u.l)}var v=s;n(s.h,o),n(s.i,o),m(s)}function l(s,a,o){a=a||{},o=o||window,this.family=s,this.style=a.style||"normal",this.weight=a.weight||"normal",this.stretch=a.stretch||"normal",this.context=o}var I=null,d=null,S=null,A=null;function w(s){return d===null&&(M(s)&&/Apple/.test(window.navigator.vendor)?(s=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent),d=!!s&&603>parseInt(s[1],10)):d=!1),d}function M(s){return A===null&&(A=!!s.document.fonts),A}function O(s,a){var o=s.style,v=s.weight;if(S===null){var u=document.createElement("div");try{u.style.font="condensed 100px sans-serif"}catch{}S=u.style.font!==""}return[o,v,S?s.stretch:"","100px",a].join(" ")}l.prototype.load=function(s,a){var o=this,v=s||"BESbswy",u=0,j=a||3e3,N=new Date().getTime();return new Promise(function(C,_){if(M(o.context)&&!w(o.context)){var ce=new Promise(function(P,K){function y(){new Date().getTime()-N>=j?K(Error(""+j+"ms timeout exceeded")):o.context.document.fonts.load(O(o,'"'+o.family+'"'),v).then(function(x){1<=x.length?P():setTimeout(y,25)},K)}y()}),ue=new Promise(function(P,K){u=setTimeout(function(){K(Error(""+j+"ms timeout exceeded"))},j)});Promise.race([ue,ce]).then(function(){clearTimeout(u),C(o)},_)}else t(function(){function P(){var i;(i=h!=-1&&g!=-1||h!=-1&&b!=-1||g!=-1&&b!=-1)&&((i=h!=g&&h!=b&&g!=b)||(I===null&&(i=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),I=!!i&&(536>parseInt(i[1],10)||parseInt(i[1],10)===536&&11>=parseInt(i[2],10))),i=I&&(h==D&&g==D&&b==D||h==B&&g==B&&b==B||h==T&&g==T&&b==T)),i=!i),i&&(f.parentNode!==null&&f.parentNode.removeChild(f),clearTimeout(u),C(o))}function K(){if(new Date().getTime()-N>=j)f.parentNode!==null&&f.parentNode.removeChild(f),_(Error(""+j+"ms timeout exceeded"));else{var i=o.context.document.hidden;(i===!0||i===void 0)&&(h=y.g.offsetWidth,g=x.g.offsetWidth,b=F.g.offsetWidth,P()),u=setTimeout(K,50)}}var y=new p(v),x=new p(v),F=new p(v),h=-1,g=-1,b=-1,D=-1,B=-1,T=-1,f=document.createElement("div");f.dir="ltr",r(y,O(o,"sans-serif")),r(x,O(o,"serif")),r(F,O(o,"monospace")),f.appendChild(y.g),f.appendChild(x.g),f.appendChild(F.g),o.context.document.body.appendChild(f),D=y.g.offsetWidth,B=x.g.offsetWidth,T=F.g.offsetWidth,K(),c(y,function(i){h=i,P()}),r(y,O(o,'"'+o.family+'",sans-serif')),c(x,function(i){g=i,P()}),r(x,O(o,'"'+o.family+'",serif')),c(F,function(i){b=i,P()}),r(F,O(o,'"'+o.family+'",monospace'))})})},e.exports=l})()})(oe);var Te=oe.exports;const Ee=he(Te),ae=Y.memo(e=>q.jsx("div",{children:q.jsx("h1",{children:"Async API Operation Diff Viewer"})}));ae.__docgenInfo={description:"",methods:[],displayName:"AsyncApiOperationDiffViewer",props:{source:{required:!0,tsType:{name:"unknown"},description:""},operationType:{required:!1,tsType:{name:"string"},description:""},operationKey:{required:!1,tsType:{name:"string"},description:""},messageKey:{required:!1,tsType:{name:"string"},description:""},displayMode:{required:!1,tsType:{name:"union",raw:`| typeof SIMPLE_DISPLAY_MODE
+| typeof DETAILED_DISPLAY_MODE`,elements:[{name:"SIMPLE_DISPLAY_MODE"},{name:"DETAILED_DISPLAY_MODE"}]},description:""},metaKeys:{required:!0,tsType:{name:"signature",type:"object",raw:`{
+  entityKeyMetaKey: symbol;
+  diffsMetaKey: symbol;
+  aggregatedDiffsMetaKey: symbol;
+}`,signature:{properties:[{key:"entityKeyMetaKey",value:{name:"symbol",required:!0}},{key:"diffsMetaKey",value:{name:"symbol",required:!0}},{key:"aggregatedDiffsMetaKey",value:{name:"symbol",required:!0}}]}},description:""},displayedDiffTypes:{required:!1,tsType:{name:"ReadonlyArray",elements:[{name:"DiffType"}],raw:"ReadonlyArray<DiffType>"},description:""}}};const Le=Symbol("synthetic-title"),$e={validate:!0,liftCombiners:!0,syntheticTitleFlag:Le,unify:!0,allowNotValidSyntheticChanges:!0},ie=(e,n)=>{const r=fe(e,n,{...$e,beforeSource:e,afterSource:n,mode:le,metaKey:L});return Ge(r.merged)&&(r.merged.toJSON=()=>de(r.merged)),r};function Ge(e){return e!=null&&typeof e=="object"}const Qe=["Inter"];function me(){const[e,n]=Y.useState(!1),t=Qe.map(p=>new Ee(p).load(null,1e4));return Promise.all(t).then(()=>{n(!0)}),e}const Re={diffsMetaKey:L,aggregatedDiffsMetaKey:W};function Me({before:e,after:n}){const{merged:t}=ie(k(e),k(n));return me()?q.jsx(ge,{layoutMode:ye,metaKeys:Re,source:t}):q.jsx(q.Fragment,{})}function ze(e,n,t){const[p,r]=pe(e,n,t);return{before:p,after:r}}const Ne=Symbol("entity-key"),Ce={diffsMetaKey:L,aggregatedDiffsMetaKey:W,entityKeyMetaKey:Ne};function _e({before:e,after:n}){if(!me())return q.jsx(q.Fragment,{});const p=X.load(e),r=X.load(n),{merged:m}=ie(p,r);return q.jsx(ae,{source:m,metaKeys:Ce})}function He(e,n,t){const[p,r]=pe(e,n,t);return{before:p,after:r}}Me.__docgenInfo={description:"",methods:[],displayName:"GraphQLStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};_e.__docgenInfo={description:"",methods:[],displayName:"AsyncApiStoryComponent",props:{before:{required:!0,tsType:{name:"string"},description:""},after:{required:!0,tsType:{name:"string"},description:""}}};export{_e as A,Me as G,Z as T,ze as a,J as b,He as g};
