@@ -21,12 +21,13 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const value = node.value()
   const children = useMemo(() => node.childrenNodes(), [node])
 
+  const title = value?.title ?? value?.internalTitle ?? node.key.toString() ?? '<No message title>'
   const description = value?.description ?? value?.summary ?? ''
 
   return (
     <div className="flex flex-col gap-2">
       <TitleRow
-        value={value?.title ?? node.key.toString() ?? '<No message title>'}
+        value={title}
         expandable={false}
         variant='h1'
       />

@@ -224,9 +224,26 @@ describe('Simple E2E test', () => {
     })
 
     const channelSectionChildren = channelSectionNode!.childrenNodes()
-    expect(channelSectionChildren.length).toBe(0)
+    expect(channelSectionChildren.length).toBe(1)
     expect(channelSectionNode!.value()).toEqual({
       description: "Channel for customer change notifications",
+    })
+
+    const channelServersNode = channelSectionChildren.find(node => node.kind === AsyncApiTreeNodeKinds.SERVERS)
+    expect(channelServersNode).toBeDefined()
+    expect(channelServersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+    expect(channelServersNode!.key).toBe('servers')
+    
+    const channelServersChildren = channelServersNode!.childrenNodes()
+    expect(channelServersChildren.length).toBe(1)
+
+    const channelServerNode = channelServersChildren.find(node => node.kind === AsyncApiTreeNodeKinds.SERVER)
+    expect(channelServerNode).toBeDefined()
+    expect(channelServerNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+    expect(channelServerNode!.key).toBe('kafka-main')
+    expect(channelServerNode!.value()).toEqual({
+      host: "kafka-host",
+      protocol: "kafka"
     })
 
     const operationSectionChildren = operationSectionNode!.childrenNodes()
