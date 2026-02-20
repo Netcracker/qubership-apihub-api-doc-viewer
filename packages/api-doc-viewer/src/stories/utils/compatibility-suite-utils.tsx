@@ -21,7 +21,12 @@ import { stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
 import { getCompatibilitySuite, TestSpecType } from '@netcracker/qubership-apihub-compatibility-suites'
 import FontFaceObserver from 'fontfaceobserver'
 import { buildSchema, findBreakingChanges, findDangerousChanges } from 'graphql'
+import YAML from 'js-yaml'
 import { useState } from 'react'
+import {
+  AsyncApiOperationDiffViewer,
+  MetaKeys,
+} from '../../components/AsyncApiOperationViewer/AsyncApiOperationDiffViewer'
 import { GraphQLOperationDiffViewer } from '../../components/GraphQLOperationViewer/GraphQLOperationDiffViewer'
 import { buildGraphApiSchema } from '../../mocks/utils/graph-api-transformers'
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '../../types/LayoutMode'
@@ -74,6 +79,47 @@ export function getGraphQLStoryArgs(
   suiteId: string,
   testId: string,
 ): GraphQLCompatibilitySuiteStoryArgs {
+  const [before, after] = getCompatibilitySuite(suiteType, suiteId, testId)
+  return { before, after }
+}
+
+// AsyncAPI
+
+const ENTITY_KEY_META_KEY = Symbol('entity-key')
+
+const ASYNC_API_META_KEYS: MetaKeys = {
+  diffsMetaKey: DIFF_META_KEY,
+  aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY,
+  entityKeyMetaKey: ENTITY_KEY_META_KEY,
+}
+
+// Extra props (operationKey, messageKey, etc.) may be needed when doc-viewer supports reply objects.
+export type AsyncApiCompatibilitySuiteStoryArgs = { before: string; after: string }
+
+export function AsyncApiStoryComponent({ before, after }: AsyncApiCompatibilitySuiteStoryArgs) {
+  const fontLoaded = useFontLoaded()
+
+  if (!fontLoaded) {
+    return <></>
+  }
+
+  const beforeDoc = YAML.load(before) as object
+  const afterDoc = YAML.load(after) as object
+  const { merged } = getCompareResult(beforeDoc, afterDoc)
+
+  return (
+    <AsyncApiOperationDiffViewer
+      source={merged}
+      metaKeys={ASYNC_API_META_KEYS}
+    />
+  )
+}
+
+export function getAsyncApiStoryArgs(
+  suiteType: TestSpecType,
+  suiteId: string,
+  testId: string,
+): AsyncApiCompatibilitySuiteStoryArgs {
   const [before, after] = getCompatibilitySuite(suiteType, suiteId, testId)
   return { before, after }
 }

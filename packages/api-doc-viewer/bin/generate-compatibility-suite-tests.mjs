@@ -10,7 +10,7 @@ import {
 exitIfInsideNodeModules(import.meta.url)
 
 // Dynamic import: must run after exitIfInsideNodeModules because static import breaks the UI component build
-const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL } = await import(
+const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL, TEST_SPEC_TYPE_ASYNC_API } = await import(
   '@netcracker/qubership-apihub-compatibility-suites'
 )
 
@@ -23,6 +23,19 @@ const TEST_GENERATION_CONFIGS = [
     skipTestIds: new Set([
       'apply-schema-directive-to-input-object',
       'apply-schema-directive-to-union',
+    ]),
+  },
+  {
+    specType: TEST_SPEC_TYPE_ASYNC_API,
+    skipSuiteIds: new Set([
+      'operation-receive-message-headers',
+      'operation-send-message-headers',
+      'operation-receive-message-payload',
+      'operation-send-message-payload',
+      'operation-reply-receive-message-headers',
+      'operation-reply-send-message-headers',
+      'operation-reply-receive-message-payload',
+      'operation-reply-send-message-payload',
     ]),
   },
 ]
