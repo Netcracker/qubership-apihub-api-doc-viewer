@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 export declare const LESS_THAN_SIGN = "<";
-export declare const LESS_THAN_OR_EQUAL_SIGN: string;
+export declare const LESS_THAN_OR_EQUAL_SIGN = "<=";
 export declare const GREATER_THAN_SIGN = ">";
-export declare const GREATER_THAN_OR_EQUAL_SIGN: string;
+export declare const GREATER_THAN_OR_EQUAL_SIGN = ">=";
 export declare const DEFAULT_VALUE_LABEL = "Default";
 export declare const PROVIDED_VALUE_LABEL = "Value";
 export declare const EXAMPLES_LABEL = "Examples";

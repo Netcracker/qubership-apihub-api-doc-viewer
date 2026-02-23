@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="node" />
-/// <reference types="node" />
 import { ElementHandle } from 'puppeteer';
 export declare function captureScreenshot(domElement: ElementHandle): Promise<Buffer | string>;
 export declare function host(): string;

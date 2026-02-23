@@ -1,4 +1,4 @@
-import{j as q}from"./_commonjs-dynamic-modules-6308e768.js";import{x as fe,y as le,D as L,w as de,S as ye,a as W}from"./GraphPropNodeViewer-6e707ea9.js";import{g as he,r as Y}from"./index-f46741a2.js";import{j as X}from"./js-yaml-38530ef5.js";import{G as ge}from"./GraphQLOperationDiffViewer-cbd25613.js";import{b as k}from"./graph-api-transformers-6e38e61b.js";const z=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
+import{j as q}from"./_commonjs-dynamic-modules-6308e768.js";import{x as fe,y as le,D as L,w as de,S as ye,a as W}from"./GraphPropNodeViewer-6e707ea9.js";import{g as he,r as Y}from"./index-f46741a2.js";import{j as X}from"./js-yaml-71a24e1f.js";import{G as ge}from"./GraphQLOperationDiffViewer-cbd25613.js";import{b as k}from"./graph-api-transformers-6e38e61b.js";const z=new Map([["graphql/directives/add-argument-default-value-for-schema-directive",{before:`directive @limit (offset: Int) on FIELD_DEFINITION
 
 type Query {
   fruits: [Fruit]

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 declare const meta: {
     title: string;
     component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaViewer").JsonSchemaViewerProps>;

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
     component: import('../../../../../node_modules/react').FC<{
         source: object | null;
-        displayMode?: import("../..").DisplayMode | undefined;
-        initialLevel?: number | undefined;
-        supportJsonSchema?: boolean | undefined;
+        displayMode?: import("../..").DisplayMode;
+        initialLevel?: number;
+        supportJsonSchema?: boolean;
     }>;
     parameters: {};
     argTypes: {

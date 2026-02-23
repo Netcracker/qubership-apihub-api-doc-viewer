@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 export declare const ChangeSeverityFiltersContext: import('../../../../node_modules/react').Context<readonly DiffType[]>;
 export declare function useChangeSeverityFilters(): readonly DiffType[];
