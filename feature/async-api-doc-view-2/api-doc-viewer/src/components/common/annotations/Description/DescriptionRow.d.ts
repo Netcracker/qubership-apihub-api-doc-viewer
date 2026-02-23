@@ -46,6 +46,6 @@ export declare const DescriptionExpander: FC<Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
-    fontSize?: "primary" | "secondary" | "legacy" | undefined;
+    fontSize?: "primary" | "secondary" | "legacy";
 }>>;
 export {};
