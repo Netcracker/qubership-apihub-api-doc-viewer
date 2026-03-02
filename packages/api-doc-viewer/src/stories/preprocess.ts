@@ -429,7 +429,7 @@ export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unkno
   storyName && console.debug('[AsyncAPI] Raw source:', source)
   const normalizedSchema = normalize(source, {
     syntheticTitleFlag: syntheticTitleFlag,
-    lastReferenceKeyProperty: referenceNamePropertyKey,
+    firstReferenceKeyProperty: referenceNamePropertyKey,
     unify: true,
     validate: true,
     liftCombiners: true,
