@@ -11,6 +11,7 @@ import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
 import { TitleRow } from "./TitleRow"
+import { DescriptionFontSize } from "../common/annotations/Description/type-description-font-size"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -44,7 +45,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         <Aligner>
           <DescriptionRow
             value={description}
-            fontSize='secondary'
+            fontSize={DescriptionFontSize.SECONDARY}
             layoutMode={layoutMode}
             level={level}
           />

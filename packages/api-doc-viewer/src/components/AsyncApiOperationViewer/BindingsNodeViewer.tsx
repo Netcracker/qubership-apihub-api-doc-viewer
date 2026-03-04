@@ -5,16 +5,17 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
-import { Selector, SelectorOption } from "./Selector/Selector";
-import { TitleRow } from "./TitleRow";
 import { BrokenRefViewer } from "./BrokenRefViewer";
+import { Selector, SelectorOption } from "./Selector/Selector";
+import { TitleRow, TitleVariant } from "./TitleRow";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
+  variant?: 'primary' | 'secondary'
 }
 
 export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, variant = 'primary' } = props
 
   const displayMode = useDisplayMode()
 
@@ -68,7 +69,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         value='Bindings'
         expandable={false}
         expanded={true}
-        variant='h3'
+        variant={variant === 'primary' ? TitleVariant.h3 : TitleVariant.h5}
         subheader={titleRowSubheader}
       />
       {brokenRef && <BrokenRefViewer value={brokenRef} />}

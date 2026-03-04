@@ -203,6 +203,38 @@ export const ServersTwoServers: Story = createStory(createSource({
   },
 }));
 
+export const ServersTwoServersWithBindings: Story = createStory(createSource({
+  channel: {
+    servers: [
+      {
+        title: "Kafka Server Title",
+        host: "kafka.server.com",
+        protocol: "kafka",
+        description: "The Kafka server to connect to",
+        bindings: {
+          kafka: {
+            bindingVersion: "0.5.0",
+            topic: "events.user.created",
+            clientId: "api-doc-viewer-client",
+          }
+        },
+      },
+      {
+        title: "AMQP Server Title",
+        host: "amqp.server.com",
+        protocol: "amqp",
+        description: "The AMQP server to connect to",
+        bindings: {
+          amqp: {
+            bindingVersion: "0.2.0",
+            clientId: "mqtt-client-01",
+          }
+        },
+      },
+    ],
+  },
+}));
+
 export const DescriptionSummary: Story = createStory(createSource({
   channel: {
     description: "Channel description",

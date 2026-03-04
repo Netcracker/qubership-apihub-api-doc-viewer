@@ -1,8 +1,4 @@
 .message-channel-server-node {
-  background-color: #EDF2F7;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #E0E5EB;
   width: 500px;
   min-width: 500px;
   max-width: 500px;
@@ -10,22 +6,15 @@
 
 .message-channel-server-node .server-element {
   font-family: 'Inter Variable';
-  font-size: 12px;
+  font-size: 13px;
   color: black;
   text-wrap: wrap;
   word-break: break-all;
   word-wrap: break-word;
 }
 
-.message-channel-server-node .server-element.server-header {
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
 .message-channel-server-node .server-element.server-subheader {
-  font-weight: 500;
-}
-
-.message-channel-server-node .server-element.server-description {
-  font-weight: 400;
+  background-color: rgb(243, 243, 245);
+  padding: 4px 8px;
+  border-radius: 4px;
 }

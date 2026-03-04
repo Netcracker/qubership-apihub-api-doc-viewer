@@ -154,6 +154,16 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
+  it('servers-two-servers-with-bindings', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-two-servers-with-bindings'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
   it('description-summary', async () => {
     story = await storyPage(
       page,
