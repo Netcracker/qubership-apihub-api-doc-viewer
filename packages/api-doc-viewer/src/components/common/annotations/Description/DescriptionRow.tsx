@@ -50,6 +50,7 @@ import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloat
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
 import './Description.css';
+import { DescriptionFontSize } from "./type-description-font-size";
 
 const OVERFLOW_LINES_AMOUNT = 5
 
@@ -71,7 +72,7 @@ export type DescriptionRowProps = PropsWithoutChangesSummary<
   PropsWithShift &
   {
     value: string
-    fontSize?: 'primary' | 'secondary' | 'legacy'
+    fontSize?: DescriptionFontSize
   } &
   PropsWithChanges
 >
@@ -80,7 +81,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
     shift = false,
     value,
-    fontSize = 'legacy',
+    fontSize = DescriptionFontSize.LEGACY,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -216,7 +217,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
 type ValueProps = {
   value: string
-  fontSize?: 'primary' | 'secondary' | 'legacy'
+  fontSize?: DescriptionFontSize
   expanded?: boolean
   setIsExpandable?: Dispatch<SetStateAction<boolean>>
   // diffs
@@ -228,7 +229,7 @@ type ValueProps = {
 
 const Value: FC<ValueProps> = props => {
   const {
-    fontSize = 'legacy',
+    fontSize = DescriptionFontSize.LEGACY,
     expanded = false,
     setIsExpandable,
     // diffs
@@ -303,11 +304,11 @@ export type DescriptionExpanderProps = Partial<{
   isExpandable: boolean
   expanded: boolean
   setExpanded: Dispatch<SetStateAction<boolean>>
-  fontSize?: 'primary' | 'secondary' | 'legacy'
+  fontSize?: DescriptionFontSize
 }>
 
 const Expander: FC<DescriptionExpanderProps> = props => {
-  const { isExpandable, expanded, setExpanded, fontSize = 'legacy' } = props
+  const { isExpandable, expanded, setExpanded, fontSize = DescriptionFontSize.LEGACY } = props
 
   return <>
     {isExpandable && (
@@ -324,13 +325,15 @@ const Expander: FC<DescriptionExpanderProps> = props => {
 
 export const DescriptionExpander = Expander
 
-function getFontSizeClass(fontSize: 'primary' | 'secondary' | 'legacy'): string {
+function getFontSizeClass(fontSize: DescriptionFontSize): string {
   switch (fontSize) {
-    case 'primary':
+    case DescriptionFontSize.PRIMARY:
       return 'description-row_primary'
-    case 'secondary':
+    case DescriptionFontSize.SECONDARY:
       return 'description-row_secondary'
-    case 'legacy':
+    case DescriptionFontSize.TERTIARY:
+      return 'description-row_tertiary'
+    case DescriptionFontSize.LEGACY:
       return 'text-xs'
     default:
       return ''

@@ -335,10 +335,10 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   private transformParametersToJsonSchema(parameters: v3.ParametersObject): v3.SchemaObject {
     const newParameters: Record<string, v3.SchemaObject> = {}
     for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-      if (this.isReferenceObject(parameterValue)) {
-        continue
-      }
-      newParameters[parameterName] = { type: 'string', ...parameterValue }
+      newParameters[parameterName] =
+        this.isReferenceObject(parameterValue)
+          ? parameterValue
+          : { type: 'string', ...parameterValue }
     }
     return newParameters
   }

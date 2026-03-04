@@ -16,7 +16,6 @@ type JsoPropertyNodeViewerProps = {
   node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
   expandable: boolean
   expanded?: boolean
-  titleVariant?: TitleVariant
   supportJsonSchema?: boolean
 }
 
@@ -25,7 +24,6 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     node,
     expandable,
     expanded: initialExpanded,
-    titleVariant = TitleVariant.h3,
     supportJsonSchema = false
   } = props
 
@@ -106,7 +104,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        variant={titleVariant}
+        variant={TitleVariant.body}
         enableMainHeader={!nodeValue?.isArrayItem}
         subheader={subheader}
       />
@@ -122,7 +120,6 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
               node={childProperty}
               expandable={!childNodeValue?.isPrimitive}
               expanded={expanded}
-              titleVariant={titleVariant}
             />
           </LevelContext.Provider>
         )

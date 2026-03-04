@@ -20,9 +20,7 @@ export function getAsyncApiCrawlRules(kind: AsyncApiTreeNodeKind): CrawlRules<As
       transformers: [collectRawValues],
     },
     '/servers': {
-      '/*': {
-        kind: AsyncApiTreeNodeKinds.SERVER,
-      },
+      '/*': () => getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.SERVER),
       kind: AsyncApiTreeNodeKinds.SERVERS,
     },
     // Message/Channel/Operation Extensions

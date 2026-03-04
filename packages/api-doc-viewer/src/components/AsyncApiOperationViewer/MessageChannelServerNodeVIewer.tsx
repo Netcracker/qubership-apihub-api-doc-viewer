@@ -2,8 +2,14 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useMemo } from "react"
 
-import './styles/MessageChannelServer.css'
+import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
+import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
+import { DescriptionFontSize } from "../common/annotations/Description/type-description-font-size"
+import { Aligner } from "../JsoViewer/Aligner"
+import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
+import './styles/MessageChannelServer.css'
+import { TitleRow } from "./TitleRow"
 
 type MessageChannelServerNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>
@@ -17,13 +23,35 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const brokenRef = useMemo(() => meta?.brokenRef, [meta])
 
+  const description = useMemo(() => value?.description ?? '', [value])
+
+  const children: AsyncApiTreeNode[] = node.childrenNodes()
+  const bindingsChild = children.find(isBindingsNode)
+
   return (
     <div className='flex flex-col gap-2 message-channel-server-node'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && <>
-        <span className='server-element server-header'>{value?.title}</span>
-        <span className='server-element server-subheader'>{value?.protocol}://{value?.host}</span>
-        <span className='server-element server-description'>{value?.description}</span>
+        <TitleRow
+          value={value?.title}
+          expandable={false}
+          expanded={true}
+          variant='h4'
+        />
+        <span className='server-element server-subheader'>
+          {value?.protocol}://{value?.host}
+        </span>
+        <Aligner>
+          <DescriptionRow
+            value={description}
+            fontSize={DescriptionFontSize.TERTIARY}
+          />
+        </Aligner>
+        {children.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {bindingsChild && <BindingsNodeViewer node={bindingsChild} variant='secondary' />}
+          </div>
+        )}
       </>}
     </div>
   )

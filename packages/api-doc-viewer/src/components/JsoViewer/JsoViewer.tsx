@@ -8,7 +8,6 @@ import { DisplayMode, DOCUMENT_LAYOUT_MODE } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
-import { TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
 
 type JsoViewerProps = {
   source: object | null
@@ -60,7 +59,6 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
                 node={jsoProperty}
                 expandable={!jsoProperty.value()?.isPrimitive}
                 expanded={true}
-                titleVariant={TitleVariant.body}
                 supportJsonSchema={supportJsonSchema}
               />
             ))}
