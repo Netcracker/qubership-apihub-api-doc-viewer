@@ -12,6 +12,8 @@ export const TitleVariant = {
   h2: 'h2',
   h3: 'h3',
   h4: 'h4',
+  h5: 'h5',
+  h6: 'h6',
   body: 'body',
 } as const
 export type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant]
@@ -98,6 +100,10 @@ const TitleRowValue: FC<TitleRowContentProps> = memo<TitleRowContentProps>((prop
         return <h3 {...commonProps}>{resolvedValue}</h3>
       case TitleVariant.h4:
         return <h4 {...commonProps}>{resolvedValue}</h4>
+      case TitleVariant.h5:
+        return <h5 {...commonProps}>{resolvedValue}</h5>
+      case TitleVariant.h6:
+        return <h6 {...commonProps}>{resolvedValue}</h6>
       case TitleVariant.body:
         return <span {...commonProps}>{resolvedValue}</span>
     }
