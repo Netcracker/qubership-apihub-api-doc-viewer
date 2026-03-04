@@ -126,6 +126,10 @@ function isJsonSchema(value: unknown): boolean {
       JSON_SCHEMA_PROPERTY_ALL_OF in value &&
       Array.isArray(value.allOf) &&
       value.allOf.every(item => isJsonSchema(item))
+    ) || (
+      JSON_SCHEMA_PROPERTY_REF in value &&
+      typeof value.$ref === 'string' &&
+      value.$ref.startsWith('#/')
     )
   )
   const JSON_SCHEMA_PROPERTY_KEYS = new Set([

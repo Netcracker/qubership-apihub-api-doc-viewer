@@ -332,7 +332,7 @@ export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
   channel: {
     bindings: { $ref: "#/components/bindings/not-existing-bindings" },
   },
-}));
+}), 'edge-case-broken-ref-bindings');
 
 export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource({
   channel: {
@@ -342,7 +342,7 @@ export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource
       },
     },
   },
-}));
+}), 'edge-case-broken-ref-address-parameter');
 
 export const EdgeCaseBrokenRefServer: Story = createStory(createSource({
   channel: {
