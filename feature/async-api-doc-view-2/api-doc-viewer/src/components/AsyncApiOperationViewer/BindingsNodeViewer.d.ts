@@ -3,6 +3,7 @@ import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/asy
 import { FC } from '../../../../../node_modules/react';
 type BindingsNodeViewerProps = {
     node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
+    variant?: 'primary' | 'secondary';
 };
 export declare const BindingsNodeViewer: FC<BindingsNodeViewerProps>;
 export {};
