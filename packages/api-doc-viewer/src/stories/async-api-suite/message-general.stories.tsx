@@ -68,12 +68,10 @@ const createSource = ({ message, channel = {}, operationType = 'send' }: SourceO
 
 const createStory = (
   source: ReturnType<typeof createSource>,
-  operationType: 'send' | 'receive' = 'send'
 ): Story => ({
   args: {
     source: prepareAsyncApiDocument({ source }),
     operationKey: OPERATION_KEY,
-    operationType: operationType,
     messageKey: MESSAGE_KEY,
     referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
   }
@@ -88,7 +86,6 @@ export const MessageIdReceive: Story = createStory(
     message: {},
     operationType: 'receive',
   }),
-  'receive'
 );
 
 export const Name: Story = createStory(createSource({

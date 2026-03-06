@@ -15,7 +15,6 @@ import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
 
 export type AsyncApiOperationViewerProps = {
   source: unknown
-  operationType?: string // send, receive
   operationKey?: string // e.g. send-fruit, receive-fruit
   messageKey?: string // e.g. send-fruit-message, receive-fruit-message
   displayMode?: DisplayMode
@@ -39,7 +38,6 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
     const {
       source,
-      operationType,
       operationKey,
       messageKey,
       displayMode = DEFAULT_DISPLAY_MODE,
@@ -47,8 +45,8 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     } = props
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeBuilder(source, { operationType, operationKey, messageKey }, referenceNamePropertyKey),
-      [source, operationType, operationKey, messageKey, referenceNamePropertyKey]
+      () => new AsyncApiTreeBuilder(source, { operationKey, messageKey }, referenceNamePropertyKey),
+      [source, operationKey, messageKey, referenceNamePropertyKey]
     )
     const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])
 

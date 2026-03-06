@@ -136,7 +136,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   constructor(
     private readonly source: unknown,
     private readonly operationKeys?: Partial<{
-      operationType: string // send, receive
       operationKey: string // e.g. send-fruit, receive-fruit
       messageKey: string // e.g. send-fruit-message, receive-fruit-message
     }>,
@@ -160,10 +159,10 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     // TODO: Encapsulate this
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
-    const { operationType, operationKey, messageKey } = this.operationKeys ?? {}
+    const { operationKey, messageKey } = this.operationKeys ?? {}
 
     // TODO: Encapsulate this
-    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationType, operationKey, messageKey)
+    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationKey, messageKey)
 
     console.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
@@ -187,7 +186,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   private transformOperationOrientedSpecToMessageOrientedSpec(
     source: unknown,
-    operationType?: string, // action (send, receive)
     operationKey?: string, // id (key) to the necessary operation in source
     messageKey?: string, // id (key) to the necessary message in source
   ): unknown {
@@ -202,18 +200,15 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     const operations: v3.OperationsObject = source.operations ?? {}
 
-    let firstOperationType: string | undefined
     let firstOperationKey: string | undefined
     let firstOperationMessageKey: string | undefined
-    if (!operationType || !operationKey || !messageKey) {
+    if (!operationKey || !messageKey) {
       console.error('Operation type (action), key or message key is not provided. Looking for first operation, channel and message in source...')
       firstOperationKey = Object.keys(operations).at(0)
       if (firstOperationKey) {
         const firstOperationCandidate = operations[firstOperationKey]
         const firstOperation = !this.isReferenceObject(firstOperationCandidate) ? firstOperationCandidate : null
         if (firstOperation) {
-          // First Operation Type (Action)
-          firstOperationType = firstOperation.action
           // First Message
           const firstOperationMessagesCandidate = firstOperation.messages?.[0]
           const firstOperationMessage = !this.isReferenceObject(firstOperationMessagesCandidate) ? firstOperationMessagesCandidate : null
@@ -223,14 +218,12 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           }
         }
       }
-      if (!firstOperationKey || !firstOperationType || !firstOperationMessageKey) {
+      if (!firstOperationKey || !firstOperationMessageKey) {
         !firstOperationKey && console.error('Cannot find first operation in source.')
-        !firstOperationType && console.error('Cannot find first operation type in source.')
         !firstOperationMessageKey && console.error('Cannot find first operation message key in source.')
         return null
       }
-      console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationType, firstOperationMessageKey)
-      operationType = firstOperationType
+      console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
       operationKey = firstOperationKey
       messageKey = firstOperationMessageKey
     }
@@ -240,7 +233,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         const [currentOperationKey, currentOperation] = currentOperationEntry
         return (
           !this.isReferenceObject(currentOperation) &&
-          currentOperation.action === operationType &&
           currentOperationKey === operationKey
         )
       })
@@ -248,7 +240,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       .at(0)
 
     if (!operation) {
-      console.error(`Cannot find operation with key (id) = ${operationKey}, type (action) = ${operationType}`)
+      console.error(`Cannot find operation with key (id) = ${operationKey}`)
       return null
     }
 
