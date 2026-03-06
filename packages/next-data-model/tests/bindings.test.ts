@@ -3,6 +3,23 @@ import { AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
 import { createAsyncApiTreeForTests } from "./helpers/create-async-api-tree-for-tests"
 import { simplifyConsole } from "./helpers/simplify-console"
 
+const COMPONENTS_WITH_MESSAGES = {
+  components: {
+    messages: {
+      'test-message': {
+        name: "TestMessage",
+        title: "Test Message",
+      }
+    }
+  }
+}
+
+const SINGLE_MESSAGE_USAGE = {
+  messages: [
+    { $ref: "#/components/messages/test-message" }
+  ]
+}
+
 describe('Bindings', () => {
   simplifyConsole()
 
@@ -23,6 +40,7 @@ describe('Bindings', () => {
           'test-operation': {
             action: "send",
             channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
             bindings: {
               kafka: {
                 groupId: {
@@ -37,26 +55,42 @@ describe('Bindings', () => {
               }
             }
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const bindingsNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      const operationBindingsNode = operationSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(operationBindingsNode).toBeDefined()
+      expect(operationBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(operationBindingsNode!.key).toBe('bindings')
+
+      const bindingNodes = operationBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+
+      const bindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNode).toBeDefined()
+      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingNode!.key).toBe('kafka')
+      expect(bindingNode!.value()).toEqual({
         binding: {
           groupId: {
             type: "string",
@@ -70,18 +104,6 @@ describe('Bindings', () => {
         version: '0.5.0',
         protocol: 'kafka',
       })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(bindingNode).toBeDefined()
-      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingNode!.key).toBe('kafka')
-      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
     })
 
     it('should handle operation with two bindings', () => {
@@ -100,6 +122,7 @@ describe('Bindings', () => {
           'test-operation': {
             action: "send",
             channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
             bindings: {
               kafka: {
                 groupId: {
@@ -119,66 +142,55 @@ describe('Bindings', () => {
               }
             }
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const bindingsNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      // Check bindings node value (proxy mode - default to first binding)
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
-        binding: {
-          groupId: {
-            type: "string",
-            enum: ["consumer-group-1"]
-          },
-        },
-      })
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
 
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(2)
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
 
-      // Check first binding (kafka)
-      const kafkaBindingNode = bindingsNestedNodes.find(node => node.key === 'kafka')
+      const operationBindingsNode = operationSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(operationBindingsNode).toBeDefined()
+      expect(operationBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(operationBindingsNode!.key).toBe('bindings')
+
+      const bindingNodes = operationBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(2)
+
+      const kafkaBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'kafka')
       expect(kafkaBindingNode).toBeDefined()
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(kafkaBindingNode!.key).toBe('kafka')
-      expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(kafkaBindingNode!.value()).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
         binding: {
           groupId: {
             type: "string",
             enum: ["consumer-group-1"]
           },
         },
+        version: '0.5.0',
+        protocol: 'kafka',
       })
 
-      const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
-      expect(kafkaBindingPropertyNodes.length).toBe(0)
-
-      // Check second binding (amqp)
-      const amqpBindingNode = bindingsNestedNodes.find(node => node.key === 'amqp')
+      const amqpBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'amqp')
       expect(amqpBindingNode).toBeDefined()
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(amqpBindingNode!.key).toBe('amqp')
-      expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(amqpBindingNode!.value()).toEqual({
         binding: {
           expiration: 100000,
@@ -191,9 +203,6 @@ describe('Bindings', () => {
         version: '0.3.0',
         protocol: 'amqp',
       })
-
-      const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
-      expect(amqpBindingPropertyNodes.length).toBe(0)
     })
   })
 
@@ -221,51 +230,52 @@ describe('Bindings', () => {
         operations: {
           'test-operation': {
             action: "send",
-            channel: { $ref: "#/channels/test-channel" }
+            channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
+      
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
 
-      const bindingsNode = channelNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
 
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
+      const channelBindingsNode = channelSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(channelBindingsNode).toBeDefined()
+      expect(channelBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(channelBindingsNode!.key).toBe('bindings')
+
+      const bindingNodes = channelBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      
+      const bindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'kafka')
+      expect(bindingNode).toBeDefined()
+      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingNode!.value()).toEqual({
         binding: {
           topic: "test-topic",
           partitions: 3,
           replicas: 2,
         },
+        version: '0.5.0',
+        protocol: 'kafka',
       })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(bindingNode).toBeDefined()
-      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingNode!.key).toBe('kafka')
-      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
     })
 
     it('should handle channel with two bindings', () => {
@@ -300,83 +310,68 @@ describe('Bindings', () => {
         operations: {
           'test-operation': {
             action: "send",
-            channel: { $ref: "#/channels/test-channel" }
+            channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      const bindingsNode = channelNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
 
-      // Check bindings node value (proxy mode - default to first binding)
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
-        binding: {
-          topic: "events-topic",
-          partitions: 5,
-        },
-      })
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
 
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(2)
+      const channelBindingsNode = channelSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(channelBindingsNode).toBeDefined()
+      expect(channelBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(channelBindingsNode!.key).toBe('bindings')
 
-      // Check first binding (kafka)
-      const kafkaBindingNode = bindingsNestedNodes.find(node => node.key === 'kafka')
+      const bindingNodes = channelBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(2)
+
+      const kafkaBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'kafka')
       expect(kafkaBindingNode).toBeDefined()
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(kafkaBindingNode!.key).toBe('kafka')
-      expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(kafkaBindingNode!.value()).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
         binding: {
           topic: "events-topic",
           partitions: 5,
         },
+        version: '0.5.0',
+        protocol: 'kafka',
       })
 
-      const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
-      expect(kafkaBindingPropertyNodes.length).toBe(0)
-
-      // Check second binding (amqp)
-      const amqpBindingNode = bindingsNestedNodes.find(node => node.key === 'amqp')
+      const amqpBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'amqp')
       expect(amqpBindingNode).toBeDefined()
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(amqpBindingNode!.key).toBe('amqp')
-      expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(amqpBindingNode!.value()).toEqual({
-        protocol: 'amqp',
-        version: '0.3.0',
         binding: {
           is: "routingKey",
           exchange: {
             name: "events-exchange",
             type: "topic",
             durable: true,
-            autoDelete: false
+            autoDelete: false,
           },
         },
+        version: '0.3.0',
+        protocol: 'amqp',
       })
-
-      const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
-      expect(amqpBindingPropertyNodes.length).toBe(0)
     })
   })
 
@@ -391,16 +386,19 @@ describe('Bindings', () => {
         channels: {
           'test-channel': {
             address: "test-channel",
-            messages: {
-              TestMessage: { $ref: "#/components/messages/TestMessage" }
-            }
+          }
+        },
+        operations: {
+          'test-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
           }
         },
         components: {
           messages: {
-            TestMessage: {
-              name: "TestMessage",
-              title: "Test Message",
+            'test-message': {
+              ...COMPONENTS_WITH_MESSAGES.components.messages['test-message'],
               bindings: {
                 kafka: {
                   key: {
@@ -415,45 +413,39 @@ describe('Bindings', () => {
             }
           }
         },
-        operations: {
-          'test-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/TestMessage" }
-            ]
-          }
-        }
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
+      
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+      
+      const messageBindingsNode = contentSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(messageBindingsNode).toBeDefined()
+      expect(messageBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(messageBindingsNode!.key).toBe('bindings')
 
-      const messageNode = messagesNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE)
-      expect(messageNode).toBeDefined()
-
-      const bindingsNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
-
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
+      const bindingNodes = messageBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      
+      const bindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'kafka')
+      expect(bindingNode).toBeDefined()
+      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(bindingNode!.value()).toEqual({
         binding: {
           key: {
             type: "string",
@@ -462,19 +454,9 @@ describe('Bindings', () => {
           schemaIdLocation: "payload",
           schemaIdPayloadEncoding: 'apicurio-new',
         },
+        version: '0.5.0',
+        protocol: 'kafka',
       })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const bindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(bindingNode).toBeDefined()
-      expect(bindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(bindingNode!.key).toBe('kafka')
-      expect(bindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = bindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
     })
 
     it('should handle message with two bindings', () => {
@@ -487,16 +469,19 @@ describe('Bindings', () => {
         channels: {
           'test-channel': {
             address: "test-channel",
-            messages: {
-              TestMessage: { $ref: "#/components/messages/TestMessage" }
-            }
+          }
+        },
+        operations: {
+          'test-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE,
           }
         },
         components: {
           messages: {
-            TestMessage: {
-              name: "TestMessage",
-              title: "Test Message",
+            'test-message': {
+              ...COMPONENTS_WITH_MESSAGES.components.messages['test-message'],
               bindings: {
                 kafka: {
                   key: {
@@ -514,94 +499,60 @@ describe('Bindings', () => {
             }
           }
         },
-        operations: {
-          'test-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/test-channel" },
-            messages: [
-              { $ref: "#/channels/test-channel/messages/TestMessage" }
-            ]
-          }
-        }
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageNode = tree?.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
 
-      const messagesNestedNodes = messagesNode!.nestedNodes()
-      expect(messagesNestedNodes.length).toBe(1)
+      const sections = messageSectionSelectorNode?.nestedNodes() ?? []
+      expect(sections.length).toBe(3)
+      
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+      
+      const messageBindingsNode = contentSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(messageBindingsNode).toBeDefined()
+      expect(messageBindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(messageBindingsNode!.key).toBe('bindings')
 
-      const messageNode = messagesNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE)
-      expect(messageNode).toBeDefined()
+      const bindingNodes = messageBindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(2)
 
-      const bindingsNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
-
-      // Check bindings node value (proxy mode - default to first binding)
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
-        binding: {
-          key: {
-            type: "string"
-          },
-          schemaIdLocation: "header",
-        },
-      })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(2)
-
-      // Check first binding (kafka)
-      const kafkaBindingNode = bindingsNestedNodes.find(node => node.key === 'kafka')
+      const kafkaBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'kafka')
       expect(kafkaBindingNode).toBeDefined()
       expect(kafkaBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(kafkaBindingNode!.key).toBe('kafka')
-      expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(kafkaBindingNode!.value()).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
         binding: {
           key: {
-            type: "string"
+            type: "string",
           },
           schemaIdLocation: "header",
         },
+        version: '0.5.0',
+        protocol: 'kafka',
       })
 
-      const kafkaBindingPropertyNodes = kafkaBindingNode!.childrenNodes()
-      expect(kafkaBindingPropertyNodes.length).toBe(0)
-
-      // Check second binding (amqp)
-      const amqpBindingNode = bindingsNestedNodes.find(node => node.key === 'amqp')
+      const amqpBindingNode = bindingNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING && node.key === 'amqp')
       expect(amqpBindingNode).toBeDefined()
       expect(amqpBindingNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(amqpBindingNode!.key).toBe('amqp')
-      expect(amqpBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
       expect(amqpBindingNode!.value()).toEqual({
-        protocol: 'amqp',
-        version: '0.3.0',
         binding: {
           contentEncoding: "gzip",
           messageType: "user.signup",
         },
+        version: '0.3.0',
+        protocol: 'amqp',
       })
-
-      const amqpBindingPropertyNodes = amqpBindingNode!.childrenNodes()
-      expect(amqpBindingPropertyNodes.length).toBe(0)
     })
   })
 })

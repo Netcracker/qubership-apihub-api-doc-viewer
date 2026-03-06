@@ -13,7 +13,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Json Schema Viewer (Debug)',
+  title: 'Debug/Json Schema Viewer',
   component: JsonSchemaViewer,
   parameters: {},
   argTypes: {

@@ -126,6 +126,10 @@ function isJsonSchema(value: unknown): boolean {
       JSON_SCHEMA_PROPERTY_ALL_OF in value &&
       Array.isArray(value.allOf) &&
       value.allOf.every(item => isJsonSchema(item))
+    ) || (
+      JSON_SCHEMA_PROPERTY_REF in value &&
+      typeof value.$ref === 'string' &&
+      value.$ref.startsWith('#/')
     )
   )
   const JSON_SCHEMA_PROPERTY_KEYS = new Set([
@@ -174,15 +178,32 @@ function isJsonSchema(value: unknown): boolean {
   ])
   return (
     hasFieldTypeFromJsonSchema &&
-    Object.keys(value).every(key => JSON_SCHEMA_PROPERTY_KEYS.has(key))
+    Object.keys(value).every(key => (
+      JSON_SCHEMA_PROPERTY_KEYS.has(key) ||
+      isExtensionPropertyInJsonSchema(key) || // extensions in JSON Schema
+      isAllowedCustomPropertyInJsonSchema(key) // for AsyncAPI parameters
+    ))
   )
+}
+
+function isAllowedCustomPropertyInJsonSchema(key: string): boolean {
+  return key === 'location'
+}
+
+function isExtensionPropertyInJsonSchema(key: string): boolean {
+  return key.startsWith('x-')
 }
 
 function isMultiSchema(value: unknown): boolean {
   if (typeof value !== 'object' || value === null) {
     return false
   }
-  if ('schemaFormat' in value && typeof value.schemaFormat === 'string' && 'schema' in value && isObject(value.schema)) {
+  if (
+    'schemaFormat' in value &&
+    typeof value.schemaFormat === 'string' &&
+    'schema' in value &&
+    isObject(value.schema)
+  ) {
     return true
   }
   return false

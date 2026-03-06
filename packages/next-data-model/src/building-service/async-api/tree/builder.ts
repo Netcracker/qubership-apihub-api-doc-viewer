@@ -4,6 +4,7 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
+import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -13,16 +14,20 @@ import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
+import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
 import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.ROOT>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS>
   | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>;
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
+  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>
 
 type SimpleAsyncApiTreeNodeParams = SimpleTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -52,74 +57,77 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   // Function overloads for type-safe return based on input type
   public static getAsyncApiTreeNodeValueProps(
     type:
-      | typeof AsyncApiTreeNodeKinds.ROOT
-      | typeof AsyncApiTreeNodeKinds.OPERATION
-      | typeof AsyncApiTreeNodeKinds.BINDINGS
       | typeof AsyncApiTreeNodeKinds.BINDING
-      | typeof AsyncApiTreeNodeKinds.CHANNEL
+      | typeof AsyncApiTreeNodeKinds.EXTENSIONS
       | typeof AsyncApiTreeNodeKinds.MESSAGE
+      | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+      | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS
       | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
+      | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
       | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
+      | typeof AsyncApiTreeNodeKinds.SERVER
   ): (keyof AsyncApiTreeNodeValue<
-    | typeof AsyncApiTreeNodeKinds.ROOT
-    | typeof AsyncApiTreeNodeKinds.OPERATION
-    | typeof AsyncApiTreeNodeKinds.BINDINGS
     | typeof AsyncApiTreeNodeKinds.BINDING
-    | typeof AsyncApiTreeNodeKinds.CHANNEL
+    | typeof AsyncApiTreeNodeKinds.EXTENSIONS
     | typeof AsyncApiTreeNodeKinds.MESSAGE
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS
     | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
     | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
+    | typeof AsyncApiTreeNodeKinds.SERVER
   >)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.ROOT): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.ROOT>)[]
-  public static getAsyncApiTreeNodeValueProps(type:
-    | typeof AsyncApiTreeNodeKinds.OPERATION
-  ): (keyof AsyncApiTreeNodeValue<
-    | typeof AsyncApiTreeNodeKinds.OPERATION
-  >)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.CHANNEL): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.BINDING): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.EXTENSIONS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.SERVER): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
+
   // General fallback signature
   public static getAsyncApiTreeNodeValueProps(type: AsyncApiTreeNodeKind): AnyAsyncApiNodeValueKey[] {
     switch (type) {
-      case AsyncApiTreeNodeKinds.ROOT:
-        return AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.ROOT>)[]
-      case AsyncApiTreeNodeKinds.OPERATION:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-          'action',
-          'address', // TODO: From channel!
-          'extensions',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>)[]
       case AsyncApiTreeNodeKinds.BINDING:
         return [
           'binding',
           'version',
           'protocol',
-          'extensions',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
-      case AsyncApiTreeNodeKinds.CHANNEL:
+      case AsyncApiTreeNodeKinds.EXTENSIONS:
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
         return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-          'extensions',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>)[]
+          'rawValues',
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
       case AsyncApiTreeNodeKinds.MESSAGE:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'internalTitle',
-          'extensions',
+          'action',
+          'address',
         ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
-      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
         return [
-          'schema',
-          'schemaFormat',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>)[]
+          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
+      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
+        return [
+          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
+      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
       case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
         return [
           'schema',
           'schemaFormat',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+      case AsyncApiTreeNodeKinds.SERVER:
+        return [
+          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
+          'host',
+          'protocol',
+        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
       default:
         return []
     }
@@ -127,7 +135,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
-    private readonly referenceNamePropertyKey?: symbol
+    private readonly operationKeys?: Partial<{
+      operationKey: string // e.g. send-fruit, receive-fruit
+      messageKey: string // e.g. send-fruit-message, receive-fruit-message
+    }>,
+    private readonly referenceNamePropertyKey?: symbol,
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -144,13 +156,21 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       alreadyConvertedValuesCache: new Map(),
     }
 
-    const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules()
+    // TODO: Encapsulate this
+    const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
+
+    const { operationKey, messageKey } = this.operationKeys ?? {}
+
+    // TODO: Encapsulate this
+    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationKey, messageKey)
+
+    console.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
     syncCrawl<AsyncApiTreeCrawlState, AsyncApiCrawlRule>(
-      this.source,
+      preparedSource,
       [
         this.instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop(),
-        this.instantiateHookUnifyingValue(this.source),
+        this.instantiateHookUnifyingValue(preparedSource),
         this.instantiateHookCreatingAsyncApiTreeNodes(),
       ],
       {
@@ -160,6 +180,179 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     )
 
     return this.tree;
+  }
+
+  // General transformer
+
+  private transformOperationOrientedSpecToMessageOrientedSpec(
+    source: unknown,
+    operationKey?: string, // id (key) to the necessary operation in source
+    messageKey?: string, // id (key) to the necessary message in source
+  ): unknown {
+    if (!this.isAsyncApiSpecification(source)) {
+      return null
+    }
+
+    if (!this.referenceNamePropertyKey) {
+      console.error('Reference name property key is not provided. Cannot find operation, channel or message by id (key) in source without key of reference name property.')
+      return null
+    }
+
+    const operations: v3.OperationsObject = source.operations ?? {}
+
+    let firstOperationKey: string | undefined
+    let firstOperationMessageKey: string | undefined
+    if (!operationKey || !messageKey) {
+      console.error('Operation type (action), key or message key is not provided. Looking for first operation, channel and message in source...')
+      firstOperationKey = Object.keys(operations).at(0)
+      if (firstOperationKey) {
+        const firstOperationCandidate = operations[firstOperationKey]
+        const firstOperation = !this.isReferenceObject(firstOperationCandidate) ? firstOperationCandidate : null
+        if (firstOperation) {
+          // First Message
+          const firstOperationMessagesCandidate = firstOperation.messages?.[0]
+          const firstOperationMessage = !this.isReferenceObject(firstOperationMessagesCandidate) ? firstOperationMessagesCandidate : null
+          if (firstOperationMessage) {
+            const key = (firstOperationMessage as Record<PropertyKey, unknown>)[this.referenceNamePropertyKey]
+            firstOperationMessageKey = typeof key === 'string' ? key : undefined
+          }
+        }
+      }
+      if (!firstOperationKey || !firstOperationMessageKey) {
+        !firstOperationKey && console.error('Cannot find first operation in source.')
+        !firstOperationMessageKey && console.error('Cannot find first operation message key in source.')
+        return null
+      }
+      console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
+      operationKey = firstOperationKey
+      messageKey = firstOperationMessageKey
+    }
+
+    const operation: v3.OperationObject | undefined = Object.entries(operations)
+      .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
+        const [currentOperationKey, currentOperation] = currentOperationEntry
+        return (
+          !this.isReferenceObject(currentOperation) &&
+          currentOperationKey === operationKey
+        )
+      })
+      .map(([, operation]) => operation)
+      .at(0)
+
+    if (!operation) {
+      console.error(`Cannot find operation with key (id) = ${operationKey}`)
+      return null
+    }
+
+    const operationChannel: v3.ChannelObject = !this.isReferenceObject(operation.channel) ? operation.channel : {}
+    const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
+      .filter((message): message is v3.MessageObject => !this.isReferenceObject(message))
+    let operationMessage: v3.MessageObject | undefined = operationMessages
+      .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey!] === messageKey)
+
+    if (!operationChannel) {
+      console.error('Cannot find channel in the operation', operation)
+      return null
+    }
+
+    if (!operationMessage) {
+      const channelMessage = operationChannel.messages?.[messageKey]
+      operationMessage = !this.isReferenceObject(channelMessage) ? channelMessage : undefined
+      if (!operationMessage) {
+        console.error(`Cannot find message with key (id) = ${messageKey}`)
+        return null
+      }
+    }
+
+    const operationExtensions = this.copyExtensions(operation)
+    const operationChannelExtensions = this.copyExtensions(operationChannel)
+    const operationMessageExtensions = this.copyExtensions(operationMessage)
+
+    const pickReferenceNameProperty = (source: unknown): Record<PropertyKey, unknown> | undefined => {
+      if (!isObject(source)) {
+        return undefined
+      }
+      if (!this.referenceNamePropertyKey) {
+        return undefined
+      }
+      return {
+        [this.referenceNamePropertyKey]: source[this.referenceNamePropertyKey],
+      }
+    }
+
+    const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
+    const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
+    const operationReferenceNameProperty = pickReferenceNameProperty(operation)
+
+    const messageOrientedOperation: Record<PropertyKey, unknown> = {
+      ...(messageReferenceNameProperty ?? {}),
+      id: messageKey,
+      ...(operationMessage.name ? { internalTitle: operationMessage.name } : {}),
+      ...(operationMessage.title ? { title: operationMessage.title } : {}),
+      ...(operationMessage.summary ? { summary: operationMessage.summary } : {}),
+      ...(operationMessage.description ? { description: operationMessage.description } : {}),
+      action: operation.action,
+      address: operationChannel.address ?? UNKNOWN_ADDRESS,
+      data: {
+        content: {
+          ...operationMessage.headers ? { headers: operationMessage.headers } : {},
+          ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
+          ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
+          ...operationMessage.payload ? { payload: operationMessage.payload } : {},
+        },
+        channel: {
+          ...(channelReferenceNameProperty ?? {}),
+          ...(operationChannel.title ? { title: operationChannel.title } : {}),
+          ...(operationChannel.summary ? { summary: operationChannel.summary } : {}),
+          ...(operationChannel.description ? { description: operationChannel.description } : {}),
+          ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
+          ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
+          ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
+          ...operationChannel.servers ? { servers: operationChannel.servers } : {},
+        },
+        operation: {
+          ...(operationReferenceNameProperty ?? {}),
+          id: operationKey,
+          ...(operation.title ? { title: operation.title } : {}),
+          ...(operation.summary ? { summary: operation.summary } : {}),
+          ...(operation.description ? { description: operation.description } : {}),
+          ...operation.bindings ? { bindings: operation.bindings } : {},
+          ...operationExtensions ? { extensions: operationExtensions } : {},
+        },
+      }
+    }
+    return messageOrientedOperation
+  }
+
+  private transformParametersToJsonSchema(parameters: v3.ParametersObject): v3.SchemaObject {
+    const newParameters: Record<string, v3.SchemaObject> = {}
+    for (const [parameterName, parameterValue] of Object.entries(parameters)) {
+      newParameters[parameterName] =
+        this.isReferenceObject(parameterValue)
+          ? parameterValue
+          : { type: 'string', ...parameterValue }
+    }
+    return newParameters
+  }
+
+  private copyExtensions(source: v3.MessageObject): v3.SpecificationExtensions | undefined {
+    const extensionKeys = Object.keys(source)
+      .filter((key): key is keyof v3.SpecificationExtensions => key.startsWith('x-'))
+    if (extensionKeys.length === 0) {
+      return undefined
+    }
+    return extensionKeys.reduce((extensions, key) => {
+      extensions[key] = source[key]
+      return extensions
+    }, {} as v3.SpecificationExtensions)
+  }
+
+  private isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
+    return typeof value === 'object' && value !== null && 'asyncapi' in value && typeof value.asyncapi === 'string'
+  }
+
+  private isReferenceObject(value: unknown): value is v3.ReferenceObject {
+    return typeof value === 'object' && value !== null && '$ref' in value && typeof value.$ref === 'string'
   }
 
   /* Crawlhooks-builders */
@@ -246,6 +439,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
         return { done: true };
       }
+      // if (isObject(value) && Reflect.ownKeys(value).length === 0) {
+      // return { done: true }; // exit on empty object
+      // }
       if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind)) {
         // equivalent to "continue" operator within loop operators
         // means "keep going deeper in the original object"
@@ -309,13 +505,17 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
    * @returns resolved node key.
    */
   private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
-    if (this.referenceNamePropertyKey) {
-      if (isObject(value) && value[this.referenceNamePropertyKey]) {
-        const nodeKeyCandidate = value[this.referenceNamePropertyKey]
-        if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
-          return nodeKeyCandidate
-        }
+    if (!isObject(value)) {
+      return key
+    }
+    if (this.referenceNamePropertyKey && value[this.referenceNamePropertyKey]) {
+      const nodeKeyCandidate = value[this.referenceNamePropertyKey]
+      if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
+        return nodeKeyCandidate
       }
+    }
+    if ('id' in value && typeof value.id === 'string') {
+      return value.id
     }
     return key
   }
@@ -389,18 +589,13 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     }
 
     switch (kind) {
-      case AsyncApiTreeNodeKinds.OPERATION:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.OPERATION>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
       case AsyncApiTreeNodeKinds.BINDING:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
-      case AsyncApiTreeNodeKinds.CHANNEL:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.CHANNEL>>(
+      case AsyncApiTreeNodeKinds.EXTENSIONS:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
@@ -409,13 +604,33 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
       case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )
+      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
       case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
         return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.SERVER:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>>(
           value,
           AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
         )

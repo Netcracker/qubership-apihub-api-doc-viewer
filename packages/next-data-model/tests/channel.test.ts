@@ -1,7 +1,24 @@
 import { TreeNodeComplexityTypes } from "../src/model/abstract/tree/tree-node.interface"
+import { AsyncApiTree } from "../src/model/async-api/tree/tree.impl"
 import { AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
 import { createAsyncApiTreeForTests } from "./helpers/create-async-api-tree-for-tests"
 import { simplifyConsole } from "./helpers/simplify-console"
+
+const COMPONENTS_WITH_MESSAGES = {
+  components: {
+    messages: {
+      'test-message': {
+        name: "TestMessage",
+      }
+    }
+  }
+}
+
+const SINGLE_MESSAGE_USAGE = {
+  messages: [
+    { $ref: "#/components/messages/test-message" }
+  ]
+}
 
 describe('Cases with channel', () => {
   simplifyConsole()
@@ -22,31 +39,35 @@ describe('Cases with channel', () => {
         operations: {
           'user-signup-operation': {
             action: "send",
-            channel: { $ref: "#/channels/user-signup" }
+            channel: { $ref: "#/channels/user-signup" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
       expect(tree).toBeDefined()
-      const root = tree?.root ?? null
-      expect(root).not.toBeNull()
 
-      const operationNode = root!.childrenNodes()[0]
-      expect(operationNode).toBeDefined()
-      expect(operationNode.kind).toBe(AsyncApiTreeNodeKinds.OPERATION)
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toBeDefined()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "user/signup"
-      })
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      // Check for channel node
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('user-signup')
     })
 
     it('should handle channel with title', () => {
@@ -65,26 +86,36 @@ describe('Cases with channel', () => {
         operations: {
           'user-events-operation': {
             action: "send",
-            channel: { $ref: "#/channels/user-events" }
+            channel: { $ref: "#/channels/user-events" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "user/events"
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('user-events')
+      expect(channelSectionNode!.value()).toEqual({
         title: "User Events Channel"
       })
     })
@@ -106,26 +137,36 @@ describe('Cases with channel', () => {
         operations: {
           'order-operation': {
             action: "send",
-            channel: { $ref: "#/channels/order-channel" }
+            channel: { $ref: "#/channels/order-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "orders"
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('order-channel')
+      expect(channelSectionNode!.value()).toEqual({
         title: "Order Processing Channel",
         description: "Channel for handling order-related events and messages"
       })
@@ -149,26 +190,36 @@ describe('Cases with channel', () => {
         operations: {
           'payment-operation': {
             action: "receive",
-            channel: { $ref: "#/channels/payment-channel" }
+            channel: { $ref: "#/channels/payment-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "receive",
-        address: "payments"
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('payment-channel')
+      expect(channelSectionNode!.value()).toEqual({
         title: "Payment Channel",
         summary: "Brief summary of payment channel",
         description: "Detailed description of payment processing channel"
@@ -199,121 +250,129 @@ describe('Cases with channel', () => {
         operations: {
           'kafka-operation': {
             action: "send",
-            channel: { $ref: "#/channels/kafka-channel" }
+            channel: { $ref: "#/channels/kafka-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "kafka-topic"
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('kafka-channel')
+      expect(channelSectionNode!.value()).toEqual({
+        title: "Kafka Channel",
       })
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Kafka Channel"
-      })
-
-      // Check bindings node as child of channel
-      const bindingsNode = channelNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      const bindingsNode = channelSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
       expect(bindingsNode).toBeDefined()
       expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
-      expect(bindingsNode!.key).toBe('bindings')
 
-      const bindingsNodeValue = bindingsNode!.value()
-      expect(bindingsNodeValue).toEqual({
-        protocol: 'kafka',
-        version: '0.5.0',
+      const bindingNodes = bindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      expect(bindingNodes[0].kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNodes[0].key).toBe('kafka')
+      expect(bindingNodes[0].value()).toEqual({
         binding: {
           topic: "user-events",
           partitions: 3,
           replicas: 2,
         },
+        version: "0.5.0",
+        protocol: "kafka",
       })
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(1)
-
-      const kafkaBindingNode = bindingsNestedNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDING)
-      expect(kafkaBindingNode).toBeDefined()
-      expect(kafkaBindingNode!.key).toBe('kafka')
-      expect(kafkaBindingNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDING)
-
-      const bindingPropertyNodes = kafkaBindingNode!.childrenNodes()
-      expect(bindingPropertyNodes.length).toBe(0)
     })
 
-    it('should handle channel with multiple protocol bindings', () => {
+    it('should handle channel with parameters', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
         info: {
-          title: "channel-with-multiple-bindings-test",
+          title: "channel-with-parameters-test",
           version: "1.0.0"
         },
         channels: {
-          'multi-protocol-channel': {
-            address: "multi-protocol",
-            title: "Multi Protocol Channel",
-            bindings: {
-              kafka: {
-                topic: "events",
-                bindingVersion: "0.5.0"
-              },
-              amqp: {
-                is: "routingKey",
-                exchange: {
-                  name: "events-exchange",
-                  type: "topic"
-                },
-                bindingVersion: "0.3.0"
+          'user-channel': {
+            address: "user/events",
+            title: "User Events Channel",
+            parameters: {
+              userId: {
+                description: "User identifier",
+                default: "testUser001",
+                examples: ["testUser001", "testUser002", "testUser003"],
+                location: "$user.id"
               }
             }
           }
         },
         operations: {
-          'multi-protocol-operation': {
+          'user-operation': {
             action: "send",
-            channel: { $ref: "#/channels/multi-protocol-channel" }
+            channel: { $ref: "#/channels/user-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "multi-protocol"
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('user-channel')
+      expect(channelSectionNode!.value()).toEqual({
+        title: "User Events Channel",
       })
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Multi Protocol Channel"
+      const parametersNode = channelSectionNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS)
+      expect(parametersNode).toBeDefined()
+      expect(parametersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(parametersNode!.value()).toEqual({
+        rawValues: {
+          userId: {
+            type: 'string',
+            description: "User identifier",
+            default: "testUser001",
+            examples: ["testUser001", "testUser002", "testUser003"],
+            location: "$user.id"
+          }
+        }
       })
-
-      const bindingsNode = channelNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
-      expect(bindingsNode).toBeDefined()
-
-      const bindingsNestedNodes = bindingsNode!.nestedNodes()
-      expect(bindingsNestedNodes.length).toBe(2)
-
-      const kafkaBinding = bindingsNestedNodes.find(node => node.key === 'kafka')
-      expect(kafkaBinding).toBeDefined()
-
-      const amqpBinding = bindingsNestedNodes.find(node => node.key === 'amqp')
-      expect(amqpBinding).toBeDefined()
     })
 
     it('should handle channel with all fields combined', () => {
@@ -332,9 +391,9 @@ describe('Cases with channel', () => {
             parameters: {
               tenantId: {
                 description: "Tenant identifier",
-                schema: {
-                  type: "string"
-                }
+                default: "testTenant001",
+                examples: ["testTenant001", "testTenant002", "testTenant003"],
+                location: "$tenant.id"
               }
             },
             messages: {
@@ -366,82 +425,156 @@ describe('Cases with channel', () => {
         operations: {
           'complete-operation': {
             action: "send",
-            channel: { $ref: "#/channels/complete-channel" }
+            channel: { $ref: "#/channels/complete-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "tenant/{tenantId}/complete"
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('complete-channel')
+      expect(channelSectionNode!.value()).toEqual({
         title: "Complete Channel",
         summary: "A channel with all possible fields",
-        description: "This channel demonstrates all possible channel fields in AsyncAPI 3.0"
+        description: "This channel demonstrates all possible channel fields in AsyncAPI 3.0",
       })
 
-      // Verify all child nodes of channel are present
-      const channelChildrenNodes = channelNode!.childrenNodes()
-      expect(channelChildrenNodes.length).toBe(1)
+      const channelChildrenNodes = channelSectionNode!.childrenNodes()
+      expect(channelChildrenNodes.length).toBe(2)
 
-      // TODO 19.12.25 // Update tests when parameters, tags, externalDocs will be implemented
-
-      const bindingsNode = channelChildrenNodes.find(node => node.key === 'bindings')
+      const bindingsNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
       expect(bindingsNode).toBeDefined()
-      expect(bindingsNode!.kind).toBe(AsyncApiTreeNodeKinds.BINDINGS)
+      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const bindingNodes = bindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      expect(bindingNodes[0].kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNodes[0].key).toBe('kafka')
+      expect(bindingNodes[0].value()).toEqual({
+        binding: {
+          topic: "complete-topic",
+          partitions: 5,
+          replicas: 3,
+        },
+        version: "0.5.0",
+        protocol: "kafka",
+      })
+
+      const parametersNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS)
+      expect(parametersNode).toBeDefined()
+      expect(parametersNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(parametersNode!.value()).toEqual({
+        rawValues: {
+          tenantId: {
+            type: 'string',
+            description: "Tenant identifier",
+            default: "testTenant001",
+            examples: ["testTenant001", "testTenant002", "testTenant003"],
+            location: "$tenant.id"
+          }
+        }
+      })
     })
   })
 
-  describe('Channel with null address', () => {
-    it('should handle channel with null address', () => {
+  describe('Channel Extensions', () => {
+    it('should handle channel with extensions', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
         info: {
-          title: "channel-null-address-test",
+          title: "channel-with-extensions-test",
           version: "1.0.0"
         },
         channels: {
-          'dynamic-channel': {
-            address: null,
-            title: "Dynamic Channel",
-            description: "Channel with dynamically determined address"
+          'test-channel': {
+            address: "test-channel",
+            'x-first': "first",
+            'x-second': {
+              a: 1,
+              b: '2',
+              c: true,
+              d: [1, 2, 3],
+              e: {
+                f: 'g',
+                h: 4,
+                i: false,
+                j: [4, 5, 6],
+              }
+            }
           }
         },
         operations: {
-          'dynamic-operation': {
+          'test-operation': {
             action: "send",
-            channel: { $ref: "#/channels/dynamic-channel" }
+            channel: { $ref: "#/channels/test-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: '<address unknown>',
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Dynamic Channel",
-        description: "Channel with dynamically determined address",
-        address: undefined, // Channel address is lifted to operation
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      expect(channelSectionNode).toBeDefined()
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('test-channel')
+      expect(channelSectionNode!.value()).toEqual({})
+
+      const channelChildrenNodes = channelSectionNode!.childrenNodes()
+      expect(channelChildrenNodes.length).toBe(1)
+
+      const extensionsNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.EXTENSIONS)
+      expect(extensionsNode).toBeDefined()
+      expect(extensionsNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(extensionsNode!.value()).toEqual({
+        rawValues: {
+          'x-first': "first",
+          'x-second': {
+            a: 1,
+            b: '2',
+            c: true,
+            d: [1, 2, 3],
+            e: {
+              f: 'g',
+              h: 4,
+              i: false,
+              j: [4, 5, 6],
+            }
+          }
+        }
       })
     })
   })
@@ -464,25 +597,36 @@ describe('Cases with channel', () => {
         operations: {
           'receive-operation': {
             action: "receive",
-            channel: { $ref: "#/channels/receive-channel" }
+            channel: { $ref: "#/channels/receive-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "receive",
-        address: "receive/events"
-      })
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
 
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('receive-channel')
+      expect(channelSectionNode!.value()).toEqual({
         title: "Receive Channel",
         description: "Channel for receiving events"
       })
@@ -505,212 +649,113 @@ describe('Cases with channel', () => {
         operations: {
           'send-operation': {
             action: "send",
-            channel: { $ref: "#/channels/shared-channel" }
+            channel: { $ref: "#/channels/shared-channel" },
+            ...SINGLE_MESSAGE_USAGE
           },
           'receive-operation': {
             action: "receive",
-            channel: { $ref: "#/channels/shared-channel" }
+            channel: { $ref: "#/channels/shared-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
+      }
+
+      function test(tree: AsyncApiTree | null) {
+        const messageNode = tree!.root ?? null
+        expect(messageNode).not.toBeNull()
+
+        const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+        expect(messageSectionSelectorNode).toBeDefined()
+        expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+        const sections = messageSectionSelectorNode!.nestedNodes()
+        expect(sections.length).toBe(3)
+
+        const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+        const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+        const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+        expect(contentSectionNode).toBeDefined()
+        expect(channelSectionNode).toBeDefined()
+        expect(operationSectionNode).toBeDefined()
+
+        expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+        expect(channelSectionNode!.key).toBe('shared-channel')
+        expect(channelSectionNode!.value()).toEqual({
+          title: "Shared Channel",
+          description: "Channel used by multiple operations"
+        })
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const root = tree!.root!
-      const operations = root.childrenNodes()
-      expect(operations.length).toBe(2)
+      expect(tree).toBeDefined()
+      test(tree)
 
-      const sendOperation = operations[0]
-      const sendOperationValue = sendOperation.value()
-      expect(sendOperationValue).toEqual({
-        action: "send",
-        address: "shared/channel"
+      const treeWithSpecificOperation = createAsyncApiTreeForTests(asyncApiSource, {
+        operationKey: 'receive-operation',
+        operationType: 'receive',
+        messageKey: 'test-message',
       })
-
-      const sendChannelNode = sendOperation.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(sendChannelNode).toBeDefined()
-      expect(sendChannelNode!.value()).toEqual({
-        title: "Shared Channel",
-        description: "Channel used by multiple operations"
-      })
-
-      const receiveOperation = operations[1]
-      const receiveOperationValue = receiveOperation.value()
-      expect(receiveOperationValue).toEqual({
-        action: "receive",
-        address: "shared/channel"
-      })
-
-      const receiveChannelNode = receiveOperation.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(receiveChannelNode).toBeDefined()
-      expect(receiveChannelNode!.value()).toEqual({
-        title: "Shared Channel",
-        description: "Channel used by multiple operations"
-      })
-    })
-  })
-
-  describe('Channel with messages integration', () => {
-    it('should handle channel with inline message', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "channel-with-inline-message-test",
-          version: "1.0.0"
-        },
-        channels: {
-          'message-channel': {
-            address: "messages",
-            title: "Message Channel",
-            messages: {
-              InlineMessage: {
-                name: "InlineMessage",
-                title: "Inline Message",
-                description: "A message defined inline in the channel"
-              }
-            }
-          }
-        },
-        operations: {
-          'message-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/message-channel" },
-            messages: [
-              { $ref: "#/channels/message-channel/messages/InlineMessage" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "messages"
-      })
-
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(channelNode!.childrenNodes().length).toBe(0)
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Message Channel"
-      })
-
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
-      expect(messagesNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGES)
-    })
-
-    it('should handle channel referencing component messages', () => {
-      const asyncApiSource = {
-        asyncapi: "3.0.0",
-        info: {
-          title: "channel-with-component-message-test",
-          version: "1.0.0"
-        },
-        channels: {
-          'component-message-channel': {
-            address: "component/messages",
-            title: "Component Message Channel",
-            messages: {
-              ComponentMessage: { $ref: "#/components/messages/ComponentMessage" }
-            }
-          }
-        },
-        components: {
-          messages: {
-            ComponentMessage: {
-              name: "ComponentMessage",
-              title: "Component Message",
-              description: "A message defined in components"
-            }
-          }
-        },
-        operations: {
-          'component-message-operation': {
-            action: "send",
-            channel: { $ref: "#/channels/component-message-channel" },
-            messages: [
-              { $ref: "#/channels/component-message-channel/messages/ComponentMessage" }
-            ]
-          }
-        }
-      }
-
-      const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
-
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "component/messages"
-      })
-
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-      expect(channelNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
-      expect(channelNode!.childrenNodes().length).toBe(0)
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        title: "Component Message Channel",
-        address: undefined, // Channel address is lifted to operation
-      })
-
-      const messagesNode = operationNode.childrenNodes().find(node => node.key === 'messages')
-      expect(messagesNode).toBeDefined()
-      expect(messagesNode!.kind).toBe(AsyncApiTreeNodeKinds.MESSAGES)
-
-      const messagesNodeValue = messagesNode!.value()
-      expect(messagesNodeValue).toEqual({
-        internalTitle: "ComponentMessage",
-        title: "Component Message",
-        description: "A message defined in components"
-      })
+      expect(treeWithSpecificOperation).toBeDefined()
+      test(treeWithSpecificOperation)
     })
   })
 
   describe('Edge cases and special scenarios', () => {
-    it('should handle channel with only description (no title)', () => {
+    it('should handle channel with null address', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
         info: {
-          title: "channel-only-description-test",
+          title: "channel-null-address-test",
           version: "1.0.0"
         },
         channels: {
-          'description-only-channel': {
-            address: "description/only",
-            description: "This channel has only description field"
+          'null-address-channel': {
+            address: null,
+            title: "Null Address Channel",
+            description: "Channel with null address"
           }
         },
         operations: {
-          'description-only-operation': {
+          'null-address-operation': {
             action: "send",
-            channel: { $ref: "#/channels/description-only-channel" }
+            channel: { $ref: "#/channels/null-address-channel" },
+            ...SINGLE_MESSAGE_USAGE
           }
-        }
+        },
+        ...COMPONENTS_WITH_MESSAGES
       }
 
       const tree = createAsyncApiTreeForTests(asyncApiSource)
-      const operationNode = tree!.root!.childrenNodes()[0]
+      expect(tree).toBeDefined()
 
-      const operationNodeValue = operationNode.value()
-      expect(operationNodeValue).toEqual({
-        action: "send",
-        address: "description/only"
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const contentSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CONTENT)
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      const operationSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+      expect(contentSectionNode).toBeDefined()
+      expect(channelSectionNode).toBeDefined()
+      expect(operationSectionNode).toBeDefined()
+
+      expect(channelSectionNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(channelSectionNode!.key).toBe('null-address-channel')
+      expect(channelSectionNode!.value()).toEqual({
+        title: "Null Address Channel",
+        description: "Channel with null address"
       })
 
-      const channelNode = operationNode.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.CHANNEL)
-      expect(channelNode).toBeDefined()
-
-      const channelNodeValue = channelNode!.value()
-      expect(channelNodeValue).toEqual({
-        description: "This channel has only description field"
+      expect(messageNode!.value()).toMatchObject({
+        action: 'send',
+        address: '<address unknown>'
       })
     })
   })

@@ -5,20 +5,18 @@ import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { AsyncApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model";
-import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
-import { OperationNodeViewer } from "./OperationNodeViewer";
+import { MessageNodeViewer } from "./MessageNodeViewer";
 
-import { isOperationNode } from "@apihub/utils/async-api/node-type-checkers";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import '../../index.css';
+import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
 
 export type AsyncApiOperationViewerProps = {
   source: unknown
-  operationType?: string // send, receive
-  operationName?: string // e.g. send-fruit, receive-fruit
+  operationKey?: string // e.g. send-fruit, receive-fruit
+  messageKey?: string // e.g. send-fruit-message, receive-fruit-message
   displayMode?: DisplayMode
   referenceNamePropertyKey?: symbol
 }
@@ -40,42 +38,23 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
     const {
       source,
-      operationType,
-      operationName,
+      operationKey,
+      messageKey,
       displayMode = DEFAULT_DISPLAY_MODE,
       referenceNamePropertyKey,
     } = props
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeBuilder(source, referenceNamePropertyKey),
-      [source, referenceNamePropertyKey]
+      () => new AsyncApiTreeBuilder(source, { operationKey, messageKey }, referenceNamePropertyKey),
+      [source, operationKey, messageKey, referenceNamePropertyKey]
     )
-    const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
+    const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])
 
-    console.debug('[AsyncAPI] Source:', source)
+    console.debug('[AsyncAPI] Original Source:', source)
     console.debug('[AsyncAPI] Tree:', tree)
 
-    const root = tree.root
-    if (!root) {
-      return null
-    }
-
-    const operations = root.childrenNodes()
-    const operationNode = operations.find(
-      (current): current is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.OPERATION> => {
-        if (!isOperationNode(current)) {
-          return false
-        }
-        const value = current.value()
-        return (
-          !operationName || !operationType || (
-            current.key === operationName &&
-            value?.action === operationType
-          )
-        )
-      }
-    )
-    if (!operationNode) {
+    const messageNode = tree?.root
+    if (!messageNode || !isMessageNode(messageNode)) {
       return null
     }
 
@@ -83,8 +62,8 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
           <LevelContext.Provider value={0}>
-            <OperationNodeViewer
-              node={operationNode}
+            <MessageNodeViewer
+              node={messageNode}
             />
           </LevelContext.Provider>
         </LayoutModeContext.Provider>

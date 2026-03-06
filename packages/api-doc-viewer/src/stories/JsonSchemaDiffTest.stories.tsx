@@ -23,7 +23,7 @@ import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from './preprocess';
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Json Schema Diff Viewer',
+  title: 'Json Schema Diff Viewer/Test Stories',
   component: JsonSchemaDiffViewer,
   parameters: {},
   argTypes: {},

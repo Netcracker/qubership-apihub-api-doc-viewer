@@ -41,21 +41,31 @@ button.button-selector-option.selected {
 }
 
 h1.title-row {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
 }
 
 h2.title-row {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 h3.title-row {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 h4.title-row {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+h5.title-row {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+h6.title-row {
   font-size: 13px;
   font-weight: 600;
 }
@@ -82,6 +92,10 @@ span.binding-version {
   padding-bottom: 2px;
 }
 
+.broken-ref-viewer .subheader {
+  font-size: 12px;
+}
+
 .description-row_primary {
   font-size: 18px;
   font-weight: 400;
@@ -89,5 +103,10 @@ span.binding-version {
 
 .description-row_secondary {
   font-size: 15px;
+  font-weight: 400;
+}
+
+.description-row_tertiary {
+  font-size: 13px;
   font-weight: 400;
 }

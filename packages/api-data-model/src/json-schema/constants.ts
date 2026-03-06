@@ -35,7 +35,7 @@ export const jsonSchemaNodeValueProps: Record<JsonSchemaNodeType, readonly strin
   nothing: [...jsonSchemaCommonProps],
   boolean: [...jsonSchemaCommonProps],
   null: [...jsonSchemaCommonProps],
-  string: [...jsonSchemaCommonProps, 'format', 'minLength', 'maxLength', 'pattern'],
+  string: [...jsonSchemaCommonProps, 'format', 'minLength', 'maxLength', 'pattern', 'location' /* 'location' is for AsyncAPI Channel Parameters only */],
   number: [...jsonSchemaCommonProps, 'format', 'multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum'],
   integer: [...jsonSchemaCommonProps, 'format', 'multipleOf', 'minimum', 'exclusiveMinimum', 'maximum', 'exclusiveMaximum'],
   object: [...jsonSchemaCommonProps, 'required', 'minProperties', 'maxProperties', 'propertyNames'],

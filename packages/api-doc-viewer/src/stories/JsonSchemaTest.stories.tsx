@@ -21,7 +21,7 @@ import { prepareJsonSchema, REQUEST_BODY_TARGET } from './preprocess';
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Json Schema Viewer',
+  title: 'Json Schema Viewer/Test Stories',
   component: JsonSchemaViewer,
   parameters: {},
   argTypes: {},

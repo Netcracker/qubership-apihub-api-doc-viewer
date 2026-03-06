@@ -42,7 +42,7 @@ const AddressRowContainer: FC<AddressRowProps> = (props) => {
 }
 
 const ACTION_COLOR_MAP: Record<string, string> = {
-  send: 'bg-blue-500',
+  send: 'bg-sky-400',
   receive: 'bg-green-500',
 }
 
@@ -55,9 +55,9 @@ const AddressRowContent: FC<AddressRowProps> = (props) => {
   const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
   return (
-    <div className={`address-row font-Inter-Medium ${width} my-2`}>
-      <div className='flex flex-row items-center w-max p-3 bg-slate-100 rounded-md gap-3'>
-        <div className={`font-bold px-2 py-1 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
+    <div className={`address-row font-Inter-Medium ${width}`}>
+      <div className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3' style={{ paddingLeft: 10, paddingRight: 10 }}>
+        <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
           {action.toUpperCase()}
         </div>
         <div className='text-slate-500'>{address}</div>
