@@ -58,7 +58,7 @@ const createSource = ({ channel, operationType = 'send', servers }: SourceOption
     [CHANNEL_KEY]: {
       ...{
         ...channel,
-        ...servers ? { servers: Object.keys(servers).map(serverId => `#/servers/${serverId}`) } : {},
+        ...servers ? { servers: Object.keys(servers).map(serverId => ({ $ref: `#/servers/${serverId}` })) } : {},
       },
       messages: {
         [MESSAGE_KEY]: {
