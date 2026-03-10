@@ -41,10 +41,12 @@ type ChannelContent = {
 type SourceOptions = {
   channel: ChannelContent;
   operationType?: 'send' | 'receive';
+  servers?: Record<string, Record<string, unknown>>;
 };
 
-const createSource = ({ channel, operationType = 'send' }: SourceOptions) => ({
+const createSource = ({ channel, operationType = 'send', servers }: SourceOptions) => ({
   asyncapi: "3.0.0",
+  ...servers ? { servers } : {},
   operations: {
     [OPERATION_KEY]: {
       action: operationType,
@@ -54,7 +56,10 @@ const createSource = ({ channel, operationType = 'send' }: SourceOptions) => ({
   },
   channels: {
     [CHANNEL_KEY]: {
-      ...channel,
+      ...{
+        ...channel,
+        ...servers ? { servers: Object.keys(servers).map(serverId => `#/servers/${serverId}`) } : {},
+      },
       messages: {
         [MESSAGE_KEY]: {
           name: "Message Name",
@@ -171,67 +176,75 @@ export const BindingsTwoOptionsSelectedSecond: Story = createStory(createSource(
 }));
 
 export const ServersOneServer: Story = createStory(createSource({
-  channel: {
-    servers: [
-      {
-        title: "Server Title",
-        host: "localhost",
-        protocol: "http",
-        description: "The HTTP server to connect to",
-      },
-    ],
-  },
+  channel: {},
+  servers: {
+    'first-server-id': {
+      title: "Server Title",
+      host: "localhost",
+      protocol: "http",
+      description: "The HTTP server to connect to",
+    }
+  }
+}
+), 'servers-one-server');
+
+export const ServersOneServerWithoutTitle: Story = createStory(createSource({
+  channel: {},
+  servers: {
+    'server-without-title': {
+      host: "localhost",
+      protocol: "http",
+    }
+  }
 }));
 
 export const ServersTwoServers: Story = createStory(createSource({
-  channel: {
-    servers: [
-      {
-        title: "Kafka Server Title",
-        host: "kafka.server.com",
-        protocol: "kafka",
-        description: "The Kafka server to connect to",
-      },
-      {
-        title: "AMQP Server Title",
-        host: "amqp.server.com",
-        protocol: "amqp",
-        description: "The AMQP server to connect to",
-      },
-    ],
-  },
+  channel: {},
+  servers: {
+    'first-server': {
+      title: "Kafka Server Title",
+      host: "kafka.server.com",
+      protocol: "kafka",
+      description: "The Kafka server to connect to",
+    },
+    'second-server': {
+      title: "AMQP Server Title",
+      host: "amqp.server.com",
+      protocol: "amqp",
+      description: "The AMQP server to connect to",
+    }
+  }
 }));
 
 export const ServersTwoServersWithBindings: Story = createStory(createSource({
-  channel: {
-    servers: [
-      {
-        title: "Kafka Server Title",
-        host: "kafka.server.com",
-        protocol: "kafka",
-        description: "The Kafka server to connect to",
-        bindings: {
-          kafka: {
-            bindingVersion: "0.5.0",
-            topic: "events.user.created",
-            clientId: "api-doc-viewer-client",
-          }
-        },
+  channel: {},
+  servers: {
+    'first-server': {
+      title: "Kafka Server Title",
+      host: "kafka.server.com",
+      protocol: "kafka",
+      description: "The Kafka server to connect to",
+      bindings: {
+        kafka: {
+          bindingVersion: "0.5.0",
+          topic: "events.user.created",
+          clientId: "api-doc-viewer-client",
+        }
       },
-      {
-        title: "AMQP Server Title",
-        host: "amqp.server.com",
-        protocol: "amqp",
-        description: "The AMQP server to connect to",
-        bindings: {
-          amqp: {
-            bindingVersion: "0.2.0",
-            clientId: "mqtt-client-01",
-          }
-        },
+    },
+    'second-server': {
+      title: "AMQP Server Title",
+      host: "amqp.server.com",
+      protocol: "amqp",
+      description: "The AMQP server to connect to",
+      bindings: {
+        amqp: {
+          bindingVersion: "0.2.0",
+          clientId: "mqtt-client-01",
+        }
       },
-    ],
-  },
+    },
+  }
 }));
 
 export const DescriptionSummary: Story = createStory(createSource({
@@ -275,15 +288,15 @@ export const DescriptionBindingsOneOption: Story = createStory(createSource({
 export const DescriptionServersOneServer: Story = createStory(createSource({
   channel: {
     description: "Channel description",
-    servers: [
-      {
-        title: "Server Title",
-        host: "localhost",
-        protocol: "http",
-        description: "The HTTP server to connect to",
-      },
-    ],
   },
+  servers: {
+    'server-with-title': {
+      title: "Server Title",
+      host: "localhost",
+      protocol: "http",
+      description: "The HTTP server to connect to",
+    }
+  }
 }));
 
 export const AddressParametersExtensions: Story = createStory(createSource({
@@ -321,15 +334,15 @@ export const AddressParametersServersOneServer: Story = createStory(createSource
         description: "Parameter description",
       },
     },
-    servers: [
-      {
-        title: "Server Title",
-        host: "localhost",
-        protocol: "http",
-        description: "The HTTP server to connect to",
-      },
-    ],
   },
+  servers: {
+    'server-with-title': {
+      title: "Server Title",
+      host: "localhost",
+      protocol: "http",
+      description: "The HTTP server to connect to",
+    },
+  }
 }));
 
 export const ExtensionsBindingsOneOption: Story = createStory(createSource({
@@ -348,22 +361,22 @@ export const ExtensionsBindingsOneOption: Story = createStory(createSource({
 export const ExtensionsServersOneServer: Story = createStory(createSource({
   channel: {
     ...EXTENSIONS,
-    servers: [
-      {
-        title: "Server Title",
-        host: "localhost",
-        protocol: "http",
-        description: "The HTTP server to connect to",
-      },
-    ],
   },
+  servers: {
+    'server-with-title': {
+      title: "Server Title",
+      host: "localhost",
+      protocol: "http",
+      description: "The HTTP server to connect to",
+    }
+  }
 }));
 
 export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
   channel: {
     bindings: { $ref: "#/components/bindings/not-existing-bindings" },
   },
-}), 'edge-case-broken-ref-bindings');
+}));
 
 export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource({
   channel: {
@@ -373,7 +386,7 @@ export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource
       },
     },
   },
-}), 'edge-case-broken-ref-address-parameter');
+}));
 
 export const EdgeCaseBrokenRefServer: Story = createStory(createSource({
   channel: {
@@ -381,4 +394,4 @@ export const EdgeCaseBrokenRefServer: Story = createStory(createSource({
       { $ref: "#/components/servers/not-existing-server" },
     ]
   },
-}), 'edge-case-broken-ref-server');
+}));
