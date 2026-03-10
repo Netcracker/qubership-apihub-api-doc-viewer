@@ -308,7 +308,15 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
           ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
           ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
-          ...operationChannel.servers ? { servers: operationChannel.servers } : {},
+          ...operationChannel.servers ? {
+            servers: operationChannel.servers.map((server: v3.ServerObject | v3.ReferenceObject) => {
+              if (this.isReferenceObject(server)) {
+                return server
+              }
+              const serverReferenceNameProperty = pickReferenceNameProperty(server)
+              return { ...server, title: server.title ?? serverReferenceNameProperty }
+            })
+          } : {},
         },
         operation: {
           ...(operationReferenceNameProperty ?? {}),

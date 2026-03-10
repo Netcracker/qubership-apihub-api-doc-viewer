@@ -23,7 +23,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const brokenRef = useMemo(() => meta?.brokenRef, [meta])
 
-  const description = useMemo(() => value?.description ?? '', [value])
+  const description = useMemo(() => value?.description ?? value?.summary ?? '', [value])
 
   const children: AsyncApiTreeNode[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)

@@ -244,4 +244,4 @@ export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
   message: {
     bindings: { $ref: "#/components/bindings/not-existing-bindings" },
   },
-}), 'edge-case-broken-ref-bindings');
+}));
