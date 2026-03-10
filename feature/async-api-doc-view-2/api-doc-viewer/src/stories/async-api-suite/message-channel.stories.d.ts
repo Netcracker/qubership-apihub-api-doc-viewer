@@ -26,6 +26,7 @@ export declare const BindingsOneOption: Story;
 export declare const BindingsTwoOptionsSelectedFirst: Story;
 export declare const BindingsTwoOptionsSelectedSecond: Story;
 export declare const ServersOneServer: Story;
+export declare const ServersOneServerWithoutTitle: Story;
 export declare const ServersTwoServers: Story;
 export declare const ServersTwoServersWithBindings: Story;
 export declare const DescriptionSummary: Story;
