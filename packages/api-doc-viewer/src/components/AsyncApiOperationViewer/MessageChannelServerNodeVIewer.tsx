@@ -31,15 +31,17 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   return (
     <div className='flex flex-col gap-2 message-channel-server-node'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
-      {!brokenRef && <>
-        <TitleRow
-          value={value?.title}
-          expandable={false}
-          expanded={true}
-          variant='h4'
-        />
+      {!brokenRef && value && <>
+        {value.title && (
+          <TitleRow
+            value={value.title}
+            expandable={false}
+            expanded={true}
+            variant='h4'
+          />
+        )}
         <span className='server-element server-subheader'>
-          {value?.protocol}://{value?.host}
+          {value.protocol}://{value.host}
         </span>
         <Aligner>
           <DescriptionRow
@@ -47,12 +49,12 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             fontSize={DescriptionFontSize.TERTIARY}
           />
         </Aligner>
-        {children.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {bindingsChild && <BindingsNodeViewer node={bindingsChild} variant='secondary' />}
-          </div>
-        )}
       </>}
+      {!brokenRef && children.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {bindingsChild && <BindingsNodeViewer node={bindingsChild} variant='secondary' />}
+        </div>
+      )}
     </div>
   )
 })
