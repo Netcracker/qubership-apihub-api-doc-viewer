@@ -186,7 +186,7 @@ export const ServersOneServer: Story = createStory(createSource({
     }
   }
 }
-), 'servers-one-server');
+));
 
 export const ServersOneServerWithoutTitle: Story = createStory(createSource({
   channel: {},
