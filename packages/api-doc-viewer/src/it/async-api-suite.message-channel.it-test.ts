@@ -13,6 +13,11 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     await jestPuppeteer.resetPage()
   })
 
+  async function waitForHtmlRenderingComplete() {
+    await page.waitForFunction(() => document.readyState === 'complete')
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+  }
+
   async function switchToChannelSection() {
     await page.click('[data-testid="message-channel"]')
     await page.waitForSelector('[data-testid="message-channel-section"]', { visible: true })
@@ -30,6 +35,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -40,6 +46,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -50,6 +57,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -60,6 +68,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -70,6 +79,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -80,6 +90,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -90,6 +101,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -100,6 +112,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -110,6 +123,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -120,6 +134,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -131,6 +146,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     component = await story.viewComponent()
     await switchToChannelSection()
     await switchToSecondBindingOption()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -141,6 +157,18 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+  
+  it('servers-one-server-without-title', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server-without-title'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -151,6 +179,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -161,6 +190,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -171,6 +201,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -181,6 +212,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -191,6 +223,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -201,6 +234,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -211,6 +245,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -221,6 +256,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -231,6 +267,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -241,6 +278,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -251,6 +289,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -261,6 +300,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -271,6 +311,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -281,6 +322,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -291,6 +333,7 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 })

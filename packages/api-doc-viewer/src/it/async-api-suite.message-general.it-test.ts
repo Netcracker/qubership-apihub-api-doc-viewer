@@ -13,12 +13,18 @@ describe('AsyncAPI Suite 2 - Message General', () => {
     await jestPuppeteer.resetPage()
   })
 
+  async function waitForHtmlRenderingComplete() {
+    await page.waitForFunction(() => document.readyState === 'complete')
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+  }
+
   it('message-id-send', async () => {
     story = await storyPage(
       page,
       'async-api-suite-message--message-id-send'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -28,6 +34,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--message-id-receive'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -37,6 +44,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--name'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -46,6 +54,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--title'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -55,6 +64,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--name-title'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -64,6 +74,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--address'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -73,6 +84,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--address-description'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -82,6 +94,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--address-summary'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -91,6 +104,7 @@ describe('AsyncAPI Suite 2 - Message General', () => {
       'async-api-suite-message--address-description-summary'
     )
     component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 })
