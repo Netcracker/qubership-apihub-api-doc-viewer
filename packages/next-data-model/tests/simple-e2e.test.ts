@@ -242,6 +242,7 @@ describe('Simple E2E test', () => {
     expect(channelServerNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
     expect(channelServerNode!.key).toBe('kafka-main')
     expect(channelServerNode!.value()).toEqual({
+      title: "kafka-main",
       host: "kafka-host",
       protocol: "kafka"
     })
