@@ -18,6 +18,7 @@ import { AsyncApiOperationViewer } from '@apihub/components/AsyncApiOperationVie
 import type { Meta, StoryObj } from '@storybook/react';
 import YAML from 'js-yaml';
 import type { ComponentProps } from 'react';
+import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite/shared-test-data';
 import { prepareAsyncApiDocument } from './preprocess';
 
 type StoryArgs = ComponentProps<typeof AsyncApiOperationViewer> & {
@@ -77,6 +78,7 @@ export const Debug: Story = {
 }`,
     operationKey: '',
     operationType: '',
+    referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY
   },
   render: (args) => {
     const { sourceText, ...viewerArgs } = args
