@@ -5,6 +5,7 @@ export type AsyncApiOperationViewerProps = {
     source: unknown;
     operationKeys?: OperationKeys;
     displayMode?: DisplayMode;
+    devMode?: boolean;
     referenceNamePropertyKey: symbol;
 };
 export declare const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps>;
