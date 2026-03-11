@@ -71,6 +71,7 @@ const createSource = ({ channel, operationType = 'send', servers }: SourceOption
 
 const createStory = (source: ReturnType<typeof createSource>, storyName?: string): Story => ({
   args: {
+    devMode: true,
     source: prepareAsyncApiDocument({ source, storyName }),
     operationKeys: {
       operationKey: OPERATION_KEY,

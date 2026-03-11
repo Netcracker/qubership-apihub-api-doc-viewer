@@ -68,6 +68,7 @@ type Story = StoryObj<StoryArgs>
 
 export const Debug: Story = {
   args: {
+    devMode: true,
     sourceText: `{
   "asyncapi": "3.0.0",
   "operations": {

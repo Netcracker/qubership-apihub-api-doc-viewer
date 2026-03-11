@@ -12,6 +12,7 @@ import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplex
 import { isObject, isObjectWithStringKeys } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
+import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
@@ -138,6 +139,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     private readonly source: unknown,
     private readonly referenceNamePropertyKey: symbol,
     private readonly operationKeys?: OperationKeys,
+    private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -160,7 +162,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     // TODO: Encapsulate this
     const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, this.operationKeys)
 
-    console.debug('[AsyncAPI] Prepared Source:', preparedSource)
+    this.logger.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
     syncCrawl<AsyncApiTreeCrawlState, AsyncApiCrawlRule>(
       preparedSource,
@@ -196,7 +198,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     let firstOperationKey: string | undefined
     let firstOperationMessageKey: string | undefined
     if (!operationKeys) {
-      console.error('Operation key or message key is not provided. Looking for first operation, channel and message in source...')
+      this.logger.error('Operation key or message key is not provided. Looking for first operation, channel and message in source...')
       firstOperationKey = Object.keys(operations).at(0)
       if (firstOperationKey) {
         const firstOperationCandidate = operations[firstOperationKey]
@@ -212,11 +214,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
         }
       }
       if (!firstOperationKey || !firstOperationMessageKey) {
-        !firstOperationKey && console.error('Cannot find first operation in source.')
-        !firstOperationMessageKey && console.error('Cannot find first operation message key in source.')
+        !firstOperationKey && this.logger.error('Cannot find first operation in source.')
+        !firstOperationMessageKey && this.logger.error('Cannot find first operation message key in source.')
         return null
       }
-      console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
+      this.logger.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
       operationKey = firstOperationKey
       messageKey = firstOperationMessageKey
     } else {
@@ -236,7 +238,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       .at(0)
 
     if (!operation) {
-      console.error(`Cannot find operation with key (id) = ${operationKey}`)
+      this.logger.error(`Cannot find operation with key (id) = ${operationKey}`)
       return null
     }
 
@@ -247,7 +249,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey] === messageKey)
 
     if (!operationChannel) {
-      console.error('Cannot find channel in the operation', operation)
+      this.logger.error('Cannot find channel in the operation', operation)
       return null
     }
 
@@ -255,7 +257,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       const channelMessage = operationChannel.messages?.[messageKey]
       operationMessage = !this.isReferenceObject(channelMessage) ? channelMessage : undefined
       if (!operationMessage) {
-        console.error(`Cannot find message with key (id) = ${messageKey}`)
+        this.logger.error(`Cannot find message with key (id) = ${messageKey}`)
         return null
       }
     }
