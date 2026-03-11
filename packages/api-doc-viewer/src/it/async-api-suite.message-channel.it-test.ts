@@ -150,21 +150,65 @@ describe('AsyncAPI Suite 2 - Message Channel', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('servers-one-server', async () => {
+  it('servers-one-server-with-host-and-protocol', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-message-channel--servers-one-server'
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
     await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
-  
-  it('servers-one-server-without-title', async () => {
+
+  it('servers-one-server-with-host-and-protocol-and-title', async () => {
     story = await storyPage(
       page,
-      'async-api-suite-message-channel--servers-one-server-without-title'
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol-and-title'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('servers-one-server-with-host-and-protocol-and-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol-and-description'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('servers-one-server-with-host-and-protocol-and-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol-and-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('servers-one-server-with-host-and-protocol-and-description-and-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol-and-description-and-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('servers-one-server-with-host-and-protocol-and-bindings', async () => {
+    story = await storyPage(
+      page,
+      'async-api-suite-message-channel--servers-one-server-with-host-and-protocol-and-bindings'
     )
     component = await story.viewComponent()
     await switchToChannelSection()

@@ -175,25 +175,74 @@ export const BindingsTwoOptionsSelectedSecond: Story = createStory(createSource(
   },
 }));
 
-export const ServersOneServer: Story = createStory(createSource({
+export const ServersOneServerWithHostAndProtocol: Story = createStory(createSource({
+  channel: {},
+  servers: {
+    'first-server-id': {
+      host: "localhost",
+      protocol: "http",
+    }
+  }
+}));
+
+export const ServersOneServerWithHostAndProtocolAndTitle: Story = createStory(createSource({
   channel: {},
   servers: {
     'first-server-id': {
       title: "Server Title",
       host: "localhost",
       protocol: "http",
-      description: "The HTTP server to connect to",
     }
   }
-}
-));
+}));
 
-export const ServersOneServerWithoutTitle: Story = createStory(createSource({
+export const ServersOneServerWithHostAndProtocolAndDescription: Story = createStory(createSource({
   channel: {},
   servers: {
-    'server-without-title': {
+    'first-server-id': {
       host: "localhost",
       protocol: "http",
+      description: "Server description",
+    }
+  }
+}));
+
+export const ServersOneServerWithHostAndProtocolAndSummary: Story = createStory(createSource({
+  channel: {},
+  servers: {
+    'first-server-id': {
+      host: "localhost",
+      protocol: "http",
+      summary: "Server summary",
+    }
+  }
+}));
+
+export const ServersOneServerWithHostAndProtocolAndDescriptionAndSummary: Story = createStory(createSource({
+  channel: {},
+  servers: {
+    'first-server-id': {
+      host: "localhost",
+      protocol: "http",
+      description: "Server description",
+      summary: "Server summary",
+    }
+  }
+}));
+
+export const ServersOneServerWithHostAndProtocolAndBindings: Story = createStory(createSource({
+  channel: {},
+  servers: {
+    'first-server-id': {
+      host: "localhost",
+      protocol: "http",
+      bindings: {
+        kafka: {
+          bindingVersion: "0.5.0",
+          topic: "events.user.created",
+          clientId: "api-doc-viewer-client",
+        }
+      },
     }
   }
 }));

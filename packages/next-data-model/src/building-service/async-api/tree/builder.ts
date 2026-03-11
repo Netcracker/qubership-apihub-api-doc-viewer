@@ -280,6 +280,16 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       }
     }
 
+    const pickReferenceNamePropertyValue = (source: unknown): unknown | undefined => {
+      if (!isObject(source)) {
+        return undefined
+      }
+      if (!this.referenceNamePropertyKey) {
+        return undefined
+      }
+      return source[this.referenceNamePropertyKey]
+    }
+
     const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
     const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
     const operationReferenceNameProperty = pickReferenceNameProperty(operation)
@@ -313,8 +323,10 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
               if (this.isReferenceObject(server)) {
                 return server
               }
-              const serverReferenceNameProperty = pickReferenceNameProperty(server)
-              return { ...server, title: server.title ?? serverReferenceNameProperty }
+              const serverTitle = server.title ?? pickReferenceNamePropertyValue(server)
+              return typeof serverTitle === 'string'
+                ? { ...server, title: serverTitle }
+                : server
             })
           } : {},
         },
