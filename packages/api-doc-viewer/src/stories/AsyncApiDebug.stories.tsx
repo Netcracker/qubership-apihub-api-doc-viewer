@@ -72,15 +72,30 @@ export const Debug: Story = {
   "asyncapi": "3.0.0",
   "operations": {
     "test-operation": {
-      "action": "send"
+      "action": "send",
+      "channel": { "$ref": "#/channels/test-channel" },
+      "messages": [
+        { "$ref": "#/channels/test-channel/messages/test-message" }
+      ]
+    }
+  },
+  "channels": {
+    "test-channel": {
+      "messages": {
+        "test-message": {
+          "name": "Test Message"
+        }
+      }
     }
   }
 }`,
-    operationKey: '',
-    operationType: '',
+    operationKeys: {
+      operationKey: 'test-operation',
+      messageKey: 'test-message',
+    },
     referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY
   },
-  render: (args) => {
+  render: (args: StoryArgs) => {
     const { sourceText, ...viewerArgs } = args
 
     let parsedSource: unknown = undefined

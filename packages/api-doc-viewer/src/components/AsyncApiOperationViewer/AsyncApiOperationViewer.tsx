@@ -10,15 +10,15 @@ import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
 import { MessageNodeViewer } from "./MessageNodeViewer";
 
-import '../../index.css';
+import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
+import '../../index.css';
 
 export type AsyncApiOperationViewerProps = {
   source: unknown
-  operationKey?: string // e.g. send-fruit, receive-fruit
-  messageKey?: string // e.g. send-fruit-message, receive-fruit-message
+  operationKeys?: OperationKeys
   displayMode?: DisplayMode
-  referenceNamePropertyKey?: symbol
+  referenceNamePropertyKey: symbol
 }
 
 export const AsyncApiOperationViewer: FC<AsyncApiOperationViewerProps> =
@@ -38,15 +38,14 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
   memo<AsyncApiOperationViewerProps>(props => {
     const {
       source,
-      operationKey,
-      messageKey,
+      operationKeys,
       displayMode = DEFAULT_DISPLAY_MODE,
       referenceNamePropertyKey,
     } = props
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeBuilder(source, { operationKey, messageKey }, referenceNamePropertyKey),
-      [source, operationKey, messageKey, referenceNamePropertyKey]
+      () => new AsyncApiTreeBuilder(source, referenceNamePropertyKey, operationKeys),
+      [source, operationKeys, referenceNamePropertyKey]
     )
     const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])
 

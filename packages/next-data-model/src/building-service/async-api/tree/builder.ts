@@ -4,6 +4,7 @@ import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
+import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
@@ -95,39 +96,39 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
           'binding',
           'version',
           'protocol',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
       case AsyncApiTreeNodeKinds.EXTENSIONS:
       case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
         return [
           'rawValues',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
       case AsyncApiTreeNodeKinds.MESSAGE:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'internalTitle',
           'action',
           'address',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
       case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
       case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
       case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
       case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
         return [
           'schema',
           'schemaFormat',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
       case AsyncApiTreeNodeKinds.SERVER:
         return [
           ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
           'host',
           'protocol',
-        ] satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
+        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
       default:
         return []
     }
@@ -135,11 +136,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   constructor(
     private readonly source: unknown,
-    private readonly operationKeys?: Partial<{
-      operationKey: string // e.g. send-fruit, receive-fruit
-      messageKey: string // e.g. send-fruit-message, receive-fruit-message
-    }>,
-    private readonly referenceNamePropertyKey?: symbol,
+    private readonly referenceNamePropertyKey: symbol,
+    private readonly operationKeys?: OperationKeys,
   ) {
     super()
     this.tree = new AsyncApiTree();
@@ -159,10 +157,8 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     // TODO: Encapsulate this
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
-    const { operationKey, messageKey } = this.operationKeys ?? {}
-
     // TODO: Encapsulate this
-    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, operationKey, messageKey)
+    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, this.operationKeys)
 
     console.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
@@ -186,24 +182,21 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
   private transformOperationOrientedSpecToMessageOrientedSpec(
     source: unknown,
-    operationKey?: string, // id (key) to the necessary operation in source
-    messageKey?: string, // id (key) to the necessary message in source
+    operationKeys?: OperationKeys,
   ): unknown {
     if (!this.isAsyncApiSpecification(source)) {
       return null
     }
 
-    if (!this.referenceNamePropertyKey) {
-      console.error('Reference name property key is not provided. Cannot find operation, channel or message by id (key) in source without key of reference name property.')
-      return null
-    }
-
     const operations: v3.OperationsObject = source.operations ?? {}
+
+    let operationKey: string
+    let messageKey: string
 
     let firstOperationKey: string | undefined
     let firstOperationMessageKey: string | undefined
-    if (!operationKey || !messageKey) {
-      console.error('Operation type (action), key or message key is not provided. Looking for first operation, channel and message in source...')
+    if (!operationKeys) {
+      console.error('Operation key or message key is not provided. Looking for first operation, channel and message in source...')
       firstOperationKey = Object.keys(operations).at(0)
       if (firstOperationKey) {
         const firstOperationCandidate = operations[firstOperationKey]
@@ -226,6 +219,9 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       console.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
       operationKey = firstOperationKey
       messageKey = firstOperationMessageKey
+    } else {
+      operationKey = operationKeys.operationKey
+      messageKey = operationKeys.messageKey
     }
 
     const operation: v3.OperationObject | undefined = Object.entries(operations)
@@ -248,7 +244,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
       .filter((message): message is v3.MessageObject => !this.isReferenceObject(message))
     let operationMessage: v3.MessageObject | undefined = operationMessages
-      .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey!] === messageKey)
+      .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey] === messageKey)
 
     if (!operationChannel) {
       console.error('Cannot find channel in the operation', operation)
@@ -269,25 +265,13 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const operationMessageExtensions = this.copyExtensions(operationMessage)
 
     const pickReferenceNameProperty = (source: unknown): Record<PropertyKey, unknown> | undefined => {
-      if (!isObject(source)) {
-        return undefined
-      }
-      if (!this.referenceNamePropertyKey) {
-        return undefined
-      }
-      return {
-        [this.referenceNamePropertyKey]: source[this.referenceNamePropertyKey],
-      }
+      return isObject(source)
+        ? { [this.referenceNamePropertyKey]: source[this.referenceNamePropertyKey] }
+        : undefined
     }
 
     const pickReferenceNamePropertyValue = (source: unknown): unknown | undefined => {
-      if (!isObject(source)) {
-        return undefined
-      }
-      if (!this.referenceNamePropertyKey) {
-        return undefined
-      }
-      return source[this.referenceNamePropertyKey]
+      return isObject(source) ? source[this.referenceNamePropertyKey] : undefined
     }
 
     const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
