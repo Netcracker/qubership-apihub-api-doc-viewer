@@ -10,6 +10,7 @@ import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
 import './styles/MessageChannelServer.css'
 import { TitleRow } from "./TitleRow"
+import { SizeVariant } from "./types/SizeVariant"
 
 type MessageChannelServerNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>
@@ -50,9 +51,12 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           />
         </Aligner>
       </>}
-      {!brokenRef && children.length > 0 && (
+      {!brokenRef && children.length > 0 && bindingsChild && (
         <div className="flex flex-col gap-2">
-          {bindingsChild && <BindingsNodeViewer node={bindingsChild} variant='secondary' />}
+          <BindingsNodeViewer
+            node={bindingsChild}
+            variant={SizeVariant.SECONDARY}
+          />
         </div>
       )}
     </div>
