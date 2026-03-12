@@ -54,5 +54,20 @@ describe('Transform JSON schema extensions', () => {
         ],
       })
     })
+
+    it('should keep properties with symbolic keys as-is', () => {
+      const symbolA = Symbol('a')
+      const symbolB = Symbol('b')
+      const value = { 'x-a': 777, 'x-b': "hello world", [symbolA]: 1, [symbolB]: 2 }
+
+      expect(transformJsonSchemaExtensions(value)).toEqual({
+        [symbolA]: 1,
+        [symbolB]: 2,
+        extensions: [
+          { 'x-a': 777 },
+          { 'x-b': "hello world" }
+        ],
+      })
+    })
   })
 })
