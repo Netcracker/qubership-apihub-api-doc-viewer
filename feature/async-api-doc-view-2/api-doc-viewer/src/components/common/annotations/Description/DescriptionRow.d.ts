@@ -20,7 +20,7 @@ import { PropsWithChanges } from '../../../../types/internal/PropsWithChanges';
 import { PropsWithShift } from '../../../../types/internal/PropsWithShift';
 import { LayoutMode } from '../../../../types/LayoutMode';
 import { PropsWithoutChangesSummary } from "../../../../types/PropsWithoutChangesSummary";
-import { DescriptionFontSize } from "./type-description-font-size";
+import { DescriptionFontSize } from "./types/DescriptionFontSize";
 export type DescriptionRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     value: string;
     fontSize?: DescriptionFontSize;
