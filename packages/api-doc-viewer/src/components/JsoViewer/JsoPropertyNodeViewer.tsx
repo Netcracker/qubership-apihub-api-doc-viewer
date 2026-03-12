@@ -98,7 +98,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   const childrenProperties = node.childrenNodes()
 
   return (
-    <div data-testId='jso-property-node-viewer' className="flex flex-col jso-property">
+    <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
         value={`${node.key}`}
         expandable={expandable}

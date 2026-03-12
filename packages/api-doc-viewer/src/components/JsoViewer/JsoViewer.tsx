@@ -52,7 +52,7 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
     <DisplayModeContext.Provider value={displayMode}>
       <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
         <LevelContext.Provider value={initialLevel}>
-          <div data-testId='jso-viewer'>
+          <div data-testid='jso-viewer'>
             {jsoProperties.map(jsoProperty => (
               <JsoPropertyNodeViewer
                 key={jsoProperty.id}
