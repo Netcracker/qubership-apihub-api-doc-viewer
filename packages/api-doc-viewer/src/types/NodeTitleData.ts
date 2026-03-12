@@ -16,7 +16,7 @@
 
 import { GraphApiDiffTreeNode, GraphApiTreeNode, JsonSchemaDiffTreeNode } from '@netcracker/qubership-apihub-api-data-model'
 import { BadgeKind } from '../components/kit/ux/types'
-import { CutomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
+import { CustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
 
 export type NodeTitleData = Partial<{
   title: string | number
@@ -33,7 +33,7 @@ type NodeTitleDataOptions<T> = {
   nodeValue?: unknown
   nodeMeta?: unknown
   titleMappings?: Record<string, string>
-  customizationOptions?: CutomizationOptions
+  customizationOptions?: CustomizationOptions
 }
 
 export type JsonNodeTitleDataOptions = NodeTitleDataOptions<JsonSchemaDiffTreeNode>

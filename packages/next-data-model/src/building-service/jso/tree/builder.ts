@@ -65,7 +65,7 @@ export class JsoTreeBuilder extends TreeBuilder<
       [
         this.instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop(),
         this.instantiateHookUnifyingValue(this.source),
-        this.instantiateHookCreatingAsyncApiTreeNodes(),
+        this.instantiateHookCreatingJsoTreeNodes(),
       ],
       {
         state: initialState,
@@ -148,7 +148,7 @@ export class JsoTreeBuilder extends TreeBuilder<
     }
   }
 
-  private instantiateHookCreatingAsyncApiTreeNodes(): SyncCrawlHook<JsoTreeCrawlState, JsoCrawlRule> {
+  private instantiateHookCreatingJsoTreeNodes(): SyncCrawlHook<JsoTreeCrawlState, JsoCrawlRule> {
     return ({ key, value, path, rules, state }) => {
       if (!rules) {
         return { done: true };
