@@ -5,6 +5,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
+import { SizeVariant } from "./types/SizeVariant";
 
 type MessageSectionsViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
@@ -39,7 +40,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         options={sectionSelectorOptions}
         selectedOption={selectedSection}
         onSelectOption={setSelectedSection}
-        variant="secondary"
+        variant={SizeVariant.SECONDARY}
       />
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>
