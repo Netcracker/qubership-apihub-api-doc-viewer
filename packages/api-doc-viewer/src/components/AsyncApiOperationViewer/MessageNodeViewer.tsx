@@ -4,7 +4,7 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useMemo } from "react";
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
-import { DescriptionFontSize } from "../common/annotations/Description/type-description-font-size";
+import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize";
 import { Aligner } from "../JsoViewer/Aligner";
 import { AddressRow } from "./AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";

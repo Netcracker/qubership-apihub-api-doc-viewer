@@ -11,7 +11,7 @@ import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
 import { TitleRow } from "./TitleRow"
-import { DescriptionFontSize } from "../common/annotations/Description/type-description-font-size"
+import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>

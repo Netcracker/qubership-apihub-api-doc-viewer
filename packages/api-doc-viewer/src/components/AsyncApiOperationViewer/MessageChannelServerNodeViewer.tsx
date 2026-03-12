@@ -4,7 +4,7 @@ import { FC, memo, useMemo } from "react"
 
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
-import { DescriptionFontSize } from "../common/annotations/Description/type-description-font-size"
+import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"

@@ -50,7 +50,7 @@ import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloat
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
 import './Description.css';
-import { DescriptionFontSize } from "./type-description-font-size";
+import { DescriptionFontSize } from "./types/DescriptionFontSize";
 
 const OVERFLOW_LINES_AMOUNT = 5
 
