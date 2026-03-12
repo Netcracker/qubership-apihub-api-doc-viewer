@@ -1,7 +1,7 @@
 import { FC, useContext } from "react";
 import { AsyncApiDevModeContext } from "./AsyncApiDevModeContext";
 import { ExpandingCaret } from "../common/layout/Expander/ExpandingCaret";
-import { NestingHorizontalIndicator } from "../common/NestingIndicator";
+import { NestingHorizontalIndicator } from "../common/NestingHorizontalIndicator";
 
 type ExpanderProps = {
   expandable: boolean

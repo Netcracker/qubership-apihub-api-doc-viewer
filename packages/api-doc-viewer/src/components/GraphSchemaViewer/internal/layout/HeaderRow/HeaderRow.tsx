@@ -314,7 +314,6 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
         {!isOperation && (
           <div className="flex flex-row relative">
             <LevelIndicator level={level} />
-            {/* <NestingIndicator level={level} /> */}
             <Expander
               isRoot={isRoot}
               isOperation={isOperation}

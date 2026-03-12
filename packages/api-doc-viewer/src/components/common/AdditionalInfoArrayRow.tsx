@@ -153,7 +153,6 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
     return (
       <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
-        {/* <NestingIndicator level={level}/> */}
         <div className="flex flex-row flex-wrap items-start gap-2 py-1">
           <div className="inline text-xs font-normal text-slate-500">
             {title}:

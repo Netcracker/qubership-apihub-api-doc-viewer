@@ -16,7 +16,7 @@
 
 import type { FC } from 'react'
 import { ExpandingCaret } from './ExpandingCaret'
-import { NestingHorizontalIndicator } from '../../NestingIndicator'
+import { NestingHorizontalIndicator } from "../../NestingHorizontalIndicator"
 // import { defaultOnContextMenu } from '../../../../utils/common/event-handlers'
 // import { ToggleContextMenuHandler } from '../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler'
 

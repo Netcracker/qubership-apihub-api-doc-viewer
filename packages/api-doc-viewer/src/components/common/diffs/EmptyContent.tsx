@@ -29,7 +29,6 @@ export const EmptyContent: FC<EmptyContentProps> = (props) => {
     <div className={`flex flex-row w-1/2 ${DEFAULT_ROW_PADDING_LEFT} bg-gray-100`}>
       {/* FIXME 04.07.24 Problem with empty DOM elements */}
       <LevelIndicator level={level}/>
-      {/* <NestingIndicator level={level}/> */}
     </div>
   )
 }

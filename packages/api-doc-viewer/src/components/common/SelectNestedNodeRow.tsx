@@ -45,7 +45,7 @@ import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBad
 import { UxDiffMarker } from '../kit/ux/UxMarker/UxDiffMarker'
 import { EmptyContent } from './diffs/EmptyContent'
 import { UnsupportedContent } from './diffs/UnsupportedContent'
-import { NestingIndicatorTitle } from './NestingIndicator'
+import { NestingIndicatorTitle } from "./NestingIndicatorTitle"
 import { NodeType } from './NodeType'
 
 export type SelectNestedNodeRowProps = PropsWithoutChangesSummary<
@@ -120,12 +120,10 @@ export const SelectNestedNodeRow: FC<SelectNestedNodeRowProps> = (props) => {
       <div className={`flex flex-col ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <div className="flex flex-row">
           <LevelIndicator level={level} lastInvisible={true} />
-          {/* <NestingIndicator level={level} lastInvisible={true} /> */}
           <NestingIndicatorTitle>{combiner}</NestingIndicatorTitle>
         </div>
         <div className="flex flex-row gap-5">
           <LevelIndicator level={level} />
-          {/* <NestingIndicator level={level} /> */}
           <div className="flex flex-row flex-wrap gap-2 my-2">
             {Object.entries(nodesTypeData).map(([id, data]) => {
               const nestedNodeChangesSummary = $nestedChangesSummary?.[id]

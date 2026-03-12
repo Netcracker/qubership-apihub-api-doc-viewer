@@ -127,7 +127,6 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     return (
       <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
-        {/* <NestingIndicator level={level} /> */}
         <div className="py-1">
           <Value
             value={value}

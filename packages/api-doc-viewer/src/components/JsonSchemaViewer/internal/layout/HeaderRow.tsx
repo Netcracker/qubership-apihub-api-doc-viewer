@@ -238,7 +238,6 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
         {(!isRoot || isExpandable) && (
           <div className="flex flex-row relative">
             <LevelIndicator level={level} />
-            {/* <NestingIndicator level={level} /> */}
             <Expander
               isRoot={isRoot}
               isExpandable={isExpandable}

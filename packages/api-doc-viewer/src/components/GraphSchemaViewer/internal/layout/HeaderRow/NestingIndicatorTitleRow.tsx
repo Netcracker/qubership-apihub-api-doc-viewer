@@ -249,7 +249,6 @@ const Content: FC<NestingIndicatorTitleRowContentProps> = (props) => {
   return (
     <div className={`flex flex-row ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
       <LevelIndicator level={level} lastInvisible={true}/>
-      {/* <NestingIndicator level={level} lastInvisible={true}/> */}
       <div className="text-xs text-slate-400 border-b border-slate-400 w-max pt-1"
            style={{ marginLeft: '-1px' }}
       >

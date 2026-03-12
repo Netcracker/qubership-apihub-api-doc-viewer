@@ -97,7 +97,6 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
     return (
       <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
-        {/* <NestingIndicator level={level} /> */}
         <div className="inline-block py-1">
           <Value
             value={value}
