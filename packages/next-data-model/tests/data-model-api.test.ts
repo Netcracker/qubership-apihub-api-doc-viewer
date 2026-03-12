@@ -50,7 +50,7 @@ const NORMALIZATION_OPTIONS: NormalizeOptions = {
 describe('AsyncAPI Data Model API', () => {
   it('tree from non objective source', () => {
     const source = 'hello world'
-    const treeBuilder = new AsyncApiTreeBuilder(source)
+    const treeBuilder = new AsyncApiTreeBuilder(source, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree = treeBuilder.build()
     expect(tree).toBeDefined()
     expect(tree!.root).toBeNull()
@@ -58,7 +58,7 @@ describe('AsyncAPI Data Model API', () => {
 
   it('tree from empty source', () => {
     const source = {}
-    const treeBuilder = new AsyncApiTreeBuilder(source)
+    const treeBuilder = new AsyncApiTreeBuilder(source, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree = treeBuilder.build()
     expect(tree).toBeDefined()
     expect(tree!.root).toBeNull()
@@ -113,7 +113,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 
@@ -205,7 +205,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 
@@ -271,7 +271,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 
@@ -326,7 +326,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 
@@ -389,7 +389,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 
@@ -456,7 +456,7 @@ describe('AsyncAPI Data Model API', () => {
     const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
     const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY_KEY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY)
     const tree: AsyncApiTree | null = treeBuilder.build()
     expect(tree).not.toBeNull()
 

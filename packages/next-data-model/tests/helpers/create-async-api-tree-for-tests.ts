@@ -23,6 +23,6 @@ export function createAsyncApiTreeForTests(source: unknown, operationKeys?: Part
   const normalizedSource = normalize(source, { ...NORMALIZATION_OPTIONS, lastReferenceKeyProperty: TEST_REFERENCE_NAME_PROPERTY_KEY })
   const mergedSource = denormalize(normalizedSource, NORMALIZATION_OPTIONS)
 
-  const builder = new AsyncApiTreeBuilder(mergedSource, operationKeys, TEST_REFERENCE_NAME_PROPERTY_KEY)
+  const builder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY_KEY, operationKeys)
   return builder.build()
 }

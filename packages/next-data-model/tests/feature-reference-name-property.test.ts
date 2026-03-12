@@ -67,7 +67,7 @@ describe('Feature: Reference Name Property', () => {
       },
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const messageNode = tree.root ?? null
     expect(messageNode).not.toBeNull()
@@ -99,7 +99,7 @@ describe('Feature: Reference Name Property', () => {
       ...COMPONENTS_WITH_MESSAGES,
     }
     const mergedSource = mergeAsyncApi(source)
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const messageNode = tree.root ?? null
     expect(messageNode).not.toBeNull()
@@ -132,7 +132,7 @@ describe('Feature: Reference Name Property', () => {
     }
     const mergedSource = mergeAsyncApi(source)
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     const messageNode = tree.root ?? null
     expect(messageNode).not.toBeNull()
@@ -185,15 +185,14 @@ describe('Feature: Reference Name Property', () => {
       expect(messageNode!.key).toBe(messageKey)
     }
 
-    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, undefined, TEST_REFERENCE_NAME_PROPERTY)
+    const treeBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY)
     const tree: AsyncApiTree = treeBuilder.build()
     test(tree, 'test-message-1')
 
-    const treeWithSpecificMessageBuilder = new AsyncApiTreeBuilder(mergedSource, {
+    const treeWithSpecificMessageBuilder = new AsyncApiTreeBuilder(mergedSource, TEST_REFERENCE_NAME_PROPERTY, {
       messageKey: 'test-message-2',
       operationKey: 'test-operation',
-      operationType: 'send',
-    }, TEST_REFERENCE_NAME_PROPERTY)
+    })
     const treeWithSpecificMessage = treeWithSpecificMessageBuilder.build()
     test(treeWithSpecificMessage, 'test-message-2')
   })
