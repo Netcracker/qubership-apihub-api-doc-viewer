@@ -131,8 +131,8 @@ export const AddressSummary: Story = createStory(createSource({
 
 export const AddressDescriptionSummary: Story = createStory(createSource({
   message: {
-    description: "Channel description",
-    summary: "Channel summary",
+    description: "Message description",
+    summary: "Message summary",
   },
   channel: {
     address: "test.address",
