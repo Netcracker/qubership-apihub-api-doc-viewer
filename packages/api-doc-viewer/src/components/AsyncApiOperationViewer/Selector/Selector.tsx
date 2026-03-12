@@ -1,7 +1,7 @@
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
 import "../styles/styles.css"
-import { ButtonVariant } from "../types/ButtonVariant"
+import { SizeVariant } from "../types/SizeVariant"
 
 export type SelectorOption = {
   title: string
@@ -13,7 +13,7 @@ type SelectorProps = {
   options: SelectorOption[]
   selectedOption: SelectorOption | null
   onSelectOption: (option: SelectorOption) => void
-  variant: ButtonVariant
+  variant: SizeVariant
 }
 
 export const Selector: FC<SelectorProps> = (props) => {

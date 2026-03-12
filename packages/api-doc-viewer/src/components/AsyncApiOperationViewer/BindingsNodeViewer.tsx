@@ -8,15 +8,15 @@ import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { TitleRow, TitleVariant } from "./TitleRow";
-import { ButtonVariant } from "./types/ButtonVariant";
+import { SizeVariant } from "./types/SizeVariant";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
-  variant?: ButtonVariant
+  variant?: SizeVariant
 }
 
 export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
-  const { node, variant = ButtonVariant.PRIMARY } = props
+  const { node, variant = SizeVariant.PRIMARY } = props
 
   const displayMode = useDisplayMode()
 
@@ -59,7 +59,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         options={bindingSelectorOptions}
         selectedOption={selectedBinding}
         onSelectOption={setSelectedBinding}
-        variant={ButtonVariant.SECONDARY}
+        variant={SizeVariant.SECONDARY}
       />
     ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
@@ -70,7 +70,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         value='Bindings'
         expandable={false}
         expanded={true}
-        variant={variant === ButtonVariant.PRIMARY ? TitleVariant.h3 : TitleVariant.h5}
+        variant={variant === SizeVariant.PRIMARY ? TitleVariant.h3 : TitleVariant.h5}
         subheader={titleRowSubheader}
       />
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
