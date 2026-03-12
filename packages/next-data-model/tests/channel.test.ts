@@ -375,6 +375,248 @@ describe('Cases with channel', () => {
       })
     })
 
+    it('should handle channel with server (only host, protocol)', () => {
+      const asyncApiSource = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "channel-with-servers-test",
+          version: "1.0.0"
+        },
+        servers: {
+          server1: {
+            host: "server1.com",
+            protocol: "https"
+          }
+        },
+        channels: {
+          'server-channel': {
+            address: "server/events",
+            title: "Server Events Channel",
+            servers: [
+              { $ref: "#/servers/server1" }
+            ]
+          }
+        },
+        operations: {
+          'server-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/server-channel" },
+            ...SINGLE_MESSAGE_USAGE,
+          }
+        },
+        ...COMPONENTS_WITH_MESSAGES
+      }
+
+      const tree = createAsyncApiTreeForTests(asyncApiSource)
+      expect(tree).toBeDefined()
+
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      expect(channelSectionNode).toBeDefined()
+      
+      const channelChildrenNodes = channelSectionNode!.childrenNodes()
+      expect(channelChildrenNodes.length).toBe(1)
+
+      const serversNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVERS)
+      expect(serversNode).toBeDefined()
+      expect(serversNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serversNode!.key).toBe('servers')
+
+      const serverNodes = serversNode!.childrenNodes()
+      expect(serverNodes.length).toBe(1)
+
+      const serverNode = serverNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVER)
+      expect(serverNode).toBeDefined()
+      expect(serverNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serverNode!.key).toBe('server1')
+      expect(serverNode!.value()).toEqual({
+        title: 'server1',
+        host: "server1.com",
+        protocol: "https"
+      })
+    })
+
+    it('should handle channel with server (host, protocol, title, description, summary)', () => {
+      const asyncApiSource = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "channel-with-servers-test",
+          version: "1.0.0"
+        },
+        servers: {
+          server1: {
+            title: "Server 1",
+            description: "Server 1 description",
+            summary: "Server 1 summary",
+            host: "server1.com",
+            protocol: "https"
+          }
+        },
+        channels: {
+          'server-channel': {
+            address: "server/events",
+            title: "Server Events Channel",
+            servers: [
+              { $ref: "#/servers/server1" }
+            ]
+          }
+        },
+        operations: {
+          'server-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/server-channel" },
+            ...SINGLE_MESSAGE_USAGE,
+          }
+        },
+        ...COMPONENTS_WITH_MESSAGES
+      }
+
+      const tree = createAsyncApiTreeForTests(asyncApiSource)
+      expect(tree).toBeDefined()
+
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      expect(channelSectionNode).toBeDefined()
+      
+      const channelChildrenNodes = channelSectionNode!.childrenNodes()
+      expect(channelChildrenNodes.length).toBe(1)
+
+      const serversNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVERS)
+      expect(serversNode).toBeDefined()
+      expect(serversNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serversNode!.key).toBe('servers')
+
+      const serverNodes = serversNode!.childrenNodes()
+      expect(serverNodes.length).toBe(1)
+
+      const serverNode = serverNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVER)
+      expect(serverNode).toBeDefined()
+      expect(serverNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serverNode!.key).toBe('server1')
+      expect(serverNode!.value()).toEqual({
+        title: 'Server 1',
+        description: "Server 1 description",
+        summary: "Server 1 summary",
+        host: "server1.com",
+        protocol: "https"
+      })
+    })
+
+    it('should handle channel with server (host, protocol, bindings)', () => {
+      const asyncApiSource = {
+        asyncapi: "3.0.0",
+        info: {
+          title: "channel-with-servers-test",
+          version: "1.0.0"
+        },
+        servers: {
+          server1: {
+            host: "server1.com",
+            protocol: "https",
+            bindings: {
+              kafka: {
+                topic: "server-events",
+                partitions: 3,
+                replicas: 2,
+                bindingVersion: "0.5.0"
+              }
+            }
+          }
+        },
+        channels: {
+          'server-channel': {
+            address: "server/events",
+            title: "Server Events Channel",
+            servers: [
+              { $ref: "#/servers/server1" }
+            ]
+          }
+        },
+        operations: {
+          'server-operation': {
+            action: "send",
+            channel: { $ref: "#/channels/server-channel" },
+            ...SINGLE_MESSAGE_USAGE,
+          }
+        },
+        ...COMPONENTS_WITH_MESSAGES
+      }
+
+      const tree = createAsyncApiTreeForTests(asyncApiSource)
+      expect(tree).toBeDefined()
+
+      const messageNode = tree!.root ?? null
+      expect(messageNode).not.toBeNull()
+
+      const messageSectionSelectorNode = messageNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+      expect(messageSectionSelectorNode).toBeDefined()
+      expect(messageSectionSelectorNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+
+      const sections = messageSectionSelectorNode!.nestedNodes()
+      expect(sections.length).toBe(3)
+
+      const channelSectionNode = sections.find(node => node.kind === AsyncApiTreeNodeKinds.MESSAGE_CHANNEL)
+      expect(channelSectionNode).toBeDefined()
+      
+      const channelChildrenNodes = channelSectionNode!.childrenNodes()
+      expect(channelChildrenNodes.length).toBe(1)
+
+      const serversNode = channelChildrenNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVERS)
+      expect(serversNode).toBeDefined()
+      expect(serversNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serversNode!.key).toBe('servers')
+
+      const serverNodes = serversNode!.childrenNodes()
+      expect(serverNodes.length).toBe(1)
+
+      const serverNode = serverNodes.find(node => node.kind === AsyncApiTreeNodeKinds.SERVER)
+      expect(serverNode).toBeDefined()
+      expect(serverNode!.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+      expect(serverNode!.key).toBe('server1')
+      expect(serverNode!.value()).toEqual({
+        title: 'server1',
+        host: "server1.com",
+        protocol: "https"
+      })
+
+      const bindingsNode = serverNode!.childrenNodes().find(node => node.kind === AsyncApiTreeNodeKinds.BINDINGS)
+      expect(bindingsNode).toBeDefined()
+      expect(bindingsNode!.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+      expect(bindingsNode!.key).toBe('bindings')
+
+      const bindingNodes = bindingsNode!.nestedNodes()
+      expect(bindingNodes.length).toBe(1)
+      expect(bindingNodes[0].kind).toBe(AsyncApiTreeNodeKinds.BINDING)
+      expect(bindingNodes[0].key).toBe('kafka')
+      expect(bindingNodes[0].value()).toEqual({
+        binding: {
+          topic: "server-events",
+          partitions: 3,
+          replicas: 2,
+        },
+        version: "0.5.0",
+        protocol: "kafka",
+      })
+    })
+
     it('should handle channel with all fields combined', () => {
       const asyncApiSource = {
         asyncapi: "3.0.0",
