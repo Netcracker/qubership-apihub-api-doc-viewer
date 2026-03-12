@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="node" />
-/// <reference types="node" />
 import { ElementHandle } from 'puppeteer';
 import { ViewComponent } from '../view-component';
 export declare class ViewComponentImpl implements ViewComponent {

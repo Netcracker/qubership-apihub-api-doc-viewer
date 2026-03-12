@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 import { LayoutMode } from '../types/LayoutMode';
 export declare const LayoutModeContext: import('../../../../node_modules/react').Context<LayoutMode>;
 export declare function useLayoutMode(): LayoutMode;
