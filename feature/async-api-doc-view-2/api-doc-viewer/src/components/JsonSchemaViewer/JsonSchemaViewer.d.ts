@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CutomizationOptions } from '../../contexts/CustomizationOptionsContext';
+import { CustomizationOptions } from '../../contexts/CustomizationOptionsContext';
 import { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from '../../types/DisplayMode';
 import { PropsWithOverriddenKind } from '../../types/internal/PropsWithState';
@@ -23,7 +23,7 @@ export type JsonSchemaViewerProps = {
     expandedDepth?: number;
     displayMode?: DisplayMode;
 } & PropsWithOverriddenKind & PropsWithTopLevelPropsMediaTypesMap & {
-    customizationOptions?: CutomizationOptions;
+    customizationOptions?: CustomizationOptions;
     initialLevel?: number;
 };
 export declare const JsonSchemaViewer: FC<JsonSchemaViewerProps>;
