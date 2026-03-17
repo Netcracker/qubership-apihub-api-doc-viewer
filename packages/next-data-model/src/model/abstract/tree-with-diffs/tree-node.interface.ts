@@ -3,40 +3,40 @@ import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode } from "../tree/tree-node.interface";
 
-enum HighlightVariant {
+export enum HighlightVariant {
   Red = 'red',
   Green = 'green',
   Yellow = 'yellow',
   Gray = 'gray',
 }
-type DiffStyles = {
+export type DiffStyles = {
   isContentVisible: boolean
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   backgroundColor?: HighlightVariant
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
 }
-type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
-type ChangedPropertyMetaData = {
+export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
+export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
   styles: {
     before: DiffStyles
     after: DiffStyles
   }
 }
-type NodeDiffs<V extends object | null = object | null> = Record<ChangedPropertyKey<V>, ChangedPropertyMetaData | undefined> 
+export type NodeDiffs<V extends object | null = object | null> = Record<ChangedPropertyKey<V>, ChangedPropertyMetaData | undefined> 
 
-enum NodeDiffsSeverityPlacemennt {
+export enum NodeDiffsSeverityPlacemennt {
   TitleRow = 'title-row',
   DescriptionRow = 'description-row',
   SummaryRow = 'summary-row',
   AddressRow = 'address-row',
 }
-type NodeDiffsSeverity = {
+export type NodeDiffsSeverity = {
   type: DiffType
   causedAt: JsonPath
 }
-type NodeDiffsSeverities = Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>
+export type NodeDiffsSeverities = Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>
 
 export interface ITreeNodeWithDiffs<
   V extends object | null = object | null,
