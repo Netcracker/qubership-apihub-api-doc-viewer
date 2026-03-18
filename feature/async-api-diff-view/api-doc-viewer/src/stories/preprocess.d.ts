@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DiffMetaKeys } from '../../../api-data-model/src';
 export declare const REQUEST_HEADER_TARGET = "request-header";
 export declare const REQUEST_COOKIE_TARGET = "request-cookie";
 export declare const PATH_PARAMETER_TARGET = "path-parameter";
@@ -73,4 +74,13 @@ type AsyncApiDocumentOptions = {
     storyName?: string;
 };
 export declare function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unknown;
+type AsyncApiDiffsDocumentOptions = {
+    beforeSource: unknown;
+    afterSource: unknown;
+    circular?: boolean;
+    referenceNamePropertyKey?: symbol;
+    storyName?: string;
+    diffMetaKeys?: DiffMetaKeys;
+};
+export declare function prepareAsyncApiDiffsDocument(options: AsyncApiDiffsDocumentOptions): unknown;
 export {};

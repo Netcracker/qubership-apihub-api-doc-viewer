@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AsyncApiOperationViewer } from '../components/AsyncApiOperationViewer/AsyncApiOperationViewer';
+import { AsyncApiOperationDiffsViewer } from '../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
 import type { StoryObj } from '@storybook/react';
 import type { ComponentProps } from '../../../../node_modules/react';
-type StoryArgs = ComponentProps<typeof AsyncApiOperationViewer> & {
-    sourceText: string;
+type StoryArgs = ComponentProps<typeof AsyncApiOperationDiffsViewer> & {
+    beforeSourceText: string;
+    afterSourceText: string;
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import('../components/AsyncApiOperationViewer/AsyncApiOperationViewer').AsyncApiOperationViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer').AsyncApiOperationDiffsViewerProps>;
     argTypes: {
-        source: {
+        mergedSource: {
             control: {
                 disable: true;
             };
@@ -31,7 +32,10 @@ declare const meta: {
                 disable: true;
             };
         };
-        sourceText: {
+        beforeSourceText: {
+            control: "text";
+        };
+        afterSourceText: {
             control: "text";
         };
         displayMode: {
@@ -41,7 +45,8 @@ declare const meta: {
         };
     };
     args: {
-        sourceText: string;
+        beforeSourceText: string;
+        afterSourceText: string;
     };
 };
 export default meta;
