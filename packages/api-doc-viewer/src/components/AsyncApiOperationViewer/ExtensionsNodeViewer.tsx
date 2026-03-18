@@ -2,7 +2,7 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
-import { TitleRow, TitleVariant } from "./TitleRow"
+import { TitleRow, TitleVariant } from "./TitleRow/TitleRow"
 
 type SpecificationExtensionsProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS>

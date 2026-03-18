@@ -10,7 +10,7 @@ import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
-import { TitleRow } from "./TitleRow"
+import { TitleRow } from "./TitleRow/TitleRow"
 import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 
 type MessageChannelNodeViewerProps = {

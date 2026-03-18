@@ -8,7 +8,7 @@ import { DescriptionFontSize } from "../common/annotations/Description/types/Des
 import { Aligner } from "../JsoViewer/Aligner";
 import { AddressRow } from "./AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
-import { TitleRow } from "./TitleRow";
+import { TitleRow } from "./TitleRow/TitleRow";
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>

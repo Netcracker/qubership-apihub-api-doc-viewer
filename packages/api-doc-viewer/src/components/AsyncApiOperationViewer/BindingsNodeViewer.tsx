@@ -7,7 +7,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
-import { TitleRow, TitleVariant } from "./TitleRow";
+import { TitleRow, TitleVariant } from "./TitleRow/TitleRow";
 import { SizeVariant } from "./types/SizeVariant";
 
 type BindingsNodeViewerProps = {
