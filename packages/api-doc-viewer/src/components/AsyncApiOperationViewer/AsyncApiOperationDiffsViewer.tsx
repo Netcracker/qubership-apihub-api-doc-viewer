@@ -3,7 +3,7 @@ import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext";
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext";
 import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
-import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { AsyncApiTreeBuilder, createAsyncApiLogger } from "@netcracker/qubership-apihub-next-data-model";
 import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
@@ -11,13 +11,13 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
 import { AsyncApiDevModeContext } from "./AsyncApiDevModeContext";
 import { MessageNodeViewer } from "./MessageNodeViewer";
 
-import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
-import '../../index.css';
-import { DiffMetaKeys } from "./types/DiffMetaKeys";
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext";
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext";
+import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
+import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
+import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import '../../index.css';
+import { DiffMetaKeys } from "./types/DiffMetaKeys";
 
 export type AsyncApiOperationDiffsViewerProps = {
   mergedSource: unknown
@@ -55,6 +55,9 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
       diffTypes,
     } = props
 
+    console.log('diffMetaKeys', diffMetaKeys)
+    console.log('source', source)
+
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
@@ -76,7 +79,7 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
         <DiffTypesContext.Provider value={diffTypes}>
           <AsyncApiDevModeContext.Provider value={devMode}>
             <DisplayModeContext.Provider value={displayMode}>
-              <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
+              <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                 <LevelContext.Provider value={0}>
                   <MessageNodeViewer
                     node={messageNode}

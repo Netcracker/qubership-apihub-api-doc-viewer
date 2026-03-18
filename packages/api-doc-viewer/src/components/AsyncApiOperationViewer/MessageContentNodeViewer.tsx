@@ -32,6 +32,11 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
+    console.log('layoutMode', layoutMode)
+    console.log('diffMetaKeys', diffMetaKeys)
+    console.log('diffTypes', diffTypes)
+    console.log('displayMode', displayMode)
+    console.log('source', source)
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
@@ -47,6 +52,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
           displayMode={displayMode}
           metaKeys={diffMetaKeys}
           filters={diffTypes}
+          layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
         />
       ) : null
     }
