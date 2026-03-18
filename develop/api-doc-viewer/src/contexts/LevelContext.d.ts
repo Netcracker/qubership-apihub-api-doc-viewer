@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 export declare const LevelContext: import('../../../../node_modules/react').Context<number>;
 export declare function useLevelContext(): number;
