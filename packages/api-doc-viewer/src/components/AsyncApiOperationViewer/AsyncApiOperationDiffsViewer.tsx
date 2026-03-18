@@ -16,6 +16,8 @@ import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
 import '../../index.css';
 import { DiffMetaKeys } from "./types/DiffMetaKeys";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext";
+import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext";
 
 export type AsyncApiOperationDiffsViewerProps = {
   mergedSource: unknown
@@ -49,6 +51,8 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
       referenceNamePropertyKey,
+      diffMetaKeys,
+      diffTypes,
     } = props
 
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
@@ -68,16 +72,20 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
     }
 
     return (
-      <AsyncApiDevModeContext.Provider value={devMode}>
-        <DisplayModeContext.Provider value={displayMode}>
-          <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
-            <LevelContext.Provider value={0}>
-              <MessageNodeViewer
-                node={messageNode}
-              />
-            </LevelContext.Provider>
-          </LayoutModeContext.Provider>
-        </DisplayModeContext.Provider>
-      </AsyncApiDevModeContext.Provider>
+      <DiffMetaKeysContext.Provider value={diffMetaKeys}>
+        <DiffTypesContext.Provider value={diffTypes}>
+          <AsyncApiDevModeContext.Provider value={devMode}>
+            <DisplayModeContext.Provider value={displayMode}>
+              <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
+                <LevelContext.Provider value={0}>
+                  <MessageNodeViewer
+                    node={messageNode}
+                  />
+                </LevelContext.Provider>
+              </LayoutModeContext.Provider>
+            </DisplayModeContext.Provider>
+          </AsyncApiDevModeContext.Provider>
+        </DiffTypesContext.Provider>
+      </DiffMetaKeysContext.Provider>
     )
   })
