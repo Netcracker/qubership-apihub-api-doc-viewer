@@ -31,7 +31,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const bindingsChild = messageChildren.find(isBindingsNode)
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
-  const JsonSchemaViewerWrapper: FC<{ source: unknown }> = useCallback((source: unknown) => {
+  const renderJsonSchemaViewer = useCallback((source: unknown) => {
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
@@ -63,9 +63,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             expandable={false}
           />
           <Aligner>
-            <JsonSchemaViewerWrapper
-              source={headersChild.value()?.schema}
-            />
+            {renderJsonSchemaViewer(headersChild.value()?.schema)}
           </Aligner>
         </div>
       )}
@@ -87,9 +85,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             expandable={false}
           />
           <Aligner>
-            <JsonSchemaViewerWrapper
-              source={payloadChild.value()?.schema}
-            />
+            {renderJsonSchemaViewer(payloadChild.value()?.schema)}
           </Aligner>
         </div>
       )}
