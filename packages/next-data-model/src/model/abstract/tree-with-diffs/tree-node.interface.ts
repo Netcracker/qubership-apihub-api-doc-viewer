@@ -50,7 +50,7 @@ export type ChangedPropertyMetaData = {
     after: DiffStyles
   }
 }
-export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData | undefined> >
+export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 
 export enum NodeDiffsSeverityPlacemennt {
   TitleRow = 'title-row',
