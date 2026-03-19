@@ -1,7 +1,7 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
@@ -10,9 +10,10 @@ import { Selector, SelectorOption } from "./Selector/Selector";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
 import { SizeVariant } from "./types/SizeVariant";
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 
 type BindingsNodeViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>
   variant?: SizeVariant
 }
 
@@ -25,13 +26,24 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const brokenRef = bindingsNodeMeta?.brokenRef
 
   const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
-  const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
+  const bindingNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => (
     bindingNodes
       .filter(isBindingNode)
       .map((bindingNode, index) => {
         const protocol = bindingNode.value()?.protocol ?? ''
         const testId = `binding-${index}`
+        if (bindingNode instanceof SimpleTreeNodeWithDiffs) {
+          return {
+            title: protocol,
+            node: bindingNode,
+            testId: testId,
+            // diffs
+            diffs: bindingNode.diffs,
+            descendantDiffs: bindingNode.descendantDiffs,
+            diffsSeverities: bindingNode.diffsSeverities,
+          }
+        }
         return {
           title: protocol,
           node: bindingNode,

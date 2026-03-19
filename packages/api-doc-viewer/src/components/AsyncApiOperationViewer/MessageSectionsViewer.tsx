@@ -1,14 +1,15 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useEffect, useMemo, useState } from "react";
-import { Selector, SelectorOption } from "./Selector/Selector";
 import { MessageSectionViewer } from "./MessageSectionViewer";
-import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
+import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
 
 type MessageSectionsViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
 }
 
 export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => {
@@ -18,13 +19,26 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   const displayMode = useDisplayMode()
 
   const [selectedSection, setSelectedSection] = useState<SelectorOption | null>(null)
-  const sectionNodes: AsyncApiTreeNode[] = node.nestedNodes()
+  const sectionNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const sectionSelectorOptions = useMemo(
-    () => sectionNodes.map(node => ({
-      node: node,
-      title: getMessageSectionTitle(node),
-      testId: getMessageSectionTestId(node)
-    })),
+    () => sectionNodes.map(node => {
+      if (node instanceof SimpleTreeNodeWithDiffs) {
+        return {
+          node: node,
+          title: getMessageSectionTitle(node),
+          testId: getMessageSectionTestId(node),
+          // diffs
+          diffs: node.diffs,
+          descendantDiffs: node.descendantDiffs,
+          diffsSeverities: node.diffsSeverities,
+        }
+      }
+      return {
+        node: node,
+        title: getMessageSectionTitle(node),
+        testId: getMessageSectionTestId(node)
+      }
+    }),
     [sectionNodes]
   )
 
