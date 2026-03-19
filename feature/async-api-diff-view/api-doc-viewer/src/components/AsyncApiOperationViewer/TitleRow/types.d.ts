@@ -20,6 +20,7 @@ export type TitleRowProps<V extends object | null = object | null> = {
     enableMainHeader?: boolean;
     subheader?: (layoutSide: LayoutSide) => ReactElement;
     diffs?: NodeDiffs<V>;
+    descendantDiffs?: NodeDiffs<V>;
     diffsSeverities?: NodeDiffsSeverities;
 };
 export type TitleRowContentProps = TitleRowProps & {
