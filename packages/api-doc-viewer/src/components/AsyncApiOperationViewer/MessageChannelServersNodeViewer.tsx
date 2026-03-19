@@ -1,5 +1,5 @@
 import { isServerNode } from "@apihub/utils/async-api/node-type-checkers";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo, useMemo } from "react";
 import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer";
@@ -13,9 +13,9 @@ type MessageChannelServersNodeViewerProps = {
 export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewerProps> = memo(props => {
   const { node } = props
 
-  const children: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>[] = useMemo(
+  const children: (AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER>)[] = useMemo(
     () => {
-      const children: AsyncApiTreeNode[] = node.childrenNodes()
+      const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
       return children.filter(isServerNode)
     },
     [node]

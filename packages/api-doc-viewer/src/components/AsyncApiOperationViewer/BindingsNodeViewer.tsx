@@ -1,6 +1,8 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
+import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -9,8 +11,8 @@ import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
+import { TitleRowProps } from "./TitleRow/types";
 import { SizeVariant } from "./types/SizeVariant";
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 
 type BindingsNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>
@@ -77,6 +79,17 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
 
+  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (node instanceof ComplexTreeNodeWithDiffs) {
+      return {
+        diff: node.diffs[''],
+        descendantDiffs: node.descendantDiffs,
+        diffsSeverities: node.diffsSeverities,
+      }
+    }
+    return {}
+  }, [node])
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -85,6 +98,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         expanded={true}
         variant={variant === SizeVariant.PRIMARY ? TextValueVariant.h3 : TextValueVariant.h5}
         subheader={titleRowSubheader}
+        // diffs
+        {...diffsProps}
       />
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && (

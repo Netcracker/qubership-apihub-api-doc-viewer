@@ -1,4 +1,4 @@
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useMemo } from "react"
 
@@ -12,9 +12,13 @@ import './styles/MessageChannelServer.css'
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { SizeVariant } from "./types/SizeVariant"
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { TitleRowProps } from "./TitleRow/types"
 
 type MessageChannelServerNodeViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>
+  node:
+  | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>
+  | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER>
 }
 
 export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerProps> = memo(props => {
@@ -27,8 +31,35 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const description = useMemo(() => value?.description ?? value?.summary ?? '', [value])
 
-  const children: AsyncApiTreeNode[] = node.childrenNodes()
+  const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
+
+  const legacyChangesForDescription = useMemo(() => {
+    if (node instanceof SimpleTreeNodeWithDiffs) {
+      const diff = node.diffs['description']?.data
+      return diff ? { description: diff } : undefined
+    }
+    return undefined
+  }, [node])
+
+  const legacyNodeChangeForDescription = useMemo(() => {
+    if (node instanceof SimpleTreeNodeWithDiffs) {
+      const diff = node.diffs['']?.data
+      return diff ? { depth: 0, ...diff } : undefined
+    }
+    return undefined
+  }, [node])
+
+  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (node instanceof SimpleTreeNodeWithDiffs) {
+      return {
+        diff: node.diffs[''],
+        descendantDiffs: node.descendantDiffs,
+        diffsSeverities: node.diffsSeverities,
+      }
+    }
+    return {}
+  }, [node])
 
   return (
     <div className='flex flex-col gap-2 message-channel-server-node'>
@@ -40,6 +71,8 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             expandable={false}
             expanded={true}
             variant={TextValueVariant.h4}
+            // diffs
+            {...diffsProps}
           />
         )}
         <span className='server-element server-subheader'>
@@ -49,6 +82,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           <DescriptionRow
             value={description}
             fontSize={DescriptionFontSize.TERTIARY}
+            // diffs
+            $nodeChange={legacyNodeChangeForDescription}
+            $changes={legacyChangesForDescription}
           />
         </Aligner>
       </>}
