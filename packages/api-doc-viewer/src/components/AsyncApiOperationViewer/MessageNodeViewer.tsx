@@ -25,18 +25,17 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const value = node.value()
   const children = useMemo(() => node.childrenNodes(), [node])
 
-  const legacyChangesForDescription = useMemo(() => {
+  const legacyChanges = useMemo(() => {
     if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['description']?.data
-      return diff ? { description: diff } : undefined
-    }
-    return undefined
-  }, [node])
-
-  const legacyChangesForSummary = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['summary']?.data
-      return diff ? { summary: diff } : undefined
+      const diffDescription = node.diffs['description']?.data
+      const diffSummary = node.diffs['summary']?.data
+      if (!diffDescription && !diffSummary) {
+        return undefined
+      }
+      return {
+        ...diffDescription ? { description: diffDescription } : {},
+        ...diffSummary ? { summary: diffSummary } : {},
+      }
     }
     return undefined
   }, [node])
@@ -93,7 +92,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           layoutMode={layoutMode}
           // diffs
           $nodeChange={legacyNodeChange}
-          $changes={legacyChangesForDescription}
+          $changes={legacyChanges}
         />
       </Aligner>
       <Aligner>
@@ -103,7 +102,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           layoutMode={layoutMode}
           // diffs
           $nodeChange={legacyNodeChange}
-          $changes={legacyChangesForSummary}
+          $changes={legacyChanges}
         />
       </Aligner>
       <MessageChildrenViewer

@@ -27,8 +27,6 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const layoutMode = useLayoutMode()
 
   const value = node.value()
-  const title = value?.title ?? node.key.toString() ?? ''
-  const description = value?.description ?? value?.summary ?? ''
 
   const children: AsyncApiTreeNode[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
@@ -36,15 +34,22 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const legacyChangesForDescription = useMemo(() => {
+  const legacyChanges = useMemo(() => {
     if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['description']?.data
-      return diff ? { description: diff } : undefined
+      const diffDescription = node.diffs['description']?.data
+      const diffSummary = node.diffs['summary']?.data
+      if (!diffDescription && !diffSummary) {
+        return undefined
+      }
+      return {
+        ...diffDescription ? { description: diffDescription } : {},
+        ...diffSummary ? { summary: diffSummary } : {},
+      }
     }
     return undefined
   }, [node])
 
-  const legacyNodeChangeForDescription = useMemo(() => {
+  const legacyNodeChange = useMemo(() => {
     if (node instanceof SimpleTreeNodeWithDiffs) {
       const diff = node.diffs['']?.data
       return diff ? { depth: 0, ...diff } : undefined
@@ -66,26 +71,43 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   return (
     <div className="flex flex-col gap-2">
       <TitleRow
-        value={title}
+        value={value?.title ?? ''}
         expandable={false}
         expanded={true}
         variant={TextValueVariant.h2}
         // diffs
         {...diffProps}
       />
-      {description && (
-        <Aligner>
-          <DescriptionRow
-            value={description}
-            fontSize={DescriptionFontSize.SECONDARY}
-            layoutMode={layoutMode}
-            level={level}
-            // diffs
-            $nodeChange={legacyNodeChangeForDescription}
-            $changes={legacyChangesForDescription}
-          />
-        </Aligner>
-      )}
+      <TitleRow
+        value={node.key.toString()}
+        expandable={false}
+        expanded={true}
+        variant={TextValueVariant.h2}
+        // diffs
+        {...diffProps}
+      />
+      <Aligner>
+        <DescriptionRow
+          value={value?.description ?? ''}
+          fontSize={DescriptionFontSize.SECONDARY}
+          layoutMode={layoutMode}
+          level={level}
+          // diffs
+          $nodeChange={legacyNodeChange}
+          $changes={legacyChanges}
+        />
+      </Aligner>
+      <Aligner>
+        <DescriptionRow
+          value={value?.summary ?? ''}
+          fontSize={DescriptionFontSize.SECONDARY}
+          layoutMode={layoutMode}
+          level={level}
+          // diffs
+          $nodeChange={legacyNodeChange}
+          $changes={legacyChanges}
+        />
+      </Aligner>
 
       {children.length > 0 && (
         <div className="flex flex-col gap-2">

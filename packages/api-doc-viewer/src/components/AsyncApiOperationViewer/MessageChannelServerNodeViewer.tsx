@@ -29,20 +29,25 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const brokenRef = useMemo(() => meta?.brokenRef, [meta])
 
-  const description = useMemo(() => value?.description ?? value?.summary ?? '', [value])
-
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
 
-  const legacyChangesForDescription = useMemo(() => {
+  const legacyChanges = useMemo(() => {
     if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['description']?.data
-      return diff ? { description: diff } : undefined
+      const diffDescription = node.diffs['description']?.data
+      const diffSummary = node.diffs['summary']?.data
+      if (!diffDescription && !diffSummary) {
+        return undefined
+      }
+      return {
+        ...diffDescription ? { description: diffDescription } : {},
+        ...diffSummary ? { summary: diffSummary } : {},
+      }
     }
     return undefined
   }, [node])
 
-  const legacyNodeChangeForDescription = useMemo(() => {
+  const legacyNodeChange = useMemo(() => {
     if (node instanceof SimpleTreeNodeWithDiffs) {
       const diff = node.diffs['']?.data
       return diff ? { depth: 0, ...diff } : undefined
@@ -75,16 +80,18 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             {...diffsProps}
           />
         )}
+        {/* TODO: Extract to row-like component */}
         <span className='server-element server-subheader'>
           {value.protocol}://{value.host}
         </span>
+        {/* ---------------------------------- */}
         <Aligner>
           <DescriptionRow
-            value={description}
+            value={value?.description ?? ''}
             fontSize={DescriptionFontSize.TERTIARY}
             // diffs
-            $nodeChange={legacyNodeChangeForDescription}
-            $changes={legacyChangesForDescription}
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
           />
         </Aligner>
       </>}
