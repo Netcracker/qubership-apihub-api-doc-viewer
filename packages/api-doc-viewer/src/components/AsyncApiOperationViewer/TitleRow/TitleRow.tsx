@@ -6,7 +6,6 @@ import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { TitleRowContent } from "./TitleRowContent"
 import type { TitleRowProps } from "./types"
-export { TitleVariant } from "./types"
 
 export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
   const layoutMode = useLayoutMode()

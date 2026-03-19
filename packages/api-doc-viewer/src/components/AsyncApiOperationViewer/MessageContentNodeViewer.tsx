@@ -11,6 +11,7 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
+import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 
 type MessageContentNodeViewerProps = {
@@ -32,11 +33,6 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
-    console.log('layoutMode', layoutMode)
-    console.log('diffMetaKeys', diffMetaKeys)
-    console.log('diffTypes', diffTypes)
-    console.log('displayMode', displayMode)
-    console.log('source', source)
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
@@ -65,7 +61,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
         <div className="flex flex-col gap-1">
           <TitleRow
             value="Headers"
-            variant="h3"
+            variant={TextValueVariant.h3}
             expandable={false}
           />
           <Aligner>
@@ -87,7 +83,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
         <div className="flex flex-col gap-1">
           <TitleRow
             value="Payload"
-            variant="h3"
+            variant={TextValueVariant.h3}
             expandable={false}
           />
           <Aligner>

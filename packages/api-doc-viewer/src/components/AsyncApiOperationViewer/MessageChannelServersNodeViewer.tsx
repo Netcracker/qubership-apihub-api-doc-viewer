@@ -3,7 +3,8 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo, useMemo } from "react";
 import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer";
-import { TitleRow, TitleVariant } from "./TitleRow/TitleRow";
+import { TextValueVariant } from "./TextValue/types";
+import { TitleRow } from "./TitleRow/TitleRow";
 
 type MessageChannelServersNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVERS>
@@ -26,7 +27,7 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
         value='Servers'
         expandable={false}
         expanded={true}
-        variant={TitleVariant.h3}
+        variant={TextValueVariant.h3}
       />
       {children.map(child => (
         <MessageChannelServerNodeViewer key={child.id} node={child} />

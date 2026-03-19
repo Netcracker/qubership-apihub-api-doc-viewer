@@ -2,7 +2,8 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
-import { TitleRow, TitleVariant } from "./TitleRow/TitleRow"
+import { TextValueVariant } from "./TextValue/types"
+import { TitleRow } from "./TitleRow/TitleRow"
 
 type SpecificationExtensionsProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
@@ -19,7 +20,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
     <TitleRow
       value='Extensions'
       expandable={false}
-      variant={TitleVariant.h3}
+      variant={TextValueVariant.h3}
     />
     <JsoViewer
       source={extensions}

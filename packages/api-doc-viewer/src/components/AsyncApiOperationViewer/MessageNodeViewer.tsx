@@ -8,6 +8,7 @@ import { DescriptionFontSize } from "../common/annotations/Description/types/Des
 import { Aligner } from "../JsoViewer/Aligner";
 import { AddressRow } from "./AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
+import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
 
 type MessageNodeViewerProps = {
@@ -30,7 +31,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       <TitleRow
         value={title}
         expandable={false}
-        variant='h1'
+        variant={TextValueVariant.h1}
       />
       <AddressRow
         action={value?.action ?? ''}

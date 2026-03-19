@@ -9,6 +9,7 @@ import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
 import './styles/MessageChannelServer.css'
+import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { SizeVariant } from "./types/SizeVariant"
 
@@ -38,7 +39,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             value={value.title}
             expandable={false}
             expanded={true}
-            variant='h4'
+            variant={TextValueVariant.h4}
           />
         )}
         <span className='server-element server-subheader'>

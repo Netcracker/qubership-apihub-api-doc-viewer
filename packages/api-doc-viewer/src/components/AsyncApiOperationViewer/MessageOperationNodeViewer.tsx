@@ -7,6 +7,7 @@ import { DescriptionFontSize } from "../common/annotations/Description/types/Des
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
+import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 
 type MessageOperationNodeViewerProps = {
@@ -28,7 +29,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
     <div className="flex flex-col gap-2">
       <TitleRow
         value={title}
-        variant="h2"
+        variant={TextValueVariant.h2}
         expandable={false}
         expanded={true}
       />

@@ -5,13 +5,14 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
+import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
+import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
-import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -39,7 +40,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         value={title}
         expandable={false}
         expanded={true}
-        variant='h2'
+        variant={TextValueVariant.h2}
       />
       {description && (
         <Aligner>

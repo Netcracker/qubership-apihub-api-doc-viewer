@@ -8,7 +8,8 @@ import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/m
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useState } from "react"
-import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
+import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
+import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 
@@ -104,7 +105,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        variant={TitleVariant.body}
+        variant={TextValueVariant.body}
         enableMainHeader={!nodeValue?.isArrayItem}
         subheader={subheader}
       />

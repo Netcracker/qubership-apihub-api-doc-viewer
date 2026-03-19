@@ -2,7 +2,8 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC } from "react"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
-import { TitleRow, TitleVariant } from "./TitleRow/TitleRow"
+import { TextValueVariant } from "./TextValue/types"
+import { TitleRow } from "./TitleRow/TitleRow"
 
 type MessageChannelParametersNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
@@ -19,7 +20,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
     <TitleRow
       value='Address Parameters'
       expandable={false}
-      variant={TitleVariant.h3}
+      variant={TextValueVariant.h3}
     />
     <JsoViewer
       source={addressParameters}
