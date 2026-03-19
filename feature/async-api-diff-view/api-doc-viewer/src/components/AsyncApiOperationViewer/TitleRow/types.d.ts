@@ -13,14 +13,14 @@ export declare const TitleVariant: {
 export type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant];
 export type TitleRowProps<V extends object | null = object | null> = {
     value?: string;
-    diffs?: NodeDiffs<V>;
-    diffsSeverities?: NodeDiffsSeverities;
     expandable: boolean;
     expanded?: boolean;
     onClickExpander?: () => void;
     variant: TitleVariant;
     enableMainHeader?: boolean;
     subheader?: (layoutSide: LayoutSide) => ReactElement;
+    diffs?: NodeDiffs<V>;
+    diffsSeverities?: NodeDiffsSeverities;
 };
 export type TitleRowContentProps = TitleRowProps & {
     layoutSide: LayoutSide;
