@@ -7,7 +7,7 @@ type TextValueProps = {
     variant: TextValueVariant;
     layoutSide: LayoutSide;
     onClick?: () => void;
-    diffs?: ChangedPropertyMetaData;
+    diff?: ChangedPropertyMetaData;
 };
 export declare const TextValue: FC<TextValueProps>;
 export {};
