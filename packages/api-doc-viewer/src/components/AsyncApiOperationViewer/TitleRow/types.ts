@@ -16,14 +16,15 @@ export type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant]
 
 export type TitleRowProps<V extends object | null = object | null> = {
   value?: string // Document Mode
-  diffs?: NodeDiffs<V> // Comparison Mode
-  diffsSeverities?: NodeDiffsSeverities // Comparison Mode
   expandable: boolean
   expanded?: boolean
   onClickExpander?: () => void
   variant: TitleVariant
   enableMainHeader?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
+  // diffs
+  diffs?: NodeDiffs<V> // Comparison Mode
+  diffsSeverities?: NodeDiffsSeverities // Comparison Mode
 }
 
 export type TitleRowContentProps = TitleRowProps & {

@@ -1,6 +1,4 @@
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
-import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { FC, memo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
@@ -14,15 +12,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
   const level = useLevelContext()
 
-  const layoutMode = useLayoutMode()
-  const isSideBySideDiffsLayoutMode = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
-
-  const width = isSideBySideDiffsLayoutMode ? "w-1/2" : "w-full"
-
   const showLevelAndExpanderGroup = level > 0 || expandable
 
   return (
-    <div className={`flex flex-row items-center gap-2 ${width}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div className='flex flex-row items-center gap-2' style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       {showLevelAndExpanderGroup && (
         <div className="flex flex-row items-stretch h-full">
           <LevelIndicator level={level} />
