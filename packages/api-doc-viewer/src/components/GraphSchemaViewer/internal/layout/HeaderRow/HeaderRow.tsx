@@ -54,7 +54,7 @@ import {
   getDiffTypesFromSummary,
   getLayoutModeFlags,
   isDiffTypeIncluded,
-  maxDiffType,
+  maxDiffTypeFromDiffs,
   toChangesList
 } from '../../../../../utils/common/changes'
 import { isDefined } from '../../../../../utils/common/checkers'
@@ -195,9 +195,9 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
 
   const [diffType, diffTypeCause] =
     isNodeChanged
-      ? maxDiffType($nodeChange)
+      ? maxDiffTypeFromDiffs($nodeChange)
       : isContentChanged
-        ? maxDiffType(...rowContentChangesList)
+        ? maxDiffTypeFromDiffs(...rowContentChangesList)
         : DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR
   const diffTypeIncluded = isDiffTypeIncluded(diffType, filters)
 

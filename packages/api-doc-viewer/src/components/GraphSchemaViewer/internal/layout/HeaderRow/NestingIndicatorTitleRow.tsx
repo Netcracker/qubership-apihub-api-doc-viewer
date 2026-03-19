@@ -32,7 +32,7 @@ import {
   getLayoutModeFlags,
   getLayoutSideFlags,
   isDiffTypeIncluded,
-  maxDiffType
+  maxDiffTypeFromDiffs
 } from '../../../../../utils/common/changes'
 import { isDefined } from '../../../../../utils/common/checkers'
 import { EmptyContent } from '../../../../common/diffs/EmptyContent'
@@ -88,7 +88,7 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
     getTypeChangesList($nodeChange, $changes),
     filters
   )
-  const [diffType, diffTypeCause] = maxDiffType(...rowContentChangesList)
+  const [diffType, diffTypeCause] = maxDiffTypeFromDiffs(...rowContentChangesList)
   const diffTypeIncluded = isDiffTypeIncluded(diffType, filters)
   const diffBackground =
     isNodeChanged
