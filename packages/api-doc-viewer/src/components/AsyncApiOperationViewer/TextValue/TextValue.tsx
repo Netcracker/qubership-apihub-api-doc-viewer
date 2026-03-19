@@ -52,7 +52,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(styles.before.textHighlighterColor ? `diffs-higlighter_${styles.before.textHighlighterColor}` : '')
           if (isDiffRemove(data) || isDiffReplace(data)) {
-            resolvedValue = !isDiffAdd(data) ? data.beforeValue : undefined
+            resolvedValue = data.beforeValue
           } else if (isDiffRename(data)) {
             resolvedValue = data.beforeKey
           }
@@ -63,7 +63,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(styles.after.textHighlighterColor ? `diffs-higlighter_${styles.after.textHighlighterColor}` : '')
           if (isDiffAdd(data) || isDiffReplace(data)) {
-            resolvedValue = !isDiffRemove(data) ? data.afterValue : undefined
+            resolvedValue = data.afterValue
           } else if (isDiffRename(data)) {
             resolvedValue = data.afterKey
           }
