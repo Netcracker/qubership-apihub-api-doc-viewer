@@ -7,7 +7,7 @@ import { DescriptionFontSize } from "../common/annotations/Description/types/Des
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
-import { TitleRow } from "./TitleRow"
+import { TitleRow } from "./TitleRow/TitleRow"
 
 type MessageOperationNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>

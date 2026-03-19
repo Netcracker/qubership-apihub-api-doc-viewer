@@ -9,7 +9,7 @@ import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
 import './styles/MessageChannelServer.css'
-import { TitleRow } from "./TitleRow"
+import { TitleRow } from "./TitleRow/TitleRow"
 import { SizeVariant } from "./types/SizeVariant"
 
 type MessageChannelServerNodeViewerProps = {

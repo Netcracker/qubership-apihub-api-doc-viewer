@@ -8,7 +8,7 @@ import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/m
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useState } from "react"
-import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
+import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 
