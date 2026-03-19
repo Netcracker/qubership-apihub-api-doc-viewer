@@ -1,6 +1,7 @@
 import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import type { NodeDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import type { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import type { ReactElement } from "react"
+import { TextValueVariant } from "../TextValue/types"
 
 export const TitleVariant = {
   h1: "h1",
@@ -14,17 +15,17 @@ export const TitleVariant = {
 
 export type TitleVariant = typeof TitleVariant[keyof typeof TitleVariant]
 
-export type TitleRowProps<V extends object | null = object | null> = {
+export type TitleRowProps = {
   value?: string // Document Mode
   expandable: boolean
   expanded?: boolean
   onClickExpander?: () => void
-  variant: TitleVariant
+  variant: TextValueVariant
   enableMainHeader?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
   // diffs
-  diffs?: NodeDiffs<V>
-  descendantDiffs?: NodeDiffs<V>
+  diff?: ChangedPropertyMetaData
+  descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
 }
 

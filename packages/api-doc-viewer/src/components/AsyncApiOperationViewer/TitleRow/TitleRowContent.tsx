@@ -2,16 +2,16 @@ import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { FC, memo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
-import { TitleRowValue } from "./TitleRowValue"
+import { TextValue } from "../TextValue/TextValue"
 import type { TitleRowContentProps } from "./types"
 
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
 
 export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { expandable, expanded, onClickExpander, layoutSide, enableMainHeader = true, subheader } = props
+  const { expandable, expanded, onClickExpander, value, variant, layoutSide, enableMainHeader = true, subheader } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { diffs, descendantDiffs, diffsSeverities } = props
+  const { diff, descendantDiffs, diffsSeverities } = props
 
   const level = useLevelContext()
 
@@ -30,7 +30,14 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
           />
         </div>
       )}
-      {enableMainHeader && <TitleRowValue {...props} />}
+      {enableMainHeader && (
+        <TextValue
+          value={value}
+          variant={variant}
+          layoutSide={layoutSide}
+          diff={diff}
+        />
+      )}
       {subheader?.(layoutSide)}
     </div>
   )

@@ -10,12 +10,12 @@ type TextValueProps = {
   layoutSide: LayoutSide
   onClick?: () => void
   // diffs
-  diffs?: ChangedPropertyMetaData
+  diff?: ChangedPropertyMetaData
 }
 
 export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { value, variant, layoutSide, onClick, diffs } = props
+  const { value, variant, layoutSide, onClick, diff } = props
 
   const renderElement = useCallback((
     children: ReactElement | string | number | boolean | null | undefined,
@@ -46,8 +46,8 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     const diffsStyleClasses: string[] = []
     let resolvedValue: unknown = value
     let isInvisible = false
-    if (diffs) {
-      const { data, styles } = diffs
+    if (diff) {
+      const { data, styles } = diff
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(styles.before.textHighlighterColor ? `diffs-higlighter_${styles.before.textHighlighterColor}` : '')
@@ -74,7 +74,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       }
     }
     return [resolvedValue, diffsStyleClasses, isInvisible]
-  }, [diffs, layoutSide])
+  }, [diff, layoutSide])
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
