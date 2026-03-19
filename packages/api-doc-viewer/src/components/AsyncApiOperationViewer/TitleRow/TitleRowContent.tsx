@@ -10,6 +10,9 @@ const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bot
 export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
   const { expandable, expanded, onClickExpander, layoutSide, enableMainHeader = true, subheader } = props
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { diffs, descendantDiffs, diffsSeverities } = props
+
   const level = useLevelContext()
 
   const showLevelAndExpanderGroup = level > 0 || expandable

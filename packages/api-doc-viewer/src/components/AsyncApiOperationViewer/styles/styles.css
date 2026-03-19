@@ -40,37 +40,49 @@ button.button-selector-option.selected {
   font-weight: 600;
 }
 
-h1.title-row {
+.text-value {
+  font-family: 'Inter-Medium';
+  color: black;
+}
+
+h1.title-row,
+h1.text-value {
   font-size: 32px;
   font-weight: 600;
 }
 
-h2.title-row {
+h2.title-row,
+h2.text-value {
   font-size: 24px;
   font-weight: 600;
 }
 
-h3.title-row {
+h3.title-row,
+h3.text-value {
   font-size: 20px;
   font-weight: 600;
 }
 
-h4.title-row {
+h4.title-row,
+h4.text-value {
   font-size: 18px;
   font-weight: 600;
 }
 
-h5.title-row {
+h5.title-row,
+h5.text-value {
   font-size: 15px;
   font-weight: 600;
 }
 
-h6.title-row {
+h6.title-row,
+h6.text-value {
   font-size: 13px;
   font-weight: 600;
 }
 
-span.title-row {
+span.title-row,
+span.text-value {
   font-size: 13px;
   font-weight: 400;
   padding: 4px 0;
