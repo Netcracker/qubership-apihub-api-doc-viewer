@@ -16,14 +16,15 @@
 import { DiffRecord, NodeChange, NodeChangesSummary } from '../../../../api-data-model/src';
 import { Diff, DiffAdd, DiffRemove, DiffRename, DiffReplace, DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { IModelStateNode } from '../../../../api-state-model/src';
-import { LayoutMode } from '../../types/LayoutMode';
 import { LayoutSide } from '../../types/internal/LayoutSide';
+import { LayoutMode } from '../../types/LayoutMode';
 export declare function diffAdd(diff?: Diff): diff is DiffAdd;
 export declare function diffRemove(diff?: Diff): diff is DiffRemove;
 export declare function diffReplace(diff?: Diff): diff is DiffReplace;
 export declare function diffRename(diff?: Diff): diff is DiffRename;
 export declare function buildOpenApiDiffCause(diff: Diff | undefined): string | undefined;
-export declare function maxDiffType(...changes: Array<Diff | undefined>): [DiffType | undefined, string | undefined];
+export declare function maxDiffType(diffTypes: Set<DiffType> | DiffType[]): DiffType | undefined;
+export declare function maxDiffTypeFromDiffs(...changes: Array<Diff | undefined>): [DiffType | undefined, string | undefined];
 export declare function maxDiffTypeFromNodeSummary(summary?: NodeChangesSummary): DiffType | undefined;
 export declare function maxDiffTypeFromNestedNodesSummary(summaries?: Record<string, NodeChangesSummary>): DiffType | undefined;
 export declare function compareDiffTypes(a: DiffType | undefined, b: DiffType | undefined): number;
