@@ -1,6 +1,7 @@
 import { ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities";
 import { FC, memo, ReactElement, useCallback } from "react";
 import { TextValueVariant } from "./types";
 
@@ -22,7 +23,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     diffsStyleClasses: string[],
     isInvisible: boolean,
   ) => {
-    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${isInvisible ? 'invisible' : ''} ${diffsStyleClasses.join(' ')}`.trim()
+    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${DiffsClassesBuilder.contentInvisible(isInvisible)} ${diffsStyleClasses.join(' ')}`.trim()
     const commonProps = { className: commonStyles, onClick: onClick }
     switch (variant) {
       case TextValueVariant.h1:
@@ -50,7 +51,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       const { data, styles } = diff
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
-          diffsStyleClasses.push(styles.before.textHighlighterColor ? `diffs-higlighter_${styles.before.textHighlighterColor}` : '')
+          diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
           if (isDiffRemove(data) || isDiffReplace(data)) {
             resolvedValue = data.beforeValue
           } else if (isDiffRename(data)) {
@@ -61,7 +62,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           }
           break
         case CHANGED_LAYOUT_SIDE:
-          diffsStyleClasses.push(styles.after.textHighlighterColor ? `diffs-higlighter_${styles.after.textHighlighterColor}` : '')
+          diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
           if (isDiffAdd(data) || isDiffReplace(data)) {
             resolvedValue = data.afterValue
           } else if (isDiffRename(data)) {

@@ -17,6 +17,7 @@ import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
 import { SizeVariant } from "./types/SizeVariant"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities"
 
 type MessageChannelServerNodeViewerProps = {
   node:
@@ -87,10 +88,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
       if (isDiffRemove(data) || isDiffReplace(data)) {
         resolvedValue = data.beforeValue as string
-        diffsClasses.push(`diffs-highlighter_${styles.before.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.beforeKey as string
-        diffsClasses.push(`diffs-highlighter_${styles.before.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       }
       if (isDiffAdd(data)) {
         isInvisible = true
@@ -99,10 +100,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
       if (isDiffAdd(data) || isDiffReplace(data)) {
         resolvedValue = data.afterValue as string
-        diffsClasses.push(`diffs-highlighter_${styles.after.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.afterKey as string
-        diffsClasses.push(`diffs-highlighter_${styles.after.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       }
       if (isDiffRemove(data)) {
         isInvisible = true
@@ -136,10 +137,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
       if (isDiffRemove(data) || isDiffReplace(data)) {
         resolvedValue = data.beforeValue as string
-        diffsClasses.push(`diffs-highlighter_${styles.before.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.beforeKey as string
-        diffsClasses.push(`diffs-highlighter_${styles.before.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       }
       if (isDiffAdd(data)) {
         isInvisible = true
@@ -148,10 +149,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
       if (isDiffAdd(data) || isDiffReplace(data)) {
         resolvedValue = data.afterValue as string
-        diffsClasses.push(`diffs-highlighter_${styles.after.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.afterKey as string
-        diffsClasses.push(`diffs-highlighter_${styles.after.textHighlighterColor}`)
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       }
       if (isDiffRemove(data)) {
         isInvisible = true

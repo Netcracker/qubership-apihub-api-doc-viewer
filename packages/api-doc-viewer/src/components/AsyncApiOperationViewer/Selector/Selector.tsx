@@ -1,6 +1,7 @@
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities"
 import { NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
@@ -44,18 +45,18 @@ export const Selector: FC<SelectorProps> = (props) => {
             const { styles } = diffWholeNode
             switch (layoutSide) {
               case ORIGIN_LAYOUT_SIDE:
-                diffsRelatedClassesList.push(styles.before.borderShadowColor ? `diffs-border_${styles.before.borderShadowColor}` : '')
+                diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.before.borderShadowColor))
                 isInvisible = diffWholeNode.data.action === DiffAction.add
                 break;
               case CHANGED_LAYOUT_SIDE:
-                diffsRelatedClassesList.push(styles.after.borderShadowColor ? `diffs-border_${styles.after.borderShadowColor}` : '')
+                diffsRelatedClassesList.push(styles.after.borderShadowColor ? DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor) : '')
                 isInvisible = diffWholeNode.data.action === DiffAction.remove
                 break;
             }
           }
           if (descendantDiffs) {
             const resolvedDescendantDiffType = maxDiffType(descendantDiffs)
-            diffsRelatedClassesList.push(resolvedDescendantDiffType ? `diffs-round-marker_${resolvedDescendantDiffType}` : '')
+            diffsRelatedClassesList.push(resolvedDescendantDiffType ? DiffsClassesBuilder.roundMarker(resolvedDescendantDiffType) : '')
           }
         }
         if (isInvisible) {
