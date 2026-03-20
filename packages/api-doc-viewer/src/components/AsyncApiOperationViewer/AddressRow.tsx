@@ -1,44 +1,31 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC } from "react"
+import { TextValue } from "./TextValue/TextValue"
+import { TextValueVariant } from "./TextValue/types"
 
 type AddressRowProps = {
   action: string
   address: string
+  diff?: ChangedPropertyMetaData
 }
 
 export const AddressRow: FC<AddressRowProps> = (props) => {
   const layoutMode = useLayoutMode()
 
-  if (layoutMode === INLINE_DIFFS_LAYOUT_MODE) {
-    return (
-      <div style={{ fontSize: 12, marginTop: 4, marginBottom: 4 }}>
-        This layout mode ({layoutMode}) is not supported.
-      </div>
-    )
+  switch (layoutMode) {
+    case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
+      return (
+        <div className="flex flex-row">
+          <AddressRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />
+          <AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
+        </div>
+      )
+    default:
+      return <AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
   }
-
-  return <AddressRowContainer {...props} />
-}
-
-const AddressRowContainer: FC<AddressRowProps> = (props) => {
-  const layoutMode = useLayoutMode()
-  const sideBySideLayout = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
-
-  if (sideBySideLayout) {
-    return (
-      <div className="flex flex-row">
-        <AddressRowContent {...props} />
-        <AddressRowContent {...props} />
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-row">
-      <AddressRowContent {...props} />
-    </div>
-  )
 }
 
 const ACTION_COLOR_MAP: Record<string, string> = {
@@ -46,21 +33,27 @@ const ACTION_COLOR_MAP: Record<string, string> = {
   receive: 'bg-green-500',
 }
 
-const AddressRowContent: FC<AddressRowProps> = (props) => {
-  const { action, address } = props
+type AddressRowContentProps = AddressRowProps & {
+  layoutSide: LayoutSide
+}
 
-  const layoutMode = useLayoutMode()
-  const isSideBySideDiffsLayoutMode = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
-
-  const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
+const AddressRowContent: FC<AddressRowContentProps> = (props) => {
+  const { action, address, layoutSide, diff } = props
 
   return (
-    <div className={`address-row font-Inter-Medium ${width}`}>
+    <div className='address-row font-Inter-Medium'>
       <div className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3' style={{ paddingLeft: 10, paddingRight: 10 }}>
         <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
           {action.toUpperCase()}
         </div>
-        <div className='text-slate-500'>{address}</div>
+        <div className='text-slate-500'>
+          <TextValue
+            value={address}
+            variant={TextValueVariant.body}
+            layoutSide={layoutSide}
+            diff={diff}
+          />
+        </div>
       </div>
     </div>
   )
