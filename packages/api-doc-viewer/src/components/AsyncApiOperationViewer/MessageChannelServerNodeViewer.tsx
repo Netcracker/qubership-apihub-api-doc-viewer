@@ -14,6 +14,7 @@ import { TitleRow } from "./TitleRow/TitleRow"
 import { SizeVariant } from "./types/SizeVariant"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { TitleRowProps } from "./TitleRow/types"
+import { ServerAddressRow } from "./ServerAddressRow"
 
 type MessageChannelServerNodeViewerProps = {
   node:
@@ -80,10 +81,11 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             {...diffsProps}
           />
         )}
-        {/* TODO: Extract to row-like component */}
-        <span className='server-element server-subheader'>
-          {value.protocol}://{value.host}
-        </span>
+        {/* TODO: Provide changes to parts of ServerAddressRow */}
+        <ServerAddressRow 
+          renderProtocol={() => <>{value.protocol}</>}
+          renderHost={() => <>{value.host}</>}
+        />
         {/* ---------------------------------- */}
         <Aligner>
           <DescriptionRow
