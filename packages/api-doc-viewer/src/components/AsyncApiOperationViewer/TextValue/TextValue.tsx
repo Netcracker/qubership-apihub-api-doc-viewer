@@ -23,7 +23,10 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     diffsStyleClasses: string[],
     isInvisible: boolean,
   ) => {
-    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${DiffsClassesBuilder.contentInvisible(isInvisible)} ${diffsStyleClasses.join(' ')}`.trim()
+    if (isInvisible) {
+      return null
+    }
+    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${diffsStyleClasses.join(' ')}`.trim()
     const commonProps = { className: commonStyles, onClick: onClick }
     switch (variant) {
       case TextValueVariant.h1:

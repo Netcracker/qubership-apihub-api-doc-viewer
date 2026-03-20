@@ -33,8 +33,4 @@ export class DiffsClassesBuilder {
   public static fontMuted() {
     return `diffs-font-muted`
   }
-  
-  public static contentInvisible(invsibile: boolean) {
-    return invsibile ? `diffs-content-invisible` : ''
-  }
 }
