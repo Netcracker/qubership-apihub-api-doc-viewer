@@ -1,4 +1,4 @@
-import { NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { NodeDescendantDiffs, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/tree.impl";
@@ -79,6 +79,15 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   public createNodeDescendantsDiffs(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    kind: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+  ): NodeDescendantDiffs | undefined {
+    return undefined;
+  }
+
+  public createNodeDescendantsDiffsSummary(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     kind: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

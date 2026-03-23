@@ -1,7 +1,6 @@
-import { ITreeNodeWithDiffs, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { ITreeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree.interface";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { TreeBuilder } from "../tree/builder";
 
 export abstract class TreeWithDiffsBuilder<
@@ -42,7 +41,12 @@ export abstract class TreeWithDiffsBuilder<
   protected abstract createNodeDescendantsDiffs(
     kind: string,
     params: TreeNodeWithDiffsParams<V, K, M>,
-  ): Set<DiffType> | undefined;
+  ): NodeDescendantDiffs | undefined;
+
+  protected abstract createNodeDescendantsDiffsSummary(
+    kind: string,
+    params: TreeNodeWithDiffsParams<V, K, M>,
+  ): NodeDescendantDiffsSummary | undefined;
 
   protected abstract createNodeDiffsSeverities(
     kind: string,

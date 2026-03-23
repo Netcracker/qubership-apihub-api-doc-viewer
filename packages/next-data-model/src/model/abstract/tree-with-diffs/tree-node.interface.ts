@@ -64,7 +64,9 @@ export type NodeDiffsSeverity = {
 }
 export type NodeDiffsSeverities = Partial<Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>>
 
-export type NodeDescendantDiffs = Set<DiffType>
+export type NodeDescendantDiffs = Partial<Record<NodeId, NodeDiffs<object | null>>>
+
+export type NodeDescendantDiffsSummary = Set<DiffType>
 
 export interface ITreeNodeWithDiffs<
   V extends object | null = object | null,
@@ -73,6 +75,7 @@ export interface ITreeNodeWithDiffs<
 > extends ITreeNode<V, K, M> {
   diffs: NodeDiffs<V>
   descendantDiffs: NodeDescendantDiffs
+  descendantDiffsSummary: NodeDescendantDiffsSummary
   diffsSeverities: NodeDiffsSeverities
 
   createCycledClone(

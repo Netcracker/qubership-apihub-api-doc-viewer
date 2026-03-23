@@ -10,7 +10,11 @@ export class AsyncApiNodeDescendantDiffsAggregatorFactory {
   ): AbstractNodeDescendantsDiffsAggregator {
     switch (kind) {
       default:
-        return new AsyncApiNodeDescendantDiffsAggregatorKindAny();
+        if (!this.instances.has(null)) {
+          const instance = new AsyncApiNodeDescendantDiffsAggregatorKindAny();
+          this.instances.set(null, instance);
+        }
+        return this.instances.get(null)!;
     }
   }
 }
