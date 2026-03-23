@@ -7,10 +7,10 @@ const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const OUTPUT_ROOT = path.join(ROOT_DIR, "async-api-diffs");
 const EXPORT_FILE = path.join(ROOT_DIR, "src", "async-api-diffs.ts");
 
-const SECTION_OPERATION = "For Operation Object";
-const SECTION_CHANNEL = "For Channel Object";
-const SECTION_MESSAGE = "For Message Object";
-const SECTION_SERVER = "For Server Object";
+const SECTION_OPERATION = "operation";
+const SECTION_CHANNEL = "channel";
+const SECTION_MESSAGE = "message";
+const SECTION_SERVER = "channel-server";
 
 const CASES = [];
 
