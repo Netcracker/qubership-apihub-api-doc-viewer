@@ -7,15 +7,15 @@ import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-d
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
+import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject, isObjectWithStringKeys } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
-import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
 import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
+import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
@@ -478,14 +478,4 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   private isValueWithBrokenRef(value: unknown): value is Record<typeof JSON_SCHEMA_PROPERTY_REF, unknown> {
     return isObject(value) && JSON_SCHEMA_PROPERTY_REF in value
   }
-
-  /* Specific utilities */
-
-  // Complexity type detection
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private getNodeComplexityType(value: unknown): TreeNodeComplexityType {
-    return TreeNodeComplexityTypes.SIMPLE
-  }
 }
-

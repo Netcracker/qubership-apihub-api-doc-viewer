@@ -4,7 +4,7 @@ import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext";
 import { LevelContext } from "@apihub/contexts/LevelContext";
 import { DisplayMode } from "@apihub/types/DisplayMode";
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode";
-import { AsyncApiTreeBuilder, createAsyncApiLogger } from "@netcracker/qubership-apihub-next-data-model";
+import { AsyncApiTreeWithDiffsBuilder, createAsyncApiLogger } from "@netcracker/qubership-apihub-next-data-model";
 import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback";
@@ -26,7 +26,7 @@ export type AsyncApiOperationDiffsViewerProps = {
   devMode?: boolean
   referenceNamePropertyKey: symbol
   // diffs specific
-  diffMetaKeys?: DiffMetaKeys
+  diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
 }
 
@@ -58,8 +58,8 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeBuilder(source, referenceNamePropertyKey, operationKeys, logger),
-      [source, operationKeys, referenceNamePropertyKey, logger]
+      () => new AsyncApiTreeWithDiffsBuilder(source, referenceNamePropertyKey, diffMetaKeys, operationKeys, logger),
+      [source, referenceNamePropertyKey, diffMetaKeys, operationKeys, logger]
     )
     const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])
 
