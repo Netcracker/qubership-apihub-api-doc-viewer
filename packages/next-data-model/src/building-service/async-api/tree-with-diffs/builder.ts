@@ -13,7 +13,7 @@ import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifi
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
+import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { AsyncApiTreeBuilder } from "../tree/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
@@ -26,7 +26,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiNodeMeta
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
-  private readonly specificationTransformer: AsyncApiSpecTransformer;
+  private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
 
   constructor(
     private readonly source: unknown,
@@ -37,7 +37,11 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   ) {
     super()
     this.tree = new AsyncApiTreeWithDiffs()
-    this.specificationTransformer = new AsyncApiSpecTransformer(this.referenceNamePropertyKey, this.logger)
+    this.specificationTransformer = new AsyncApiSpecWithDiffsTransformer(
+      this.referenceNamePropertyKey,
+      this.logger,
+      this.diffsMetaKeys,
+    )
   }
 
   public build(): AsyncApiTreeWithDiffs {

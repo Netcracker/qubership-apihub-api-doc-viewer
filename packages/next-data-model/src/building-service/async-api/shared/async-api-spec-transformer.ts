@@ -4,6 +4,53 @@ import { isObject } from "../../../utilities";
 import { AsyncApiLogger } from "../logging";
 import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
 
+export interface AsyncApiMessageOrientedSpecDataContent {
+  headers?: unknown;
+  extensions?: v3.SpecificationExtensions;
+  bindings?: unknown;
+  payload?: unknown;
+  [key: string]: unknown;
+}
+
+export interface AsyncApiMessageOrientedSpecDataChannel {
+  title?: string;
+  summary?: string;
+  description?: string;
+  extensions?: v3.SpecificationExtensions;
+  bindings?: unknown;
+  parameters?: v3.SchemaObject;
+  servers?: (v3.ServerObject | v3.ReferenceObject)[];
+  [key: string]: unknown;
+}
+
+export interface AsyncApiMessageOrientedSpecDataOperation {
+  id: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  bindings?: unknown;
+  extensions?: v3.SpecificationExtensions;
+  [key: string]: unknown;
+}
+
+export interface AsyncApiMessageOrientedSpecData {
+  content: AsyncApiMessageOrientedSpecDataContent;
+  channel: AsyncApiMessageOrientedSpecDataChannel;
+  operation: AsyncApiMessageOrientedSpecDataOperation;
+}
+
+export interface AsyncApiMessageOrientedSpec {
+  id: string;
+  internalTitle?: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  action?: v3.OperationObject["action"];
+  address: string;
+  data: AsyncApiMessageOrientedSpecData;
+  [key: string]: unknown;
+}
+
 export class AsyncApiSpecTransformer {
   constructor(
     private readonly referenceNamePropertyKey: symbol,
@@ -13,7 +60,7 @@ export class AsyncApiSpecTransformer {
   public transformOperationOrientedSpecToMessageOrientedSpec(
     source: unknown,
     operationKeys?: OperationKeys,
-  ): unknown {
+  ): AsyncApiMessageOrientedSpec | null {
     if (!this.isAsyncApiSpecification(source)) {
       return null
     }
@@ -104,7 +151,7 @@ export class AsyncApiSpecTransformer {
     const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
     const operationReferenceNameProperty = pickReferenceNameProperty(operation)
 
-    const messageOrientedOperation: Record<PropertyKey, unknown> = {
+    const messageOrientedOperation: AsyncApiMessageOrientedSpec = {
       ...(messageReferenceNameProperty ?? {}),
       id: messageKey,
       ...(operationMessage.name ? { internalTitle: operationMessage.name } : {}),
