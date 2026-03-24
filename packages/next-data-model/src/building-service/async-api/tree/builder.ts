@@ -5,7 +5,6 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList 
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -16,8 +15,8 @@ import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
-import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
 import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
+import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
@@ -49,6 +48,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   AsyncApiNodeMeta
 > {
   public readonly tree: AsyncApiTree;
+  private readonly specificationTransformer: AsyncApiSpecTransformer;
 
   public static readonly ASYNC_API_TREE_NODE_META_PROPS: (keyof AsyncApiNodeMeta)[] = []
 
@@ -143,6 +143,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   ) {
     super()
     this.tree = new AsyncApiTree();
+    this.specificationTransformer = new AsyncApiSpecTransformer(this.referenceNamePropertyKey, this.logger)
   }
 
   public build(): AsyncApiTree {
@@ -160,7 +161,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const initialRules: AsyncApiCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE)
 
     // TODO: Encapsulate this
-    const preparedSource = this.transformOperationOrientedSpecToMessageOrientedSpec(this.source, this.operationKeys)
+    const preparedSource = this.specificationTransformer.transformOperationOrientedSpecToMessageOrientedSpec(this.source, this.operationKeys)
 
     this.logger.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
@@ -178,187 +179,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     )
 
     return this.tree;
-  }
-
-  // General transformer
-
-  private transformOperationOrientedSpecToMessageOrientedSpec(
-    source: unknown,
-    operationKeys?: OperationKeys,
-  ): unknown {
-    if (!this.isAsyncApiSpecification(source)) {
-      return null
-    }
-
-    const operations: v3.OperationsObject = source.operations ?? {}
-
-    let operationKey: string
-    let messageKey: string
-
-    let firstOperationKey: string | undefined
-    let firstOperationMessageKey: string | undefined
-    if (!operationKeys) {
-      this.logger.error('Operation key or message key is not provided. Looking for first operation, channel and message in source...')
-      firstOperationKey = Object.keys(operations).at(0)
-      if (firstOperationKey) {
-        const firstOperationCandidate = operations[firstOperationKey]
-        const firstOperation = !this.isReferenceObject(firstOperationCandidate) ? firstOperationCandidate : null
-        if (firstOperation) {
-          // First Message
-          const firstOperationMessagesCandidate = firstOperation.messages?.[0]
-          const firstOperationMessage = !this.isReferenceObject(firstOperationMessagesCandidate) ? firstOperationMessagesCandidate : null
-          if (firstOperationMessage) {
-            const key = (firstOperationMessage as Record<PropertyKey, unknown>)[this.referenceNamePropertyKey]
-            firstOperationMessageKey = typeof key === 'string' ? key : undefined
-          }
-        }
-      }
-      if (!firstOperationKey || !firstOperationMessageKey) {
-        !firstOperationKey && this.logger.error('Cannot find first operation in source.')
-        !firstOperationMessageKey && this.logger.error('Cannot find first operation message key in source.')
-        return null
-      }
-      this.logger.debug('[AsyncAPI] Found first operation, channel and message in source:', firstOperationKey, firstOperationMessageKey)
-      operationKey = firstOperationKey
-      messageKey = firstOperationMessageKey
-    } else {
-      operationKey = operationKeys.operationKey
-      messageKey = operationKeys.messageKey
-    }
-
-    const operation: v3.OperationObject | undefined = Object.entries(operations)
-      .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
-        const [currentOperationKey, currentOperation] = currentOperationEntry
-        return (
-          !this.isReferenceObject(currentOperation) &&
-          currentOperationKey === operationKey
-        )
-      })
-      .map(([, operation]) => operation)
-      .at(0)
-
-    if (!operation) {
-      this.logger.error(`Cannot find operation with key (id) = ${operationKey}`)
-      return null
-    }
-
-    const operationChannel: v3.ChannelObject = !this.isReferenceObject(operation.channel) ? operation.channel : {}
-    const operationMessages: v3.MessageObject[] = (operation.messages ?? [])
-      .filter((message): message is v3.MessageObject => !this.isReferenceObject(message))
-    let operationMessage: v3.MessageObject | undefined = operationMessages
-      .find((message: v3.MessageObject) => isObject(message) && message[this.referenceNamePropertyKey] === messageKey)
-
-    if (!operationChannel) {
-      this.logger.error('Cannot find channel in the operation', operation)
-      return null
-    }
-
-    if (!operationMessage) {
-      const channelMessage = operationChannel.messages?.[messageKey]
-      operationMessage = !this.isReferenceObject(channelMessage) ? channelMessage : undefined
-      if (!operationMessage) {
-        this.logger.error(`Cannot find message with key (id) = ${messageKey}`)
-        return null
-      }
-    }
-
-    const operationExtensions = this.copyExtensions(operation)
-    const operationChannelExtensions = this.copyExtensions(operationChannel)
-    const operationMessageExtensions = this.copyExtensions(operationMessage)
-
-    const pickReferenceNameProperty = (source: unknown): Record<PropertyKey, unknown> | undefined => {
-      return isObject(source)
-        ? { [this.referenceNamePropertyKey]: source[this.referenceNamePropertyKey] }
-        : undefined
-    }
-
-    const pickReferenceNamePropertyValue = (source: unknown): unknown | undefined => {
-      return isObject(source) ? source[this.referenceNamePropertyKey] : undefined
-    }
-
-    const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
-    const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
-    const operationReferenceNameProperty = pickReferenceNameProperty(operation)
-
-    const messageOrientedOperation: Record<PropertyKey, unknown> = {
-      ...(messageReferenceNameProperty ?? {}),
-      id: messageKey,
-      ...(operationMessage.name ? { internalTitle: operationMessage.name } : {}),
-      ...(operationMessage.title ? { title: operationMessage.title } : {}),
-      ...(operationMessage.summary ? { summary: operationMessage.summary } : {}),
-      ...(operationMessage.description ? { description: operationMessage.description } : {}),
-      action: operation.action,
-      address: operationChannel.address ?? UNKNOWN_ADDRESS,
-      data: {
-        content: {
-          ...operationMessage.headers ? { headers: operationMessage.headers } : {},
-          ...operationMessageExtensions ? { extensions: operationMessageExtensions } : {},
-          ...operationMessage.bindings ? { bindings: operationMessage.bindings } : {},
-          ...operationMessage.payload ? { payload: operationMessage.payload } : {},
-        },
-        channel: {
-          ...(channelReferenceNameProperty ?? {}),
-          ...(operationChannel.title ? { title: operationChannel.title } : {}),
-          ...(operationChannel.summary ? { summary: operationChannel.summary } : {}),
-          ...(operationChannel.description ? { description: operationChannel.description } : {}),
-          ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
-          ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
-          ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
-          ...operationChannel.servers ? {
-            servers: operationChannel.servers.map((server: v3.ServerObject | v3.ReferenceObject) => {
-              if (this.isReferenceObject(server)) {
-                return server
-              }
-              const serverTitle = server.title ?? pickReferenceNamePropertyValue(server)
-              return typeof serverTitle === 'string'
-                ? { ...server, title: serverTitle }
-                : server
-            })
-          } : {},
-        },
-        operation: {
-          ...(operationReferenceNameProperty ?? {}),
-          id: operationKey,
-          ...(operation.title ? { title: operation.title } : {}),
-          ...(operation.summary ? { summary: operation.summary } : {}),
-          ...(operation.description ? { description: operation.description } : {}),
-          ...operation.bindings ? { bindings: operation.bindings } : {},
-          ...operationExtensions ? { extensions: operationExtensions } : {},
-        },
-      }
-    }
-    return messageOrientedOperation
-  }
-
-  private transformParametersToJsonSchema(parameters: v3.ParametersObject): v3.SchemaObject {
-    const newParameters: Record<string, v3.SchemaObject> = {}
-    for (const [parameterName, parameterValue] of Object.entries(parameters)) {
-      newParameters[parameterName] =
-        this.isReferenceObject(parameterValue)
-          ? parameterValue
-          : { type: 'string', ...parameterValue }
-    }
-    return newParameters
-  }
-
-  private copyExtensions(source: v3.MessageObject): v3.SpecificationExtensions | undefined {
-    const extensionKeys = Object.keys(source)
-      .filter((key): key is keyof v3.SpecificationExtensions => key.startsWith('x-'))
-    if (extensionKeys.length === 0) {
-      return undefined
-    }
-    return extensionKeys.reduce((extensions, key) => {
-      extensions[key] = source[key]
-      return extensions
-    }, {} as v3.SpecificationExtensions)
-  }
-
-  private isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
-    return typeof value === 'object' && value !== null && 'asyncapi' in value && typeof value.asyncapi === 'string'
-  }
-
-  private isReferenceObject(value: unknown): value is v3.ReferenceObject {
-    return typeof value === 'object' && value !== null && '$ref' in value && typeof value.$ref === 'string'
   }
 
   /* Crawlhooks-builders */

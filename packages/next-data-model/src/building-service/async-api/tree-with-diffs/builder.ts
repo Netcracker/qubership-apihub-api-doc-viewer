@@ -1,16 +1,24 @@
-import { NodeDescendantDiffs, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/tree.impl";
-import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
+import { isObject, isObjectWithStringKeys } from "@apihub/next-data-model/utilities";
+import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
+import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
+import { AsyncApiTreeBuilder } from "../tree/builder";
+import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
+import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
+import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
+import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -18,6 +26,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiNodeMeta
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
+  private readonly specificationTransformer: AsyncApiSpecTransformer;
 
   constructor(
     private readonly source: unknown,
@@ -27,81 +36,201 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
   ) {
     super()
-    this.tree = new AsyncApiTreeWithDiffs();
+    this.tree = new AsyncApiTreeWithDiffs()
+    this.specificationTransformer = new AsyncApiSpecTransformer(this.referenceNamePropertyKey, this.logger)
   }
 
   public build(): AsyncApiTreeWithDiffs {
-    return this.tree;
+    const preparedSource = this.specificationTransformer.transformOperationOrientedSpecToMessageOrientedSpec(
+      this.source,
+      this.operationKeys,
+    )
+    this.logger.debug("[AsyncAPI][WithDiffs] Prepared Source:", preparedSource)
+    return this.tree
   }
 
-  public createNodeFromRaw(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected createNodeFromRaw(
     id: NodeId,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     kind: AsyncApiTreeNodeKind,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     complex: boolean,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): AsyncApiSimpleTreeNodeWithDiffs | AsyncApiComplexTreeNodeWithDiffs | undefined {
-    return undefined;
+    const { parent = null, container = null, newDataLevel } = params
+
+    if (complex) {
+      const nodeMeta = this.createNodeMeta(key, params)
+      const treeNode = this.tree.createComplexNode(id, key, kind, false, {
+        type: TreeNodeComplexityTypes.COMPLEX,
+        parent: parent as AsyncApiSimpleTreeNodeWithDiffs | null,
+        container: container as AsyncApiComplexTreeNodeWithDiffs | null,
+        value: null,
+        meta: nodeMeta,
+        newDataLevel,
+      })
+      this.assignNodeDiffs(treeNode, kind, params)
+      return treeNode as AsyncApiComplexTreeNodeWithDiffs
+    }
+
+    const nodeValue = this.createNodeValue(key, kind, params)
+    const nodeMeta = this.createNodeMeta(key, params)
+    const treeNode = this.tree.createSimpleNode(id, key, kind, false, {
+      type: TreeNodeComplexityTypes.SIMPLE,
+      parent: parent as AsyncApiSimpleTreeNodeWithDiffs | null,
+      container: container as AsyncApiComplexTreeNodeWithDiffs | null,
+      value: nodeValue,
+      meta: nodeMeta,
+      newDataLevel,
+    })
+    this.assignNodeDiffs(treeNode, kind, params)
+    return treeNode as AsyncApiSimpleTreeNodeWithDiffs
   }
 
-  public createNodeMeta(
+  protected createNodeMeta(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): AsyncApiNodeMeta {
-    return {};
+    const { value } = params
+    return {
+      ...this.isValueWithBrokenRef(value) ? { brokenRef: `${value.$ref}` } : {},
+      _fragment: value,
+    }
   }
 
-  public createNodeValue(
+  protected createNodeValue(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     kind: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
-    return null;
+    const { value } = params
+
+    if (value === undefined || value === null) {
+      return null
+    }
+    if (!isObjectWithStringKeys(value) || !this.isAsyncApiTreeNodeKind(kind)) {
+      return null
+    }
+
+    switch (kind) {
+      case AsyncApiTreeNodeKinds.BINDING:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.EXTENSIONS:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      case AsyncApiTreeNodeKinds.SERVER:
+        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>>(
+          value,
+          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
+        )
+      default:
+        return null
+    }
   }
 
-  public createNodeDiffs(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected createNodeDiffs(
     kind: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
-  ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind>> | undefined {
-    return undefined;
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
+  ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
+    if (!this.isAsyncApiTreeNodeKind(kind)) {
+      return undefined
+    }
+    return AsyncApiNodeDiffsAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
   }
 
-  public createNodeDescendantsDiffs(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected createNodeDescendantsDiffs(
     kind: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): NodeDescendantDiffs | undefined {
-    return undefined;
+    if (!this.isAsyncApiTreeNodeKind(kind)) {
+      return undefined
+    }
+    return AsyncApiNodeDescendantDiffsAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
   }
 
-  public createNodeDescendantsDiffsSummary(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected createNodeDescendantsDiffsSummary(
     kind: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): Set<DiffType> | undefined {
-    return undefined;
+    if (!this.isAsyncApiTreeNodeKind(kind)) {
+      return undefined
+    }
+    return AsyncApiNodeDescendantDiffsSummaryAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
   }
 
-  public createNodeDiffsSeverities(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected createNodeDiffsSeverities(
     kind: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    params: TreeNodeWithDiffsParams<object | null, string, object> // FIXME
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
   ): NodeDiffsSeverities | undefined {
-    return undefined;
+    if (!this.isAsyncApiTreeNodeKind(kind)) {
+      return undefined
+    }
+    return AsyncApiNodeDiffsSeveritiesAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
+  }
+
+  private assignNodeDiffs(
+    node: ITreeNodeWithDiffs<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiNodeMeta
+    >,
+    kind: AsyncApiTreeNodeKind,
+    params: TreeNodeWithDiffsParams<object | null, string, object>, // FIXME
+  ): void {
+    const nodeDiffs = this.createNodeDiffs(kind, params)
+    nodeDiffs && Object.assign(node.diffs, nodeDiffs)
+
+    const descendantDiffs = this.createNodeDescendantsDiffs(kind, params)
+    descendantDiffs && Object.assign(node.descendantDiffs, descendantDiffs)
+
+    const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, params)
+    descendantDiffsSummary && descendantDiffsSummary.forEach((diffType) => node.descendantDiffsSummary.add(diffType))
+
+    const diffsSeverities = this.createNodeDiffsSeverities(kind, params)
+    diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)
+  }
+
+  private isAsyncApiTreeNodeKind(kind: string): kind is AsyncApiTreeNodeKind {
+    return AsyncApiTreeNodeKindsList.includes(kind as AsyncApiTreeNodeKind)
+  }
+
+  private isValueWithBrokenRef(value: unknown): value is Record<typeof JSON_SCHEMA_PROPERTY_REF, unknown> {
+    return isObject(value) && JSON_SCHEMA_PROPERTY_REF in value
   }
 }
