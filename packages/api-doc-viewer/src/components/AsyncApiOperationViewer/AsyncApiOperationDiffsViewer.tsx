@@ -55,9 +55,6 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
       diffTypes,
     } = props
 
-    console.log('diffMetaKeys', diffMetaKeys)
-    console.log('source', source)
-
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
