@@ -3,6 +3,8 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC } from "react"
+import { OneSideLayout } from "./Layout/OneSideLayout"
+import { SideBySideLayout } from "./Layout/SideBySideLayout"
 import { TextValue } from "./TextValue/TextValue"
 import { TextValueVariant } from "./TextValue/types"
 
@@ -18,13 +20,17 @@ export const AddressRow: FC<AddressRowProps> = (props) => {
   switch (layoutMode) {
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
       return (
-        <div className="flex flex-row">
-          <AddressRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />
-          <AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
-        </div>
+        <SideBySideLayout
+          left={<AddressRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />}
+          right={<AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
+        />
       )
     default:
-      return <AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />
+      return (
+        <OneSideLayout
+          content={<AddressRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
+        />
+      )
   }
 }
 
