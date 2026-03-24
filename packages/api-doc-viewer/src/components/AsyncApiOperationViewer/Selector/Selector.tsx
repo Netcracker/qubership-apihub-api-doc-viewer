@@ -1,8 +1,8 @@
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { maxDiffType } from "@apihub/utils/common/changes"
-import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities"
-import { NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { NodeDescendantDiffsSummary, NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
 import "../styles/styles.css"
@@ -14,7 +14,7 @@ export type SelectorOption<V extends object | null = object | null> = {
   testId?: string
   // diifs
   diffs?: NodeDiffs<V>
-  descendantDiffs?: Set<DiffType>
+  descendantDiffsSummary?: NodeDescendantDiffsSummary
 }
 
 type SelectorProps<V extends object | null = object | null> = {
@@ -35,7 +35,7 @@ export const Selector: FC<SelectorProps> = (props) => {
   return (
     <div className='flex flex-row gap-2'>
       {options.map((option) => {
-        const { diffs, descendantDiffs } = option
+        const { diffs, descendantDiffsSummary: descendantDiffs } = option
         const diffsRelatedClassesList = []
         let isInvisible = false
         if (diffs || descendantDiffs) {
