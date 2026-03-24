@@ -19,22 +19,18 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const defaultCaseId = sampleCases[0]?.caseId ?? "";
-const sampleCaseIds = sampleCases.map((item) => item.caseId);
 const sampleById = Object.fromEntries(sampleCases.map((item) => [item.caseId, item])) as Record<
   string,
   (typeof sampleCases)[number]
 >;
 
-type StoryArgs = {
-  caseId: string;
-};
+const AsyncApiServerSamplesStory = ({ caseId }: { caseId: string }) => {
+  const selected = sampleById[caseId];
 
-const AsyncApiServerSamplesStory = ({ caseId }: StoryArgs) => {
-  const selected = sampleById[caseId] ?? sampleCases[0];
   if (!selected) {
-    return <div>No sample cases found</div>;
+    return <div>Sample case not found: {caseId}</div>;
   }
+
   return (
     <AsyncApiOperationDiffsViewer
       {...createViewerArgs(selected.beforeYaml, selected.afterYaml)}
@@ -46,16 +42,7 @@ const AsyncApiServerSamplesStory = ({ caseId }: StoryArgs) => {
 const meta = {
   title: "Async API Diffs Suite/Server Samples",
   component: AsyncApiServerSamplesStory,
-  argTypes: {
-    caseId: {
-      control: "select",
-      options: sampleCaseIds,
-    },
-  },
-  args: {
-    caseId: defaultCaseId,
-  },
-} satisfies Meta<StoryArgs>;
+} satisfies Meta<typeof AsyncApiServerSamplesStory>;
 
 export default meta;
 
@@ -80,6 +67,43 @@ const createViewerArgs = (beforeSourceText: string, afterSourceText: string): As
   diffMetaKeys: TEST_DIFF_META_KEYS,
 });
 
-export const Samples: Story = {
+const createCaseStory = (caseId: string): Story => ({
+  name: caseId,
+  args: {
+    caseId,
+  },
   render: (args) => <AsyncApiServerSamplesStory caseId={args.caseId} />,
-};
+});
+
+export const Case_1_1_channel_servers_host_protocol_changed: Story = createCaseStory("1.1-channel-servers-host-protocol-changed");
+export const Case_1_2_channel_servers_description_set: Story = createCaseStory("1.2-channel-servers-description-set");
+export const Case_1_3_channel_servers_summary_set: Story = createCaseStory("1.3-channel-servers-summary-set");
+export const Case_2_1_channel_servers0_bindings_add_amqp: Story = createCaseStory("2.1-channel-servers0-bindings-add-amqp");
+export const Case_2_2_channel_servers0_bindings_remove_kafka: Story = createCaseStory("2.2-channel-servers0-bindings-remove-kafka");
+export const Case_2_3_channel_servers0_bindings_add_kafka: Story = createCaseStory("2.3-channel-servers0-bindings-add-kafka");
+export const Case_2_4_channel_servers0_bindings_remove_kafka: Story = createCaseStory("2.4-channel-servers0-bindings-remove-kafka");
+export const Case_3_1_channel_servers0_bindings_kafka_bindingVersion_changed: Story = createCaseStory("3.1-channel-servers0-bindings-kafka-bindingVersion-changed");
+export const Case_3_2_channel_servers0_bindings_kafka_bindingVersion_removed: Story = createCaseStory("3.2-channel-servers0-bindings-kafka-bindingVersion-removed");
+export const Case_3_3_channel_servers0_bindings_kafka_bindingVersion_added: Story = createCaseStory("3.3-channel-servers0-bindings-kafka-bindingVersion-added");
+export const Case_4_1_1_channel_servers0_bindings_kafka_string_to_number: Story = createCaseStory("4.1.1-channel-servers0-bindings-kafka-string-to-number");
+export const Case_4_1_2_channel_servers0_bindings_kafka_number_to_string: Story = createCaseStory("4.1.2-channel-servers0-bindings-kafka-number-to-string");
+export const Case_4_1_3_channel_servers0_bindings_kafka_string_to_boolean: Story = createCaseStory("4.1.3-channel-servers0-bindings-kafka-string-to-boolean");
+export const Case_4_1_4_channel_servers0_bindings_kafka_number_to_null: Story = createCaseStory("4.1.4-channel-servers0-bindings-kafka-number-to-null");
+export const Case_4_1_5_channel_servers0_bindings_kafka_boolean_to_string: Story = createCaseStory("4.1.5-channel-servers0-bindings-kafka-boolean-to-string");
+export const Case_4_1_6_channel_servers0_bindings_kafka_null_to_number: Story = createCaseStory("4.1.6-channel-servers0-bindings-kafka-null-to-number");
+export const Case_4_1_7_channel_servers0_bindings_kafka_string_to_array_primitives: Story = createCaseStory("4.1.7-channel-servers0-bindings-kafka-string-to-array-primitives");
+export const Case_4_1_8_channel_servers0_bindings_kafka_number_to_array_primitives: Story = createCaseStory("4.1.8-channel-servers0-bindings-kafka-number-to-array-primitives");
+export const Case_4_1_9_channel_servers0_bindings_kafka_string_to_array_objects: Story = createCaseStory("4.1.9-channel-servers0-bindings-kafka-string-to-array-objects");
+export const Case_4_1_10_channel_servers0_bindings_kafka_number_to_array_objects: Story = createCaseStory("4.1.10-channel-servers0-bindings-kafka-number-to-array-objects");
+export const Case_4_1_11_channel_servers0_bindings_kafka_string_to_array_arrays_primitives: Story = createCaseStory("4.1.11-channel-servers0-bindings-kafka-string-to-array-arrays-primitives");
+export const Case_4_1_12_channel_servers0_bindings_kafka_number_to_array_arrays_primitives: Story = createCaseStory("4.1.12-channel-servers0-bindings-kafka-number-to-array-arrays-primitives");
+export const Case_4_1_13_channel_servers0_bindings_kafka_boolean_to_null: Story = createCaseStory("4.1.13-channel-servers0-bindings-kafka-boolean-to-null");
+export const Case_4_1_14_channel_servers0_bindings_kafka_boolean_to_array_primitives: Story = createCaseStory("4.1.14-channel-servers0-bindings-kafka-boolean-to-array-primitives");
+export const Case_4_1_15_channel_servers0_bindings_kafka_null_to_array_primitives: Story = createCaseStory("4.1.15-channel-servers0-bindings-kafka-null-to-array-primitives");
+export const Case_4_1_16_channel_servers0_bindings_kafka_boolean_to_object: Story = createCaseStory("4.1.16-channel-servers0-bindings-kafka-boolean-to-object");
+export const Case_4_1_17_channel_servers0_bindings_kafka_null_to_object: Story = createCaseStory("4.1.17-channel-servers0-bindings-kafka-null-to-object");
+export const Case_4_1_18_channel_servers0_bindings_kafka_array_primitives_to_object: Story = createCaseStory("4.1.18-channel-servers0-bindings-kafka-array-primitives-to-object");
+export const Case_4_1_19_channel_servers0_bindings_kafka_array_objects_to_object: Story = createCaseStory("4.1.19-channel-servers0-bindings-kafka-array-objects-to-object");
+export const Case_4_1_20_channel_servers0_bindings_kafka_array_arrays_primitives_to_object: Story = createCaseStory("4.1.20-channel-servers0-bindings-kafka-array-arrays-primitives-to-object");
+export const Case_4_1_21_channel_servers0_bindings_kafka_remove_object_property: Story = createCaseStory("4.1.21-channel-servers0-bindings-kafka-remove-object-property");
+export const Case_4_1_22_channel_servers0_bindings_kafka_add_object_property: Story = createCaseStory("4.1.22-channel-servers0-bindings-kafka-add-object-property");
