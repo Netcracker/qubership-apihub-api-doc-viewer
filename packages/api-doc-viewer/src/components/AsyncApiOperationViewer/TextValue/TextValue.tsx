@@ -4,6 +4,7 @@ import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracke
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities";
 import { FC, memo, ReactElement, useCallback } from "react";
 import { TextValueVariant } from "./types";
+import '../styles/TextValue.css';
 
 type TextValueProps = {
   value?: string
