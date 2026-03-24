@@ -10,15 +10,35 @@ import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/op
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { isObject, isObjectWithStringKeys } from "@apihub/next-data-model/utilities";
 import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
+import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
+import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
+import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
+import { CommonState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
+import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 import { AsyncApiTreeBuilder } from "../tree/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
+
+type AsyncApiTreeNodeWithDiffs = ITreeNodeWithDiffs<
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+  AsyncApiTreeNodeKind,
+  AsyncApiNodeMeta
+>
+
+type AsyncApiTreeWithDiffsCrawlState = CommonState<
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+  AsyncApiTreeNodeKind,
+  AsyncApiNodeMeta,
+  AsyncApiTreeNodeWithDiffs
+>
+
+type AsyncApiTreeWithDiffsCrawlRule = SchemaCrawlRule<AsyncApiTreeNodeKind, AsyncApiTreeWithDiffsCrawlState>
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -45,12 +65,70 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   public build(): AsyncApiTreeWithDiffs {
+    if (!isObject(this.source)) {
+      return this.tree
+    }
+
+    const initialState: AsyncApiTreeWithDiffsCrawlState = {
+      parent: null,
+      container: null,
+      alreadyConvertedValuesCache: new Map(),
+    }
+
+    const initialRules: AsyncApiTreeWithDiffsCrawlRule = getAsyncApiCrawlRules(AsyncApiTreeNodeKinds.MESSAGE) as unknown as AsyncApiTreeWithDiffsCrawlRule
+
     const preparedSource = this.specificationTransformer.transformOperationOrientedSpecToMessageOrientedSpec(
       this.source,
       this.operationKeys,
     )
     this.logger.debug("[AsyncAPI][WithDiffs] Prepared Source:", preparedSource)
+
+    const hooks = createAsyncApiTreeBuildingHooks<
+      AsyncApiTreeNodeWithDiffs,
+      AsyncApiTreeWithDiffsCrawlState,
+      AsyncApiCrawlRule
+    >({
+      source: preparedSource,
+      tree: this.tree,
+      createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(
+        id,
+        key,
+        kind,
+        complex,
+        params as TreeNodeWithDiffsParams<object | null, string, object>,
+      ),
+      isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
+      isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
+      resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
+      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+    })
+
+    syncCrawl<AsyncApiTreeWithDiffsCrawlState, AsyncApiCrawlRule>(
+      preparedSource,
+      hooks,
+      {
+        state: initialState,
+        rules: initialRules as unknown as AsyncApiCrawlRule,
+      },
+    )
+
     return this.tree
+  }
+
+  private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
+    if (!isObject(value)) {
+      return key
+    }
+    if (this.referenceNamePropertyKey && value[this.referenceNamePropertyKey]) {
+      const nodeKeyCandidate = value[this.referenceNamePropertyKey]
+      if (typeof nodeKeyCandidate === 'string' || typeof nodeKeyCandidate === 'number') {
+        return nodeKeyCandidate
+      }
+    }
+    if ('id' in value && typeof value.id === 'string') {
+      return value.id
+    }
+    return key
   }
 
   protected createNodeFromRaw(

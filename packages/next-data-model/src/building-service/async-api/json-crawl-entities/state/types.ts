@@ -7,10 +7,12 @@ import { CrawlerIterationValue } from "../../../../utility-types"
 export interface CommonState<
   V extends object | null,
   K extends string,
-  M extends object> {
-  parent: ITreeNode<V, K, M> | null
-  container: ITreeNode<V, K, M> | null
-  alreadyConvertedValuesCache: Map<CrawlerIterationValue, ITreeNode<V, K, M>>
+  M extends object,
+  N extends ITreeNode<V, K, M> = ITreeNode<V, K, M>,
+> {
+  parent: N | null
+  container: N | null
+  alreadyConvertedValuesCache: Map<CrawlerIterationValue, N>
 }
 
 export type AsyncApiTreeCrawlState = CommonState<

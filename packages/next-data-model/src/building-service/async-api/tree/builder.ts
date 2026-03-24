@@ -1,22 +1,22 @@
 import { AsyncApiComplexTreeNode } from "@apihub/next-data-model/model/async-api/tree/complex-node.impl";
 import { AsyncApiSimpleTreeNode } from "@apihub/next-data-model/model/async-api/tree/simple-node.impl";
 import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.impl";
-import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { buildPointer, JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
-import { isArray, syncCrawl, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
+import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
+import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject, isObjectWithStringKeys } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
-import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
-import { AsyncApiTreeCrawlState, CommonState } from "../json-crawl-entities/state/types";
-import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
+import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
+import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
+import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 
 // Union of all possible keys from all AsyncApiTreeNodeValue variants
 type AnyAsyncApiNodeValueKey =
@@ -165,13 +165,23 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     this.logger.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
+    const hooks = createAsyncApiTreeBuildingHooks<
+      AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode,
+      AsyncApiTreeCrawlState,
+      AsyncApiCrawlRule
+    >({
+      source: preparedSource,
+      tree: this.tree,
+      createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
+      isSimpleNode: (node): node is AsyncApiSimpleTreeNode => this.isAsyncApiSimpleTreeNode(node),
+      isComplexNode: (node): node is AsyncApiComplexTreeNode => this.isAsyncApiComplexTreeNode(node),
+      resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
+      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+    })
+
     syncCrawl<AsyncApiTreeCrawlState, AsyncApiCrawlRule>(
       preparedSource,
-      [
-        this.instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop(),
-        this.instantiateHookUnifyingValue(preparedSource),
-        this.instantiateHookCreatingAsyncApiTreeNodes(),
-      ],
+      hooks,
       {
         state: initialState,
         rules: initialRules,
@@ -179,148 +189,6 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     )
 
     return this.tree;
-  }
-
-  /* Crawlhooks-builders */
-
-  private instantiateHookPreventingTreeBuildingProcessFromInfiniteLoop<
-    V extends object | null,
-    K extends string,
-    M extends object,
-  >(): SyncCrawlHook<
-    CommonState<V, K, M>,
-    SchemaCrawlRule<K, CommonState<V, K, M>>
-  > {
-    return ({ value, state, key, path }) => {
-      if (typeof key === 'symbol') {
-        return;
-      }
-
-      const {
-        alreadyConvertedValuesCache,
-        parent,
-        container,
-      } = state
-      const alreadyExisted: ITreeNode<V, K, M> | undefined = alreadyConvertedValuesCache.get(value)
-
-      if (
-        !alreadyExisted || (
-          !this.isAsyncApiSimpleTreeNode(alreadyExisted) &&
-          !this.isAsyncApiComplexTreeNode(alreadyExisted)
-        )
-      ) {
-        return { value }
-      }
-
-      if (!parent || !this.isAsyncApiSimpleTreeNode(parent)) {
-        return { value }
-      }
-
-      const nodeId = '#' + buildPointer(path)
-      const nodeKey = this.resolveNodeKey(key, value);
-      const cycledClone = this.tree.createCycledClone(alreadyExisted, nodeId, nodeKey, parent)
-      if (container) {
-        container.addNestedNode(cycledClone)
-      }
-      if (parent) {
-        parent.addChildNode(cycledClone)
-      }
-      return { done: true }
-    }
-  }
-
-  private instantiateHookUnifyingValue<
-    V extends object | null,
-    K extends string,
-    M extends object
-  >(
-    source: unknown
-  ): SyncCrawlHook<
-    CommonState<V, K, M>,
-    SchemaCrawlRule<K, CommonState<V, K, M>>
-  > {
-    return ({ key, value, path, state, rules }) => {
-      if (!rules || !Array.isArray(rules.transformers)) {
-        return
-      }
-
-      const transformers: SchemaTransformFunc<CommonState<V, K, M>>[] = rules.transformers ?? []
-      const transformedValue = transformers.reduce(
-        (accumulatedTransformedValue, transform) => transform(key, accumulatedTransformedValue, source, path, state),
-        value
-      )
-
-      return { value: transformedValue }
-    }
-  }
-
-  private instantiateHookCreatingAsyncApiTreeNodes(): SyncCrawlHook<AsyncApiTreeCrawlState, AsyncApiCrawlRule> {
-    return ({ key, value, path, rules, state }) => {
-      if (!rules) {
-        return { done: true };
-      }
-      if (typeof key === 'symbol') {
-        return { done: true };
-      }
-      if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
-        return { done: true };
-      }
-      // if (isObject(value) && Reflect.ownKeys(value).length === 0) {
-      // return { done: true }; // exit on empty object
-      // }
-      if (!rules.kind || !AsyncApiTreeNodeKindsList.includes(rules.kind)) {
-        // equivalent to "continue" operator within loop operators
-        // means "keep going deeper in the original object"
-        return;
-      }
-
-      const { parent, container } = state;
-      const nodeId = '#' + buildPointer(path);
-      const nodeKey = this.resolveNodeKey(key, value);
-      const { kind, complex = false } = rules;
-
-      const params = container
-        ? { value: Array.isArray(value) ? null : value, newDataLevel: true, container: container, parent: container.parent }
-        : { value: Array.isArray(value) ? null : value, newDataLevel: true, container: null, parent: parent }
-
-      const treeNode = this.createNodeFromRaw(nodeId, nodeKey, kind, complex, params)
-
-      if (!treeNode) {
-        return;
-      }
-
-      if (container) {
-        container.addNestedNode(treeNode);
-      } else if (parent) {
-        parent.addChildNode(treeNode);
-      }
-
-      if (isObject(value) && value.isPrimitive) {
-        // Prevent from falling into infinite loop due to transformed primitives into objects
-        return { done: true };
-      }
-
-      const newCache = new Map(state.alreadyConvertedValuesCache);
-      newCache.set(value, treeNode);
-
-      let newState: AsyncApiTreeCrawlState | undefined;
-      if (this.isAsyncApiSimpleTreeNode(treeNode)) {
-        newState = {
-          parent: treeNode,
-          container: null,
-          alreadyConvertedValuesCache: newCache,
-        }
-      }
-      if (this.isAsyncApiComplexTreeNode(treeNode)) {
-        newState = {
-          parent: parent,
-          container: treeNode,
-          alreadyConvertedValuesCache: newCache,
-        }
-      }
-
-      return { value: value, state: newState };
-    };
   }
 
   /**
