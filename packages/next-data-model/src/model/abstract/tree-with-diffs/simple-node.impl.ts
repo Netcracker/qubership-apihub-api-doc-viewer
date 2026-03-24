@@ -1,6 +1,5 @@
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeNodeComplexityType, TreeNodeComplexityTypes } from "../tree/tree-node.interface";
-import { ComplexTreeNodeWithDiffs } from "./complex-node.impl";
 import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "./tree-node.interface";
 
 export class SimpleTreeNodeWithDiffs<
@@ -118,7 +117,7 @@ export class SimpleTreeNodeWithDiffs<
       if (nestedNode.id === nestedNodeId) {
         return nestedNode;
       }
-      if (recursive && nestedNode instanceof ComplexTreeNodeWithDiffs) {
+      if (recursive && nestedNode.type === TreeNodeComplexityTypes.COMPLEX) {
         const node = nestedNode.findNestedNode(nestedNodeId, recursive);
         if (node) {
           return node;
