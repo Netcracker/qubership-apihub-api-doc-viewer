@@ -8,13 +8,13 @@ export abstract class AbstractNodeDiffsAggregator<
 > {
   public abstract aggregate(crawlValue: V, diffsMetaKeys: DiffMetaKeys): NodeDiffs<V> | undefined;
 
-  protected isDiffsRecord(value: unknown): value is Partial<Record<string, Diff>> {
+  public static isDiffsRecord(value: unknown): value is Partial<Record<string, Diff>> {
     if (!isObject(value)) {
       return false
     }
 
     for (const maybeDiff of Object.values(value)) {
-      if (!this.isDiff(maybeDiff)) {
+      if (!AbstractNodeDiffsAggregator.isDiff(maybeDiff)) {
         return false
       }
     }
@@ -22,7 +22,7 @@ export abstract class AbstractNodeDiffsAggregator<
     return true
   }
 
-  protected isDiff(value: unknown): value is Diff {
+  public static isDiff(value: unknown): value is Diff {
     const maybeDiff: Diff | undefined = value as Diff | undefined
     return isObject(maybeDiff) && (isDiffAdd(maybeDiff) || isDiffRemove(maybeDiff) || isDiffRename(maybeDiff) || isDiffReplace(maybeDiff))
   }

@@ -1,3 +1,4 @@
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/abstract-node-diffs-aggregator";
 import { NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -22,7 +23,7 @@ export class AsyncApiNodeDiffsAggregatorKindServer extends AsyncApiNodeDiffsAggr
     }
 
     const diffs = crawlValue[diffsMetaKey]
-    if (!this.isDiffsRecord(diffs)) {
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       return undefined
     }
     

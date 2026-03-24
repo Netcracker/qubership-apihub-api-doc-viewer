@@ -24,7 +24,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny extends AbstractNodeDiffsAggrega
 
     const diffs = crawlValue[diffsMetaKey]
 
-    if (!this.isDiffsRecord(diffs)) {
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       return undefined
     }
 

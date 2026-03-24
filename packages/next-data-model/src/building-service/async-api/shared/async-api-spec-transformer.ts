@@ -57,18 +57,11 @@ export class AsyncApiSpecTransformer {
     private readonly logger: AsyncApiLogger,
   ) {}
 
-  public transformOperationOrientedSpecToMessageOrientedSpec(
-    source: unknown,
-    operationKeys?: OperationKeys,
-  ): AsyncApiMessageOrientedSpec | null {
-    if (!this.isAsyncApiSpecification(source)) {
-      return null
-    }
-
-    const operations: v3.OperationsObject = source.operations ?? {}
-
+  protected operationKeysOrDefaults(source: v3.AsyncAPIObject, operationKeys?: OperationKeys): OperationKeys | null {
     let operationKey: string
     let messageKey: string
+
+    const operations: v3.OperationsObject = source.operations ?? {}
 
     let firstOperationKey: string | undefined
     let firstOperationMessageKey: string | undefined
@@ -100,6 +93,25 @@ export class AsyncApiSpecTransformer {
       messageKey = operationKeys.messageKey
     }
 
+    return { operationKey, messageKey }
+  }
+
+  public transformOperationOrientedSpecToMessageOrientedSpec(
+    source: unknown,
+    operationKeys?: OperationKeys,
+  ): AsyncApiMessageOrientedSpec | null {
+    if (!this.isAsyncApiSpecification(source)) {
+      return null
+    }
+
+    const operations: v3.OperationsObject = source.operations ?? {}
+
+    const resolvedOperationKeys = this.operationKeysOrDefaults(source, operationKeys)
+    if (!resolvedOperationKeys) {
+      return null
+    }
+    const { operationKey, messageKey } = resolvedOperationKeys
+    
     const operation: v3.OperationObject | undefined = Object.entries(operations)
       .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
         const [currentOperationKey, currentOperation] = currentOperationEntry
@@ -227,7 +239,7 @@ export class AsyncApiSpecTransformer {
     }, {} as v3.SpecificationExtensions)
   }
 
-  private isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
+  protected isAsyncApiSpecification(value: unknown): value is v3.AsyncAPIObject {
     return typeof value === "object" && value !== null && "asyncapi" in value && typeof value.asyncapi === "string"
   }
 
