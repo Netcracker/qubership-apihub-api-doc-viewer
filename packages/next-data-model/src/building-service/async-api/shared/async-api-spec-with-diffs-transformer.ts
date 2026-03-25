@@ -4,7 +4,7 @@ import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { isArray, isObject } from "../../../utilities";
 import { AbstractNodeDiffsAggregator } from "../../abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { AsyncApiLogger } from "../logging";
-import { DiffMetaKeys } from "../tree-with-diffs/diffs-data-aggregators/node-diffs/factory";
+import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
 import {
   AsyncApiMessageOrientedSpec,
   AsyncApiMessageOrientedSpecData,

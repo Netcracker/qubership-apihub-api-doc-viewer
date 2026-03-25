@@ -13,17 +13,17 @@ import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
+import { AsyncApiNodeDataWithDiffsBuilder } from "../../abstract/tree-with-diffs/node-data/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { AsyncApiNodeDataWithDiffsBuilder } from "../../abstract/tree-with-diffs/node-data/builder";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
-import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
-import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
-import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
-import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
+import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
+import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
+import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
+import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./node-diffs-data/node-diffs/factory";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,

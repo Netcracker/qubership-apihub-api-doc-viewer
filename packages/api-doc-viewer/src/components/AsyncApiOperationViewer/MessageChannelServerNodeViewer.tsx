@@ -5,6 +5,7 @@ import { FC, memo, useCallback, useMemo } from "react"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
@@ -17,7 +18,6 @@ import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
 import { SizeVariant } from "./types/SizeVariant"
-import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/diffs-data-aggregation/utilities"
 
 type MessageChannelServerNodeViewerProps = {
   node:
