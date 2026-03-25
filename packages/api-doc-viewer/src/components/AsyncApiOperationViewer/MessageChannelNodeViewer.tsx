@@ -1,9 +1,12 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode, isServersNode } from "@apihub/utils/async-api/node-type-checkers"
+import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
@@ -34,10 +37,14 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
+  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+
   const legacyChanges = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diffDescription = node.diffs['description']?.data
-      const diffSummary = node.diffs['summary']?.data
+    if (nodeDiffs) {
+      const diffDescription = nodeDiffs['description']?.data
+      const diffSummary = nodeDiffs['summary']?.data
       if (!diffDescription && !diffSummary) {
         return undefined
       }
@@ -47,37 +54,39 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       }
     }
     return undefined
-  }, [node])
+  }, [nodeDiffs])
 
   const legacyNodeChange = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['']?.data
+    if (nodeDiffs) {
+      const diff = nodeDiffs['']?.data
       return diff ? { depth: 0, ...diff } : undefined
     }
     return undefined
-  }, [node])
+  }, [nodeDiffs])
 
   const diffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
+    if (nodeDiffs) {
       return {
-        diff: node.diffs[''],
-        descendantDiffs: node.descendantDiffs,
-        diffsSeverities: node.diffsSeverities,
+        diff: nodeDiffs[''],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
       }
     }
     return {}
-  }, [node])
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
   return (
     <div className="flex flex-col gap-2">
-      <TitleRow
-        value={value?.title ?? ''}
-        expandable={false}
-        expanded={true}
-        variant={TextValueVariant.h2}
-        // diffs
-        {...diffProps}
-      />
+      {shouldBeDisplayed(value, nodeDiffs) && (
+        <TitleRow
+          value={value?.title ?? ''}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h2}
+          // diffs
+          {...diffProps}
+        />
+      )}
       <TitleRow
         value={node.key.toString()}
         expandable={false}
@@ -119,4 +128,27 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
     </div>
   )
+}
+
+function shouldBeDisplayed(
+  value: AsyncApiTreeNodeValueTypeMessageChannel | null,
+  diffs: NodeDiffs<AsyncApiTreeNodeValueTypeMessageChannel> | undefined
+) {
+  if (!diffs) {
+    return value?.title !== undefined
+  }
+  const diffTitle = diffs['title']?.data
+  if (!diffTitle) {
+    return value?.title !== undefined
+  }
+  if (isDiffRemove(diffTitle) || isDiffReplace(diffTitle)) {
+    return diffTitle.beforeValue !== undefined
+  }
+  if (isDiffAdd(diffTitle) || isDiffReplace(diffTitle)) {
+    return diffTitle.afterValue !== undefined
+  }
+  if (isDiffRename(diffTitle)) {
+    return diffTitle.beforeKey !== undefined && diffTitle.afterKey !== undefined
+  }
+  return false
 }
