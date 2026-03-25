@@ -1,11 +1,12 @@
 import {
   AsyncApiOperationDiffsViewer,
-  type AsyncApiOperationDiffsViewerProps,
+  type AsyncApiOperationDiffsViewerProps
 } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
 import type { Meta, StoryObj } from "@storybook/react";
+import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/shared-test-data";
 import { prepareAsyncApiDiffsDocument } from "../preprocess";
 import { collectSampleCases } from "./sample-cases";
-import { TEST_DIFF_META_KEYS, TEST_REFERENCE_NAME_PROPERTY } from "./shared-test-data";
+import { TEST_DIFF_META_KEYS } from "./shared-test-data";
 import { parseYamlSource } from "./yaml-source";
 
 const beforeFiles = import.meta.glob(

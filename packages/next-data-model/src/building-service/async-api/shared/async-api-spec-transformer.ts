@@ -1,8 +1,8 @@
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { isObject } from "../../../utilities";
-import { AsyncApiLogger } from "../logging";
 import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
+import { AsyncApiLogger } from "../logging";
 
 export interface AsyncApiMessageOrientedSpecDataContent {
   headers?: unknown;
@@ -55,7 +55,7 @@ export class AsyncApiSpecTransformer {
   constructor(
     private readonly referenceNamePropertyKey: symbol,
     private readonly logger: AsyncApiLogger,
-  ) {}
+  ) { }
 
   protected operationKeysOrDefaults(source: v3.AsyncAPIObject, operationKeys?: OperationKeys): OperationKeys | null {
     let operationKey: string
@@ -111,7 +111,7 @@ export class AsyncApiSpecTransformer {
       return null
     }
     const { operationKey, messageKey } = resolvedOperationKeys
-    
+
     const operation: v3.OperationObject | undefined = Object.entries(operations)
       .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
         const [currentOperationKey, currentOperation] = currentOperationEntry
@@ -155,10 +155,6 @@ export class AsyncApiSpecTransformer {
         : undefined
     }
 
-    const pickReferenceNamePropertyValue = (value: unknown): unknown | undefined => {
-      return isObject(value) ? value[this.referenceNamePropertyKey] : undefined
-    }
-
     const messageReferenceNameProperty = pickReferenceNameProperty(operationMessage)
     const channelReferenceNameProperty = pickReferenceNameProperty(operationChannel)
     const operationReferenceNameProperty = pickReferenceNameProperty(operation)
@@ -187,17 +183,7 @@ export class AsyncApiSpecTransformer {
           ...operationChannelExtensions ? { extensions: operationChannelExtensions } : {},
           ...operationChannel.bindings ? { bindings: operationChannel.bindings } : {},
           ...operationChannel.parameters ? { parameters: this.transformParametersToJsonSchema(operationChannel.parameters) } : {},
-          ...operationChannel.servers ? {
-            servers: operationChannel.servers.map((server: v3.ServerObject | v3.ReferenceObject) => {
-              if (this.isReferenceObject(server)) {
-                return server
-              }
-              const serverTitle = server.title ?? pickReferenceNamePropertyValue(server)
-              return typeof serverTitle === "string"
-                ? { ...server, title: serverTitle }
-                : server
-            })
-          } : {},
+          ...operationChannel.servers ? { servers: operationChannel.servers } : {},
         },
         operation: {
           ...(operationReferenceNameProperty ?? {}),

@@ -35,6 +35,6 @@ export class AsyncApiNodeDiffsAggregatorKindServer extends AsyncApiNodeDiffsAggr
     const protocolDiff = diffs['protocol']
     protocolDiff && this.aggregateTextDiff(protocolDiff, 'protocol', nodeDiffs)
 
-    return undefined;
+    return nodeDiffs;
   }
 }
