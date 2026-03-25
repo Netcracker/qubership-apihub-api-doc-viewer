@@ -1,8 +1,8 @@
 import { isArray, isObject } from "../../../../utilities"
-import { AsyncApiCommonCrawlState } from "../rules/types"
+import { AsyncApiTreeCrawlState } from "../state/types"
 import { SchemaTransformFunc } from "./types/types"
 
-export const renameMessageParams: SchemaTransformFunc<AsyncApiCommonCrawlState> = (key, value) => {
+export const renameMessageParams: SchemaTransformFunc<AsyncApiTreeCrawlState> = (key, value) => {
   if (!isObject(value) || isArray(value)) {
     return value
   }

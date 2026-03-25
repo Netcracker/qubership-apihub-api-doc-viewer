@@ -26,8 +26,6 @@ import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggre
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
 import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
 
-const ASYNC_API_NODE_KINDS: ReadonlySet<string> = new Set(AsyncApiTreeNodeKindsList)
-
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
@@ -346,7 +344,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   private isAsyncApiTreeNodeKind(kind: string): kind is AsyncApiTreeNodeKind {
-    return ASYNC_API_NODE_KINDS.has(kind)
+    return AsyncApiTreeNodeKindsList.some(asyncApiKind => asyncApiKind === kind)
   }
 
   private isAsyncApiSimpleTreeNodeWithDiffs(

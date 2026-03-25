@@ -1,12 +1,12 @@
 import { CrawlRules } from "@netcracker/qubership-apihub-json-crawl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../../../../model/async-api/types/node-kind";
+import { AsyncApiTreeCrawlState } from "../state/types";
+import { collectRawValues } from "../transformers/collect-raw-values";
 import { inlineBindingParameters } from "../transformers/inline-binding-params";
 import { unifyParamsWithSchema } from "../transformers/unify-params-with-schema";
-import { AsyncApiCommonCrawlState, AsyncApiCrawlRule } from "./types";
-import { collectRawValues } from "../transformers/collect-raw-values";
-import { AsyncApiTreeCrawlState } from "../state/types";
+import { AsyncApiCrawlRule } from "./types";
 
-export function getAsyncApiCrawlRules<S extends AsyncApiCommonCrawlState = AsyncApiTreeCrawlState>(
+export function getAsyncApiCrawlRules<S extends AsyncApiTreeCrawlState = AsyncApiTreeCrawlState>(
   kind: AsyncApiTreeNodeKind
 ): CrawlRules<AsyncApiCrawlRule<S>> {
   return {
