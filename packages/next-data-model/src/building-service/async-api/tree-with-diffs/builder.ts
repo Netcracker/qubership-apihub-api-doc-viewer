@@ -3,42 +3,28 @@ import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/tree.impl";
+import { AsyncApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { isObject, isObjectWithStringKeys } from "@apihub/next-data-model/utilities";
+import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
+import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
-import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
-import { AsyncApiCrawlRule, SchemaCrawlRule } from "../json-crawl-entities/rules/types";
-import { CommonState } from "../json-crawl-entities/state/types";
+import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
+import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 import { AsyncApiTreeBuilder } from "../tree/builder";
-import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
-import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
+import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
-
-type AsyncApiTreeNodeWithDiffs = ITreeNodeWithDiffs<
-  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-  AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta
->
-
-type AsyncApiTreeWithDiffsCrawlState = CommonState<
-  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-  AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta,
-  AsyncApiTreeNodeWithDiffs
->
-
-type AsyncApiTreeWithDiffsCrawlRule = SchemaCrawlRule<AsyncApiTreeNodeKind, AsyncApiTreeWithDiffsCrawlState>
+import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./diffs-data-aggregators/node-diffs/factory";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -86,7 +72,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const hooks = createAsyncApiTreeBuildingHooks<
       AsyncApiTreeNodeWithDiffs,
       AsyncApiTreeWithDiffsCrawlState,
-      AsyncApiCrawlRule
+      AsyncApiTreeWithDiffsCrawlRule
     >({
       source: preparedSource,
       tree: this.tree,
@@ -103,12 +89,12 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
     })
 
-    syncCrawl<AsyncApiTreeWithDiffsCrawlState, AsyncApiCrawlRule>(
+    syncCrawl<AsyncApiTreeWithDiffsCrawlState, AsyncApiTreeWithDiffsCrawlRule>(
       preparedSource,
       hooks,
       {
         state: initialState,
-        rules: initialRules as unknown as AsyncApiCrawlRule,
+        rules: initialRules,
       },
     )
 
