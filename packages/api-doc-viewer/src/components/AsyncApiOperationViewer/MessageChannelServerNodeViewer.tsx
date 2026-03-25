@@ -169,7 +169,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   }, [node, value])
 
   return (
-    <div className='flex flex-col gap-2 message-channel-server-node'>
+    <div className='flex flex-col gap-2'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && value && <>
         <TitleRow

@@ -20,14 +20,14 @@ export const ServerAddressRow: FC<ServerAddressRowProps> = memo<ServerAddressRow
       return (
         <SideBySideLayout
           left={
-            <span className='server-element server-subheader'>
+            <span className='server-address-container server-address server-subheader'>
               {renderProtocol(ORIGIN_LAYOUT_SIDE)}
               ://
               {renderHost(ORIGIN_LAYOUT_SIDE)}
             </span>
           }
           right={
-            <span className='server-element server-subheader'>
+            <span className='server-address-container server-address server-subheader'>
               {renderProtocol(CHANGED_LAYOUT_SIDE)}
               ://
               {renderHost(CHANGED_LAYOUT_SIDE)}
@@ -39,7 +39,7 @@ export const ServerAddressRow: FC<ServerAddressRowProps> = memo<ServerAddressRow
       return (
         <OneSideLayout
           content={
-            <span className='server-element server-subheader'>
+            <span className='server-address-container server-address server-subheader'>
               {renderProtocol(CHANGED_LAYOUT_SIDE)}
               ://
               {renderHost(CHANGED_LAYOUT_SIDE)}
