@@ -2,7 +2,7 @@ import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/op
 import { Diff } from "@netcracker/qubership-apihub-api-diff";
 import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { isArray, isObject } from "../../../utilities";
-import { AbstractNodeDiffsAggregator } from "../../abstract/tree-with-diffs/diffs-data-aggregation/abstract-node-diffs-aggregator";
+import { AbstractNodeDiffsAggregator } from "../../abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { AsyncApiLogger } from "../logging";
 import { DiffMetaKeys } from "../tree-with-diffs/diffs-data-aggregators/node-diffs/factory";
 import {

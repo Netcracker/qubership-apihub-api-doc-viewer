@@ -17,7 +17,7 @@ import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { AsyncApiNodeDataWithDiffsBuilder } from "../shared/node-data-builders";
+import { AsyncApiNodeDataWithDiffsBuilder } from "../../abstract/tree-with-diffs/node-data/builder";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";

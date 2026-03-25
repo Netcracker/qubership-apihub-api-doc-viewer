@@ -14,7 +14,7 @@ import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { AsyncApiNodeDataBuilder } from "../shared/node-data-builders";
+import { AsyncApiNodeDataBuilder } from "./node-data/builder";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 
