@@ -2,6 +2,7 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useCallback, useMemo } from "react"
 
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
@@ -27,6 +28,8 @@ type MessageChannelServerNodeViewerProps = {
 
 export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerProps> = memo(props => {
   const { node } = props
+
+  const layoutMode = useLayoutMode()
 
   const value = useMemo(() => node.value(), [node])
   const meta = useMemo(() => node.meta(), [node])
@@ -196,6 +199,17 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           <DescriptionRow
             value={value?.description ?? ''}
             fontSize={DescriptionFontSize.TERTIARY}
+            layoutMode={layoutMode}
+            // diffs
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
+          />
+        </Aligner>
+        <Aligner>
+          <DescriptionRow
+            value={value?.summary ?? ''}
+            fontSize={DescriptionFontSize.TERTIARY}
+            layoutMode={layoutMode}
             // diffs
             $nodeChange={legacyNodeChange}
             $changes={legacyChanges}

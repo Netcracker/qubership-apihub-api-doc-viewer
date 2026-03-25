@@ -1,3 +1,4 @@
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
@@ -18,6 +19,8 @@ type MessageOperationNodeViewerProps = {
 
 export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (props) => {
   const { node } = props
+
+  const layoutMode = useLayoutMode()
 
   const value = node.value()
 
@@ -86,6 +89,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         <DescriptionRow
           value={value?.description ?? ''}
           fontSize={DescriptionFontSize.SECONDARY}
+          layoutMode={layoutMode}
           // diffs
           $nodeChange={legacyNodeChange}
           $changes={legacyChanges}
@@ -95,6 +99,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         <DescriptionRow
           value={value?.summary ?? ''}
           fontSize={DescriptionFontSize.SECONDARY}
+          layoutMode={layoutMode}
           // diffs
           $nodeChange={legacyNodeChange}
           $changes={legacyChanges}
