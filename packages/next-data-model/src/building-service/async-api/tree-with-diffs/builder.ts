@@ -8,19 +8,18 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList 
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { isObject, isObjectWithStringKeys } from "@apihub/next-data-model/utilities";
+import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
-import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
+import { AsyncApiNodeDataWithDiffsBuilder } from "../shared/node-data-builders";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
-import { AsyncApiTreeBuilder } from "../tree/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./diffs-data-aggregators/node-descendant-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./diffs-data-aggregators/node-diffs-severities/factory";
@@ -33,6 +32,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
+  private readonly nodeDataBuilder: AsyncApiNodeDataWithDiffsBuilder;
 
   constructor(
     private readonly source: unknown,
@@ -48,6 +48,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       this.logger,
       this.diffsMetaKeys,
     )
+    this.nodeDataBuilder = new AsyncApiNodeDataWithDiffsBuilder()
   }
 
   public build(): AsyncApiTreeWithDiffs {
@@ -189,10 +190,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     >,
   ): AsyncApiNodeMeta {
     const { value } = params
-    return {
-      ...this.isValueWithBrokenRef(value) ? { brokenRef: `${value.$ref}` } : {},
-      _fragment: value,
-    }
+    return this.nodeDataBuilder.createNodeMeta(value)
   }
 
   protected createNodeValue(
@@ -207,62 +205,11 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
 
-    if (value === undefined || value === null) {
-      return null
-    }
-    if (!isObjectWithStringKeys(value) || !this.isAsyncApiTreeNodeKind(kind)) {
-      return null
-    }
-
-    switch (kind) {
-      case AsyncApiTreeNodeKinds.BINDING:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.EXTENSIONS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.SERVER:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      default:
-        return null
-    }
+    return this.nodeDataBuilder.createNodeValue(
+      kind,
+      value,
+      (source, keys) => this.pick(source, keys),
+    )
   }
 
   protected createNodeDiffs(
@@ -357,9 +304,5 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     node: AsyncApiTreeNodeWithDiffs,
   ): node is AsyncApiComplexTreeNodeWithDiffs {
     return node.type === TreeNodeComplexityTypes.COMPLEX
-  }
-
-  private isValueWithBrokenRef(value: unknown): value is Record<typeof JSON_SCHEMA_PROPERTY_REF, unknown> {
-    return isObject(value) && JSON_SCHEMA_PROPERTY_REF in value
   }
 }

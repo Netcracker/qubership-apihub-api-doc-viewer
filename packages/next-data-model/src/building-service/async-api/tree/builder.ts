@@ -3,32 +3,20 @@ import { AsyncApiSimpleTreeNode } from "@apihub/next-data-model/model/async-api/
 import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.impl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
-import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
+import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
-import { isObject, isObjectWithStringKeys } from "../../../utilities";
+import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
+import { AsyncApiNodeDataBuilder } from "../shared/node-data-builders";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
-
-// Union of all possible keys from all AsyncApiTreeNodeValue variants
-type AnyAsyncApiNodeValueKey =
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
-  | keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>
 
 type SimpleAsyncApiTreeNodeParams = SimpleTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -49,91 +37,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 > {
   public readonly tree: AsyncApiTree;
   private readonly specificationTransformer: AsyncApiSpecTransformer;
-
-  public static readonly ASYNC_API_TREE_NODE_META_PROPS: (keyof AsyncApiNodeMeta)[] = []
-
-  private static readonly ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS: (keyof AsyncApiTreeNodeValueBase)[] = [
-    'title', 'description', 'summary'
-  ]
-
-  // Function overloads for type-safe return based on input type
-  public static getAsyncApiTreeNodeValueProps(
-    type:
-      | typeof AsyncApiTreeNodeKinds.BINDING
-      | typeof AsyncApiTreeNodeKinds.EXTENSIONS
-      | typeof AsyncApiTreeNodeKinds.MESSAGE
-      | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
-      | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS
-      | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
-      | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
-      | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
-      | typeof AsyncApiTreeNodeKinds.SERVER
-  ): (keyof AsyncApiTreeNodeValue<
-    | typeof AsyncApiTreeNodeKinds.BINDING
-    | typeof AsyncApiTreeNodeKinds.EXTENSIONS
-    | typeof AsyncApiTreeNodeKinds.MESSAGE
-    | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
-    | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS
-    | typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS
-    | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
-    | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD
-    | typeof AsyncApiTreeNodeKinds.SERVER
-  >)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.BINDING): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.EXTENSIONS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
-  public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.SERVER): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
-
-  // General fallback signature
-  public static getAsyncApiTreeNodeValueProps(type: AsyncApiTreeNodeKind): AnyAsyncApiNodeValueKey[] {
-    switch (type) {
-      case AsyncApiTreeNodeKinds.BINDING:
-        return [
-          'binding',
-          'version',
-          'protocol',
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[]
-      case AsyncApiTreeNodeKinds.EXTENSIONS:
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
-        return [
-          'rawValues',
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>)[]
-      case AsyncApiTreeNodeKinds.MESSAGE:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-          'internalTitle',
-          'action',
-          'address',
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>)[]
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[]
-      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>)[]
-      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
-      case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
-        return [
-          'schema',
-          'schemaFormat',
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS | typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>)[]
-      case AsyncApiTreeNodeKinds.SERVER:
-        return [
-          ...AsyncApiTreeBuilder.ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS,
-          'host',
-          'protocol',
-        ]satisfies (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>)[]
-      default:
-        return []
-    }
-  }
+  private readonly nodeDataBuilder: AsyncApiNodeDataBuilder;
 
   constructor(
     private readonly source: unknown,
@@ -144,6 +48,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     super()
     this.tree = new AsyncApiTree();
     this.specificationTransformer = new AsyncApiSpecTransformer(this.referenceNamePropertyKey, this.logger)
+    this.nodeDataBuilder = new AsyncApiNodeDataBuilder()
   }
 
   public build(): AsyncApiTree {
@@ -278,11 +183,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   ): AsyncApiNodeMeta {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { value, parent = null } = params
-
-    return {
-      ...this.isValueWithBrokenRef(value) ? { brokenRef: `${value.$ref}` } : {},
-      _fragment: value,
-    }
+    return this.nodeDataBuilder.createNodeMeta(value)
   }
 
   protected createNodeValue(
@@ -292,62 +193,11 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
 
-    if (value === undefined || value === null) {
-      return null
-    }
-    if (!isObjectWithStringKeys(value)) {
-      return null
-    }
-
-    switch (kind) {
-      case AsyncApiTreeNodeKinds.BINDING:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.EXTENSIONS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      case AsyncApiTreeNodeKinds.SERVER:
-        return this.pick<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>>(
-          value,
-          AsyncApiTreeBuilder.getAsyncApiTreeNodeValueProps(kind),
-        )
-      default:
-        return null
-    }
+    return this.nodeDataBuilder.createNodeValue(
+      kind,
+      value,
+      (source, keys) => this.pick(source, keys),
+    )
   }
 
   /* Type guards */
@@ -360,7 +210,4 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     return !this.isAsyncApiSimpleTreeNode(node)
   }
 
-  private isValueWithBrokenRef(value: unknown): value is Record<typeof JSON_SCHEMA_PROPERTY_REF, unknown> {
-    return isObject(value) && JSON_SCHEMA_PROPERTY_REF in value
-  }
 }
