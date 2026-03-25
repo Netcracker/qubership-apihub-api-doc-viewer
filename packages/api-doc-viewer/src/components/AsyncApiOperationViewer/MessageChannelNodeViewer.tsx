@@ -18,6 +18,7 @@ import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeView
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
+import { isObject } from "@apihub/next-data-model/utilities";
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -77,7 +78,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
 
   return (
     <div className="flex flex-col gap-2">
-      {shouldBeDisplayed(value, nodeDiffs) && (
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'title') && (
         <TitleRow
           value={value?.title ?? ''}
           expandable={false}
@@ -95,28 +96,32 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         // diffs
         {...diffProps}
       />
-      <Aligner>
-        <DescriptionRow
-          value={value?.description ?? ''}
-          fontSize={DescriptionFontSize.SECONDARY}
-          layoutMode={layoutMode}
-          level={level}
-          // diffs
-          $nodeChange={legacyNodeChange}
-          $changes={legacyChanges}
-        />
-      </Aligner>
-      <Aligner>
-        <DescriptionRow
-          value={value?.summary ?? ''}
-          fontSize={DescriptionFontSize.SECONDARY}
-          layoutMode={layoutMode}
-          level={level}
-          // diffs
-          $nodeChange={legacyNodeChange}
-          $changes={legacyChanges}
-        />
-      </Aligner>
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'description') && (
+        <Aligner>
+          <DescriptionRow
+            value={value?.description ?? ''}
+            fontSize={DescriptionFontSize.SECONDARY}
+            layoutMode={layoutMode}
+            level={level}
+            // diffs
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
+          />
+        </Aligner>
+      )}
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'summary') && (
+        <Aligner>
+          <DescriptionRow
+            value={value?.summary ?? ''}
+            fontSize={DescriptionFontSize.SECONDARY}
+            layoutMode={layoutMode}
+            level={level}
+            // diffs
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
+          />
+        </Aligner>
+      )}
 
       {children.length > 0 && (
         <div className="flex flex-col gap-2">
@@ -130,25 +135,32 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   )
 }
 
-function shouldBeDisplayed(
-  value: AsyncApiTreeNodeValueTypeMessageChannel | null,
-  diffs: NodeDiffs<AsyncApiTreeNodeValueTypeMessageChannel> | undefined
+function shouldBeDisplayed<V extends object = object>(
+  value: V | null,
+  diffs: NodeDiffs<V> | undefined,
+  key: keyof V
 ) {
+  if (!isObject(value)) {
+    return false
+  }
   if (!diffs) {
-    return value?.title !== undefined
+    return value?.[key] !== undefined
   }
-  const diffTitle = diffs['title']?.data
-  if (!diffTitle) {
-    return value?.title !== undefined
+  const diff = diffs[key]?.data
+  if (!diff) {
+    return value?.[key] !== undefined
   }
-  if (isDiffRemove(diffTitle) || isDiffReplace(diffTitle)) {
-    return diffTitle.beforeValue !== undefined
+  if (isDiffRemove(diff)) {
+    return diff.beforeValue !== undefined
   }
-  if (isDiffAdd(diffTitle) || isDiffReplace(diffTitle)) {
-    return diffTitle.afterValue !== undefined
+  if (isDiffAdd(diff)) {
+    return diff.afterValue !== undefined
   }
-  if (isDiffRename(diffTitle)) {
-    return diffTitle.beforeKey !== undefined && diffTitle.afterKey !== undefined
+  if (isDiffReplace(diff)) {
+    return diff.beforeValue !== undefined || diff.afterValue !== undefined
+  }
+  if (isDiffRename(diff)) {
+    return diff.beforeKey !== undefined || diff.afterKey !== undefined
   }
   return false
 }
