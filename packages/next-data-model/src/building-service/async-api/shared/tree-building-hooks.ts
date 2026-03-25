@@ -3,15 +3,15 @@ import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { ITreeNode, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
+import { ITreeNode } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { CommonState } from "../json-crawl-entities/state/types";
-import { SchemaTransformFunc } from "../json-crawl-entities/transformers/types/types";
 
 type AsyncApiNodeValue = AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null;
 type AsyncApiBaseNode = ITreeNode<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta>;
+type NodeCache<N extends AsyncApiBaseNode> = Map<unknown, N>
 
 type CycleCloneFactory<N extends AsyncApiBaseNode> = {
   createCycledClone: (
@@ -24,6 +24,13 @@ type CycleCloneFactory<N extends AsyncApiBaseNode> = {
 
 export interface AsyncApiTreeBuildingHooksFactoryParams<
   N extends AsyncApiBaseNode,
+  S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta, N>,
+  P extends {
+    value: object | null
+    newDataLevel: boolean
+    parent: N | null
+    container: N | null
+  },
 > {
   source: unknown
   tree: CycleCloneFactory<N>
@@ -32,8 +39,23 @@ export interface AsyncApiTreeBuildingHooksFactoryParams<
     key: NodeKey,
     kind: AsyncApiTreeNodeKind,
     complex: boolean,
-    params: TreeNodeParams<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
+    params: P
   ) => N | undefined
+  createNodeParams: (
+    value: unknown,
+    parent: N | null,
+    container: N | null,
+  ) => P
+  createStateForSimpleNode: (
+    state: S,
+    node: N,
+    cache: NodeCache<N>,
+  ) => S
+  createStateForComplexNode: (
+    state: S,
+    node: N,
+    cache: NodeCache<N>,
+  ) => S
   isSimpleNode: (node: N) => boolean
   isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
@@ -43,9 +65,15 @@ export interface AsyncApiTreeBuildingHooksFactoryParams<
 export function createAsyncApiTreeBuildingHooks<
   N extends AsyncApiBaseNode,
   S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta, N>,
-  R extends SchemaCrawlRule<AsyncApiTreeNodeKind, any>,
+  R extends SchemaCrawlRule<AsyncApiTreeNodeKind, S>,
+  P extends {
+    value: object | null
+    newDataLevel: boolean
+    parent: N | null
+    container: N | null
+  },
 >(
-  params: AsyncApiTreeBuildingHooksFactoryParams<N>
+  params: AsyncApiTreeBuildingHooksFactoryParams<N, S, P>
 ): [
   SyncCrawlHook<S, R>,
   SyncCrawlHook<S, R>,
@@ -55,6 +83,9 @@ export function createAsyncApiTreeBuildingHooks<
     source,
     tree,
     createNodeFromRaw,
+    createNodeParams,
+    createStateForSimpleNode,
+    createStateForComplexNode,
     isSimpleNode,
     isComplexNode,
     resolveNodeKey,
@@ -99,7 +130,7 @@ export function createAsyncApiTreeBuildingHooks<
       return;
     }
 
-    const transformers = rules.transformers as SchemaTransformFunc<S>[];
+    const transformers = rules.transformers;
     const transformedValue = transformers.reduce(
       (accumulatedTransformedValue, transform) => transform(key, accumulatedTransformedValue, source, path, state),
       value
@@ -127,9 +158,7 @@ export function createAsyncApiTreeBuildingHooks<
     const nodeKey = resolveNodeKey(key, value);
     const { kind, complex = false } = rules;
 
-    const nodeParams = container
-      ? { value: Array.isArray(value) ? null : value, newDataLevel: true, container, parent: container.parent as N | null }
-      : { value: Array.isArray(value) ? null : value, newDataLevel: true, container: null, parent };
+    const nodeParams = createNodeParams(value, parent, container);
 
     const treeNode = createNodeFromRaw(nodeId, nodeKey, kind, complex, nodeParams);
     if (!treeNode) {
@@ -149,20 +178,11 @@ export function createAsyncApiTreeBuildingHooks<
     const newCache = new Map(state.alreadyConvertedValuesCache);
     newCache.set(value, treeNode);
 
-    let newState: S | undefined;
+    let newState: S;
     if (isSimpleNode(treeNode)) {
-      newState = {
-        parent: treeNode,
-        container: null,
-        alreadyConvertedValuesCache: newCache,
-      } as S;
-    }
-    if (isComplexNode(treeNode)) {
-      newState = {
-        parent,
-        container: treeNode,
-        alreadyConvertedValuesCache: newCache,
-      } as S;
+      newState = createStateForSimpleNode(state, treeNode, newCache);
+    } else {
+      newState = createStateForComplexNode(state, treeNode, newCache);
     }
 
     return { value, state: newState };

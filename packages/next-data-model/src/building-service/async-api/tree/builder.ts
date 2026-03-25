@@ -168,11 +168,28 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     const hooks = createAsyncApiTreeBuildingHooks<
       AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode,
       AsyncApiTreeCrawlState,
-      AsyncApiCrawlRule
+      AsyncApiCrawlRule,
+      TreeNodeParams<object | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
     >({
       source: preparedSource,
       tree: this.tree,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
+      createNodeParams: (value, parent, container) => ({
+        value: isObject(value) && !Array.isArray(value) ? value : null,
+        newDataLevel: true,
+        parent,
+        container,
+      }),
+      createStateForSimpleNode: (_state, node, cache) => ({
+        parent: node,
+        container: null,
+        alreadyConvertedValuesCache: cache,
+      }),
+      createStateForComplexNode: (state, node, cache) => ({
+        parent: state.parent,
+        container: node,
+        alreadyConvertedValuesCache: cache,
+      }),
       isSimpleNode: (node): node is AsyncApiSimpleTreeNode => this.isAsyncApiSimpleTreeNode(node),
       isComplexNode: (node): node is AsyncApiComplexTreeNode => this.isAsyncApiComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
