@@ -5,13 +5,14 @@ import { FC, memo, ReactElement } from "react"
 import { OneSideLayout } from "./Layout/OneSideLayout"
 import { SideBySideLayout } from "./Layout/SideBySideLayout"
 
+export type RenderFunction = (layoutSide: LayoutSide) => ReactElement | null
+
 type ServerAddressRowProps = {
-  renderProtocol: (layoutSide: LayoutSide) => ReactElement | null
-  renderHost: (layoutSide: LayoutSide) => ReactElement | null
+  renderAddress: RenderFunction
 }
 
 export const ServerAddressRow: FC<ServerAddressRowProps> = memo<ServerAddressRowProps>((props) => {
-  const { renderProtocol, renderHost } = props
+  const { renderAddress } = props
 
   const layoutMode = useLayoutMode()
 
@@ -19,31 +20,15 @@ export const ServerAddressRow: FC<ServerAddressRowProps> = memo<ServerAddressRow
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
       return (
         <SideBySideLayout
-          left={
-            <span className='server-address-container server-address server-subheader'>
-              {renderProtocol(ORIGIN_LAYOUT_SIDE)}
-              ://
-              {renderHost(ORIGIN_LAYOUT_SIDE)}
-            </span>
-          }
-          right={
-            <span className='server-address-container server-address server-subheader'>
-              {renderProtocol(CHANGED_LAYOUT_SIDE)}
-              ://
-              {renderHost(CHANGED_LAYOUT_SIDE)}
-            </span>
-          }
+          left={renderAddress(ORIGIN_LAYOUT_SIDE)}
+          right={renderAddress(CHANGED_LAYOUT_SIDE)}
         />
       )
     case DOCUMENT_LAYOUT_MODE:
       return (
         <OneSideLayout
           content={
-            <span className='server-address-container server-address server-subheader'>
-              {renderProtocol(CHANGED_LAYOUT_SIDE)}
-              ://
-              {renderHost(CHANGED_LAYOUT_SIDE)}
-            </span>
+            renderAddress(CHANGED_LAYOUT_SIDE)
           }
         />
       )

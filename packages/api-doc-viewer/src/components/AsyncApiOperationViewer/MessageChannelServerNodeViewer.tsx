@@ -177,6 +177,50 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     )
   }, [node, value])
 
+  const renderAddress = useCallback((layoutSide: LayoutSide) => {
+    function renderAddressContent(diffClasses: string[] = []) {
+      return <span className={`server-address-container server-address server-subheader ${diffClasses.join(' ')}`}>
+        {renderProtocol(layoutSide)}
+        ://
+        {renderHost(layoutSide)}
+      </span>
+    }
+    if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+      return renderAddressContent()
+    }
+    const diffNode = node.diffs?.['']
+    if (!diffNode) {
+      return renderAddressContent()
+    }
+    const { data, styles } = diffNode
+    const diffsClasses: string[] = []
+    let isInvisible = false
+    if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+      if (isDiffRemove(data) || isDiffReplace(data)) {
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
+      } else if (isDiffRename(data)) {
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
+      }
+      if (isDiffAdd(data)) {
+        isInvisible = true
+      }
+    }
+    if (layoutSide === CHANGED_LAYOUT_SIDE) {
+      if (isDiffAdd(data) || isDiffReplace(data)) {
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
+      } else if (isDiffRename(data)) {
+        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
+      }
+      if (isDiffRemove(data)) {
+        isInvisible = true
+      }
+    }
+    if (isInvisible) {
+      return null
+    }
+    return renderAddressContent(diffsClasses)
+  }, [node, renderHost, renderProtocol])
+
   const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'title'), [value, nodeDiffs])
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
@@ -206,8 +250,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           />
         )}
         <ServerAddressRow
-          renderProtocol={renderProtocol}
-          renderHost={renderHost}
+          renderAddress={renderAddress}
         />
         {isDescriptionDisplayed && (
           <Aligner>

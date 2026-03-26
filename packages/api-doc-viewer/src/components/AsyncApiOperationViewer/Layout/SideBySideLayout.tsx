@@ -1,8 +1,8 @@
 import { FC, memo, ReactElement } from "react";
 
 type SideBySideLayoutProps = {
-  left: ReactElement
-  right: ReactElement
+  left: ReactElement | null
+  right: ReactElement | null
 }
 
 export const SideBySideLayout: FC<SideBySideLayoutProps> = memo<SideBySideLayoutProps>((props) => {

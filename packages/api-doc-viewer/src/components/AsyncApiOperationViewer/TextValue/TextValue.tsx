@@ -57,7 +57,8 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
           if (isDiffRemove(data) || isDiffReplace(data)) {
-            resolvedValue = data.beforeValue
+            // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
+            resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue
           } else if (isDiffRename(data)) {
             resolvedValue = data.beforeKey
           }
@@ -68,7 +69,8 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
           if (isDiffAdd(data) || isDiffReplace(data)) {
-            resolvedValue = data.afterValue
+            // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
+            resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue
           } else if (isDiffRename(data)) {
             resolvedValue = data.afterKey
           }

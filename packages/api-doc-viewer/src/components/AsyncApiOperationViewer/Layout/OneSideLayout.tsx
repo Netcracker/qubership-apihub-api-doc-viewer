@@ -1,7 +1,7 @@
 import { FC, memo, ReactElement } from "react";
 
 type OneSideLayoutProps = {
-  content: ReactElement
+  content: ReactElement | null
 }
 
 export const OneSideLayout: FC<OneSideLayoutProps> = memo<OneSideLayoutProps>((props) => {
