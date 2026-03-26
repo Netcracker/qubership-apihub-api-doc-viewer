@@ -1,9 +1,13 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../..";
+import { OneSideLayout } from "./Layout/OneSideLayout";
+import { SideBySideLayout } from "./Layout/SideBySideLayout";
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
@@ -15,6 +19,7 @@ type MessageSectionsViewerProps = {
 export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => {
   const { node } = props
 
+  const layoutMode = useLayoutMode()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const displayMode = useDisplayMode()
 
@@ -48,14 +53,35 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     }
   }, [sectionSelectorOptions, selectedSection])
 
-  return (
-    <div className="flex flex-col gap-2">
+  const renderSelectorRow = useCallback(() => {
+    const selectorElement = (
       <Selector
         options={sectionSelectorOptions}
         selectedOption={selectedSection}
         onSelectOption={setSelectedSection}
         variant={SizeVariant.SECONDARY}
       />
+    )
+    switch (layoutMode) {
+      case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
+        return (
+          <SideBySideLayout
+            left={selectorElement}
+            right={selectorElement}
+          />
+        )
+      default:
+        return (
+          <OneSideLayout
+            content={selectorElement}
+          />
+        )
+    }
+  }, [layoutMode, sectionSelectorOptions, selectedSection])
+
+  return (
+    <div className="flex flex-col gap-2">
+      {renderSelectorRow()}
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>
           <MessageSectionViewer node={selectedSection.node} />
