@@ -39,11 +39,11 @@ export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNo
         continue
       }
       const nodeDiffs: NodeDiffs<object | null> = {}
-      nodeDescendantDiffs[serverKey] = nodeDiffs
       const diffServer = diffsServers[i]
       if (!diffServer) {
         continue
       }
+      nodeDescendantDiffs[serverKey] = nodeDiffs
       somethingChanged = true
       this.aggregateWholeNodeDiff<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>(diffServer, nodeDiffs)
     }

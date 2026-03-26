@@ -108,3 +108,5 @@ export const Case_4_1_19_channel_servers0_bindings_kafka_array_objects_to_object
 export const Case_4_1_20_channel_servers0_bindings_kafka_array_arrays_primitives_to_object: Story = createCaseStory("4.1.20-channel-servers0-bindings-kafka-array-arrays-primitives-to-object");
 export const Case_4_1_21_channel_servers0_bindings_kafka_remove_object_property: Story = createCaseStory("4.1.21-channel-servers0-bindings-kafka-remove-object-property");
 export const Case_4_1_22_channel_servers0_bindings_kafka_add_object_property: Story = createCaseStory("4.1.22-channel-servers0-bindings-kafka-add-object-property");
+export const Case_5_1_channel_servers_one_item_removed: Story = createCaseStory("5.1-channel-servers-one-item-removed");
+export const Case_5_2_channel_servers_one_item_added: Story = createCaseStory("5.2-channel-servers-one-item-added");

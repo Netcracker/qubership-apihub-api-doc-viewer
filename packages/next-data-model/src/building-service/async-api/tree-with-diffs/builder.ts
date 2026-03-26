@@ -80,7 +80,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       tree: this.tree,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) && !Array.isArray(value) ? value : null,
+        value: typeof value === 'object' ? value : null,
         newDataLevel: true,
         parent,
         container,
