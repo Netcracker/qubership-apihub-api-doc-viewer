@@ -17,6 +17,7 @@ import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/op
 import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
 import { DiffType } from "@netcracker/qubership-apihub-api-diff";
 import '../../index.css';
+import './styles/diffs/index.css';
 import { DiffMetaKeys } from "./types/DiffMetaKeys";
 
 export type AsyncApiOperationDiffsViewerProps = {
