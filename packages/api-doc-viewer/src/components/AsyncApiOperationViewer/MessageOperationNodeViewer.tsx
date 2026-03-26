@@ -1,8 +1,10 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-type-checkers"
+import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeValueTypeMessageOperation } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
@@ -28,10 +30,14 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const bindingsChild = children.find(isBindingsNode)
   const extensionsChild = children.find(isExtensionsNode)
 
+  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+
   const legacyChanges = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diffDescription = node.diffs['description']?.data
-      const diffSummary = node.diffs['summary']?.data
+    if (nodeDiffs) {
+      const diffDescription = nodeDiffs['description']?.data
+      const diffSummary = nodeDiffs['summary']?.data
       if (!diffDescription && !diffSummary) {
         return undefined
       }
@@ -41,26 +47,26 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       }
     }
     return undefined
-  }, [node])
+  }, [nodeDiffs])
 
   const legacyNodeChange = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
-      const diff = node.diffs['']?.data
+    if (nodeDiffs) {
+      const diff = nodeDiffs['']?.data
       return diff ? { depth: 0, ...diff } : undefined
     }
     return undefined
-  }, [node])
+  }, [nodeDiffs])
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (node instanceof SimpleTreeNodeWithDiffs) {
+    if (nodeDiffs) {
       return {
-        diff: node.diffs[''] ?? node.diffs['title'], // TODO: Check if this is correct
-        descendantDiffs: node.descendantDiffs,
-        diffsSeverities: node.diffsSeverities,
+        diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
       }
     }
     return {}
-  }, [node])
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
   /* 
   Problems:
@@ -69,14 +75,16 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
 
   return (
     <div className="flex flex-col gap-2">
-      <TitleRow
-        value={value?.title ?? ''}
-        variant={TextValueVariant.h2}
-        expandable={false}
-        expanded={true}
-        // diffs
-        {...diffsProps}
-      />
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'title') && (
+        <TitleRow
+          value={value?.title ?? ''}
+          variant={TextValueVariant.h2}
+          expandable={false}
+          expanded={true}
+          // diffs
+          {...diffsProps}
+        />
+      )}
       <TitleRow
         value={node.key.toString()}
         variant={TextValueVariant.h2}
@@ -85,26 +93,30 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         // diffs
         {...diffsProps}
       />
-      <Aligner>
-        <DescriptionRow
-          value={value?.description ?? ''}
-          fontSize={DescriptionFontSize.SECONDARY}
-          layoutMode={layoutMode}
-          // diffs
-          $nodeChange={legacyNodeChange}
-          $changes={legacyChanges}
-        />
-      </Aligner>
-      <Aligner>
-        <DescriptionRow
-          value={value?.summary ?? ''}
-          fontSize={DescriptionFontSize.SECONDARY}
-          layoutMode={layoutMode}
-          // diffs
-          $nodeChange={legacyNodeChange}
-          $changes={legacyChanges}
-        />
-      </Aligner>
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'description') && (
+        <Aligner>
+          <DescriptionRow
+            value={value?.description ?? ''}
+            fontSize={DescriptionFontSize.SECONDARY}
+            layoutMode={layoutMode}
+            // diffs
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
+          />
+        </Aligner>
+      )}
+      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'summary') && (
+        <Aligner>
+          <DescriptionRow
+            value={value?.summary ?? ''}
+            fontSize={DescriptionFontSize.SECONDARY}
+            layoutMode={layoutMode}
+            // diffs
+            $nodeChange={legacyNodeChange}
+            $changes={legacyChanges}
+          />
+        </Aligner>
+      )}
 
       {children.length > 0 && (
         <div className="flex flex-col gap-2">

@@ -1,9 +1,8 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode, isServersNode } from "@apihub/utils/async-api/node-type-checkers"
-import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
-import { NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -18,7 +17,6 @@ import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeView
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
-import { isObject } from "@apihub/next-data-model/utilities";
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -76,9 +74,13 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
     return {}
   }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
+  const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'title'), [value, nodeDiffs])
+  const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'description'), [value, nodeDiffs])
+  const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
+
   return (
     <div className="flex flex-col gap-2">
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'title') && (
+      {isTitleDisplayed && (
         <TitleRow
           value={value?.title ?? ''}
           expandable={false}
@@ -88,15 +90,17 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           {...diffProps}
         />
       )}
-      <TitleRow
-        value={node.key.toString()}
-        expandable={false}
-        expanded={true}
-        variant={TextValueVariant.h2}
-        // diffs
-        {...diffProps}
-      />
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'description') && (
+      {!isTitleDisplayed && (
+        <TitleRow
+          value={node.key.toString()}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h2}
+          // diffs
+          {...diffProps}
+        />
+      )}
+      {isDescriptionDisplayed && (
         <Aligner>
           <DescriptionRow
             value={value?.description ?? ''}
@@ -109,7 +113,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           />
         </Aligner>
       )}
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'summary') && (
+      {isSummaryDisplayed && (
         <Aligner>
           <DescriptionRow
             value={value?.summary ?? ''}
@@ -133,34 +137,4 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
     </div>
   )
-}
-
-function shouldBeDisplayed<V extends object = object>(
-  value: V | null,
-  diffs: NodeDiffs<V> | undefined,
-  key: keyof V
-) {
-  if (!isObject(value)) {
-    return false
-  }
-  if (!diffs) {
-    return value?.[key] !== undefined
-  }
-  const diff = diffs[key]?.data
-  if (!diff) {
-    return value?.[key] !== undefined
-  }
-  if (isDiffRemove(diff)) {
-    return diff.beforeValue !== undefined
-  }
-  if (isDiffAdd(diff)) {
-    return diff.afterValue !== undefined
-  }
-  if (isDiffReplace(diff)) {
-    return diff.beforeValue !== undefined || diff.afterValue !== undefined
-  }
-  if (isDiffRename(diff)) {
-    return diff.beforeKey !== undefined || diff.afterKey !== undefined
-  }
-  return false
 }

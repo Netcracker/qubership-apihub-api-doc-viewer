@@ -5,9 +5,11 @@ import { FC, memo, useCallback, useMemo } from "react"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
+import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
 import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
 import { Aligner } from "../JsoViewer/Aligner"
@@ -19,8 +21,6 @@ import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
 import { SizeVariant } from "./types/SizeVariant"
-import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { NodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 
 type MessageChannelServerNodeViewerProps = {
   node:
@@ -177,11 +177,15 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     )
   }, [node, value])
 
+  const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'title'), [value, nodeDiffs])
+  const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
+  const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
+
   return (
     <div className='flex flex-col gap-2'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && value && <>
-        {shouldBeDisplayed(value, nodeDiffs) && (
+        {isTitleDisplayed && (
           <TitleRow
             value={value.title}
             expandable={false}
@@ -191,38 +195,44 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             {...diffsProps}
           />
         )}
-        <TitleRow
-          value={node.key.toString()}
-          expandable={false}
-          expanded={true}
-          variant={TextValueVariant.h4}
-          // diffs
-          {...diffsProps}
-        />
+        {!isTitleDisplayed && (
+          <TitleRow
+            value={node.key.toString()}
+            expandable={false}
+            expanded={true}
+            variant={TextValueVariant.h4}
+            // diffs
+            {...diffsProps}
+          />
+        )}
         <ServerAddressRow
           renderProtocol={renderProtocol}
           renderHost={renderHost}
         />
-        <Aligner>
-          <DescriptionRow
-            value={value?.description ?? ''}
-            fontSize={DescriptionFontSize.TERTIARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
-        <Aligner>
-          <DescriptionRow
-            value={value?.summary ?? ''}
-            fontSize={DescriptionFontSize.TERTIARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
+        {isDescriptionDisplayed && (
+          <Aligner>
+            <DescriptionRow
+              value={value?.description ?? ''}
+              fontSize={DescriptionFontSize.TERTIARY}
+              layoutMode={layoutMode}
+              // diffs
+              $nodeChange={legacyNodeChange}
+              $changes={legacyChanges}
+            />
+          </Aligner>
+        )}
+        {isSummaryDisplayed && (
+          <Aligner>
+            <DescriptionRow
+              value={value?.summary ?? ''}
+              fontSize={DescriptionFontSize.TERTIARY}
+              layoutMode={layoutMode}
+              // diffs
+              $nodeChange={legacyNodeChange}
+              $changes={legacyChanges}
+            />
+          </Aligner>
+        )}
       </>}
       {!brokenRef && children.length > 0 && bindingsChild && (
         <div className="flex flex-col gap-2">
@@ -235,26 +245,3 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     </div>
   )
 })
-
-function shouldBeDisplayed(
-  value: AsyncApiTreeNodeValueTypeServer | null,
-  diffs: NodeDiffs<AsyncApiTreeNodeValueTypeServer> | undefined
-) {
-  if (!diffs) {
-    return value?.title !== undefined
-  }
-  const diffTitle = diffs['title']?.data
-  if (!diffTitle) {
-    return value?.title !== undefined
-  }
-  if (isDiffRemove(diffTitle) || isDiffReplace(diffTitle)) {
-    return diffTitle.beforeValue !== undefined
-  }
-  if (isDiffAdd(diffTitle) || isDiffReplace(diffTitle)) {
-    return diffTitle.afterValue !== undefined
-  }
-  if (isDiffRename(diffTitle)) {
-    return diffTitle.beforeKey !== undefined && diffTitle.afterKey !== undefined
-  }
-  return false
-}
