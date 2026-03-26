@@ -1,11 +1,8 @@
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
-import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
-import { isObject } from "@apihub/next-data-model/utilities";
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
-import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
+import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { DiffMetaKeys } from "../node-diffs/factory";
 
 export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNodeDescendantsDiffsAggregator {
@@ -24,8 +21,8 @@ export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNo
       return undefined
     }
 
-    const diffsServers = this.takeIfDiffsRecord(
-      this.getValueByPath(value, [diffsMetaKey])
+    const diffsServers = takeIfDiffsRecord(
+      getValueByPath(value, [diffsMetaKey], referenceNamePropertyKey),
     )
     if (!diffsServers) {
       return undefined
@@ -49,27 +46,5 @@ export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNo
     }
 
     return somethingChanged ? nodeDescendantDiffs : undefined;
-  }
-
-  private getValueByPath(source: unknown, path: JsonPath): unknown {
-    let currentValue: unknown = source
-
-    for (const pathSegment of path) {
-      if (!isObject(currentValue) && !Array.isArray(currentValue)) {
-        return undefined
-      }
-
-      const currentNode = currentValue as Record<PropertyKey, unknown>
-      currentValue = currentNode[pathSegment]
-    }
-
-    return currentValue
-  }
-
-  private takeIfDiffsRecord(maybeDiffsRecord: unknown): Partial<Record<string, Diff>> | undefined {
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(maybeDiffsRecord)) {
-      return undefined
-    }
-    return maybeDiffsRecord
   }
 }

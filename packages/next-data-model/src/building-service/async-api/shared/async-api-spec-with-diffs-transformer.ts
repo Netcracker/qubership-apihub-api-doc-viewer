@@ -1,8 +1,5 @@
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
-import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
-import { isArray, isObject } from "../../../utilities";
-import { AbstractNodeDiffsAggregator } from "../../abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { getValueByPath, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { AsyncApiLogger } from "../logging";
 import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
 import {
@@ -68,34 +65,34 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       return null
     }
 
-    const operationsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', diffsMetaKey])
+    const operationsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', diffsMetaKey], this.referenceNamePropertyKey)
     )
-    const operationFieldsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, diffsMetaKey])
+    const operationFieldsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, diffsMetaKey], this.referenceNamePropertyKey)
     )
-    const operationBindingsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'bindings', diffsMetaKey])
-    )
-
-    const channelFieldsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'channel', diffsMetaKey])
-    )
-    const channelBindingsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'channel', 'bindings', diffsMetaKey])
-    )
-    const channelServersDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'channel', 'servers', diffsMetaKey])
+    const operationBindingsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
 
-    const messagesDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'messages', diffsMetaKey])
+    const channelFieldsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'channel', diffsMetaKey], this.referenceNamePropertyKey)
     )
-    const messageFieldsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'messages', messageKey, diffsMetaKey])
+    const channelBindingsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'channel', 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
-    const messageBindingsDiffsRecord = this.takeIfDiffsRecord(
-      this.getValueByPath(source, ['operations', operationKey, 'messages', messageKey, 'bindings', diffsMetaKey])
+    const channelServersDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'channel', 'servers', diffsMetaKey], this.referenceNamePropertyKey)
+    )
+
+    const messagesDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'messages', diffsMetaKey], this.referenceNamePropertyKey)
+    )
+    const messageFieldsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'messages', messageKey, diffsMetaKey], this.referenceNamePropertyKey)
+    )
+    const messageBindingsDiffsRecord = takeIfDiffsRecord(
+      getValueByPath(source, ['operations', operationKey, 'messages', messageKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
 
     const transformedWithDiffs = transformed as AsyncApiMessageOrientedSpecWithDiffs
@@ -142,13 +139,6 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     return transformedWithDiffs
   }
 
-  private isAsyncApiMessageOrientedSpecWithDiffs(value: unknown): value is AsyncApiMessageOrientedSpecWithDiffs {
-    if (!isObject(value)) {
-      return false
-    }
-    return this.hasOnlyAllowedDiffMetaSymbols(value)
-  }
-
   private hasOnlyAllowedDiffMetaSymbols(value: unknown): boolean {
     if (!isObject(value) && !isArray(value)) {
       return true
@@ -170,42 +160,5 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     }
 
     return Object.values(value).every((nestedValue) => this.hasOnlyAllowedDiffMetaSymbols(nestedValue))
-  }
-
-  // TODO 26.03.26 // Duplicate
-  private getValueByPath(source: unknown, path: JsonPath): unknown {
-    let currentValue: unknown = source
-    let isArrayTraversal = false
-
-    for (const pathSegment of path) {
-      if (!isObject(currentValue) && !isArray(currentValue)) {
-        return undefined
-      }
-
-      if (isArrayTraversal && isArray(currentValue)) {
-        const matchedElement = currentValue.find((element) =>
-          isObject(element) && element[this.referenceNamePropertyKey] === pathSegment
-        )
-        currentValue = matchedElement
-        isArrayTraversal = false
-        continue
-      }
-
-      const currentNode = currentValue as Record<PropertyKey, unknown>
-      currentValue = currentNode[pathSegment]
-      if (isArray(currentValue)) {
-        isArrayTraversal = true
-      }
-    }
-
-    return currentValue
-  }
-
-  // TODO 26.03.26 // Duplicate
-  private takeIfDiffsRecord(maybeDiffsRecord: unknown): Partial<Record<string, Diff>> | undefined {
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(maybeDiffsRecord)) {
-      return undefined
-    }
-    return maybeDiffsRecord
   }
 }
