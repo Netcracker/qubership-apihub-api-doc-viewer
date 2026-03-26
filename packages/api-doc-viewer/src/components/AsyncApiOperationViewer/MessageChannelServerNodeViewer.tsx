@@ -68,10 +68,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     return undefined
   }, [nodeDiffs])
 
-  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''],
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -236,7 +236,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             expanded={true}
             variant={TextValueVariant.h4}
             // diffs
-            {...diffsProps}
+            {...titleRowDiffsProps}
           />
         )}
         {!isTitleDisplayed && (
@@ -246,7 +246,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
             expanded={true}
             variant={TextValueVariant.h4}
             // diffs
-            {...diffsProps}
+            {...titleRowDiffsProps}
           />
         )}
         <ServerAddressRow

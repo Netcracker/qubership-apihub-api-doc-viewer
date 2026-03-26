@@ -57,7 +57,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
     return undefined
   }, [nodeDiffs])
 
-  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
@@ -68,32 +68,33 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
     return {}
   }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
-  /* 
-  Problems:
-  - Displaying description by condition
-  */
+  const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'title'), [value, nodeDiffs])
+  const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'description'), [value, nodeDiffs])
+  const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
   return (
     <div className="flex flex-col gap-2">
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'title') && (
+      {isTitleDisplayed && (
         <TitleRow
           value={value?.title ?? ''}
           variant={TextValueVariant.h2}
           expandable={false}
           expanded={true}
           // diffs
-          {...diffsProps}
+          {...titleRowDiffsProps}
         />
       )}
-      <TitleRow
-        value={node.key.toString()}
-        variant={TextValueVariant.h2}
-        expandable={false}
-        expanded={true}
-        // diffs
-        {...diffsProps}
-      />
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'description') && (
+      {!isTitleDisplayed && (
+        <TitleRow
+          value={node.key.toString()}
+          variant={TextValueVariant.h2}
+          expandable={false}
+          expanded={true}
+          // diffs
+          {...titleRowDiffsProps}
+        />
+      )}
+      {isDescriptionDisplayed && (
         <Aligner>
           <DescriptionRow
             value={value?.description ?? ''}
@@ -105,7 +106,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
           />
         </Aligner>
       )}
-      {shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'summary') && (
+      {isSummaryDisplayed && (
         <Aligner>
           <DescriptionRow
             value={value?.summary ?? ''}

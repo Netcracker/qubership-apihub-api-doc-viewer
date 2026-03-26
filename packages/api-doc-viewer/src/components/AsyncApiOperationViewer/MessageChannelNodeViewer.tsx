@@ -63,10 +63,10 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
     return undefined
   }, [nodeDiffs])
 
-  const diffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''],
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -87,7 +87,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           expanded={true}
           variant={TextValueVariant.h2}
           // diffs
-          {...diffProps}
+          {...titleRowDiffProps}
         />
       )}
       {!isTitleDisplayed && (
@@ -97,7 +97,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           expanded={true}
           variant={TextValueVariant.h2}
           // diffs
-          {...diffProps}
+          {...titleRowDiffProps}
         />
       )}
       {isDescriptionDisplayed && (
