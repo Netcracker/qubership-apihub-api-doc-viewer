@@ -53,8 +53,8 @@ export interface AsyncApiMessageOrientedSpec {
 
 export class AsyncApiSpecTransformer {
   constructor(
-    private readonly referenceNamePropertyKey: symbol,
-    private readonly logger: AsyncApiLogger,
+    protected readonly referenceNamePropertyKey: symbol,
+    protected readonly logger: AsyncApiLogger,
   ) { }
 
   protected operationKeysOrDefaults(source: v3.AsyncAPIObject, operationKeys?: OperationKeys): OperationKeys | null {

@@ -175,14 +175,27 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
   // TODO 26.03.26 // Duplicate
   private getValueByPath(source: unknown, path: JsonPath): unknown {
     let currentValue: unknown = source
+    let isArrayTraversal = false
 
     for (const pathSegment of path) {
       if (!isObject(currentValue) && !isArray(currentValue)) {
         return undefined
       }
 
+      if (isArrayTraversal && isArray(currentValue)) {
+        const matchedElement = currentValue.find((element) =>
+          isObject(element) && element[this.referenceNamePropertyKey] === pathSegment
+        )
+        currentValue = matchedElement
+        isArrayTraversal = false
+        continue
+      }
+
       const currentNode = currentValue as Record<PropertyKey, unknown>
       currentValue = currentNode[pathSegment]
+      if (isArray(currentValue)) {
+        isArrayTraversal = true
+      }
     }
 
     return currentValue

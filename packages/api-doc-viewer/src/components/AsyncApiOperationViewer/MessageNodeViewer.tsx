@@ -54,7 +54,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     return undefined
   }, [nodeDiffs])
 
-  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
@@ -77,7 +77,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           expandable={false}
           variant={TextValueVariant.h1}
           // diffs
-          {...diffsProps}
+          {...titleRowDiffsProps}
         />
       )}
       {!isTitleDisplayed && (
@@ -86,7 +86,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           expandable={false}
           variant={TextValueVariant.h1}
           // diffs
-          {...diffsProps}
+          {...titleRowDiffsProps}
         />
       )}
       <AddressRow
