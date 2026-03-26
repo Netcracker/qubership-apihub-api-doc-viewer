@@ -95,7 +95,9 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         container: node,
         alreadyConvertedValuesCache: cache,
       }),
+      // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
       isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
+      // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
       shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
@@ -113,6 +115,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     return this.tree
   }
 
+  // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
   private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
     if (!isObject(value)) {
       return key
@@ -237,7 +240,9 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (!this.isAsyncApiTreeNodeKind(kind)) {
       return undefined
     }
-    return AsyncApiNodeDescendantDiffsAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
+    return AsyncApiNodeDescendantDiffsAggregatorFactory
+      .instance(kind)
+      .aggregate(params.value, this.diffsMetaKeys, this.referenceNamePropertyKey)
   }
 
   protected createNodeDescendantsDiffsSummary(

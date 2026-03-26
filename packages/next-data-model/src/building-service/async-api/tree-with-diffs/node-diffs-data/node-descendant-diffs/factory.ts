@@ -1,6 +1,7 @@
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
-import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeDescendantDiffsAggregatorKindAny } from "./kind-any";
+import { AsyncApiNodeDescendantDiffsAggregatorKindServers } from "./kind-servers";
 
 export class AsyncApiNodeDescendantDiffsAggregatorFactory {
   private static readonly instances = new Map<AsyncApiTreeNodeKind | null, AbstractNodeDescendantsDiffsAggregator>();
@@ -9,6 +10,11 @@ export class AsyncApiNodeDescendantDiffsAggregatorFactory {
     kind: AsyncApiTreeNodeKind,
   ): AbstractNodeDescendantsDiffsAggregator {
     switch (kind) {
+      case AsyncApiTreeNodeKinds.SERVERS:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.SERVERS)) {
+          this.instances.set(AsyncApiTreeNodeKinds.SERVERS, new AsyncApiNodeDescendantDiffsAggregatorKindServers());
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.SERVERS)!;
       default:
         if (!this.instances.has(null)) {
           const instance = new AsyncApiNodeDescendantDiffsAggregatorKindAny();

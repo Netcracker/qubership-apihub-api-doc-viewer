@@ -172,6 +172,7 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     return Object.values(value).every((nestedValue) => this.hasOnlyAllowedDiffMetaSymbols(nestedValue))
   }
 
+  // TODO 26.03.26 // Duplicate
   private getValueByPath(source: unknown, path: JsonPath): unknown {
     let currentValue: unknown = source
 
@@ -187,6 +188,7 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     return currentValue
   }
 
+  // TODO 26.03.26 // Duplicate
   private takeIfDiffsRecord(maybeDiffsRecord: unknown): Partial<Record<string, Diff>> | undefined {
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(maybeDiffsRecord)) {
       return undefined
