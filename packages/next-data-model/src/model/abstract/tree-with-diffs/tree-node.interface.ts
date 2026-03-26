@@ -64,7 +64,7 @@ export type NodeDiffsSeverity = {
 }
 export type NodeDiffsSeverities = Partial<Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>>
 
-export type NodeDescendantDiffs = Partial<Record<NodeId, NodeDiffs<object | null>>>
+export type NodeDescendantDiffs = Partial<Record<NodeId, ChangedPropertyMetaData>>
 
 export type NodeDescendantDiffsSummary = Set<DiffType>
 

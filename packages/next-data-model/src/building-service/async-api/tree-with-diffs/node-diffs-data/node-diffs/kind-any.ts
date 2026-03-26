@@ -1,13 +1,21 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { DiffStyles, HighlightVariant, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
+import { SimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { ChangedPropertyKey, DiffStyles, HighlightVariant, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
+import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeys } from "./factory";
-import { ChangedPropertyKey } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 
-export class AsyncApiNodeDiffsAggregatorKindAny extends AbstractNodeDiffsAggregator {
+export class AsyncApiNodeDiffsAggregatorKindAny
+  extends AbstractNodeDiffsAggregator<
+    AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+    AsyncApiTreeNodeKind,
+    AsyncApiNodeMeta
+  > {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
   }
@@ -15,6 +23,9 @@ export class AsyncApiNodeDiffsAggregatorKindAny extends AbstractNodeDiffsAggrega
   public aggregate(
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
+    nodeKey: NodeKey,
+    parentNode?: SimpleTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>,
+    containerNode?: ComplexTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>,
   ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
@@ -24,11 +35,38 @@ export class AsyncApiNodeDiffsAggregatorKindAny extends AbstractNodeDiffsAggrega
 
     const diffs = crawlValue[diffsMetaKey]
 
+    const nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> = {}
+
+    if (parentNode) {
+      // Support inheritance of node diff from parent
+      // If parent wholly added/removed, it means that all the descendants are wholly added/removed
+      if (parentNode.diffs['']) {
+        nodeDiffs[''] = parentNode.diffs['']
+      } else {
+        const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
+        if (maybeNodeDiffs) {
+          nodeDiffs[''] = maybeNodeDiffs
+          return nodeDiffs
+        }
+      }
+    }
+    if (containerNode) {
+      // Support inheritance of node diff from container
+      // If container wholly added/removed, it means that all the descendants are wholly added/removed
+      if (containerNode.diffs['']) {
+        nodeDiffs[''] = containerNode.diffs['']
+      } else {
+        const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
+        if (maybeNodeDiffs) {
+          nodeDiffs[''] = maybeNodeDiffs
+          return nodeDiffs
+        }
+      }
+    }
+
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       return undefined
     }
-
-    const nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> = {}
 
     // title
     const titleDiff = diffs['title']

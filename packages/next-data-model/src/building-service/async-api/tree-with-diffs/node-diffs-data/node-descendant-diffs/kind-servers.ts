@@ -43,9 +43,9 @@ export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNo
       if (!diffServer) {
         continue
       }
-      nodeDescendantDiffs[serverKey] = nodeDiffs
       somethingChanged = true
       this.aggregateWholeNodeDiff<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>(diffServer, nodeDiffs)
+      nodeDescendantDiffs[serverKey] = nodeDiffs['']
     }
 
     return somethingChanged ? nodeDescendantDiffs : undefined;

@@ -34,6 +34,7 @@ export abstract class TreeWithDiffsBuilder<
   /* Atomic builders */
 
   protected abstract createNodeDiffs(
+    key: NodeKey,
     kind: string,
     params: TreeNodeWithDiffsParams<V, K, M>,
   ): NodeDiffs<V> | undefined;
