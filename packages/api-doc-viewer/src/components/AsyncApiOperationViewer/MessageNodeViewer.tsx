@@ -1,4 +1,3 @@
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-checkers";
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
@@ -6,10 +5,9 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
-import { DescriptionRow } from "../common/annotations/Description/DescriptionRow";
-import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize";
-import { Aligner } from "../JsoViewer/Aligner";
 import { AddressRow } from "./AddressRow";
+import { LongTextRow } from "./LongTextRow/LongTextRow";
+import { LongTextRowProps } from "./LongTextRow/types";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
@@ -22,8 +20,6 @@ type MessageNodeViewerProps = {
 export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const { node } = props
 
-  const layoutMode = useLayoutMode()
-
   const value = node.value()
   const children = useMemo(() => node.childrenNodes(), [node])
 
@@ -31,33 +27,32 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
   const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
 
-  const legacyChanges = useMemo(() => {
-    if (nodeDiffs) {
-      const diffDescription = nodeDiffs['description']?.data
-      const diffSummary = nodeDiffs['summary']?.data
-      if (!diffDescription && !diffSummary) {
-        return undefined
-      }
-      return {
-        ...diffDescription ? { description: diffDescription } : {},
-        ...diffSummary ? { summary: diffSummary } : {},
-      }
-    }
-    return undefined
-  }, [nodeDiffs])
-
-  const legacyNodeChange = useMemo(() => {
-    if (nodeDiffs) {
-      const diff = nodeDiffs['']?.data
-      return diff ? { depth: 0, ...diff } : undefined
-    }
-    return undefined
-  }, [nodeDiffs])
-
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const descriptionRowDiffsProps: Pick<LongTextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['description'], // TODO: Check if this is correct
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const summaryRowDiffsProps: Pick<LongTextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['summary'], // TODO: Check if this is correct
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -94,28 +89,20 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         address={value?.address ?? ''}
       />
       {isDescriptionDisplayed && (
-        <Aligner>
-          <DescriptionRow
-            value={value?.description ?? ''}
-            fontSize={DescriptionFontSize.PRIMARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
+        <LongTextRow
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...descriptionRowDiffsProps}
+        />
       )}
       {isSummaryDisplayed && (
-        <Aligner>
-          <DescriptionRow
-            value={value?.summary ?? ''}
-            fontSize={DescriptionFontSize.PRIMARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
+        <LongTextRow
+          value={value?.summary ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...summaryRowDiffsProps}
+        />
       )}
       <MessageChildrenViewer
         children={children}
