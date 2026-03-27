@@ -24,7 +24,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     if (!diff) {
       return []
     }
-    const { data, styles} = diff
+    const { data, styles } = diff
     if (!data) {
       return []
     }
