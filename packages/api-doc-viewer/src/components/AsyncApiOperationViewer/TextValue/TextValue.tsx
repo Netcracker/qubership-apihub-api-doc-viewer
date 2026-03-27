@@ -117,14 +117,14 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
   return (
-    <div className='flex flex-col'>
+    <>
       {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
       <Expander
         isExpandable={isExpandable(resolvedValue)}
         expanded={expanded}
         setExpanded={setExpanded}
       />
-    </div>
+    </>
   )
 })
 
