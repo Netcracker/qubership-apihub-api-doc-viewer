@@ -4,24 +4,24 @@ import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/ty
 import { FC, memo } from "react"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
-import { LongTextRowContent } from "./LongTextRowContent"
-import type { LongTextRowProps } from "./types"
+import { TextRowContent } from "./TextRowContent"
+import type { TextRowProps } from "./types"
 
-export const LongTextRow: FC<LongTextRowProps> = memo<LongTextRowProps>(props => {
+export const TextRow: FC<TextRowProps> = memo<TextRowProps>(props => {
   const layoutMode = useLayoutMode()
 
   switch (layoutMode) {
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
       return (
         <SideBySideLayout
-          left={<LongTextRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />}
-          right={<LongTextRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
+          left={<TextRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />}
+          right={<TextRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
         />
       )
     case DOCUMENT_LAYOUT_MODE:
       return (
         <OneSideLayout
-          content={<LongTextRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
+          content={<TextRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
         />
       )
   }

@@ -6,8 +6,8 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
 import { AddressRow } from "./AddressRow";
-import { LongTextRow } from "./LongTextRow/LongTextRow";
-import { LongTextRowProps } from "./LongTextRow/types";
+import { TextRow } from "./TextRow/TextRow";
+import { TextRowProps } from "./TextRow/types";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
@@ -38,7 +38,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     return {}
   }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
-  const descriptionRowDiffsProps: Pick<LongTextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const descriptionRowDiffsProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['description'], // TODO: Check if this is correct
@@ -49,7 +49,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     return {}
   }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
-  const summaryRowDiffsProps: Pick<LongTextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const summaryRowDiffsProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['summary'], // TODO: Check if this is correct
@@ -89,7 +89,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         address={value?.address ?? ''}
       />
       {isDescriptionDisplayed && (
-        <LongTextRow
+        <TextRow
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -97,7 +97,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       {isSummaryDisplayed && (
-        <LongTextRow
+        <TextRow
           value={value?.summary ?? ''}
           variant={TextValueVariant.body}
           // diffs

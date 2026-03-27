@@ -3,11 +3,11 @@ import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-ap
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { TextValue } from "../TextValue/TextValue"
-import type { LongTextRowContentProps } from "./types"
+import type { TextRowContentProps } from "./types"
 
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
 
-export const LongTextRowContent: FC<LongTextRowContentProps> = memo<LongTextRowContentProps>((props) => {
+export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>((props) => {
   const { value, variant, layoutSide } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,7 +48,7 @@ export const LongTextRowContent: FC<LongTextRowContentProps> = memo<LongTextRowC
   }, [diff, layoutSide])
 
   return (
-    <div className={`flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div className={`h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       <TextValue
         value={value}
         variant={variant}
