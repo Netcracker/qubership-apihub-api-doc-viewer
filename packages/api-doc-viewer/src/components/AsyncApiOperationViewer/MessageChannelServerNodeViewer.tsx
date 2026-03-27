@@ -2,7 +2,6 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useCallback, useMemo } from "react"
 
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
@@ -10,13 +9,12 @@ import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracke
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
-import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
-import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
 import { ServerAddressRow } from "./ServerAddressRow"
 import './styles/MessageChannelServer.css'
+import { TextRow } from "./TextRow/TextRow"
+import { TextRowProps } from "./TextRow/types"
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
@@ -31,8 +29,6 @@ type MessageChannelServerNodeViewerProps = {
 export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerProps> = memo(props => {
   const { node } = props
 
-  const layoutMode = useLayoutMode()
-
   const value = useMemo(() => node.value(), [node])
   const meta = useMemo(() => node.meta(), [node])
 
@@ -45,33 +41,32 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
   const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
 
-  const legacyChanges = useMemo(() => {
-    if (nodeDiffs) {
-      const diffDescription = nodeDiffs['description']?.data
-      const diffSummary = nodeDiffs['summary']?.data
-      if (!diffDescription && !diffSummary) {
-        return undefined
-      }
-      return {
-        ...diffDescription ? { description: diffDescription } : {},
-        ...diffSummary ? { summary: diffSummary } : {},
-      }
-    }
-    return undefined
-  }, [nodeDiffs])
-
-  const legacyNodeChange = useMemo(() => {
-    if (nodeDiffs) {
-      const diff = nodeDiffs['']?.data
-      return diff ? { depth: 0, ...diff } : undefined
-    }
-    return undefined
-  }, [nodeDiffs])
-
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+
+  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['description'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+
+  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -253,28 +248,20 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           renderAddress={renderAddress}
         />
         {isDescriptionDisplayed && (
-          <Aligner>
-            <DescriptionRow
-              value={value?.description ?? ''}
-              fontSize={DescriptionFontSize.TERTIARY}
-              layoutMode={layoutMode}
-              // diffs
-              $nodeChange={legacyNodeChange}
-              $changes={legacyChanges}
-            />
-          </Aligner>
+          <TextRow
+            value={value?.description ?? ''}
+            variant={TextValueVariant.body}
+            // diffs
+            {...descriptionRowDiffProps}
+          />
         )}
         {isSummaryDisplayed && (
-          <Aligner>
-            <DescriptionRow
-              value={value?.summary ?? ''}
-              fontSize={DescriptionFontSize.TERTIARY}
-              layoutMode={layoutMode}
-              // diffs
-              $nodeChange={legacyNodeChange}
-              $changes={legacyChanges}
-            />
-          </Aligner>
+          <TextRow
+            value={value?.summary ?? ''}
+            variant={TextValueVariant.body}
+            // diffs
+            {...summaryRowDiffProps}
+          />
         )}
       </>}
       {!brokenRef && children.length > 0 && bindingsChild && (

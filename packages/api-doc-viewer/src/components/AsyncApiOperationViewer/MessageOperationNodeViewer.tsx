@@ -1,4 +1,3 @@
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
@@ -6,11 +5,10 @@ import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/m
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageOperation } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
-import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
-import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
-import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
+import { TextRow } from "./TextRow/TextRow"
+import { TextRowProps } from "./TextRow/types"
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
 import { TitleRowProps } from "./TitleRow/types"
@@ -22,8 +20,6 @@ type MessageOperationNodeViewerProps = {
 export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (props) => {
   const { node } = props
 
-  const layoutMode = useLayoutMode()
-
   const value = node.value()
 
   const children: AsyncApiTreeNode[] = node.childrenNodes()
@@ -34,33 +30,32 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
   const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
 
-  const legacyChanges = useMemo(() => {
-    if (nodeDiffs) {
-      const diffDescription = nodeDiffs['description']?.data
-      const diffSummary = nodeDiffs['summary']?.data
-      if (!diffDescription && !diffSummary) {
-        return undefined
-      }
-      return {
-        ...diffDescription ? { description: diffDescription } : {},
-        ...diffSummary ? { summary: diffSummary } : {},
-      }
-    }
-    return undefined
-  }, [nodeDiffs])
-
-  const legacyNodeChange = useMemo(() => {
-    if (nodeDiffs) {
-      const diff = nodeDiffs['']?.data
-      return diff ? { depth: 0, ...diff } : undefined
-    }
-    return undefined
-  }, [nodeDiffs])
-
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['description'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -95,28 +90,20 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         />
       )}
       {isDescriptionDisplayed && (
-        <Aligner>
-          <DescriptionRow
-            value={value?.description ?? ''}
-            fontSize={DescriptionFontSize.SECONDARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
+        <TextRow
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...descriptionRowDiffProps}
+        />
       )}
       {isSummaryDisplayed && (
-        <Aligner>
-          <DescriptionRow
-            value={value?.summary ?? ''}
-            fontSize={DescriptionFontSize.SECONDARY}
-            layoutMode={layoutMode}
-            // diffs
-            $nodeChange={legacyNodeChange}
-            $changes={legacyChanges}
-          />
-        </Aligner>
+        <TextRow
+          value={value?.summary ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...summaryRowDiffProps}
+        />
       )}
 
       {children.length > 0 && (
