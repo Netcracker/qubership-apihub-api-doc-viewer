@@ -51,6 +51,6 @@ export abstract class TreeWithDiffsBuilder<
 
   protected abstract createNodeDiffsSeverities(
     kind: string,
-    params: TreeNodeWithDiffsParams<V, K, M>,
+    nodeDiffs: NodeDiffs<V> | undefined,
   ): NodeDiffsSeverities | undefined;
 }

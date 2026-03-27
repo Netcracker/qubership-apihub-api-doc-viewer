@@ -266,16 +266,15 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   protected createNodeDiffsSeverities(
     kind: string,
-    params: TreeNodeWithDiffsParams<
-      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-      AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
-    >,
+    nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined,
   ): NodeDiffsSeverities | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
       return undefined
     }
-    return AsyncApiNodeDiffsSeveritiesAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
+    if (!nodeDiffs) {
+      return undefined
+    }
+    return AsyncApiNodeDiffsSeveritiesAggregatorFactory.instance(kind).aggregate(nodeDiffs)
   }
 
   private assignNodeDiffs(
@@ -296,7 +295,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, params)
     descendantDiffsSummary && descendantDiffsSummary.forEach((diffType) => node.descendantDiffsSummary.add(diffType))
 
-    const diffsSeverities = this.createNodeDiffsSeverities(kind, params)
+    const diffsSeverities = this.createNodeDiffsSeverities(kind, nodeDiffs)
     diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)
   }
 
