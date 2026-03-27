@@ -47,7 +47,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   const { action, address, layoutSide, diff } = props
 
   return (
-    <div className='address-row font-Inter-Medium'>
+    <div className='address-row font-Inter-Medium px-2'>
       <div className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3' style={{ paddingLeft: 10, paddingRight: 10 }}>
         <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
           {action.toUpperCase()}

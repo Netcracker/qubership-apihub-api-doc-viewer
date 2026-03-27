@@ -48,7 +48,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   }, [diff, layoutSide])
 
   return (
-    <div className={`h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div className={`px-2 h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       <TextValue
         value={value}
         variant={variant}

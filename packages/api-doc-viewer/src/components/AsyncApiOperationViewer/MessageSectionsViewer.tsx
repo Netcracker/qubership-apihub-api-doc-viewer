@@ -55,12 +55,14 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
 
   const renderSelectorRow = useCallback(() => {
     const selectorElement = (
-      <Selector
-        options={sectionSelectorOptions}
-        selectedOption={selectedSection}
-        onSelectOption={setSelectedSection}
-        variant={SizeVariant.SECONDARY}
-      />
+      <div className="px-2">
+        <Selector
+          options={sectionSelectorOptions}
+          selectedOption={selectedSection}
+          onSelectOption={setSelectedSection}
+          variant={SizeVariant.SECONDARY}
+        />
+      </div>
     )
     switch (layoutMode) {
       case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
