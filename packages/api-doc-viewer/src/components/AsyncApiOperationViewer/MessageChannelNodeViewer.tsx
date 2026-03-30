@@ -1,6 +1,7 @@
 import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode, isServersNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -51,6 +52,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         diff: nodeDiffs[''] ?? nodeDiffs['description'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
       }
     }
     return {}
@@ -62,6 +64,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         diff: nodeDiffs[''] ?? nodeDiffs['summary'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
       }
     }
     return {}

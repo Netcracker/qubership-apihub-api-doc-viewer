@@ -1,14 +1,15 @@
 import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-checkers";
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
 import { AddressRow } from "./AddressRow";
+import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextRow } from "./TextRow/TextRow";
 import { TextRowProps } from "./TextRow/types";
-import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
 import { TitleRowProps } from "./TitleRow/types";
@@ -44,6 +45,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         diff: nodeDiffs[''] ?? nodeDiffs['description'], // TODO: Check if this is correct
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
       }
     }
     return {}
@@ -55,6 +57,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         diff: nodeDiffs[''] ?? nodeDiffs['summary'], // TODO: Check if this is correct
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
       }
     }
     return {}

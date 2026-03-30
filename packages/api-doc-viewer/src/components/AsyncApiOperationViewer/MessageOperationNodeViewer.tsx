@@ -1,6 +1,7 @@
 import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageOperation } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -47,6 +48,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         diff: nodeDiffs[''] ?? nodeDiffs['description'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
       }
     }
     return {}
@@ -58,6 +60,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         diff: nodeDiffs[''] ?? nodeDiffs['summary'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
       }
     }
     return {}
