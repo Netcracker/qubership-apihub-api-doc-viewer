@@ -35,10 +35,10 @@ export const Selector: FC<SelectorProps> = (props) => {
   return (
     <div className='flex flex-row gap-2'>
       {options.map((option) => {
-        const { diffs, descendantDiffsSummary: descendantDiffs } = option
+        const { diffs, descendantDiffsSummary } = option
         const diffsRelatedClassesList = []
         let isInvisible = false
-        if (diffs || descendantDiffs) {
+        if (diffs || descendantDiffsSummary) {
           // resolve diffs
           const diffWholeNode = diffs?.[""]
           if (diffWholeNode) {
@@ -49,13 +49,13 @@ export const Selector: FC<SelectorProps> = (props) => {
                 isInvisible = diffWholeNode.data.action === DiffAction.add
                 break;
               case CHANGED_LAYOUT_SIDE:
-                diffsRelatedClassesList.push(styles.after.borderShadowColor ? DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor) : '')
+                diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor))
                 isInvisible = diffWholeNode.data.action === DiffAction.remove
                 break;
             }
           }
-          if (descendantDiffs) {
-            const resolvedDescendantDiffType = maxDiffType(descendantDiffs)
+          if (descendantDiffsSummary) {
+            const resolvedDescendantDiffType = maxDiffType(descendantDiffsSummary)
             diffsRelatedClassesList.push(resolvedDescendantDiffType ? DiffsClassesBuilder.roundMarker(resolvedDescendantDiffType) : '')
           }
         }

@@ -1,6 +1,7 @@
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeDescendantDiffsAggregatorKindAny } from "./kind-any";
+import { AsyncApiNodeDescendantDiffsAggregatorKindBindings } from "./kind-bindings";
 import { AsyncApiNodeDescendantDiffsAggregatorKindServers } from "./kind-servers";
 
 export class AsyncApiNodeDescendantDiffsAggregatorFactory {
@@ -10,6 +11,11 @@ export class AsyncApiNodeDescendantDiffsAggregatorFactory {
     kind: AsyncApiTreeNodeKind,
   ): AbstractNodeDescendantsDiffsAggregator {
     switch (kind) {
+      case AsyncApiTreeNodeKinds.BINDINGS:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.BINDINGS)) {
+          this.instances.set(AsyncApiTreeNodeKinds.BINDINGS, new AsyncApiNodeDescendantDiffsAggregatorKindBindings());
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.BINDINGS)!;
       case AsyncApiTreeNodeKinds.SERVERS:
         if (!this.instances.has(AsyncApiTreeNodeKinds.SERVERS)) {
           this.instances.set(AsyncApiTreeNodeKinds.SERVERS, new AsyncApiNodeDescendantDiffsAggregatorKindServers());

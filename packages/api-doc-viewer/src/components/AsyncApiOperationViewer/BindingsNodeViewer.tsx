@@ -75,6 +75,9 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         selectedOption={selectedBinding}
         onSelectOption={setSelectedBinding}
         variant={SizeVariant.SECONDARY}
+        // diffs
+        layoutSide={layoutSide}
+
       />
     ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
