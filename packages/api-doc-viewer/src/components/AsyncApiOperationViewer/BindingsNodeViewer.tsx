@@ -83,7 +83,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (node instanceof ComplexTreeNodeWithDiffs) {
+    if (isBindingsNodeWithDiffs(node)) {
       return {
         diff: node.diffs[''],
         descendantDiffs: node.descendantDiffs,
@@ -122,4 +122,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       )}
     </div>
   )
+}
+
+function isBindingsNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
+  return node.kind == AsyncApiTreeNodeKinds.BINDINGS && node instanceof ComplexTreeNodeWithDiffs
 }

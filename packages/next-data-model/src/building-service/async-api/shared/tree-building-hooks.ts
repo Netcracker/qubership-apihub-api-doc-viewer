@@ -1,5 +1,5 @@
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
+import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
@@ -10,7 +10,7 @@ import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 import { CommonState } from "../json-crawl-entities/state/types";
 
 type AsyncApiNodeValue = AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null;
-type AsyncApiBaseNode = ITreeNode<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta>;
+type AsyncApiBaseNode = ITreeNode<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>;
 type NodeCache<N extends AsyncApiBaseNode> = Map<unknown, N>
 
 type CycleCloneFactory<N extends AsyncApiBaseNode> = {
@@ -24,7 +24,7 @@ type CycleCloneFactory<N extends AsyncApiBaseNode> = {
 
 export interface AsyncApiTreeBuildingHooksFactoryParams<
   N extends AsyncApiBaseNode,
-  S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta, N>,
+  S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta, N>,
   P extends {
     value: object | null
     newDataLevel: boolean
@@ -64,7 +64,7 @@ export interface AsyncApiTreeBuildingHooksFactoryParams<
 
 export function createAsyncApiTreeBuildingHooks<
   N extends AsyncApiBaseNode,
-  S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiNodeMeta, N>,
+  S extends CommonState<AsyncApiNodeValue, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta, N>,
   R extends SchemaCrawlRule<AsyncApiTreeNodeKind, S>,
   P extends {
     value: object | null

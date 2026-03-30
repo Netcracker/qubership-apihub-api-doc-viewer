@@ -2,7 +2,7 @@ import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-t
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageOperation } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
@@ -27,9 +27,9 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const bindingsChild = children.find(isBindingsNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+  const nodeDiffs = useMemo(() => isMessageOperationNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isMessageOperationNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isMessageOperationNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
@@ -117,4 +117,8 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
     </div>
   )
+}
+
+function isMessageOperationNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION> {
+  return node.kind == AsyncApiTreeNodeKinds.MESSAGE_OPERATION && node instanceof SimpleTreeNodeWithDiffs
 }

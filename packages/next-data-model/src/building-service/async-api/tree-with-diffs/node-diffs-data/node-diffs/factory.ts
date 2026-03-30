@@ -1,6 +1,6 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
+import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { AsyncApiNodeDiffsAggregatorKindBinding } from "./kind-binding";
@@ -14,12 +14,12 @@ export type DiffMetaKeys = {
 export class AsyncApiNodeDiffsAggregatorFactory {
   private static readonly instances = new Map<
     AsyncApiTreeNodeKind | null,
-    AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
+    AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
   >();
 
   public static instance(
     kind: AsyncApiTreeNodeKind,
-  ): AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta> {
+  ): AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta> {
     switch (kind) {
       case AsyncApiTreeNodeKinds.BINDING:
         if (!this.instances.has(AsyncApiTreeNodeKinds.BINDING)) {

@@ -2,7 +2,7 @@ import { AsyncApiComplexTreeNode } from "@apihub/next-data-model/model/async-api
 import { AsyncApiSimpleTreeNode } from "@apihub/next-data-model/model/async-api/tree/simple-node.impl";
 import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.impl";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
+import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
@@ -21,19 +21,19 @@ import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 type SimpleAsyncApiTreeNodeParams = SimpleTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta
+  AsyncApiTreeNodeMeta
 >
 
 type ComplexAsyncApiTreeNodeParams = ComplexTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta
+  AsyncApiTreeNodeMeta
 >
 
 export class AsyncApiTreeBuilder extends TreeBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta
+  AsyncApiTreeNodeMeta
 > {
   public readonly tree: AsyncApiTree;
   private readonly specificationTransformer: AsyncApiSpecTransformer;
@@ -74,7 +74,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode,
       AsyncApiTreeCrawlState,
       AsyncApiCrawlRule,
-      TreeNodeParams<object | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
+      TreeNodeParams<object | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
     >({
       source: preparedSource,
       tree: this.tree,
@@ -180,7 +180,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
   protected createNodeMeta(
     key: NodeKey,
     params: TreeNodeParams<object | null, string, object>,
-  ): AsyncApiNodeMeta {
+  ): AsyncApiTreeNodeMeta {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { value, parent = null } = params
     return this.nodeDataBuilder.createNodeMeta(value)

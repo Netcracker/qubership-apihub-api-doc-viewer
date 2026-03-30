@@ -1,5 +1,5 @@
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
+import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isObject, isObjectWithStringKeys } from "../../../../utilities";
@@ -29,9 +29,9 @@ type AsyncApiNodeValueKind = typeof AsyncApiTreeNodeKinds.BINDING |
   typeof AsyncApiTreeNodeKinds.SERVER;
 
 export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
-  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiNodeMeta
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeMeta
 > {
-  public override createNodeMeta(value: unknown): AsyncApiNodeMeta {
+  public override createNodeMeta(value: unknown): AsyncApiTreeNodeMeta {
     return {
       ...isObject(value) && JSON_SCHEMA_PROPERTY_REF in value ? { brokenRef: `${value.$ref}` } : {},
       _fragment: value,

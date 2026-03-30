@@ -5,7 +5,7 @@ import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/a
 import { AsyncApiTreeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/tree.impl";
 import { AsyncApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
-import { AsyncApiNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
+import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { isObject } from "@apihub/next-data-model/utilities";
@@ -28,7 +28,7 @@ import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./node-diffs-d
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiNodeMeta
+  AsyncApiTreeNodeMeta
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
@@ -74,7 +74,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       AsyncApiTreeNodeWithDiffs,
       AsyncApiTreeWithDiffsCrawlState,
       AsyncApiTreeWithDiffsCrawlRule,
-      TreeNodeWithDiffsParams<object | null, AsyncApiTreeNodeKind, AsyncApiNodeMeta>
+      TreeNodeWithDiffsParams<object | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
     >({
       source: preparedSource,
       tree: this.tree,
@@ -140,7 +140,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): AsyncApiTreeNodeWithDiffs | undefined {
     const { parent = null, container = null, newDataLevel } = params
@@ -150,7 +150,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       const complexParams: ComplexTreeNodeWithDiffsParams<
         AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
         AsyncApiTreeNodeKind,
-        AsyncApiNodeMeta
+        AsyncApiTreeNodeMeta
       > = {
         type: TreeNodeComplexityTypes.COMPLEX,
         parent: parent && this.isAsyncApiSimpleTreeNodeWithDiffs(parent) ? parent : null,
@@ -169,7 +169,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const simpleParams: SimpleTreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     > = {
       type: TreeNodeComplexityTypes.SIMPLE,
       parent: parent && this.isAsyncApiSimpleTreeNodeWithDiffs(parent) ? parent : null,
@@ -189,9 +189,9 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
-  ): AsyncApiNodeMeta {
+  ): AsyncApiTreeNodeMeta {
     const { value } = params
     return this.nodeDataBuilder.createNodeMeta(value)
   }
@@ -203,7 +203,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
@@ -221,7 +221,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
@@ -239,7 +239,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): NodeDescendantDiffs | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
@@ -255,7 +255,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): Set<DiffType> | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
@@ -283,7 +283,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >,
   ): void {
     const nodeDiffs = this.createNodeDiffs(node.key, kind, params)

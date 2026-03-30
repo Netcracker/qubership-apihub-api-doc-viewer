@@ -2,7 +2,7 @@ import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
@@ -24,9 +24,9 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const value = node.value()
   const children = useMemo(() => node.childrenNodes(), [node])
 
-  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+  const nodeDiffs = useMemo(() => isMessageNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isMessageNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isMessageNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
@@ -131,4 +131,8 @@ const MessageChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
       })}
     </div>
   )
+}
+
+function isMessageNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE> {
+  return node.kind == AsyncApiTreeNodeKinds.MESSAGE && node instanceof SimpleTreeNodeWithDiffs
 }

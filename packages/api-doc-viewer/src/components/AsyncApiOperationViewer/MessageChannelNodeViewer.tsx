@@ -2,7 +2,7 @@ import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode, isSer
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
@@ -31,9 +31,9 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+  const nodeDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
@@ -124,4 +124,8 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
     </div>
   )
+}
+
+function isMessageChannelNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL> {
+  return node.kind == AsyncApiTreeNodeKinds.MESSAGE_CHANNEL && node instanceof SimpleTreeNodeWithDiffs
 }

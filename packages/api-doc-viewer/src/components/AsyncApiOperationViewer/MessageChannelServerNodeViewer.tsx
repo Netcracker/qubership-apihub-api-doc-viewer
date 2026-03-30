@@ -38,9 +38,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
 
-  const nodeDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => node instanceof SimpleTreeNodeWithDiffs ? node.diffsSeverities : undefined, [node])
+  const nodeDiffs = useMemo(() => isServerNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isServerNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isServerNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
@@ -81,7 +81,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (!value) {
       return null
     }
-    if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+    if (!(isServerNodeWithDiffs(node))) {
       return <>{value.protocol}</>
     }
     const diffProtocol = node.diffs?.['protocol']
@@ -130,7 +130,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (!value) {
       return null
     }
-    if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+    if (!(isServerNodeWithDiffs(node))) {
       return <>{value.host}</>
     }
     const diffHost = node.diffs?.['host']
@@ -183,7 +183,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
         {renderHost(layoutSide)}
       </span>
     }
-    if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+    if (!(isServerNodeWithDiffs(node))) {
       return renderAddressContent()
     }
     const diffNode = node.diffs?.['']
@@ -278,3 +278,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     </div>
   )
 })
+
+function isServerNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER> {
+  return node.kind == AsyncApiTreeNodeKinds.SERVER && node instanceof SimpleTreeNodeWithDiffs
+}
