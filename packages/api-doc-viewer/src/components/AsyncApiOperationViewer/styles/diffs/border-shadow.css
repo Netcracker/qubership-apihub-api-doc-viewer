@@ -1,15 +1,19 @@
 .diffs-border-shadow_red {
-  border: 1px solid red;
+  border: 0 !important;
+  box-shadow: 0 0 4px 1px #FF0000;
 }
 
 .diffs-border-shadow_green {
-  border: 1px solid green;
+  border: 0 !important;
+  box-shadow: 0 0 4px 1px #00D75D;
 }
 
 .diffs-border-shadow_yellow {
-  border: 1px solid yellow;
+  border: 0 !important;
+  box-shadow: 0 0 4px 1px yellow;
 }
 
 .diffs-border-shadow_gray {
-  border: 1px solid gray;
+  border: 0 !important;
+  box-shadow: 0 0 4px 1px gray;
 }
