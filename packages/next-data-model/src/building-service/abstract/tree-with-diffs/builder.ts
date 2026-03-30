@@ -46,7 +46,7 @@ export abstract class TreeWithDiffsBuilder<
 
   protected abstract createNodeDescendantsDiffsSummary(
     kind: string,
-    params: TreeNodeWithDiffsParams<V, K, M>,
+    nodeDescendantDiffs: NodeDescendantDiffs | undefined,
   ): NodeDescendantDiffsSummary | undefined;
 
   protected abstract createNodeDiffsSeverities(

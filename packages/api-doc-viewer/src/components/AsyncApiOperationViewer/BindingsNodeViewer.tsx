@@ -35,7 +35,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       .map((bindingNode, index) => {
         const protocol = bindingNode.value()?.protocol ?? ''
         const testId = `binding-${index}`
-        if (bindingNode instanceof SimpleTreeNodeWithDiffs) {
+        if (isBindingNodeWithDiffs(bindingNode)) {
           return {
             title: protocol,
             node: bindingNode,
@@ -77,7 +77,6 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         variant={SizeVariant.SECONDARY}
         // diffs
         layoutSide={layoutSide}
-
       />
     ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
@@ -126,4 +125,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
 function isBindingsNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
   return node.kind == AsyncApiTreeNodeKinds.BINDINGS && node instanceof ComplexTreeNodeWithDiffs
+}
+
+function isBindingNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING> {
+  return node.kind == AsyncApiTreeNodeKinds.BINDING && node instanceof SimpleTreeNodeWithDiffs
 }

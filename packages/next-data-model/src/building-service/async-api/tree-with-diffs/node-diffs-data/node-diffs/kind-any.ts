@@ -37,26 +37,27 @@ export class AsyncApiNodeDiffsAggregatorKindAny
 
     const nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> = {}
 
-    if (parentNode) {
-      // Support inheritance of node diff from parent
-      // If parent wholly added/removed, it means that all the descendants are wholly added/removed
-      if (parentNode.diffs['']) {
-        nodeDiffs[''] = parentNode.diffs['']
+    if (containerNode) {
+      // Support inheritance of node diff from container
+      // If container wholly added/removed, it means that all the descendants are wholly added/removed
+      const containerNodeDiff = containerNode.diffs['']
+      if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
+        nodeDiffs[''] = containerNodeDiff
       } else {
-        const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
+        const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
           nodeDiffs[''] = maybeNodeDiffs
           return nodeDiffs
         }
       }
-    }
-    if (containerNode) {
-      // Support inheritance of node diff from container
-      // If container wholly added/removed, it means that all the descendants are wholly added/removed
-      if (containerNode.diffs['']) {
-        nodeDiffs[''] = containerNode.diffs['']
+    } else if (parentNode) {
+      // Support inheritance of node diff from parent
+      // If parent wholly added/removed, it means that all the descendants are wholly added/removed
+      const parentNodeDiff = parentNode.diffs['']
+      if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
+        nodeDiffs[''] = parentNodeDiff
       } else {
-        const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
+        const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
           nodeDiffs[''] = maybeNodeDiffs
           return nodeDiffs

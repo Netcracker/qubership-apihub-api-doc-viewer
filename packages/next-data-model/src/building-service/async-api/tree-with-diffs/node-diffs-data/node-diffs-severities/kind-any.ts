@@ -16,10 +16,15 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         type: diffType,
         causedAt: [],
       }
-      if (isDiffRemove(diff) || isDiffReplace(diff)) {
+      if (isDiffReplace(diff)) { // case when descendants diffs summary is not empty
         nodeDiffsSeverity.causedAt = diff.beforeDeclarationPaths[0]
+        return {
+          [NodeDiffsSeverityPlacemennt.TitleRow]: nodeDiffsSeverity,
+        }
       }
-      if (isDiffAdd(diff)) {
+      if (isDiffRemove(diff)) {
+        nodeDiffsSeverity.causedAt = diff.beforeDeclarationPaths[0]
+      } else if (isDiffAdd(diff)) {
         nodeDiffsSeverity.causedAt = diff.afterDeclarationPaths[0]
       }
       return {

@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, NodeDescendantDiffs, NodeDiffs, NodeDiffsSeverities, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -10,8 +10,8 @@ import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/t
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types";
-import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
+import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiNodeDataWithDiffsBuilder } from "../../abstract/tree-with-diffs/node-data/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
@@ -252,16 +252,17 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   protected createNodeDescendantsDiffsSummary(
     kind: string,
-    params: TreeNodeWithDiffsParams<
-      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-      AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
-    >,
-  ): Set<DiffType> | undefined {
+    nodeDescendantDiffs: NodeDescendantDiffs | undefined,
+  ): NodeDescendantDiffsSummary | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
       return undefined
     }
-    return AsyncApiNodeDescendantDiffsSummaryAggregatorFactory.instance(kind).aggregate(params.value, this.diffsMetaKeys)
+    if (!nodeDescendantDiffs) {
+      return undefined
+    }
+    return AsyncApiNodeDescendantDiffsSummaryAggregatorFactory
+      .instance(kind)
+      .aggregate(nodeDescendantDiffs)
   }
 
   protected createNodeDiffsSeverities(
@@ -274,7 +275,9 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (!nodeDiffs) {
       return undefined
     }
-    return AsyncApiNodeDiffsSeveritiesAggregatorFactory.instance(kind).aggregate(nodeDiffs)
+    return AsyncApiNodeDiffsSeveritiesAggregatorFactory
+      .instance(kind)
+      .aggregate(nodeDiffs)
   }
 
   private assignNodeDiffs(
@@ -292,10 +295,53 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const descendantDiffs = this.createNodeDescendantsDiffs(kind, params)
     descendantDiffs && Object.assign(node.descendantDiffs, descendantDiffs)
 
-    const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, params)
-    descendantDiffsSummary && descendantDiffsSummary.forEach((diffType) => node.descendantDiffsSummary.add(diffType))
+    const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, node.descendantDiffs)
+    if (descendantDiffsSummary) {
+      node.descendantDiffsSummary.clear()
+      for (const diffType of descendantDiffsSummary) {
+        node.descendantDiffsSummary.add(diffType)
+      }
 
-    const diffsSeverities = this.createNodeDiffsSeverities(kind, nodeDiffs)
+      const descendantsMaxDiffType = this.maxDiffType(node.descendantDiffsSummary)
+      const declarationPaths: JsonPath[] = []
+      for (const descendantDiff of Object.values(node.descendantDiffs)) {
+        if (!descendantDiff) {
+          continue
+        }
+        if (descendantDiff.data.type === descendantsMaxDiffType) {
+          if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
+            declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
+          } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
+            declarationPaths.push(descendantDiff.data.afterDeclarationPaths[0])
+          }
+        }
+      }
+      if (descendantsMaxDiffType && !nodeDiffs?.[""]) {
+        node.diffs[""] = {
+          data: {
+            type: descendantsMaxDiffType,
+            action: DiffAction.replace,
+            beforeDeclarationPaths: declarationPaths,
+            afterDeclarationPaths: declarationPaths,
+            beforeValue: null,
+            afterValue: null,
+            scope: 'descendants',
+          },
+          styles: {
+            before: {
+              isContentVisible: true,
+              backgroundColor: HighlightVariant.Yellow,
+            },
+            after: {
+              isContentVisible: true,
+              backgroundColor: HighlightVariant.Yellow
+            },
+          },
+        }
+      }
+    }
+
+    const diffsSeverities = this.createNodeDiffsSeverities(kind, node.diffs)
     diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)
   }
 
@@ -313,5 +359,39 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     node: AsyncApiTreeNodeWithDiffs,
   ): node is AsyncApiComplexTreeNodeWithDiffs {
     return node.type === TreeNodeComplexityTypes.COMPLEX
+  }
+
+  // TODO 30.03.26 // REFACTOR THIS ASAP!!!
+
+  private maxDiffType(diffTypes: Set<DiffType> | DiffType[]): DiffType | undefined {
+    let diffType: DiffType | undefined
+    for (const currentDiffType of diffTypes) {
+      if (this.compareDiffTypes(currentDiffType, diffType) > 0) {
+        diffType = currentDiffType
+      }
+    }
+    return diffType
+  }
+
+  private compareDiffTypes(a: DiffType | undefined, b: DiffType | undefined): number {
+    if (!a && !b) {
+      return 0
+    }
+    if (!a && b) {
+      return this.CHANGE_SEVERITIES[b]
+    }
+    if (a && !b) {
+      return this.CHANGE_SEVERITIES[a]
+    }
+    return this.CHANGE_SEVERITIES[a!] - this.CHANGE_SEVERITIES[b!]
+  }
+
+  private readonly CHANGE_SEVERITIES: Record<DiffType, number> = {
+    [breaking]: 6,
+    [risky]: 5,
+    [deprecated]: 4,
+    [nonBreaking]: 3,
+    [annotation]: 2,
+    [unclassified]: 1,
   }
 }

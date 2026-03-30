@@ -3,5 +3,7 @@ import { NodeDiffs, NodeDiffsSeverities } from "@apihub/next-data-model/model/ab
 export abstract class AbstractNodeDiffsSeveritiesAggregator<
   V extends object | null = object | null,
 > {
-  public abstract aggregate(nodeDiffs: NodeDiffs<V>): NodeDiffsSeverities | undefined;
+  public abstract aggregate(
+    nodeDiffs: NodeDiffs<V>,
+  ): NodeDiffsSeverities | undefined;
 }

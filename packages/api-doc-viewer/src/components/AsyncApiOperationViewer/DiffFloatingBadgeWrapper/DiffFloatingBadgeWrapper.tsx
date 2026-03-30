@@ -12,7 +12,7 @@ type DiffFloatingBadgeWrapperProps = {
 export const DiffFloatingBadgeWrapper: FC<DiffFloatingBadgeWrapperProps> = (props) => {
   const { children, diffType, diffTypeCause, hidden = false } = props
 
-  if (hidden || !diffType || !diffTypeCause) {
+  if (hidden || !diffType) {
     return children
   }
 
