@@ -9,6 +9,8 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
+import { TextRow } from "./TextRow/TextRow";
+import { TextRowProps } from "./TextRow/types";
 import { TextValueVariant } from "./TextValue/types";
 import { TitleRow } from "./TitleRow/TitleRow";
 import { TitleRowProps } from "./TitleRow/types";
@@ -92,6 +94,13 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     return {}
   }, [node])
 
+  const bindingVersionDiffsProps: Pick<TextRowProps, 'diff'> = useMemo(() => {
+    if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
+      return { diff: selectedBindingNode.diffs['version'] }
+    }
+    return {}
+  }, [selectedBindingNode])
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -106,11 +115,14 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && (
         <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
-          {bindingVersion && (
-            <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
-              Version: {bindingVersion}
-            </span>
-          )}
+          <TextRow
+            value={bindingVersion}
+            variant={TextValueVariant.body}
+            label="Version"
+            fontWeight='bold'
+            // diffs
+            {...bindingVersionDiffsProps}
+          />
           <JsoViewer
             source={bindingValue}
             displayMode={displayMode}

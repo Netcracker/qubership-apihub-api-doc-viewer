@@ -10,6 +10,9 @@ const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bot
 export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>((props) => {
   const { value, variant, layoutSide } = props
 
+  // value/font specific
+  const { label, fontWeight } = props
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
 
@@ -48,7 +51,8 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   }, [diff, layoutSide])
 
   return (
-    <div className={`px-2 h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div className={`flex px-2 h-full gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+      {label && (<span>{label}:</span>)}
       <TextValue
         value={value}
         variant={variant}
