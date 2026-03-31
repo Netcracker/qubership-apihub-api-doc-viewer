@@ -252,7 +252,10 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   protected createNodeDescendantsDiffsSummary(
     kind: string,
+    nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined,
     nodeDescendantDiffs: NodeDescendantDiffs | undefined,
+    crawlValue: object | null | undefined,
+    diffsMetaKeys: DiffMetaKeys | undefined,
   ): NodeDescendantDiffsSummary | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
       return undefined
@@ -262,7 +265,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     }
     return AsyncApiNodeDescendantDiffsSummaryAggregatorFactory
       .instance(kind)
-      .aggregate(nodeDescendantDiffs)
+      .aggregate(nodeDiffs, nodeDescendantDiffs, crawlValue, diffsMetaKeys)
   }
 
   protected createNodeDiffsSeverities(
@@ -295,7 +298,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const descendantDiffs = this.createNodeDescendantsDiffs(kind, params)
     descendantDiffs && Object.assign(node.descendantDiffs, descendantDiffs)
 
-    const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, node.descendantDiffs)
+    const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, node.diffs, node.descendantDiffs, params.value, this.diffsMetaKeys)
     if (descendantDiffsSummary) {
       node.descendantDiffsSummary.clear()
       for (const diffType of descendantDiffsSummary) {

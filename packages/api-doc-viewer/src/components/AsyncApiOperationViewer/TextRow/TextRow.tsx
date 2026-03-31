@@ -17,7 +17,7 @@ export const TextRow: FC<TextRowProps> = memo<TextRowProps>(props => {
   const diffType = useMemo(() => diffsSeverities?.[diffsSeverityPlacement]?.type, [diffsSeverities, diffsSeverityPlacement])
   const diffTypeCause = useMemo(() => {
     // TODO: Extract to shared utility function
-    const path = diffsSeverities?.[diffsSeverityPlacement]?.causedAt.join('.')
+    const path = diffsSeverities?.[diffsSeverityPlacement]?.causedAt?.join('.')
     return path ? `caused by ${path} change` : undefined
   }, [diffsSeverities, diffsSeverityPlacement])
 

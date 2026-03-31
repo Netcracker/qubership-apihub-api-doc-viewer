@@ -1,6 +1,7 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
 import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
@@ -97,8 +98,16 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
+      const changeNodeMetadata = selectedBindingNode.diffs['']
+      let changePropertyMetadata = changeNodeMetadata
+      if (
+        !changePropertyMetadata ||
+        !isDiffAdd(changePropertyMetadata.data) && !isDiffRemove(changePropertyMetadata.data)
+      ) {
+        changePropertyMetadata = selectedBindingNode.diffs['version']
+      }
       return {
-        diff: selectedBindingNode.diffs[''] ?? selectedBindingNode.diffs['version'],
+        diff: changePropertyMetadata,
         diffsSeverities: selectedBindingNode.diffsSeverities,
         diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
       }

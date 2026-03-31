@@ -20,6 +20,8 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         nodeDiffsSeverity.causedAt = diff.beforeDeclarationPaths[0]
         return {
           [NodeDiffsSeverityPlacemennt.TitleRow]: nodeDiffsSeverity,
+          // TODO: Extract more layers!
+          [NodeDiffsSeverityPlacemennt.BindingVersionRow]: nodeDiffsSeverity,
         }
       }
       if (isDiffRemove(diff)) {
@@ -104,7 +106,6 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
       }
       diffsSeverities[NodeDiffsSeverityPlacemennt.AddressRow] = nodeDiffsSeverity
     }
-
     if (diffBindingVersion) {
       const diff = diffBindingVersion.data
       const diffType = diff.type
