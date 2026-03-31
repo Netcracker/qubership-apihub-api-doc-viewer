@@ -32,6 +32,7 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         [NodeDiffsSeverityPlacemennt.DescriptionRow]: nodeDiffsSeverity,
         [NodeDiffsSeverityPlacemennt.SummaryRow]: nodeDiffsSeverity,
         [NodeDiffsSeverityPlacemennt.AddressRow]: nodeDiffsSeverity,
+        [NodeDiffsSeverityPlacemennt.BindingVersionRow]: nodeDiffsSeverity,
       }
     }
 
