@@ -98,7 +98,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
       return {
-        diff: selectedBindingNode.diffs['version'],
+        diff: selectedBindingNode.diffs[''] ?? selectedBindingNode.diffs['version'],
         diffsSeverities: selectedBindingNode.diffsSeverities,
         diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
       }

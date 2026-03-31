@@ -22,6 +22,11 @@ export const JsoViewer: FC<JsoViewerProps> =
       return null
     }
 
+    // TODO 31.03.26 // This is to disable JsoViewer due to impact on performance until it is ready
+    if (true) {
+      return null
+    }
+
     return (
       <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSO Viewer" />}>
         <JsoViewerInner {...props} />
