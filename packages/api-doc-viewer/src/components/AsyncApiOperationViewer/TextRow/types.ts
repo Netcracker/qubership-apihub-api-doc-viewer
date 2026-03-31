@@ -6,7 +6,7 @@ export type TextRowProps = {
   value?: string // Document Mode
   variant: TextValueVariant
   label?: string
-  fontWeight?: 'regular' | 'medium' | 'bold'
+  fontWeight?: 'normal' | 'bold'
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs

@@ -52,8 +52,9 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
 
   return (
     <div className={`flex px-2 h-full gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
-      {label && (<span>{label}:</span>)}
       <TextValue
+        label={label}
+        fontWeight={fontWeight}
         value={value}
         variant={variant}
         layoutSide={layoutSide}

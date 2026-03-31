@@ -13,6 +13,8 @@ type TextValueProps = {
   variant: TextValueVariant
   layoutSide: LayoutSide
   onClick?: () => void
+  fontWeight?: 'normal' | 'bold'
+  label?: string
   // diffs
   diff?: ChangedPropertyMetaData
 }
@@ -44,8 +46,10 @@ const Expander: FC<TextExpanderProps> = props => {
 }
 
 export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { value, variant, layoutSide, onClick, diff } = props
+
+  // value/font specific
+  const { fontWeight, label } = props
 
   const [expanded, setExpanded] = useState(false)
 
@@ -111,20 +115,21 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           break
       }
     }
-    return [resolvedValue, diffsStyleClasses, isInvisible]
-  }, [diff, layoutSide])
+    const resolvedValueWithLabel = label ? `${label}: ${resolvedValue}` : resolvedValue
+    return [resolvedValueWithLabel, diffsStyleClasses, isInvisible]
+  }, [diff, label, layoutSide])
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
   return (
-    <>
+    <div className={`${fontWeight ? `font-${fontWeight}` : ''}`}>
       {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
       <Expander
         isExpandable={isExpandable(resolvedValue)}
         expanded={expanded}
         setExpanded={setExpanded}
       />
-    </>
+    </div>
   )
 })
 
