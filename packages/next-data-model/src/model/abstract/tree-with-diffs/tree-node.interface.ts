@@ -57,6 +57,7 @@ export enum NodeDiffsSeverityPlacemennt {
   DescriptionRow = 'description-row',
   SummaryRow = 'summary-row',
   AddressRow = 'address-row',
+  BindingVersionRow = 'binding-version-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType

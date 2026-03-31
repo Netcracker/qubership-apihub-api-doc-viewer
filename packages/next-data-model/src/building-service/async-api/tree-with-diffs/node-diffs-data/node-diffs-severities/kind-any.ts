@@ -39,6 +39,7 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
     const diffDescription = nodeDiffs['description']
     const diffSummary = nodeDiffs['summary']
     const diffAddress = nodeDiffs['address']
+    const diffBindingVersion = nodeDiffs['version']
 
     const diffsSeverities: NodeDiffsSeverities = {}
 
@@ -101,6 +102,22 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         nodeDiffsSeverity.causedAt = diff.afterDeclarationPaths[0]
       }
       diffsSeverities[NodeDiffsSeverityPlacemennt.AddressRow] = nodeDiffsSeverity
+    }
+
+    if (diffBindingVersion) {
+      const diff = diffBindingVersion.data
+      const diffType = diff.type
+      const nodeDiffsSeverity: NodeDiffsSeverity = {
+        type: diffType,
+        causedAt: [],
+      }
+      if (isDiffRemove(diff) || isDiffReplace(diff)) {
+        nodeDiffsSeverity.causedAt = diff.beforeDeclarationPaths[0]
+      }
+      if (isDiffAdd(diff)) {
+        nodeDiffsSeverity.causedAt = diff.afterDeclarationPaths[0]
+      }
+      diffsSeverities[NodeDiffsSeverityPlacemennt.BindingVersionRow] = nodeDiffsSeverity
     }
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined;

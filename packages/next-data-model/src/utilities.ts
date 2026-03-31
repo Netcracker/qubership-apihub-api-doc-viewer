@@ -22,7 +22,7 @@ export function isString(value: unknown): value is string {
   return typeof value === 'string'
 }
 
-export function getValueByPath(source: unknown, path: JsonPath, referenceNamePropertyKey: symbol): unknown {
+export function getValueByPath(source: unknown, path: JsonPath, referenceNamePropertyKey?: symbol): unknown {
   let currentValue: unknown = source
   let isArrayTraversal = false
 
@@ -31,7 +31,7 @@ export function getValueByPath(source: unknown, path: JsonPath, referenceNamePro
       return undefined
     }
 
-    if (isArrayTraversal && isArray(currentValue)) {
+    if (isArrayTraversal && isArray(currentValue) && referenceNamePropertyKey) {
       const matchedElement = currentValue.find((element) =>
         isObject(element) && element[referenceNamePropertyKey] === pathSegment
       )

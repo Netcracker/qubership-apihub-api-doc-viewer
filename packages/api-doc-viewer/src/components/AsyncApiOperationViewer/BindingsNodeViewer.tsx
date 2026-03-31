@@ -3,6 +3,7 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -94,9 +95,13 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     return {}
   }, [node])
 
-  const bindingVersionDiffsProps: Pick<TextRowProps, 'diff'> = useMemo(() => {
+  const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
-      return { diff: selectedBindingNode.diffs['version'] }
+      return {
+        diff: selectedBindingNode.diffs['version'],
+        diffsSeverities: selectedBindingNode.diffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
+      }
     }
     return {}
   }, [selectedBindingNode])

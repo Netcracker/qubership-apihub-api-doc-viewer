@@ -95,6 +95,8 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       getValueByPath(source, ['operations', operationKey, 'messages', messageKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
 
+    // TODO 31.03.26 // Invent something to migrate 'bindingVersion' diffs from 'binding' property to our synthetic representation for binding
+
     const transformedWithDiffs = transformed as AsyncApiMessageOrientedSpecWithDiffs
 
     if (!(diffsMetaKey in transformedWithDiffs)) {
