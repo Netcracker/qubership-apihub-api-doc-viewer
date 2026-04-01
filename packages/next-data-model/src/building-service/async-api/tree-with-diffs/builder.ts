@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -23,6 +23,7 @@ import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
+import { AsyncApiNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
 import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./node-diffs-data/node-diffs/factory";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
@@ -234,6 +235,20 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       .aggregate(params.value, this.diffsMetaKeys, key, parentNode, containerNode)
   }
 
+  protected createNodeDiffsSummary(
+    kind: string,
+    nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined,
+    crawlValue: object | null | undefined,
+    diffsMetaKeys: DiffMetaKeys | undefined,
+  ): NodeDiffsSummary | undefined {
+    if (!this.isAsyncApiTreeNodeKind(kind)) {
+      return undefined
+    }
+    return AsyncApiNodeDiffsSummaryAggregatorFactory
+      .instance(kind)
+      .aggregate(nodeDiffs, crawlValue, diffsMetaKeys)
+  }
+
   protected createNodeDescendantsDiffs(
     kind: string,
     params: TreeNodeWithDiffsParams<
@@ -295,6 +310,14 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const nodeDiffs = this.createNodeDiffs(node.key, kind, params)
     nodeDiffs && Object.assign(node.diffs, nodeDiffs)
 
+    const nodeDiffsSummary = this.createNodeDiffsSummary(kind, node.diffs, params.value, this.diffsMetaKeys)
+    if (nodeDiffsSummary) {
+      node.diffsSummary.clear()
+      for (const diffType of nodeDiffsSummary) {
+        node.diffsSummary.add(diffType)
+      }
+    }
+
     const descendantDiffs = this.createNodeDescendantsDiffs(kind, params)
     descendantDiffs && Object.assign(node.descendantDiffs, descendantDiffs)
 
@@ -304,45 +327,49 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       for (const diffType of descendantDiffsSummary) {
         node.descendantDiffsSummary.add(diffType)
       }
+    }
 
-      const descendantsMaxDiffType = this.maxDiffType(node.descendantDiffsSummary)
-      const declarationPaths: JsonPath[] = []
-      for (const descendantDiff of Object.values(node.descendantDiffs)) {
-        if (!descendantDiff) {
-          continue
-        }
-        if (descendantDiff.data.type === descendantsMaxDiffType) {
-          if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-            declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
-          } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-            declarationPaths.push(descendantDiff.data.afterDeclarationPaths[0])
-          }
-        }
+    // ---------------
+    // TODO 01.04.26 // Refactor this to use the new diffs summary
+    const totalDiffsSummary = new Set([...node.diffsSummary, ...node.descendantDiffsSummary])
+    const totalMaxDiffType = this.maxDiffType(totalDiffsSummary)
+    const declarationPaths: JsonPath[] = []
+    for (const descendantDiff of Object.values(node.descendantDiffs)) {
+      if (!descendantDiff) {
+        continue
       }
-      if (descendantsMaxDiffType && !nodeDiffs?.[""]) {
-        node.diffs[""] = {
-          data: {
-            type: descendantsMaxDiffType,
-            action: DiffAction.replace,
-            beforeDeclarationPaths: declarationPaths,
-            afterDeclarationPaths: declarationPaths,
-            beforeValue: null,
-            afterValue: null,
-            scope: 'descendants',
-          },
-          styles: {
-            before: {
-              isContentVisible: true,
-              backgroundColor: HighlightVariant.Yellow,
-            },
-            after: {
-              isContentVisible: true,
-              backgroundColor: HighlightVariant.Yellow
-            },
-          },
+      if (descendantDiff.data.type === totalMaxDiffType) {
+        if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
+          declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
+        } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
+          declarationPaths.push(descendantDiff.data.afterDeclarationPaths[0])
         }
       }
     }
+    if (totalMaxDiffType && !nodeDiffs?.[""]) {
+      node.diffs[""] = {
+        data: {
+          type: totalMaxDiffType,
+          action: DiffAction.replace,
+          beforeDeclarationPaths: declarationPaths,
+          afterDeclarationPaths: declarationPaths,
+          beforeValue: null,
+          afterValue: null,
+          scope: 'descendants',
+        },
+        styles: {
+          before: {
+            isContentVisible: true,
+            backgroundColor: HighlightVariant.Yellow,
+          },
+          after: {
+            isContentVisible: true,
+            backgroundColor: HighlightVariant.Yellow
+          },
+        },
+      }
+    }
+    // ------------
 
     const diffsSeverities = this.createNodeDiffsSeverities(kind, node.diffs)
     diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)

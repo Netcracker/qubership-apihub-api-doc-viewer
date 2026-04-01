@@ -1,6 +1,6 @@
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeNodeComplexityType, TreeNodeComplexityTypes } from "../tree/tree-node.interface";
-import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "./tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, TreeNodeWithDiffsParams } from "./tree-node.interface";
 
 export class SimpleTreeNodeWithDiffs<
   V extends object | null,
@@ -20,12 +20,16 @@ export class SimpleTreeNodeWithDiffs<
   protected readonly _nestedNodes: ITreeNodeWithDiffs<V, K, M>[] = []
 
   protected readonly _diffs: NodeDiffs<V> = { }
+  protected readonly _diffsSummary: NodeDiffsSummary = new Set()
   protected readonly _descendantDiffs: NodeDescendantDiffs = {}
   protected readonly _descendantDiffsSummary: NodeDescendantDiffsSummary = new Set()
   protected readonly _diffsSeverities: NodeDiffsSeverities = {}
 
   get diffs(): NodeDiffs<V> {
     return this._diffs;
+  }
+  get diffsSummary(): NodeDiffsSummary {
+    return this._diffsSummary;
   }
   get descendantDiffs(): NodeDescendantDiffs {
     return this._descendantDiffs;

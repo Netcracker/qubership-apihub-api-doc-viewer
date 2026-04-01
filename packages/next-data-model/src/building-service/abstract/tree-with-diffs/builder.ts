@@ -1,4 +1,4 @@
-import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { ITreeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree.interface";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { DiffMetaKeys } from "../../async-api/tree-with-diffs/node-diffs-data/node-diffs/factory";
@@ -39,6 +39,13 @@ export abstract class TreeWithDiffsBuilder<
     kind: string,
     params: TreeNodeWithDiffsParams<V, K, M>,
   ): NodeDiffs<V> | undefined;
+
+  protected abstract createNodeDiffsSummary(
+    kind: string,
+    nodeDiffs: NodeDiffs<V> | undefined,
+    crawlValue: object | null | undefined,
+    diffsMetaKeys: DiffMetaKeys | undefined,
+  ): NodeDiffsSummary | undefined;
 
   protected abstract createNodeDescendantsDiffs(
     kind: string,

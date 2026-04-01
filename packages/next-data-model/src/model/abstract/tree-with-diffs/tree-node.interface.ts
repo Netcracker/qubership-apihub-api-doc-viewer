@@ -69,12 +69,15 @@ export type NodeDescendantDiffs = Partial<Record<NodeId, ChangedPropertyMetaData
 
 export type NodeDescendantDiffsSummary = Set<DiffType>
 
+export type NodeDiffsSummary = Set<DiffType>
+
 export interface ITreeNodeWithDiffs<
   V extends object | null = object | null,
   K extends string = string,
   M extends object = object,
 > extends ITreeNode<V, K, M> {
   diffs: NodeDiffs<V>
+  diffsSummary: NodeDiffsSummary
   descendantDiffs: NodeDescendantDiffs
   descendantDiffsSummary: NodeDescendantDiffsSummary
   diffsSeverities: NodeDiffsSeverities
