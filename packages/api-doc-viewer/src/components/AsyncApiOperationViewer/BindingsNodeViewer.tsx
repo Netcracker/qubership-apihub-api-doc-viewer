@@ -46,6 +46,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
             testId: testId,
             // diffs
             diffs: bindingNode.diffs,
+            diffsSummary: bindingNode.diffsSummary,
             descendantDiffs: bindingNode.descendantDiffs,
             descendantDiffsSummary: bindingNode.descendantDiffsSummary,
             diffsSeverities: bindingNode.diffsSeverities,

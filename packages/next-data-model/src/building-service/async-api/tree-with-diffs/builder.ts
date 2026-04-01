@@ -331,14 +331,13 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
     // ---------------
     // TODO 01.04.26 // Refactor this to use the new diffs summary
-    const totalDiffsSummary = new Set([...node.diffsSummary, ...node.descendantDiffsSummary])
-    const totalMaxDiffType = this.maxDiffType(totalDiffsSummary)
+    const descendantsMaxDiffType = descendantDiffsSummary ? this.maxDiffType(descendantDiffsSummary) : undefined
     const declarationPaths: JsonPath[] = []
     for (const descendantDiff of Object.values(node.descendantDiffs)) {
       if (!descendantDiff) {
         continue
       }
-      if (descendantDiff.data.type === totalMaxDiffType) {
+      if (descendantDiff.data.type === descendantsMaxDiffType) {
         if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
           declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
         } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
@@ -346,10 +345,10 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         }
       }
     }
-    if (totalMaxDiffType && !nodeDiffs?.[""]) {
+    if (descendantsMaxDiffType && !nodeDiffs?.[""]) {
       node.diffs[""] = {
         data: {
-          type: totalMaxDiffType,
+          type: descendantsMaxDiffType,
           action: DiffAction.replace,
           beforeDeclarationPaths: declarationPaths,
           afterDeclarationPaths: declarationPaths,

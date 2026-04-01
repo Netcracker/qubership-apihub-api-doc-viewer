@@ -35,6 +35,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
           testId: getMessageSectionTestId(node),
           // diffs
           diffs: node.diffs,
+          diffsSummary: node.diffsSummary,
           descendantDiffs: node.descendantDiffs,
           descendantDiffsSummary: node.descendantDiffsSummary,
           diffsSeverities: node.diffsSeverities,
