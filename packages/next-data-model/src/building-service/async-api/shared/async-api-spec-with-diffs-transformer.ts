@@ -1,5 +1,6 @@
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { getValueByPath, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
+import { aggregateDiffsWithRollup } from "@netcracker/qubership-apihub-api-diff";
 import { AsyncApiLogger } from "../logging";
 import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
 import {
@@ -114,6 +115,7 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       }
     }
 
+    // channel
     if (!(diffsMetaKey in transformedWithDiffs.data.channel)) {
       const diffTitle = channelFieldsDiffsRecord?.title
       const diffDescription = channelFieldsDiffsRecord?.description
@@ -127,6 +129,7 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       }
     }
 
+    // operation
     if (!(diffsMetaKey in transformedWithDiffs.data.operation)) {
       const diffTitle = operationFieldsDiffsRecord?.title
       const diffDescription = operationFieldsDiffsRecord?.description
@@ -137,6 +140,9 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
         ...(diffSummary ? { summary: diffSummary } : {}),
       }
     }
+
+    // ATTENTION: It is IMPORTANT to aggregate diffs on TRANSFORMED DOCUMENT
+    aggregateDiffsWithRollup(transformedWithDiffs, diffsMetaKey, aggregatedDiffsMetaKey)
 
     return transformedWithDiffs
   }

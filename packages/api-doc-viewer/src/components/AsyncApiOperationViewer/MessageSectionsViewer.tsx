@@ -28,7 +28,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   const sectionNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const sectionSelectorOptions = useMemo(
     () => sectionNodes.map(node => {
-      if (node instanceof SimpleTreeNodeWithDiffs) {
+      if (isMessageSectionNodeWithDiffs(node)) {
         return {
           node: node,
           title: getMessageSectionTitle(node),
@@ -36,6 +36,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
           // diffs
           diffs: node.diffs,
           descendantDiffs: node.descendantDiffs,
+          descendantDiffsSummary: node.descendantDiffsSummary,
           diffsSeverities: node.diffsSeverities,
         }
       }
@@ -124,4 +125,21 @@ function getMessageSectionTestId(node: AsyncApiTreeNode): string {
     default:
       return 'unknown'
   }
+}
+
+function isMessageSectionNodeWithDiffs(
+  node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs
+): node is AsyncApiTreeNodeWithDiffs<
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
+> {
+  if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+    return false;
+  }
+  return [
+    AsyncApiTreeNodeKinds.MESSAGE_CONTENT,
+    AsyncApiTreeNodeKinds.MESSAGE_CHANNEL,
+    AsyncApiTreeNodeKinds.MESSAGE_OPERATION,
+  ].includes(node.kind)
 }

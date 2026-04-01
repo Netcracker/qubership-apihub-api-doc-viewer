@@ -16,7 +16,6 @@
 
 import { DiffMetaKeys, isObject } from '@netcracker/qubership-apihub-api-data-model'
 import {
-  aggregateDiffsWithRollup,
   apiDiff,
   COMPARE_MODE_OPERATION, DIFF_META_KEY
 } from '@netcracker/qubership-apihub-api-diff'
@@ -482,8 +481,6 @@ export function prepareAsyncApiDiffsDocument(options: AsyncApiDiffsDocumentOptio
     liftCombiners: true,
     unify: true,
   }).merged
-
-  aggregateDiffsWithRollup(mergedSource, diffMetaKeys.diffsMetaKey, diffMetaKeys.aggregatedDiffsMetaKey)
 
   storyName && console.debug('[AsyncAPI Diffs] Merged source:', mergedSource)
   if (circular && isObject(mergedSource)) {
