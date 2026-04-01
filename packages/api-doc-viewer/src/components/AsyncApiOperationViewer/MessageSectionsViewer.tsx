@@ -1,5 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
@@ -53,7 +54,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     }
   }, [sectionSelectorOptions, selectedSection])
 
-  const renderSelectorRow = useCallback(() => {
+  const renderSelector = useCallback((layoutSide: LayoutSide) => {
     const selectorElement = (
       <div className="px-2">
         <Selector
@@ -61,25 +62,31 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
           selectedOption={selectedSection}
           onSelectOption={setSelectedSection}
           variant={SizeVariant.SECONDARY}
+          // diffs
+          layoutSide={layoutSide}
         />
       </div>
     )
+    return selectorElement
+  }, [sectionSelectorOptions, selectedSection])
+
+  const renderSelectorRow = useCallback(() => {
     switch (layoutMode) {
       case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
         return (
           <SideBySideLayout
-            left={selectorElement}
-            right={selectorElement}
+            left={renderSelector(ORIGIN_LAYOUT_SIDE)}
+            right={renderSelector(CHANGED_LAYOUT_SIDE)}
           />
         )
       default:
         return (
           <OneSideLayout
-            content={selectorElement}
+            content={renderSelector(CHANGED_LAYOUT_SIDE)}
           />
         )
     }
-  }, [layoutMode, sectionSelectorOptions, selectedSection])
+  }, [layoutMode, renderSelector])
 
   return (
     <div className="flex flex-col gap-2">

@@ -29,7 +29,7 @@ export class AsyncApiNodeDescendantDiffsSummaryAggregatorKindContent extends Abs
 
     const { aggregatedDiffsMetaKey } = diffsMetaKeys
 
-    const diffsSummaryBinding = getValueByPath(crawlValue, ['binding', aggregatedDiffsMetaKey])
+    const diffsSummaryBinding = getValueByPath(crawlValue, [aggregatedDiffsMetaKey])
     if (this.isDiffsSet(diffsSummaryBinding)) {
       for (const diff of diffsSummaryBinding) {
         summary.add(diff.type)
