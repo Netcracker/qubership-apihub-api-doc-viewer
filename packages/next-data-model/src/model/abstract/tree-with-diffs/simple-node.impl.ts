@@ -140,4 +140,25 @@ export class SimpleTreeNodeWithDiffs<
     this._nestedNodes.push(node);
   }
 
+  public addDiffsSummary(diffsSummary: NodeDiffsSummary): void {
+    for (const diffType of diffsSummary) {
+      this._diffsSummary.add(diffType);
+      if (this.container) {
+        this.container.addDiffsSummary(diffsSummary);
+      } else if (this.parent) {
+        this.parent.addDiffsSummary(diffsSummary);
+      }
+    }
+  }
+
+  public addDescendantDiffsSummary(descendantDiffsSummary: NodeDescendantDiffsSummary): void {
+    for (const diffType of descendantDiffsSummary) {
+      this._descendantDiffsSummary.add(diffType);
+      if (this.container) {
+        this.container.addDescendantDiffsSummary(descendantDiffsSummary);
+      } else if (this.parent) {
+        this.parent.addDescendantDiffsSummary(descendantDiffsSummary);
+      }
+    }
+  }
 }

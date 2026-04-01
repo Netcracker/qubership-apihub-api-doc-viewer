@@ -313,9 +313,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const nodeDiffsSummary = this.createNodeDiffsSummary(kind, node.diffs, params.value, this.diffsMetaKeys)
     if (nodeDiffsSummary) {
       node.diffsSummary.clear()
-      for (const diffType of nodeDiffsSummary) {
-        node.diffsSummary.add(diffType)
-      }
+      node.addDiffsSummary(nodeDiffsSummary)
     }
 
     const descendantDiffs = this.createNodeDescendantsDiffs(kind, params)
@@ -324,9 +322,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, node.diffs, node.descendantDiffs, params.value, this.diffsMetaKeys)
     if (descendantDiffsSummary) {
       node.descendantDiffsSummary.clear()
-      for (const diffType of descendantDiffsSummary) {
-        node.descendantDiffsSummary.add(diffType)
-      }
+      node.addDescendantDiffsSummary(descendantDiffsSummary)
     }
 
     // ---------------

@@ -76,11 +76,17 @@ export interface ITreeNodeWithDiffs<
   K extends string = string,
   M extends object = object,
 > extends ITreeNode<V, K, M> {
+  parent: ITreeNodeWithDiffs | null
+  container: ITreeNodeWithDiffs | null
+
   diffs: NodeDiffs<V>
   diffsSummary: NodeDiffsSummary
   descendantDiffs: NodeDescendantDiffs
   descendantDiffsSummary: NodeDescendantDiffsSummary
   diffsSeverities: NodeDiffsSeverities
+
+  addDiffsSummary(diffsSummary: NodeDiffsSummary): void
+  addDescendantDiffsSummary(descendantDiffsSummary: NodeDescendantDiffsSummary): void
 
   createCycledClone(
     id: NodeId,
