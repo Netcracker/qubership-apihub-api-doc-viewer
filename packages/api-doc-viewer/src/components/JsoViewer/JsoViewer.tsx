@@ -4,7 +4,7 @@ import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext } from "@apihub/contexts/LevelContext"
 import { JsoTreeBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree/builder"
 import { FC, memo, useMemo } from "react"
-import { DisplayMode, DOCUMENT_LAYOUT_MODE } from "../.."
+import { DisplayMode, DOCUMENT_LAYOUT_MODE, LayoutMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
@@ -12,6 +12,7 @@ import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
 type JsoViewerProps = {
   source: object | null
   displayMode?: DisplayMode
+  layoutMode?: LayoutMode
   initialLevel?: number
   supportJsonSchema?: boolean
 }
@@ -19,11 +20,6 @@ type JsoViewerProps = {
 export const JsoViewer: FC<JsoViewerProps> =
   memo<JsoViewerProps>(props => {
     if (props.source === null) {
-      return null
-    }
-
-    // TODO 31.03.26 // This is to disable JsoViewer due to impact on performance until it is ready
-    if (true) {
       return null
     }
 
@@ -35,7 +31,7 @@ export const JsoViewer: FC<JsoViewerProps> =
   })
 
 const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
-  const { source, displayMode = DEFAULT_DISPLAY_MODE, initialLevel = 0, supportJsonSchema = false } = props
+  const { source, displayMode = DEFAULT_DISPLAY_MODE, layoutMode = DOCUMENT_LAYOUT_MODE, initialLevel = 0, supportJsonSchema = false } = props
 
   const builder = useMemo(() => new JsoTreeBuilder(source, supportJsonSchema), [source, supportJsonSchema])
   const tree = useMemo(() => builder.build(), [builder])
@@ -55,7 +51,7 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
 
   return (
     <DisplayModeContext.Provider value={displayMode}>
-      <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}> {/* Now only 1 layout mode is supported */}
+      <LayoutModeContext.Provider value={layoutMode}> {/* Now only 1 layout mode is supported */}
         <LevelContext.Provider value={initialLevel}>
           <div data-testid='jso-viewer'>
             {jsoProperties.map(jsoProperty => (

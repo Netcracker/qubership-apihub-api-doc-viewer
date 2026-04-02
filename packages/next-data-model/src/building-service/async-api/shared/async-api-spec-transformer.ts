@@ -201,12 +201,24 @@ export class AsyncApiSpecTransformer {
   }
 
   private transformParametersToJsonSchema(parameters: v3.ParametersObject): v3.SchemaObject {
-    const newParameters: Record<string, v3.SchemaObject> = {}
+    const newParameters: Record<PropertyKey, v3.SchemaObject> = {}
     for (const [parameterName, parameterValue] of Object.entries(parameters)) {
       newParameters[parameterName] =
         this.isReferenceObject(parameterValue)
           ? parameterValue
           : { type: "string", ...parameterValue }
+    }
+    const parametersRawObject = parameters as Record<PropertyKey, unknown>;
+    for (const key of Reflect.ownKeys(parameters)) {
+      if (typeof key !== "symbol") {
+        continue
+      }
+      Object.defineProperty(newParameters, key, {
+        value: parametersRawObject[key],
+        configurable: true,
+        enumerable: true,
+        writable: true,
+      })
     }
     return newParameters
   }
