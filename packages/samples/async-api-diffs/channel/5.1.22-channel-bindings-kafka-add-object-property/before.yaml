@@ -11,27 +11,9 @@ channels:
     bindings:
       kafka:
         bindingVersion: 1.0.0
-        stringValue: hello
-        numberValue: 7
-        booleanValue: true
-        nullValue: null
         objectValue:
           first: one
           second: 2
-        arrayPrimitives:
-          - x
-          - 1
-          - false
-        arrayObjects:
-          - id: 1
-          - id: 2
-        arrayArrayPrimitives:
-          - - a
-            - b
-          - - 1
-            - 2
-          - - true
-            - false
 operations:
   sendOperation:
     action: send
