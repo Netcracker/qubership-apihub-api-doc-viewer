@@ -10,7 +10,7 @@ import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/m
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
-import { JsoValue } from "../AsyncApiOperationViewer/JsoValue/JsoValue"
+import { JsoValue } from "./JsoValue/JsoValue"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"

@@ -4,7 +4,6 @@ import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracke
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { JsoPropertyValueType } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type";
 import { FC, memo, useCallback } from "react";
-import '../styles/TextValue.css';
 
 type JsoValueProps = {
   value: unknown

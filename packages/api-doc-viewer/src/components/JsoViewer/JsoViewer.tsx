@@ -8,6 +8,7 @@ import { DisplayMode, DOCUMENT_LAYOUT_MODE, LayoutMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
+import './styles/index.css'
 
 type JsoViewerProps = {
   source: object | null
