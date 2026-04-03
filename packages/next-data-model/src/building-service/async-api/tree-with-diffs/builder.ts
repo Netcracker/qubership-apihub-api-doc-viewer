@@ -13,7 +13,7 @@ import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
-import { AsyncApiNodeDataWithDiffsBuilder } from "../../abstract/tree-with-diffs/node-data/builder";
+import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
