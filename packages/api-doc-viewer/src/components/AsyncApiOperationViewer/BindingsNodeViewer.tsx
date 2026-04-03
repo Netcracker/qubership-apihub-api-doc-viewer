@@ -1,3 +1,4 @@
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
@@ -8,6 +9,7 @@ import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-d
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
@@ -27,6 +29,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const { node, variant = SizeVariant.PRIMARY } = props
 
   const displayMode = useDisplayMode()
+
+  const diffMetaKeys = useDiffMetaKeys()
 
   const bindingsNodeMeta = node.meta()
   const brokenRef = bindingsNodeMeta?.brokenRef
@@ -139,12 +143,23 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
             // diffs
             {...bindingVersionDiffsProps}
           />
-          <JsoViewer
-            source={bindingValue}
-            displayMode={displayMode}
-            initialLevel={1}
-            supportJsonSchema={true}
-          />
+          {selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode) && diffMetaKeys ? (
+            <JsoDiffsViewer
+              mergedSource={bindingValue}
+              displayMode={displayMode}
+              initialLevel={1}
+              supportJsonSchema={true}
+              // diffs specific
+              diffMetaKeys={diffMetaKeys}
+            />
+          ) : (
+            <JsoViewer
+              source={bindingValue}
+              displayMode={displayMode}
+              initialLevel={1}
+              supportJsonSchema={true}
+            />
+          )}
         </div>
       )}
     </div>

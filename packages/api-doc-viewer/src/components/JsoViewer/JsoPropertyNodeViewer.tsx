@@ -10,6 +10,7 @@ import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/m
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
+import { JsoValue } from "../AsyncApiOperationViewer/JsoValue/JsoValue"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
@@ -17,7 +18,9 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 
 type JsoPropertyNodeViewerProps = {
-  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  node:
+  | JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
   expandable: boolean
   expanded?: boolean
   supportJsonSchema?: boolean
@@ -45,26 +48,18 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   const isNodeWithDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node), [node])
 
-  const legacyNodeChange = useMemo(() => {
-    if (isJsoPropertyNodeWithDiffs(node)) {
-      const diff = node.diffs[""]?.data
-      return diff ? { ...diff, depth: level } : undefined
-    }
-    return undefined
-  }, [node, level])
-
   const subheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (layoutSide: LayoutSide) => {
-      switch (nodeValue?.valueType) {
-        case 'string':
-        case 'number':
-        case 'boolean':
-          return (
-            <span className={`subheader text-slate-500 ${nodeValue?.isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
-              {`${nodeValue?.value}`}
-            </span>
-          )
+      if (nodeValue) {
+        return (
+          <JsoValue
+            value={nodeValue.value}
+            valueType={nodeValue.valueType}
+            isPredefinedValueSet={nodeValue.isPredefinedValueSet}
+            layoutSide={layoutSide}
+          />
+        )
       }
       return <></>
     },

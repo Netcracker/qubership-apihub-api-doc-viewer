@@ -19,7 +19,6 @@ type JsoDiffsViewerProps = {
   displayMode?: DisplayMode
   initialLevel?: number
   supportJsonSchema?: boolean
-  referenceNamePropertyKey: symbol
   // diffs specific
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
@@ -45,10 +44,11 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       displayMode = DEFAULT_DISPLAY_MODE,
       initialLevel = 0,
       supportJsonSchema = false,
-      referenceNamePropertyKey,
       diffMetaKeys,
       diffTypes,
     } = props
+  
+    const referenceNamePropertyKey = Symbol('referenceName')
 
     const builder = useMemo(
       () => new JsoTreeWithDiffsBuilder(source, referenceNamePropertyKey, diffMetaKeys),
