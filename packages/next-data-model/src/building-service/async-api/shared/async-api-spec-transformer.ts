@@ -220,7 +220,10 @@ export class AsyncApiSpecTransformer {
         writable: true,
       })
     }
-    return newParameters
+    return {
+      type: 'object',
+      properties: newParameters,
+    }
   }
 
   private copyExtensions(

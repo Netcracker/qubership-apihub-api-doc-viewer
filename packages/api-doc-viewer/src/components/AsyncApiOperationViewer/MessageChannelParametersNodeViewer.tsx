@@ -1,10 +1,12 @@
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
-import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer"
+import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
+import { Aligner } from "../JsoViewer/Aligner"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
 import { TextValueVariant } from "./TextValue/types"
 import { TitleRow } from "./TitleRow/TitleRow"
@@ -51,11 +53,13 @@ type MessageChannelParametersNodeWithDiffsViewerProps = {
 const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNodeWithDiffsViewerProps> = (props) => {
   const { node } = props
 
+  const displayMode = useDisplayMode()
+  const layoutMode = useLayoutMode()
+
   const value = node.value()
-  const addressParameters = value?.rawValues ?? {}
+  const addressParameters = value?.rawValues
 
   const diffMetaKeys = useDiffMetaKeys()
-  const referenceNamePropertyKey: symbol = Symbol('referenceName')
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     return {
@@ -65,14 +69,9 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
     }
   }, [node])
 
-  if (!diffMetaKeys) {
+  if (!diffMetaKeys || !addressParameters) {
     return null
   }
-
-  console.log('diffsProps', diffsProps)
-  console.log('diffMetaKeys', diffMetaKeys)
-  console.log('referenceNamePropertyKey', referenceNamePropertyKey)
-  console.log('addressParameters', addressParameters)
 
   return <>
     <TitleRow
@@ -82,14 +81,16 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       // diffs
       {...diffsProps}
     />
-    <JsoDiffsViewer
-      mergedSource={addressParameters}
-      initialLevel={1}
-      supportJsonSchema={true}
-      // diffs specific
-      diffMetaKeys={diffMetaKeys}
-      referenceNamePropertyKey={referenceNamePropertyKey}
-    />
+    <Aligner>
+      <JsonSchemaDiffViewer
+        schema={addressParameters}
+        expandedDepth={2}
+        displayMode={displayMode}
+        layoutMode={layoutMode}
+        metaKeys={diffMetaKeys}
+        overriddenKind='parameters'
+      />
+    </Aligner>
   </>
 }
 
