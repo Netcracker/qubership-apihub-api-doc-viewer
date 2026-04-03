@@ -63,11 +63,15 @@ export const inlineJsoPropertyParameters: SchemaTransformFunc<JsoTreeCrawlState>
     valueType: getValueType(value),
     isPrimitive: isPrimitive,
     isArrayItem: typeof key === 'number' && key >= 0,
-    isPredefinedValueSet: valueType === JsoPropertyValueTypes.BOOLEAN || valueType === JsoPropertyValueTypes.NULL,
+    isPredefinedValueSet: isPredefinedValueSet(valueType),
   }
 }
 
-function isPrimitiveValue(valueType: JsoPropertyValueType): boolean {
+export function isPredefinedValueSet(valueType: JsoPropertyValueType): boolean {
+  return valueType === JsoPropertyValueTypes.BOOLEAN || valueType === JsoPropertyValueTypes.NULL
+}
+
+export function isPrimitiveValue(valueType: JsoPropertyValueType): boolean {
   return (
     valueType !== JsoPropertyValueTypes.JSON_SCHEMA &&
     valueType !== JsoPropertyValueTypes.MULTI_SCHEMA &&
@@ -76,7 +80,7 @@ function isPrimitiveValue(valueType: JsoPropertyValueType): boolean {
   )
 }
 
-function getValueType(value: unknown): JsoPropertyValueType {
+export function getValueType(value: unknown): JsoPropertyValueType {
   if (typeof value === 'string') {
     return JsoPropertyValueTypes.STRING
   }
@@ -104,7 +108,7 @@ function getValueType(value: unknown): JsoPropertyValueType {
   return JsoPropertyValueTypes.UNKNOWN
 }
 
-function isJsonSchema(value: unknown): boolean {
+export function isJsonSchema(value: unknown): boolean {
   if (typeof value !== 'object' || value === null) {
     return false
   }
