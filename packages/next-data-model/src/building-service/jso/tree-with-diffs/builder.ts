@@ -3,21 +3,26 @@ import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/
 import { JsoComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/complex-node.impl";
 import { JsoSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/simple-node.impl";
 import { JsoTreeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/tree.impl";
+import { JsoTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/types/aliases";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
-import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
+import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
+import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
+import { JsoCrawlRule, JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
+import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
+import { createJsoTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { JsoNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { JsoNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { JsoNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
 import { JsoNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
 import { JsoNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
 import { DiffMetaKeys, JsoNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
-import { JsoNodeDataWithDiffsBuilder } from "./node-data/builder";
 
 export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   JsoTreeNodeValue | null,
@@ -42,7 +47,68 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (!isObject(this.source)) {
       return this.tree
     }
+
+    const initialState: JsoTreeWithDiffsCrawlState = {
+      parent: null,
+      container: null,
+      alreadyConvertedValuesCache: new Map(),
+    }
+
+    const initialRules: JsoCrawlRule = getJsoCrawlRules()
+
+    const hooks = createJsoTreeBuildingHooks<
+      JsoTreeNodeWithDiffs<JsoTreeNodeKind>,
+      JsoTreeWithDiffsCrawlState,
+      JsoWithDiffsCrawlRule,
+      TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>
+    >({
+      source: this.source,
+      tree: this.tree,
+      createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
+      createNodeParams: (value, parent, container) => ({
+        value: isObject(value) ? value : null,
+        newDataLevel: true,
+        container,
+        parent,
+      }),
+      createStateForSimpleNode: (_state, node, cache) => ({
+        parent: node,
+        container: null,
+        alreadyConvertedValuesCache: cache,
+      }),
+      createStateForComplexNode: (state, node, cache) => ({
+        parent: state.parent,
+        container: node,
+        alreadyConvertedValuesCache: cache,
+      }),
+      isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
+      isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
+      resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
+      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+    })
+
+    syncCrawl<JsoTreeWithDiffsCrawlState, JsoWithDiffsCrawlRule>(
+      this.source,
+      hooks,
+      {
+        state: initialState,
+        rules: initialRules,
+      },
+    )
+
     return this.tree
+  }
+
+  // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
+  private resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
+    if (!isObject(value)) {
+      return key
+    }
+
+    if ('id' in value && typeof value.id === 'string') {
+      return value.id
+    }
+    return key
   }
 
   protected createNodeFromRaw(

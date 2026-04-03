@@ -13,13 +13,13 @@ import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
-import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
@@ -75,7 +75,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       AsyncApiTreeNodeWithDiffs,
       AsyncApiTreeWithDiffsCrawlState,
       AsyncApiTreeWithDiffsCrawlRule,
-      TreeNodeWithDiffsParams<object | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
+      TreeNodeWithDiffsParams<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
     >({
       source: preparedSource,
       tree: this.tree,

@@ -61,16 +61,16 @@ export class JsoTreeBuilder extends TreeBuilder<
     const hooks = createJsoTreeBuildingHooks<
       JsoTreeCrawlState,
       JsoCrawlRule,
-      TreeNodeParams<object | null, string, object>
+      TreeNodeParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>
     >({
       source: this.source,
       tree: this.tree,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) && !Array.isArray(value) ? value : null,
+        value: isObject(value) ? value : null,
         newDataLevel: true,
         container,
-        parent: container ? container.parent : parent,
+        parent,
       }),
       createStateForSimpleNode: (_state, node, cache) => ({
         parent: node,

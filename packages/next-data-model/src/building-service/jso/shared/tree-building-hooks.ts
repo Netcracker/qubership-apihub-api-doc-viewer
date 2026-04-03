@@ -6,76 +6,80 @@ import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl"
 import { ITreeNode } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
+import { CommonState } from "../../async-api/json-crawl-entities/state/types";
 import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
-import { CommonState } from "../json-crawl-entities/state/types";
 
 type JsoNodeValue = JsoTreeNodeValue | null;
 type JsoBaseNode = ITreeNode<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta>;
 
-type CycleCloneFactory = {
+type NodeCache<N extends JsoBaseNode> = Map<unknown, N>;
+
+type CycleCloneFactory<N extends JsoBaseNode> = {
   createCycledClone: (
-    sourceNode: JsoBaseNode,
+    sourceNode: N,
     cloneId: NodeId,
     cloneKey: NodeKey,
-    cloneParent: JsoBaseNode | null,
-  ) => JsoBaseNode
+    cloneParent: N | null,
+  ) => N
 }
 
 export interface JsoTreeBuildingHooksFactoryParams<
-  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta>,
+  N extends JsoBaseNode,
+  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta, N>,
   P extends {
     value: object | null
     newDataLevel: boolean
-    parent: ITreeNode<object | null, string, object> | null
-    container: ITreeNode<object | null, string, object> | null
+    parent: N | null
+    container: N | null
   },
 > {
   source: unknown
-  tree: CycleCloneFactory
+  tree: CycleCloneFactory<N>
   createNodeFromRaw: (
     id: NodeId,
     key: NodeKey,
     kind: JsoTreeNodeKind,
     complex: boolean,
     params: P
-  ) => JsoBaseNode | undefined
+  ) => N | undefined
   createNodeParams: (
     value: unknown,
-    parent: JsoBaseNode | null,
-    container: JsoBaseNode | null,
+    parent: N | null,
+    container: N | null,
   ) => P
   createStateForSimpleNode: (
     state: S,
-    node: JsoBaseNode,
-    cache: S["alreadyConvertedValuesCache"],
+    node: N,
+    cache: NodeCache<N>,
   ) => S
   createStateForComplexNode: (
     state: S,
-    node: JsoBaseNode,
-    cache: S["alreadyConvertedValuesCache"],
+    node: N,
+    cache: NodeCache<N>,
   ) => S
-  isSimpleNode: (node: JsoBaseNode) => boolean
-  isComplexNode: (node: JsoBaseNode) => boolean
+  isSimpleNode: (node: N) => boolean
+  isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
   shouldStopAfterNodeCreation?: (value: unknown) => boolean
 }
 
 export function createJsoTreeBuildingHooks<
-  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta>,
+  N extends JsoBaseNode,
+  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta, N>,
   R extends SchemaCrawlRule<JsoTreeNodeKind, S>,
   P extends {
     value: object | null
     newDataLevel: boolean
-    parent: ITreeNode<object | null, string, object> | null
-    container: ITreeNode<object | null, string, object> | null
+    parent: N | null
+    container: N | null
   },
 >(
-  params: JsoTreeBuildingHooksFactoryParams<S, P>
+  params: JsoTreeBuildingHooksFactoryParams<N, S, P>
 ): [
-  SyncCrawlHook<S, R>,
-  SyncCrawlHook<S, R>,
-  SyncCrawlHook<S, R>,
-] {
+    SyncCrawlHook<S, R>,
+    SyncCrawlHook<S, R>,
+    SyncCrawlHook<S, R>,
+  ] {
   const {
     source,
     tree,

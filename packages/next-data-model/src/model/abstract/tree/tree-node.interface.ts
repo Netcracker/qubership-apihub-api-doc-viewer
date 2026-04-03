@@ -12,7 +12,7 @@ export interface TreeNodeParams<
   M extends object,
 > {
   type?: TreeNodeComplexityType
-  value: V | null
+  value: object | null
   meta?: M
   parent: ITreeNode<V, K, M> | null
   container: ITreeNode<V, K, M> | null
