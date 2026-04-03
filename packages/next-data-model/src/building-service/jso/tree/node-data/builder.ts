@@ -23,8 +23,7 @@ export class JsoNodeDataBuilder extends AbstractNodeDataBuilder<
   public override createNodeValue(
     kind: string,
     value: unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _pick: NodeDataPickFunction
+    pick: NodeDataPickFunction
   ): JsoTreeNodeValue | null {
     if (!this.isJsoTreeNodeKind(kind)) {
       return null;
@@ -36,7 +35,7 @@ export class JsoNodeDataBuilder extends AbstractNodeDataBuilder<
       return null;
     }
 
-    return value;
+    return pick<JsoTreeNodeValue>(value, JsoNodeDataBuilder.JSO_TREE_NODE_VALUE_PROPS);
   }
 
   private isJsoTreeNodeKind(kind: string): kind is JsoTreeNodeKind {
