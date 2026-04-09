@@ -20,12 +20,15 @@ import { PropsWithChanges } from '../../../../types/internal/PropsWithChanges';
 import { PropsWithShift } from '../../../../types/internal/PropsWithShift';
 import { LayoutMode } from '../../../../types/LayoutMode';
 import { PropsWithoutChangesSummary } from "../../../../types/PropsWithoutChangesSummary";
+import { DescriptionFontSize } from "./types/DescriptionFontSize";
 export type DescriptionRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     value: string;
+    fontSize?: DescriptionFontSize;
 } & PropsWithChanges>;
 export declare const DescriptionRow: FC<DescriptionRowProps>;
 type ValueProps = {
     value: string;
+    fontSize?: DescriptionFontSize;
     expanded?: boolean;
     setIsExpandable?: Dispatch<SetStateAction<boolean>>;
     enableDiffs: boolean;
@@ -38,10 +41,12 @@ export type DescriptionExpanderProps = Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
+    fontSize?: DescriptionFontSize;
 }>;
 export declare const DescriptionExpander: FC<Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
+    fontSize?: DescriptionFontSize;
 }>>;
 export {};

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
@@ -32,3 +31,7 @@ export declare const Flags: Story;
 export declare const Enum: Story;
 export declare const AddMinItemsInArrayProperty: Story;
 export declare const CycledChanged: Story;
+export declare const PrimitiveChanged: Story;
+export declare const ObjectiveHeaderChanged: Story;
+export declare const ExtensionsOnPrimitive: Story;
+export declare const ExtensionsOnObject: Story;

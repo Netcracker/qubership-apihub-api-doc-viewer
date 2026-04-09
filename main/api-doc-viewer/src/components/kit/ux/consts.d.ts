@@ -19,4 +19,4 @@ export declare const COLOR_SCHEMAS: Record<BadgeKind, string>;
 export declare const DIFF_TYPE_COLORS: Record<DiffType, string>;
 export declare const DIFF_TYPE_NAME_MAP: Record<DiffType, string>;
 export declare const COMMON_LAYOUT_STYLE_WITHOUT_BORDER = "rounded-md px-2 pb-px text-xs font-normal";
-export declare const COMMON_LAYOUT_STYLE: string;
+export declare const COMMON_LAYOUT_STYLE = "rounded-md px-2 pb-px text-xs font-normal ring-1 ring-inset";

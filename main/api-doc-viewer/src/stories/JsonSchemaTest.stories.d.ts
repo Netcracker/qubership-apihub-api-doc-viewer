@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/// <reference types="react" />
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
@@ -26,5 +25,14 @@ declare const meta: {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export declare const Test: Story;
 export declare const Cycled: Story;
+export declare const ExtensionsFirstLevel: Story;
+export declare const ExtensionsSecondLevel: Story;
+export declare const MultiLevelExtensionsFirstLevel: Story;
+export declare const MultiLevelExtensionsSecondLevel: Story;
+export declare const CombinationOfDifferentExtensionsSecondLevel: Story;
+export declare const AdditionalPropertiesFalse: Story;
+export declare const AdditionalItemsFalse: Story;
+export declare const NewLineCharacterInEnum: Story;
+export declare const NonAsciiCharactersInEnum: Story;
+export declare const JsonSchemaInExtensions: Story;
