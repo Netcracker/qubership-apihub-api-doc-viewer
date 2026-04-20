@@ -57,7 +57,7 @@ import {
   getLayoutModeFlags,
   getLayoutSideFlags,
   isDiffTypeIncluded,
-  maxDiffType,
+  maxDiffTypeFromDiffs,
 } from '../../../../../utils/common/changes'
 import { isDefined } from '../../../../../utils/common/checkers'
 import { stringifyItem } from '../../../../../utils/common/rows'
@@ -358,10 +358,10 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
     nodeReplaced: isEnumChanged && isDiffReplace(enumChange),
   }
 
-  const nodeDiffTypeData = maxDiffType(nodeChange)
-  const enumDiffTypeData = maxDiffType(enumChange)
+  const nodeDiffTypeData = maxDiffTypeFromDiffs(nodeChange)
+  const enumDiffTypeData = maxDiffTypeFromDiffs(enumChange)
   const contentDiffTypeData =
-    maxDiffType(
+    maxDiffTypeFromDiffs(
       valueChange,
       deprecationReasonChange,
       descriptionChange,

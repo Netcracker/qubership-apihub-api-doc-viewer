@@ -37,7 +37,7 @@ import {
   getLayoutModeFlags,
   getLayoutSideFlags,
   isDiffTypeIncluded,
-  maxDiffType,
+  maxDiffTypeFromDiffs,
   maxDiffTypeFromNodeSummary
 } from '../../utils/common/changes'
 import { LevelIndicator } from '../AsyncApiOperationViewer/LevelIndicator'
@@ -99,9 +99,9 @@ export const SelectNestedNodeRow: FC<SelectNestedNodeRowProps> = (props) => {
 
   const [diffType, diffTypeCause] =
     isNodeChanged
-      ? maxDiffType($nodeChange)
+      ? maxDiffTypeFromDiffs($nodeChange)
       : isContentChanged
-        ? maxDiffType(...rowContentChangesList)
+        ? maxDiffTypeFromDiffs(...rowContentChangesList)
         : DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR
   const diffTypeIncluded = !!diffType && isDiffTypeIncluded(diffType, filters)
 

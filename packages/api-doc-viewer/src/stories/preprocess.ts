@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { isObject } from '@netcracker/qubership-apihub-api-data-model'
+import { DiffMetaKeys, isObject } from '@netcracker/qubership-apihub-api-data-model'
 import {
   apiDiff,
-  COMPARE_MODE_OPERATION,
-  DIFF_META_KEY
+  COMPARE_MODE_OPERATION, DIFF_META_KEY
 } from '@netcracker/qubership-apihub-api-diff'
 import { denormalize, normalize, NormalizeOptions, RefErrorType, stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
 import { ObjectUtils } from '../utils/common/objects'
+import { TEST_DIFF_META_KEYS } from './async-api-diffs-suite/shared-test-data'
 import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite/shared-test-data'
 
 const syntheticTitleFlag = Symbol('syntheticTitle')
@@ -446,4 +446,45 @@ export function prepareAsyncApiDocument(options: AsyncApiDocumentOptions): unkno
     mergedSchema.toJSON = () => stringifyCyclicJso(mergedSchema)
   }
   return mergedSchema
+}
+
+type AsyncApiDiffsDocumentOptions = {
+  beforeSource: unknown
+  afterSource: unknown
+  circular?: boolean
+  referenceNamePropertyKey?: symbol
+  storyName?: string
+  diffMetaKeys?: DiffMetaKeys
+}
+
+export function prepareAsyncApiDiffsDocument(options: AsyncApiDiffsDocumentOptions): unknown {
+  const {
+    beforeSource,
+    afterSource,
+    circular = false,
+    referenceNamePropertyKey = TEST_REFERENCE_NAME_PROPERTY,
+    storyName,
+    diffMetaKeys = TEST_DIFF_META_KEYS,
+  } = options
+
+  storyName && console.debug(`[AsyncAPI Diffs] STORY: ${storyName}`)
+  storyName && console.debug('[AsyncAPI Diffs] Before raw source:', beforeSource)
+  storyName && console.debug('[AsyncAPI Diffs] After raw source:', afterSource)
+
+  const mergedSource = apiDiff(beforeSource, afterSource, {
+    beforeSource,
+    afterSource,
+    syntheticTitleFlag: syntheticTitleFlag,
+    firstReferenceKeyProperty: referenceNamePropertyKey,
+    metaKey: diffMetaKeys.diffsMetaKey,
+    validate: true,
+    liftCombiners: true,
+    unify: true,
+  }).merged
+
+  storyName && console.debug('[AsyncAPI Diffs] Merged source:', mergedSource)
+  if (circular && isObject(mergedSource)) {
+    mergedSource.toJSON = () => stringifyCyclicJso(mergedSource)
+  }
+  return mergedSource
 }

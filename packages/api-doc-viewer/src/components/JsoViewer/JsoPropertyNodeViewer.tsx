@@ -1,19 +1,26 @@
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
-import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoTreeNode, JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
-import { FC, useCallback, useState } from "react"
-import { TitleRow, TitleVariant } from "../AsyncApiOperationViewer/TitleRow"
+import { FC, useCallback, useMemo, useState } from "react"
+import { JsoValue } from "./JsoValue/JsoValue"
+import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
+import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
+import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 
 type JsoPropertyNodeViewerProps = {
-  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  node:
+  | JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
   expandable: boolean
   expanded?: boolean
   supportJsonSchema?: boolean
@@ -30,6 +37,8 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
 
+  const diffMetaKeys = useDiffMetaKeys()
+
   const [expanded, setExpanded] = useState(initialExpanded ?? false)
   const onClickExpander = useCallback(() => {
     setExpanded(prevExpanded => !prevExpanded)
@@ -37,18 +46,20 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   const nodeValue = node.value()
 
+  const isNodeWithDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node), [node])
+
   const subheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (layoutSide: LayoutSide) => {
-      switch (nodeValue?.valueType) {
-        case 'string':
-        case 'number':
-        case 'boolean':
-          return (
-            <span className={`subheader text-slate-500 ${nodeValue?.isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
-              {`${nodeValue?.value}`}
-            </span>
-          )
+      if (nodeValue) {
+        return (
+          <JsoValue
+            value={nodeValue.value}
+            valueType={nodeValue.valueType}
+            isPredefinedValueSet={nodeValue.isPredefinedValueSet}
+            layoutSide={layoutSide}
+          />
+        )
       }
       return <></>
     },
@@ -77,6 +88,19 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
+    if (isNodeWithDiffs && diffMetaKeys) {
+      return (
+        <Aligner>
+          <JsonSchemaDiffViewer
+            schema={schema}
+            expandedDepth={2}
+            displayMode={displayMode}
+            metaKeys={diffMetaKeys}
+            overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
+          />
+        </Aligner>
+      )
+    }
     return (
       <Aligner>
         <JsonSchemaViewer
@@ -104,7 +128,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expandable={expandable}
         expanded={expanded}
         onClickExpander={onClickExpander}
-        variant={TitleVariant.body}
+        variant={TextValueVariant.body}
         enableMainHeader={!nodeValue?.isArrayItem}
         subheader={subheader}
       />
@@ -139,4 +163,10 @@ function prepareJsonSchemaForJsoViewer(
   return isObject(nodeValue.value)
     ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
     : undefined
+}
+
+function isJsoPropertyNodeWithDiffs(
+  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY> | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
+): node is JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY> {
+  return node instanceof SimpleTreeNodeWithDiffs
 }

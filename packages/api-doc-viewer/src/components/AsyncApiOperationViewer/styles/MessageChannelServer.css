@@ -1,10 +1,10 @@
-.message-channel-server-node {
+.server-address-container {
   width: 600px;
   min-width: 600px;
   max-width: 600px;
 }
 
-.message-channel-server-node .server-element {
+.server-address-container.server-address {
   font-family: 'Inter Variable';
   font-size: 13px;
   color: black;
@@ -13,7 +13,7 @@
   word-wrap: break-word;
 }
 
-.message-channel-server-node .server-element.server-subheader {
+.server-address-container.server-address.server-subheader {
   background-color: rgb(243, 243, 245);
   padding: 4px 8px;
   border-radius: 4px;
