@@ -65,10 +65,12 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         beforeDiffStyles = {
           isContentVisible: true,
           backgroundColor: HighlightVariant.Yellow,
+          textHighlighterColor: HighlightVariant.Yellow,
         }
         afterDiffStyles = {
           isContentVisible: true,
           backgroundColor: HighlightVariant.Yellow,
+          textHighlighterColor: HighlightVariant.Yellow,
         }
       }
 
