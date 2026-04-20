@@ -19,6 +19,7 @@ declare const meta: {
     component: import('../../../../../node_modules/react').FC<{
         source: object | null;
         displayMode?: import("../..").DisplayMode;
+        layoutMode?: import("../..").LayoutMode;
         initialLevel?: number;
         supportJsonSchema?: boolean;
     }>;

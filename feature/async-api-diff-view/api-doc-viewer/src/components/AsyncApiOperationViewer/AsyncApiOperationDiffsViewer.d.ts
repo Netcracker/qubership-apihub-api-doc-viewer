@@ -9,7 +9,7 @@ export type AsyncApiOperationDiffsViewerProps = {
     displayMode?: DisplayMode;
     devMode?: boolean;
     referenceNamePropertyKey: symbol;
-    diffMetaKeys?: DiffMetaKeys;
+    diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
 };
 export declare const AsyncApiOperationDiffsViewer: FC<AsyncApiOperationDiffsViewerProps>;

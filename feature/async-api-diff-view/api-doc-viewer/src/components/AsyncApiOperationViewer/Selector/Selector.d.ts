@@ -1,6 +1,5 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
-import { NodeDiffs } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { AsyncApiTreeNode } from '../../../../../next-data-model/src/model/async-api/types/aliases';
 import { FC } from '../../../../../../node_modules/react';
 import { SizeVariant } from "../types/SizeVariant";
@@ -9,7 +8,8 @@ export type SelectorOption<V extends object | null = object | null> = {
     node: AsyncApiTreeNode;
     testId?: string;
     diffs?: NodeDiffs<V>;
-    descendantDiffs?: Set<DiffType>;
+    diffsSummary?: NodeDiffsSummary;
+    descendantDiffsSummary?: NodeDescendantDiffsSummary;
 };
 type SelectorProps<V extends object | null = object | null> = {
     options: SelectorOption<V>[];
