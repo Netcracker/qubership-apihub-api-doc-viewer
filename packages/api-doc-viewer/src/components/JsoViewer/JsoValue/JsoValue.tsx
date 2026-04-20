@@ -21,9 +21,9 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
   const renderElement = useCallback((
     resolvedValue: string | undefined,
     diffsStyleClasses: string[],
-    isInvisible: boolean,
+    isVisible: boolean,
   ) => {
-    if (isInvisible) {
+    if (!isVisible) {
       return null
     }
     const commonStyles = `jso-value subheader text-slate-500 ${diffsStyleClasses.join(' ')}`.trim()
@@ -33,69 +33,61 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
       case 'boolean':
         return (
           <span className={`${commonStyles} ${isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
-            {`${value}`}
+            {`${resolvedValue}`}
           </span>
         )
     }
-  }, [value, valueType, isPredefinedValueSet])
+  }, [valueType, isPredefinedValueSet])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []
     let resolvedValue: string | undefined = value
-    let isInvisible = false
+    let isVisible = false
     if (diff) {
       const { data, styles } = diff
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
           if (isDiffReplace(data)) {
-            // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-            if (typeof data.beforeValue !== typeof value) {
-              resolvedValue = value
+            isVisible = styles.before.isContentVisible
+            resolvedValue = data.beforeValue as string | undefined
+            const beforeValueType = getValueType(data.beforeValue)
+            if (checkIsPredefinedValueSet(beforeValueType)) {
+              diffsStyleClasses.push('bg-gray-100 px-2 rounded-md')
+              diffsStyleClasses.push(DiffsClassesBuilder.borderShadow(styles.before.borderShadowColor))
             } else {
-              resolvedValue = data.beforeValue as string | undefined
-              const beforeValueType = getValueType(data.beforeValue)
-              if (checkIsPredefinedValueSet(beforeValueType)) {
-                diffsStyleClasses.push('bg-gray-100 px-2 rounded-md')
-                diffsStyleClasses.push(DiffsClassesBuilder.borderShadow(styles.before.borderShadowColor))
-              } else {
-                diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-              }
+              diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
             }
           }
           if (isDiffAdd(data)) {
-            isInvisible = true
+            isVisible = styles.after.isContentVisible
           }
           break
         case CHANGED_LAYOUT_SIDE:
           if (isDiffReplace(data)) {
-            // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-            if (typeof data.afterValue !== typeof value) {
-              resolvedValue = value
+            isVisible = styles.after.isContentVisible
+            resolvedValue = data.afterValue as string | undefined
+            const afterValueType = getValueType(data.afterValue)
+            if (checkIsPredefinedValueSet(afterValueType)) {
+              diffsStyleClasses.push('bg-gray-100 px-2 rounded-md')
+              diffsStyleClasses.push(DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor))
             } else {
-              resolvedValue = data.afterValue as string | undefined
-              const afterValueType = getValueType(data.afterValue)
-              if (checkIsPredefinedValueSet(afterValueType)) {
-                diffsStyleClasses.push('bg-gray-100 px-2 rounded-md')
-                diffsStyleClasses.push(DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor))
-              } else {
-                diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-              }
+              diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
             }
           }
           if (isDiffRemove(data)) {
-            isInvisible = true
+            isVisible = styles.before.isContentVisible
           }
           break
       }
     }
-    return [resolvedValue, diffsStyleClasses, isInvisible]
+    return [resolvedValue, diffsStyleClasses, isVisible]
   }, [diff, layoutSide])
 
-  const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(`${value}`)
+  const [resolvedValue, diffsStyleClasses, isVisible] = renderValue(`${value}`)
 
   return (
     <div>
-      {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
+      {renderElement(resolvedValue, diffsStyleClasses, isVisible)}
     </div>
   )
 })

@@ -49,6 +49,10 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   const isNodeWithDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node), [node])
 
+  const nodeDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
+
   const subheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (layoutSide: LayoutSide) => {
@@ -59,17 +63,15 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
             valueType={nodeValue.valueType}
             isPredefinedValueSet={nodeValue.isPredefinedValueSet}
             layoutSide={layoutSide}
+            // diffs
+            diff={nodeDiffs?.['']}
           />
         )
       }
       return <></>
     },
-    [nodeValue]
+    [nodeDiffs, nodeValue]
   )
-
-  const nodeDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
