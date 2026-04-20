@@ -16,6 +16,7 @@ import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
+import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
 
 type JsoPropertyNodeViewerProps = {
   node:
@@ -65,6 +66,21 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     },
     [nodeValue]
   )
+
+  const nodeDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
+
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
@@ -131,6 +147,8 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         variant={TextValueVariant.body}
         enableMainHeader={!nodeValue?.isArrayItem}
         subheader={subheader}
+        // diffs
+        {...titleRowDiffProps}
       />
       {expanded && childrenProperties.map(childProperty => {
         const childNodeValue = childProperty.value()
