@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { JsoComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/complex-node.impl";
 import { JsoSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/simple-node.impl";
@@ -9,8 +9,8 @@ import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-me
 import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
-import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
+import { annotation, breaking, deprecated, DiffType, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
 import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
@@ -268,44 +268,6 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (descendantDiffsSummary) {
       node.descendantDiffsSummary.clear()
       node.addDescendantDiffsSummary(descendantDiffsSummary)
-    }
-
-    const descendantsMaxDiffType = descendantDiffsSummary ? this.maxDiffType(descendantDiffsSummary) : undefined
-    const declarationPaths: JsonPath[] = []
-    for (const descendantDiff of Object.values(node.descendantDiffs)) {
-      if (!descendantDiff) {
-        continue
-      }
-      if (descendantDiff.data.type === descendantsMaxDiffType) {
-        if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-          declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
-        } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-          declarationPaths.push(descendantDiff.data.afterDeclarationPaths[0])
-        }
-      }
-    }
-    if (descendantsMaxDiffType && !nodeDiffs?.[""]) {
-      node.diffs[""] = {
-        data: {
-          type: descendantsMaxDiffType,
-          action: DiffAction.replace,
-          beforeDeclarationPaths: declarationPaths,
-          afterDeclarationPaths: declarationPaths,
-          beforeValue: null,
-          afterValue: null,
-          scope: "descendants",
-        },
-        styles: {
-          before: {
-            isContentVisible: true,
-            backgroundColor: HighlightVariant.Yellow,
-          },
-          after: {
-            isContentVisible: true,
-            backgroundColor: HighlightVariant.Yellow,
-          },
-        },
-      }
     }
 
     const diffsSeverities = this.createNodeDiffsSeverities(kind, node.diffs)
