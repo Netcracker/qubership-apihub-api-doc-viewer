@@ -31,6 +31,7 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
       case 'string':
       case 'number':
       case 'boolean':
+      case 'null':
         return (
           <span className={`${commonStyles} ${isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
             {`${resolvedValue}`}
@@ -79,6 +80,8 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
           }
           break
       }
+    } else {
+      isVisible = true
     }
     return [resolvedValue, diffsStyleClasses, isVisible]
   }, [diff, layoutSide])
