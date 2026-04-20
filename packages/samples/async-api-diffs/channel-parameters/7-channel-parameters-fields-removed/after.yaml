@@ -12,9 +12,13 @@ channels:
       firstParam:
         description: first parameter
       secondParam:
+        location: $message.payload#/id
       thirdParam:
+        location: $message.payload#/id
       fourthParam:
+        location: $message.payload#/id
       fifthParam:
+        location: $message.payload#/id
 operations:
   sendOperation:
     action: send
