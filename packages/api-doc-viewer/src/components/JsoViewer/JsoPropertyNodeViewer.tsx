@@ -3,6 +3,7 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
@@ -126,8 +127,14 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     [effectiveValueDiff, hiddenLayoutSide, nodeValue, shouldForceYellowForCurrentNode]
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide'> = useMemo(() => {
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide' | 'disableMainHeaderDiff'> = useMemo(() => {
     const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
+    const disableMainHeaderDiff = Boolean(
+      nodeDiffs?.[''] &&
+      nodeDiffs[''] === effectiveTitleDiff &&
+      !nodeDiffs['title'] &&
+      isDiffReplace(nodeDiffs[''].data),
+    )
     if (nodeDiffs) {
       return {
         diff: effectiveTitleDiff,
@@ -135,11 +142,13 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         diffsSeverities: nodeDiffsSeverities,
         forcedBackgroundColor,
         hiddenLayoutSide,
+        disableMainHeaderDiff,
       }
     }
     return {
       forcedBackgroundColor,
       hiddenLayoutSide,
+      disableMainHeaderDiff,
     }
   }, [effectiveTitleDiff, hiddenLayoutSide, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
 

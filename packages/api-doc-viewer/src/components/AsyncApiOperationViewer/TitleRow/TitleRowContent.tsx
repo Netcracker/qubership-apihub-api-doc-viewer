@@ -23,6 +23,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     subheader,
     forcedBackgroundColor,
     hiddenLayoutSide,
+    disableMainHeaderDiff = false,
   } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -92,7 +93,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
           value={value}
           variant={variant}
           layoutSide={layoutSide}
-          diff={diff}
+          diff={disableMainHeaderDiff ? undefined : diff}
         />
       )}
       {!isHiddenLayoutSide && subheader?.(layoutSide)}
