@@ -5,14 +5,16 @@ import { JsoSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tr
 import { JsoTreeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/tree.impl";
 import { JsoTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/types/aliases";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
+import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { annotation, breaking, deprecated, DiffType, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { annotation, breaking, deprecated, DiffType, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
+import { getValueType } from "../json-crawl-entities/transformers/inline-jso-property-params";
 import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
 import { JsoCrawlRule, JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
@@ -272,6 +274,60 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
     const diffsSeverities = this.createNodeDiffsSeverities(kind, node.diffs)
     diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)
+
+    const propagatedDiffsSeverities = node.diffsSeverities["title-row"]
+      ? undefined
+      : this.createPropagatedNodeDiffsSeverities(params)
+    propagatedDiffsSeverities && Object.assign(node.diffsSeverities, propagatedDiffsSeverities)
+  }
+
+  private createPropagatedNodeDiffsSeverities(
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
+  ): NodeDiffsSeverities | undefined {
+    const sourceNode = this.resolveDiffsSeverityPropagationSourceNode(params)
+    if (!sourceNode) {
+      return undefined
+    }
+    const propagatedTitleRowSeverity = sourceNode.diffsSeverities["title-row"]
+    if (!propagatedTitleRowSeverity) {
+      return undefined
+    }
+    return {
+      "title-row": propagatedTitleRowSeverity,
+    }
+  }
+
+  private resolveDiffsSeverityPropagationSourceNode(
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
+  ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
+    const candidateNodes = [params.container, params.parent]
+    for (const candidateNode of candidateNodes) {
+      if (!candidateNode || !this.isComplexTypeTransitionReplaceDiffNode(candidateNode)) {
+        continue
+      }
+      if (candidateNode.diffsSeverities["title-row"]) {
+        return candidateNode as JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs
+      }
+    }
+    return undefined
+  }
+
+  private isComplexTypeTransitionReplaceDiffNode(
+    node: JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs,
+  ): boolean {
+    const candidateDiff = node.diffs["value"] ?? node.diffs[""]
+    if (!candidateDiff || !isDiffReplace(candidateDiff.data)) {
+      return false
+    }
+    const beforeType = getValueType(candidateDiff.data.beforeValue)
+    const afterType = getValueType(candidateDiff.data.afterValue)
+    const beforeIsComplex = this.isJsoComplexValueType(beforeType)
+    const afterIsComplex = this.isJsoComplexValueType(afterType)
+    return beforeIsComplex !== afterIsComplex
+  }
+
+  private isJsoComplexValueType(valueType: string): boolean {
+    return valueType === JsoPropertyValueTypes.OBJECT || valueType === JsoPropertyValueTypes.ARRAY
   }
 
   private isJsoTreeNodeKind(kind: string): kind is JsoTreeNodeKind {
