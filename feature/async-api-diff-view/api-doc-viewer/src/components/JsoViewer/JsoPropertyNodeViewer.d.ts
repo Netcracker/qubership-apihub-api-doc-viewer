@@ -6,6 +6,7 @@ type JsoPropertyNodeViewerProps = {
     node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY> | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>;
     supportJsonSchema?: boolean;
     forceYellowDescendantDiffs?: boolean;
+    forceYellowObjectDescendantHeaders?: boolean;
     hiddenLayoutSide?: LayoutSide;
     hiddenLayoutSideLevelCap?: number;
 };

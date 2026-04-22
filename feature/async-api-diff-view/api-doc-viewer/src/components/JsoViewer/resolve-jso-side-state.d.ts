@@ -19,5 +19,6 @@ export type ResolvedJsoSideState = {
 export declare function resolveJsoSideState(input: ResolveJsoSideStateInput): ResolvedJsoSideState;
 export declare function isDiffWithComplexValue(diff?: ChangedPropertyMetaData): boolean;
 export declare function resolveHiddenDescendantsLayoutSide(diff?: ChangedPropertyMetaData): LayoutSide | undefined;
+export declare function isPrimitiveComplexTransitionReplaceDiff(diff?: ChangedPropertyMetaData): boolean;
 export declare function withForcedBackgroundColor(diff: ChangedPropertyMetaData | undefined, color: HighlightVariant | undefined): ChangedPropertyMetaData | undefined;
 export {};
