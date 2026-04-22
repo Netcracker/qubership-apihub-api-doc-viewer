@@ -22,6 +22,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     enableMainHeader = true,
     subheader,
     forcedBackgroundColor,
+    forcedMainHeaderTextHighlighterColor,
     hiddenLayoutSide,
     hiddenLayoutSideLevelCap,
     disableMainHeaderDiff = false,
@@ -100,6 +101,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
           variant={variant}
           layoutSide={layoutSide}
           diff={disableMainHeaderDiff ? undefined : diff}
+          forcedTextHighlighterColor={forcedMainHeaderTextHighlighterColor}
         />
       )}
       {!isHiddenLayoutSide && subheader?.(layoutSide)}

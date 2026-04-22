@@ -4,6 +4,7 @@ import { DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 import {
   isDiffWithComplexValue,
+  isPrimitiveComplexTransitionReplaceDiff,
   resolveHiddenDescendantsLayoutSide,
   resolveJsoSideState,
   withForcedBackgroundColor
@@ -166,6 +167,34 @@ describe('resolveJsoSideState', () => {
       afterValue: 'after',
     })
     expect(resolveHiddenDescendantsLayoutSide(diff)).toBeUndefined()
+  })
+
+  it('detects primitive-complex replace transitions only', () => {
+    const primitiveToObjectDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: 'before',
+      afterValue: { nested: true },
+    })
+    const objectToPrimitiveDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: { nested: true },
+      afterValue: 42,
+    })
+    const primitiveToArrayDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: 'before',
+      afterValue: [1, 2, 3],
+    })
+    const objectToArrayDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: { nested: true },
+      afterValue: [1, 2, 3],
+    })
+
+    expect(isPrimitiveComplexTransitionReplaceDiff(primitiveToObjectDiff)).toBe(true)
+    expect(isPrimitiveComplexTransitionReplaceDiff(objectToPrimitiveDiff)).toBe(true)
+    expect(isPrimitiveComplexTransitionReplaceDiff(primitiveToArrayDiff)).toBe(true)
+    expect(isPrimitiveComplexTransitionReplaceDiff(objectToArrayDiff)).toBe(false)
   })
 })
 

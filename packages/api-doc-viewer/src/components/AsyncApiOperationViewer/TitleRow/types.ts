@@ -21,6 +21,7 @@ export type TitleRowProps = {
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
   forcedBackgroundColor?: HighlightVariant
+  forcedMainHeaderTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   hiddenLayoutSide?: LayoutSide
   hiddenLayoutSideLevelCap?: number
   disableMainHeaderDiff?: boolean

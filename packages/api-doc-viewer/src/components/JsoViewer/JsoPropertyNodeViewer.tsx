@@ -21,6 +21,7 @@ import { Aligner } from "./Aligner"
 import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
 import {
   isDiffWithComplexValue,
+  isPrimitiveComplexTransitionReplaceDiff,
   resolveHiddenDescendantsLayoutSide,
   resolveJsoSideState,
   withForcedBackgroundColor
@@ -32,6 +33,7 @@ type JsoPropertyNodeViewerProps = {
   | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
   supportJsonSchema?: boolean
   forceYellowDescendantDiffs?: boolean
+  forceYellowObjectDescendantHeaders?: boolean
   hiddenLayoutSide?: LayoutSide
   hiddenLayoutSideLevelCap?: number
 }
@@ -41,6 +43,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     node,
     supportJsonSchema = false,
     forceYellowDescendantDiffs = false,
+    forceYellowObjectDescendantHeaders = false,
     hiddenLayoutSide,
     hiddenLayoutSideLevelCap,
   } = props
@@ -82,8 +85,14 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   }, [nodeValue, nodeValueDiff])
 
   const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
+  const hasPrimitiveComplexTransitionOwnDiff = useMemo(
+    () => isPrimitiveComplexTransitionReplaceDiff(nodeValueDiff),
+    [nodeValueDiff],
+  )
   const shouldForceYellowForCurrentNode = forceYellowDescendantDiffs
   const shouldForceYellowForChildren = forceYellowDescendantDiffs || hasComplexOwnDiff
+  const shouldForceYellowObjectHeaderForCurrentNode = forceYellowObjectDescendantHeaders
+  const shouldForceYellowObjectHeaderForChildren = forceYellowObjectDescendantHeaders || hasPrimitiveComplexTransitionOwnDiff
   const hiddenLayoutSideForChildren = useMemo(
     () => hiddenLayoutSide ?? resolveHiddenDescendantsLayoutSide(nodeValueDiff),
     [hiddenLayoutSide, nodeValueDiff],
@@ -136,8 +145,11 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     [effectiveValueDiff, hiddenLayoutSide, nodeValue, shouldForceYellowForCurrentNode]
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide' | 'hiddenLayoutSideLevelCap' | 'disableMainHeaderDiff'> = useMemo(() => {
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'forcedMainHeaderTextHighlighterColor' | 'hiddenLayoutSide' | 'hiddenLayoutSideLevelCap' | 'disableMainHeaderDiff'> = useMemo(() => {
     const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
+    const forcedMainHeaderTextHighlighterColor = shouldForceYellowObjectHeaderForCurrentNode && !nodeValue?.isArrayItem
+      ? HighlightVariant.Yellow
+      : undefined
     const disableMainHeaderDiff = Boolean(
       nodeDiffs?.[''] &&
       nodeDiffs[''] === effectiveTitleDiff &&
@@ -150,6 +162,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
         forcedBackgroundColor,
+        forcedMainHeaderTextHighlighterColor,
         hiddenLayoutSide,
         hiddenLayoutSideLevelCap,
         disableMainHeaderDiff,
@@ -157,11 +170,12 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     }
     return {
       forcedBackgroundColor,
+        forcedMainHeaderTextHighlighterColor,
       hiddenLayoutSide,
       hiddenLayoutSideLevelCap,
       disableMainHeaderDiff,
     }
-  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
+  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, nodeValue?.isArrayItem, shouldForceYellowForCurrentNode, shouldForceYellowObjectHeaderForCurrentNode])
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
@@ -241,6 +255,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
             <JsoPropertyNodeViewer
               node={childProperty}
               forceYellowDescendantDiffs={shouldForceYellowForChildren}
+              forceYellowObjectDescendantHeaders={shouldForceYellowObjectHeaderForChildren}
               hiddenLayoutSide={hiddenLayoutSideForChildren}
               hiddenLayoutSideLevelCap={hiddenLayoutSideLevelCapForChildren}
             />

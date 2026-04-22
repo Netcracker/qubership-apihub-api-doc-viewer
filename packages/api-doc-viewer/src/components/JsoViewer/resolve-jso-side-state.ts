@@ -99,6 +99,19 @@ export function resolveHiddenDescendantsLayoutSide(diff?: ChangedPropertyMetaDat
   return undefined
 }
 
+export function isPrimitiveComplexTransitionReplaceDiff(diff?: ChangedPropertyMetaData): boolean {
+  if (!diff || !isDiffReplace(diff.data)) {
+    return false
+  }
+  const beforeType = getValueType(diff.data.beforeValue)
+  const afterType = getValueType(diff.data.afterValue)
+  const beforeIsComplex = isComplexType(beforeType)
+  const afterIsComplex = isComplexType(afterType)
+  const beforeIsPrimitive = isRenderableValueType(beforeType)
+  const afterIsPrimitive = isRenderableValueType(afterType)
+  return (beforeIsPrimitive && afterIsComplex) || (beforeIsComplex && afterIsPrimitive)
+}
+
 export function withForcedBackgroundColor(
   diff: ChangedPropertyMetaData | undefined,
   color: HighlightVariant | undefined,
