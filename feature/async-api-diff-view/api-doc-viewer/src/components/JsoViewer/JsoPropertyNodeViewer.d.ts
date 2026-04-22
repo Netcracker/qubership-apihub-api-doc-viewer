@@ -9,6 +9,7 @@ type JsoPropertyNodeViewerProps = {
     supportJsonSchema?: boolean;
     forceYellowDescendantDiffs?: boolean;
     hiddenLayoutSide?: LayoutSide;
+    hiddenLayoutSideLevelCap?: number;
 };
 export declare const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps>;
 export {};
