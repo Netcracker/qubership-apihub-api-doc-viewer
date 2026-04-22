@@ -4,6 +4,7 @@ import { ResolvedJsoSideState } from "../resolve-jso-side-state";
 type JsoValueProps = {
     sideState: ResolvedJsoSideState;
     forcedBackgroundColor?: HighlightVariant;
+    forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
 };
 export declare const JsoValue: FC<JsoValueProps>;
 export {};
