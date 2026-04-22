@@ -60,7 +60,7 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
             }
           }
           if (isDiffAdd(data)) {
-            isVisible = styles.after.isContentVisible
+            isVisible = styles.before.isContentVisible
           }
           break
         case CHANGED_LAYOUT_SIDE:
@@ -76,7 +76,7 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
             }
           }
           if (isDiffRemove(data)) {
-            isVisible = styles.before.isContentVisible
+            isVisible = styles.after.isContentVisible
           }
           break
       }
