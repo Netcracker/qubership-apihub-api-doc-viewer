@@ -18,7 +18,12 @@ import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
-import { isDiffWithComplexValue, resolveJsoSideState, withForcedBackgroundColor } from "./resolve-jso-side-state"
+import {
+  isDiffWithComplexValue,
+  resolveHiddenDescendantsLayoutSide,
+  resolveJsoSideState,
+  withForcedBackgroundColor
+} from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerProps = {
   node:
@@ -28,6 +33,7 @@ type JsoPropertyNodeViewerProps = {
   expanded?: boolean
   supportJsonSchema?: boolean
   forceYellowDescendantDiffs?: boolean
+  hiddenLayoutSide?: LayoutSide
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
@@ -37,6 +43,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     expanded: initialExpanded,
     supportJsonSchema = false,
     forceYellowDescendantDiffs = false,
+    hiddenLayoutSide,
   } = props
 
   const displayMode = useDisplayMode()
@@ -68,12 +75,16 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     if (!nodeDiffs) {
       return undefined
     }
-    return nodeDiffs[''] ?? nodeDiffs['title'] ?? nodeDiffs['value']
+    return nodeDiffs[''] ?? nodeDiffs['title']
   }, [nodeDiffs])
 
   const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
   const shouldForceYellowForCurrentNode = forceYellowDescendantDiffs
   const shouldForceYellowForChildren = forceYellowDescendantDiffs || hasComplexOwnDiff
+  const hiddenLayoutSideForChildren = useMemo(
+    () => hiddenLayoutSide ?? resolveHiddenDescendantsLayoutSide(nodeValueDiff),
+    [hiddenLayoutSide, nodeValueDiff],
+  )
 
   const effectiveValueDiff = useMemo(
     () => withForcedBackgroundColor(
@@ -102,6 +113,9 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         diff: effectiveValueDiff,
         layoutSide,
       })
+      if (hiddenLayoutSide === layoutSide) {
+        return <></>
+      }
       return (
         <JsoValue
           sideState={sideState}
@@ -109,10 +123,10 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         />
       )
     },
-    [effectiveValueDiff, nodeValue, shouldForceYellowForCurrentNode]
+    [effectiveValueDiff, hiddenLayoutSide, nodeValue, shouldForceYellowForCurrentNode]
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor'> = useMemo(() => {
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide'> = useMemo(() => {
     const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
     if (nodeDiffs) {
       return {
@@ -120,12 +134,14 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
         forcedBackgroundColor,
+        hiddenLayoutSide,
       }
     }
     return {
       forcedBackgroundColor,
+      hiddenLayoutSide,
     }
-  }, [effectiveTitleDiff, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
+  }, [effectiveTitleDiff, hiddenLayoutSide, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
@@ -208,6 +224,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
               expandable={!childNodeValue?.isPrimitive}
               expanded={expanded}
               forceYellowDescendantDiffs={shouldForceYellowForChildren}
+              hiddenLayoutSide={hiddenLayoutSideForChildren}
             />
           </LevelContext.Provider>
         )

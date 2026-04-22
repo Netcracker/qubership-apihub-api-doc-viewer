@@ -2,7 +2,12 @@ import { ChangedPropertyMetaData, HighlightVariant } from "@apihub/next-data-mod
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
-import { isDiffWithComplexValue, resolveJsoSideState, withForcedBackgroundColor } from "./resolve-jso-side-state"
+import {
+  isDiffWithComplexValue,
+  resolveHiddenDescendantsLayoutSide,
+  resolveJsoSideState,
+  withForcedBackgroundColor
+} from "./resolve-jso-side-state"
 
 describe('resolveJsoSideState', () => {
   const nodeValue = {
@@ -134,6 +139,33 @@ describe('resolveJsoSideState', () => {
     expect(yellowDiff?.styles.after.isContentVisible).toBe(true)
     expect(yellowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(yellowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it('hides descendants on origin side for simple to complex replace', () => {
+    const diff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: 'before',
+      afterValue: { nested: true },
+    })
+    expect(resolveHiddenDescendantsLayoutSide(diff)).toBe(ORIGIN_LAYOUT_SIDE)
+  })
+
+  it('hides descendants on changed side for complex to simple replace', () => {
+    const diff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: { nested: true },
+      afterValue: 'after',
+    })
+    expect(resolveHiddenDescendantsLayoutSide(diff)).toBe(CHANGED_LAYOUT_SIDE)
+  })
+
+  it('does not hide descendants for primitive replace', () => {
+    const diff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: 'before',
+      afterValue: 'after',
+    })
+    expect(resolveHiddenDescendantsLayoutSide(diff)).toBeUndefined()
   })
 })
 

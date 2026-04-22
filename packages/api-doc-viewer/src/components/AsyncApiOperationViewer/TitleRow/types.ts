@@ -21,6 +21,7 @@ export type TitleRowProps = {
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
   forcedBackgroundColor?: HighlightVariant
+  hiddenLayoutSide?: LayoutSide
 }
 
 export type TitleRowContentProps = TitleRowProps & {

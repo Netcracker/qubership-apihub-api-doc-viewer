@@ -83,6 +83,22 @@ export function isDiffWithComplexValue(diff?: ChangedPropertyMetaData): boolean 
   return false
 }
 
+export function resolveHiddenDescendantsLayoutSide(diff?: ChangedPropertyMetaData): LayoutSide | undefined {
+  if (!diff || !isDiffReplace(diff.data)) {
+    return undefined
+  }
+  const beforeIsComplex = isComplexValue(diff.data.beforeValue)
+  const afterIsComplex = isComplexValue(diff.data.afterValue)
+
+  if (!beforeIsComplex && afterIsComplex) {
+    return ORIGIN_LAYOUT_SIDE
+  }
+  if (beforeIsComplex && !afterIsComplex) {
+    return CHANGED_LAYOUT_SIDE
+  }
+  return undefined
+}
+
 export function withForcedBackgroundColor(
   diff: ChangedPropertyMetaData | undefined,
   color: HighlightVariant | undefined,
