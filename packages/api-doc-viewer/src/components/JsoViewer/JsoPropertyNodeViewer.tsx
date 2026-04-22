@@ -129,6 +129,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         <JsoValue
           sideState={sideState}
           forcedBackgroundColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined}
+          forcedTextHighlighterColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined}
         />
       )
     },

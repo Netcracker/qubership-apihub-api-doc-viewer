@@ -6,10 +6,11 @@ import { ResolvedJsoSideState } from "../resolve-jso-side-state";
 type JsoValueProps = {
   sideState: ResolvedJsoSideState
   forcedBackgroundColor?: HighlightVariant
+  forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
 }
 
 export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
-  const { sideState, forcedBackgroundColor } = props
+  const { sideState, forcedBackgroundColor, forcedTextHighlighterColor } = props
   const { showSubheader, resolvedValue, resolvedValueType, isPredefinedValueSet, sideStyles } = sideState
   const resolvedBackgroundColor = forcedBackgroundColor ?? sideStyles?.backgroundColor
   const useFixedPoolDiffBorder = isPredefinedValueSet && resolvedBackgroundColor === HighlightVariant.Yellow
@@ -37,7 +38,7 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
 
   const styleClasses = [
     useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.background(resolvedBackgroundColor),
-    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.highlighter(sideStyles?.textHighlighterColor),
+    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.highlighter(forcedTextHighlighterColor ?? sideStyles?.textHighlighterColor),
     DiffsClassesBuilder.borderShadow(sideStyles?.borderShadowColor),
     useFixedPoolDiffBorder ? 'jso-value-fixed-pool-diff-border_orange' : '',
   ].filter(Boolean)
