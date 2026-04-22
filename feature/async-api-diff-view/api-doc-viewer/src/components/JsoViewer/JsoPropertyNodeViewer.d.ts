@@ -4,8 +4,6 @@ import { JsoTreeNodeKinds } from '../../../../next-data-model/src/model/jso/type
 import { FC } from '../../../../../node_modules/react';
 type JsoPropertyNodeViewerProps = {
     node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY> | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>;
-    expandable: boolean;
-    expanded?: boolean;
     supportJsonSchema?: boolean;
     forceYellowDescendantDiffs?: boolean;
     hiddenLayoutSide?: LayoutSide;
