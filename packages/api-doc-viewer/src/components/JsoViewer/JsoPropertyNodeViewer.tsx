@@ -30,8 +30,6 @@ type JsoPropertyNodeViewerProps = {
   node:
   | JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
   | JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
-  expandable: boolean
-  expanded?: boolean
   supportJsonSchema?: boolean
   forceYellowDescendantDiffs?: boolean
   hiddenLayoutSide?: LayoutSide
@@ -41,8 +39,6 @@ type JsoPropertyNodeViewerProps = {
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
   const {
     node,
-    expandable,
-    expanded: initialExpanded,
     supportJsonSchema = false,
     forceYellowDescendantDiffs = false,
     hiddenLayoutSide,
@@ -54,7 +50,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   const diffMetaKeys = useDiffMetaKeys()
 
-  const [expanded, setExpanded] = useState(initialExpanded ?? false)
+  const [expanded, setExpanded] = useState(true)
   const onClickExpander = useCallback(() => {
     setExpanded(prevExpanded => !prevExpanded)
   }, [])
@@ -80,6 +76,10 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     }
     return nodeDiffs[''] ?? nodeDiffs['title']
   }, [nodeDiffs])
+
+  const expandable = useMemo(() => {
+    return Boolean((nodeValue && !nodeValue.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
+  }, [nodeValue, nodeValueDiff])
 
   const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
   const shouldForceYellowForCurrentNode = forceYellowDescendantDiffs
@@ -231,7 +231,6 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         {...titleRowDiffProps}
       />
       {expanded && childrenProperties.map(childProperty => {
-        const childNodeValue = childProperty.value()
         const nextLevel = level + 1
         return (
           <LevelContext.Provider
@@ -240,8 +239,6 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
           >
             <JsoPropertyNodeViewer
               node={childProperty}
-              expandable={!childNodeValue?.isPrimitive}
-              expanded={expanded}
               forceYellowDescendantDiffs={shouldForceYellowForChildren}
               hiddenLayoutSide={hiddenLayoutSideForChildren}
               hiddenLayoutSideLevelCap={hiddenLayoutSideLevelCapForChildren}

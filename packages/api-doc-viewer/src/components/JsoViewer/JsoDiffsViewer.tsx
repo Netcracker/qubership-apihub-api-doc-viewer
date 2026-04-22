@@ -80,8 +80,6 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
                     <JsoPropertyNodeViewer
                       key={jsoProperty.id}
                       node={jsoProperty}
-                      expandable={!jsoProperty.value()?.isPrimitive}
-                      expanded={true}
                       supportJsonSchema={supportJsonSchema}
                     />
                   ))}
