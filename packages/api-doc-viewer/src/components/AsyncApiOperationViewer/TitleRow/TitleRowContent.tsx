@@ -11,7 +11,7 @@ import type { TitleRowContentProps } from "./types"
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
 
 export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
-  const { expandable, expanded, onClickExpander, value, variant, layoutSide, enableMainHeader = true, subheader } = props
+  const { expandable, expanded, onClickExpander, value, variant, layoutSide, enableMainHeader = true, subheader, forcedBackgroundColor } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
@@ -21,14 +21,17 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   const showLevelAndExpanderGroup = level > 0 || expandable
 
   const diffsStyleClasses = useMemo(() => {
+    const diffsStyleClasses: string[] = []
+    if (forcedBackgroundColor) {
+      diffsStyleClasses.push(DiffsClassesBuilder.background(forcedBackgroundColor))
+    }
     if (!diff) {
-      return []
+      return diffsStyleClasses
     }
     const { data, styles } = diff
     if (!data) {
-      return []
+      return diffsStyleClasses
     }
-    const diffsStyleClasses: string[] = []
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
       if (isDiffRemove(data)) {
         diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
@@ -52,7 +55,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       }
     }
     return diffsStyleClasses
-  }, [diff, layoutSide])
+  }, [diff, forcedBackgroundColor, layoutSide])
 
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>

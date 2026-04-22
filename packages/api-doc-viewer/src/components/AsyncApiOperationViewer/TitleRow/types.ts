@@ -1,5 +1,10 @@
 import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import type { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import type {
+  ChangedPropertyMetaData,
+  HighlightVariant,
+  NodeDescendantDiffs,
+  NodeDiffsSeverities
+} from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
 
@@ -15,6 +20,7 @@ export type TitleRowProps = {
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
+  forcedBackgroundColor?: HighlightVariant
 }
 
 export type TitleRowContentProps = TitleRowProps & {

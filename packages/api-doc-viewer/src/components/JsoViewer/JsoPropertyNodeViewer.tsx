@@ -1,6 +1,7 @@
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
@@ -17,6 +18,7 @@ import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
+import { isDiffWithComplexValue, resolveJsoSideState, withForcedBackgroundColor } from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerProps = {
   node:
@@ -25,6 +27,7 @@ type JsoPropertyNodeViewerProps = {
   expandable: boolean
   expanded?: boolean
   supportJsonSchema?: boolean
+  forceYellowDescendantDiffs?: boolean
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
@@ -32,7 +35,8 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     node,
     expandable,
     expanded: initialExpanded,
-    supportJsonSchema = false
+    supportJsonSchema = false,
+    forceYellowDescendantDiffs = false,
   } = props
 
   const displayMode = useDisplayMode()
@@ -53,36 +57,75 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   const nodeDescendantDiffs = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
   const nodeDiffsSeverities = useMemo(() => isJsoPropertyNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
 
-  const subheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (layoutSide: LayoutSide) => {
-      if (nodeValue) {
-        return (
-          <JsoValue
-            value={nodeValue.value}
-            valueType={nodeValue.valueType}
-            isPredefinedValueSet={nodeValue.isPredefinedValueSet}
-            layoutSide={layoutSide}
-            // diffs
-            diff={nodeDiffs?.['']}
-          />
-        )
-      }
-      return <></>
-    },
-    [nodeDiffs, nodeValue]
+  const nodeValueDiff = useMemo(() => {
+    if (!nodeDiffs) {
+      return undefined
+    }
+    return nodeDiffs['value'] ?? nodeDiffs['']
+  }, [nodeDiffs])
+
+  const nodeTitleDiff = useMemo(() => {
+    if (!nodeDiffs) {
+      return undefined
+    }
+    return nodeDiffs[''] ?? nodeDiffs['title'] ?? nodeDiffs['value']
+  }, [nodeDiffs])
+
+  const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
+  const shouldForceYellowForCurrentNode = forceYellowDescendantDiffs
+  const shouldForceYellowForChildren = forceYellowDescendantDiffs || hasComplexOwnDiff
+
+  const effectiveValueDiff = useMemo(
+    () => withForcedBackgroundColor(
+      nodeValueDiff,
+      shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined,
+    ),
+    [nodeValueDiff, shouldForceYellowForCurrentNode],
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const effectiveTitleDiff = useMemo(
+    () => withForcedBackgroundColor(
+      nodeTitleDiff,
+      shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined,
+    ),
+    [nodeTitleDiff, shouldForceYellowForCurrentNode],
+  )
+
+  const subheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      if (!nodeValue) {
+        return <></>
+      }
+
+      const sideState = resolveJsoSideState({
+        nodeValue,
+        diff: effectiveValueDiff,
+        layoutSide,
+      })
+      return (
+        <JsoValue
+          sideState={sideState}
+          forcedBackgroundColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined}
+        />
+      )
+    },
+    [effectiveValueDiff, nodeValue, shouldForceYellowForCurrentNode]
+  )
+
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor'> = useMemo(() => {
+    const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['title'],
+        diff: effectiveTitleDiff,
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
+        forcedBackgroundColor,
       }
     }
-    return {}
-  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+    return {
+      forcedBackgroundColor,
+    }
+  }, [effectiveTitleDiff, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
@@ -164,6 +207,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
               node={childProperty}
               expandable={!childNodeValue?.isPrimitive}
               expanded={expanded}
+              forceYellowDescendantDiffs={shouldForceYellowForChildren}
             />
           </LevelContext.Provider>
         )
