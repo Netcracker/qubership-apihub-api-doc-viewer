@@ -300,14 +300,14 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private resolveDiffsSeverityPropagationSourceNode(
     params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
   ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
-    const candidateNodes = [params.container, params.parent]
-    for (const candidateNode of candidateNodes) {
-      if (!candidateNode || !this.isComplexTypeTransitionReplaceDiffNode(candidateNode)) {
-        continue
+    if (params.container && this.isJsoTreeNodeWithDiffs(params.container)) {
+      const containerSourceNode = this.resolveEligibleDiffsSeveritySourceNode(params.container, new Set<NodeId>())
+      if (containerSourceNode) {
+        return containerSourceNode
       }
-      if (candidateNode.diffsSeverities["title-row"]) {
-        return candidateNode as JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs
-      }
+    }
+    if (params.parent && this.isJsoTreeNodeWithDiffs(params.parent)) {
+      return this.resolveEligibleDiffsSeveritySourceNode(params.parent, new Set<NodeId>())
     }
     return undefined
   }
@@ -328,6 +328,57 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   private isJsoComplexValueType(valueType: string): boolean {
     return valueType === JsoPropertyValueTypes.OBJECT || valueType === JsoPropertyValueTypes.ARRAY
+  }
+
+  private isInheritedComplexTransitionSeverityNode(
+    node: JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs,
+  ): boolean {
+    return Boolean(
+      node.diffsSeverities["title-row"] &&
+      !node.diffs[""] &&
+      !node.diffs["title"] &&
+      !node.diffs["value"],
+    )
+  }
+
+  private resolveEligibleDiffsSeveritySourceNode(
+    node: JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs,
+    visitedNodeIds: Set<NodeId>,
+  ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
+    if (visitedNodeIds.has(node.id)) {
+      return undefined
+    }
+    visitedNodeIds.add(node.id)
+
+    if (
+      node.diffsSeverities["title-row"] &&
+      (this.isComplexTypeTransitionReplaceDiffNode(node) || this.isInheritedComplexTransitionSeverityNode(node))
+    ) {
+      return node
+    }
+
+    if (node.container && this.isJsoTreeNodeWithDiffs(node.container)) {
+      const sourceFromContainer = this.resolveEligibleDiffsSeveritySourceNode(node.container, visitedNodeIds)
+      if (sourceFromContainer) {
+        return sourceFromContainer
+      }
+    }
+    if (node.parent && this.isJsoTreeNodeWithDiffs(node.parent)) {
+      return this.resolveEligibleDiffsSeveritySourceNode(node.parent, visitedNodeIds)
+    }
+    return undefined
+  }
+
+  private isJsoTreeNodeWithDiffs(
+    node: unknown,
+  ): node is JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs {
+    return Boolean(
+      node &&
+      typeof node === 'object' &&
+      'type' in node &&
+      ((node as JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs).type === TreeNodeComplexityTypes.SIMPLE ||
+        (node as JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs).type === TreeNodeComplexityTypes.COMPLEX)
+    )
   }
 
   private isJsoTreeNodeKind(kind: string): kind is JsoTreeNodeKind {
