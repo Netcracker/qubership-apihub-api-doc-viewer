@@ -1,3 +1,4 @@
+import { LayoutSide } from '../../types/internal/LayoutSide';
 import { JsoTreeNode, JsoTreeNodeWithDiffs } from '../../../../next-data-model/src/model/jso/types/aliases';
 import { JsoTreeNodeKinds } from '../../../../next-data-model/src/model/jso/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
@@ -6,6 +7,8 @@ type JsoPropertyNodeViewerProps = {
     expandable: boolean;
     expanded?: boolean;
     supportJsonSchema?: boolean;
+    forceYellowDescendantDiffs?: boolean;
+    hiddenLayoutSide?: LayoutSide;
 };
 export declare const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps>;
 export {};
