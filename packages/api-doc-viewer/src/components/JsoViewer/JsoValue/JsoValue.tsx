@@ -11,6 +11,8 @@ type JsoValueProps = {
 export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
   const { sideState, forcedBackgroundColor } = props
   const { showSubheader, resolvedValue, resolvedValueType, isPredefinedValueSet, sideStyles } = sideState
+  const resolvedBackgroundColor = forcedBackgroundColor ?? sideStyles?.backgroundColor
+  const useFixedPoolDiffBorder = isPredefinedValueSet && resolvedBackgroundColor === HighlightVariant.Yellow
 
   const renderElement = useCallback((
     resolvedValue: string | undefined,
@@ -34,9 +36,10 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
   }, [resolvedValueType, isPredefinedValueSet, showSubheader])
 
   const styleClasses = [
-    DiffsClassesBuilder.background(forcedBackgroundColor ?? sideStyles?.backgroundColor),
-    DiffsClassesBuilder.highlighter(sideStyles?.textHighlighterColor),
+    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.background(resolvedBackgroundColor),
+    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.highlighter(sideStyles?.textHighlighterColor),
     DiffsClassesBuilder.borderShadow(sideStyles?.borderShadowColor),
+    useFixedPoolDiffBorder ? 'jso-value-fixed-pool-diff-border_orange' : '',
   ].filter(Boolean)
 
   return (
