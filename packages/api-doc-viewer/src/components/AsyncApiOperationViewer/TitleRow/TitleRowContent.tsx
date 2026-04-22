@@ -23,6 +23,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     subheader,
     forcedBackgroundColor,
     hiddenLayoutSide,
+    hiddenLayoutSideLevelCap,
     disableMainHeaderDiff = false,
   } = props
 
@@ -32,7 +33,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   const level = useLevelContext()
 
   const isHiddenLayoutSide = hiddenLayoutSide === layoutSide
-  const showLevelAndExpanderGroup = level > 0 || (!isHiddenLayoutSide && expandable)
+  const levelIndicatorLevel = isHiddenLayoutSide && hiddenLayoutSideLevelCap !== undefined
+    ? Math.min(level, hiddenLayoutSideLevelCap)
+    : level
+  const showLevelAndExpanderGroup = levelIndicatorLevel > 0 || (!isHiddenLayoutSide && expandable)
 
   const diffsStyleClasses = useMemo(() => {
     const diffsStyleClasses: string[] = []
@@ -79,7 +83,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       {showLevelAndExpanderGroup && (
         <div className="flex flex-row items-stretch h-full">
-          <LevelIndicator level={level} lastInvisible={isHiddenLayoutSide} />
+          <LevelIndicator level={levelIndicatorLevel} />
           {!isHiddenLayoutSide && (
             <Expander
               expandable={expandable}

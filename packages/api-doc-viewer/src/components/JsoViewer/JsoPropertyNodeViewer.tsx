@@ -35,6 +35,7 @@ type JsoPropertyNodeViewerProps = {
   supportJsonSchema?: boolean
   forceYellowDescendantDiffs?: boolean
   hiddenLayoutSide?: LayoutSide
+  hiddenLayoutSideLevelCap?: number
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
@@ -45,6 +46,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     supportJsonSchema = false,
     forceYellowDescendantDiffs = false,
     hiddenLayoutSide,
+    hiddenLayoutSideLevelCap,
   } = props
 
   const displayMode = useDisplayMode()
@@ -86,6 +88,12 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     () => hiddenLayoutSide ?? resolveHiddenDescendantsLayoutSide(nodeValueDiff),
     [hiddenLayoutSide, nodeValueDiff],
   )
+  const hiddenLayoutSideLevelCapForChildren = useMemo(() => {
+    if (hiddenLayoutSideLevelCap !== undefined) {
+      return hiddenLayoutSideLevelCap
+    }
+    return hiddenLayoutSideForChildren ? level : undefined
+  }, [hiddenLayoutSideForChildren, hiddenLayoutSideLevelCap, level])
 
   const effectiveValueDiff = useMemo(
     () => withForcedBackgroundColor(
@@ -127,7 +135,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     [effectiveValueDiff, hiddenLayoutSide, nodeValue, shouldForceYellowForCurrentNode]
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide' | 'disableMainHeaderDiff'> = useMemo(() => {
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'hiddenLayoutSide' | 'hiddenLayoutSideLevelCap' | 'disableMainHeaderDiff'> = useMemo(() => {
     const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
     const disableMainHeaderDiff = Boolean(
       nodeDiffs?.[''] &&
@@ -142,15 +150,17 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         diffsSeverities: nodeDiffsSeverities,
         forcedBackgroundColor,
         hiddenLayoutSide,
+        hiddenLayoutSideLevelCap,
         disableMainHeaderDiff,
       }
     }
     return {
       forcedBackgroundColor,
       hiddenLayoutSide,
+      hiddenLayoutSideLevelCap,
       disableMainHeaderDiff,
     }
-  }, [effectiveTitleDiff, hiddenLayoutSide, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
+  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities, shouldForceYellowForCurrentNode])
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
@@ -234,6 +244,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
               expanded={expanded}
               forceYellowDescendantDiffs={shouldForceYellowForChildren}
               hiddenLayoutSide={hiddenLayoutSideForChildren}
+              hiddenLayoutSideLevelCap={hiddenLayoutSideLevelCapForChildren}
             />
           </LevelContext.Provider>
         )

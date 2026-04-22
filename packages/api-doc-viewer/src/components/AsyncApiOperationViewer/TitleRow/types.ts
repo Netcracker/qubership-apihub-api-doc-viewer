@@ -22,6 +22,7 @@ export type TitleRowProps = {
   diffsSeverities?: NodeDiffsSeverities
   forcedBackgroundColor?: HighlightVariant
   hiddenLayoutSide?: LayoutSide
+  hiddenLayoutSideLevelCap?: number
   disableMainHeaderDiff?: boolean
 }
 
