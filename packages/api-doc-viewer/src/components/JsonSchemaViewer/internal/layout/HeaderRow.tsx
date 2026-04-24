@@ -43,7 +43,7 @@ import {
   getDiffTypesFromSummary,
   getLayoutModeFlags,
   isDiffTypeIncluded,
-  maxDiffType,
+  maxDiffTypeFromDiffs,
   toChangesList
 } from '../../../../utils/common/changes'
 // import { defaultOnContextMenu } from '../../../../utils/common/event-handlers'
@@ -137,9 +137,9 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
   const rowContentChangesList = filterChangesList(toChangesList($changes, $metaChanges, API_TYPE_REST), filters)
   const [diffType, diffTypeCause] =
     isNodeChanged
-      ? maxDiffType($nodeChange)
+      ? maxDiffTypeFromDiffs($nodeChange)
       : isContentChanged
-        ? maxDiffType(...rowContentChangesList)
+        ? maxDiffTypeFromDiffs(...rowContentChangesList)
         : DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR
   const diffTypeIncluded = isDiffTypeIncluded(diffType, filters)
 

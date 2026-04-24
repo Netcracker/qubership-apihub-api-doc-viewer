@@ -27,6 +27,8 @@ module.exports = {
     "^@apihub/next-data-model/model/(.*)$": "<rootDir>/src/model/$1",
     "^@apihub/next-data-model$": "<rootDir>/src",
     "^@apihub/next-data-model/(.*)$": "<rootDir>/src/$1",
+    "^@netcracker/qubership-apihub-samples$": "<rootDir>/../samples/src",
+    "^@netcracker/qubership-apihub-samples/(.*)$": "<rootDir>/../samples/src/$1",
   },
   collectCoverage: true,
 }

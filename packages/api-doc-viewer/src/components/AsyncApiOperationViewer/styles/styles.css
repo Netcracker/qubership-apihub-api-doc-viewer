@@ -21,7 +21,7 @@ button.button-selector-option {
 
 button.button-selector-option:hover {
   /* bg-slate-200 */
-  background-color: rgb(226, 232, 240);
+  background-color: #D5DCE3;
   cursor: pointer;
 }
 
@@ -31,8 +31,8 @@ button.button-selector-option:focus {
 
 button.button-selector-option.selected {
   /* bg-slate-300 */
-  background-color: #8F9EB4;
-  color: white;
+  background-color: #D5DCE3;
+  color: #626D82;
 }
 
 .address-row {
@@ -40,56 +40,9 @@ button.button-selector-option.selected {
   font-weight: 600;
 }
 
-h1.title-row {
-  font-size: 32px;
-  font-weight: 600;
-}
-
-h2.title-row {
-  font-size: 24px;
-  font-weight: 600;
-}
-
-h3.title-row {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-h4.title-row {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-h5.title-row {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-h6.title-row {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-span.title-row {
-  font-size: 13px;
-  font-weight: 400;
-  padding: 4px 0;
-}
-
 span.binding-version {
   font-size: 13px;
   font-weight: 400;
-}
-
-.jso-property .title-row {
-  font-size: 12px;
-  font-weight: 400;
-  margin-bottom: 2px;
-}
-
-.jso-property .subheader {
-  font-size: 12px;
-  padding-bottom: 2px;
 }
 
 .broken-ref-viewer .subheader {

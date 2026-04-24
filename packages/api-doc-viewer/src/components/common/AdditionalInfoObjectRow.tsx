@@ -60,7 +60,7 @@ import {
   hasAfterDeclarationPaths,
   hasBeforeDeclarationPaths,
   isDiffTypeIncluded,
-  maxDiffType
+  maxDiffTypeFromDiffs
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
 import { handleSeriesItem, isSeriesItemEmpty, stringifyItem } from '../../utils/common/rows'
@@ -115,9 +115,9 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
 
   const [diffType, diffTypeCause] =
     isNodeChanged
-      ? maxDiffType($nodeChange)
+      ? maxDiffTypeFromDiffs($nodeChange)
       : isRowChanged
-        ? maxDiffType($rowChanges)
+        ? maxDiffTypeFromDiffs($rowChanges)
         : DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR
   const diffTypeIncluded = isDiffTypeIncluded(diffType, filters)
 

@@ -1,17 +1,27 @@
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
+import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { BrokenRefViewer } from "./BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
-import { TitleRow, TitleVariant } from "./TitleRow";
+import { TextRow } from "./TextRow/TextRow";
+import { TextRowProps } from "./TextRow/types";
+import { TextValueVariant } from "./TextValue/types";
+import { TitleRow } from "./TitleRow/TitleRow";
+import { TitleRowProps } from "./TitleRow/types";
 import { SizeVariant } from "./types/SizeVariant";
 
 type BindingsNodeViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>
   variant?: SizeVariant
 }
 
@@ -20,17 +30,32 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
 
+  const diffMetaKeys = useDiffMetaKeys()
+
   const bindingsNodeMeta = node.meta()
   const brokenRef = bindingsNodeMeta?.brokenRef
 
   const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
-  const bindingNodes: AsyncApiTreeNode[] = node.nestedNodes()
+  const bindingNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => (
     bindingNodes
       .filter(isBindingNode)
       .map((bindingNode, index) => {
         const protocol = bindingNode.value()?.protocol ?? ''
         const testId = `binding-${index}`
+        if (isBindingNodeWithDiffs(bindingNode)) {
+          return {
+            title: protocol,
+            node: bindingNode,
+            testId: testId,
+            // diffs
+            diffs: bindingNode.diffs,
+            diffsSummary: bindingNode.diffsSummary,
+            descendantDiffs: bindingNode.descendantDiffs,
+            descendantDiffsSummary: bindingNode.descendantDiffsSummary,
+            diffsSeverities: bindingNode.diffsSeverities,
+          }
+        }
         return {
           title: protocol,
           node: bindingNode,
@@ -60,9 +85,41 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         selectedOption={selectedBinding}
         onSelectOption={setSelectedBinding}
         variant={SizeVariant.SECONDARY}
+        // diffs
+        layoutSide={layoutSide}
       />
     ) : <></>
   ), [bindingSelectorOptions, brokenRef, selectedBinding])
+
+  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (isBindingsNodeWithDiffs(node)) {
+      return {
+        diff: node.diffs[''],
+        descendantDiffs: node.descendantDiffs,
+        diffsSeverities: node.diffsSeverities,
+      }
+    }
+    return {}
+  }, [node])
+
+  const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
+    if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
+      const changeNodeMetadata = selectedBindingNode.diffs['']
+      let changePropertyMetadata = changeNodeMetadata
+      if (
+        !changePropertyMetadata ||
+        !isDiffAdd(changePropertyMetadata.data) && !isDiffRemove(changePropertyMetadata.data)
+      ) {
+        changePropertyMetadata = selectedBindingNode.diffs['version']
+      }
+      return {
+        diff: changePropertyMetadata,
+        diffsSeverities: selectedBindingNode.diffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
+      }
+    }
+    return {}
+  }, [selectedBindingNode])
 
   return (
     <div className="flex flex-col gap-1">
@@ -70,25 +127,49 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         value='Bindings'
         expandable={false}
         expanded={true}
-        variant={variant === SizeVariant.PRIMARY ? TitleVariant.h3 : TitleVariant.h5}
+        variant={variant === SizeVariant.PRIMARY ? TextValueVariant.h3 : TextValueVariant.h5}
         subheader={titleRowSubheader}
+        // diffs
+        {...diffsProps}
       />
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && (
         <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
-          {bindingVersion && (
-            <span className='binding-version font-Inter-Medium font-bold text-black mb-1'>
-              Version: {bindingVersion}
-            </span>
-          )}
-          <JsoViewer
-            source={bindingValue}
-            displayMode={displayMode}
-            initialLevel={1}
-            supportJsonSchema={true}
+          <TextRow
+            value={bindingVersion}
+            variant={TextValueVariant.body}
+            label="Version"
+            fontWeight='bold'
+            // diffs
+            {...bindingVersionDiffsProps}
           />
+          {selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode) && diffMetaKeys ? (
+            <JsoDiffsViewer
+              mergedSource={bindingValue}
+              displayMode={displayMode}
+              initialLevel={1}
+              supportJsonSchema={true}
+              // diffs specific
+              diffMetaKeys={diffMetaKeys}
+            />
+          ) : (
+            <JsoViewer
+              source={bindingValue}
+              displayMode={displayMode}
+              initialLevel={1}
+              supportJsonSchema={true}
+            />
+          )}
         </div>
       )}
     </div>
   )
+}
+
+function isBindingsNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
+  return node.kind == AsyncApiTreeNodeKinds.BINDINGS && node instanceof ComplexTreeNodeWithDiffs
+}
+
+function isBindingNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING> {
+  return node.kind == AsyncApiTreeNodeKinds.BINDING && node instanceof SimpleTreeNodeWithDiffs
 }

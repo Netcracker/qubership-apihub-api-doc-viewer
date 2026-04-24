@@ -47,7 +47,7 @@ import {
   getLayoutSideFlags,
   inferRowChange,
   isDiffTypeIncluded,
-  maxDiffType
+  maxDiffTypeFromDiffs
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
 import { isSeriesItemEmpty, stringifyItem } from '../../utils/common/rows'
@@ -118,13 +118,13 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
 
   const [diffType, diffTypeCause] =
     isNodeChanged
-      ? maxDiffType($nodeChange)
+      ? maxDiffTypeFromDiffs($nodeChange)
       : isWholeRowChangedNaturally
-        ? maxDiffType($rowChanges)
+        ? maxDiffTypeFromDiffs($rowChanges)
         : isWholeRowChangedSynthetically
-          ? maxDiffType($inferredRowChange)
+          ? maxDiffTypeFromDiffs($inferredRowChange)
           : isRowContentChanged
-            ? maxDiffType(...rowContentChangesList)
+            ? maxDiffTypeFromDiffs(...rowContentChangesList)
             : DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR
   const diffTypeIncluded = isDiffTypeIncluded(diffType, filters)
 

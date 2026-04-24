@@ -1,17 +1,20 @@
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { isBindingsNode, isExtensionsNode, isMessageChannelParametersNode, isServersNode } from "@apihub/utils/async-api/node-type-checkers"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { FC } from "react"
-import { DescriptionRow } from "../common/annotations/Description/DescriptionRow"
-import { Aligner } from "../JsoViewer/Aligner"
+import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
+import { FC, useMemo } from "react"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
 import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
-import { TitleRow } from "./TitleRow"
-import { DescriptionFontSize } from "../common/annotations/Description/types/DescriptionFontSize"
+import { TextRow } from "./TextRow/TextRow"
+import { TextRowProps } from "./TextRow/types"
+import { TextValueVariant } from "./TextValue/types"
+import { TitleRow } from "./TitleRow/TitleRow"
+import { TitleRowProps } from "./TitleRow/types"
 
 type MessageChannelNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
@@ -20,12 +23,7 @@ type MessageChannelNodeViewerProps = {
 export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (props) => {
   const { node } = props
 
-  const level = useLevelContext()
-  const layoutMode = useLayoutMode()
-
   const value = node.value()
-  const title = value?.title ?? node.key.toString() ?? ''
-  const description = value?.description ?? value?.summary ?? ''
 
   const children: AsyncApiTreeNode[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
@@ -33,23 +31,87 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
+  const nodeDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffs : undefined, [node])
+  const nodeDescendantDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
+  const nodeDiffsSeverities = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
+
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['description'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'title'), [value, nodeDiffs])
+  const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'description'), [value, nodeDiffs])
+  const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
+
   return (
     <div className="flex flex-col gap-2">
-      <TitleRow
-        value={title}
-        expandable={false}
-        expanded={true}
-        variant='h2'
-      />
-      {description && (
-        <Aligner>
-          <DescriptionRow
-            value={description}
-            fontSize={DescriptionFontSize.SECONDARY}
-            layoutMode={layoutMode}
-            level={level}
-          />
-        </Aligner>
+      {isTitleDisplayed && (
+        <TitleRow
+          value={value?.title ?? ''}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h2}
+          // diffs
+          {...titleRowDiffProps}
+        />
+      )}
+      {!isTitleDisplayed && (
+        <TitleRow
+          value={node.key.toString()}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h2}
+          // diffs
+          {...titleRowDiffProps}
+        />
+      )}
+      {isDescriptionDisplayed && (
+        <TextRow
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...descriptionRowDiffProps}
+        />
+
+      )}
+      {isSummaryDisplayed && (
+        <TextRow
+          value={value?.summary ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...summaryRowDiffProps}
+        />
       )}
 
       {children.length > 0 && (
@@ -62,4 +124,8 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
     </div>
   )
+}
+
+function isMessageChannelNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL> {
+  return node.kind == AsyncApiTreeNodeKinds.MESSAGE_CHANNEL && node instanceof SimpleTreeNodeWithDiffs
 }

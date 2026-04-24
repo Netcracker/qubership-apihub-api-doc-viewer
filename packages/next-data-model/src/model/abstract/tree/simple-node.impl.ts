@@ -1,5 +1,4 @@
 import { NodeId, NodeKey } from "../../../utility-types";
-import { ComplexTreeNode } from "./complex-node.impl";
 import { ITreeNode, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "./tree-node.interface";
 
 export class SimpleTreeNode<
@@ -99,7 +98,7 @@ export class SimpleTreeNode<
       if (nestedNode.id === nestedNodeId) {
         return nestedNode;
       }
-      if (recursive && nestedNode instanceof ComplexTreeNode) {
+      if (recursive && nestedNode.type === TreeNodeComplexityTypes.COMPLEX) {
         const node = nestedNode.findNestedNode(nestedNodeId, recursive);
         if (node) {
           return node;
