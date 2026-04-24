@@ -170,7 +170,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     }
     return {
       forcedBackgroundColor,
-        forcedMainHeaderTextHighlighterColor,
+      forcedMainHeaderTextHighlighterColor,
       hiddenLayoutSide,
       hiddenLayoutSideLevelCap,
       disableMainHeaderDiff,

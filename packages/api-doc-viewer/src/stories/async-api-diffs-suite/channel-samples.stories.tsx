@@ -2,6 +2,7 @@ import {
   AsyncApiOperationDiffsViewer,
   type AsyncApiOperationDiffsViewerProps
 } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
+import { userEvent, within } from "@storybook/test";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/shared-test-data";
 import { prepareAsyncApiDiffsDocument } from "../preprocess";
@@ -74,6 +75,11 @@ const createCaseStory = (caseId: string): Story => ({
     caseId,
   },
   render: (args) => <AsyncApiChannelSamplesStory caseId={args.caseId} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const buttons = await canvas.findAllByTestId("message-channel");
+    await userEvent.click(buttons[0]);
+  },
 });
 
 export const Case_1_1_channel_title_changed: Story = createCaseStory("1.1-channel-title-changed");
