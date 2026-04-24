@@ -151,6 +151,34 @@
                 </builder>
               </tree-with-diffs>
             </abstract-sub-layer>
+            <async-api-sub-layer>
+              <tree>
+                <path>./src/building-service/async-api/tree</path>
+                <description>
+                  Implementation of <abstract-sub-layer>.<tree> with AsyncAPI specific
+                </description>
+              </tree>
+              <tree-with-diffs>
+                <path>./src/building-service/async-api/tree-with-diffs</path>
+                <description>
+                  Implementation of <abstract-sub-layer>.<tree-with-diffs> with AsyncAPI specific
+                </description>
+              </tree-with-diffs>
+            </async-api-sub-layer>
+            <jso-sub-layer>
+              <tree>
+                <path>./src/building-service/jso/tree</path>
+                <description>
+                  Implementation of <abstract-sub-layer>.<tree> with JavaScript Object (JSO) specific
+                </description>
+              </tree>
+              <tree-with-diffs>
+                <path>./src/building-service/jso/tree-with-diffs</path>
+                <description>
+                  Implementation of <abstract-sub-layer>.<tree-with-diffs> with JavaScript Object (JSO) specific
+                </description>
+              </tree-with-diffs>
+            </jso-sub-layer>
           </sub-layers>
         </building-service>
       </layers>
