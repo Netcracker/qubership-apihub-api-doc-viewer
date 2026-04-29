@@ -8,6 +8,6 @@ on:
 
 jobs: 
   call-storybook-cd-workflow:
-    uses: netcracker/qubership-apihub-ci/.github/workflows/storybook-cd.yaml@main 
-    with:      
-      container: "ghcr.io/netcracker/qubership-apihub-nodejs-dev-image:1.8.0"
+    uses: netcracker/qubership-apihub-ci/.github/workflows/storybook-cd.yaml@feature/nodejs24
+    with:
+      container: "ghcr.io/netcracker/qubership-apihub-nodejs-dev-image:feature-nodejs24"
