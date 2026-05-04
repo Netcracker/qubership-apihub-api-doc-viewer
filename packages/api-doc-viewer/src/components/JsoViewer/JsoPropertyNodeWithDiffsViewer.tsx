@@ -22,6 +22,8 @@ import {
   isDiffWithComplexValue,
   isPrimitiveComplexTransitionReplaceDiff,
   resolveHiddenDescendantsLayoutSide,
+  resolveJsoTitleDiffKey,
+  resolveJsoValueDiffKey,
   resolveJsoSideState,
   withForcedBackgroundColor
 } from "./resolve-jso-side-state"
@@ -60,8 +62,16 @@ export const JsoPropertyNodeWithDiffsViewer: FC<JsoPropertyNodeWithDiffsViewerPr
   const nodeDescendantDiffs = node.descendantDiffs
   const nodeDiffsSeverities = node.diffsSeverities
 
-  const nodeValueDiff = useMemo(() => nodeDiffs['value'] ?? nodeDiffs[''], [nodeDiffs])
-  const nodeTitleDiff = useMemo(() => nodeDiffs[''] ?? nodeDiffs['title'], [nodeDiffs])
+  const nodeValueDiffKey = useMemo(() => resolveJsoValueDiffKey(nodeDiffs), [nodeDiffs])
+  const nodeTitleDiffKey = useMemo(() => resolveJsoTitleDiffKey(nodeDiffs), [nodeDiffs])
+  const nodeValueDiff = useMemo(
+    () => nodeValueDiffKey ? nodeDiffs[nodeValueDiffKey] : undefined,
+    [nodeDiffs, nodeValueDiffKey],
+  )
+  const nodeTitleDiff = useMemo(
+    () => nodeTitleDiffKey ? nodeDiffs[nodeTitleDiffKey] : undefined,
+    [nodeDiffs, nodeTitleDiffKey],
+  )
 
   const expandable = useMemo(
     () => !!nodeValue && !nodeValue.isPrimitive || isDiffWithComplexValue(nodeValueDiff),

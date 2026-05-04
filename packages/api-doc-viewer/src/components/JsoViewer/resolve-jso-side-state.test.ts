@@ -6,6 +6,8 @@ import {
   isDiffWithComplexValue,
   isPrimitiveComplexTransitionReplaceDiff,
   resolveHiddenDescendantsLayoutSide,
+  resolveJsoTitleDiffKey,
+  resolveJsoValueDiffKey,
   resolveJsoSideState,
   withForcedBackgroundColor
 } from "./resolve-jso-side-state"
@@ -195,6 +197,62 @@ describe('resolveJsoSideState', () => {
     expect(isPrimitiveComplexTransitionReplaceDiff(objectToPrimitiveDiff)).toBe(true)
     expect(isPrimitiveComplexTransitionReplaceDiff(primitiveToArrayDiff)).toBe(true)
     expect(isPrimitiveComplexTransitionReplaceDiff(objectToArrayDiff)).toBe(false)
+  })
+
+  it('resolves value diff key by action and value types', () => {
+    const addRootDiff = createDiffMeta({
+      action: DiffAction.add,
+      afterValue: "added",
+    })
+    expect(resolveJsoValueDiffKey({
+      "": addRootDiff,
+    })).toBe("")
+
+    const primitiveReplaceRootDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: "before",
+      afterValue: "after",
+    })
+    const primitiveReplaceValueDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: "before",
+      afterValue: "after",
+    })
+    expect(resolveJsoValueDiffKey({
+      "": primitiveReplaceRootDiff,
+      value: primitiveReplaceValueDiff,
+    })).toBe("value")
+
+    const complexReplaceRootDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: "before",
+      afterValue: { nested: true },
+    })
+    expect(resolveJsoValueDiffKey({
+      "": complexReplaceRootDiff,
+      value: primitiveReplaceValueDiff,
+    })).toBe("")
+  })
+
+  it('resolves title diff key with root priority', () => {
+    const rootDiff = createDiffMeta({
+      action: DiffAction.remove,
+      beforeValue: "old",
+    })
+    const titleDiff = createDiffMeta({
+      action: DiffAction.replace,
+      beforeValue: "old-title",
+      afterValue: "new-title",
+    })
+
+    expect(resolveJsoTitleDiffKey({
+      "": rootDiff,
+      title: titleDiff,
+    })).toBe("")
+    expect(resolveJsoTitleDiffKey({
+      title: titleDiff,
+    })).toBe("title")
+    expect(resolveJsoTitleDiffKey()).toBeUndefined()
   })
 })
 

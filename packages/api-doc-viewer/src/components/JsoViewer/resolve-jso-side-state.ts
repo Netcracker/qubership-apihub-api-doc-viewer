@@ -1,8 +1,8 @@
-import { ChangedPropertyMetaData, DiffStyles, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, DiffStyles, HighlightVariant, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { getValueType, isPredefinedValueSet as checkIsPredefinedValueSet } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/json-crawl-entities/transformers/inline-jso-property-params"
-import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
+import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 
 type ResolveJsoSideStateInput = {
@@ -110,6 +110,57 @@ export function isPrimitiveComplexTransitionReplaceDiff(diff?: ChangedPropertyMe
   const beforeIsPrimitive = isRenderableValueType(beforeType)
   const afterIsPrimitive = isRenderableValueType(afterType)
   return (beforeIsPrimitive && afterIsComplex) || (beforeIsComplex && afterIsPrimitive)
+}
+
+export function resolveJsoValueDiffKey(
+  nodeDiffs?: NodeDiffs<JsoTreeNodeValue | null>,
+): "" | "value" | undefined {
+  if (!nodeDiffs) {
+    return undefined
+  }
+  const rootDiff = nodeDiffs[""]
+  if (rootDiff) {
+    if (isDiffAdd(rootDiff.data) || isDiffRemove(rootDiff.data)) {
+      return ""
+    }
+    if (isDiffReplace(rootDiff.data)) {
+      const beforeType = getValueType(rootDiff.data.beforeValue)
+      const afterType = getValueType(rootDiff.data.afterValue)
+      const primitiveToPrimitive = isRenderableValueType(beforeType) && isRenderableValueType(afterType)
+      return primitiveToPrimitive && nodeDiffs["value"] ? "value" : ""
+    }
+  }
+
+  const valueDiff = nodeDiffs["value"]
+  if (!valueDiff) {
+    return undefined
+  }
+  if (isDiffAdd(valueDiff.data) || isDiffRemove(valueDiff.data)) {
+    return ""
+  }
+  if (isDiffReplace(valueDiff.data)) {
+    const beforeType = getValueType(valueDiff.data.beforeValue)
+    const afterType = getValueType(valueDiff.data.afterValue)
+    return isRenderableValueType(beforeType) && isRenderableValueType(afterType)
+      ? "value"
+      : ""
+  }
+  return "value"
+}
+
+export function resolveJsoTitleDiffKey(
+  nodeDiffs?: NodeDiffs<JsoTreeNodeValue | null>,
+): "" | "title" | undefined {
+  if (!nodeDiffs) {
+    return undefined
+  }
+  if (nodeDiffs[""]) {
+    return ""
+  }
+  if (nodeDiffs["title"]) {
+    return "title"
+  }
+  return undefined
 }
 
 export function withForcedBackgroundColor(
