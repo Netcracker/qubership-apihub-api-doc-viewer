@@ -9,10 +9,12 @@ import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
+import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
 import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
+import { JsoPropertyNodeWithDiffsViewer } from "./JsoPropertyNodeWithDiffsViewer"
 
 type JsoDiffsViewerProps = {
   mergedSource: unknown
@@ -77,9 +79,9 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
               <LevelContext.Provider value={initialLevel}>
                 <div data-testid='jso-diffs-viewer'>
                   {jsoProperties.map(jsoProperty => (
-                    <JsoPropertyNodeViewer
+                    <JsoPropertyNodeWithDiffsViewer
                       key={jsoProperty.id}
-                      node={jsoProperty}
+                      node={jsoProperty as JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>}
                       supportJsonSchema={supportJsonSchema}
                     />
                   ))}
