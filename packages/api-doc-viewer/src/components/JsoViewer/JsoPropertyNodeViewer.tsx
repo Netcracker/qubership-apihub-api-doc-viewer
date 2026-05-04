@@ -80,9 +80,10 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     return nodeDiffs[''] ?? nodeDiffs['title']
   }, [nodeDiffs])
 
-  const expandable = useMemo(() => {
-    return Boolean((nodeValue && !nodeValue.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
-  }, [nodeValue, nodeValueDiff])
+  const expandable = useMemo(
+    () => !!nodeValue && !nodeValue.isPrimitive || isDiffWithComplexValue(nodeValueDiff),
+    [nodeValue, nodeValueDiff],
+  )
 
   const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
   const hasPrimitiveComplexTransitionOwnDiff = useMemo(

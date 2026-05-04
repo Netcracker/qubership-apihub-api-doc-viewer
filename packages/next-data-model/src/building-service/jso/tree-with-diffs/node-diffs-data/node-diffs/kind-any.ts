@@ -51,7 +51,7 @@ export class JsoNodeDiffsAggregatorKindAny
         nodeDiffs[""] = containerNodeDiff
       } else {
         const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs) {
+        if (maybeNodeDiffs && (isDiffAdd(maybeNodeDiffs.data) || isDiffRemove(maybeNodeDiffs.data))) {
           nodeDiffs[""] = maybeNodeDiffs
           return nodeDiffs
         }
@@ -62,7 +62,7 @@ export class JsoNodeDiffsAggregatorKindAny
         nodeDiffs[""] = parentNodeDiff
       } else {
         const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs) {
+        if (maybeNodeDiffs && (isDiffAdd(maybeNodeDiffs.data) || isDiffRemove(maybeNodeDiffs.data))) {
           nodeDiffs[""] = maybeNodeDiffs
           return nodeDiffs
         }
