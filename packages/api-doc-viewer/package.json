@@ -26,11 +26,11 @@
     "generate-stories": "node bin/generate-compatibility-suite-stories.mjs",
     "generate-tests": "node bin/generate-compatibility-suite-tests.mjs",
     "development:storybook": "npm run generate-stories && storybook dev -p 9099",
-    "development:local-server:static": "npm run build:showcase && ws -p 9009 -d ../../dist-showcase --spa index.html --static.maxage 3600",
+    "development:local-server:static": "npm run build:showcase && ws -p 9009 --hostname 0.0.0.0 -d ../../dist-showcase --spa index.html --static.maxage 3600",
     "screenshot-test:ci": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 4 -c .config/it/it-test.jest.config.cjs\"",
-    "screenshot-test:docker": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 1 -c .config/it/it-test-docker.jest.config.cjs\"",
+    "screenshot-test:docker": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 4 -c .config/it/it-test-docker.jest.config.cjs\"",
     "regenerate-screenshots:ci": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 4 --updateSnapshot -c .config/it/it-test.jest.config.cjs\"",
-    "regenerate-screenshots:docker": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 1 --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs\""
+    "regenerate-screenshots:docker": "start-server-and-test development:local-server:static http://localhost:9009 \"npm run generate-tests && jest --maxWorkers 4 --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs\""
   },
   "dependencies": {
     "postcss": "8.4.29",
