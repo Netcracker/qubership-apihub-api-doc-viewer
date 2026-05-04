@@ -232,6 +232,14 @@ describe('resolveJsoSideState', () => {
       "": complexReplaceRootDiff,
       value: primitiveReplaceValueDiff,
     })).toBe("")
+
+    const addValueDiff = createDiffMeta({
+      action: DiffAction.add,
+      afterValue: "value-only-add",
+    })
+    expect(resolveJsoValueDiffKey({
+      value: addValueDiff,
+    })).toBeUndefined()
   })
 
   it('resolves title diff key with root priority', () => {

@@ -184,32 +184,17 @@ export const JsoPropertyNodeWithDiffsViewer: FC<JsoPropertyNodeWithDiffsViewerPr
   }
 
   if (supportJsonSchema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
-    const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
-    if (diffMetaKeys) {
-      return (
-        <Aligner>
-          <JsonSchemaDiffViewer
-            schema={schema}
-            expandedDepth={2}
-            displayMode={displayMode}
-            metaKeys={diffMetaKeys}
-            overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
-          />
-        </Aligner>
-      )
+    if (!diffMetaKeys) {
+      return null
     }
+    const schema = prepareJsonSchemaForJsoViewer(node.key, nodeValue)
     return (
       <Aligner>
-        <JsonSchemaViewer
+        <JsonSchemaDiffViewer
           schema={schema}
           expandedDepth={2}
           displayMode={displayMode}
-          customizationOptions={{
-            headerRowTitle: `${node.key}`,
-            // TODO 25.12.25 // Temporarily disabled
-            // headerRowFontSize: 'h3'
-          }}
-          initialLevel={level - 1}
+          metaKeys={diffMetaKeys}
           overriddenKind='parameters' // This option is WA until JSON Schema Viewer is uniformed with JSO Viewer
         />
       </Aligner>

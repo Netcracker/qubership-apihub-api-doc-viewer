@@ -129,23 +129,18 @@ export function resolveJsoValueDiffKey(
       const primitiveToPrimitive = isRenderableValueType(beforeType) && isRenderableValueType(afterType)
       return primitiveToPrimitive && nodeDiffs["value"] ? "value" : ""
     }
+    return ""
   }
 
   const valueDiff = nodeDiffs["value"]
-  if (!valueDiff) {
+  if (!valueDiff || !isDiffReplace(valueDiff.data)) {
     return undefined
   }
-  if (isDiffAdd(valueDiff.data) || isDiffRemove(valueDiff.data)) {
-    return ""
-  }
-  if (isDiffReplace(valueDiff.data)) {
-    const beforeType = getValueType(valueDiff.data.beforeValue)
-    const afterType = getValueType(valueDiff.data.afterValue)
-    return isRenderableValueType(beforeType) && isRenderableValueType(afterType)
-      ? "value"
-      : ""
-  }
-  return "value"
+  const beforeType = getValueType(valueDiff.data.beforeValue)
+  const afterType = getValueType(valueDiff.data.afterValue)
+  return isRenderableValueType(beforeType) && isRenderableValueType(afterType)
+    ? "value"
+    : undefined
 }
 
 export function resolveJsoTitleDiffKey(
