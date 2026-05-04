@@ -45,28 +45,20 @@ export class JsoNodeDiffsAggregatorKindAny
     const diffs = crawlValue[diffsMetaKey]
     const nodeDiffs: NodeDiffs<JsoTreeNodeValue | null> = {}
 
-    if (containerNode) {
-      const containerNodeDiff = containerNode.diffs[""]
-      if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
-        nodeDiffs[""] = containerNodeDiff
-      } else {
-        const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs && (isDiffAdd(maybeNodeDiffs.data) || isDiffRemove(maybeNodeDiffs.data))) {
-          nodeDiffs[""] = maybeNodeDiffs
-          return nodeDiffs
-        }
-      }
-    } else if (parentNode) {
-      const parentNodeDiff = parentNode.diffs[""]
-      if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
-        nodeDiffs[""] = parentNodeDiff
-      } else {
-        const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs && (isDiffAdd(maybeNodeDiffs.data) || isDiffRemove(maybeNodeDiffs.data))) {
-          nodeDiffs[""] = maybeNodeDiffs
-          return nodeDiffs
-        }
-      }
+    const inheritedParentDiff = parentNode
+      ? this.resolveInheritedAddRemoveDiff(parentNode.diffs[""], parentNode.descendantDiffs[nodeKey])
+      : undefined
+    if (inheritedParentDiff) {
+      nodeDiffs[""] = inheritedParentDiff
+      return nodeDiffs
+    }
+
+    const inheritedContainerDiff = containerNode
+      ? this.resolveInheritedAddRemoveDiff(containerNode.diffs[""], containerNode.descendantDiffs[nodeKey])
+      : undefined
+    if (inheritedContainerDiff) {
+      nodeDiffs[""] = inheritedContainerDiff
+      return nodeDiffs
     }
 
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
@@ -79,6 +71,19 @@ export class JsoNodeDiffsAggregatorKindAny
     }
 
     return nodeDiffs
+  }
+
+  private resolveInheritedAddRemoveDiff(
+    rootDiff: NodeDiffs<JsoTreeNodeValue | null>[""],
+    descendantDiff: NodeDiffs<JsoTreeNodeValue | null>[ChangedPropertyKey<JsoTreeNodeValue | null>],
+  ): NodeDiffs<JsoTreeNodeValue | null>[""] | undefined {
+    if (rootDiff && (isDiffAdd(rootDiff.data) || isDiffRemove(rootDiff.data))) {
+      return rootDiff
+    }
+    if (descendantDiff && (isDiffAdd(descendantDiff.data) || isDiffRemove(descendantDiff.data))) {
+      return descendantDiff
+    }
+    return undefined
   }
 
   protected aggregateValueDiff(

@@ -300,14 +300,17 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private resolveDiffsSeverityPropagationSourceNode(
     params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
   ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
+    if (params.parent && this.isJsoTreeNodeWithDiffs(params.parent)) {
+      const parentSourceNode = this.resolveEligibleDiffsSeveritySourceNode(params.parent, new Set<NodeId>())
+      if (parentSourceNode) {
+        return parentSourceNode
+      }
+    }
     if (params.container && this.isJsoTreeNodeWithDiffs(params.container)) {
       const containerSourceNode = this.resolveEligibleDiffsSeveritySourceNode(params.container, new Set<NodeId>())
       if (containerSourceNode) {
         return containerSourceNode
       }
-    }
-    if (params.parent && this.isJsoTreeNodeWithDiffs(params.parent)) {
-      return this.resolveEligibleDiffsSeveritySourceNode(params.parent, new Set<NodeId>())
     }
     return undefined
   }
@@ -357,14 +360,14 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       return node
     }
 
-    if (node.container && this.isJsoTreeNodeWithDiffs(node.container)) {
-      const sourceFromContainer = this.resolveEligibleDiffsSeveritySourceNode(node.container, visitedNodeIds)
-      if (sourceFromContainer) {
-        return sourceFromContainer
+    if (node.parent && this.isJsoTreeNodeWithDiffs(node.parent)) {
+      const sourceFromParent = this.resolveEligibleDiffsSeveritySourceNode(node.parent, visitedNodeIds)
+      if (sourceFromParent) {
+        return sourceFromParent
       }
     }
-    if (node.parent && this.isJsoTreeNodeWithDiffs(node.parent)) {
-      return this.resolveEligibleDiffsSeveritySourceNode(node.parent, visitedNodeIds)
+    if (node.container && this.isJsoTreeNodeWithDiffs(node.container)) {
+      return this.resolveEligibleDiffsSeveritySourceNode(node.container, visitedNodeIds)
     }
     return undefined
   }
