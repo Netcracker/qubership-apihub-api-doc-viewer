@@ -13,6 +13,7 @@ import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-mod
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsoValue } from "./JsoValue/JsoValue"
+import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
@@ -134,11 +135,24 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
       if (hiddenLayoutSide === layoutSide) {
         return <></>
       }
+      const isDiffAwareValue = Boolean(effectiveValueDiff || shouldForceYellowForCurrentNode)
+      if (!isDiffAwareValue) {
+        return (
+          <JsoValue
+            isVisible={sideState.showSubheader}
+            value={sideState.resolvedValue}
+            appearance={sideState.isPredefinedValueSet ? 'block' : 'text'}
+          />
+        )
+      }
       return (
-        <JsoValue
-          sideState={sideState}
-          forcedBackgroundColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined}
-          forcedTextHighlighterColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined}
+        <JsoValueWithDiffs
+          isVisible={sideState.showSubheader}
+          value={sideState.resolvedValue}
+          appearance={sideState.isPredefinedValueSet ? 'block' : 'text'}
+          backgroundColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : sideState.sideStyles?.backgroundColor}
+          textHighlighterColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : sideState.sideStyles?.textHighlighterColor}
+          borderShadowColor={sideState.sideStyles?.borderShadowColor}
         />
       )
     },

@@ -1,51 +1,34 @@
-import { HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
-import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
-import { FC, memo, useCallback } from "react";
-import { ResolvedJsoSideState } from "../resolve-jso-side-state";
+import { FC, memo } from "react"
+import { JsoValueBase } from "./JsoValueBase"
+import { JsoValueAppearance, useJsoValueStyles } from "./useJsoValueStyles"
 
-type JsoValueProps = {
-  sideState: ResolvedJsoSideState
-  forcedBackgroundColor?: HighlightVariant
-  forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
+export type JsoValueProps = {
+  isVisible: boolean
+  value: unknown
+  appearance: JsoValueAppearance
+  textClassName?: string
+  blockClassName?: string
 }
 
 export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
-  const { sideState, forcedBackgroundColor, forcedTextHighlighterColor } = props
-  const { showSubheader, resolvedValue, resolvedValueType, isPredefinedValueSet, sideStyles } = sideState
-  const resolvedBackgroundColor = forcedBackgroundColor ?? sideStyles?.backgroundColor
-  const useFixedPoolDiffBorder = isPredefinedValueSet && resolvedBackgroundColor === HighlightVariant.Yellow
-
-  const renderElement = useCallback((
-    resolvedValue: string | undefined,
-    styleClasses: string[],
-  ) => {
-    if (!showSubheader) {
-      return null
-    }
-    const commonStyles = `jso-value subheader text-slate-500 ${styleClasses.join(' ')}`.trim()
-    switch (resolvedValueType) {
-      case 'string':
-      case 'number':
-      case 'boolean':
-      case 'null':
-        return (
-          <span className={`${commonStyles} ${isPredefinedValueSet ? 'bg-gray-100 px-2 rounded-md' : ''}`}>
-            {resolvedValue}
-          </span>
-        )
-    }
-  }, [resolvedValueType, isPredefinedValueSet, showSubheader])
-
-  const styleClasses = [
-    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.background(resolvedBackgroundColor),
-    useFixedPoolDiffBorder ? '' : DiffsClassesBuilder.highlighter(forcedTextHighlighterColor ?? sideStyles?.textHighlighterColor),
-    DiffsClassesBuilder.borderShadow(sideStyles?.borderShadowColor),
-    useFixedPoolDiffBorder ? 'jso-value-fixed-pool-diff-border_orange' : '',
-  ].filter(Boolean)
+  const {
+    isVisible,
+    value,
+    appearance,
+    textClassName,
+    blockClassName,
+  } = props
+  const className = useJsoValueStyles({
+    appearance,
+    textClassName,
+    blockClassName,
+  })
 
   return (
-    <div>
-      {renderElement(`${resolvedValue}`, styleClasses)}
-    </div>
+    <JsoValueBase
+      isVisible={isVisible}
+      value={value}
+      className={className}
+    />
   )
 })

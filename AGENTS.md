@@ -52,6 +52,32 @@
       1. Describe types for any domain entities.
       2. Avoid type assertions everywhere it is possible. Signatures of methods, functions, classes, components must be designed in way that type assertions are not needed.
     </code-style>
+    <rendering>
+      <rule>avoid redundant HTML elements</rule>
+      <example>
+        Do not wrap a single rendered element with an extra block element when it does not provide layout,
+        semantics, styling, event handling, or grouping required by React. For example, a `div` wrapping only
+        a `span` in JsoValueBase is redundant if the `span` can be returned directly.
+      </example>
+    </rendering>
+    <component-structure>
+      <rule name="Extract hooks and components into different files">
+        When decomposing React code, keep rendering components and reusable hooks in separate files.
+        Components should stay focused on JSX and composition. Hooks should own derived state, memoized classes,
+        event handlers, and other reusable view logic.
+
+        Prefer this structure for non-trivial components:
+        - Component rendering: ComponentName.tsx
+        - Each shared component with export directive: SharedComponentName.tsx
+        - Component-specific hooks: useComponentNameSomething.ts
+        - Shared base rendering components: ComponentNameBase.tsx, when reused by multiple wrappers
+
+        Each shared component with directive `export` must be kept in a separate file due to React best practices.
+
+        If an extracted hook is tiny, private, and unlikely to be reused or tested independently, place it in a
+        separate file in the same folder as its direct users. Such hooks must not be exported as public API.
+      </rule>
+    </component-structure>
     <critical-constraints>
       1. Never change files in directory ./packages/api-data-model. You MAY use them as a context only.
       2. Never change files in directory ./packages/api-state-model. Do not use them as a context as well.
