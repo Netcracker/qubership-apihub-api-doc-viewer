@@ -7,7 +7,8 @@ export class ComplexTreeNodeWithDiffs<
   V extends object | null,
   K extends string,
   M extends object,
-> extends SimpleTreeNodeWithDiffs<V, K, M> {
+  D extends object | null,
+> extends SimpleTreeNodeWithDiffs<V, K, M, D> {
 
   public readonly type: typeof TreeNodeComplexityTypes.COMPLEX
 
@@ -16,7 +17,7 @@ export class ComplexTreeNodeWithDiffs<
     public readonly key: string | number = '',
     public readonly kind: K,
     isCycle: boolean,
-    params: ComplexTreeNodeWithDiffsParams<V, K, M>,
+    params: ComplexTreeNodeWithDiffsParams<V, K, M, D>,
   ) {
     super(id, key, kind, isCycle, params);
     this.type = params.type
@@ -25,9 +26,9 @@ export class ComplexTreeNodeWithDiffs<
   public createCycledClone(
     id: NodeId,
     key: NodeKey,
-    parent: ITreeNodeWithDiffs<V, K, M> | null,
-  ): ITreeNodeWithDiffs<V, K, M> {
-    const result = new ComplexTreeNodeWithDiffs<V, K, M>(id, key, this.kind, true, {
+    parent: ITreeNodeWithDiffs<V, K, M, D> | null,
+  ): ITreeNodeWithDiffs<V, K, M, D> {
+    const result = new ComplexTreeNodeWithDiffs<V, K, M, D>(id, key, this.kind, true, {
       type: this.type,
       parent: parent,
       container: null,

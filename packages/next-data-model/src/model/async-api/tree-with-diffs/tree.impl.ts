@@ -6,7 +6,8 @@ import { AsyncApiTreeNodeValue } from "../types/node-value";
 export class AsyncApiTreeWithDiffs extends TreeWithDiffs<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiTreeNodeMeta
+  AsyncApiTreeNodeMeta,
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
 > {
   constructor() {
     super();

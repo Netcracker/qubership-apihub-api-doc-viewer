@@ -1,7 +1,5 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/async-api/tree-with-diffs/node-diffs-data/node-diffs/factory";
-import { ComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
-import { SimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from '@netcracker/qubership-apihub-api-diff';
@@ -10,14 +8,15 @@ export abstract class AbstractNodeDiffsAggregator<
   V extends object | null,
   K extends string,
   M extends object,
+  D extends object | null,
 > {
   public abstract aggregate(
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
-    parentNode?: SimpleTreeNodeWithDiffs<V, K, M>,
-    containerNode?: ComplexTreeNodeWithDiffs<V, K, M>,
-  ): NodeDiffs<V> | undefined;
+    parentNode?: ITreeNodeWithDiffs<V, K, M, D>,
+    containerNode?: ITreeNodeWithDiffs<V, K, M, D>,
+  ): NodeDiffs<D> | undefined;
 
   public static isDiffsRecord(value: unknown): value is Partial<Record<string, Diff>> {
     if (!isObject(value)) {

@@ -14,12 +14,22 @@ export type DiffMetaKeys = {
 export class AsyncApiNodeDiffsAggregatorFactory {
   private static readonly instances = new Map<
     AsyncApiTreeNodeKind | null,
-    AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
+    AbstractNodeDiffsAggregator<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+    >
   >();
 
   public static instance(
     kind: AsyncApiTreeNodeKind,
-  ): AbstractNodeDiffsAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta> {
+  ): AbstractNodeDiffsAggregator<
+    AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+    AsyncApiTreeNodeKind,
+    AsyncApiTreeNodeMeta,
+    AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+  > {
     switch (kind) {
       case AsyncApiTreeNodeKinds.BINDING:
         if (!this.instances.has(AsyncApiTreeNodeKinds.BINDING)) {

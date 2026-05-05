@@ -8,16 +8,18 @@ export interface TreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
+  D extends object | null,
 > extends TreeNodeParams<V, K, M> {
-  parent: ITreeNodeWithDiffs<V, K, M> | null
-  container: ITreeNodeWithDiffs<V, K, M> | null
+  parent: ITreeNodeWithDiffs<V, K, M, D> | null
+  container: ITreeNodeWithDiffs<V, K, M, D> | null
 }
 
 export interface SimpleTreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
-> extends TreeNodeWithDiffsParams<V, K, M> {
+  D extends object | null,
+> extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.SIMPLE
 }
 
@@ -25,7 +27,8 @@ export interface ComplexTreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
-> extends TreeNodeWithDiffsParams<V, K, M> {
+  D extends object | null,
+> extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.COMPLEX
 }
 
@@ -42,12 +45,19 @@ export type DiffStyles = {
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
 }
+export type DiffFlags = {
+  increaseLevel: boolean
+}
 export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
 export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
   styles: {
     before: DiffStyles
     after: DiffStyles
+  }
+  flags: {
+    before: DiffFlags
+    after: DiffFlags
   }
 }
 export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
@@ -72,14 +82,15 @@ export type NodeDescendantDiffsSummary = Set<DiffType>
 export type NodeDiffsSummary = Set<DiffType>
 
 export interface ITreeNodeWithDiffs<
-  V extends object | null = object | null,
-  K extends string = string,
-  M extends object = object,
-> extends ITreeNode<V, K, M> {
+  NodeValue extends object | null = object | null,
+  NodeKind extends string = string,
+  NodeMeta extends object = object,
+  NodeDiffsSource extends object | null = object | null
+> extends ITreeNode<NodeValue, NodeKind, NodeMeta> {
   parent: ITreeNodeWithDiffs | null
   container: ITreeNodeWithDiffs | null
 
-  diffs: NodeDiffs<V>
+  diffs: NodeDiffs<NodeDiffsSource>
   diffsSummary: NodeDiffsSummary
   descendantDiffs: NodeDescendantDiffs
   descendantDiffsSummary: NodeDescendantDiffsSummary
@@ -92,19 +103,19 @@ export interface ITreeNodeWithDiffs<
     id: NodeId,
     key: NodeKey,
     parent: ITreeNodeWithDiffs | null,
-  ): ITreeNodeWithDiffs<V, K, M>
+  ): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>
 
-  value(nestedNodeId?: NodeId): V | null;
+  value(nestedNodeId?: NodeId): NodeValue | null;
 
-  meta(): M;
+  meta(): NodeMeta;
 
-  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<V, K, M>[]
+  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>[]
 
-  nestedNodes(): ITreeNodeWithDiffs<V, K, M>[]
+  nestedNodes(): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>[]
 
-  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<V, K, M> | null
+  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource> | null
 
-  addChildNode(node: ITreeNodeWithDiffs<V, K, M>): void
+  addChildNode(node: ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>): void
 
-  addNestedNode(node: ITreeNodeWithDiffs<V, K, M>): void
+  addNestedNode(node: ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>): void
 }

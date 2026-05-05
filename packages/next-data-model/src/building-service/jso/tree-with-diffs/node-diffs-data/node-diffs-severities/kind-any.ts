@@ -3,9 +3,11 @@ import { NodeDiffs, NodeDiffsSeverities, NodeDiffsSeverity, NodeDiffsSeverityPla
 import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 
-export class JsoNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSeveritiesAggregator {
+type JsoTreeNodeDiffsSource = Pick<JsoTreeNodeValue, 'value'>
+
+export class JsoNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSeveritiesAggregator<JsoTreeNodeDiffsSource> {
   public aggregate(
-    nodeDiffs: NodeDiffs<JsoTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource>,
   ): NodeDiffsSeverities | undefined {
     const wholeNodeDiff = nodeDiffs[""];
     if (wholeNodeDiff) {
@@ -24,11 +26,11 @@ export class JsoNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSe
       };
     }
 
-    const titleDiff = nodeDiffs["title"];
-    if (!titleDiff) {
+    const valueDiff = nodeDiffs["value"];
+    if (!valueDiff) {
       return undefined;
     }
-    const diff = titleDiff.data;
+    const diff = valueDiff.data;
     const nodeDiffsSeverity: NodeDiffsSeverity = {
       type: diff.type,
       causedAt: [],

@@ -1,7 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
-import { SimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { ChangedPropertyKey, DiffStyles, HighlightVariant, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
@@ -10,32 +8,30 @@ import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeys } from "./factory";
 
+type JsoTreeNodeDiffsSource = Pick<JsoTreeNodeValue, 'value'>
+
 export class JsoNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
     JsoTreeNodeValue | null,
     JsoTreeNodeKind,
-    JsoTreeNodeMeta
+    JsoTreeNodeMeta,
+    JsoTreeNodeDiffsSource
   > {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
   }
 
-  private static readonly DIFFABLE_NODE_VALUE_KEYS: (keyof JsoTreeNodeValue)[] = [
-    "title",
+  private static readonly DIFFABLE_NODE_VALUE_KEYS: (keyof JsoTreeNodeDiffsSource)[] = [
     "value",
-    "valueType",
-    "isPrimitive",
-    "isArrayItem",
-    "isPredefinedValueSet",
   ];
 
   public aggregate(
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
-    parentNode?: SimpleTreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
-    containerNode?: ComplexTreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>,
-  ): NodeDiffs<JsoTreeNodeValue | null> | undefined {
+    parentNode?: ITreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+  ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
     if (!isObject(crawlValue)) {
@@ -43,7 +39,7 @@ export class JsoNodeDiffsAggregatorKindAny
     }
 
     const diffs = crawlValue[diffsMetaKey]
-    const nodeDiffs: NodeDiffs<JsoTreeNodeValue | null> = {}
+    const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
 
     if (containerNode) {
       const containerNodeDiff = containerNode.diffs[""]
@@ -83,8 +79,8 @@ export class JsoNodeDiffsAggregatorKindAny
 
   protected aggregateValueDiff(
     diff: Diff<DiffType>,
-    key: ChangedPropertyKey<JsoTreeNodeValue | null>,
-    nodeDiffs: NodeDiffs<JsoTreeNodeValue | null>,
+    key: ChangedPropertyKey<JsoTreeNodeDiffsSource>,
+    nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource>,
   ) {
     let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
@@ -125,6 +121,14 @@ export class JsoNodeDiffsAggregatorKindAny
       styles: {
         before: beforeStyles,
         after: afterStyles,
+      },
+      flags: {
+        before: {
+          increaseLevel: isDiffAdd(diff) || isDiffReplace(diff),
+        },
+        after: {
+          increaseLevel: isDiffRemove(diff) || isDiffReplace(diff),
+        },
       },
     }
   }

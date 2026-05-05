@@ -8,4 +8,9 @@ export type JsoTreeNode<K extends JsoTreeNodeKind = JsoTreeNodeKind> =
   ITreeNode<JsoTreeNodeValue | null, K, JsoTreeNodeMeta>
 
 export type JsoTreeNodeWithDiffs<K extends JsoTreeNodeKind = JsoTreeNodeKind> =
-  ITreeNodeWithDiffs<JsoTreeNodeValue | null, K, JsoTreeNodeMeta>
+  ITreeNodeWithDiffs<
+    JsoTreeNodeValue | null,
+    K,
+    JsoTreeNodeMeta,
+    Pick<JsoTreeNodeValue, 'value'>
+  >

@@ -8,14 +8,15 @@ export class TreeWithDiffs<
   V extends object | null,
   K extends string,
   M extends object,
+  D extends object | null,
 >
-  implements ITreeWithDiffs<V, K, M> {
-  public readonly nodes: Map<NodeId, ITreeNodeWithDiffs<V, K, M>> = new Map()
+  implements ITreeWithDiffs<V, K, M, D> {
+  public readonly nodes: Map<NodeId, ITreeNodeWithDiffs<V, K, M, D>> = new Map()
 
   constructor() {
   }
 
-  public get root(): ITreeNodeWithDiffs<V, K, M> | null {
+  public get root(): ITreeNodeWithDiffs<V, K, M, D> | null {
     return this.nodes.get('#') ?? null
   }
 
@@ -24,8 +25,8 @@ export class TreeWithDiffs<
     key: NodeKey,
     kind: K,
     isCycle: boolean,
-    nodeParams: SimpleTreeNodeWithDiffsParams<V, K, M>,
-  ): ITreeNodeWithDiffs<V, K, M> {
+    nodeParams: SimpleTreeNodeWithDiffsParams<V, K, M, D>,
+  ): ITreeNodeWithDiffs<V, K, M, D> {
     const node = new SimpleTreeNodeWithDiffs(id, key, kind, isCycle, nodeParams)
     this.nodes.set(id, node)
     return node
@@ -36,19 +37,19 @@ export class TreeWithDiffs<
     key: NodeKey,
     kind: K,
     isCycle: boolean,
-    nodeParams: ComplexTreeNodeWithDiffsParams<V, K, M>,
-  ): ITreeNodeWithDiffs<V, K, M> {
+    nodeParams: ComplexTreeNodeWithDiffsParams<V, K, M, D>,
+  ): ITreeNodeWithDiffs<V, K, M, D> {
     const node = new ComplexTreeNodeWithDiffs(id, key, kind, isCycle, nodeParams)
     this.nodes.set(id, node)
     return node
   }
 
   public createCycledClone(
-    sourceNode: ITreeNodeWithDiffs<V, K, M>,
+    sourceNode: ITreeNodeWithDiffs<V, K, M, D>,
     cloneId: NodeId,
     cloneKey: NodeKey,
-    cloneParent: ITreeNodeWithDiffs<V, K, M> | null,
-  ): ITreeNodeWithDiffs<V, K, M> {
+    cloneParent: ITreeNodeWithDiffs<V, K, M, D> | null,
+  ): ITreeNodeWithDiffs<V, K, M, D> {
     const node = sourceNode.createCycledClone(cloneId, cloneKey, cloneParent)
     this.nodes.set(cloneId, node)
     return node

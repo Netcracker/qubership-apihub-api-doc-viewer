@@ -6,5 +6,6 @@ import { JsoTreeNodeValue } from "../types/node-value";
 export type JsoComplexTreeNodeWithDiffs = ComplexTreeNodeWithDiffs<
   JsoTreeNodeValue | null,
   JsoTreeNodeKind,
-  JsoTreeNodeMeta
+  JsoTreeNodeMeta,
+  Pick<JsoTreeNodeValue, 'value'>
 >

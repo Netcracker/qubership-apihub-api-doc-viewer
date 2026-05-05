@@ -1,7 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
-import { SimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -15,8 +13,18 @@ export class AsyncApiNodeDiffsAggregatorKindServer extends AsyncApiNodeDiffsAggr
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
-    parentNode?: SimpleTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>,
-    containerNode?: ComplexTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>,
+    parentNode?: ITreeNodeWithDiffs<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+    >,
+    containerNode?: ITreeNodeWithDiffs<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+    >,
   ): NodeDiffs<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER> | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 

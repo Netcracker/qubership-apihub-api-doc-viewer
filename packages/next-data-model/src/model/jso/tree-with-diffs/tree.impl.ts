@@ -6,7 +6,8 @@ import { JsoTreeNodeValue } from "../types/node-value";
 export class JsoTreeWithDiffs extends TreeWithDiffs<
   JsoTreeNodeValue | null,
   JsoTreeNodeKind,
-  JsoTreeNodeMeta
+  JsoTreeNodeMeta,
+  Pick<JsoTreeNodeValue, 'value'>
 > {
   constructor() {
     super();

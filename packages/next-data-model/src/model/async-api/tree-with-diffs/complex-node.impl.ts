@@ -6,5 +6,6 @@ import { AsyncApiTreeNodeValue } from "../types/node-value";
 export type AsyncApiComplexTreeNodeWithDiffs = ComplexTreeNodeWithDiffs<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiTreeNodeMeta
+  AsyncApiTreeNodeMeta,
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
 >

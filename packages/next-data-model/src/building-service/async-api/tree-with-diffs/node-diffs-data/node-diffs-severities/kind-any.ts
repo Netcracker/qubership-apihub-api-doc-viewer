@@ -4,7 +4,8 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 
-export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSeveritiesAggregator {
+export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny
+  extends AbstractNodeDiffsSeveritiesAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> {
   public aggregate(
     nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>,
   ): NodeDiffsSeverities | undefined {
