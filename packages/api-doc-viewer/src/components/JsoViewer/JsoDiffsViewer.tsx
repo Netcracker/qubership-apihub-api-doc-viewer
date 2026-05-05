@@ -1,18 +1,29 @@
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext } from "@apihub/contexts/LevelContext"
-import { DisplayMode } from "@apihub/types/DisplayMode"
+import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
+import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
+import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, memo, useMemo } from "react"
+import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
+import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { Aligner } from "./Aligner"
+import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
 
 type JsoDiffsViewerProps = {
   mergedSource: unknown
@@ -77,7 +88,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
               <LevelContext.Provider value={initialLevel}>
                 <div data-testid='jso-diffs-viewer'>
                   {jsoProperties.map(jsoProperty => (
-                    <JsoPropertyNodeViewer
+                    <JsoPropertyNodeRenderSwitchWithDiffs
                       key={jsoProperty.id}
                       node={jsoProperty}
                       supportJsonSchema={supportJsonSchema}
@@ -91,3 +102,74 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       </DiffMetaKeysContext.Provider>
     )
   })
+
+type RenderJsoPropertyWithDiffsInput = {
+  node: JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
+  supportJsonSchema: boolean
+}
+
+const JsoPropertyNodeRenderSwitchWithDiffs: FC<RenderJsoPropertyWithDiffsInput> = (input) => {
+  const { node, supportJsonSchema } = input
+  const displayMode = useDisplayMode()
+  const level = useLevelContext()
+  const diffMetaKeys = useDiffMetaKeys()
+  const nodeValue = node.value()
+  const schema = supportJsonSchema ? prepareJsonSchemaForJsoViewer(node.key, nodeValue) : undefined
+
+  if (schema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
+    return (
+      <Aligner key={node.id}>
+        <JsonSchemaViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters'
+        />
+      </Aligner>
+    )
+  }
+
+  if (schema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
+    if (!diffMetaKeys) {
+      return <JsoPropertyNodeViewerWithDiffs node={node} supportJsonSchema={supportJsonSchema} />
+    }
+    return (
+      <Aligner key={node.id}>
+        <JsonSchemaDiffViewer
+          schema={schema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          metaKeys={diffMetaKeys}
+          overriddenKind='parameters'
+        />
+      </Aligner>
+    )
+  }
+
+  return (
+    <JsoPropertyNodeViewerWithDiffs node={node} supportJsonSchema={supportJsonSchema} />
+  )
+}
+
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: JsoTreeNodeValueBase | null | undefined,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+  if (
+    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) {
+    return undefined
+  }
+
+  return isObject(nodeValue.value)
+    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
+    : undefined
+}
