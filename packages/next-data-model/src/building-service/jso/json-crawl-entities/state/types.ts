@@ -1,8 +1,9 @@
-import { CommonState } from "@apihub/next-data-model/building-service/async-api/json-crawl-entities/state/types"
+import { CommonState } from "@apihub/next-data-model/building-service/abstract/json-crawl-entities/state/types"
+import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value"
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value"
 import { JsoTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/types/aliases"
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind"
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta"
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value"
 
 export type JsoTreeCrawlState = CommonState<
   JsoTreeNodeValue | null,
@@ -11,7 +12,7 @@ export type JsoTreeCrawlState = CommonState<
 >
 
 export type JsoTreeWithDiffsCrawlState = CommonState<
-  JsoTreeNodeValue | null,
+  JsoTreeNodeValueWithDiffs | null,
   JsoTreeNodeKind,
   JsoTreeNodeMeta,
   JsoTreeNodeWithDiffs

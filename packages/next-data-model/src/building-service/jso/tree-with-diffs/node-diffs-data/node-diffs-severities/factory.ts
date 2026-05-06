@@ -1,9 +1,7 @@
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
+import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { JsoNodeDiffsSeveritiesAggregatorKindAny } from "./kind-any";
-
-type JsoTreeNodeDiffsSource = Pick<JsoTreeNodeValue, 'value'>
 
 export class JsoNodeDiffsSeveritiesAggregatorFactory {
   private static readonly instances = new Map<JsoTreeNodeKind | null, AbstractNodeDiffsSeveritiesAggregator<JsoTreeNodeDiffsSource>>();

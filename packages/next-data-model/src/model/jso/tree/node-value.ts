@@ -1,4 +1,4 @@
-import { JsoPropertyValueType } from "./node-value-type"
+import { JsoPropertyValueType } from "../types/node-value-type"
 
 export type JsoTreeNodeValue = JsoTreeNodeValueBase
 

@@ -1,18 +1,17 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { ChangedPropertyKey, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
+import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeys } from "./factory";
 
-type JsoTreeNodeDiffsSource = Pick<JsoTreeNodeValue, 'value'>
-
 export class JsoNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
-    JsoTreeNodeValue | null,
+    JsoTreeNodeValueWithDiffs | null,
     JsoTreeNodeKind,
     JsoTreeNodeMeta,
     JsoTreeNodeDiffsSource
@@ -29,8 +28,8 @@ export class JsoNodeDiffsAggregatorKindAny
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
-    parentNode?: ITreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
-    containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    parentNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 

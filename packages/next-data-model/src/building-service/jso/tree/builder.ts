@@ -1,19 +1,19 @@
 import { JsoComplexTreeNode } from "@apihub/next-data-model/model/jso/tree/complex-node.impl";
 import { JsoSimpleTreeNode } from "@apihub/next-data-model/model/jso/tree/simple-node.impl";
 import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
-import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
+import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value";
 import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
-import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
+import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules.jso";
 import { JsoCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeCrawlState } from "../json-crawl-entities/state/types";
-import { createJsoTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { createJsoTreeBuildingHooks } from "./building-hooks";
 import { JsoNodeDataBuilder } from "./node-data/builder";
 
 type SimpleJsoTreeNodeParams = SimpleTreeNodeParams<
@@ -58,13 +58,10 @@ export class JsoTreeBuilder extends TreeBuilder<
 
     const initialRules: JsoCrawlRule = getJsoCrawlRules()
 
-    const hooks = createJsoTreeBuildingHooks<
-      JsoTreeCrawlState,
-      JsoCrawlRule,
-      TreeNodeParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>
-    >({
+    const hooks = createJsoTreeBuildingHooks({
       source: this.source,
       tree: this.tree,
+      supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: isObject(value) ? value : null,

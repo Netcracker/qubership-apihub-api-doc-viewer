@@ -1,13 +1,14 @@
 import { TreeWithDiffs } from "../../abstract/tree-with-diffs/tree.impl";
 import { JsoTreeNodeKind } from "../types/node-kind";
 import { JsoTreeNodeMeta } from "../types/node-meta";
-import { JsoTreeNodeValue } from "../types/node-value";
+import { JsoTreeNodeDiffsSource } from "./node-diffs-source";
+import { JsoTreeNodeValueWithDiffs } from "./node-value";
 
 export class JsoTreeWithDiffs extends TreeWithDiffs<
-  JsoTreeNodeValue | null,
+  JsoTreeNodeValueWithDiffs | null,
   JsoTreeNodeKind,
   JsoTreeNodeMeta,
-  Pick<JsoTreeNodeValue, 'value'>
+  JsoTreeNodeDiffsSource
 > {
   constructor() {
     super();

@@ -47,7 +47,7 @@ import {
 } from "@netcracker/qubership-apihub-api-unifier"
 import { isObject } from "../../../../utilities"
 import { JsoTreeCrawlState } from "../state/types"
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value"
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value"
 
 export const inlineJsoPropertyParameters: SchemaTransformFunc<JsoTreeCrawlState> = (key, value): JsoTreeNodeValue => {
   const valueType = getValueType(value)

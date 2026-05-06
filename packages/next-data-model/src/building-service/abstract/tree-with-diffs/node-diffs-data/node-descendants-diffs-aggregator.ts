@@ -60,6 +60,14 @@ export abstract class AbstractNodeDescendantsDiffsAggregator {
         before: beforeStyles,
         after: afterStyles,
       },
+      flags: {
+        before: {
+          increaseLevel: true,
+        },
+        after: {
+          increaseLevel: true,
+        },
+      },
     }
   }
 }

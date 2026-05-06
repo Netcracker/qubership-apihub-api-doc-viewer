@@ -1,6 +1,6 @@
 import { JsoTreeNodeKind, JsoTreeNodeKinds, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/types/node-value";
+import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/tree/node-value";
 import { isObject } from "../../../../utilities";
 import { AbstractNodeDataBuilder, NodeDataPickFunction } from "../../../abstract/tree/node-data/builder";
 

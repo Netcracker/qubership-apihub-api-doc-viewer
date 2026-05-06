@@ -1,24 +1,24 @@
 import { ComplexTreeNodeWithDiffsParams, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { JsoComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/complex-node.impl";
+import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
+import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/simple-node.impl";
 import { JsoTreeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/tree.impl";
-import { JsoTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/types/aliases";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
-import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
+import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffType, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
-import { getValueType } from "../json-crawl-entities/transformers/inline-jso-property-params";
-import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
-import { JsoCrawlRule, JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
+import { getJsoWithDiffsCrawlRules } from "../json-crawl-entities/rules/rules.jso-with-diffs";
+import { JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { createJsoTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { getValueType } from "../json-crawl-entities/transformers/inline-jso-property-params";
+import { createJsoTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { JsoNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { JsoNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { JsoNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
@@ -26,10 +26,8 @@ import { JsoNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-
 import { JsoNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
 import { DiffMetaKeys, JsoNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
 
-type JsoTreeNodeDiffsSource = Pick<JsoTreeNodeValue, 'value'>
-
 export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
-  JsoTreeNodeValue | null,
+  JsoTreeNodeValueWithDiffs | null,
   JsoTreeNodeKind,
   JsoTreeNodeMeta,
   JsoTreeNodeDiffsSource
@@ -59,16 +57,12 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       alreadyConvertedValuesCache: new Map(),
     }
 
-    const initialRules: JsoCrawlRule = getJsoCrawlRules()
+    const initialRules: JsoWithDiffsCrawlRule = getJsoWithDiffsCrawlRules()
 
-    const hooks = createJsoTreeBuildingHooks<
-      JsoTreeNodeWithDiffs<JsoTreeNodeKind>,
-      JsoTreeWithDiffsCrawlState,
-      JsoWithDiffsCrawlRule,
-      TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>
-    >({
+    const hooks = createJsoTreeWithDiffsBuildingHooks({
       source: this.source,
       tree: this.tree,
+      supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: isObject(value) ? value : null,
@@ -121,13 +115,13 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     key: NodeKey,
     kind: JsoTreeNodeKind,
     complex: boolean,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
     const { parent = null, container = null, newDataLevel } = params
 
     if (complex) {
       const nodeMeta = this.createNodeMeta(key, params)
-      const complexParams: ComplexTreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
+      const complexParams: ComplexTreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
         type: TreeNodeComplexityTypes.COMPLEX,
         parent: parent && this.isJsoSimpleTreeNodeWithDiffs(parent) ? parent : null,
         container: container && this.isJsoComplexTreeNodeWithDiffs(container) ? container : null,
@@ -142,7 +136,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
     const nodeValue = this.createNodeValue(key, kind, params)
     const nodeMeta = this.createNodeMeta(key, params)
-    const simpleParams: SimpleTreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
+    const simpleParams: SimpleTreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
       type: TreeNodeComplexityTypes.SIMPLE,
       parent: parent && this.isJsoSimpleTreeNodeWithDiffs(parent) ? parent : null,
       container: container && this.isJsoComplexTreeNodeWithDiffs(container) ? container : null,
@@ -158,7 +152,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   protected createNodeMeta(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoTreeNodeMeta {
     const { value } = params
     return this.nodeDataBuilder.createNodeMeta(value)
@@ -168,8 +162,8 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
     kind: string,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
-  ): JsoTreeNodeValue | null {
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+  ): JsoTreeNodeValueWithDiffs | null {
     const { value } = params
     return this.nodeDataBuilder.createNodeValue(
       kind,
@@ -181,7 +175,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   protected createNodeDiffs(
     key: NodeKey,
     kind: string,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
     if (!this.isJsoTreeNodeKind(kind)) {
       return undefined
@@ -209,7 +203,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   protected createNodeDescendantsDiffs(
     kind: string,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDescendantDiffs | undefined {
     if (!this.isJsoTreeNodeKind(kind)) {
       return undefined
@@ -255,7 +249,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private assignNodeDiffs(
     node: JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs,
     kind: JsoTreeNodeKind,
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): void {
     const nodeDiffs = this.createNodeDiffs(node.key, kind, params)
     nodeDiffs && Object.assign(node.diffs, nodeDiffs)
@@ -285,7 +279,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   private createPropagatedNodeDiffsSeverities(
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffsSeverities | undefined {
     const sourceNode = this.resolveDiffsSeverityPropagationSourceNode(params)
     if (!sourceNode) {
@@ -301,7 +295,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   private resolveDiffsSeverityPropagationSourceNode(
-    params: TreeNodeWithDiffsParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
     if (params.container && this.isJsoTreeNodeWithDiffs(params.container)) {
       const containerSourceNode = this.resolveEligibleDiffsSeveritySourceNode(params.container, new Set<NodeId>())

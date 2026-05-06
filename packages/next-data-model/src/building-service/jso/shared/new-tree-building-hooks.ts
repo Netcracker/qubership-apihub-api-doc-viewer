@@ -1,20 +1,24 @@
-import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
-import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
-import { CommonState } from "../../async-api/json-crawl-entities/state/types";
+import { CommonState } from "../../abstract/json-crawl-entities/state/types";
 import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
 
-type JsoNodeValue = JsoTreeNodeValue | null;
-type JsoBaseNode = ITreeNode<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta>;
+type NodeCache<
+  V extends object | null,
+  K extends string,
+  M extends object,
+  N extends ITreeNode<V, K, M>
+> = Map<unknown, N>;
 
-type NodeCache<N extends JsoBaseNode> = Map<unknown, N>;
-
-type CycleCloneFactory<N extends JsoBaseNode> = {
+type CycleCloneFactory<
+  V extends object | null,
+  K extends string,
+  M extends object,
+  N extends ITreeNode<V, K, M>
+> = {
   createCycledClone: (
     sourceNode: N,
     cloneId: NodeId,
@@ -23,9 +27,12 @@ type CycleCloneFactory<N extends JsoBaseNode> = {
   ) => N
 }
 
-export interface JsoTreeBuildingHooksFactoryParams<
-  N extends JsoBaseNode,
-  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta, N>,
+export interface NewTreeBuildingHooksFactoryParams<
+  V extends object | null,
+  K extends string,
+  M extends object,
+  N extends ITreeNode<V, K, M>,
+  S extends CommonState<V, K, M, N>,
   P extends {
     value: object | null
     newDataLevel: boolean
@@ -34,11 +41,12 @@ export interface JsoTreeBuildingHooksFactoryParams<
   },
 > {
   source: unknown
-  tree: CycleCloneFactory<N>
+  tree: CycleCloneFactory<V, K, M, N>
+  supportedNodeKinds: readonly K[]
   createNodeFromRaw: (
     id: NodeId,
     key: NodeKey,
-    kind: JsoTreeNodeKind,
+    kind: K,
     complex: boolean,
     params: P
   ) => N | undefined
@@ -50,12 +58,12 @@ export interface JsoTreeBuildingHooksFactoryParams<
   createStateForSimpleNode: (
     state: S,
     node: N,
-    cache: NodeCache<N>,
+    cache: NodeCache<V, K, M, N>,
   ) => S
   createStateForComplexNode: (
     state: S,
     node: N,
-    cache: NodeCache<N>,
+    cache: NodeCache<V, K, M, N>,
   ) => S
   isSimpleNode: (node: N) => boolean
   isComplexNode: (node: N) => boolean
@@ -63,10 +71,13 @@ export interface JsoTreeBuildingHooksFactoryParams<
   shouldStopAfterNodeCreation?: (value: unknown) => boolean
 }
 
-export function createJsoTreeBuildingHooks<
-  N extends JsoBaseNode,
-  S extends CommonState<JsoNodeValue, JsoTreeNodeKind, JsoTreeNodeMeta, N>,
-  R extends SchemaCrawlRule<JsoTreeNodeKind, S>,
+export function createNewTreeBuildingHooks<
+  V extends object | null,
+  K extends string,
+  M extends object,
+  N extends ITreeNode<V, K, M>,
+  S extends CommonState<V, K, M, N>,
+  R extends SchemaCrawlRule<K, S>,
   P extends {
     value: object | null
     newDataLevel: boolean
@@ -74,7 +85,7 @@ export function createJsoTreeBuildingHooks<
     container: N | null
   },
 >(
-  params: JsoTreeBuildingHooksFactoryParams<N, S, P>
+  params: NewTreeBuildingHooksFactoryParams<V, K, M, N, S, P>
 ): [
     SyncCrawlHook<S, R>,
     SyncCrawlHook<S, R>,
@@ -83,6 +94,7 @@ export function createJsoTreeBuildingHooks<
   const {
     source,
     tree,
+    supportedNodeKinds,
     createNodeFromRaw,
     createNodeParams,
     createStateForSimpleNode,
@@ -150,7 +162,7 @@ export function createJsoTreeBuildingHooks<
     if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
       return { done: true };
     }
-    if (!rules.kind || !JsoTreeNodeKindsList.includes(rules.kind)) {
+    if (!rules.kind || !supportedNodeKinds.includes(rules.kind)) {
       return;
     }
 

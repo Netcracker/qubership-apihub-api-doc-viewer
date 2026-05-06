@@ -1,7 +1,7 @@
 import { AsyncApiComplexTreeNode } from "@apihub/next-data-model/model/async-api/tree/complex-node.impl";
 import { AsyncApiSimpleTreeNode } from "@apihub/next-data-model/model/async-api/tree/simple-node.impl";
 import { AsyncApiTree } from "@apihub/next-data-model/model/async-api/tree/tree.impl";
-import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
@@ -14,9 +14,9 @@ import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
-import { AsyncApiNodeDataBuilder } from "./node-data/builder";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
-import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { createAsyncApiTreeBuildingHooks } from "./building-hooks";
+import { AsyncApiNodeDataBuilder } from "./node-data/builder";
 
 type SimpleAsyncApiTreeNodeParams = SimpleTreeNodeParams<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -70,14 +70,10 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     this.logger.debug('[AsyncAPI] Prepared Source:', preparedSource)
 
-    const hooks = createAsyncApiTreeBuildingHooks<
-      AsyncApiSimpleTreeNode | AsyncApiComplexTreeNode,
-      AsyncApiTreeCrawlState,
-      AsyncApiCrawlRule,
-      TreeNodeParams<object | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
-    >({
+    const hooks = createAsyncApiTreeBuildingHooks({
       source: preparedSource,
       tree: this.tree,
+      supportedNodeKinds: AsyncApiTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: isObject(value) && !Array.isArray(value) ? value : null,

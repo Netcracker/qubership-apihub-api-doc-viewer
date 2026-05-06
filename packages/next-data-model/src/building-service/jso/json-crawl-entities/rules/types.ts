@@ -8,7 +8,6 @@ export type SchemaCrawlRule<K extends string, S> = {
   transformers?: SchemaTransformFunc<S>[];
 };
 
-export type JsoCrawlRule<S extends JsoTreeCrawlState = JsoTreeCrawlState> = SchemaCrawlRule<JsoTreeNodeKind, S>;
+export type JsoCrawlRule = SchemaCrawlRule<JsoTreeNodeKind, JsoTreeCrawlState>;
 
-export type JsoWithDiffsCrawlRule =
-  JsoCrawlRule<JsoTreeWithDiffsCrawlState>;
+export type JsoWithDiffsCrawlRule = SchemaCrawlRule<JsoTreeNodeKind, JsoTreeWithDiffsCrawlState>;

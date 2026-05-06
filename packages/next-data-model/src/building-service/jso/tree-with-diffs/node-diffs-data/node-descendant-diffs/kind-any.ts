@@ -80,6 +80,14 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
           before: beforeDiffStyles,
           after: afterDiffStyles,
         },
+        flags: {
+          before: {
+            increaseLevel: true,
+          },
+          after: {
+            increaseLevel: true,
+          },
+        }
       }
     }
 

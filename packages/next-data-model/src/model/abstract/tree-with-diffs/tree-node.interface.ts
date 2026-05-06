@@ -82,15 +82,15 @@ export type NodeDescendantDiffsSummary = Set<DiffType>
 export type NodeDiffsSummary = Set<DiffType>
 
 export interface ITreeNodeWithDiffs<
-  NodeValue extends object | null = object | null,
-  NodeKind extends string = string,
-  NodeMeta extends object = object,
-  NodeDiffsSource extends object | null = object | null
-> extends ITreeNode<NodeValue, NodeKind, NodeMeta> {
+  V extends object | null = object | null,
+  K extends string = string,
+  M extends object = object,
+  D extends object | null = object | null
+> extends ITreeNode<V, K, M> {
   parent: ITreeNodeWithDiffs | null
   container: ITreeNodeWithDiffs | null
 
-  diffs: NodeDiffs<NodeDiffsSource>
+  diffs: NodeDiffs<D>
   diffsSummary: NodeDiffsSummary
   descendantDiffs: NodeDescendantDiffs
   descendantDiffsSummary: NodeDescendantDiffsSummary
@@ -103,19 +103,19 @@ export interface ITreeNodeWithDiffs<
     id: NodeId,
     key: NodeKey,
     parent: ITreeNodeWithDiffs | null,
-  ): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>
+  ): ITreeNodeWithDiffs<V, K, M, D>
 
-  value(nestedNodeId?: NodeId): NodeValue | null;
+  value(nestedNodeId?: NodeId): V | null;
 
-  meta(): NodeMeta;
+  meta(): M;
 
-  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>[]
+  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<V, K, M, D>[]
 
-  nestedNodes(): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>[]
+  nestedNodes(): ITreeNodeWithDiffs<V, K, M, D>[]
 
-  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource> | null
+  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<V, K, M, D> | null
 
-  addChildNode(node: ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>): void
+  addChildNode(node: ITreeNodeWithDiffs<V, K, M, D>): void
 
-  addNestedNode(node: ITreeNodeWithDiffs<NodeValue, NodeKind, NodeMeta, NodeDiffsSource>): void
+  addNestedNode(node: ITreeNodeWithDiffs<V, K, M, D>): void
 }

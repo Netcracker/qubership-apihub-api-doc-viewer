@@ -18,7 +18,7 @@ import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/typ
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
-import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { createAsyncApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
@@ -72,19 +72,10 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     )
     this.logger.debug("[AsyncAPI][WithDiffs] Prepared Source:", preparedSource)
 
-    const hooks = createAsyncApiTreeBuildingHooks<
-      AsyncApiTreeNodeWithDiffs,
-      AsyncApiTreeWithDiffsCrawlState,
-      AsyncApiTreeWithDiffsCrawlRule,
-      TreeNodeWithDiffsParams<
-        AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
-        AsyncApiTreeNodeKind,
-        AsyncApiTreeNodeMeta,
-        AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
-      >
-    >({
+    const hooks = createAsyncApiTreeWithDiffsBuildingHooks({
       source: preparedSource,
       tree: this.tree,
+      supportedNodeKinds: AsyncApiTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: typeof value === 'object' ? value : null,
