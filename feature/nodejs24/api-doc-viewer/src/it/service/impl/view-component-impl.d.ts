@@ -18,5 +18,5 @@ import { ViewComponent } from '../view-component';
 export declare class ViewComponentImpl implements ViewComponent {
     private readonly _domElement;
     constructor(_domElement: ElementHandle);
-    captureScreenshot(): Promise<Buffer | string>;
+    captureScreenshot(): Promise<Uint8Array>;
 }
