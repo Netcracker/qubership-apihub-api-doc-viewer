@@ -230,6 +230,15 @@ export function useValueRangeValidation(
     afterBitwiseKey |= BITWISE_EXCLUSIVE_MAXIMUM
   }
 
+  // OAS 3.0 boolean exclusive flags are modifiers on the regular bound — without a paired minimum/maximum
+  // they carry no display value and must be suppressed (otherwise the template renders '> ?' / '< ?').
+  if (typeof exclusiveMinimum !== 'number' && !(afterBitwiseKey & BITWISE_MINIMUM)) {
+    afterBitwiseKey &= ~BITWISE_EXCLUSIVE_MINIMUM
+  }
+  if (typeof exclusiveMaximum !== 'number' && !(afterBitwiseKey & BITWISE_MAXIMUM)) {
+    afterBitwiseKey &= ~BITWISE_EXCLUSIVE_MAXIMUM
+  }
+
   // For JSON Schema Draft 07 and above numeric value: when both bits are set, keep only the effective (stricter) one
   afterBitwiseKey = resolveEffectiveLowerBitwiseKey(afterBitwiseKey, minimum, exclusiveLowerValue)
   afterBitwiseKey = resolveEffectiveUpperBitwiseKey(afterBitwiseKey, maximum, exclusiveUpperValue)
@@ -303,6 +312,23 @@ export function useValueRangeValidation(
     if (typeof diffExclusiveMaximum!.beforeValue === 'number') {
       beforeExclusiveUpperValue = diffExclusiveMaximum!.beforeValue as number
     }
+  }
+
+  // Same suppression as for after-state: a boolean exclusive flag without its paired regular bound is meaningless.
+  // Determine the before-state exclusive type: unchanged → same as current; replaced/removed → from beforeValue.
+  const beforeExclMinIsBoolean =
+    (!hasExclusiveMinimumChanged && typeof exclusiveMinimum !== 'number') ||
+    ((diffReplace(diffExclusiveMinimum) || diffRemove(diffExclusiveMinimum)) &&
+      typeof diffExclusiveMinimum!.beforeValue !== 'number')
+  if (beforeExclMinIsBoolean && !(beforeBitwiseKey & BITWISE_MINIMUM)) {
+    beforeBitwiseKey &= ~BITWISE_EXCLUSIVE_MINIMUM
+  }
+  const beforeExclMaxIsBoolean =
+    (!hasExclusiveMaximumChanged && typeof exclusiveMaximum !== 'number') ||
+    ((diffReplace(diffExclusiveMaximum) || diffRemove(diffExclusiveMaximum)) &&
+      typeof diffExclusiveMaximum!.beforeValue !== 'number')
+  if (beforeExclMaxIsBoolean && !(beforeBitwiseKey & BITWISE_MAXIMUM)) {
+    beforeBitwiseKey &= ~BITWISE_EXCLUSIVE_MAXIMUM
   }
 
   // For JSON Schema Draft 07 and above numeric value: when both bits are set, keep only the effective (stricter) one

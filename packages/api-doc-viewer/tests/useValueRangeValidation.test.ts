@@ -98,6 +98,22 @@ describe('static display (no diffs)', () => {
       expect(data.upper).toBe('< 10')
     })
 
+    test('exclusiveMinimum: true without minimum → not visible (flag alone has no value)', () => {
+      const { visible } = run({ exclusiveMinimum: true })
+      expect(visible).toBe(false)
+    })
+
+    test('exclusiveMaximum: true without maximum → not visible (flag alone has no value)', () => {
+      const { visible } = run({ exclusiveMaximum: true })
+      expect(visible).toBe(false)
+    })
+
+    test('both boolean exclusive flags without regular bounds → not visible', () => {
+      // Regression: type: string → type: number with exclusiveMinimum/Maximum: true (no minimum/maximum)
+      const { visible } = run({ exclusiveMinimum: true, exclusiveMaximum: true })
+      expect(visible).toBe(false)
+    })
+
     test('exclusiveMinimum: false (flag off) → >= {minimum}', () => {
       const { data } = run({ exclusiveMinimum: false, minimum: 5 })
       expect(data.lower).toBe('>= 5')
@@ -345,6 +361,29 @@ describe('JSON Schema Draft 04 diffs (boolean exclusive flag changes)', () => {
     )
     expect(data.lower).toBe('> 7')
     expect(changes.lower).toMatchObject({ action: DiffAction.replace, beforeValue: '> 5', afterValue: '> 7' })
+  })
+
+  test('boolean exclusive flags added without regular bounds → no lower/upper diff', () => {
+    const { visible, data, changes } = run(
+      { exclusiveMinimum: true, exclusiveMaximum: true },
+      { exclusiveMinimum: add(true), exclusiveMaximum: add(true) },
+    )
+    expect(visible).toBe(false)
+    expect(data.lower).toBeUndefined()
+    expect(data.upper).toBeUndefined()
+    expect(changes.lower).toBeUndefined()
+    expect(changes.upper).toBeUndefined()
+  })
+
+  test('minimum added alongside pre-existing boolean exclusiveMinimum: true → lower added as > {minimum}', () => {
+    // Before: { exclusiveMinimum: true } — flag alone, meaningless (before-state suppressed)
+    // After:  { exclusiveMinimum: true, minimum: 5 } — flag + bound, renders > 5
+    const { data, changes } = run(
+      { minimum: 5, exclusiveMinimum: true },
+      { minimum: add(5, BREAKING) },
+    )
+    expect(data.lower).toBe('> 5')
+    expect(changes.lower).toMatchObject({ action: DiffAction.add, afterValue: '> 5' })
   })
 })
 
