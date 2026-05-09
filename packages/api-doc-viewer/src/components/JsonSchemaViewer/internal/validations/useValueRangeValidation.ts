@@ -60,8 +60,7 @@ type UseValueRangeValidationResult = {
 
 const DEFAULT_CHARACTER = '?'
 const VALUE_MASK = '{value}'
-const EXCLUSIVE_LOWER_VALUE_MASK = '{exclusive_lower}'
-const EXCLUSIVE_UPPER_VALUE_MASK = '{exclusive_upper}'
+const EXCLUSIVE_VALUE_MASK = '{exclusive_value}'
 const GREATER_THAN = '>'
 const GREATER_THAN_OR_EQUALS = '>='
 const LESS_THAN = '<'
@@ -72,26 +71,27 @@ const BITWISE_EXCLUSIVE_MINIMUM = 1 << 1
 const BITWISE_MAXIMUM = 1 << 2
 const BITWISE_EXCLUSIVE_MAXIMUM = 1 << 3
 
-// Templates use VALUE_MASK for regular bound values and EXCLUSIVE_*_VALUE_MASK for exclusive bound values.
-// These masks are substituted at render time with the actual bound values.
-// EXCLUSIVE_*_VALUE_MASK falls back to DEFAULT_CHARACTER when no numeric exclusive value is available (JSON Schema Draft 04 boolean style).
+// Templates use VALUE_MASK for the regular bound value and EXCLUSIVE_VALUE_MASK for the exclusive bound value.
+// substituteValues is called separately for lower (with minimum / exclusiveLowerValue) and upper
+// (with maximum / exclusiveUpperValue), so a single EXCLUSIVE_VALUE_MASK suffices for both sides.
+// EXCLUSIVE_VALUE_MASK falls back to DEFAULT_CHARACTER when no numeric exclusive value is available (JSON Schema Draft 04 boolean style).
 const MINIMAX_CHAINS_MAPPING: Record<number, ValueRange> = {
   // no fields
   0: { lower: undefined, upper: undefined },
   // one field
   [BITWISE_MINIMUM]: { lower: `${GREATER_THAN_OR_EQUALS} ${VALUE_MASK}`, upper: undefined },
-  [BITWISE_EXCLUSIVE_MINIMUM]: { lower: `${GREATER_THAN} ${EXCLUSIVE_LOWER_VALUE_MASK}`, upper: undefined },
+  [BITWISE_EXCLUSIVE_MINIMUM]: { lower: `${GREATER_THAN} ${EXCLUSIVE_VALUE_MASK}`, upper: undefined },
   [BITWISE_MAXIMUM]: { lower: undefined, upper: `${LESS_THAN_OR_EQUALS} ${VALUE_MASK}` },
-  [BITWISE_EXCLUSIVE_MAXIMUM]: { lower: undefined, upper: `${LESS_THAN} ${EXCLUSIVE_UPPER_VALUE_MASK}` },
+  [BITWISE_EXCLUSIVE_MAXIMUM]: { lower: undefined, upper: `${LESS_THAN} ${EXCLUSIVE_VALUE_MASK}` },
   // two fields
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_MINIMUM]:
     { lower: `${GREATER_THAN} ${VALUE_MASK}`, upper: undefined },
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_MAXIMUM]:
-    { lower: `${GREATER_THAN} ${EXCLUSIVE_LOWER_VALUE_MASK}`, upper: `${LESS_THAN_OR_EQUALS} ${VALUE_MASK}` },
+    { lower: `${GREATER_THAN} ${EXCLUSIVE_VALUE_MASK}`, upper: `${LESS_THAN_OR_EQUALS} ${VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_EXCLUSIVE_MAXIMUM]:
-    { lower: `${GREATER_THAN} ${EXCLUSIVE_LOWER_VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_UPPER_VALUE_MASK}` },
+    { lower: `${GREATER_THAN} ${EXCLUSIVE_VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MAXIMUM | BITWISE_MINIMUM]:
-    { lower: `${GREATER_THAN_OR_EQUALS} ${VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_UPPER_VALUE_MASK}` },
+    { lower: `${GREATER_THAN_OR_EQUALS} ${VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MAXIMUM | BITWISE_MAXIMUM]:
     { lower: undefined, upper: `${LESS_THAN} ${VALUE_MASK}` },
   [BITWISE_MAXIMUM | BITWISE_MINIMUM]:
@@ -100,9 +100,9 @@ const MINIMAX_CHAINS_MAPPING: Record<number, ValueRange> = {
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_MINIMUM | BITWISE_MAXIMUM]:
     { lower: `${GREATER_THAN} ${VALUE_MASK}`, upper: `${LESS_THAN_OR_EQUALS} ${VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_MINIMUM | BITWISE_EXCLUSIVE_MAXIMUM]:
-    { lower: `${GREATER_THAN} ${VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_UPPER_VALUE_MASK}` },
+    { lower: `${GREATER_THAN} ${VALUE_MASK}`, upper: `${LESS_THAN} ${EXCLUSIVE_VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MINIMUM | BITWISE_MAXIMUM | BITWISE_EXCLUSIVE_MAXIMUM]:
-    { lower: `${GREATER_THAN} ${EXCLUSIVE_LOWER_VALUE_MASK}`, upper: `${LESS_THAN} ${VALUE_MASK}` },
+    { lower: `${GREATER_THAN} ${EXCLUSIVE_VALUE_MASK}`, upper: `${LESS_THAN} ${VALUE_MASK}` },
   [BITWISE_EXCLUSIVE_MAXIMUM | BITWISE_MINIMUM | BITWISE_MAXIMUM]:
     { lower: `${GREATER_THAN_OR_EQUALS} ${VALUE_MASK}`, upper: `${LESS_THAN} ${VALUE_MASK}` },
   // all fields
@@ -154,13 +154,11 @@ function resolveEffectiveUpperBitwiseKey(key: number, maxValue: unknown, exclMax
 function substituteValues(
   template: string,
   regularValue: unknown,
-  exclusiveLowerValue: number | undefined,
-  exclusiveUpperValue: number | undefined,
+  exclusiveValue: number | undefined,
 ): string {
   return template
     .replace(VALUE_MASK, `${regularValue}`)
-    .replace(EXCLUSIVE_LOWER_VALUE_MASK, isDefined(exclusiveLowerValue) ? `${exclusiveLowerValue}` : DEFAULT_CHARACTER)
-    .replace(EXCLUSIVE_UPPER_VALUE_MASK, isDefined(exclusiveUpperValue) ? `${exclusiveUpperValue}` : DEFAULT_CHARACTER)
+    .replace(EXCLUSIVE_VALUE_MASK, isDefined(exclusiveValue) ? `${exclusiveValue}` : DEFAULT_CHARACTER)
 }
 
 export function useValueRangeValidation(
@@ -249,10 +247,10 @@ export function useValueRangeValidation(
       ? { ...MINIMAX_CHAINS_MAPPING[afterBitwiseKey] }
       : undefined
   if (afterMapping?.lower) {
-    afterMapping.lower = substituteValues(afterMapping.lower, minimum, exclusiveLowerValue, exclusiveUpperValue)
+    afterMapping.lower = substituteValues(afterMapping.lower, minimum, exclusiveLowerValue)
   }
   if (afterMapping?.upper) {
-    afterMapping.upper = substituteValues(afterMapping.upper, maximum, exclusiveLowerValue, exclusiveUpperValue)
+    afterMapping.upper = substituteValues(afterMapping.upper, maximum, exclusiveUpperValue)
   }
 
   // Saving them
@@ -341,10 +339,10 @@ export function useValueRangeValidation(
       ? { ...MINIMAX_CHAINS_MAPPING[beforeBitwiseKey] }
       : undefined
   if (beforeMapping?.lower) {
-    beforeMapping.lower = substituteValues(beforeMapping.lower, beforeMinimum, beforeExclusiveLowerValue, beforeExclusiveUpperValue)
+    beforeMapping.lower = substituteValues(beforeMapping.lower, beforeMinimum, beforeExclusiveLowerValue)
   }
   if (beforeMapping?.upper) {
-    beforeMapping.upper = substituteValues(beforeMapping.upper, beforeMaximum, beforeExclusiveLowerValue, beforeExclusiveUpperValue)
+    beforeMapping.upper = substituteValues(beforeMapping.upper, beforeMaximum, beforeExclusiveUpperValue)
   }
 
   // Re-saving them
