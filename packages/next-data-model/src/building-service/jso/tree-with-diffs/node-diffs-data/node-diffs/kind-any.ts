@@ -27,6 +27,7 @@ export class JsoNodeDiffsAggregatorKindAny
   }
 
   public aggregate(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     crawlValue: object | null,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diffsMetaKeys: DiffMetaKeys,
@@ -35,10 +36,6 @@ export class JsoNodeDiffsAggregatorKindAny
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
-    if (!isObject(crawlValue)) {
-      return undefined
-    }
-
     const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
 
     if (parentNode) {

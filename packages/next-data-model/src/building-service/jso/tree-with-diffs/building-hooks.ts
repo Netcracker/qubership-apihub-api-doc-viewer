@@ -8,7 +8,7 @@ import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../shared/new-tree-building-hooks";
 
 type JsoTreeWithDiffsBuildingNodeParams = {
-  value: object | null
+  value: NonNullable<unknown> | null
   newDataLevel: boolean
   parent: JsoTreeNodeWithDiffs | null
   container: JsoTreeNodeWithDiffs | null

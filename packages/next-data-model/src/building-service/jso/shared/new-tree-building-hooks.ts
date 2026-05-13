@@ -1,7 +1,6 @@
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
-import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
+import { SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode } from "../../../model/abstract/tree/tree-node.interface";
-import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { CommonState } from "../../abstract/json-crawl-entities/state/types";
 import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
@@ -34,7 +33,7 @@ export interface NewTreeBuildingHooksFactoryParams<
   N extends ITreeNode<V, K, M>,
   S extends CommonState<V, K, M, N>,
   P extends {
-    value: object | null
+    value: NonNullable<unknown> | null
     newDataLevel: boolean
     parent: N | null
     container: N | null
@@ -79,7 +78,7 @@ export function createNewTreeBuildingHooks<
   S extends CommonState<V, K, M, N>,
   R extends SchemaCrawlRule<K, S>,
   P extends {
-    value: object | null
+    value: NonNullable<unknown> | null
     newDataLevel: boolean
     parent: N | null
     container: N | null
@@ -110,7 +109,7 @@ export function createNewTreeBuildingHooks<
       return;
     }
 
-    const { alreadyConvertedValuesCache, parent, container } = state;
+    const { alreadyConvertedValuesCache, parent } = state;
     const alreadyExisted = alreadyConvertedValuesCache.get(value);
 
     if (
@@ -129,9 +128,6 @@ export function createNewTreeBuildingHooks<
     const nodeId = "#" + buildPointer(path);
     const nodeKey = resolveNodeKey(key, value);
     const cycledClone = tree.createCycledClone(alreadyExisted, nodeId, nodeKey, parent);
-    if (container) {
-      container.addNestedNode(cycledClone);
-    }
     if (parent) {
       parent.addChildNode(cycledClone);
     }
@@ -159,27 +155,25 @@ export function createNewTreeBuildingHooks<
     if (typeof key === "symbol") {
       return { done: true };
     }
-    if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
+    if (value === undefined) {
       return { done: true };
     }
     if (!rules.kind || !supportedNodeKinds.includes(rules.kind)) {
       return;
     }
 
-    const { parent, container } = state;
+    const { parent } = state;
     const nodeId = "#" + buildPointer(path);
     const nodeKey = resolveNodeKey(key, value);
     const { kind, complex = false } = rules;
 
-    const nodeParams = createNodeParams(value, parent, container);
+    const nodeParams = createNodeParams(value, parent, null);
     const treeNode = createNodeFromRaw(nodeId, nodeKey, kind, complex, nodeParams);
     if (!treeNode) {
       return;
     }
 
-    if (container) {
-      container.addNestedNode(treeNode);
-    } else if (parent) {
+    if (parent) {
       parent.addChildNode(treeNode);
     }
 

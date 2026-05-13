@@ -1,4 +1,5 @@
 import { SchemaTransformFunc } from "@apihub/next-data-model/building-service/async-api/json-crawl-entities/transformers/types/types"
+import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/tree/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type"
 import {
   JSON_SCHEMA_NODE_TYPES,
@@ -20,16 +21,11 @@ import {
   JSON_SCHEMA_PROPERTY_EXCLUSIVE_MAXIMUM,
   JSON_SCHEMA_PROPERTY_EXCLUSIVE_MINIMUM,
   JSON_SCHEMA_PROPERTY_FORMAT,
-  JSON_SCHEMA_PROPERTY_ITEMS,
-  JSON_SCHEMA_PROPERTY_MAX_ITEMS,
+  JSON_SCHEMA_PROPERTY_ITEMS, JSON_SCHEMA_PROPERTY_MAXIMUM, JSON_SCHEMA_PROPERTY_MAX_ITEMS,
   JSON_SCHEMA_PROPERTY_MAX_LENGTH,
-  JSON_SCHEMA_PROPERTY_MAX_PROPERTIES,
-  JSON_SCHEMA_PROPERTY_MAXIMUM,
-  JSON_SCHEMA_PROPERTY_MIN_ITEMS,
+  JSON_SCHEMA_PROPERTY_MAX_PROPERTIES, JSON_SCHEMA_PROPERTY_MINIMUM, JSON_SCHEMA_PROPERTY_MIN_ITEMS,
   JSON_SCHEMA_PROPERTY_MIN_LENGTH,
-  JSON_SCHEMA_PROPERTY_MIN_PROPERTIES,
-  JSON_SCHEMA_PROPERTY_MINIMUM,
-  JSON_SCHEMA_PROPERTY_MULTIPLE_OF,
+  JSON_SCHEMA_PROPERTY_MIN_PROPERTIES, JSON_SCHEMA_PROPERTY_MULTIPLE_OF,
   JSON_SCHEMA_PROPERTY_NOT,
   JSON_SCHEMA_PROPERTY_NULLABLE,
   JSON_SCHEMA_PROPERTY_ONE_OF,
@@ -47,26 +43,41 @@ import {
 } from "@netcracker/qubership-apihub-api-unifier"
 import { isObject } from "../../../../utilities"
 import { JsoTreeCrawlState } from "../state/types"
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value"
 
 export class JsoRawValueUtilities {
+  public static readonly DEFAULT_BASE_JSO_NODE_VALUE: JsoTreeNodeValueBase = {
+    title: '',
+    value: undefined,
+    valueType: JsoPropertyValueTypes.UNKNOWN,
+    isPrimitive: false,
+    isArrayItem: false,
+    isPredefinedValueSet: false,
+  }
+
   public static readonly transformRawJsoPropertyToBaseJsoNodeValue: SchemaTransformFunc<JsoTreeCrawlState> = (
     key,
     value,
   ): JsoTreeNodeValue => {
+    const title = (
+      key === undefined || key === null
+        ? ''
+        : typeof key === 'symbol'
+          ? key.toString()
+          : `${key}`
+    )
+    const isArrayItem = typeof key === 'number' && key >= 0
+    return JsoRawValueUtilities.transformRawJsoValueToBaseJsoNodeValue(value, title, isArrayItem)
+  }
+
+  public static transformRawJsoValueToBaseJsoNodeValue(value: unknown, title: string = '', isArrayItem: boolean = false): JsoTreeNodeValueBase {
     const valueType = JsoRawValueUtilities.getValueType(value)
     const isPrimitive = JsoRawValueUtilities.isPrimitiveValue(valueType)
     return {
-      title:
-        key === undefined || key === null
-          ? ''
-          : typeof key === 'symbol'
-            ? key.toString()
-            : `${key}`,
+      title,
       value,
       valueType,
       isPrimitive,
-      isArrayItem: typeof key === 'number' && key >= 0,
+      isArrayItem,
       isPredefinedValueSet: JsoRawValueUtilities.isPredefinedValueSet(valueType),
     }
   }

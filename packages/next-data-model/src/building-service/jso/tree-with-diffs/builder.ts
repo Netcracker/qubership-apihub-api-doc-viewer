@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { JsoComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/complex-node.impl";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
@@ -10,7 +10,7 @@ import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-me
 import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { annotation, breaking, deprecated, DiffType, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { annotation, breaking, deprecated, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
@@ -65,7 +65,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) ? value : null,
+        value: value !== undefined ? value : null,
         newDataLevel: true,
         container,
         parent,
@@ -114,38 +114,42 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     id: NodeId,
     key: NodeKey,
     kind: JsoTreeNodeKind,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     complex: boolean,
     params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs | undefined {
-    const { parent = null, container = null, newDataLevel } = params
-
-    if (complex) {
-      const nodeMeta = this.createNodeMeta(key, params)
-      const complexParams: ComplexTreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
-        type: TreeNodeComplexityTypes.COMPLEX,
-        parent: parent && this.isJsoSimpleTreeNodeWithDiffs(parent) ? parent : null,
-        container: container && this.isJsoComplexTreeNodeWithDiffs(container) ? container : null,
-        value: null,
-        meta: nodeMeta,
-        newDataLevel,
-      }
-      const treeNode = this.tree.createComplexNode(id, key, kind, false, complexParams)
-      this.assignNodeDiffs(treeNode, kind, params)
-      return treeNode
-    }
+    const { parent = null, newDataLevel } = params
 
     const nodeValue = this.createNodeValue(key, kind, params)
     const nodeMeta = this.createNodeMeta(key, params)
     const simpleParams: SimpleTreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource> = {
       type: TreeNodeComplexityTypes.SIMPLE,
       parent: parent && this.isJsoSimpleTreeNodeWithDiffs(parent) ? parent : null,
-      container: container && this.isJsoComplexTreeNodeWithDiffs(container) ? container : null,
+      container: null,
       value: nodeValue,
       meta: nodeMeta,
       newDataLevel,
     }
     const treeNode = this.tree.createSimpleNode(id, key, kind, false, simpleParams)
     this.assignNodeDiffs(treeNode, kind, params)
+
+    const nodeDiffs = treeNode.diffs
+    const nodeChangePropertyMetdata = nodeDiffs['']
+    if (nodeChangePropertyMetdata) {
+      const { data: diff } = nodeChangePropertyMetdata
+      if (isDiffAdd(diff)) {
+        nodeValue && Object.assign(nodeValue.before, JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
+      }
+      if (isDiffRemove(diff)) {
+        nodeValue && Object.assign(nodeValue.after, JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
+      }
+      if (isDiffReplace(diff)) {
+        const { beforeValue } = diff
+        const transformedBeforeValue = JsoRawValueUtilities.transformRawJsoValueToBaseJsoNodeValue(beforeValue)
+        nodeValue && Object.assign(nodeValue.before, transformedBeforeValue)
+      }
+    }
+
     return treeNode
   }
 
@@ -165,11 +169,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoTreeNodeValueWithDiffs | null {
     const { value } = params
-    return this.nodeDataBuilder.createNodeValue(
-      kind,
-      value,
-      (source, keys) => this.pick(source, keys),
-    )
+    return this.nodeDataBuilder.createNodeValue(kind, value, () => null)
   }
 
   protected createNodeDiffs(
