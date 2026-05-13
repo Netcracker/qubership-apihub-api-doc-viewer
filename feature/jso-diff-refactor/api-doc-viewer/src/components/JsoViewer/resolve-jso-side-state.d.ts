@@ -1,6 +1,6 @@
 import { ChangedPropertyMetaData, DiffStyles, HighlightVariant } from '../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { LayoutSide } from '../../types/internal/LayoutSide';
-import { JsoTreeNodeValueBase } from '../../../../next-data-model/src/model/jso/types/node-value';
+import { JsoTreeNodeValueBase } from '../../../../next-data-model/src/model/jso/tree/node-value';
 import { JsoPropertyValueType } from '../../../../next-data-model/src/model/jso/types/node-value-type';
 type ResolveJsoSideStateInput = {
     nodeValue?: JsoTreeNodeValueBase | null;
