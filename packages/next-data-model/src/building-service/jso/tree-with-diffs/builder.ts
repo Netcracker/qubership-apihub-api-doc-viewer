@@ -64,11 +64,11 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       tree: this.tree,
       supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
-      createNodeParams: (value, parent, container) => ({
-        value: value !== undefined ? value : null,
+      createNodeParams: (value, parent) => ({
+        value: value ?? null,
         newDataLevel: true,
-        container,
-        parent,
+        container: null,
+        parent: parent,
       }),
       createStateForSimpleNode: (_state, node, cache) => ({
         parent: node,
@@ -83,7 +83,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+      shouldStopAfterNodeCreation: (value) => !isObject(value),
     })
 
     syncCrawl<JsoTreeWithDiffsCrawlState, JsoWithDiffsCrawlRule>(
