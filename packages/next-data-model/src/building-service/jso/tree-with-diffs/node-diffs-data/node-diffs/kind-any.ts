@@ -40,38 +40,16 @@ export class JsoNodeDiffsAggregatorKindAny
     const diffs = crawlValue[diffsMetaKey]
     const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
 
-    if (containerNode) {
-      const containerNodeDiff = containerNode.diffs[""]
-      if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
-        nodeDiffs[""] = containerNodeDiff
-      } else {
-        const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs) {
-          nodeDiffs[""] = maybeNodeDiffs
-          return nodeDiffs
-        }
-      }
-    } else if (parentNode) {
-      const parentNodeDiff = parentNode.diffs[""]
-      if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
-        nodeDiffs[""] = parentNodeDiff
-      } else {
-        const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
-        if (maybeNodeDiffs) {
-          nodeDiffs[""] = maybeNodeDiffs
-          return nodeDiffs
-        }
-      }
-    }
-
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       return undefined
     }
 
-    for (const key of JsoNodeDiffsAggregatorKindAny.DIFFABLE_NODE_VALUE_KEYS) {
-      const diff = diffs[key]
-      diff && this.aggregateValueDiff(diff, key, nodeDiffs)
+    const diff = diffs[nodeKey]
+    if (!diff) {
+      return undefined
     }
+
+    this.aggregateValueDiff(diff, 'value', nodeDiffs)
 
     return nodeDiffs
   }
@@ -84,6 +62,7 @@ export class JsoNodeDiffsAggregatorKindAny
     let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     if (isDiffAdd(diff)) {
+      key = ''
       beforeStyles = {
         isContentVisible: false,
         backgroundColor: HighlightVariant.Gray,
@@ -94,6 +73,7 @@ export class JsoNodeDiffsAggregatorKindAny
       }
     }
     if (isDiffRemove(diff)) {
+      key = ''
       beforeStyles = {
         isContentVisible: true,
         backgroundColor: HighlightVariant.Red,

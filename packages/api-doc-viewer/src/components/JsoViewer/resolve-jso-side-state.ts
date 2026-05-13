@@ -1,7 +1,7 @@
 import { ChangedPropertyMetaData, DiffStyles, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
-import { getValueType, isPredefinedValueSet as checkIsPredefinedValueSet } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/json-crawl-entities/transformers/inline-jso-property-params"
+import { JsoRawValueUtilities } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/json-crawl-entities/transformers/inline-jso-property-params"
 import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 
@@ -51,7 +51,7 @@ export function resolveJsoSideState(input: ResolveJsoSideStateInput): ResolvedJs
 
   const sideStyles = layoutSide === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after
   const resolvedValue = resolveSideValue(nodeValue, diff, layoutSide)
-  const resolvedValueType = getValueType(resolvedValue)
+  const resolvedValueType = JsoRawValueUtilities.getValueType(resolvedValue)
   const isComplexValue = isComplexType(resolvedValueType)
   const isVisible = sideStyles.isContentVisible
 
@@ -60,7 +60,7 @@ export function resolveJsoSideState(input: ResolveJsoSideStateInput): ResolvedJs
     showSubheader: isVisible && isRenderableValueType(resolvedValueType),
     resolvedValue,
     resolvedValueType,
-    isPredefinedValueSet: checkIsPredefinedValueSet(resolvedValueType),
+    isPredefinedValueSet: JsoRawValueUtilities.isPredefinedValueSet(resolvedValueType),
     isComplexValue,
     sideStyles,
   }
@@ -103,8 +103,8 @@ export function isPrimitiveComplexTransitionReplaceDiff(diff?: ChangedPropertyMe
   if (!diff || !isDiffReplace(diff.data)) {
     return false
   }
-  const beforeType = getValueType(diff.data.beforeValue)
-  const afterType = getValueType(diff.data.afterValue)
+  const beforeType = JsoRawValueUtilities.getValueType(diff.data.beforeValue)
+  const afterType = JsoRawValueUtilities.getValueType(diff.data.afterValue)
   const beforeIsComplex = isComplexType(beforeType)
   const afterIsComplex = isComplexType(afterType)
   const beforeIsPrimitive = isRenderableValueType(beforeType)
@@ -168,15 +168,15 @@ function isComplexType(valueType: JsoPropertyValueType): boolean {
 }
 
 function isComplexValue(value: unknown): boolean {
-  return isComplexType(getValueType(value))
+  return isComplexType(JsoRawValueUtilities.getValueType(value))
 }
 
 function pickPreferredChangedSideValue(currentValue: unknown, fallbackAfterValue: unknown): unknown {
   if (fallbackAfterValue === undefined) {
     return currentValue
   }
-  const currentType = getValueType(currentValue)
-  const fallbackType = getValueType(fallbackAfterValue)
+  const currentType = JsoRawValueUtilities.getValueType(currentValue)
+  const fallbackType = JsoRawValueUtilities.getValueType(fallbackAfterValue)
   return currentType === fallbackType
     ? currentValue
     : fallbackAfterValue

@@ -17,7 +17,7 @@ import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
 import { getJsoWithDiffsCrawlRules } from "../json-crawl-entities/rules/rules.jso-with-diffs";
 import { JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { getValueType } from "../json-crawl-entities/transformers/inline-jso-property-params";
+import { JsoRawValueUtilities } from "../json-crawl-entities/transformers/raw-jso-property-to-base-jso-node-value";
 import { createJsoTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { JsoNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { JsoNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
@@ -316,8 +316,8 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (!candidateDiff || !isDiffReplace(candidateDiff.data)) {
       return false
     }
-    const beforeType = getValueType(candidateDiff.data.beforeValue)
-    const afterType = getValueType(candidateDiff.data.afterValue)
+    const beforeType = JsoRawValueUtilities.getValueType(candidateDiff.data.beforeValue)
+    const afterType = JsoRawValueUtilities.getValueType(candidateDiff.data.afterValue)
     const beforeIsComplex = this.isJsoComplexValueType(beforeType)
     const afterIsComplex = this.isJsoComplexValueType(afterType)
     return beforeIsComplex !== afterIsComplex
