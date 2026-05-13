@@ -1,12 +1,12 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyKey, DiffFlags, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, ChangedPropertyMetaData, DiffFlags, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { JsoRawValueUtilities } from "../../../json-crawl-entities/transformers/raw-jso-property-to-base-jso-node-value";
 import { DiffMetaKeys } from "./factory";
 
@@ -32,19 +32,17 @@ export class JsoNodeDiffsAggregatorKindAny
 
   public aggregate(
     crawlValue: object | null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
     parentNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
-    const { diffsMetaKey } = diffsMetaKeys
-
     if (!isObject(crawlValue)) {
       return undefined
     }
 
-    const diffs = crawlValue[diffsMetaKey]
     const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
 
     if (parentNode) {
@@ -56,29 +54,129 @@ export class JsoNodeDiffsAggregatorKindAny
           nodeDiffs[''] = parentNodeChangePropertyMetadata
           return nodeDiffs
         }
-        // complex <-> primitive, complex <-> complex in parent
         if (isDiffReplace(diff)) {
-          const propertyMetadata = parentNode.descendantDiffs[nodeKey]
-          if (propertyMetadata) {
+          const { beforeValue, afterValue } = diff
+          const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
+          const afterValueType = JsoRawValueUtilities.getValueType(afterValue)
+          const isBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(beforeValueType)
+          const isAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(afterValueType)
+
+          // primitive <-> primitive
+          if (isBeforeValuePrimitive && isAfterValuePrimitive) {
+            nodeDiffs[''] = parentNodeChangePropertyMetadata
+            return nodeDiffs
+          }
+
+          // complex <-> primitive
+          if (!isBeforeValuePrimitive && isObject(beforeValue) && isAfterValuePrimitive) {
+            const nextBeforeValue = beforeValue[nodeKey]
+            const nextBeforeValueType = JsoRawValueUtilities.getValueType(nextBeforeValue)
+            const isNextBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextBeforeValueType)
+            const isNextBeforeValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(nextBeforeValueType)
+
+            const propertyMetadata: ChangedPropertyMetaData = {
+              data: {
+                ...diff,
+                beforeValue: nextBeforeValue,
+                afterValue: null,
+              },
+              styles: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.styles.before,
+                  isContentVisible: true,
+                  backgroundColor: HighlightVariant.Yellow,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.styles.after,
+                  isContentVisible: false,
+                  backgroundColor: HighlightVariant.Gray,
+                },
+              },
+              flags: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.flags.before,
+                  increaseLevel: true,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.flags.after,
+                  increaseLevel: false,
+                },
+              },
+            }
+            if (isNextBeforeValuePrimitive) {
+              propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow
+            }
+            if (isNextBeforeValuePredefined) {
+              propertyMetadata.styles.before.borderShadowColor = HighlightVariant.Yellow
+            }
             nodeDiffs[''] = propertyMetadata
             return nodeDiffs
           }
+
+          // primitive <-> complex
+          if (!isAfterValuePrimitive && isObject(afterValue) && isBeforeValuePrimitive) {
+            const nextAfterValue = afterValue[nodeKey]
+            const nextAfterValueType = JsoRawValueUtilities.getValueType(nextAfterValue)
+            const isNextAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextAfterValueType)
+            const isNextAfterValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(nextAfterValueType)
+
+            const propertyMetadata: ChangedPropertyMetaData = {
+              data: {
+                ...diff,
+                beforeValue: null,
+                afterValue: nextAfterValue,
+              },
+              styles: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.styles.before,
+                  isContentVisible: false,
+                  backgroundColor: HighlightVariant.Gray,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.styles.after,
+                  isContentVisible: true,
+                  backgroundColor: HighlightVariant.Yellow,
+                },
+              },
+              flags: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.flags.before,
+                  increaseLevel: false,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.flags.after,
+                  increaseLevel: true,
+                },
+              },
+            }
+            if (isNextAfterValuePrimitive) {
+              propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow
+            }
+            if (isNextAfterValuePredefined) {
+              propertyMetadata.styles.after.borderShadowColor = HighlightVariant.Yellow
+            }
+            nodeDiffs[''] = propertyMetadata
+            return nodeDiffs
+          }
+
+          // complex <-> complex
+          if (!isBeforeValuePrimitive && isObject(beforeValue) && !isAfterValuePrimitive && isObject(afterValue)) {
+            // TODO: IMPLEMENT COMPLEX <-> COMPLEX DIFFS AGGREGATION
+            nodeDiffs[''] = parentNodeChangePropertyMetadata
+            return nodeDiffs
+          }
+        }
+      } else {
+        // add/remove object property/array item itself
+        const propertyMetadata = parentNode.descendantDiffs[nodeKey]
+        if (propertyMetadata) {
+          nodeDiffs[''] = propertyMetadata
+          return nodeDiffs
         }
       }
     }
 
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
-      return undefined
-    }
-
-    const diff = diffs[nodeKey]
-    if (!diff) {
-      return undefined
-    }
-
-    this.aggregateValueDiff(diff, 'value', nodeDiffs)
-
-    return nodeDiffs
+    return undefined
   }
 
   protected aggregateValueDiff(
