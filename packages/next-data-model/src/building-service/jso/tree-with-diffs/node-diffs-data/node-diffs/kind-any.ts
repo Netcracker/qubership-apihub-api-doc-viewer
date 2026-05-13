@@ -35,6 +35,7 @@ export class JsoNodeDiffsAggregatorKindAny
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
     parentNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     containerNode?: ITreeNodeWithDiffs<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): NodeDiffs<JsoTreeNodeDiffsSource> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
@@ -45,6 +46,26 @@ export class JsoNodeDiffsAggregatorKindAny
 
     const diffs = crawlValue[diffsMetaKey]
     const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
+
+    if (parentNode) {
+      const parentNodeChangePropertyMetadata = parentNode.diffs['']
+      if (parentNodeChangePropertyMetadata) {
+        const { data: diff } = parentNodeChangePropertyMetadata
+        // add/remove object property/array item in parent
+        if (isDiffAdd(diff) || isDiffRemove(diff)) {
+          nodeDiffs[''] = parentNodeChangePropertyMetadata
+          return nodeDiffs
+        }
+        // complex <-> primitive, complex <-> complex in parent
+        if (isDiffReplace(diff)) {
+          const propertyMetadata = parentNode.descendantDiffs[nodeKey]
+          if (propertyMetadata) {
+            nodeDiffs[''] = propertyMetadata
+            return nodeDiffs
+          }
+        }
+      }
+    }
 
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       return undefined
