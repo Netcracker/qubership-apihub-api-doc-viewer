@@ -1,8 +1,8 @@
 import { ChangedPropertyMetaData, DiffStyles, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
-import { JsoRawValueUtilities } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/json-crawl-entities/transformers/inline-jso-property-params"
-import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
+import { JsoRawValueUtilities } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/json-crawl-entities/transformers/raw-jso-property-to-base-jso-node-value"
+import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 
 type ResolveJsoSideStateInput = {
