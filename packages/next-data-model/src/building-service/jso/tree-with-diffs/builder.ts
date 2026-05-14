@@ -147,7 +147,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       if (isDiffReplace(diff)) {
         const { beforeValue } = diff
         const transformedBeforeValue = JsoRawValueUtilities.transformRawJsoValueToBaseJsoNodeValue(beforeValue)
-        nodeValue && Object.assign(nodeValue.before, transformedBeforeValue)
+        nodeValue && (nodeValue.before = transformedBeforeValue)
       }
     }
 

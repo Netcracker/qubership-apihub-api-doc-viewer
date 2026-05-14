@@ -1,7 +1,5 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
-import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, useCallback, useMemo, useState } from "react"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
@@ -9,11 +7,7 @@ import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 import {
-  isDiffWithComplexValue,
-  isPrimitiveComplexTransitionReplaceDiff,
-  resolveHiddenDescendantsLayoutSide,
-  resolveJsoSideState,
-  withForcedBackgroundColor
+  isDiffWithComplexValue
 } from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerWithDiffsProps = {
@@ -21,25 +15,10 @@ type JsoPropertyNodeViewerWithDiffsProps = {
   supportJsonSchema?: boolean
 }
 
-type JsoPropertyNodeViewerWithDiffsInnerProps = JsoPropertyNodeViewerWithDiffsProps & {
-  forceYellowDescendantDiffs?: boolean
-  forceYellowObjectDescendantHeaders?: boolean
-  hiddenLayoutSide?: LayoutSide
-  hiddenLayoutSideLevelCap?: number
-}
-
 export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsProps> = (props) => {
-  return <JsoPropertyNodeViewerWithDiffsInner {...props} />
-}
-
-const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInnerProps> = (props) => {
   const {
     node,
     supportJsonSchema = false,
-    forceYellowDescendantDiffs = false,
-    forceYellowObjectDescendantHeaders = false,
-    hiddenLayoutSide,
-    hiddenLayoutSideLevelCap,
   } = props
 
   const level = useLevelContext()
@@ -55,49 +34,11 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
   const nodeDescendantDiffs = node.descendantDiffs
   const nodeDiffsSeverities = node.diffsSeverities
 
-  const nodeValueDiff = useMemo(() => nodeDiffs['value'] ?? nodeDiffs[''], [nodeDiffs])
-
-  const nodeTitleDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
+  const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
 
   const expandable = useMemo(() => {
     return Boolean((nodeValue && !nodeValue.after.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
   }, [nodeValue, nodeValueDiff])
-
-  const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
-  const hasPrimitiveComplexTransitionOwnDiff = useMemo(
-    () => isPrimitiveComplexTransitionReplaceDiff(nodeValueDiff),
-    [nodeValueDiff],
-  )
-  const shouldForceYellowForCurrentNode = forceYellowDescendantDiffs
-  const shouldForceYellowForChildren = forceYellowDescendantDiffs || hasComplexOwnDiff
-  const shouldForceYellowObjectHeaderForCurrentNode = forceYellowObjectDescendantHeaders
-  const shouldForceYellowObjectHeaderForChildren = forceYellowObjectDescendantHeaders || hasPrimitiveComplexTransitionOwnDiff
-  const hiddenLayoutSideForChildren = useMemo(
-    () => hiddenLayoutSide ?? resolveHiddenDescendantsLayoutSide(nodeValueDiff),
-    [hiddenLayoutSide, nodeValueDiff],
-  )
-  const hiddenLayoutSideLevelCapForChildren = useMemo(() => {
-    if (hiddenLayoutSideLevelCap !== undefined) {
-      return hiddenLayoutSideLevelCap
-    }
-    return hiddenLayoutSideForChildren ? level : undefined
-  }, [hiddenLayoutSideForChildren, hiddenLayoutSideLevelCap, level])
-
-  const effectiveValueDiff = useMemo(
-    () => withForcedBackgroundColor(
-      nodeValueDiff,
-      shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined,
-    ),
-    [nodeValueDiff, shouldForceYellowForCurrentNode],
-  )
-
-  const effectiveTitleDiff = useMemo(
-    () => withForcedBackgroundColor(
-      nodeTitleDiff,
-      shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined,
-    ),
-    [nodeTitleDiff, shouldForceYellowForCurrentNode],
-  )
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -105,49 +46,50 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
         return <></>
       }
 
-      const sideState = resolveJsoSideState({
-        nodeValue: nodeValue?.after,
-        diff: effectiveValueDiff,
-        layoutSide,
-      })
-      if (hiddenLayoutSide === layoutSide) {
-        return <></>
+      if (!nodeValueDiff) {
+        return <></> // Return subheader with no changes!
       }
-      return (
-        <JsoValueWithDiffs
-          isVisible={sideState.showSubheader}
-          value={sideState.resolvedValue}
-          appearance={sideState.isPredefinedValueSet ? 'block' : 'text'}
-          backgroundColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : sideState.sideStyles?.backgroundColor}
-          textHighlighterColor={shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : sideState.sideStyles?.textHighlighterColor}
-          borderShadowColor={sideState.sideStyles?.borderShadowColor}
-        />
-      )
+
+      const { styles } = nodeValueDiff
+
+      if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+        return (
+          <JsoValueWithDiffs
+            isVisible={styles.before.isContentVisible}
+            value={nodeValue.before.value}
+            appearance={nodeValue.before.isPredefinedValueSet ? 'block' : 'text'}
+            backgroundColor={styles.before.backgroundColor}
+            textHighlighterColor={styles.before.textHighlighterColor}
+            borderShadowColor={styles.before.borderShadowColor}
+          />
+        )
+      }
+
+      if (layoutSide === CHANGED_LAYOUT_SIDE) {
+        return (
+          <JsoValueWithDiffs
+            isVisible={styles.after.isContentVisible}
+            value={nodeValue.after.value}
+            appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
+            backgroundColor={styles.after.backgroundColor}
+            textHighlighterColor={styles.after.textHighlighterColor}
+            borderShadowColor={styles.after.borderShadowColor}
+          />
+        )
+      }
+
+      return <></>
     },
-    [effectiveValueDiff, hiddenLayoutSide, nodeValue, shouldForceYellowForCurrentNode]
+    [nodeValue, nodeValueDiff]
   )
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'forcedMainHeaderTextHighlighterColor' | 'hiddenLayoutSide' | 'hiddenLayoutSideLevelCap' | 'disableMainHeaderDiff'> = useMemo(() => {
-    const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
-    const forcedMainHeaderTextHighlighterColor = shouldForceYellowObjectHeaderForCurrentNode && !nodeValue?.after.isArrayItem
-      ? HighlightVariant.Yellow
-      : undefined
-    const disableMainHeaderDiff = Boolean(
-      nodeDiffs[''] &&
-      nodeDiffs[''] === effectiveTitleDiff &&
-      isDiffReplace(nodeDiffs[''].data),
-    )
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     return {
-      diff: effectiveTitleDiff,
+      diff: nodeValueDiff,
       descendantDiffs: nodeDescendantDiffs,
       diffsSeverities: nodeDiffsSeverities,
-      forcedBackgroundColor,
-      forcedMainHeaderTextHighlighterColor,
-      hiddenLayoutSide,
-      hiddenLayoutSideLevelCap,
-      disableMainHeaderDiff,
     }
-  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities, nodeValue?.after.isArrayItem, shouldForceYellowForCurrentNode, shouldForceYellowObjectHeaderForCurrentNode])
+  }, [nodeDescendantDiffs, nodeDiffsSeverities, nodeValueDiff])
 
   const childrenProperties = node.childrenNodes()
 
@@ -171,13 +113,9 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
             key={childProperty.id}
             value={nextLevel}
           >
-            <JsoPropertyNodeViewerWithDiffsInner
+            <JsoPropertyNodeViewerWithDiffs
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
-              forceYellowDescendantDiffs={shouldForceYellowForChildren}
-              forceYellowObjectDescendantHeaders={shouldForceYellowObjectHeaderForChildren}
-              hiddenLayoutSide={hiddenLayoutSideForChildren}
-              hiddenLayoutSideLevelCap={hiddenLayoutSideLevelCapForChildren}
             />
           </LevelContext.Provider>
         )

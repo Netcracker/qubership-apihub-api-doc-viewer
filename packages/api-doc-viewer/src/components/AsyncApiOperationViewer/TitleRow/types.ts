@@ -1,7 +1,6 @@
 import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import type {
   ChangedPropertyMetaData,
-  HighlightVariant,
   NodeDescendantDiffs,
   NodeDiffsSeverities
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -20,11 +19,6 @@ export type TitleRowProps = {
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
-  forcedBackgroundColor?: HighlightVariant
-  forcedMainHeaderTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
-  hiddenLayoutSide?: LayoutSide
-  hiddenLayoutSideLevelCap?: number
-  disableMainHeaderDiff?: boolean
 }
 
 export type TitleRowContentProps = TitleRowProps & {
