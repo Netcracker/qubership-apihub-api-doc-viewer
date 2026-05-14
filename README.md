@@ -3,7 +3,7 @@
 Library which can render JSON schemas, GraphQL schemas and
 GraphAPI specifications in human-readable way.
 
-### Installation 
+### Installation
 
 ``
 npm add @netcracker/qubership-apihub-api-doc-viewer
