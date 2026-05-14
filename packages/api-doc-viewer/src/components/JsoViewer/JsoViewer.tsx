@@ -1,20 +1,18 @@
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
+import { DisplayModeContext, useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { JsoTreeBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree/builder"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree/node-value"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
-import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
-import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, memo, useMemo } from "react"
 import { DisplayMode, DOCUMENT_LAYOUT_MODE, LayoutMode } from "../.."
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "./Aligner"
 import { JsoPropertyNodeViewer } from "./JsoPropertyNodeViewer"
 import './styles/index.css'
@@ -79,7 +77,7 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
 })
 
 type RenderJsoPropertyInput = {
-  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  node: JsoTreeNode
   supportJsonSchema: boolean
 }
 
@@ -124,7 +122,12 @@ const JsoPropertyNodeRenderSwitch: FC<RenderJsoPropertyInput> = (input) => {
     )
   }
 
-  return <JsoPropertyNodeViewer node={node} supportJsonSchema={supportJsonSchema} />
+  return (
+    <JsoPropertyNodeViewer
+      node={node}
+      supportJsonSchema={supportJsonSchema}
+    />
+  )
 }
 
 function prepareJsonSchemaForJsoViewer(

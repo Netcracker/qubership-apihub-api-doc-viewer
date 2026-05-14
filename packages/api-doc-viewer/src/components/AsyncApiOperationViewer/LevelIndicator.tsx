@@ -18,6 +18,7 @@ export const LevelIndicator: FC<LevelIndicatorProps> = (props) => {
         display: 'flex',
         gap: 24,
         alignSelf: 'stretch',
+        minHeight: '1em',
       }}
     >
       {Array.from({ length: level }).map((_, index) => (

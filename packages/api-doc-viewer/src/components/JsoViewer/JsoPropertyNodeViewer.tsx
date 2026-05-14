@@ -1,15 +1,14 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
-import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
 import { FC, useCallback, useMemo, useState } from "react"
-import { JsoValue } from "./JsoValue/JsoValue"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
+import { JsoValue } from "./JsoValue/JsoValue"
 import { resolveJsoSideState } from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerProps = {
-  node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>
+  node: JsoTreeNode
   supportJsonSchema?: boolean
 }
 

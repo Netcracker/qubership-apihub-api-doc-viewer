@@ -1,14 +1,13 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
-import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
 import { FC, useCallback, useMemo, useState } from "react"
-import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
+import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 import {
   isDiffWithComplexValue,
   isPrimitiveComplexTransitionReplaceDiff,
@@ -18,7 +17,7 @@ import {
 } from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerWithDiffsProps = {
-  node: JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
+  node: JsoTreeNodeWithDiffs
   supportJsonSchema?: boolean
 }
 
@@ -58,10 +57,10 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
 
   const nodeValueDiff = useMemo(() => nodeDiffs['value'] ?? nodeDiffs[''], [nodeDiffs])
 
-  const nodeTitleDiff = useMemo(() => nodeDiffs[''] ?? nodeDiffs['title'], [nodeDiffs])
+  const nodeTitleDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
 
   const expandable = useMemo(() => {
-    return Boolean((nodeValue && !nodeValue.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
+    return Boolean((nodeValue && !nodeValue.after.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
   }, [nodeValue, nodeValueDiff])
 
   const hasComplexOwnDiff = useMemo(() => isDiffWithComplexValue(nodeValueDiff), [nodeValueDiff])
@@ -107,7 +106,7 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
       }
 
       const sideState = resolveJsoSideState({
-        nodeValue,
+        nodeValue: nodeValue?.after,
         diff: effectiveValueDiff,
         layoutSide,
       })
@@ -130,13 +129,12 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'forcedBackgroundColor' | 'forcedMainHeaderTextHighlighterColor' | 'hiddenLayoutSide' | 'hiddenLayoutSideLevelCap' | 'disableMainHeaderDiff'> = useMemo(() => {
     const forcedBackgroundColor = shouldForceYellowForCurrentNode ? HighlightVariant.Yellow : undefined
-    const forcedMainHeaderTextHighlighterColor = shouldForceYellowObjectHeaderForCurrentNode && !nodeValue?.isArrayItem
+    const forcedMainHeaderTextHighlighterColor = shouldForceYellowObjectHeaderForCurrentNode && !nodeValue?.after.isArrayItem
       ? HighlightVariant.Yellow
       : undefined
     const disableMainHeaderDiff = Boolean(
       nodeDiffs[''] &&
       nodeDiffs[''] === effectiveTitleDiff &&
-      !nodeDiffs['title'] &&
       isDiffReplace(nodeDiffs[''].data),
     )
     return {
@@ -149,7 +147,7 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
       hiddenLayoutSideLevelCap,
       disableMainHeaderDiff,
     }
-  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities, nodeValue?.isArrayItem, shouldForceYellowForCurrentNode, shouldForceYellowObjectHeaderForCurrentNode])
+  }, [effectiveTitleDiff, hiddenLayoutSide, hiddenLayoutSideLevelCap, nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities, nodeValue?.after.isArrayItem, shouldForceYellowForCurrentNode, shouldForceYellowObjectHeaderForCurrentNode])
 
   const childrenProperties = node.childrenNodes()
 
@@ -161,7 +159,7 @@ const JsoPropertyNodeViewerWithDiffsInner: FC<JsoPropertyNodeViewerWithDiffsInne
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={TextValueVariant.body}
-        enableMainHeader={!nodeValue?.isArrayItem}
+        enableMainHeader={!nodeValue?.after.isArrayItem}
         subheader={subheader}
         // diffs
         {...titleRowDiffProps}
