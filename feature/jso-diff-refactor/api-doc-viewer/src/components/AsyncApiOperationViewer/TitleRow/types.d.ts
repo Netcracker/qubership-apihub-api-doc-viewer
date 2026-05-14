@@ -1,5 +1,5 @@
 import type { LayoutSide } from '../../../types/internal/LayoutSide';
-import type { ChangedPropertyMetaData, HighlightVariant, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import type { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import type { ReactElement } from '../../../../../../node_modules/react';
 import { TextValueVariant } from "../TextValue/types";
 export type TitleRowProps = {
@@ -13,11 +13,6 @@ export type TitleRowProps = {
     diff?: ChangedPropertyMetaData;
     descendantDiffs?: NodeDescendantDiffs;
     diffsSeverities?: NodeDiffsSeverities;
-    forcedBackgroundColor?: HighlightVariant;
-    forcedMainHeaderTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
-    hiddenLayoutSide?: LayoutSide;
-    hiddenLayoutSideLevelCap?: number;
-    disableMainHeaderDiff?: boolean;
 };
 export type TitleRowContentProps = TitleRowProps & {
     layoutSide: LayoutSide;
