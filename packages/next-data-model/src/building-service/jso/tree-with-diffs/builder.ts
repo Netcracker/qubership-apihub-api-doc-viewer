@@ -139,10 +139,10 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (nodeChangePropertyMetdata) {
       const { data: diff } = nodeChangePropertyMetdata
       if (isDiffAdd(diff)) {
-        nodeValue && Object.assign(nodeValue.before, JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
+        nodeValue && (nodeValue.before = JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
       }
       if (isDiffRemove(diff)) {
-        nodeValue && Object.assign(nodeValue.after, JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
+        nodeValue && (nodeValue.after = JsoRawValueUtilities.DEFAULT_BASE_JSO_NODE_VALUE)
       }
       if (isDiffReplace(diff)) {
         const { beforeValue } = diff
