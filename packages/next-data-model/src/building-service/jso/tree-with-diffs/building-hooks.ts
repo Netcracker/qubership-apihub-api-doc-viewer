@@ -5,7 +5,7 @@ import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-me
 import { SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../shared/new-tree-building-hooks";
+import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
 
 type JsoTreeWithDiffsBuildingNodeParams = {
   value: NonNullable<unknown> | null

@@ -1,10 +1,10 @@
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { ITreeNode } from "../../../model/abstract/tree/tree-node.interface";
-import { isObject } from "../../../utilities";
-import { NodeId, NodeKey } from "../../../utility-types";
-import { CommonState } from "../../abstract/json-crawl-entities/state/types";
-import { SchemaCrawlRule } from "../json-crawl-entities/rules/types";
+import { ITreeNode } from "../../../../model/abstract/tree/tree-node.interface";
+import { isObject } from "../../../../utilities";
+import { NodeId, NodeKey } from "../../../../utility-types";
+import { SchemaCrawlRule } from "../../../jso/json-crawl-entities/rules/types";
+import { CommonState } from "../state/types";
 
 type NodeCache<
   V extends object | null,

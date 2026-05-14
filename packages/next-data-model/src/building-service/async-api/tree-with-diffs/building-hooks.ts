@@ -3,7 +3,7 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../../jso/shared/new-tree-building-hooks";
+import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 
