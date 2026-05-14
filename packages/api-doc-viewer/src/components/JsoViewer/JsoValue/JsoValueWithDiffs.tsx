@@ -9,8 +9,6 @@ export type JsoValueWithDiffsProps = {
   appearance: JsoValueWithDiffsAppearance
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   borderShadowColor?: HighlightVariant
-  backgroundColor?: HighlightVariant
-  blockClassName?: string
 }
 
 export const JsoValueWithDiffs: FC<JsoValueWithDiffsProps> = memo<JsoValueWithDiffsProps>((props) => {
@@ -20,15 +18,11 @@ export const JsoValueWithDiffs: FC<JsoValueWithDiffsProps> = memo<JsoValueWithDi
     appearance,
     textHighlighterColor,
     borderShadowColor,
-    backgroundColor,
-    blockClassName,
   } = props
   const className = useJsoValueWithDiffsStyles({
     appearance,
     textHighlighterColor,
     borderShadowColor,
-    backgroundColor,
-    blockClassName,
   })
 
   return (

@@ -8,8 +8,6 @@ export type UseJsoValueWithDiffsStylesInput = {
   appearance: JsoValueWithDiffsAppearance
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   borderShadowColor?: HighlightVariant
-  backgroundColor?: HighlightVariant
-  blockClassName?: string
 }
 
 export function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInput): string {
@@ -17,8 +15,6 @@ export function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInpu
     appearance,
     textHighlighterColor,
     borderShadowColor,
-    backgroundColor,
-    blockClassName = 'px-2 rounded-md',
   } = input
 
   return useMemo(() => {
@@ -26,9 +22,8 @@ export function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInpu
       'jso-value',
       'subheader',
       appearance === 'text' ? DiffsClassesBuilder.highlighter(textHighlighterColor) : '',
-      appearance === 'block' ? blockClassName : '',
+      appearance === 'block' ? 'px-2 rounded-md bg-slate-200' : '',
       appearance === 'block' ? DiffsClassesBuilder.borderShadow(borderShadowColor) : '',
-      appearance === 'block' ? DiffsClassesBuilder.background(backgroundColor) : '',
     ].filter(Boolean).join(' ')
-  }, [appearance, backgroundColor, blockClassName, borderShadowColor, textHighlighterColor])
+  }, [appearance, borderShadowColor, textHighlighterColor])
 }

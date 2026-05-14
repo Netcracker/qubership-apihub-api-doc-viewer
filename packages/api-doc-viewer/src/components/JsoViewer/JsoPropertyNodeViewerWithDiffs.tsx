@@ -58,7 +58,6 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
             isVisible={styles.before.isContentVisible}
             value={nodeValue.before.value}
             appearance={nodeValue.before.isPredefinedValueSet ? 'block' : 'text'}
-            backgroundColor={styles.before.backgroundColor}
             textHighlighterColor={styles.before.textHighlighterColor}
             borderShadowColor={styles.before.borderShadowColor}
           />
@@ -71,7 +70,6 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
             isVisible={styles.after.isContentVisible}
             value={nodeValue.after.value}
             appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
-            backgroundColor={styles.after.backgroundColor}
             textHighlighterColor={styles.after.textHighlighterColor}
             borderShadowColor={styles.after.borderShadowColor}
           />
