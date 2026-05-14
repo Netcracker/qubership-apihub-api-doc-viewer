@@ -83,10 +83,7 @@ export class JsoTreeBuilder extends TreeBuilder<
       isComplexNode: (node): node is JsoComplexTreeNode => this.isJsoComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
       isDisallowedValue: (value) => value === undefined,
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(
-        value.isPrimitive ||
-        this.supportJsonSchema && value.valueType === JsoPropertyValueTypes.JSON_SCHEMA
-      ),
+      shouldStopAfterNodeCreation: (value) => !isObject(value) && !Array.isArray(value), // restore json schema condition
     })
 
     syncCrawl<JsoTreeCrawlState, JsoCrawlRule>(
