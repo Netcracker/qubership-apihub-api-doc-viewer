@@ -20,7 +20,7 @@ export class SimpleTreeNodeWithDiffs<
   protected readonly _childrenNodes: ITreeNodeWithDiffs<V, K, M, D>[] = []
   protected readonly _nestedNodes: ITreeNodeWithDiffs<V, K, M, D>[] = []
 
-  protected readonly _diffs: NodeDiffs<D> = { }
+  protected readonly _diffs: NodeDiffs<D> = {}
   protected readonly _diffsSummary: NodeDiffsSummary = new Set()
   protected readonly _descendantDiffs: NodeDescendantDiffs = {}
   protected readonly _descendantDiffsSummary: NodeDescendantDiffsSummary = new Set()
@@ -51,7 +51,6 @@ export class SimpleTreeNodeWithDiffs<
   ) {
     const {
       type = TreeNodeComplexityTypes.SIMPLE,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       value = null,
       parent = null,
       container = null,
@@ -62,8 +61,7 @@ export class SimpleTreeNodeWithDiffs<
     this.parent = parent;
     this.container = container;
     this.newDataLevel = newDataLevel;
-    // TODO 05.05.26 // This is redundant! Node value is assigned in building service!
-    this._value = null;
+    this._value = value;
     this._meta = meta!; // if you did not pass "meta", that is wrong contract
     // TODO 05.11.25 // Separate params contract for different scenarios.
   }
