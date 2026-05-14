@@ -83,7 +83,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       {showLevelAndExpanderGroup && (
-        <div className="flex flex-row items-stretch h-full">
+        <div className="flex flex-row items-stretch self-stretch">
           <LevelIndicator level={levelIndicatorLevel} />
           {!isHiddenLayoutSide && (
             <Expander
