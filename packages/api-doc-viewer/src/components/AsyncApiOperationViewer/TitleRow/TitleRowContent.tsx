@@ -1,5 +1,4 @@
 import { useLevelContext } from "@apihub/contexts/LevelContext"
-import { HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
@@ -21,11 +20,6 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     layoutSide,
     enableMainHeader = true,
     subheader,
-    forcedBackgroundColor,
-    forcedMainHeaderTextHighlighterColor,
-    hiddenLayoutSide,
-    hiddenLayoutSideLevelCap,
-    disableMainHeaderDiff = false,
   } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,21 +27,8 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
   const level = useLevelContext()
 
-  const isHiddenLayoutSide = hiddenLayoutSide === layoutSide
-  const levelIndicatorLevel = isHiddenLayoutSide && hiddenLayoutSideLevelCap !== undefined
-    ? Math.min(level, hiddenLayoutSideLevelCap)
-    : level
-  const showLevelAndExpanderGroup = levelIndicatorLevel > 0 || (!isHiddenLayoutSide && expandable)
-
   const diffsStyleClasses = useMemo(() => {
     const diffsStyleClasses: string[] = []
-    if (isHiddenLayoutSide) {
-      diffsStyleClasses.push(DiffsClassesBuilder.background(HighlightVariant.Gray))
-      return diffsStyleClasses
-    }
-    if (forcedBackgroundColor) {
-      diffsStyleClasses.push(DiffsClassesBuilder.background(forcedBackgroundColor))
-    }
     if (!diff) {
       return diffsStyleClasses
     }
@@ -78,33 +59,28 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       }
     }
     return diffsStyleClasses
-  }, [diff, forcedBackgroundColor, isHiddenLayoutSide, layoutSide])
+  }, [diff, layoutSide])
 
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
-      {showLevelAndExpanderGroup && (
-        <div className="flex flex-row items-stretch self-stretch">
-          <LevelIndicator level={levelIndicatorLevel} />
-          {!isHiddenLayoutSide && (
-            <Expander
-              expandable={expandable}
-              expanded={expanded}
-              onClick={onClickExpander}
-              level={level}
-            />
-          )}
-        </div>
-      )}
-      {enableMainHeader && !isHiddenLayoutSide && (
+      <div className="flex flex-row items-stretch self-stretch">
+        <LevelIndicator level={level} />
+        <Expander
+          expandable={expandable}
+          expanded={expanded}
+          onClick={onClickExpander}
+          level={level}
+        />
+      </div>
+      {enableMainHeader && (
         <TextValue
           value={value}
           variant={variant}
           layoutSide={layoutSide}
-          diff={disableMainHeaderDiff ? undefined : diff}
-          forcedTextHighlighterColor={forcedMainHeaderTextHighlighterColor}
+          diff={diff}
         />
       )}
-      {!isHiddenLayoutSide && subheader?.(layoutSide)}
+      {subheader?.(layoutSide)}
     </div>
   )
 })
