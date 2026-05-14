@@ -26,6 +26,10 @@ export class JsoNodeDiffsAggregatorKindAny
     increaseLevel: true,
   }
 
+  private isComplexValue(value: unknown): value is Record<string, unknown> {
+    return isObject(value) || Array.isArray(value)
+  }
+
   public aggregate(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     crawlValue: object | null,
@@ -61,7 +65,7 @@ export class JsoNodeDiffsAggregatorKindAny
           }
 
           // complex <-> primitive
-          if (!isBeforeValuePrimitive && isObject(beforeValue) && isAfterValuePrimitive) {
+          if (!isBeforeValuePrimitive && this.isComplexValue(beforeValue) && isAfterValuePrimitive) {
             const nextBeforeValue = beforeValue[nodeKey]
             const nextBeforeValueType = JsoRawValueUtilities.getValueType(nextBeforeValue)
             const isNextBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextBeforeValueType)
@@ -107,7 +111,7 @@ export class JsoNodeDiffsAggregatorKindAny
           }
 
           // primitive <-> complex
-          if (!isAfterValuePrimitive && isObject(afterValue) && isBeforeValuePrimitive) {
+          if (!isAfterValuePrimitive && this.isComplexValue(afterValue) && isBeforeValuePrimitive) {
             const nextAfterValue = afterValue[nodeKey]
             const nextAfterValueType = JsoRawValueUtilities.getValueType(nextAfterValue)
             const isNextAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextAfterValueType)
@@ -153,7 +157,7 @@ export class JsoNodeDiffsAggregatorKindAny
           }
 
           // complex <-> complex
-          if (!isBeforeValuePrimitive && isObject(beforeValue) && !isAfterValuePrimitive && isObject(afterValue)) {
+          if (!isBeforeValuePrimitive && this.isComplexValue(beforeValue) && !isAfterValuePrimitive && this.isComplexValue(afterValue)) {
             // TODO: IMPLEMENT COMPLEX <-> COMPLEX DIFFS AGGREGATION
             nodeDiffs[''] = parentNodeChangePropertyMetadata
             return nodeDiffs
