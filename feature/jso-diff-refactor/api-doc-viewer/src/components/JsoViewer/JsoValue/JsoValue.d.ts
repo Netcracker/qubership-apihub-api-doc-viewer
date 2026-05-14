@@ -4,7 +4,5 @@ export type JsoValueProps = {
     isVisible: boolean;
     value: unknown;
     appearance: JsoValueAppearance;
-    textClassName?: string;
-    blockClassName?: string;
 };
 export declare const JsoValue: FC<JsoValueProps>;
