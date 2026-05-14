@@ -1,11 +1,9 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, useCallback, useMemo, useState } from "react"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { JsoValue } from "./JsoValue/JsoValue"
-import { resolveJsoSideState } from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerProps = {
   node: JsoTreeNode
@@ -32,20 +30,16 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   }, [nodeValue])
 
   const subheader = useCallback(
-    (layoutSide: LayoutSide) => {
+    () => {
       if (!nodeValue) {
         return <></>
       }
 
-      const sideState = resolveJsoSideState({
-        nodeValue,
-        layoutSide,
-      })
       return (
         <JsoValue
-          isVisible={sideState.showSubheader}
-          value={sideState.resolvedValue}
-          appearance={sideState.isPredefinedValueSet ? 'block' : 'text'}
+          isVisible={true}
+          value={nodeValue.value}
+          appearance={nodeValue.isPredefinedValueSet ? 'block' : 'text'}
         />
       )
     },

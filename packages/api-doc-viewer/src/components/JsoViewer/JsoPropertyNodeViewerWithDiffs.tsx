@@ -47,7 +47,13 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
       }
 
       if (!nodeValueDiff) {
-        return <></> // Return subheader with no changes!
+        return (
+          <JsoValueWithDiffs
+            isVisible={nodeValue.after.isPrimitive}
+            value={nodeValue.after.value}
+            appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
+          />
+        )
       }
 
       const { styles } = nodeValueDiff

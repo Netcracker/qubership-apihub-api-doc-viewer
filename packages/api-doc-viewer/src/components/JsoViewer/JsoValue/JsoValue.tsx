@@ -6,8 +6,6 @@ export type JsoValueProps = {
   isVisible: boolean
   value: unknown
   appearance: JsoValueAppearance
-  textClassName?: string
-  blockClassName?: string
 }
 
 export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
@@ -15,13 +13,9 @@ export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
     isVisible,
     value,
     appearance,
-    textClassName,
-    blockClassName,
   } = props
   const className = useJsoValueStyles({
     appearance,
-    textClassName,
-    blockClassName,
   })
 
   return (
