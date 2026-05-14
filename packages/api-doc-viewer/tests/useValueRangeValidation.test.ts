@@ -43,7 +43,7 @@ function run(data: ValueRangeInitialData, changes: ValueRangeDiffData = {}) {
 }
 
 describe('static display (no diffs)', () => {
-  describe('JSON Schema Draft 07 and above numeric value exclusive bounds', () => {
+  describe('JSON Schema Draft 07 and above numeric value bounds', () => {
     test('exclusiveMinimum only → > {value}', () => {
       const { data } = run({ exclusiveMinimum: 5 })
       expect(data.lower).toBe('> 5')
@@ -60,6 +60,12 @@ describe('static display (no diffs)', () => {
       const { data } = run({ exclusiveMinimum: 1, exclusiveMaximum: 9 })
       expect(data.lower).toBe('> 1')
       expect(data.upper).toBe('< 9')
+    })
+
+    test('both inclusive bounds (minimum and maximum only) → >= {lo} and <= {hi}', () => {
+      const { data } = run({ minimum: 1, maximum: 100 })
+      expect(data.lower).toBe('>= 1')
+      expect(data.upper).toBe('<= 100')
     })
 
     test('minimum with exclusiveMaximum → >= {lo} and < {hi}', () => {
@@ -95,6 +101,18 @@ describe('static display (no diffs)', () => {
 
     test('exclusiveMaximum: true with maximum → < {maximum}', () => {
       const { data } = run({ exclusiveMaximum: true, maximum: 10 })
+      expect(data.upper).toBe('< 10')
+    })
+
+    test('both boolean exclusive flags with minimum 0 and maximum → > 0 and < {hi}', () => {
+      const { data, visible } = run({
+        exclusiveMinimum: true,
+        minimum: 0,
+        exclusiveMaximum: true,
+        maximum: 10,
+      })
+      expect(visible).toBe(true)
+      expect(data.lower).toBe('> 0')
       expect(data.upper).toBe('< 10')
     })
 
@@ -171,12 +189,6 @@ describe('static display (no diffs)', () => {
       const { data } = run({ maximum: 10, exclusiveMaximum: 10 })
       expect(data.upper).toBe('< 10')
     })
-
-    test('JSON Schema Draft 04 boolean combo is unaffected: exclusiveMinimum: true + minimum → > minimum', () => {
-      // Both bits set but exclusive is boolean (not numeric) → JSON Schema Draft 04 path, no effective resolution
-      const { data } = run({ minimum: 5, exclusiveMinimum: true })
-      expect(data.lower).toBe('> 5')
-    })
   })
 })
 
@@ -224,7 +236,7 @@ describe('JSON Schema Draft 07 and above numeric value diffs', () => {
     // api-diff: exclusiveMinimum → remove, minimum → add
     const { data, changes } = run(
       { minimum: 1, exclusiveMinimum: 0 },
-      { exclusiveMinimum: remove(2), minimum: add(1) },
+      { minimum: add(1), exclusiveMinimum: replace(2, 0) },
     )
     expect(data.lower).toBe('>= 1')
     expect(changes.lower).toMatchObject({ action: DiffAction.replace, beforeValue: '> 2', afterValue: '>= 1' })
