@@ -38,8 +38,7 @@ export class SimpleTreeNode<
     this.parent = parent;
     this.container = container;
     this.newDataLevel = newDataLevel;
-    // TODO 05.05.26 // This is redundant! Node value is assigned in building service!
-    this._value = null;
+    this._value = value;
     this._meta = meta!; // if you did not pass "meta", that is wrong contract
     // TODO 05.11.25 // Separate params contract for different scenarios.
   }

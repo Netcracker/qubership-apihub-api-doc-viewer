@@ -4,9 +4,7 @@ import { JsoWithDiffsCrawlRule } from "./types";
 
 export function getJsoWithDiffsCrawlRules(): CrawlRules<JsoWithDiffsCrawlRule> {
   return {
-    '/value': () => ({
-      '/*': () => getJsoWithDiffsCrawlRules(),
-    }),
+    '/*': () => getJsoWithDiffsCrawlRules(),
     kind: JsoTreeNodeKinds.PROPERTY,
   }
 }

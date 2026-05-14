@@ -64,7 +64,7 @@ export class JsoTreeBuilder extends TreeBuilder<
       supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) ? value : null,
+        value: value ?? null,
         newDataLevel: true,
         container,
         parent,
