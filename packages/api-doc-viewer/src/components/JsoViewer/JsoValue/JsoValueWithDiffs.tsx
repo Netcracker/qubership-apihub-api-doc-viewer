@@ -19,6 +19,7 @@ export const JsoValueWithDiffs: FC<JsoValueWithDiffsProps> = memo<JsoValueWithDi
     textHighlighterColor,
     borderShadowColor,
   } = props
+
   const className = useJsoValueWithDiffsStyles({
     appearance,
     textHighlighterColor,
