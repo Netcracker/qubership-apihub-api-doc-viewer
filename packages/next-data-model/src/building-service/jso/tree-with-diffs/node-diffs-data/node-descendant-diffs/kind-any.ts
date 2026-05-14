@@ -23,14 +23,10 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
     if (!isObject(crawlValue)) {
       return undefined;
     }
-    const value = crawlValue.value
-    if (!isObject(value)) {
-      return undefined
-    }
 
     const { diffsMetaKey } = diffsMetaKeys
 
-    const diffs = takeIfDiffsRecord(value[diffsMetaKey])
+    const diffs = takeIfDiffsRecord(crawlValue[diffsMetaKey])
     if (!diffs) {
       return undefined
     }
