@@ -4,7 +4,5 @@ export type UseJsoValueWithDiffsStylesInput = {
     appearance: JsoValueWithDiffsAppearance;
     textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
     borderShadowColor?: HighlightVariant;
-    backgroundColor?: HighlightVariant;
-    blockClassName?: string;
 };
 export declare function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInput): string;

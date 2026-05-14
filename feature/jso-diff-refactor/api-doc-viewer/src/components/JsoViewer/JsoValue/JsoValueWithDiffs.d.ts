@@ -7,7 +7,5 @@ export type JsoValueWithDiffsProps = {
     appearance: JsoValueWithDiffsAppearance;
     textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
     borderShadowColor?: HighlightVariant;
-    backgroundColor?: HighlightVariant;
-    blockClassName?: string;
 };
 export declare const JsoValueWithDiffs: FC<JsoValueWithDiffsProps>;
