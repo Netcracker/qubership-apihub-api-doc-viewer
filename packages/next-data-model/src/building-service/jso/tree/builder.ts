@@ -82,6 +82,7 @@ export class JsoTreeBuilder extends TreeBuilder<
       isSimpleNode: (node): node is JsoSimpleTreeNode => this.isJsoSimpleTreeNode(node),
       isComplexNode: (node): node is JsoComplexTreeNode => this.isJsoComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
+      isDisallowedValue: (value) => value === undefined,
       shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(
         value.isPrimitive ||
         this.supportJsonSchema && value.valueType === JsoPropertyValueTypes.JSON_SCHEMA

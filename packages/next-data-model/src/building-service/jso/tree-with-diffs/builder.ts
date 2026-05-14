@@ -83,6 +83,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
+      isDisallowedValue: (value) => value === undefined,
       shouldStopAfterNodeCreation: (value) => !isObject(value),
     })
 

@@ -13,6 +13,14 @@ type NodeCache<
   N extends ITreeNode<V, K, M>
 > = Map<unknown, N>;
 
+function defaultIsDisallowedValue(value: unknown): boolean {
+  return (
+    value === undefined ||
+    value === null ||
+    (!isObject(value) && !isArray(value))
+  );
+}
+
 type CycleCloneFactory<
   V extends object | null,
   K extends string,
@@ -68,6 +76,7 @@ export interface NewTreeBuildingHooksFactoryParams<
   isSimpleNode: (node: N) => boolean
   isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
+  isDisallowedValue?: (value: unknown) => boolean
   shouldStopAfterNodeCreation?: (value: unknown) => boolean
 }
 
@@ -102,6 +111,7 @@ export function createNewTreeBuildingHooks<
     isSimpleNode,
     isComplexNode,
     resolveNodeKey,
+    isDisallowedValue = defaultIsDisallowedValue,
     shouldStopAfterNodeCreation,
   } = params;
 
@@ -158,8 +168,7 @@ export function createNewTreeBuildingHooks<
     if (typeof key === "symbol") {
       return { done: true };
     }
-    // TODO: Extract value checker outside because they're different for different types of trees
-    if (value === undefined || value === null || !isObject(value) && !isArray(value)) {
+    if (isDisallowedValue(value)) {
       return { done: true };
     }
     if (!rules.kind || !supportedNodeKinds.includes(rules.kind)) {
