@@ -102,6 +102,10 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
   }, [nodeValue])
 
+  const allChildrenAreDiffs = useMemo(() => {
+    return childrenProperties.every(childProperty => !!childProperty.diffs[''])
+  }, [childrenProperties])
+
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
@@ -119,7 +123,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         let nextBeforeLevel = beforeLevel + 1
         let nextAfterLevel = afterLevel + 1
         const childNodeValueDiff = childProperty.diffs['']
-        if (childNodeValueDiff) {
+        if (childNodeValueDiff && allChildrenAreDiffs) {
           nextBeforeLevel = childNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
           nextAfterLevel = childNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
         }
