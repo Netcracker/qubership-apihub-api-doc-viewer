@@ -4,7 +4,7 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { ArrayUtils } from "@apihub/utils/common/arrays";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
-import { Dispatch, FC, memo, SetStateAction, useCallback, useState } from "react";
+import { Dispatch, FC, memo, SetStateAction, useCallback, useMemo, useState } from "react";
 import '../styles/TextValue.css';
 import { TextValueVariant } from "./types";
 
@@ -123,16 +123,24 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
-  return (
-    <div className={`${fontWeight ? `font-${fontWeight}` : ''}`}>
-      {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
-      <Expander
-        isExpandable={isExpandable(resolvedValue)}
-        expanded={expanded}
-        setExpanded={setExpanded}
-      />
-    </div>
-  )
+  const content = useMemo(() => <>
+    {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
+    <Expander
+      isExpandable={isExpandable(resolvedValue)}
+      expanded={expanded}
+      setExpanded={setExpanded}
+    />
+  </>, [renderElement, resolvedValue, diffsStyleClasses, isInvisible, expanded, setExpanded])
+
+  if (fontWeight) {
+    return (
+      <div className={`font-${fontWeight}`}>
+        {content}
+      </div>
+    )
+  }
+
+  return content
 })
 
 const OVERFLOW_LINES_AMOUNT = 5
