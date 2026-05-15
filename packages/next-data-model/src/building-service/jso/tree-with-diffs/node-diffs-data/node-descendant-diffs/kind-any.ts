@@ -8,6 +8,7 @@ import { DiffMetaKeys } from "../node-diffs/factory";
 export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescendantsDiffsAggregator {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
+    isHeaderVisible: true,
   }
 
   private readonly DEFAULT_DIFF_FLAGS: DiffFlags = {
@@ -46,6 +47,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
       if (isDiffAdd(diff)) {
         beforeStyles = {
           isContentVisible: false,
+          isHeaderVisible: false,
           backgroundColor: HighlightVariant.Gray,
         }
         beforeFlags = {
@@ -53,6 +55,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         }
         afterStyles = {
           isContentVisible: true,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Green,
         }
         afterFlags = {
@@ -63,6 +66,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
       if (isDiffRemove(diff)) {
         beforeStyles = {
           isContentVisible: true,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Red,
         }
         beforeFlags = {
@@ -70,6 +74,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         }
         afterStyles = {
           isContentVisible: false,
+          isHeaderVisible: false,
           backgroundColor: HighlightVariant.Gray,
         }
         afterFlags = {
@@ -87,6 +92,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         const isAfterValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(afterValueType)
         beforeStyles = {
           isContentVisible: isBeforeValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Yellow,
         }
         if (isBeforeValuePrimitive) {
@@ -98,6 +104,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         }
         afterStyles = {
           isContentVisible: isAfterValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Yellow,
         }
         if (isAfterValuePrimitive) {

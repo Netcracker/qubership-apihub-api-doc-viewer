@@ -40,6 +40,7 @@ export enum HighlightVariant {
 }
 export type DiffStyles = {
   isContentVisible: boolean
+  isHeaderVisible: boolean
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   backgroundColor?: HighlightVariant
   borderShadowColor?: HighlightVariant

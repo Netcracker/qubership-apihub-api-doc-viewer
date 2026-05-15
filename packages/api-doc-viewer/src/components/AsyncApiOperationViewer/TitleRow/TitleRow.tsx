@@ -32,14 +32,14 @@ export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
             left={
               <TitleRowContent
                 {...props}
-                enableMainHeader={enableMainHeader && diff?.styles.before.isContentVisible}
+                enableMainHeader={enableMainHeader && diff?.styles.before.isHeaderVisible}
                 layoutSide={ORIGIN_LAYOUT_SIDE}
               />
             }
             right={
               <TitleRowContent
                 {...props}
-                enableMainHeader={enableMainHeader && diff?.styles.after.isContentVisible}
+                enableMainHeader={enableMainHeader && diff?.styles.after.isHeaderVisible}
                 layoutSide={CHANGED_LAYOUT_SIDE}
               />}
           />

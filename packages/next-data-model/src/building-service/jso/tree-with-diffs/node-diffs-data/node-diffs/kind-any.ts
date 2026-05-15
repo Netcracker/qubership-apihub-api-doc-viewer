@@ -20,6 +20,7 @@ export class JsoNodeDiffsAggregatorKindAny
 
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
+    isHeaderVisible: true,
   }
 
   private readonly DEFAULT_DIFF_FLAGS: DiffFlags = {
@@ -81,11 +82,13 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: true,
+                  isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: false,
+                  isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
                 },
               },
@@ -127,11 +130,13 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: false,
+                  isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: true,
+                  isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
                 },
               },
