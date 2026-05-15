@@ -118,9 +118,10 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
       {expanded && childrenProperties.map(childProperty => {
         let nextBeforeLevel = beforeLevel + 1
         let nextAfterLevel = afterLevel + 1
-        if (nodeValueDiff) {
-          nextBeforeLevel = nodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
-          nextAfterLevel = nodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
+        const childNodeValueDiff = childProperty.diffs['']
+        if (childNodeValueDiff) {
+          nextBeforeLevel = childNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
+          nextAfterLevel = childNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
         }
         return (
           <AsyncLevelContextProvider
