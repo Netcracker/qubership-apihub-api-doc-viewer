@@ -98,7 +98,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const childrenProperties = node.childrenNodes()
 
-  const enableMainHeader = useMemo(() => {
+  const enableHeaderValue = useMemo(() => {
     return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
   }, [nodeValue])
 
@@ -114,7 +114,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={TextValueVariant.body}
-        enableMainHeader={enableMainHeader}
+        enableHeaderValue={enableHeaderValue}
         subheader={subheader}
         // diffs
         {...titleRowDiffProps}

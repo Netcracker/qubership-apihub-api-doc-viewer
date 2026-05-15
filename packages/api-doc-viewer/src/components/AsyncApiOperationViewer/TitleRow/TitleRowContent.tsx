@@ -17,7 +17,8 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     value,
     variant,
     layoutSide,
-    enableMainHeader = true,
+    enableHeader = true,
+    enableHeaderValue = true,
     subheader,
   } = props
 
@@ -47,25 +48,34 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     return diffsStyleClasses
   }, [diff, layoutSide])
 
+  const headerValueElement = useMemo(() => <>
+    {enableHeaderValue && (
+      <TextValue
+        value={value}
+        variant={variant}
+        layoutSide={layoutSide}
+        diff={diff}
+      />
+    )}
+  </>, [enableHeaderValue, value, variant, layoutSide, diff])
+
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
-      <div className="flex flex-row items-stretch self-stretch">
+      {enableHeader ? <>
+        <div className="flex flex-row items-stretch self-stretch">
+          <LevelIndicator level={level} />
+          <Expander
+            expandable={expandable}
+            expanded={expanded}
+            onClick={onClickExpander}
+            level={level}
+          />
+        </div>
+        {headerValueElement}
+      </> : <>
         <LevelIndicator level={level} />
-        <Expander
-          expandable={expandable}
-          expanded={expanded}
-          onClick={onClickExpander}
-          level={level}
-        />
-      </div>
-      {enableMainHeader && (
-        <TextValue
-          value={value}
-          variant={variant}
-          layoutSide={layoutSide}
-          diff={diff}
-        />
-      )}
+        {headerValueElement}
+      </>}
       {subheader?.(layoutSide)}
     </div>
   )

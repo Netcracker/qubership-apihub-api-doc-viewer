@@ -11,7 +11,7 @@ import type { TitleRowProps } from "./types"
 export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
   const layoutMode = useLayoutMode()
 
-  const { diff, diffsSeverities, enableMainHeader } = props
+  const { diff, diffsSeverities, enableHeaderValue } = props
 
   const diffType = useMemo(() => diffsSeverities?.["title-row"]?.type, [diffsSeverities])
   const diffTypeCause = useMemo(() => {
@@ -32,14 +32,16 @@ export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
             left={
               <TitleRowContent
                 {...props}
-                enableMainHeader={enableMainHeader && diff?.styles.before.isHeaderVisible}
+                enableHeader={diff?.styles.before.isHeaderVisible ?? true}
+                enableHeaderValue={enableHeaderValue}
                 layoutSide={ORIGIN_LAYOUT_SIDE}
               />
             }
             right={
               <TitleRowContent
                 {...props}
-                enableMainHeader={enableMainHeader && diff?.styles.after.isHeaderVisible}
+                enableHeader={diff?.styles.after.isHeaderVisible ?? true}
+                enableHeaderValue={enableHeaderValue}
                 layoutSide={CHANGED_LAYOUT_SIDE}
               />}
           />

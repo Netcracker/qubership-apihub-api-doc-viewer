@@ -56,7 +56,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={TextValueVariant.body}
-        enableMainHeader={!nodeValue?.isArrayItem}
+        enableHeaderValue={!nodeValue?.isArrayItem}
         subheader={subheader}
       />
       {expanded && childrenProperties.map(childProperty => {

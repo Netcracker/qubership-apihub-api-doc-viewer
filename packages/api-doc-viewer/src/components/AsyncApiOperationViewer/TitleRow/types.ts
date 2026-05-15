@@ -13,7 +13,8 @@ export type TitleRowProps = {
   expanded?: boolean
   onClickExpander?: () => void
   variant: TextValueVariant
-  enableMainHeader?: boolean
+  enableHeader?: boolean
+  enableHeaderValue?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
   // diffs
   diff?: ChangedPropertyMetaData
