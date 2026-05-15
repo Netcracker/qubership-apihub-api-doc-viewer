@@ -10,7 +10,7 @@
 
 .diffs-border-shadow_yellow {
   border: 0 !important;
-  box-shadow: 0 0 4px 1px yellow;
+  box-shadow: 0 0 4px 1px #FFB02E;
 }
 
 .diffs-border-shadow_gray {
