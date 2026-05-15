@@ -5,11 +5,8 @@ export type AsyncLevelContextValue = {
   afterLevel: number
 }
 
-export const AsyncLevelContext = createContext<AsyncLevelContextValue>({
-  beforeLevel: 0,
-  afterLevel: 0,
-})
+export const AsyncLevelContext = createContext<AsyncLevelContextValue | undefined>(undefined)
 
-export function useAsyncLevelContext(): AsyncLevelContextValue {
+export function useAsyncLevelContext(): AsyncLevelContextValue | undefined {
   return useContext(AsyncLevelContext)
 }

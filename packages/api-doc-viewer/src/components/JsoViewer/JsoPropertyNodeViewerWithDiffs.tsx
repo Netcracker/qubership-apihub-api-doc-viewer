@@ -22,7 +22,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     supportJsonSchema = false,
   } = props
 
-  const { beforeLevel, afterLevel } = useAsyncLevelContext()
+  const { beforeLevel, afterLevel } = useAsyncLevelContext()!
 
   const [expanded, setExpanded] = useState(true)
   const onClickExpander = useCallback(() => {

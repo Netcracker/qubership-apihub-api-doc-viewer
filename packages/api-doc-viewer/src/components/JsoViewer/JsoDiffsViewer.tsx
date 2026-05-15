@@ -1,9 +1,10 @@
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { DiffMetaKeysContext, useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
 import { DisplayModeContext, useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
@@ -55,7 +56,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       diffMetaKeys,
       diffTypes,
     } = props
-  
+
     const referenceNamePropertyKey = Symbol('referenceName')
 
     const builder = useMemo(
@@ -82,7 +83,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
         <DiffTypesContext.Provider value={diffTypes}>
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-              <LevelContext.Provider value={initialLevel}>
+              <AsyncLevelContextProvider beforeLevel={initialLevel} afterLevel={initialLevel}>
                 <div data-testid='jso-diffs-viewer'>
                   {jsoProperties.map(jsoProperty => (
                     <JsoPropertyNodeRenderSwitchWithDiffs
@@ -92,7 +93,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
                     />
                   ))}
                 </div>
-              </LevelContext.Provider>
+              </AsyncLevelContextProvider>
             </LayoutModeContext.Provider>
           </DisplayModeContext.Provider>
         </DiffTypesContext.Provider>
