@@ -74,7 +74,6 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         {headerValueElement}
       </> : <>
         <LevelIndicator level={level} />
-        {headerValueElement}
       </>}
       {subheader?.(layoutSide)}
     </div>
