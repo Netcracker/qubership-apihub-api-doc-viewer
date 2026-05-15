@@ -1,4 +1,4 @@
-import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
@@ -24,7 +24,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
 
-  const level = useLevelContext()
+  const { beforeLevel, afterLevel } = useAsyncLevelContext()
+  const level = useMemo(() => {
+    return layoutSide === ORIGIN_LAYOUT_SIDE ? beforeLevel : afterLevel
+  }, [layoutSide, beforeLevel, afterLevel])
 
   const diffsStyleClasses = useMemo(() => {
     const diffsStyleClasses: string[] = []

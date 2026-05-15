@@ -1,4 +1,5 @@
-import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, useCallback, useMemo, useState } from "react"
@@ -21,7 +22,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     supportJsonSchema = false,
   } = props
 
-  const level = useLevelContext()
+  const { beforeLevel, afterLevel } = useAsyncLevelContext()
 
   const [expanded, setExpanded] = useState(true)
   const onClickExpander = useCallback(() => {
@@ -97,6 +98,10 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const childrenProperties = node.childrenNodes()
 
+  const enableMainHeader = useMemo(() => {
+    return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
+  }, [nodeValue])
+
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
@@ -105,23 +110,29 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={TextValueVariant.body}
-        enableMainHeader={!nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem}
+        enableMainHeader={enableMainHeader}
         subheader={subheader}
         // diffs
         {...titleRowDiffProps}
       />
       {expanded && childrenProperties.map(childProperty => {
-        const nextLevel = level + 1
+        let nextBeforeLevel = beforeLevel + 1
+        let nextAfterLevel = afterLevel + 1
+        if (nodeValueDiff) {
+          nextBeforeLevel = nodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
+          nextAfterLevel = nodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
+        }
         return (
-          <LevelContext.Provider
+          <AsyncLevelContextProvider
             key={childProperty.id}
-            value={nextLevel}
+            beforeLevel={nextBeforeLevel}
+            afterLevel={nextAfterLevel}
           >
             <JsoPropertyNodeViewerWithDiffs
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />
-          </LevelContext.Provider>
+          </AsyncLevelContextProvider>
         )
       })}
     </div>
