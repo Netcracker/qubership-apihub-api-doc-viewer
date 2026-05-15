@@ -105,7 +105,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         expanded={expanded}
         onClickExpander={onClickExpander}
         variant={TextValueVariant.body}
-        enableMainHeader={!nodeValue?.after.isArrayItem}
+        enableMainHeader={!nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem}
         subheader={subheader}
         // diffs
         {...titleRowDiffProps}

@@ -1,4 +1,3 @@
-import { SchemaTransformFunc } from "@apihub/next-data-model/building-service/async-api/json-crawl-entities/transformers/types/types"
 import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/tree/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type"
 import {
@@ -42,7 +41,6 @@ import {
   JSON_SCHEMA_PROPERTY_WRITE_ONLY
 } from "@netcracker/qubership-apihub-api-unifier"
 import { isObject } from "../../../../utilities"
-import { JsoTreeCrawlState } from "../state/types"
 
 export class JsoRawValueUtilities {
   public static readonly DEFAULT_BASE_JSO_NODE_VALUE: JsoTreeNodeValueBase = {
@@ -54,10 +52,7 @@ export class JsoRawValueUtilities {
     isPredefinedValueSet: false,
   }
 
-  public static readonly transformRawJsoPropertyToBaseJsoNodeValue: SchemaTransformFunc<JsoTreeCrawlState> = (
-    key,
-    value,
-  ): JsoTreeNodeValue => {
+  public static transformRawJsoPropertyToBaseJsoNodeValue(key: PropertyKey | undefined | null, value: unknown): JsoTreeNodeValue {
     const title = (
       key === undefined || key === null
         ? ''
