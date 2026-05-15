@@ -45,6 +45,9 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
       let afterFlags: DiffFlags = this.DEFAULT_DIFF_FLAGS
 
       if (isDiffAdd(diff)) {
+        const { afterValue } = diff
+        const afterValueType = JsoRawValueUtilities.getValueType(afterValue)
+        const isAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(afterValueType)
         beforeStyles = {
           isContentVisible: false,
           isHeaderVisible: false,
@@ -54,7 +57,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
           increaseLevel: false,
         }
         afterStyles = {
-          isContentVisible: true,
+          isContentVisible: isAfterValuePrimitive,
           isHeaderVisible: true,
           backgroundColor: HighlightVariant.Green,
         }
@@ -64,8 +67,11 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
       }
 
       if (isDiffRemove(diff)) {
+        const { beforeValue } = diff
+        const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
+        const isBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(beforeValueType)
         beforeStyles = {
-          isContentVisible: true,
+          isContentVisible: isBeforeValuePrimitive,
           isHeaderVisible: true,
           backgroundColor: HighlightVariant.Red,
         }

@@ -48,10 +48,102 @@ export class JsoNodeDiffsAggregatorKindAny
       if (parentNodeChangePropertyMetadata) {
         const { data: diff } = parentNodeChangePropertyMetadata
         // add/remove object property/array item in parent
-        if (isDiffAdd(diff) || isDiffRemove(diff)) {
+        if (isDiffAdd(diff)) {
+          const { afterValue } = diff
+          const afterValueType = JsoRawValueUtilities.getValueType(afterValue)
+          const isAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(afterValueType)
+
+          if (!isAfterValuePrimitive && this.isComplexValue(afterValue)) {
+            const nextAfterValue = afterValue[nodeKey]
+            const nextAfterValueType = JsoRawValueUtilities.getValueType(nextAfterValue)
+            const isNextAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextAfterValueType)
+
+            const propertyMetadata: ChangedPropertyMetaData = {
+              data: {
+                ...diff,
+                afterValue: nextAfterValue,
+              },
+              styles: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.styles.before,
+                  isContentVisible: false,
+                  isHeaderVisible: false,
+                  backgroundColor: HighlightVariant.Gray,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.styles.after,
+                  isContentVisible: isNextAfterValuePrimitive,
+                  isHeaderVisible: true,
+                  backgroundColor: HighlightVariant.Green,
+                },
+              },
+              flags: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.flags.before,
+                  increaseLevel: false,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.flags.after,
+                  increaseLevel: true,
+                },
+              },
+            }
+
+            nodeDiffs[''] = propertyMetadata
+            return nodeDiffs
+          }
+
           nodeDiffs[''] = parentNodeChangePropertyMetadata
           return nodeDiffs
         }
+
+        if (isDiffRemove(diff)) {
+          const { beforeValue } = diff
+          const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
+          const isBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(beforeValueType)
+          if (!isBeforeValuePrimitive && this.isComplexValue(beforeValue)) {
+            const nextBeforeValue = beforeValue[nodeKey]
+            const nextBeforeValueType = JsoRawValueUtilities.getValueType(nextBeforeValue)
+            const isNextBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextBeforeValueType)
+
+            const propertyMetadata: ChangedPropertyMetaData = {
+              data: {
+                ...diff,
+                beforeValue: nextBeforeValue,
+              },
+              styles: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.styles.before,
+                  isContentVisible: isNextBeforeValuePrimitive,
+                  isHeaderVisible: true,
+                  backgroundColor: HighlightVariant.Red,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.styles.after,
+                  isContentVisible: false,
+                  isHeaderVisible: false,
+                  backgroundColor: HighlightVariant.Gray,
+                },
+              },
+              flags: {
+                before: {
+                  ...parentNodeChangePropertyMetadata.flags.before,
+                  increaseLevel: true,
+                },
+                after: {
+                  ...parentNodeChangePropertyMetadata.flags.after,
+                  increaseLevel: false,
+                },
+              },
+            }
+            nodeDiffs[''] = propertyMetadata
+            return nodeDiffs
+          }
+
+          nodeDiffs[''] = parentNodeChangePropertyMetadata
+          return nodeDiffs
+        }
+
         if (isDiffReplace(diff)) {
           const { beforeValue, afterValue } = diff
           const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
@@ -81,7 +173,7 @@ export class JsoNodeDiffsAggregatorKindAny
               styles: {
                 before: {
                   ...parentNodeChangePropertyMetadata.styles.before,
-                  isContentVisible: true,
+                  isContentVisible: isNextBeforeValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
                 },
@@ -135,7 +227,7 @@ export class JsoNodeDiffsAggregatorKindAny
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.styles.after,
-                  isContentVisible: true,
+                  isContentVisible: isNextAfterValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
                 },
