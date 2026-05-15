@@ -1,6 +1,5 @@
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
@@ -37,26 +36,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       return diffsStyleClasses
     }
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
-      if (isDiffRemove(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
-      if (isDiffAdd(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
-      if (isDiffReplace(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
-      if (isDiffRemove(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
-      if (isDiffAdd(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
-      if (isDiffReplace(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
     }
     return diffsStyleClasses
   }, [diff, layoutSide])
