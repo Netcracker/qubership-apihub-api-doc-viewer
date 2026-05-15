@@ -1,27 +1,24 @@
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
-import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
-import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
+import { DiffMetaKeysContext, useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
+import { DisplayModeContext, useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeValueWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-value"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
-import { JsoTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-kind"
-import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
-import { ErrorBoundary } from "../services/ErrorBoundary"
-import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { ErrorBoundary } from "../services/ErrorBoundary"
+import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { Aligner } from "./Aligner"
 import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
 
@@ -104,7 +101,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
   })
 
 type RenderJsoPropertyWithDiffsInput = {
-  node: JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>
+  node: JsoTreeNodeWithDiffs
   supportJsonSchema: boolean
 }
 
@@ -116,7 +113,7 @@ const JsoPropertyNodeRenderSwitchWithDiffs: FC<RenderJsoPropertyWithDiffsInput> 
   const nodeValue = node.value()
   const schema = supportJsonSchema ? prepareJsonSchemaForJsoViewer(node.key, nodeValue) : undefined
 
-  if (schema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
+  if (schema && nodeValue?.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA) {
     return (
       <Aligner key={node.id}>
         <JsonSchemaViewer
@@ -133,7 +130,7 @@ const JsoPropertyNodeRenderSwitchWithDiffs: FC<RenderJsoPropertyWithDiffsInput> 
     )
   }
 
-  if (schema && nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
+  if (schema && nodeValue?.after.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA) {
     if (!diffMetaKeys) {
       return <JsoPropertyNodeViewerWithDiffs node={node} supportJsonSchema={supportJsonSchema} />
     }
@@ -157,19 +154,19 @@ const JsoPropertyNodeRenderSwitchWithDiffs: FC<RenderJsoPropertyWithDiffsInput> 
 
 function prepareJsonSchemaForJsoViewer(
   nodeKey: NodeKey,
-  nodeValue: JsoTreeNodeValueBase | null | undefined,
+  nodeValue: JsoTreeNodeValueWithDiffs | null | undefined,
 ): object | undefined {
   if (!nodeValue) {
     return undefined
   }
   if (
-    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
   ) {
     return undefined
   }
 
-  return isObject(nodeValue.value)
-    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
+  return isObject(nodeValue.after.value)
+    ? { type: 'object', properties: { [nodeKey]: nodeValue.after.value } }
     : undefined
 }
