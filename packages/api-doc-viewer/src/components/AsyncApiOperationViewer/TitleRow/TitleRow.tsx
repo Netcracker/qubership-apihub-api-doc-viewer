@@ -11,7 +11,7 @@ import type { TitleRowProps } from "./types"
 export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
   const layoutMode = useLayoutMode()
 
-  const { diffsSeverities } = props
+  const { diff, diffsSeverities, enableMainHeader } = props
 
   const diffType = useMemo(() => diffsSeverities?.["title-row"]?.type, [diffsSeverities])
   const diffTypeCause = useMemo(() => {
@@ -29,8 +29,19 @@ export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
           hidden={false} // TODO: Implement diffs severities filters
         >
           <SideBySideLayout
-            left={<TitleRowContent {...props} layoutSide={ORIGIN_LAYOUT_SIDE} />}
-            right={<TitleRowContent {...props} layoutSide={CHANGED_LAYOUT_SIDE} />}
+            left={
+              <TitleRowContent
+                {...props}
+                enableMainHeader={enableMainHeader && diff?.styles.before.isContentVisible}
+                layoutSide={ORIGIN_LAYOUT_SIDE}
+              />
+            }
+            right={
+              <TitleRowContent
+                {...props}
+                enableMainHeader={enableMainHeader && diff?.styles.after.isContentVisible}
+                layoutSide={CHANGED_LAYOUT_SIDE}
+              />}
           />
         </DiffFloatingBadgeWrapper>
       )
