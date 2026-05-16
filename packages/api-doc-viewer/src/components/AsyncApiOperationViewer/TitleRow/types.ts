@@ -7,6 +7,11 @@ import type {
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
 
+export enum TitleRowUsage {
+  DEFAULT = 'default',
+  JSO_PROPERTY = 'jso-property',
+}
+
 export type TitleRowProps = {
   value?: string // Document Mode
   expandable: boolean
@@ -16,6 +21,7 @@ export type TitleRowProps = {
   enableHeader?: boolean
   enableHeaderValue?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
+  usage?: TitleRowUsage
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs

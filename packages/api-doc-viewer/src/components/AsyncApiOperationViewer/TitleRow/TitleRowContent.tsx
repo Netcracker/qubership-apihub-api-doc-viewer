@@ -6,7 +6,7 @@ import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
-import type { TitleRowContentProps } from "./types"
+import { TitleRowContentProps, TitleRowUsage } from "./types"
 
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
 
@@ -21,6 +21,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     enableHeader = true,
     enableHeaderValue = true,
     subheader,
+    usage = TitleRowUsage.DEFAULT,
   } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -59,10 +60,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         value={value}
         variant={variant}
         layoutSide={layoutSide}
-        diff={diff}
+        diff={usage === TitleRowUsage.DEFAULT ? diff : undefined}
       />
     )}
-  </>, [enableHeaderValue, value, variant, layoutSide, diff])
+  </>, [enableHeaderValue, value, variant, layoutSide, usage, diff])
 
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>

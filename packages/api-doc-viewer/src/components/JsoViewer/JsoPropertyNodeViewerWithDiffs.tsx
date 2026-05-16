@@ -5,7 +5,7 @@ import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-mod
 import { FC, useCallback, useMemo, useState } from "react"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
-import { TitleRowProps } from "../AsyncApiOperationViewer/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../AsyncApiOperationViewer/TitleRow/types"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 import {
   isDiffWithComplexValue
@@ -116,6 +116,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         variant={TextValueVariant.body}
         enableHeaderValue={enableHeaderValue}
         subheader={subheader}
+        usage={TitleRowUsage.JSO_PROPERTY}
         // diffs
         {...titleRowDiffProps}
       />

@@ -3,6 +3,7 @@ import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/
 import { FC, useCallback, useMemo, useState } from "react"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
+import { TitleRowUsage } from "../AsyncApiOperationViewer/TitleRow/types"
 import { JsoValue } from "./JsoValue/JsoValue"
 
 type JsoPropertyNodeViewerProps = {
@@ -58,6 +59,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         variant={TextValueVariant.body}
         enableHeaderValue={!nodeValue?.isArrayItem}
         subheader={subheader}
+        usage={TitleRowUsage.JSO_PROPERTY}
       />
       {expanded && childrenProperties.map(childProperty => {
         const nextLevel = level + 1
