@@ -1,5 +1,5 @@
 import { DescriptionFontSize } from "@apihub/components/common/annotations/Description/types/DescriptionFontSize";
-import { ChangedPropertyMetaData, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { ArrayUtils } from "@apihub/utils/common/arrays";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
@@ -15,7 +15,6 @@ type TextValueProps = {
   onClick?: () => void
   fontWeight?: 'normal' | 'bold'
   label?: string
-  forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   // diffs
   diff?: ChangedPropertyMetaData
 }
@@ -47,7 +46,7 @@ const Expander: FC<TextExpanderProps> = props => {
 }
 
 export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
-  const { value, variant, layoutSide, onClick, diff, forcedTextHighlighterColor } = props
+  const { value, variant, layoutSide, onClick, diff } = props
 
   // value/font specific
   const { fontWeight, label } = props
@@ -116,10 +115,9 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           break
       }
     }
-    diffsStyleClasses.push(DiffsClassesBuilder.highlighter(forcedTextHighlighterColor))
     const resolvedValueWithLabel = label ? `${label}: ${resolvedValue}` : resolvedValue
     return [resolvedValueWithLabel, diffsStyleClasses, isInvisible]
-  }, [diff, forcedTextHighlighterColor, label, layoutSide])
+  }, [diff, label, layoutSide])
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
