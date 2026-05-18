@@ -34,13 +34,6 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
 
-  const expandable = useMemo(() => {
-    const hasValue = !!nodeValue
-    const isBeforeValuePrimitive = !nodeValue?.before.isPrimitive
-    const isAfterValuePrimitive = !nodeValue?.after.isPrimitive
-    return hasValue && (!isBeforeValuePrimitive || !isAfterValuePrimitive)
-  }, [nodeValue])
-
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
       if (!nodeValue) {
@@ -98,6 +91,15 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const childrenProperties = node.childrenNodes()
 
+  // Flags
+
+  const expandable = useMemo(() => {
+    const hasValue = !!nodeValue
+    const isBeforeValuePrimitive = !nodeValue?.before.isPrimitive
+    const isAfterValuePrimitive = !nodeValue?.after.isPrimitive
+    return hasValue && (!isBeforeValuePrimitive || !isAfterValuePrimitive)
+  }, [nodeValue])
+
   const enableHeaderValue = useMemo(() => {
     return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
   }, [nodeValue])
@@ -105,6 +107,8 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const allChildrenAreDiffs = useMemo(() => {
     return childrenProperties.every(childProperty => !!childProperty.diffs[''])
   }, [childrenProperties])
+
+  // -----
 
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
