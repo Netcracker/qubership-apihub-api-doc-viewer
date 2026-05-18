@@ -2,6 +2,7 @@ import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLe
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import { DiffHiglightingApplicationArea, DIFF_HIGHLIGHTING_MODES_DEFAULT } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
@@ -21,11 +22,21 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     enableHeader = true,
     enableHeaderValue = true,
     subheader,
-    usage = TitleRowUsage.DEFAULT,
+    usage = TitleRowUsage.Default,
+    highlightingMode = DIFF_HIGHLIGHTING_MODES_DEFAULT,
   } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
+
+  const highlightingModeForKey = useMemo(() => {
+    switch (usage) {
+      case TitleRowUsage.Default:
+        return highlightingMode.get(DiffHiglightingApplicationArea.Default)!
+      case TitleRowUsage.JsoProperty:
+        return highlightingMode.get(DiffHiglightingApplicationArea.JsoPropertyKey)!
+    }
+  }, [highlightingMode, usage])
 
   const syncLevelContext = useLevelContext()
   const asyncLevelContext = useAsyncLevelContext()
@@ -60,10 +71,11 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         value={value}
         variant={variant}
         layoutSide={layoutSide}
-        diff={usage === TitleRowUsage.DEFAULT ? diff : undefined}
+        diff={diff}
+        highlightingMode={highlightingModeForKey}
       />
     )}
-  </>, [enableHeaderValue, value, variant, layoutSide, usage, diff])
+  </>, [enableHeaderValue, value, variant, layoutSide, diff, highlightingModeForKey])
 
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>

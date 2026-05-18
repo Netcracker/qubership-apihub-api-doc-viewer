@@ -59,7 +59,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         variant={TextValueVariant.body}
         enableHeaderValue={!nodeValue?.isArrayItem}
         subheader={subheader}
-        usage={TitleRowUsage.JSO_PROPERTY}
+        usage={TitleRowUsage.JsoProperty}
       />
       {expanded && childrenProperties.map(childProperty => {
         const nextLevel = level + 1

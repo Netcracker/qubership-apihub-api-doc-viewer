@@ -1,6 +1,7 @@
 import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import type {
   ChangedPropertyMetaData,
+  DiffHighlightingApplicationMode, DiffHiglightingApplicationArea,
   NodeDescendantDiffs,
   NodeDiffsSeverities
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -8,8 +9,8 @@ import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
 
 export enum TitleRowUsage {
-  DEFAULT = 'default',
-  JSO_PROPERTY = 'jso-property',
+  Default = 'default',
+  JsoProperty = 'jso-property',
 }
 
 export type TitleRowProps = {
@@ -22,6 +23,7 @@ export type TitleRowProps = {
   enableHeaderValue?: boolean
   subheader?: (layoutSide: LayoutSide) => ReactElement
   usage?: TitleRowUsage
+  highlightingMode?: Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs

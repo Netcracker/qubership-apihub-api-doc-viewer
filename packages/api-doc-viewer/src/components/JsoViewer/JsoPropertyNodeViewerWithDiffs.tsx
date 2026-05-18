@@ -120,7 +120,8 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         variant={TextValueVariant.body}
         enableHeaderValue={enableHeaderValue}
         subheader={subheader}
-        usage={TitleRowUsage.JSO_PROPERTY}
+        usage={TitleRowUsage.JsoProperty}
+        highlightingMode={nodeValueDiff?.highlightingMode}
         // diffs
         {...titleRowDiffProps}
       />

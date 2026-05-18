@@ -60,55 +60,17 @@ export enum DiffHighlightingApplicationMode {
   Immutable = 'immutable',
   Invisible = 'invisible',
 }
-export type DiffHiglightingApplicationModeByArea<A extends DiffHiglightingApplicationArea> =
-  A extends DiffHiglightingApplicationArea.Default | DiffHiglightingApplicationArea.JsoPropertyValue ? DiffHighlightingApplicationMode.Default :
-  A extends DiffHiglightingApplicationArea.JsoPropertyKey ? DiffHighlightingApplicationMode.Immutable | DiffHighlightingApplicationMode.Invisible :
-  never
-interface DiffHighlightingModeBase {
-  applicationArea: string
-  applicationMode: string
-}
-export interface DiffHighlightingModeDefaultApplicationArea extends DiffHighlightingModeBase {
-  applicationArea: DiffHiglightingApplicationArea.Default
-  applicationMode: DiffHighlightingApplicationMode.Default
-}
-export interface DiffHighlightingModeJsoPropertyValueArea extends DiffHighlightingModeBase {
-  applicationArea: DiffHiglightingApplicationArea.JsoPropertyValue
-  applicationMode: DiffHighlightingApplicationMode.Default
-}
-export type DiffHighlightingModeDefaultArea = DiffHighlightingModeDefaultApplicationArea | DiffHighlightingModeJsoPropertyValueArea
-export interface DiffHighlightingModeJsoPropertyKeyArea extends DiffHighlightingModeBase {
-  applicationArea: DiffHiglightingApplicationArea.JsoPropertyKey
-  applicationMode: DiffHiglightingApplicationModeByArea<DiffHiglightingApplicationArea.JsoPropertyKey>
-}
-export type DiffHighlightingMode = DiffHighlightingModeDefaultArea | DiffHighlightingModeJsoPropertyKeyArea
-export type DiffHighlightingModesByArea = Map<DiffHiglightingApplicationArea, DiffHighlightingMode>
-export const DIFF_HIGHLIGHT_MODE_DEFAULT_AREA: DiffHighlightingModeDefaultApplicationArea = {
-  applicationArea: DiffHiglightingApplicationArea.Default,
-  applicationMode: DiffHighlightingApplicationMode.Default,
-}
-export const DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_VALUE_AREA_DEFAULT: DiffHighlightingModeJsoPropertyValueArea = {
-  applicationArea: DiffHiglightingApplicationArea.JsoPropertyValue,
-  applicationMode: DiffHighlightingApplicationMode.Default,
-}
-export const DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_KEY_AREA_IMMUTABLE: DiffHighlightingModeJsoPropertyKeyArea = {
-  applicationArea: DiffHiglightingApplicationArea.JsoPropertyKey,
-  applicationMode: DiffHighlightingApplicationMode.Immutable,
-}
-export const DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_KEY_AREA_INVISIBLE: DiffHighlightingModeJsoPropertyKeyArea = {
-  applicationArea: DiffHiglightingApplicationArea.JsoPropertyKey,
-  applicationMode: DiffHighlightingApplicationMode.Invisible,
-}
-export const DIFF_HIGHLIGHTING_MODES_DEFAULT: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingMode>([
-  [DiffHiglightingApplicationArea.Default, DIFF_HIGHLIGHT_MODE_DEFAULT_AREA],
+export type DiffHighlightingModesByArea = Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
+export const DIFF_HIGHLIGHTING_MODES_DEFAULT: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.Default, DiffHighlightingApplicationMode.Default],
 ])
-export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingMode>([
-  [DiffHiglightingApplicationArea.JsoPropertyKey, DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_KEY_AREA_INVISIBLE],
-  [DiffHiglightingApplicationArea.JsoPropertyValue, DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_VALUE_AREA_DEFAULT],
+export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.JsoPropertyKey, DiffHighlightingApplicationMode.Invisible],
+  [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
 ])
-export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingMode>([
-  [DiffHiglightingApplicationArea.JsoPropertyKey, DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_KEY_AREA_IMMUTABLE],
-  [DiffHiglightingApplicationArea.JsoPropertyValue, DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_VALUE_AREA_DEFAULT],
+export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.JsoPropertyKey, DiffHighlightingApplicationMode.Immutable],
+  [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
 ])
 
 export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
@@ -122,7 +84,7 @@ export type ChangedPropertyMetaData = {
     before: DiffFlags
     after: DiffFlags
   }
-  highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingMode>
+  highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
 }
 export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 
