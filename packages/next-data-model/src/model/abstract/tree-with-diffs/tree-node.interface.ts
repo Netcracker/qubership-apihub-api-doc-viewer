@@ -46,9 +46,49 @@ export type DiffStyles = {
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
 }
+
+export enum DiffFlagsApplicationArea {
+  Default = 'default',
+  JsoProperty = 'jso-property',
+}
+export enum DiffFlagsApplicationMode {
+  Default = 'default',
+  Key = 'key',
+  Value = 'value',
+}
+export type DiffFlagsApplicationModeForArea<A extends DiffFlagsApplicationArea> =
+  A extends DiffFlagsApplicationArea.Default ? DiffFlagsApplicationMode.Default :
+  A extends DiffFlagsApplicationArea.JsoProperty ? DiffFlagsApplicationMode.Key | DiffFlagsApplicationMode.Value :
+  never
+interface DiffHighlightModeBase {
+  applicationArea: string
+  applicationMode: string
+}
+export interface DiffHighlightModeDefaultArea extends DiffHighlightModeBase {
+  applicationArea: DiffFlagsApplicationArea.Default
+  applicationMode: DiffFlagsApplicationModeForArea<DiffFlagsApplicationArea.Default>
+}
+export interface DiffHighlightModeJsoPropertyArea extends DiffHighlightModeBase {
+  applicationArea: DiffFlagsApplicationArea.JsoProperty
+  applicationMode: DiffFlagsApplicationModeForArea<DiffFlagsApplicationArea.JsoProperty>
+}
 export type DiffFlags = {
   increaseLevel: boolean
+  highlightMode: DiffHighlightModeDefaultArea | DiffHighlightModeJsoPropertyArea
 }
+export const DIFF_HIGHLIGHT_MODE_DEFAULT_AREA: DiffHighlightModeDefaultArea = {
+  applicationArea: DiffFlagsApplicationArea.Default,
+  applicationMode: DiffFlagsApplicationMode.Default,
+}
+export const DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_AREA_KEY: DiffHighlightModeJsoPropertyArea = {
+  applicationArea: DiffFlagsApplicationArea.JsoProperty,
+  applicationMode: DiffFlagsApplicationMode.Key,
+}
+export const DIFF_HIGHLIGHT_MODE_JSO_PROPERTY_AREA_VALUE: DiffHighlightModeJsoPropertyArea = {
+  applicationArea: DiffFlagsApplicationArea.JsoProperty,
+  applicationMode: DiffFlagsApplicationMode.Value,
+}
+
 export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
 export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
