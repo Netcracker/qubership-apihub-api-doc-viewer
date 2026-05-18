@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -360,19 +360,23 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         styles: {
           before: {
             isContentVisible: true,
+            isHeaderVisible: true,
             backgroundColor: HighlightVariant.Yellow,
           },
           after: {
             isContentVisible: true,
+            isHeaderVisible: true,
             backgroundColor: HighlightVariant.Yellow
           },
         },
         flags: {
           before: {
             increaseLevel: false,
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
           },
           after: {
             increaseLevel: false,
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
           },
         },
       }

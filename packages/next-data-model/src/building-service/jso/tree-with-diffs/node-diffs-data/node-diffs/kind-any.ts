@@ -1,5 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyMetaData, DiffFlags, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
@@ -17,15 +17,6 @@ export class JsoNodeDiffsAggregatorKindAny
     JsoTreeNodeMeta,
     JsoTreeNodeDiffsSource
   > {
-
-  private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
-    isContentVisible: true,
-    isHeaderVisible: true,
-  }
-
-  private readonly DEFAULT_DIFF_FLAGS: DiffFlags = {
-    increaseLevel: true,
-  }
 
   private isComplexValue(value: unknown): value is Record<string, unknown> {
     return isObject(value) || Array.isArray(value)
@@ -188,10 +179,12 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: true,
+                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: false,
+                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
               },
             }
@@ -236,10 +229,12 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: false,
+                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: true,
+                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
               },
             }

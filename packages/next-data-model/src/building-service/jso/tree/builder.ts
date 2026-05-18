@@ -1,10 +1,9 @@
 import { JsoComplexTreeNode } from "@apihub/next-data-model/model/jso/tree/complex-node.impl";
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value";
 import { JsoSimpleTreeNode } from "@apihub/next-data-model/model/jso/tree/simple-node.impl";
 import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value";
-import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
