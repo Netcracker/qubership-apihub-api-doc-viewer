@@ -1,5 +1,5 @@
 import { DescriptionFontSize } from '../../common/annotations/Description/types/DescriptionFontSize';
-import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { ChangedPropertyMetaData, DiffHighlightingApplicationMode } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { Dispatch, FC, SetStateAction } from '../../../../../../node_modules/react';
 import { TextValueVariant } from "./types";
@@ -11,6 +11,7 @@ type TextValueProps = {
     fontWeight?: 'normal' | 'bold';
     label?: string;
     diff?: ChangedPropertyMetaData;
+    highlightingMode?: DiffHighlightingApplicationMode;
 };
 export type TextExpanderProps = Partial<{
     isExpandable: boolean;
