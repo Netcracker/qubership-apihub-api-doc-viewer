@@ -1,5 +1,5 @@
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
-import { DiffFlags, DiffStyles, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY, HighlightVariant, NodeDescendantDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { DiffFlags, DiffHighlightingModesByArea, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY, HighlightVariant, NodeDescendantDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { JsoRawValueUtilities } from "../../../json-crawl-entities/transformers/raw-jso-property-to-base-jso-node-value";
@@ -13,7 +13,6 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
 
   private readonly DEFAULT_DIFF_FLAGS: DiffFlags = {
     increaseLevel: true,
-    highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY,
   }
 
   public aggregate(
@@ -44,6 +43,8 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
 
       let beforeFlags: DiffFlags = this.DEFAULT_DIFF_FLAGS
       let afterFlags: DiffFlags = this.DEFAULT_DIFF_FLAGS
+
+      let highlightingMode: DiffHighlightingModesByArea = DIFF_HIGHLIGHTING_MODES_DEFAULT
 
       if (isDiffAdd(diff)) {
         const { afterValue } = diff
@@ -125,6 +126,7 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
             afterStyles.textHighlighterColor = HighlightVariant.Yellow
           }
         }
+        highlightingMode = DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY
       }
 
       nodeDescendantDiffs[key] = {
@@ -136,7 +138,8 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         flags: {
           before: beforeFlags,
           after: afterFlags,
-        }
+        },
+        highlightingMode: highlightingMode,
       }
     }
 

@@ -69,13 +69,12 @@ export abstract class AbstractNodeDescendantsDiffsAggregator {
       flags: {
         before: {
           increaseLevel: true,
-          highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
         },
         after: {
           increaseLevel: true,
-          highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
         },
       },
+      highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
     }
   }
 }

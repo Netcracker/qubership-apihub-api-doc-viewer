@@ -1,5 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
@@ -78,6 +78,7 @@ export class JsoNodeDiffsAggregatorKindAny
                   increaseLevel: true,
                 },
               },
+              highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
             }
 
             nodeDiffs[''] = propertyMetadata
@@ -126,6 +127,7 @@ export class JsoNodeDiffsAggregatorKindAny
                   increaseLevel: false,
                 },
               },
+              highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
             }
             nodeDiffs[''] = propertyMetadata
             return nodeDiffs
@@ -179,14 +181,13 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: true,
-                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: false,
-                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
               },
+              highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
             }
             if (isNextBeforeValuePrimitive) {
               propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow
@@ -229,14 +230,13 @@ export class JsoNodeDiffsAggregatorKindAny
                 before: {
                   ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: false,
-                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
                 after: {
                   ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: true,
-                  highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
                 },
               },
+              highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
             }
             if (isNextAfterValuePrimitive) {
               propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow

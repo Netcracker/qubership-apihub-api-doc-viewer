@@ -372,13 +372,12 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         flags: {
           before: {
             increaseLevel: false,
-            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
           },
           after: {
             increaseLevel: false,
-            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
           },
         },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
       }
     }
     // ------------

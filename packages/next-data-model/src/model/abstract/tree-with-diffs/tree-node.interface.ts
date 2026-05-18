@@ -46,6 +46,9 @@ export type DiffStyles = {
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
 }
+export type DiffFlags = {
+  increaseLevel: boolean
+}
 
 export enum DiffHiglightingApplicationArea {
   Default = 'default',
@@ -80,10 +83,6 @@ export interface DiffHighlightingModeJsoPropertyKeyArea extends DiffHighlighting
 }
 export type DiffHighlightingMode = DiffHighlightingModeDefaultArea | DiffHighlightingModeJsoPropertyKeyArea
 export type DiffHighlightingModesByArea = Map<DiffHiglightingApplicationArea, DiffHighlightingMode>
-export type DiffFlags = {
-  increaseLevel: boolean
-  highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingMode>
-}
 export const DIFF_HIGHLIGHT_MODE_DEFAULT_AREA: DiffHighlightingModeDefaultApplicationArea = {
   applicationArea: DiffHiglightingApplicationArea.Default,
   applicationMode: DiffHighlightingApplicationMode.Default,
@@ -123,6 +122,7 @@ export type ChangedPropertyMetaData = {
     before: DiffFlags
     after: DiffFlags
   }
+  highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingMode>
 }
 export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 
