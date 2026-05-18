@@ -239,7 +239,7 @@ export class JsoNodeDiffsAggregatorKindAny
               highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
             }
             if (isNextAfterValuePrimitive) {
-              propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow
+              propertyMetadata.styles.after.textHighlighterColor = HighlightVariant.Yellow
             }
             if (isNextAfterValuePredefined) {
               propertyMetadata.styles.after.borderShadowColor = HighlightVariant.Yellow

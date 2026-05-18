@@ -1,11 +1,12 @@
 import { DescriptionFontSize } from "@apihub/components/common/annotations/Description/types/DescriptionFontSize";
-import { ChangedPropertyMetaData, DiffHighlightingApplicationMode } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, DiffHighlightingApplicationMode, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { ArrayUtils } from "@apihub/utils/common/arrays";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { Dispatch, FC, memo, SetStateAction, useCallback, useMemo, useState } from "react";
 import '../styles/TextValue.css';
+import { TitleRowUsage } from "../TitleRow/types";
 import { TextValueVariant } from "./types";
 
 type TextValueProps = {
@@ -17,6 +18,7 @@ type TextValueProps = {
   label?: string
   // diffs
   diff?: ChangedPropertyMetaData
+  usage?: TitleRowUsage
   highlightingMode?: DiffHighlightingApplicationMode
 }
 
@@ -47,7 +49,7 @@ const Expander: FC<TextExpanderProps> = props => {
 }
 
 export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
-  const { value, variant, layoutSide, onClick, diff, highlightingMode = DiffHighlightingApplicationMode.Default } = props
+  const { value, variant, layoutSide, onClick, diff, usage, highlightingMode = DiffHighlightingApplicationMode.Default } = props
 
   const isImmutableDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Immutable
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
@@ -97,10 +99,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
           if (!isImmutableDiffHighlighting) {
-            if (isDiffRemove(data) || isDiffReplace(data)) {
+            if (isDiffRemove(data)) {
+              // TODO 18.05.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
+              resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue as string | undefined
+            }
+            if (isDiffReplace(data)) {
+              if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
+                diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
+              }
               // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
               resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue as string | undefined
-            } else if (isDiffRename(data)) {
+            }
+            if (isDiffRename(data)) {
               resolvedValue = data.beforeKey as string | undefined
             }
           }
@@ -111,10 +121,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
           if (!isImmutableDiffHighlighting) {
-            if (isDiffAdd(data) || isDiffReplace(data)) {
+            if (isDiffAdd(data)) {
               // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
               resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue as string | undefined
-            } else if (isDiffRename(data)) {
+            }
+            if (isDiffReplace(data)) {
+              if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
+                diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
+              }
+              // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
+              resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue as string | undefined
+            }
+            if (isDiffRename(data)) {
               resolvedValue = data.afterKey as string | undefined
             }
           }
@@ -126,7 +144,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     }
     const resolvedValueWithLabel = label ? `${label}: ${resolvedValue}` : resolvedValue
     return [resolvedValueWithLabel, diffsStyleClasses, isInvisible]
-  }, [diff, isImmutableDiffHighlighting, label, layoutSide])
+  }, [diff, isImmutableDiffHighlighting, isInvisibleDiffHighlighting, label, layoutSide, usage])
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
