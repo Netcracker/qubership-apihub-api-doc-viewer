@@ -7,9 +7,6 @@ import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../AsyncApiOperationViewer/TitleRow/types"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
-import {
-  isDiffWithComplexValue
-} from "./resolve-jso-side-state"
 
 type JsoPropertyNodeViewerWithDiffsProps = {
   node: JsoTreeNodeWithDiffs
@@ -38,8 +35,11 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
 
   const expandable = useMemo(() => {
-    return Boolean((nodeValue && !nodeValue.after.isPrimitive) || isDiffWithComplexValue(nodeValueDiff))
-  }, [nodeValue, nodeValueDiff])
+    const hasValue = !!nodeValue
+    const isBeforeValuePrimitive = !nodeValue?.before.isPrimitive
+    const isAfterValuePrimitive = !nodeValue?.after.isPrimitive
+    return hasValue && (!isBeforeValuePrimitive || !isAfterValuePrimitive)
+  }, [nodeValue])
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
