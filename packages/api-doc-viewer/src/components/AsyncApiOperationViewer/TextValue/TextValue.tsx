@@ -85,7 +85,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       case TextValueVariant.body:
         return <span {...commonProps}>{resolvedValue}</span>
     }
-  }, [expanded, onClick, variant])
+  }, [expanded, isInvisibleDiffHighlighting, onClick, variant])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []
