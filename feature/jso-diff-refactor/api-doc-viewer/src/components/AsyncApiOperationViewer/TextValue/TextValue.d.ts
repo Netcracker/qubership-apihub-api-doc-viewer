@@ -2,6 +2,7 @@ import { DescriptionFontSize } from '../../common/annotations/Description/types/
 import { ChangedPropertyMetaData, DiffHighlightingApplicationMode } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { Dispatch, FC, SetStateAction } from '../../../../../../node_modules/react';
+import { TitleRowUsage } from "../TitleRow/types";
 import { TextValueVariant } from "./types";
 type TextValueProps = {
     value?: string;
@@ -11,6 +12,7 @@ type TextValueProps = {
     fontWeight?: 'normal' | 'bold';
     label?: string;
     diff?: ChangedPropertyMetaData;
+    usage?: TitleRowUsage;
     highlightingMode?: DiffHighlightingApplicationMode;
 };
 export type TextExpanderProps = Partial<{
