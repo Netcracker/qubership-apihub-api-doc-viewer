@@ -27,7 +27,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   const nodeValue = node.value()
 
   const expandable = useMemo(() => {
-    return Boolean(nodeValue && !nodeValue.isPrimitive)
+    return !!nodeValue && !nodeValue.isPrimitive
   }, [nodeValue])
 
   const subheader = useCallback(
@@ -38,7 +38,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
       return (
         <JsoValue
-          isVisible={true}
+          isVisible={nodeValue.isPrimitive}
           value={nodeValue.value}
           appearance={nodeValue.isPredefinedValueSet ? 'block' : 'text'}
         />
