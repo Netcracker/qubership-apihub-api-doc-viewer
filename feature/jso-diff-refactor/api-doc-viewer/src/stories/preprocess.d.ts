@@ -83,4 +83,11 @@ type AsyncApiDiffsDocumentOptions = {
     diffMetaKeys?: DiffMetaKeys;
 };
 export declare function prepareAsyncApiDiffsDocument(options: AsyncApiDiffsDocumentOptions): unknown;
+type JsoDiffsDocumentOptions = {
+    beforeSource: unknown;
+    afterSource: unknown;
+    storyName?: string;
+    diffMetaKeys?: DiffMetaKeys;
+};
+export declare function prepareJsoDiffsDocument(options: JsoDiffsDocumentOptions): unknown;
 export {};
