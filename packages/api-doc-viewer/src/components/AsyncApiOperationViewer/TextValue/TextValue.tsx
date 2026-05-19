@@ -51,7 +51,7 @@ const Expander: FC<TextExpanderProps> = props => {
 export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const { value, variant, layoutSide, onClick, diff, usage, highlightingMode = DiffHighlightingApplicationMode.Default } = props
 
-  const isImmutableDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Immutable
+  const isDefaultDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Default
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
 
   // value/font specific
@@ -98,7 +98,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-          if (!isImmutableDiffHighlighting) {
+          if (isDefaultDiffHighlighting) {
             if (isDiffRemove(data)) {
               // TODO 18.05.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
               resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue as string | undefined
@@ -120,7 +120,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           break
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-          if (!isImmutableDiffHighlighting) {
+          if (isDefaultDiffHighlighting) {
             if (isDiffAdd(data)) {
               // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
               resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue as string | undefined
@@ -144,7 +144,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     }
     const resolvedValueWithLabel = label ? `${label}: ${resolvedValue}` : resolvedValue
     return [resolvedValueWithLabel, diffsStyleClasses, isInvisible]
-  }, [diff, isImmutableDiffHighlighting, isInvisibleDiffHighlighting, label, layoutSide, usage])
+  }, [diff, isDefaultDiffHighlighting, isInvisibleDiffHighlighting, label, layoutSide, usage])
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
