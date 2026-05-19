@@ -58,7 +58,8 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
     brokenRef,
     type,
     nullable,
-    entity,
+    title,
+    qualifier,
     combiner,
     // diffs
     layoutMode,
@@ -71,7 +72,8 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   const filters = useChangeSeverityFilters()
 
-  const wrappedEntity = entity ? wrapAsEntity(entity) : null
+  const entityString = buildEntityString(title, qualifier)
+  const wrappedEntity = entityString ? wrapAsEntity(entityString) : null
   const resolvedNullableText = nullable ? NULLABLE_TYPE_SUFFIX_TEXT : null
 
   const $typeChange = isDiff($changes?.type) ? $changes?.type : undefined
@@ -426,17 +428,17 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
             )
           )
-          const replacedFormatValue =
+          const beforeQualifier =
             diffReplace($formatChange)
-              ? $formatChange.beforeValue
-              : undefined
-          const replacedTitleValue =
+              ? $formatChange.beforeValue as string
+              : qualifier
+          const beforeTitle =
             diffReplace($titleChange)
-              ? $titleChange.beforeValue
-              : undefined
+              ? $titleChange.beforeValue as string
+              : title
           actualEntity =
             <div className={`inline ${diffStyles}`}>
-              {wrapAsEntity(replacedFormatValue ?? replacedTitleValue)}
+              {wrapAsEntity(buildEntityString(beforeTitle, beforeQualifier))}
             </div>
         }
         if (changedSide) {
@@ -494,17 +496,17 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
           diffTypeForEntityIncluded && contentChangesColorizing,
           INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
         )
-        const replacedFormatValue =
+        const beforeQualifier =
           diffReplace($formatChange)
-            ? $formatChange.beforeValue
-            : undefined
-        const replacedTitleValue =
+            ? $formatChange.beforeValue as string
+            : qualifier
+        const beforeTitle =
           diffReplace($titleChange)
-            ? $titleChange.beforeValue
-            : undefined
+            ? $titleChange.beforeValue as string
+            : title
         actualEntity = <>
           <div className={`inline ${diffStylesBefore}`}>
-            {wrapAsEntity(replacedFormatValue ?? replacedTitleValue)}
+            {wrapAsEntity(buildEntityString(beforeTitle, beforeQualifier))}
           </div>
           <div className={`inline ${diffStylesAfter}`}>
             {wrappedEntity}
@@ -516,11 +518,16 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   return (
     <div className="inline-flex flex-row gap-1 items-center">
-      {brokenRef && <WarningIcon/>}
+      {brokenRef && <WarningIcon />}
       {actualType && <div className="inline">{actualType}{actualEntity} {showNullable ? actualNullable : null}</div>}
       {combiner && <div className="inline">({combiner})</div>}
     </div>
   )
+}
+
+function buildEntityString(title: string | undefined, qualifier: string | undefined): string | undefined {
+  const parts = [title, qualifier].filter(Boolean) as string[]
+  return parts.length > 0 ? parts.join(', ') : undefined
 }
 
 function wrapAsEntity(entity: unknown): ReactNode {
