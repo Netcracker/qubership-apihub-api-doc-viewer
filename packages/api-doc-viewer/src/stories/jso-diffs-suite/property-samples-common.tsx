@@ -55,7 +55,7 @@ const createViewerArgs = (beforeSourceText: string, afterSourceText: string): Js
     diffMetaKeys: TEST_DIFF_META_KEYS,
   }),
   initialLevel: 1,
-  supportJsonSchema: false,
+  supportJsonSchema: true,
   diffMetaKeys: TEST_DIFF_META_KEYS,
 });
 

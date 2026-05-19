@@ -10,7 +10,6 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
-import { Aligner } from "./Aligner"
 import { JsoValue } from "./JsoValue/JsoValue"
 
 type JsoPropertyNodeViewerProps = {
@@ -73,18 +72,14 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     )
   ) {
     return (
-      <Aligner key={node.id}>
-        <JsonSchemaViewer
-          schema={jsonSchema}
-          expandedDepth={2}
-          displayMode={displayMode}
-          customizationOptions={{
-            headerRowTitle: `${node.key}`,
-          }}
-          initialLevel={level - 1}
-          overriddenKind='parameters'
-        />
-      </Aligner>
+      <JsonSchemaViewer
+        key={node.id}
+        schema={jsonSchema}
+        expandedDepth={2}
+        displayMode={displayMode}
+        initialLevel={level - 1}
+        overriddenKind='parameters'
+      />
     )
   }
 
