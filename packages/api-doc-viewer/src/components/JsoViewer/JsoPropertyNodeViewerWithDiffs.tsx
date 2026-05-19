@@ -1,12 +1,22 @@
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { isObject } from "@netcracker/qubership-apihub-json-crawl"
+import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeValueWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-value"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
+import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { Aligner } from "./Aligner"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 
 type JsoPropertyNodeViewerWithDiffsProps = {
@@ -20,6 +30,9 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     supportJsonSchema = false,
   } = props
 
+  const displayMode = useDisplayMode()
+  const level = useLevelContext()
+  const diffMetaKeys = useDiffMetaKeys()
   const { beforeLevel, afterLevel } = useAsyncLevelContext()!
 
   const [expanded, setExpanded] = useState(true)
@@ -110,7 +123,54 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     return childrenProperties.every(childProperty => !!childProperty.diffs[''])
   }, [childrenProperties])
 
-  // -----
+  // JSON Schema properties
+
+  const jsonSchema = useMemo(() => (
+    supportJsonSchema
+      ? prepareJsonSchemaForJsoViewer(node.key, nodeValue)
+      : undefined
+  ), [node.key, nodeValue, supportJsonSchema])
+
+  if (
+    jsonSchema &&
+    nodeValue?.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    !diffMetaKeys
+  ) {
+    return (
+      <Aligner key={node.id}>
+        <JsonSchemaViewer
+          schema={jsonSchema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters'
+        />
+      </Aligner>
+    )
+  }
+
+  if (
+    jsonSchema &&
+    nodeValue?.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    diffMetaKeys
+  ) {
+    return (
+      <Aligner key={node.id}>
+        <JsonSchemaDiffViewer
+          schema={jsonSchema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          metaKeys={diffMetaKeys}
+          overriddenKind='parameters'
+        />
+      </Aligner>
+    )
+  }
+
+  // ---
 
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
@@ -150,4 +210,23 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
       })}
     </div>
   )
+}
+
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: JsoTreeNodeValueWithDiffs | null | undefined,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+  if (
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) {
+    return undefined
+  }
+
+  return isObject(nodeValue.after.value)
+    ? { type: 'object', properties: { [nodeKey]: nodeValue.after.value } }
+    : undefined
 }
