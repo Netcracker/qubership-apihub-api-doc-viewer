@@ -9,7 +9,8 @@ const ASYNC_API_NODE_KINDS: ReadonlySet<string> = new Set(AsyncApiTreeNodeKindsL
 const ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS: (keyof AsyncApiTreeNodeValueBase)[] = [
   'title', 'description', 'summary'
 ];
-type AnyAsyncApiNodeValueKey = keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING> |
+type AnyAsyncApiNodeValueKey =
+  keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING> |
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS> |
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE> |
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL> |
@@ -18,15 +19,6 @@ type AnyAsyncApiNodeValueKey = keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNo
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION> |
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> |
   keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVER>;
-type AsyncApiNodeValueKind = typeof AsyncApiTreeNodeKinds.BINDING |
-  typeof AsyncApiTreeNodeKinds.EXTENSIONS |
-  typeof AsyncApiTreeNodeKinds.MESSAGE |
-  typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL |
-  typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS |
-  typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS |
-  typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION |
-  typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD |
-  typeof AsyncApiTreeNodeKinds.SERVER;
 
 export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeMeta
@@ -49,9 +41,6 @@ export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
     if (!this.isAsyncApiTreeNodeKind(kind)) {
       return null;
     }
-    if (!this.isAsyncApiNodeValueKind(kind)) {
-      return null;
-    }
 
     return pick<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind>>(
       value,
@@ -63,29 +52,8 @@ export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
     return ASYNC_API_NODE_KINDS.has(kind);
   }
 
-  private isAsyncApiNodeValueKind(kind: AsyncApiTreeNodeKind): kind is AsyncApiNodeValueKind {
-    switch (kind) {
-      case AsyncApiTreeNodeKinds.BINDING:
-      case AsyncApiTreeNodeKinds.EXTENSIONS:
-      case AsyncApiTreeNodeKinds.MESSAGE:
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL:
-      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
-      case AsyncApiTreeNodeKinds.MESSAGE_HEADERS:
-      case AsyncApiTreeNodeKinds.MESSAGE_OPERATION:
-      case AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD:
-      case AsyncApiTreeNodeKinds.SERVER:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   // Function overloads for type-safe return based on input type
-  public static getAsyncApiTreeNodeValueProps(
-    type: AsyncApiNodeValueKind
-  ): (keyof AsyncApiTreeNodeValue<
-    AsyncApiNodeValueKind
-  >)[];
+  public static getAsyncApiTreeNodeValueProps(type: AsyncApiTreeNodeKind): (keyof AsyncApiTreeNodeValue<AsyncApiTreeNodeKind>)[];
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.BINDING): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING>)[];
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.EXTENSIONS): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.EXTENSIONS>)[];
   public static getAsyncApiTreeNodeValueProps(type: typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL): (keyof AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>)[];
