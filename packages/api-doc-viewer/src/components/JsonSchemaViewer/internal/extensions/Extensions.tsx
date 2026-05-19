@@ -1,4 +1,4 @@
-import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
+import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
 import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer";
 import { DEFAULT_ROW_PADDING_LEFT, SHIFTED_ROW_PADDING_LEFT } from "@apihub/constants/configuration";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";

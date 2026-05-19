@@ -2,8 +2,8 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { FC, memo, ReactElement } from "react"
-import { OneSideLayout } from "./Layout/OneSideLayout"
-import { SideBySideLayout } from "./Layout/SideBySideLayout"
+import { OneSideLayout } from "../shared-components/Layout/OneSideLayout"
+import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout"
 
 export type RenderFunction = (layoutSide: LayoutSide) => ReactElement | null
 

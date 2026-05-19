@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
+import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';

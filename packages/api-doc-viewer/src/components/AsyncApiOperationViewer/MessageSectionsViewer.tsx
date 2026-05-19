@@ -7,8 +7,8 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../..";
-import { OneSideLayout } from "./Layout/OneSideLayout";
-import { SideBySideLayout } from "./Layout/SideBySideLayout";
+import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
+import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";

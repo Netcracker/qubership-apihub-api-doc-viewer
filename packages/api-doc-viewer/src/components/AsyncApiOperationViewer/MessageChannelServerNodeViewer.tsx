@@ -14,11 +14,11 @@ import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { BrokenRefViewer } from "./BrokenRefViewer"
 import { ServerAddressRow } from "./ServerAddressRow"
 import './styles/MessageChannelServer.css'
-import { TextRow } from "./TextRow/TextRow"
-import { TextRowProps } from "./TextRow/types"
-import { TextValueVariant } from "./TextValue/types"
-import { TitleRow } from "./TitleRow/TitleRow"
-import { TitleRowProps } from "./TitleRow/types"
+import { TextRow } from "../shared-components/TextRow/TextRow"
+import { TextRowProps } from "../shared-components/TextRow/types"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { SizeVariant } from "./types/SizeVariant"
 
 type MessageChannelServerNodeViewerProps = {

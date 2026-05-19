@@ -5,8 +5,8 @@ import { ArrayUtils } from "@apihub/utils/common/arrays";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { Dispatch, FC, memo, SetStateAction, useCallback, useMemo, useState } from "react";
-import '../styles/TextValue.css';
 import { TitleRowUsage } from "../TitleRow/types";
+import './TextValue.css';
 import { TextValueVariant } from "./types";
 
 type TextValueProps = {

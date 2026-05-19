@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { AsyncApiDevModeContext } from "./AsyncApiDevModeContext";
+import { AsyncApiDevModeContext } from "../AsyncApiOperationViewer/AsyncApiDevModeContext";
 import { ExpandingCaret } from "../common/layout/Expander/ExpandingCaret";
 import { NestingHorizontalIndicator } from "../common/NestingHorizontalIndicator";
 

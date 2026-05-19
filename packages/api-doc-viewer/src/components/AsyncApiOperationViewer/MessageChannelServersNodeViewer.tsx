@@ -3,8 +3,8 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo, useMemo } from "react";
 import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer";
-import { TextValueVariant } from "./TextValue/types";
-import { TitleRow } from "./TitleRow/TitleRow";
+import { TextValueVariant } from "../shared-components/TextValue/types";
+import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 
 type MessageChannelServersNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVERS>

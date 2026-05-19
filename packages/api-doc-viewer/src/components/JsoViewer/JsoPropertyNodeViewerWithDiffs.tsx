@@ -4,9 +4,9 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 import { FC, useCallback, useMemo, useState } from "react"
-import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
-import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
-import { TitleRowProps, TitleRowUsage } from "../AsyncApiOperationViewer/TitleRow/types"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 
 type JsoPropertyNodeViewerWithDiffsProps = {

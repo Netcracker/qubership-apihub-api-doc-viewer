@@ -11,8 +11,8 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
-import { TextValueVariant } from "./TextValue/types"
-import { TitleRow } from "./TitleRow/TitleRow"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 
 type MessageContentNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT>

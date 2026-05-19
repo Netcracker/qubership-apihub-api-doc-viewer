@@ -40,7 +40,7 @@ import {
   maxDiffTypeFromDiffs,
   maxDiffTypeFromNodeSummary
 } from '../../utils/common/changes'
-import { LevelIndicator } from '../AsyncApiOperationViewer/LevelIndicator'
+import { LevelIndicator } from '../shared-components/LevelIndicator'
 import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { UxDiffMarker } from '../kit/ux/UxMarker/UxDiffMarker'
 import { EmptyContent } from './diffs/EmptyContent'

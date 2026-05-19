@@ -5,9 +5,9 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useMemo } from "react"
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
-import { TextValueVariant } from "./TextValue/types"
-import { TitleRow } from "./TitleRow/TitleRow"
-import { TitleRowProps } from "./TitleRow/types"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowProps } from "../shared-components/TitleRow/types"
 
 type SpecificationExtensionsProps = {
   node:

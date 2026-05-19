@@ -1,9 +1,9 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, useCallback, useMemo, useState } from "react"
-import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
-import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
-import { TitleRowUsage } from "../AsyncApiOperationViewer/TitleRow/types"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { JsoValue } from "./JsoValue/JsoValue"
 
 type JsoPropertyNodeViewerProps = {

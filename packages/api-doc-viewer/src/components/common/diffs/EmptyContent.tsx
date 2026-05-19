@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LevelIndicator } from '@apihub/components/AsyncApiOperationViewer/LevelIndicator'
+import { LevelIndicator } from '@apihub/components/shared-components/LevelIndicator'
 import type { FC } from 'react'
 import { DEFAULT_ROW_PADDING_LEFT } from '../../../consts/configuration'
 
