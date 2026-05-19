@@ -2,6 +2,7 @@ import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLe
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 import { FC, useCallback, useMemo, useState } from "react"
 import { TextValueVariant } from "../AsyncApiOperationViewer/TextValue/types"
 import { TitleRow } from "../AsyncApiOperationViewer/TitleRow/TitleRow"
@@ -95,9 +96,10 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const expandable = useMemo(() => {
     const hasValue = !!nodeValue
-    const isBeforeValuePrimitive = !nodeValue?.before.isPrimitive
-    const isAfterValuePrimitive = !nodeValue?.after.isPrimitive
-    return hasValue && (!isBeforeValuePrimitive || !isAfterValuePrimitive)
+    // TODO 19.05.26 // In future may be moved to next-data-model
+    const isBeforeValueExpandable = !nodeValue?.before.isPrimitive && nodeValue?.before.valueType !== JsoPropertyValueTypes.UNKNOWN
+    const isAfterValueExpandable = !nodeValue?.after.isPrimitive && nodeValue?.after.valueType !== JsoPropertyValueTypes.UNKNOWN
+    return hasValue && (isBeforeValueExpandable || isAfterValueExpandable)
   }, [nodeValue])
 
   const enableHeaderValue = useMemo(() => {
