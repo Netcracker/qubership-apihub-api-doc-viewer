@@ -88,7 +88,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
                   {jsoProperties.map(jsoProperty => (
                     <JsoPropertyNodeRenderSwitchWithDiffs
                       key={jsoProperty.id}
-                      node={jsoProperty as JsoTreeNodeWithDiffs<typeof JsoTreeNodeKinds.PROPERTY>}
+                      node={jsoProperty}
                       supportJsonSchema={supportJsonSchema}
                     />
                   ))}

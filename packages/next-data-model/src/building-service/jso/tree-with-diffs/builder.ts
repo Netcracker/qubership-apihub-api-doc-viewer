@@ -63,6 +63,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       source: this.source,
       tree: this.tree,
       supportedNodeKinds: JsoTreeNodeKindsList,
+      // @ts-expect-error - TODO 19.05.26 // Fix type mismatch for `params`
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent) => ({
         value: value ?? null,
