@@ -488,3 +488,41 @@ export function prepareAsyncApiDiffsDocument(options: AsyncApiDiffsDocumentOptio
   }
   return mergedSource
 }
+
+type JsoDiffsDocumentOptions = {
+  beforeSource: unknown
+  afterSource: unknown
+  circular?: boolean
+  storyName?: string
+  diffMetaKeys?: DiffMetaKeys
+}
+
+export function prepareJsoDiffsDocument(options: JsoDiffsDocumentOptions): unknown {
+  const {
+    beforeSource,
+    afterSource,
+    circular = false,
+    storyName,
+    diffMetaKeys = TEST_DIFF_META_KEYS,
+  } = options
+
+  storyName && console.debug(`[JSO Diffs] STORY: ${storyName}`)
+  storyName && console.debug('[JSO Diffs] Before raw source:', beforeSource)
+  storyName && console.debug('[JSO Diffs] After raw source:', afterSource)
+
+  const mergedSource = apiDiff(beforeSource, afterSource, {
+    beforeSource,
+    afterSource,
+    syntheticTitleFlag: syntheticTitleFlag,
+    metaKey: diffMetaKeys.diffsMetaKey,
+    validate: true,
+    liftCombiners: true,
+    unify: true,
+  }).merged
+
+  storyName && console.debug('[JSO Diffs] Merged source:', mergedSource)
+  if (circular && isObject(mergedSource)) {
+    mergedSource.toJSON = () => stringifyCyclicJso(mergedSource)
+  }
+  return mergedSource
+}
