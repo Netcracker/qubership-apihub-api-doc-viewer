@@ -22,6 +22,7 @@ import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { Aligner } from "./Aligner"
 import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
+import '../shared-styles/diffs/index.css';
 
 type JsoDiffsViewerProps = {
   mergedSource: unknown
