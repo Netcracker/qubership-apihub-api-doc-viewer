@@ -53,7 +53,7 @@ const createViewerArgs = (beforeSourceText: string, afterSourceText: string): Js
     beforeSource: createSource(beforeSourceText),
     afterSource: createSource(afterSourceText),
   }),
-  initialLevel: 0,
+  initialLevel: 1,
   supportJsonSchema: false,
   diffMetaKeys: TEST_DIFF_META_KEYS,
 });
