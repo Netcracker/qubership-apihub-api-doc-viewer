@@ -152,14 +152,14 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
               // diffs specific
               diffMetaKeys={diffMetaKeys}
             />
-          ) : (
+          ) : selectedBindingNode && isBindingNode(selectedBindingNode) ? (
             <JsoViewer
               source={bindingValue}
               displayMode={displayMode}
               initialLevel={1}
               supportJsonSchema={true}
             />
-          )}
+          ) : null}
         </div>
       )}
     </div>
