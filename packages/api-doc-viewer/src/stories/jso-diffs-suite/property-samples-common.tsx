@@ -52,6 +52,7 @@ const createViewerArgs = (beforeSourceText: string, afterSourceText: string): Js
   mergedSource: prepareJsoDiffsDocument({
     beforeSource: createSource(beforeSourceText),
     afterSource: createSource(afterSourceText),
+    diffMetaKeys: TEST_DIFF_META_KEYS,
   }),
   initialLevel: 1,
   supportJsonSchema: false,
