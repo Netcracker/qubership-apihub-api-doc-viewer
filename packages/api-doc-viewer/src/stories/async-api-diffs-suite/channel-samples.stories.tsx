@@ -131,11 +131,8 @@ export const Case_7_2_channel_parameters_removed: Story = createCaseStory("7.2-c
 export const Case_7_3_channel_parameters_firstParam_removed: Story = createCaseStory("7.3-channel-parameters-firstParam-removed");
 export const Case_7_4_channel_parameters_secondParam_added: Story = createCaseStory("7.4-channel-parameters-secondParam-added");
 export const Case_7_5_channel_parameters_key_rename: Story = createCaseStory("7.5-channel-parameters-key-rename");
-export const Case_7_6_channel_parameters_secondParam_object_to_broken_ref: Story = createCaseStory("7.6-channel-parameters-secondParam-object-to-broken-ref");
-export const Case_7_7_channel_parameters_secondParam_broken_ref_to_object: Story = createCaseStory("7.7-channel-parameters-secondParam-broken-ref-to-object");
 export const Case_7_8_channel_servers_added: Story = createCaseStory("7.8-channel-servers-added");
 export const Case_7_9_channel_servers_removed: Story = createCaseStory("7.9-channel-servers-removed");
 export const Case_7_10_channel_servers_one_item_added: Story = createCaseStory("7.10-channel-servers-one-item-added");
 export const Case_7_11_channel_servers_one_item_removed: Story = createCaseStory("7.11-channel-servers-one-item-removed");
-export const Case_7_12_channel_servers_ref_changed_to_broken_ref: Story = createCaseStory("7.12-channel-servers-ref-changed-to-broken-ref");
-export const Case_7_13_channel_servers_broken_ref_changed_to_existing_ref: Story = createCaseStory("7.13-channel-servers-broken-ref-changed-to-existing-ref");
+
