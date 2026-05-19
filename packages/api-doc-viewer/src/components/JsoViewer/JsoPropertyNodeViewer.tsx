@@ -1,9 +1,16 @@
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { isObject } from "@netcracker/qubership-apihub-json-crawl"
+import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree/node-value"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { Aligner } from "./Aligner"
 import { JsoValue } from "./JsoValue/JsoValue"
 
 type JsoPropertyNodeViewerProps = {
@@ -17,6 +24,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
     supportJsonSchema = false,
   } = props
 
+  const displayMode = useDisplayMode()
   const level = useLevelContext()
 
   const [expanded, setExpanded] = useState(true)
@@ -49,6 +57,39 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
 
   const childrenProperties = node.childrenNodes()
 
+  // JSON Schema properties
+
+  const jsonSchema = useMemo(() => (
+    supportJsonSchema
+      ? prepareJsonSchemaForJsoViewer(node.key, nodeValue)
+      : undefined
+  ), [node.key, nodeValue, supportJsonSchema])
+
+  if (
+    jsonSchema &&
+    (
+      nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
+      nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+    )
+  ) {
+    return (
+      <Aligner key={node.id}>
+        <JsonSchemaViewer
+          schema={jsonSchema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          customizationOptions={{
+            headerRowTitle: `${node.key}`,
+          }}
+          initialLevel={level - 1}
+          overriddenKind='parameters'
+        />
+      </Aligner>
+    )
+  }
+
+  // ---
+
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
@@ -77,4 +118,23 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
       })}
     </div>
   )
+}
+
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: JsoTreeNodeValueBase | null | undefined,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+  if (
+    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) {
+    return undefined
+  }
+
+  return isObject(nodeValue.value)
+    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
+    : undefined
 }
