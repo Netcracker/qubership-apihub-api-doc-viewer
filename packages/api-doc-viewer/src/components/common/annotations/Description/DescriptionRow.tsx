@@ -49,7 +49,7 @@ import {
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge';
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
-import './Description.css';
+import './DescriptionRow.css';
 import { DescriptionFontSize } from "./types/DescriptionFontSize";
 
 const OVERFLOW_LINES_AMOUNT = 5

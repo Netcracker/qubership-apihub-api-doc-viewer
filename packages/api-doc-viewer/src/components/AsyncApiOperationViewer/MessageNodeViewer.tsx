@@ -6,7 +6,7 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
-import { AddressRow } from "./AddressRow";
+import { AddressRow } from "./AddressRow/AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";

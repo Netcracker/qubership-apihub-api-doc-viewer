@@ -11,7 +11,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
-import { BrokenRefViewer } from "./BrokenRefViewer";
+import { BrokenRefViewer } from "./BrokenRefViewer/BrokenRefViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";

@@ -34,32 +34,3 @@ button.button-selector-option.selected {
   background-color: #D5DCE3;
   color: #626D82;
 }
-
-.address-row {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-span.binding-version {
-  font-size: 13px;
-  font-weight: 400;
-}
-
-.broken-ref-viewer .subheader {
-  font-size: 12px;
-}
-
-.description-row_primary {
-  font-size: 18px;
-  font-weight: 400;
-}
-
-.description-row_secondary {
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.description-row_tertiary {
-  font-size: 13px;
-  font-weight: 400;
-}

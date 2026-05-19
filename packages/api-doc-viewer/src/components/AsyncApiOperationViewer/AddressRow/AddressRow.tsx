@@ -3,10 +3,11 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC } from "react"
-import { OneSideLayout } from "../shared-components/Layout/OneSideLayout"
-import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout"
-import { TextValue } from "../shared-components/TextValue/TextValue"
-import { TextValueVariant } from "../shared-components/TextValue/types"
+import "./AddressRow.css"
+import { OneSideLayout } from "../../shared-components/Layout/OneSideLayout"
+import { SideBySideLayout } from "../../shared-components/Layout/SideBySideLayout"
+import { TextValue } from "../../shared-components/TextValue/TextValue"
+import { TextValueVariant } from "../../shared-components/TextValue/types"
 
 type AddressRowProps = {
   action: string

@@ -5,7 +5,7 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
-import "../styles/styles.css"
+import "./Selector.css"
 import { SizeVariant } from "../types/SizeVariant"
 
 const EMPTY_DIFFS_SUMMARY = new Set<DiffType>()

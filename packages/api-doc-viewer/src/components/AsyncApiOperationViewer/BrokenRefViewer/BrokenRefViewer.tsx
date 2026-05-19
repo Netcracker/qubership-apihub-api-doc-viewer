@@ -1,5 +1,6 @@
 import { FC } from "react"
-import { WarningIcon2 } from "../kit/icons/WarningIcon2"
+import "./BrokenRefViewer.css"
+import { WarningIcon2 } from "../../kit/icons/WarningIcon2"
 
 type BrokenRefViewerProps = {
   value: string

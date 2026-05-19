@@ -75,3 +75,18 @@
 }
 
 /* End */
+
+.description-row_primary {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.description-row_secondary {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.description-row_tertiary {
+  font-size: 13px;
+  font-weight: 400;
+}

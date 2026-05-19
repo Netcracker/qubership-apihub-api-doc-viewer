@@ -2,7 +2,7 @@ import { isServerNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, memo, useMemo } from "react";
-import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer";
+import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer/MessageChannelServerNodeViewer";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 
