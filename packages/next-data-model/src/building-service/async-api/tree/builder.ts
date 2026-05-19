@@ -191,6 +191,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
 
     return this.nodeDataBuilder.createNodeValue(
       kind,
+      key,
       value,
       (source, keys) => this.pick(source, keys),
     )

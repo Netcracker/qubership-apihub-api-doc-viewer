@@ -8,5 +8,5 @@ export abstract class AbstractNodeDataBuilder<
   M extends object
 > {
   public abstract createNodeMeta(value: unknown): M;
-  public abstract createNodeValue(kind: string, value: unknown, pick: NodeDataPickFunction): V | null;
+  public abstract createNodeValue(kind: string, key: PropertyKey, value: unknown, pick: NodeDataPickFunction): V | null;
 }

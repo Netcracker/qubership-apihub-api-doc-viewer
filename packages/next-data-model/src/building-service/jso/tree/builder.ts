@@ -160,6 +160,7 @@ export class JsoTreeBuilder extends TreeBuilder<
     const { value } = params
     return this.nodeDataBuilder.createNodeValue(
       kind,
+      key,
       value,
       (source, keys) => this.pick(source, keys),
     )

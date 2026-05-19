@@ -32,6 +32,7 @@ export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
 
   public override createNodeValue(
     kind: string,
+    key: PropertyKey,
     value: unknown,
     pick: NodeDataPickFunction
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {

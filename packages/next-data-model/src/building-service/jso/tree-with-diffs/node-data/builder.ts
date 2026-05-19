@@ -15,6 +15,7 @@ export class JsoNodeDataWithDiffsBuilder extends AbstractNodeDataBuilder<JsoTree
 
   public override createNodeValue(
     kind: string,
+    key: PropertyKey,
     value: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     pick: NodeDataPickFunction
@@ -23,7 +24,7 @@ export class JsoNodeDataWithDiffsBuilder extends AbstractNodeDataBuilder<JsoTree
       return null;
     }
 
-    const transformedValue = JsoRawValueUtilities.transformRawJsoValueToBaseJsoNodeValue(value)
+    const transformedValue = JsoRawValueUtilities.transformRawJsoPropertyToBaseJsoNodeValue(key, value)
 
     return {
       before: transformedValue,

@@ -213,6 +213,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
     return this.nodeDataBuilder.createNodeValue(
       kind,
+      key,
       value,
       (source, keys) => this.pick(source, keys),
     )

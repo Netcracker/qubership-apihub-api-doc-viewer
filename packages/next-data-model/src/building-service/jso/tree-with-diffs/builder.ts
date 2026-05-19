@@ -171,7 +171,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<JsoTreeNodeValueWithDiffs | null, JsoTreeNodeKind, JsoTreeNodeMeta, JsoTreeNodeDiffsSource>,
   ): JsoTreeNodeValueWithDiffs | null {
     const { value } = params
-    return this.nodeDataBuilder.createNodeValue(kind, value, () => null)
+    return this.nodeDataBuilder.createNodeValue(kind, key, value, () => null)
   }
 
   protected createNodeDiffs(
