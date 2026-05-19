@@ -118,6 +118,57 @@ const baseJsoDocument = () => {
 
 const formatJson = (value) => `${JSON.stringify(value, null, 2)}\n`;
 
+const stringJsonSchema = () => ({
+  type: "string",
+  minLength: 1,
+  maxLength: 100,
+  pattern: "^[a-z]+$",
+  format: "email",
+  enum: ["alpha", "beta"],
+  default: "alpha",
+  examples: ["alpha", "beta"],
+  description: "A string JSON Schema property",
+});
+
+const objectJsonSchema = () => ({
+  type: "object",
+  description: "An object JSON Schema property",
+  properties: {
+    id: { type: "string", description: "Identifier" },
+    count: { type: "number", description: "Count", minimum: 0 },
+  },
+  required: ["id"],
+  additionalProperties: false,
+  examples: [{ id: "one", count: 1 }],
+});
+
+const addJsonSchemaPropertyCase = (caseId, propertyKey, schemaFactory, action, schemaKind) => {
+  const beforeDoc = baseJsoDocument();
+  const afterDoc = baseJsoDocument();
+  const schemaValue = schemaFactory();
+
+  if (action === "add") {
+    afterDoc[propertyKey] = schemaValue;
+  } else {
+    beforeDoc[propertyKey] = schemaValue;
+  }
+
+  CASES.push({
+    section: SECTION,
+    caseId,
+    description: `${propertyKey} ${action} ${schemaKind} json schema`,
+    beforeJson: formatJson(beforeDoc),
+    afterJson: formatJson(afterDoc),
+  });
+};
+
+const generateJsonSchemaPropertyCases = () => {
+  addJsonSchemaPropertyCase("13.1", "stringJsonSchema", stringJsonSchema, "add", "primitive");
+  addJsonSchemaPropertyCase("13.2", "objectJsonSchema", objectJsonSchema, "add", "complex");
+  addJsonSchemaPropertyCase("13.3", "stringJsonSchema", stringJsonSchema, "remove", "primitive");
+  addJsonSchemaPropertyCase("13.4", "objectJsonSchema", objectJsonSchema, "remove", "complex");
+};
+
 const addCase = (caseId, fromType, toType) => {
   const propertyKey = TYPE_PROPERTY_KEYS[fromType];
   const beforeDoc = baseJsoDocument();
@@ -200,6 +251,7 @@ const writeExports = () => {
 };
 
 generateAllCases();
+generateJsonSchemaPropertyCases();
 writeJsonPairs();
 writeExports();
 
