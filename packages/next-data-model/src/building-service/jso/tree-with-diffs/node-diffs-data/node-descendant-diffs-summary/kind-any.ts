@@ -1,5 +1,6 @@
 import { AbstractNodeDescendantsDiffsSummaryAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-summary-aggregator";
 import { NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeys } from "../node-diffs/factory";
 
 export class JsoNodeDescendantDiffsSummaryAggregatorKindAny extends AbstractNodeDescendantsDiffsSummaryAggregator {
@@ -18,6 +19,9 @@ export class JsoNodeDescendantDiffsSummaryAggregatorKindAny extends AbstractNode
     }
     for (const diff of Object.values(nodeDescendantDiffs)) {
       if (!diff) {
+        continue;
+      }
+      if (!isDiffAdd(diff.data) && !isDiffRemove(diff.data)) {
         continue;
       }
       summary.add(diff.data.type);
