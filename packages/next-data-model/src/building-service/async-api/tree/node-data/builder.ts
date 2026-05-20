@@ -1,11 +1,21 @@
-import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList } from "@apihub/next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueBase } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier";
 import { isObject, isObjectWithStringKeys } from "../../../../utilities";
 import { AbstractNodeDataBuilder, NodeDataPickFunction } from "../../../abstract/tree/node-data/builder";
 
-const ASYNC_API_NODE_KINDS: ReadonlySet<string> = new Set(AsyncApiTreeNodeKindsList);
+const ASYNC_API_NODE_KINDS_WITH_NODE_VALUE: ReadonlySet<string> = new Set([
+  AsyncApiTreeNodeKinds.BINDING,
+  AsyncApiTreeNodeKinds.EXTENSIONS,
+  AsyncApiTreeNodeKinds.MESSAGE,
+  AsyncApiTreeNodeKinds.MESSAGE_CHANNEL,
+  AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS,
+  AsyncApiTreeNodeKinds.MESSAGE_HEADERS,
+  AsyncApiTreeNodeKinds.MESSAGE_OPERATION,
+  AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD,
+  AsyncApiTreeNodeKinds.SERVER,
+]);
 const ASYNC_API_TREE_NODE_VALUE_COMMON_PROPS: (keyof AsyncApiTreeNodeValueBase)[] = [
   'title', 'description', 'summary'
 ];
@@ -39,7 +49,7 @@ export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
     if (!isObjectWithStringKeys(value)) {
       return null;
     }
-    if (!this.isAsyncApiTreeNodeKind(kind)) {
+    if (!this.isAsyncApiTreeNodeKindWithNodeValue(kind)) {
       return null;
     }
 
@@ -49,8 +59,8 @@ export class AsyncApiNodeDataBuilder extends AbstractNodeDataBuilder<
     );
   }
 
-  private isAsyncApiTreeNodeKind(kind: string): kind is AsyncApiTreeNodeKind {
-    return ASYNC_API_NODE_KINDS.has(kind);
+  private isAsyncApiTreeNodeKindWithNodeValue(kind: string): kind is AsyncApiTreeNodeKind {
+    return ASYNC_API_NODE_KINDS_WITH_NODE_VALUE.has(kind);
   }
 
   // Function overloads for type-safe return based on input type
