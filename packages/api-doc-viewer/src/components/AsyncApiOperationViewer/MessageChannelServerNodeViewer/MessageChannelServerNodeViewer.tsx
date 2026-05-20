@@ -231,6 +231,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
+  console.log('node', node.id, node)
   return (
     <div className='flex flex-col gap-2'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
