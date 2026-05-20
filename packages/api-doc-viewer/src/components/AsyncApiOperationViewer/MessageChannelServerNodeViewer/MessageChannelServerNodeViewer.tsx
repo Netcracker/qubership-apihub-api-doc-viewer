@@ -6,20 +6,21 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { BindingsNodeViewer } from "../BindingsNodeViewer"
-import { BrokenRefViewer } from "../BrokenRefViewer/BrokenRefViewer"
-import { ServerAddressRow } from "../ServerAddressRow"
-import './MessageChannelServerNodeViewer.css'
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextRowProps } from "../../shared-components/TextRow/types"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
+import { BindingsNodeViewer } from "../BindingsNodeViewer"
+import { BrokenRefViewer } from "../BrokenRefViewer/BrokenRefViewer"
+import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
 import { SizeVariant } from "../types/SizeVariant"
+import './MessageChannelServerNodeViewer.css'
 
 type MessageChannelServerNodeViewerProps = {
   node:
@@ -77,6 +78,21 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     return {}
   }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
 
+  const serverAddressRowDiffsProps: Pick<ServerAddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(nodeDiffs['protocol'], nodeDiffs['host'])
+      if (!maxDiff) {
+        return {}
+      }
+      return {
+        diff: maxDiff,
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+
   const renderProtocol = useCallback((layoutSide: LayoutSide) => {
     if (!value) {
       return null
@@ -88,29 +104,27 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (!diffProtocol) {
       return <>{value.protocol}</>
     }
-    const diffsClasses = []
+    const diffsClasses: Set<string> = new Set()
     const { data, styles } = diffProtocol
     let resolvedValue = value.protocol
     let isInvisible = false
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+      diffsClasses.add(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       if (isDiffRemove(data) || isDiffReplace(data)) {
         resolvedValue = data.beforeValue as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.beforeKey as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       }
       if (isDiffAdd(data)) {
         isInvisible = true
       }
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
+      diffsClasses.add(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       if (isDiffAdd(data) || isDiffReplace(data)) {
         resolvedValue = data.afterValue as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.afterKey as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       }
       if (isDiffRemove(data)) {
         isInvisible = true
@@ -120,7 +134,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return null
     }
     return (
-      <span className={diffsClasses.join(' ')}>
+      <span className={Array.from(diffsClasses).join(' ')}>
         {resolvedValue}
       </span>
     )
@@ -137,29 +151,27 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (!diffHost) {
       return <>{value.host}</>
     }
-    const diffsClasses = []
+    const diffsClasses: Set<string> = new Set()
     const { data, styles } = diffHost
     let resolvedValue = value.host
     let isInvisible = false
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+      diffsClasses.add(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       if (isDiffRemove(data) || isDiffReplace(data)) {
         resolvedValue = data.beforeValue as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.beforeKey as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
       }
       if (isDiffAdd(data)) {
         isInvisible = true
       }
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
+      diffsClasses.add(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       if (isDiffAdd(data) || isDiffReplace(data)) {
         resolvedValue = data.afterValue as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       } else if (isDiffRename(data)) {
         resolvedValue = data.afterKey as string
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
       }
       if (isDiffRemove(data)) {
         isInvisible = true
@@ -169,7 +181,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return null
     }
     return (
-      <span className={diffsClasses.join(' ')}>
+      <span className={Array.from(diffsClasses).join(' ')}>
         {resolvedValue}
       </span>
     )
@@ -177,38 +189,34 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const renderAddress = useCallback((layoutSide: LayoutSide) => {
     function renderAddressContent(diffClasses: string[] = []) {
-      return <span className={`server-address-container server-address server-subheader ${diffClasses.join(' ')}`}>
-        {renderProtocol(layoutSide)}
-        ://
-        {renderHost(layoutSide)}
-      </span>
+      return (
+        <div className={`px-2 flex flex-row ${diffClasses.join(' ')}`}>
+          <div className="server-address-container server-address server-subheader">
+            {renderProtocol(layoutSide)}
+            ://
+            {renderHost(layoutSide)}
+          </div>
+        </div>
+      )
     }
     if (!(isServerNodeWithDiffs(node))) {
       return renderAddressContent()
     }
-    const diffNode = node.diffs?.['']
-    if (!diffNode) {
+    const changedPropertyMetadata = node.diffs?.[''] ?? serverAddressRowDiffsProps.diff
+    if (!changedPropertyMetadata) {
       return renderAddressContent()
     }
-    const { data, styles } = diffNode
-    const diffsClasses: string[] = []
+    const { data, styles } = changedPropertyMetadata
+    const diffsClasses: Set<string> = new Set()
     let isInvisible = false
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
-      if (isDiffRemove(data) || isDiffReplace(data)) {
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-      } else if (isDiffRename(data)) {
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-      }
+      diffsClasses.add(DiffsClassesBuilder.background(styles.before.backgroundColor))
       if (isDiffAdd(data)) {
         isInvisible = true
       }
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
-      if (isDiffAdd(data) || isDiffReplace(data)) {
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-      } else if (isDiffRename(data)) {
-        diffsClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-      }
+      diffsClasses.add(DiffsClassesBuilder.background(styles.after.backgroundColor))
       if (isDiffRemove(data)) {
         isInvisible = true
       }
@@ -216,8 +224,8 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (isInvisible) {
       return null
     }
-    return renderAddressContent(diffsClasses)
-  }, [node, renderHost, renderProtocol])
+    return renderAddressContent(Array.from(diffsClasses))
+  }, [node, renderHost, renderProtocol, serverAddressRowDiffsProps.diff])
 
   const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'title'), [value, nodeDiffs])
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
@@ -249,6 +257,8 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
         )}
         <ServerAddressRow
           renderAddress={renderAddress}
+          // diffs
+          {...serverAddressRowDiffsProps}
         />
         {isDescriptionDisplayed && (
           <TextRow
