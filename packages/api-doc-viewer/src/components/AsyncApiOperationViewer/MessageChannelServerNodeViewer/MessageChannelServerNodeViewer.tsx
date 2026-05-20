@@ -9,7 +9,7 @@ import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracke
 import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
-import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { HighlightVariant, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextRowProps } from "../../shared-components/TextRow/types"
@@ -188,14 +188,16 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   }, [node, value])
 
   const renderAddress = useCallback((layoutSide: LayoutSide) => {
-    function renderAddressContent(diffClasses: string[] = []) {
+    function renderAddressContent(isInvisible: boolean = false, diffClasses: string[] = []) {
       return (
-        <div className={`px-2 flex flex-row ${diffClasses.join(' ')}`}>
-          <div className="server-address-container server-address server-subheader">
-            {renderProtocol(layoutSide)}
-            ://
-            {renderHost(layoutSide)}
-          </div>
+        <div className={`px-2 flex flex-row h-full ${diffClasses.join(' ')}`}>
+          {!isInvisible && (
+            <div className="server-address-container server-address server-subheader">
+              {renderProtocol(layoutSide)}
+              ://
+              {renderHost(layoutSide)}
+            </div>
+          )}
         </div>
       )
     }
@@ -210,28 +212,28 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     const diffsClasses: Set<string> = new Set()
     let isInvisible = false
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
-      diffsClasses.add(DiffsClassesBuilder.background(styles.before.backgroundColor))
       if (isDiffAdd(data)) {
+        diffsClasses.add(DiffsClassesBuilder.background(HighlightVariant.Gray))
         isInvisible = true
+      } else {
+        diffsClasses.add(DiffsClassesBuilder.background(styles.before.backgroundColor))
       }
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
-      diffsClasses.add(DiffsClassesBuilder.background(styles.after.backgroundColor))
       if (isDiffRemove(data)) {
+        diffsClasses.add(DiffsClassesBuilder.background(HighlightVariant.Gray))
         isInvisible = true
+      } else {
+        diffsClasses.add(DiffsClassesBuilder.background(styles.after.backgroundColor))
       }
     }
-    if (isInvisible) {
-      return null
-    }
-    return renderAddressContent(Array.from(diffsClasses))
+    return renderAddressContent(isInvisible, Array.from(diffsClasses))
   }, [node, renderHost, renderProtocol, serverAddressRowDiffsProps.diff])
 
   const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'title'), [value, nodeDiffs])
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
-  console.log('node', node.id, node)
   return (
     <div className='flex flex-col gap-2'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
