@@ -35,6 +35,7 @@ declare const meta: {
     args: {
         source: {};
         supportJsonSchema: true;
+        initialLevel: number;
     };
 };
 export default meta;
