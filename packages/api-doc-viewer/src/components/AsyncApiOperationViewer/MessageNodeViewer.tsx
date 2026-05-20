@@ -90,6 +90,8 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       <AddressRow
         action={value?.action ?? ''}
         address={value?.address ?? ''}
+        // diffs
+        diff={nodeDiffs?.['address']}
       />
       {isDescriptionDisplayed && (
         <TextRow
