@@ -10,6 +10,7 @@ type TextValueProps = {
     layoutSide: LayoutSide;
     onClick?: () => void;
     fontWeight?: 'normal' | 'bold';
+    fontColor?: string;
     label?: string;
     diff?: ChangedPropertyMetaData;
     usage?: TitleRowUsage;
