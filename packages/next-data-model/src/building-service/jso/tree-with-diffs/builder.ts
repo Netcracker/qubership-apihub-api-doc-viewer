@@ -37,6 +37,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   constructor(
     private readonly source: unknown,
+    private readonly supportJsonSchema: boolean = false,
     private readonly referenceNamePropertyKey: symbol,
     private readonly diffsMetaKeys: DiffMetaKeys,
     private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
@@ -96,7 +97,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         }
         // we should not build-in nodes for json schema or multi-schema values into JSO Tree
         // they will be processed by separate data models
-        return (
+        return this.supportJsonSchema && (
           nodeValue.before.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
           nodeValue.after.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
           nodeValue.before.valueType === JsoPropertyValueTypes.MULTI_SCHEMA ||

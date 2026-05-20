@@ -52,8 +52,8 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
     const referenceNamePropertyKey = Symbol('referenceName')
 
     const builder = useMemo(
-      () => new JsoTreeWithDiffsBuilder(source, referenceNamePropertyKey, diffMetaKeys),
-      [source, referenceNamePropertyKey, diffMetaKeys]
+      () => new JsoTreeWithDiffsBuilder(source, supportJsonSchema, referenceNamePropertyKey, diffMetaKeys),
+      [source, supportJsonSchema, referenceNamePropertyKey, diffMetaKeys]
     )
     const tree = useMemo(() => builder.build(), [builder])
 
