@@ -81,11 +81,8 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const serverAddressRowDiffsProps: Pick<ServerAddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(nodeDiffs['protocol'], nodeDiffs['host'])
-      if (!maxDiff) {
-        return {}
-      }
       return {
-        diff: maxDiff,
+        diff: nodeDiffs[''] ?? maxDiff,
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
