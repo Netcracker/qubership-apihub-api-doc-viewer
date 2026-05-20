@@ -53,6 +53,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       const containerNodeDiff = containerNode.diffs['']
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
         nodeDiffs[''] = containerNodeDiff
+        return nodeDiffs
       } else {
         const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
@@ -66,6 +67,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       const parentNodeDiff = parentNode.diffs['']
       if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
         nodeDiffs[''] = parentNodeDiff
+        return nodeDiffs
       } else {
         const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
