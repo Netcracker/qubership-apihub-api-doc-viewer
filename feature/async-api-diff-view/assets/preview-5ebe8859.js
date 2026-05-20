@@ -1,0 +1,1 @@
+const e={parameters:{actions:{argTypesRegex:"^on[A-Z].*"},controls:{matchers:{date:/Date$/}},options:{storySort:{order:["Debug","Json Schema Viewer","Json Schema Diff Viewer","GraphQL Operation Viewer","GraphQL Operation Diff Viewer","GraphQL Compatibility Suite","Async API Suite","Async API Diffs Suite","JSO Suite","JSO Diffs Suite","*"]}}}};export{e as default};

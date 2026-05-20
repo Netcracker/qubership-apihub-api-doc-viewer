@@ -1,13 +1,8 @@
-import { DiffStyles, HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-type UseJsoValueWithDiffsStylesInput = {
-    isPredefinedValueSet: boolean;
-    sideStyles?: DiffStyles;
-    forcedBackgroundColor?: HighlightVariant;
-    forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
+import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+export type JsoValueWithDiffsAppearance = 'text' | 'block';
+export type UseJsoValueWithDiffsStylesInput = {
+    appearance: JsoValueWithDiffsAppearance;
+    textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
+    borderShadowColor?: HighlightVariant;
 };
-type UseJsoValueWithDiffsStylesResult = {
-    styleClasses: string[];
-    valueClasses: string[];
-};
-export declare function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInput): UseJsoValueWithDiffsStylesResult;
-export {};
+export declare function useJsoValueWithDiffsStyles(input: UseJsoValueWithDiffsStylesInput): string;

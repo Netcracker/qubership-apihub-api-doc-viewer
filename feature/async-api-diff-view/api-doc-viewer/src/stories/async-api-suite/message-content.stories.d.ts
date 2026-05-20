@@ -28,4 +28,3 @@ export declare const HeadersPayload: Story;
 export declare const ExtensionsBindingsOneOption: Story;
 export declare const ExtensionsPayload: Story;
 export declare const BindingsOneOptionPayload: Story;
-export declare const EdgeCaseBrokenRefBindings: Story;

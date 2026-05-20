@@ -1,8 +1,5 @@
-type UseJsoValueStylesInput = {
-    isPredefinedValueSet: boolean;
+export type JsoValueAppearance = 'text' | 'block';
+export type UseJsoValueStylesInput = {
+    appearance: JsoValueAppearance;
 };
-type UseJsoValueStylesResult = {
-    valueClasses: string[];
-};
-export declare function useJsoValueStyles(input: UseJsoValueStylesInput): UseJsoValueStylesResult;
-export {};
+export declare function useJsoValueStyles(input: UseJsoValueStylesInput): string;
