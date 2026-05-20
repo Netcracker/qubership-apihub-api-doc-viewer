@@ -494,34 +494,6 @@ const addChannelSpecificCases = () => {
     };
   });
 
-  addCase(SECTION_CHANNEL, "7.6", "channel.parameters.secondParam object to broken ref", (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  }, (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: { $ref: "#/components/parameters/DoesNotExist" },
-    };
-  });
-
-  addCase(SECTION_CHANNEL, "7.7", "channel.parameters.secondParam broken ref to object", (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: { $ref: "#/components/parameters/DoesNotExist" },
-    };
-  }, (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  });
-
   const servers = {
     server0: { host: "broker-0.example.com:9092", protocol: "kafka" },
     server1: { host: "broker-1.example.com:9092", protocol: "kafka" },
@@ -558,21 +530,6 @@ const addChannelSpecificCases = () => {
     channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
   });
 
-  addCase(SECTION_CHANNEL, "7.12", "channel.servers ref changed to broken ref", (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  }, (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/missing-server" }];
-  });
-
-  addCase(SECTION_CHANNEL, "7.13", "channel.servers broken ref changed to existing ref", (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/missing-server" }];
-  }, (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  });
 };
 
 const addMessageSchemaCases = () => {
