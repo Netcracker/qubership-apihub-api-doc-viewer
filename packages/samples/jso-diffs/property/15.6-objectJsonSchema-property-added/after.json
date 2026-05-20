@@ -93,6 +93,10 @@
         "type": "number",
         "description": "Count",
         "minimum": 0
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name"
       }
     },
     "required": [

@@ -82,7 +82,6 @@
   ],
   "objectJsonSchema": {
     "type": "object",
-    "title": "Sample object schema",
     "description": "An object JSON Schema property",
     "properties": {
       "id": {

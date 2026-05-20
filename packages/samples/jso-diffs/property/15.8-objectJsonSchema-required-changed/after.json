@@ -96,7 +96,8 @@
       }
     },
     "required": [
-      "id"
+      "id",
+      "count"
     ],
     "additionalProperties": false,
     "examples": [

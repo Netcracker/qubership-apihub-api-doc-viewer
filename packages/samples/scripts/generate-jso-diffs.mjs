@@ -132,6 +132,7 @@ const stringJsonSchema = () => ({
 
 const objectJsonSchema = () => ({
   type: "object",
+  title: "Sample object schema",
   description: "An object JSON Schema property",
   properties: {
     id: { type: "string", description: "Identifier" },
@@ -162,11 +163,187 @@ const addJsonSchemaPropertyCase = (caseId, propertyKey, schemaFactory, action, s
   });
 };
 
+const addJsonSchemaInternalChangeCase = (caseId, propertyKey, beforeSchemaFactory, afterSchemaFactory, changeDescription) => {
+  const beforeDoc = baseJsoDocument();
+  const afterDoc = baseJsoDocument();
+  beforeDoc[propertyKey] = beforeSchemaFactory();
+  afterDoc[propertyKey] = afterSchemaFactory();
+
+  CASES.push({
+    section: SECTION,
+    caseId,
+    description: `${propertyKey} ${changeDescription}`,
+    beforeJson: formatJson(beforeDoc),
+    afterJson: formatJson(afterDoc),
+  });
+};
+
 const generateJsonSchemaPropertyCases = () => {
   addJsonSchemaPropertyCase("13.1", "stringJsonSchema", stringJsonSchema, "add", "primitive");
   addJsonSchemaPropertyCase("13.2", "objectJsonSchema", objectJsonSchema, "add", "complex");
   addJsonSchemaPropertyCase("13.3", "stringJsonSchema", stringJsonSchema, "remove", "primitive");
   addJsonSchemaPropertyCase("13.4", "objectJsonSchema", objectJsonSchema, "remove", "complex");
+};
+
+const generateStringJsonSchemaInternalChangeCases = () => {
+  const base = () => stringJsonSchema();
+
+  addJsonSchemaInternalChangeCase(
+    "14.1",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), description: "CHANGED string JSON Schema description" }),
+    "description changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.2",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), enum: ["alpha", "beta", "gamma"] }),
+    "enum changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.3",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), minLength: 3 }),
+    "minLength changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.4",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), maxLength: 50 }),
+    "maxLength changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.5",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), pattern: "^[a-z0-9]+$" }),
+    "pattern changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.6",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), format: "uuid" }),
+    "format changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.7",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), default: "beta" }),
+    "default changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "14.8",
+    "stringJsonSchema",
+    base,
+    () => ({ ...stringJsonSchema(), examples: ["alpha", "beta", "gamma"] }),
+    "examples changed",
+  );
+};
+
+const generateObjectJsonSchemaInternalChangeCases = () => {
+  const base = () => objectJsonSchema();
+
+  addJsonSchemaInternalChangeCase(
+    "15.1",
+    "objectJsonSchema",
+    base,
+    () => ({ ...objectJsonSchema(), description: "CHANGED object JSON Schema description" }),
+    "description changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.2",
+    "objectJsonSchema",
+    base,
+    () => ({ ...objectJsonSchema(), title: "CHANGED object schema title" }),
+    "title changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.3",
+    "objectJsonSchema",
+    () => {
+      const schema = objectJsonSchema();
+      delete schema.title;
+      return schema;
+    },
+    base,
+    "title added",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.4",
+    "objectJsonSchema",
+    base,
+    () => {
+      const schema = objectJsonSchema();
+      delete schema.title;
+      return schema;
+    },
+    "title removed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.5",
+    "objectJsonSchema",
+    base,
+    () => ({
+      ...objectJsonSchema(),
+      examples: [{ id: "two", count: 2 }, { id: "three", count: 3 }],
+    }),
+    "examples changed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.6",
+    "objectJsonSchema",
+    base,
+    () => ({
+      ...objectJsonSchema(),
+      properties: {
+        ...objectJsonSchema().properties,
+        name: { type: "string", description: "Display name" },
+      },
+    }),
+    "property added",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.7",
+    "objectJsonSchema",
+    base,
+    () => {
+      const schema = clone(objectJsonSchema());
+      delete schema.properties.count;
+      schema.required = ["id"];
+      return schema;
+    },
+    "property removed",
+  );
+
+  addJsonSchemaInternalChangeCase(
+    "15.8",
+    "objectJsonSchema",
+    base,
+    () => ({
+      ...objectJsonSchema(),
+      required: ["id", "count"],
+    }),
+    "required changed",
+  );
 };
 
 const addCase = (caseId, fromType, toType) => {
@@ -252,6 +429,8 @@ const writeExports = () => {
 
 generateAllCases();
 generateJsonSchemaPropertyCases();
+generateStringJsonSchemaInternalChangeCases();
+generateObjectJsonSchemaInternalChangeCases();
 writeJsonPairs();
 writeExports();
 

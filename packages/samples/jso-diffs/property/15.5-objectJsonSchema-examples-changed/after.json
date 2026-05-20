@@ -101,8 +101,12 @@
     "additionalProperties": false,
     "examples": [
       {
-        "id": "one",
-        "count": 1
+        "id": "two",
+        "count": 2
+      },
+      {
+        "id": "three",
+        "count": 3
       }
     ]
   }
