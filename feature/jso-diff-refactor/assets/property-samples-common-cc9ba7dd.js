@@ -81,7 +81,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,f=`{
+`,m=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -164,7 +164,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,m=`{
+`,f=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -413,6 +413,89 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
+`,h=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
 `,A=`{
   "stringValue": "hello",
   "numberValue": 7,
@@ -579,7 +662,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,h=`{
+`,g=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -745,7 +828,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,g=`{
+`,x=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -828,7 +911,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,x=`{
+`,O=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -1077,89 +1160,6 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,O=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
 `,S=`{
   "stringValue": "hello",
   "numberValue": 7,
@@ -1326,7 +1326,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,E=`{
+`,N=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -1409,7 +1409,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,F=`{
+`,L=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -1493,6 +1493,421 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,C=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,q=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,z=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,E=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,$=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,F=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -1824,90 +2239,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,N=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,L=`{
+`,G=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -2073,7 +2405,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,q=`{
+`,w=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -2156,90 +2488,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,z=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,G=`{
+`,H=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -2406,89 +2655,6 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,k=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,w=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -2820,173 +2986,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,$=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
 `,W=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,H=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -3484,7 +3484,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ln=`{
+`,on=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -3567,7 +3567,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,on=`{
+`,ln=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -4000,6 +4000,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ],
   "objectJsonSchema": {
     "type": "object",
+    "title": "Sample object schema",
     "description": "An object JSON Schema property",
     "properties": {
       "id": {
@@ -4105,7 +4106,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,bn=`{
   "stringValue": "hello",
@@ -4188,7 +4206,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,cn=`{
   "stringValue": "hello",
@@ -4271,7 +4306,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,Pn=`{
   "stringValue": "hello",
@@ -4354,7 +4406,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,yn=`{
   "stringValue": "hello",
@@ -4437,7 +4506,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,jn=`{
   "stringValue": "hello",
@@ -4520,90 +4606,24 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
-}
-`,fn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
   ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
     ],
-    [
-      1,
-      2
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
     ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
+    "description": "A string JSON Schema property"
+  }
 }
 `,mn=`{
   "stringValue": "hello",
@@ -4686,7 +4706,124 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,fn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
 }
 `,dn=`{
   "stringValue": "hello",
@@ -4769,7 +4906,33 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
 }
 `,_n=`{
   "stringValue": "hello",
@@ -4852,173 +5015,33 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
-}
-`,An=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
   ],
-  "arrayObjects": [
-    {
-      "id": 1
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
     },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
+    "required": [
+      "id"
     ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
     ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Vn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
+  }
 }
 `,hn=`{
   "stringValue": "hello",
@@ -5101,9 +5124,34 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
 }
-`,vn=`{
+`,An=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -5184,7 +5232,142 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,Vn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
 }
 `,gn=`{
   "stringValue": "hello",
@@ -5267,9 +5450,253 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,vn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
 }
 `,xn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,On=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -5518,89 +5945,6 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,On=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
 `,Sn=`{
   "stringValue": "hello",
   "numberValue": 7,
@@ -5767,7 +6111,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,En=`{
+`,Nn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -5850,7 +6194,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Fn=`{
+`,Ln=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -5934,6 +6278,421 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Cn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,qn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,zn=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,En=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,$n=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Fn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -6265,90 +7024,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Nn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Ln=`{
+`,Gn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -6514,7 +7190,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,qn=`{
+`,wn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -6597,90 +7273,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,zn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Gn=`{
+`,Hn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -6847,89 +7440,6 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,kn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,wn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -7261,173 +7771,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,$n=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
 `,Wn=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Hn=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -7925,7 +8269,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,lr=`{
+`,or=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -8008,7 +8352,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,or=`{
+`,lr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -9004,7 +9348,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,fr=`{
+`,mr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -9087,7 +9431,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,mr=`{
+`,fr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -9336,6 +9680,89 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
+`,hr=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
 `,Ar=`{
   "stringValue": "hello",
   "numberValue": 7,
@@ -9502,7 +9929,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,hr=`{
+`,gr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -9668,7 +10095,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,gr=`{
+`,xr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -9751,7 +10178,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,xr=`{
+`,Or=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -10000,89 +10427,6 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Or=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
 `,Sr=`{
   "stringValue": "hello",
   "numberValue": 7,
@@ -10249,7 +10593,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Er=`{
+`,Nr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -10332,7 +10676,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Fr=`{
+`,Lr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -10416,6 +10760,421 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Cr=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,qr=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,zr=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Er=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,$r=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Fr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -10747,90 +11506,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Nr=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Lr=`{
+`,Gr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -10996,7 +11672,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,qr=`{
+`,wr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -11079,90 +11755,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,zr=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Gr=`{
+`,Hr=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -11329,103 +11922,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,kr=`{
-  "stringValue": 7,
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,wr=`{
-  "stringValue": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -11508,18 +12005,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Br=`{
-  "stringValue": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ],
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -11602,7 +12088,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Ur=`{
-  "stringValue": true,
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -11685,95 +12171,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Xr=`{
-  "stringValue": null,
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,$r=`{
-  "stringValue": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -11856,106 +12254,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Wr=`{
-  "stringValue": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
-    }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
-  ],
-  "arrayObjects": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
-    {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,Hr=`{
-  "stringValue": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -12038,19 +12337,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Qr=`{
-  "stringValue": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -12133,12 +12420,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,Zr=`{
-  "stringValue": [
-    "x",
-    1,
-    false,
-    null
-  ],
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -12221,14 +12503,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,ne=`{
-  "stringValue": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    }
-  ],
+  "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
   "nullValue": null,
@@ -12358,7 +12633,14 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     false,
     null
   ],
-  "arrayObjects": "hello",
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
   "arrayArrayItems": [
     [
       "a",
@@ -12435,6 +12717,14 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     null
   ],
   "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
     [
       "a",
       "b"
@@ -12447,6 +12737,75 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
       true,
       false
     ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,oe=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
   ],
   "arrayArrayItems": [
     [
@@ -12524,93 +12883,13 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     null
   ],
   "arrayObjects": [
-    "x",
-    1,
-    true,
-    null,
     {
-      "a": 1
+      "id": 1
     },
-    [
-      "nested"
-    ]
-  ],
-  "arrayArrayItems": [
-    [
-      "a",
-      "b"
-    ],
-    [
-      1,
-      2
-    ],
-    [
-      true,
-      false
-    ]
-  ],
-  "arrayAllItemTypes": [
-    "x",
-    1,
-    true,
-    null,
     {
-      "a": 1
-    },
-    [
-      "nested"
-    ]
-  ]
-}
-`,oe=`{
-  "stringValue": "hello",
-  "numberValue": 7,
-  "booleanValue": true,
-  "nullValue": null,
-  "objectPrimitiveProps": {
-    "first": "one",
-    "second": 2,
-    "third": true,
-    "fourth": null
-  },
-  "objectPropsObjects": {
-    "first": {
-      "a": 1
-    },
-    "second": {
-      "b": 2
+      "id": 2
     }
-  },
-  "objectPropsArrays": {
-    "first": [
-      "a",
-      1
-    ],
-    "second": [
-      true,
-      null
-    ]
-  },
-  "objectAllPropTypes": {
-    "stringProp": "hello",
-    "numberProp": 7,
-    "booleanProp": true,
-    "nullProp": null,
-    "objectProp": {
-      "a": 1
-    },
-    "arrayProp": [
-      "x",
-      1
-    ]
-  },
-  "arrayPrimitives": [
-    "x",
-    1,
-    false,
-    null
   ],
-  "arrayObjects": 7,
   "arrayArrayItems": [
     [
       "a",
@@ -12686,7 +12965,14 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     false,
     null
   ],
-  "arrayObjects": true,
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
   "arrayArrayItems": [
     [
       "a",
@@ -12715,6 +13001,1392 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ]
 }
 `,ae=`{
+  "stringValue": 7,
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,se=`{
+  "stringValue": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,ue=`{
+  "stringValue": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,ie=`{
+  "stringValue": true,
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,pe=`{
+  "stringValue": null,
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,be=`{
+  "stringValue": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,ce=`{
+  "stringValue": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Pe=`{
+  "stringValue": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,ye=`{
+  "stringValue": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,je=`{
+  "stringValue": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,me=`{
+  "stringValue": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,fe=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": "hello",
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,de=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,_e=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,he=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": 7,
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Ae=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": true,
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Ve=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -12790,7 +14462,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,se=`{
+`,ge=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -12871,7 +14543,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ue=`{
+`,ve=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -12954,7 +14626,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ie=`{
+`,xe=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13039,7 +14711,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,pe=`{
+`,Oe=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13127,7 +14799,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,be=`{
+`,Ie=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13208,7 +14880,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ce=`{
+`,Te=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13278,7 +14950,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Pe=`{
+`,Se=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13355,7 +15027,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ye=`{
+`,Je=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13436,7 +15108,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,je=`{
+`,Ne=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13506,7 +15178,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,fe=`{
+`,Le=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13576,7 +15248,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,me=`{
+`,Ce=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13646,7 +15318,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,de=`{
+`,qe=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13721,7 +15393,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,_e=`{
+`,ze=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13798,7 +15470,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ae=`{
+`,Ee=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13877,7 +15549,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ve=`{
+`,$e=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -13959,7 +15631,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,he=`{
+`,Fe=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14034,7 +15706,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ve=`{
+`,De=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14106,7 +15778,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ],
   "arrayAllItemTypes": "hello"
 }
-`,ge=`{
+`,Ke=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14185,7 +15857,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     }
   ]
 }
-`,xe=`{
+`,Me=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14270,7 +15942,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ie=`{
+`,Ge=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14342,7 +16014,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ],
   "arrayAllItemTypes": 7
 }
-`,Te=`{
+`,Re=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14414,7 +16086,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ],
   "arrayAllItemTypes": true
 }
-`,Oe=`{
+`,we=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14486,7 +16158,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
   ],
   "arrayAllItemTypes": null
 }
-`,Se=`{
+`,He=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14563,7 +16235,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     "fourth": null
   }
 }
-`,Je=`{
+`,Ye=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14642,7 +16314,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     }
   }
 }
-`,Ee=`{
+`,ke=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14723,7 +16395,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   }
 }
-`,Fe=`{
+`,Be=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14807,7 +16479,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   }
 }
-`,Ce=`{
+`,Ue=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14884,7 +16556,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     null
   ]
 }
-`,De=`{
+`,Xe=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -14984,7 +16656,1411 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     "description": "A string JSON Schema property"
   }
 }
-`,Ke=`{
+`,We=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,Qe=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,Ze=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ]
+}
+`,no=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "CHANGED string JSON Schema description"
+  }
+}
+`,ro=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta",
+      "gamma"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,eo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 3,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,oo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 50,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,lo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z0-9]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,to=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "uuid",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,ao=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "beta",
+    "examples": [
+      "alpha",
+      "beta"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,so=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "stringJsonSchema": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 100,
+    "pattern": "^[a-z]+$",
+    "format": "email",
+    "enum": [
+      "alpha",
+      "beta"
+    ],
+    "default": "alpha",
+    "examples": [
+      "alpha",
+      "beta",
+      "gamma"
+    ],
+    "description": "A string JSON Schema property"
+  }
+}
+`,uo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "CHANGED object JSON Schema description",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,io=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "CHANGED object schema title",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,po=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,bo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -15092,7 +18168,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   }
 }
-`,Me=`{
+`,co=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -15173,9 +18249,39 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "two",
+        "count": 2
+      },
+      {
+        "id": "three",
+        "count": 3
+      }
+    ]
+  }
 }
-`,Ne=`{
+`,Po=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -15256,9 +18362,253 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     [
       "nested"
     ]
-  ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
 }
-`,Le=`{
+`,yo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,jo=`{
+  "stringValue": "hello",
+  "numberValue": 7,
+  "booleanValue": true,
+  "nullValue": null,
+  "objectPrimitiveProps": {
+    "first": "one",
+    "second": 2,
+    "third": true,
+    "fourth": null
+  },
+  "objectPropsObjects": {
+    "first": {
+      "a": 1
+    },
+    "second": {
+      "b": 2
+    }
+  },
+  "objectPropsArrays": {
+    "first": [
+      "a",
+      1
+    ],
+    "second": [
+      true,
+      null
+    ]
+  },
+  "objectAllPropTypes": {
+    "stringProp": "hello",
+    "numberProp": 7,
+    "booleanProp": true,
+    "nullProp": null,
+    "objectProp": {
+      "a": 1
+    },
+    "arrayProp": [
+      "x",
+      1
+    ]
+  },
+  "arrayPrimitives": [
+    "x",
+    1,
+    false,
+    null
+  ],
+  "arrayObjects": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "arrayArrayItems": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      true,
+      false
+    ]
+  ],
+  "arrayAllItemTypes": [
+    "x",
+    1,
+    true,
+    null,
+    {
+      "a": 1
+    },
+    [
+      "nested"
+    ]
+  ],
+  "objectJsonSchema": {
+    "type": "object",
+    "title": "Sample object schema",
+    "description": "An object JSON Schema property",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Identifier"
+      },
+      "count": {
+        "type": "number",
+        "description": "Count",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "id",
+      "count"
+    ],
+    "additionalProperties": false,
+    "examples": [
+      {
+        "id": "one",
+        "count": 1
+      }
+    ]
+  }
+}
+`,mo=`{
   "stringValue": "hello",
   "numberValue": "hello",
   "booleanValue": true,
@@ -15341,7 +18691,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Re=`{
+`,fo=`{
   "stringValue": "hello",
   "numberValue": [
     [
@@ -15437,7 +18787,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,qe=`{
+`,_o=`{
   "stringValue": "hello",
   "numberValue": [
     "x",
@@ -15531,7 +18881,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ze=`{
+`,ho=`{
   "stringValue": "hello",
   "numberValue": true,
   "booleanValue": true,
@@ -15614,7 +18964,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ge=`{
+`,Ao=`{
   "stringValue": "hello",
   "numberValue": null,
   "booleanValue": true,
@@ -15697,7 +19047,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ye=`{
+`,Vo=`{
   "stringValue": "hello",
   "numberValue": {
     "first": "one",
@@ -15785,7 +19135,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ke=`{
+`,go=`{
   "stringValue": "hello",
   "numberValue": {
     "first": {
@@ -15875,7 +19225,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,we=`{
+`,vo=`{
   "stringValue": "hello",
   "numberValue": {
     "first": [
@@ -15967,7 +19317,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Be=`{
+`,xo=`{
   "stringValue": "hello",
   "numberValue": {
     "stringProp": "hello",
@@ -16062,7 +19412,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ue=`{
+`,Oo=`{
   "stringValue": "hello",
   "numberValue": [
     "x",
@@ -16150,7 +19500,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Xe=`{
+`,Io=`{
   "stringValue": "hello",
   "numberValue": [
     {
@@ -16240,7 +19590,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,$e=`{
+`,To=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": "hello",
@@ -16323,7 +19673,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,We=`{
+`,So=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": [
@@ -16419,7 +19769,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,He=`{
+`,Jo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": [
@@ -16513,7 +19863,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Qe=`{
+`,No=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": 7,
@@ -16596,7 +19946,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ze=`{
+`,Lo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": null,
@@ -16679,7 +20029,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,nl=`{
+`,Co=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": {
@@ -16767,7 +20117,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,rl=`{
+`,qo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": {
@@ -16857,7 +20207,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,el=`{
+`,zo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": {
@@ -16949,7 +20299,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ll=`{
+`,Eo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": {
@@ -17044,7 +20394,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ol=`{
+`,$o=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": [
@@ -17132,7 +20482,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,tl=`{
+`,Fo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": [
@@ -17222,7 +20572,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,al=`{
+`,Do=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17305,7 +20655,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,sl=`{
+`,Ko=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17401,7 +20751,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ul=`{
+`,Mo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17495,7 +20845,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,il=`{
+`,Go=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17578,7 +20928,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,pl=`{
+`,Ro=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17661,7 +21011,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,bl=`{
+`,wo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17749,7 +21099,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,cl=`{
+`,Ho=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17839,7 +21189,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Pl=`{
+`,Yo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -17931,7 +21281,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,yl=`{
+`,ko=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18026,7 +21376,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,jl=`{
+`,Bo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18114,7 +21464,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,fl=`{
+`,Uo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18204,7 +21554,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ml=`{
+`,Xo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18282,7 +21632,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,dl=`{
+`,Wo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18373,7 +21723,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,_l=`{
+`,Qo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18462,7 +21812,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Al=`{
+`,Zo=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18540,7 +21890,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Vl=`{
+`,nl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18618,7 +21968,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,hl=`{
+`,rl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18696,7 +22046,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,vl=`{
+`,el=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18781,7 +22131,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,gl=`{
+`,ol=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18868,7 +22218,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,xl=`{
+`,ll=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -18958,7 +22308,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Il=`{
+`,tl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19041,7 +22391,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Tl=`{
+`,al=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19126,7 +22476,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ol=`{
+`,sl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19202,7 +22552,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Sl=`{
+`,ul=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19291,7 +22641,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Jl=`{
+`,il=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19378,7 +22728,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,El=`{
+`,pl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19454,7 +22804,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Fl=`{
+`,bl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19530,7 +22880,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Cl=`{
+`,cl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19606,7 +22956,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Dl=`{
+`,Pl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19687,7 +23037,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Kl=`{
+`,yl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19772,7 +23122,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ml=`{
+`,jl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19860,7 +23210,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Nl=`{
+`,ml=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -19941,7 +23291,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ll=`{
+`,fl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20024,7 +23374,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Rl=`{
+`,dl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20098,7 +23448,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ql=`{
+`,_l=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20185,7 +23535,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,zl=`{
+`,hl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20270,7 +23620,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Gl=`{
+`,Al=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20344,7 +23694,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Yl=`{
+`,Vl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20418,7 +23768,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,kl=`{
+`,gl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20492,7 +23842,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,wl=`{
+`,vl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20571,7 +23921,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Bl=`{
+`,xl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20652,7 +24002,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ul=`{
+`,Ol=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20738,7 +24088,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Xl=`{
+`,Il=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20817,7 +24167,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,$l=`{
+`,Tl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20898,7 +24248,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Wl=`{
+`,Sl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -20969,7 +24319,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Hl=`{
+`,Jl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21053,7 +24403,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Ql=`{
+`,Nl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21135,7 +24485,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Zl=`{
+`,Ll=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21206,7 +24556,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,no=`{
+`,Cl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21277,7 +24627,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ro=`{
+`,ql=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21348,7 +24698,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,eo=`{
+`,zl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21424,7 +24774,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,lo=`{
+`,El=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21502,7 +24852,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,oo=`{
+`,$l=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21582,7 +24932,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,to=`{
+`,Fl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21658,7 +25008,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,ao=`{
+`,Dl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21736,7 +25086,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,so=`{
+`,Kl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21814,7 +25164,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,uo=`{
+`,Ml=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21905,7 +25255,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,io=`{
+`,Gl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -21994,7 +25344,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,po=`{
+`,Rl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22072,7 +25422,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,bo=`{
+`,wl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22150,7 +25500,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,co=`{
+`,Hl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22228,7 +25578,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,Po=`{
+`,Yl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22311,7 +25661,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,yo=`{
+`,kl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22396,7 +25746,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,jo=`{
+`,Bl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22483,7 +25833,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,fo=`{
+`,Ul=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22573,7 +25923,7 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,mo=`{
+`,Xl=`{
   "stringValue": "hello",
   "numberValue": 7,
   "booleanValue": true,
@@ -22658,4 +26008,4 @@ import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{y as P}from".
     ]
   ]
 }
-`,a="/before.json",_o="/after.json",Ao=r=>{const n=r.replaceAll("\\","/");if(!n.endsWith(a))return;const e=n.slice(0,-a.length).split("/");return e[e.length-1]},Vo=(r,n)=>{const l=[];for(const[e,o]of Object.entries(r)){const s=Ao(e);if(!s)continue;const c=e.replace(a,_o),u=n[c];u&&l.push({caseId:s,beforeJson:o,afterJson:u})}return l.sort((e,o)=>e.caseId.localeCompare(o.caseId,void 0,{numeric:!0}))},ho=Symbol("test-diffs-meta-key"),vo=Symbol("test-aggregated-diffs-meta-key"),i={diffsMetaKey:ho,aggregatedDiffsMetaKey:vo},go=r=>{let n;try{n=JSON.parse(r)}catch(l){console.error("Cannot parse JSON:",l),n=void 0}return!n||typeof n!="object"||n===null?{}:n},xo=Object.assign({"../../../../samples/jso-diffs/property/1.1-stringValue-string-to-number/before.json":j,"../../../../samples/jso-diffs/property/1.10-stringValue-string-to-array-items-arrays/before.json":f,"../../../../samples/jso-diffs/property/1.11-stringValue-string-to-array-all-item-types/before.json":m,"../../../../samples/jso-diffs/property/1.2-stringValue-string-to-boolean/before.json":d,"../../../../samples/jso-diffs/property/1.3-stringValue-string-to-null/before.json":_,"../../../../samples/jso-diffs/property/1.4-stringValue-string-to-object-primitive-props/before.json":A,"../../../../samples/jso-diffs/property/1.5-stringValue-string-to-object-props-objects/before.json":V,"../../../../samples/jso-diffs/property/1.6-stringValue-string-to-object-props-arrays/before.json":h,"../../../../samples/jso-diffs/property/1.7-stringValue-string-to-object-all-prop-types/before.json":v,"../../../../samples/jso-diffs/property/1.8-stringValue-string-to-array-primitives/before.json":g,"../../../../samples/jso-diffs/property/1.9-stringValue-string-to-array-objects/before.json":x,"../../../../samples/jso-diffs/property/10.1-arrayObjects-array-objects-to-string/before.json":I,"../../../../samples/jso-diffs/property/10.10-arrayObjects-array-objects-to-array-items-arrays/before.json":T,"../../../../samples/jso-diffs/property/10.11-arrayObjects-array-objects-to-array-all-item-types/before.json":O,"../../../../samples/jso-diffs/property/10.2-arrayObjects-array-objects-to-number/before.json":S,"../../../../samples/jso-diffs/property/10.3-arrayObjects-array-objects-to-boolean/before.json":J,"../../../../samples/jso-diffs/property/10.4-arrayObjects-array-objects-to-null/before.json":E,"../../../../samples/jso-diffs/property/10.5-arrayObjects-array-objects-to-object-primitive-props/before.json":F,"../../../../samples/jso-diffs/property/10.6-arrayObjects-array-objects-to-object-props-objects/before.json":C,"../../../../samples/jso-diffs/property/10.7-arrayObjects-array-objects-to-object-props-arrays/before.json":D,"../../../../samples/jso-diffs/property/10.8-arrayObjects-array-objects-to-object-all-prop-types/before.json":K,"../../../../samples/jso-diffs/property/10.9-arrayObjects-array-objects-to-array-primitives/before.json":M,"../../../../samples/jso-diffs/property/11.1-arrayArrayItems-array-items-arrays-to-string/before.json":N,"../../../../samples/jso-diffs/property/11.10-arrayArrayItems-array-items-arrays-to-array-objects/before.json":L,"../../../../samples/jso-diffs/property/11.11-arrayArrayItems-array-items-arrays-to-array-all-item-types/before.json":R,"../../../../samples/jso-diffs/property/11.2-arrayArrayItems-array-items-arrays-to-number/before.json":q,"../../../../samples/jso-diffs/property/11.3-arrayArrayItems-array-items-arrays-to-boolean/before.json":z,"../../../../samples/jso-diffs/property/11.4-arrayArrayItems-array-items-arrays-to-null/before.json":G,"../../../../samples/jso-diffs/property/11.5-arrayArrayItems-array-items-arrays-to-object-primitive-props/before.json":Y,"../../../../samples/jso-diffs/property/11.6-arrayArrayItems-array-items-arrays-to-object-props-objects/before.json":k,"../../../../samples/jso-diffs/property/11.7-arrayArrayItems-array-items-arrays-to-object-props-arrays/before.json":w,"../../../../samples/jso-diffs/property/11.8-arrayArrayItems-array-items-arrays-to-object-all-prop-types/before.json":B,"../../../../samples/jso-diffs/property/11.9-arrayArrayItems-array-items-arrays-to-array-primitives/before.json":U,"../../../../samples/jso-diffs/property/12.1-arrayAllItemTypes-array-all-item-types-to-string/before.json":X,"../../../../samples/jso-diffs/property/12.10-arrayAllItemTypes-array-all-item-types-to-array-objects/before.json":$,"../../../../samples/jso-diffs/property/12.11-arrayAllItemTypes-array-all-item-types-to-array-items-arrays/before.json":W,"../../../../samples/jso-diffs/property/12.2-arrayAllItemTypes-array-all-item-types-to-number/before.json":H,"../../../../samples/jso-diffs/property/12.3-arrayAllItemTypes-array-all-item-types-to-boolean/before.json":Q,"../../../../samples/jso-diffs/property/12.4-arrayAllItemTypes-array-all-item-types-to-null/before.json":Z,"../../../../samples/jso-diffs/property/12.5-arrayAllItemTypes-array-all-item-types-to-object-primitive-props/before.json":nn,"../../../../samples/jso-diffs/property/12.6-arrayAllItemTypes-array-all-item-types-to-object-props-objects/before.json":rn,"../../../../samples/jso-diffs/property/12.7-arrayAllItemTypes-array-all-item-types-to-object-props-arrays/before.json":en,"../../../../samples/jso-diffs/property/12.8-arrayAllItemTypes-array-all-item-types-to-object-all-prop-types/before.json":ln,"../../../../samples/jso-diffs/property/12.9-arrayAllItemTypes-array-all-item-types-to-array-primitives/before.json":on,"../../../../samples/jso-diffs/property/13.1-stringJsonSchema-add-primitive-json-schema/before.json":tn,"../../../../samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema/before.json":an,"../../../../samples/jso-diffs/property/13.3-stringJsonSchema-remove-primitive-json-schema/before.json":sn,"../../../../samples/jso-diffs/property/13.4-objectJsonSchema-remove-complex-json-schema/before.json":un,"../../../../samples/jso-diffs/property/2.1-numberValue-number-to-string/before.json":pn,"../../../../samples/jso-diffs/property/2.10-numberValue-number-to-array-items-arrays/before.json":bn,"../../../../samples/jso-diffs/property/2.11-numberValue-number-to-array-all-item-types/before.json":cn,"../../../../samples/jso-diffs/property/2.2-numberValue-number-to-boolean/before.json":Pn,"../../../../samples/jso-diffs/property/2.3-numberValue-number-to-null/before.json":yn,"../../../../samples/jso-diffs/property/2.4-numberValue-number-to-object-primitive-props/before.json":jn,"../../../../samples/jso-diffs/property/2.5-numberValue-number-to-object-props-objects/before.json":fn,"../../../../samples/jso-diffs/property/2.6-numberValue-number-to-object-props-arrays/before.json":mn,"../../../../samples/jso-diffs/property/2.7-numberValue-number-to-object-all-prop-types/before.json":dn,"../../../../samples/jso-diffs/property/2.8-numberValue-number-to-array-primitives/before.json":_n,"../../../../samples/jso-diffs/property/2.9-numberValue-number-to-array-objects/before.json":An,"../../../../samples/jso-diffs/property/3.1-booleanValue-boolean-to-string/before.json":Vn,"../../../../samples/jso-diffs/property/3.10-booleanValue-boolean-to-array-items-arrays/before.json":hn,"../../../../samples/jso-diffs/property/3.11-booleanValue-boolean-to-array-all-item-types/before.json":vn,"../../../../samples/jso-diffs/property/3.2-booleanValue-boolean-to-number/before.json":gn,"../../../../samples/jso-diffs/property/3.3-booleanValue-boolean-to-null/before.json":xn,"../../../../samples/jso-diffs/property/3.4-booleanValue-boolean-to-object-primitive-props/before.json":In,"../../../../samples/jso-diffs/property/3.5-booleanValue-boolean-to-object-props-objects/before.json":Tn,"../../../../samples/jso-diffs/property/3.6-booleanValue-boolean-to-object-props-arrays/before.json":On,"../../../../samples/jso-diffs/property/3.7-booleanValue-boolean-to-object-all-prop-types/before.json":Sn,"../../../../samples/jso-diffs/property/3.8-booleanValue-boolean-to-array-primitives/before.json":Jn,"../../../../samples/jso-diffs/property/3.9-booleanValue-boolean-to-array-objects/before.json":En,"../../../../samples/jso-diffs/property/4.1-nullValue-null-to-string/before.json":Fn,"../../../../samples/jso-diffs/property/4.10-nullValue-null-to-array-items-arrays/before.json":Cn,"../../../../samples/jso-diffs/property/4.11-nullValue-null-to-array-all-item-types/before.json":Dn,"../../../../samples/jso-diffs/property/4.2-nullValue-null-to-number/before.json":Kn,"../../../../samples/jso-diffs/property/4.3-nullValue-null-to-boolean/before.json":Mn,"../../../../samples/jso-diffs/property/4.4-nullValue-null-to-object-primitive-props/before.json":Nn,"../../../../samples/jso-diffs/property/4.5-nullValue-null-to-object-props-objects/before.json":Ln,"../../../../samples/jso-diffs/property/4.6-nullValue-null-to-object-props-arrays/before.json":Rn,"../../../../samples/jso-diffs/property/4.7-nullValue-null-to-object-all-prop-types/before.json":qn,"../../../../samples/jso-diffs/property/4.8-nullValue-null-to-array-primitives/before.json":zn,"../../../../samples/jso-diffs/property/4.9-nullValue-null-to-array-objects/before.json":Gn,"../../../../samples/jso-diffs/property/5.1-objectPrimitiveProps-object-primitive-props-to-string/before.json":Yn,"../../../../samples/jso-diffs/property/5.10-objectPrimitiveProps-object-primitive-props-to-array-items-arrays/before.json":kn,"../../../../samples/jso-diffs/property/5.11-objectPrimitiveProps-object-primitive-props-to-array-all-item-types/before.json":wn,"../../../../samples/jso-diffs/property/5.2-objectPrimitiveProps-object-primitive-props-to-number/before.json":Bn,"../../../../samples/jso-diffs/property/5.3-objectPrimitiveProps-object-primitive-props-to-boolean/before.json":Un,"../../../../samples/jso-diffs/property/5.4-objectPrimitiveProps-object-primitive-props-to-null/before.json":Xn,"../../../../samples/jso-diffs/property/5.5-objectPrimitiveProps-object-primitive-props-to-object-props-objects/before.json":$n,"../../../../samples/jso-diffs/property/5.6-objectPrimitiveProps-object-primitive-props-to-object-props-arrays/before.json":Wn,"../../../../samples/jso-diffs/property/5.7-objectPrimitiveProps-object-primitive-props-to-object-all-prop-types/before.json":Hn,"../../../../samples/jso-diffs/property/5.8-objectPrimitiveProps-object-primitive-props-to-array-primitives/before.json":Qn,"../../../../samples/jso-diffs/property/5.9-objectPrimitiveProps-object-primitive-props-to-array-objects/before.json":Zn,"../../../../samples/jso-diffs/property/6.1-objectPropsObjects-object-props-objects-to-string/before.json":nr,"../../../../samples/jso-diffs/property/6.10-objectPropsObjects-object-props-objects-to-array-items-arrays/before.json":rr,"../../../../samples/jso-diffs/property/6.11-objectPropsObjects-object-props-objects-to-array-all-item-types/before.json":er,"../../../../samples/jso-diffs/property/6.2-objectPropsObjects-object-props-objects-to-number/before.json":lr,"../../../../samples/jso-diffs/property/6.3-objectPropsObjects-object-props-objects-to-boolean/before.json":or,"../../../../samples/jso-diffs/property/6.4-objectPropsObjects-object-props-objects-to-null/before.json":tr,"../../../../samples/jso-diffs/property/6.5-objectPropsObjects-object-props-objects-to-object-primitive-props/before.json":ar,"../../../../samples/jso-diffs/property/6.6-objectPropsObjects-object-props-objects-to-object-props-arrays/before.json":sr,"../../../../samples/jso-diffs/property/6.7-objectPropsObjects-object-props-objects-to-object-all-prop-types/before.json":ur,"../../../../samples/jso-diffs/property/6.8-objectPropsObjects-object-props-objects-to-array-primitives/before.json":ir,"../../../../samples/jso-diffs/property/6.9-objectPropsObjects-object-props-objects-to-array-objects/before.json":pr,"../../../../samples/jso-diffs/property/7.1-objectPropsArrays-object-props-arrays-to-string/before.json":br,"../../../../samples/jso-diffs/property/7.10-objectPropsArrays-object-props-arrays-to-array-items-arrays/before.json":cr,"../../../../samples/jso-diffs/property/7.11-objectPropsArrays-object-props-arrays-to-array-all-item-types/before.json":Pr,"../../../../samples/jso-diffs/property/7.2-objectPropsArrays-object-props-arrays-to-number/before.json":yr,"../../../../samples/jso-diffs/property/7.3-objectPropsArrays-object-props-arrays-to-boolean/before.json":jr,"../../../../samples/jso-diffs/property/7.4-objectPropsArrays-object-props-arrays-to-null/before.json":fr,"../../../../samples/jso-diffs/property/7.5-objectPropsArrays-object-props-arrays-to-object-primitive-props/before.json":mr,"../../../../samples/jso-diffs/property/7.6-objectPropsArrays-object-props-arrays-to-object-props-objects/before.json":dr,"../../../../samples/jso-diffs/property/7.7-objectPropsArrays-object-props-arrays-to-object-all-prop-types/before.json":_r,"../../../../samples/jso-diffs/property/7.8-objectPropsArrays-object-props-arrays-to-array-primitives/before.json":Ar,"../../../../samples/jso-diffs/property/7.9-objectPropsArrays-object-props-arrays-to-array-objects/before.json":Vr,"../../../../samples/jso-diffs/property/8.1-objectAllPropTypes-object-all-prop-types-to-string/before.json":hr,"../../../../samples/jso-diffs/property/8.10-objectAllPropTypes-object-all-prop-types-to-array-items-arrays/before.json":vr,"../../../../samples/jso-diffs/property/8.11-objectAllPropTypes-object-all-prop-types-to-array-all-item-types/before.json":gr,"../../../../samples/jso-diffs/property/8.2-objectAllPropTypes-object-all-prop-types-to-number/before.json":xr,"../../../../samples/jso-diffs/property/8.3-objectAllPropTypes-object-all-prop-types-to-boolean/before.json":Ir,"../../../../samples/jso-diffs/property/8.4-objectAllPropTypes-object-all-prop-types-to-null/before.json":Tr,"../../../../samples/jso-diffs/property/8.5-objectAllPropTypes-object-all-prop-types-to-object-primitive-props/before.json":Or,"../../../../samples/jso-diffs/property/8.6-objectAllPropTypes-object-all-prop-types-to-object-props-objects/before.json":Sr,"../../../../samples/jso-diffs/property/8.7-objectAllPropTypes-object-all-prop-types-to-object-props-arrays/before.json":Jr,"../../../../samples/jso-diffs/property/8.8-objectAllPropTypes-object-all-prop-types-to-array-primitives/before.json":Er,"../../../../samples/jso-diffs/property/8.9-objectAllPropTypes-object-all-prop-types-to-array-objects/before.json":Fr,"../../../../samples/jso-diffs/property/9.1-arrayPrimitives-array-primitives-to-string/before.json":Cr,"../../../../samples/jso-diffs/property/9.10-arrayPrimitives-array-primitives-to-array-items-arrays/before.json":Dr,"../../../../samples/jso-diffs/property/9.11-arrayPrimitives-array-primitives-to-array-all-item-types/before.json":Kr,"../../../../samples/jso-diffs/property/9.2-arrayPrimitives-array-primitives-to-number/before.json":Mr,"../../../../samples/jso-diffs/property/9.3-arrayPrimitives-array-primitives-to-boolean/before.json":Nr,"../../../../samples/jso-diffs/property/9.4-arrayPrimitives-array-primitives-to-null/before.json":Lr,"../../../../samples/jso-diffs/property/9.5-arrayPrimitives-array-primitives-to-object-primitive-props/before.json":Rr,"../../../../samples/jso-diffs/property/9.6-arrayPrimitives-array-primitives-to-object-props-objects/before.json":qr,"../../../../samples/jso-diffs/property/9.7-arrayPrimitives-array-primitives-to-object-props-arrays/before.json":zr,"../../../../samples/jso-diffs/property/9.8-arrayPrimitives-array-primitives-to-object-all-prop-types/before.json":Gr,"../../../../samples/jso-diffs/property/9.9-arrayPrimitives-array-primitives-to-array-objects/before.json":Yr}),Io=Object.assign({"../../../../samples/jso-diffs/property/1.1-stringValue-string-to-number/after.json":kr,"../../../../samples/jso-diffs/property/1.10-stringValue-string-to-array-items-arrays/after.json":wr,"../../../../samples/jso-diffs/property/1.11-stringValue-string-to-array-all-item-types/after.json":Br,"../../../../samples/jso-diffs/property/1.2-stringValue-string-to-boolean/after.json":Ur,"../../../../samples/jso-diffs/property/1.3-stringValue-string-to-null/after.json":Xr,"../../../../samples/jso-diffs/property/1.4-stringValue-string-to-object-primitive-props/after.json":$r,"../../../../samples/jso-diffs/property/1.5-stringValue-string-to-object-props-objects/after.json":Wr,"../../../../samples/jso-diffs/property/1.6-stringValue-string-to-object-props-arrays/after.json":Hr,"../../../../samples/jso-diffs/property/1.7-stringValue-string-to-object-all-prop-types/after.json":Qr,"../../../../samples/jso-diffs/property/1.8-stringValue-string-to-array-primitives/after.json":Zr,"../../../../samples/jso-diffs/property/1.9-stringValue-string-to-array-objects/after.json":ne,"../../../../samples/jso-diffs/property/10.1-arrayObjects-array-objects-to-string/after.json":re,"../../../../samples/jso-diffs/property/10.10-arrayObjects-array-objects-to-array-items-arrays/after.json":ee,"../../../../samples/jso-diffs/property/10.11-arrayObjects-array-objects-to-array-all-item-types/after.json":le,"../../../../samples/jso-diffs/property/10.2-arrayObjects-array-objects-to-number/after.json":oe,"../../../../samples/jso-diffs/property/10.3-arrayObjects-array-objects-to-boolean/after.json":te,"../../../../samples/jso-diffs/property/10.4-arrayObjects-array-objects-to-null/after.json":ae,"../../../../samples/jso-diffs/property/10.5-arrayObjects-array-objects-to-object-primitive-props/after.json":se,"../../../../samples/jso-diffs/property/10.6-arrayObjects-array-objects-to-object-props-objects/after.json":ue,"../../../../samples/jso-diffs/property/10.7-arrayObjects-array-objects-to-object-props-arrays/after.json":ie,"../../../../samples/jso-diffs/property/10.8-arrayObjects-array-objects-to-object-all-prop-types/after.json":pe,"../../../../samples/jso-diffs/property/10.9-arrayObjects-array-objects-to-array-primitives/after.json":be,"../../../../samples/jso-diffs/property/11.1-arrayArrayItems-array-items-arrays-to-string/after.json":ce,"../../../../samples/jso-diffs/property/11.10-arrayArrayItems-array-items-arrays-to-array-objects/after.json":Pe,"../../../../samples/jso-diffs/property/11.11-arrayArrayItems-array-items-arrays-to-array-all-item-types/after.json":ye,"../../../../samples/jso-diffs/property/11.2-arrayArrayItems-array-items-arrays-to-number/after.json":je,"../../../../samples/jso-diffs/property/11.3-arrayArrayItems-array-items-arrays-to-boolean/after.json":fe,"../../../../samples/jso-diffs/property/11.4-arrayArrayItems-array-items-arrays-to-null/after.json":me,"../../../../samples/jso-diffs/property/11.5-arrayArrayItems-array-items-arrays-to-object-primitive-props/after.json":de,"../../../../samples/jso-diffs/property/11.6-arrayArrayItems-array-items-arrays-to-object-props-objects/after.json":_e,"../../../../samples/jso-diffs/property/11.7-arrayArrayItems-array-items-arrays-to-object-props-arrays/after.json":Ae,"../../../../samples/jso-diffs/property/11.8-arrayArrayItems-array-items-arrays-to-object-all-prop-types/after.json":Ve,"../../../../samples/jso-diffs/property/11.9-arrayArrayItems-array-items-arrays-to-array-primitives/after.json":he,"../../../../samples/jso-diffs/property/12.1-arrayAllItemTypes-array-all-item-types-to-string/after.json":ve,"../../../../samples/jso-diffs/property/12.10-arrayAllItemTypes-array-all-item-types-to-array-objects/after.json":ge,"../../../../samples/jso-diffs/property/12.11-arrayAllItemTypes-array-all-item-types-to-array-items-arrays/after.json":xe,"../../../../samples/jso-diffs/property/12.2-arrayAllItemTypes-array-all-item-types-to-number/after.json":Ie,"../../../../samples/jso-diffs/property/12.3-arrayAllItemTypes-array-all-item-types-to-boolean/after.json":Te,"../../../../samples/jso-diffs/property/12.4-arrayAllItemTypes-array-all-item-types-to-null/after.json":Oe,"../../../../samples/jso-diffs/property/12.5-arrayAllItemTypes-array-all-item-types-to-object-primitive-props/after.json":Se,"../../../../samples/jso-diffs/property/12.6-arrayAllItemTypes-array-all-item-types-to-object-props-objects/after.json":Je,"../../../../samples/jso-diffs/property/12.7-arrayAllItemTypes-array-all-item-types-to-object-props-arrays/after.json":Ee,"../../../../samples/jso-diffs/property/12.8-arrayAllItemTypes-array-all-item-types-to-object-all-prop-types/after.json":Fe,"../../../../samples/jso-diffs/property/12.9-arrayAllItemTypes-array-all-item-types-to-array-primitives/after.json":Ce,"../../../../samples/jso-diffs/property/13.1-stringJsonSchema-add-primitive-json-schema/after.json":De,"../../../../samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema/after.json":Ke,"../../../../samples/jso-diffs/property/13.3-stringJsonSchema-remove-primitive-json-schema/after.json":Me,"../../../../samples/jso-diffs/property/13.4-objectJsonSchema-remove-complex-json-schema/after.json":Ne,"../../../../samples/jso-diffs/property/2.1-numberValue-number-to-string/after.json":Le,"../../../../samples/jso-diffs/property/2.10-numberValue-number-to-array-items-arrays/after.json":Re,"../../../../samples/jso-diffs/property/2.11-numberValue-number-to-array-all-item-types/after.json":qe,"../../../../samples/jso-diffs/property/2.2-numberValue-number-to-boolean/after.json":ze,"../../../../samples/jso-diffs/property/2.3-numberValue-number-to-null/after.json":Ge,"../../../../samples/jso-diffs/property/2.4-numberValue-number-to-object-primitive-props/after.json":Ye,"../../../../samples/jso-diffs/property/2.5-numberValue-number-to-object-props-objects/after.json":ke,"../../../../samples/jso-diffs/property/2.6-numberValue-number-to-object-props-arrays/after.json":we,"../../../../samples/jso-diffs/property/2.7-numberValue-number-to-object-all-prop-types/after.json":Be,"../../../../samples/jso-diffs/property/2.8-numberValue-number-to-array-primitives/after.json":Ue,"../../../../samples/jso-diffs/property/2.9-numberValue-number-to-array-objects/after.json":Xe,"../../../../samples/jso-diffs/property/3.1-booleanValue-boolean-to-string/after.json":$e,"../../../../samples/jso-diffs/property/3.10-booleanValue-boolean-to-array-items-arrays/after.json":We,"../../../../samples/jso-diffs/property/3.11-booleanValue-boolean-to-array-all-item-types/after.json":He,"../../../../samples/jso-diffs/property/3.2-booleanValue-boolean-to-number/after.json":Qe,"../../../../samples/jso-diffs/property/3.3-booleanValue-boolean-to-null/after.json":Ze,"../../../../samples/jso-diffs/property/3.4-booleanValue-boolean-to-object-primitive-props/after.json":nl,"../../../../samples/jso-diffs/property/3.5-booleanValue-boolean-to-object-props-objects/after.json":rl,"../../../../samples/jso-diffs/property/3.6-booleanValue-boolean-to-object-props-arrays/after.json":el,"../../../../samples/jso-diffs/property/3.7-booleanValue-boolean-to-object-all-prop-types/after.json":ll,"../../../../samples/jso-diffs/property/3.8-booleanValue-boolean-to-array-primitives/after.json":ol,"../../../../samples/jso-diffs/property/3.9-booleanValue-boolean-to-array-objects/after.json":tl,"../../../../samples/jso-diffs/property/4.1-nullValue-null-to-string/after.json":al,"../../../../samples/jso-diffs/property/4.10-nullValue-null-to-array-items-arrays/after.json":sl,"../../../../samples/jso-diffs/property/4.11-nullValue-null-to-array-all-item-types/after.json":ul,"../../../../samples/jso-diffs/property/4.2-nullValue-null-to-number/after.json":il,"../../../../samples/jso-diffs/property/4.3-nullValue-null-to-boolean/after.json":pl,"../../../../samples/jso-diffs/property/4.4-nullValue-null-to-object-primitive-props/after.json":bl,"../../../../samples/jso-diffs/property/4.5-nullValue-null-to-object-props-objects/after.json":cl,"../../../../samples/jso-diffs/property/4.6-nullValue-null-to-object-props-arrays/after.json":Pl,"../../../../samples/jso-diffs/property/4.7-nullValue-null-to-object-all-prop-types/after.json":yl,"../../../../samples/jso-diffs/property/4.8-nullValue-null-to-array-primitives/after.json":jl,"../../../../samples/jso-diffs/property/4.9-nullValue-null-to-array-objects/after.json":fl,"../../../../samples/jso-diffs/property/5.1-objectPrimitiveProps-object-primitive-props-to-string/after.json":ml,"../../../../samples/jso-diffs/property/5.10-objectPrimitiveProps-object-primitive-props-to-array-items-arrays/after.json":dl,"../../../../samples/jso-diffs/property/5.11-objectPrimitiveProps-object-primitive-props-to-array-all-item-types/after.json":_l,"../../../../samples/jso-diffs/property/5.2-objectPrimitiveProps-object-primitive-props-to-number/after.json":Al,"../../../../samples/jso-diffs/property/5.3-objectPrimitiveProps-object-primitive-props-to-boolean/after.json":Vl,"../../../../samples/jso-diffs/property/5.4-objectPrimitiveProps-object-primitive-props-to-null/after.json":hl,"../../../../samples/jso-diffs/property/5.5-objectPrimitiveProps-object-primitive-props-to-object-props-objects/after.json":vl,"../../../../samples/jso-diffs/property/5.6-objectPrimitiveProps-object-primitive-props-to-object-props-arrays/after.json":gl,"../../../../samples/jso-diffs/property/5.7-objectPrimitiveProps-object-primitive-props-to-object-all-prop-types/after.json":xl,"../../../../samples/jso-diffs/property/5.8-objectPrimitiveProps-object-primitive-props-to-array-primitives/after.json":Il,"../../../../samples/jso-diffs/property/5.9-objectPrimitiveProps-object-primitive-props-to-array-objects/after.json":Tl,"../../../../samples/jso-diffs/property/6.1-objectPropsObjects-object-props-objects-to-string/after.json":Ol,"../../../../samples/jso-diffs/property/6.10-objectPropsObjects-object-props-objects-to-array-items-arrays/after.json":Sl,"../../../../samples/jso-diffs/property/6.11-objectPropsObjects-object-props-objects-to-array-all-item-types/after.json":Jl,"../../../../samples/jso-diffs/property/6.2-objectPropsObjects-object-props-objects-to-number/after.json":El,"../../../../samples/jso-diffs/property/6.3-objectPropsObjects-object-props-objects-to-boolean/after.json":Fl,"../../../../samples/jso-diffs/property/6.4-objectPropsObjects-object-props-objects-to-null/after.json":Cl,"../../../../samples/jso-diffs/property/6.5-objectPropsObjects-object-props-objects-to-object-primitive-props/after.json":Dl,"../../../../samples/jso-diffs/property/6.6-objectPropsObjects-object-props-objects-to-object-props-arrays/after.json":Kl,"../../../../samples/jso-diffs/property/6.7-objectPropsObjects-object-props-objects-to-object-all-prop-types/after.json":Ml,"../../../../samples/jso-diffs/property/6.8-objectPropsObjects-object-props-objects-to-array-primitives/after.json":Nl,"../../../../samples/jso-diffs/property/6.9-objectPropsObjects-object-props-objects-to-array-objects/after.json":Ll,"../../../../samples/jso-diffs/property/7.1-objectPropsArrays-object-props-arrays-to-string/after.json":Rl,"../../../../samples/jso-diffs/property/7.10-objectPropsArrays-object-props-arrays-to-array-items-arrays/after.json":ql,"../../../../samples/jso-diffs/property/7.11-objectPropsArrays-object-props-arrays-to-array-all-item-types/after.json":zl,"../../../../samples/jso-diffs/property/7.2-objectPropsArrays-object-props-arrays-to-number/after.json":Gl,"../../../../samples/jso-diffs/property/7.3-objectPropsArrays-object-props-arrays-to-boolean/after.json":Yl,"../../../../samples/jso-diffs/property/7.4-objectPropsArrays-object-props-arrays-to-null/after.json":kl,"../../../../samples/jso-diffs/property/7.5-objectPropsArrays-object-props-arrays-to-object-primitive-props/after.json":wl,"../../../../samples/jso-diffs/property/7.6-objectPropsArrays-object-props-arrays-to-object-props-objects/after.json":Bl,"../../../../samples/jso-diffs/property/7.7-objectPropsArrays-object-props-arrays-to-object-all-prop-types/after.json":Ul,"../../../../samples/jso-diffs/property/7.8-objectPropsArrays-object-props-arrays-to-array-primitives/after.json":Xl,"../../../../samples/jso-diffs/property/7.9-objectPropsArrays-object-props-arrays-to-array-objects/after.json":$l,"../../../../samples/jso-diffs/property/8.1-objectAllPropTypes-object-all-prop-types-to-string/after.json":Wl,"../../../../samples/jso-diffs/property/8.10-objectAllPropTypes-object-all-prop-types-to-array-items-arrays/after.json":Hl,"../../../../samples/jso-diffs/property/8.11-objectAllPropTypes-object-all-prop-types-to-array-all-item-types/after.json":Ql,"../../../../samples/jso-diffs/property/8.2-objectAllPropTypes-object-all-prop-types-to-number/after.json":Zl,"../../../../samples/jso-diffs/property/8.3-objectAllPropTypes-object-all-prop-types-to-boolean/after.json":no,"../../../../samples/jso-diffs/property/8.4-objectAllPropTypes-object-all-prop-types-to-null/after.json":ro,"../../../../samples/jso-diffs/property/8.5-objectAllPropTypes-object-all-prop-types-to-object-primitive-props/after.json":eo,"../../../../samples/jso-diffs/property/8.6-objectAllPropTypes-object-all-prop-types-to-object-props-objects/after.json":lo,"../../../../samples/jso-diffs/property/8.7-objectAllPropTypes-object-all-prop-types-to-object-props-arrays/after.json":oo,"../../../../samples/jso-diffs/property/8.8-objectAllPropTypes-object-all-prop-types-to-array-primitives/after.json":to,"../../../../samples/jso-diffs/property/8.9-objectAllPropTypes-object-all-prop-types-to-array-objects/after.json":ao,"../../../../samples/jso-diffs/property/9.1-arrayPrimitives-array-primitives-to-string/after.json":so,"../../../../samples/jso-diffs/property/9.10-arrayPrimitives-array-primitives-to-array-items-arrays/after.json":uo,"../../../../samples/jso-diffs/property/9.11-arrayPrimitives-array-primitives-to-array-all-item-types/after.json":io,"../../../../samples/jso-diffs/property/9.2-arrayPrimitives-array-primitives-to-number/after.json":po,"../../../../samples/jso-diffs/property/9.3-arrayPrimitives-array-primitives-to-boolean/after.json":bo,"../../../../samples/jso-diffs/property/9.4-arrayPrimitives-array-primitives-to-null/after.json":co,"../../../../samples/jso-diffs/property/9.5-arrayPrimitives-array-primitives-to-object-primitive-props/after.json":Po,"../../../../samples/jso-diffs/property/9.6-arrayPrimitives-array-primitives-to-object-props-objects/after.json":yo,"../../../../samples/jso-diffs/property/9.7-arrayPrimitives-array-primitives-to-object-props-arrays/after.json":jo,"../../../../samples/jso-diffs/property/9.8-arrayPrimitives-array-primitives-to-object-all-prop-types/after.json":fo,"../../../../samples/jso-diffs/property/9.9-arrayPrimitives-array-primitives-to-array-objects/after.json":mo}),To=Vo(xo,Io),Oo=Object.fromEntries(To.map(r=>[r.caseId,r])),b=({caseId:r})=>{const n=Oo[r];return n?t.jsx(P,{...So(n.beforeJson,n.afterJson)}):t.jsxs("div",{children:["Sample case not found: ",r]})},p=r=>go(r),So=(r,n)=>({mergedSource:y({beforeSource:p(r),afterSource:p(n),diffMetaKeys:i}),initialLevel:1,supportJsonSchema:!0,diffMetaKeys:i}),Co=r=>({name:r,args:{caseId:r},render:n=>t.jsx(b,{caseId:n.caseId})});b.__docgenInfo={description:"",methods:[],displayName:"JsoPropertySamplesStory",props:{caseId:{required:!0,tsType:{name:"string"},description:""}}};export{b as J,Co as c};
+`,a="/before.json",Wl="/after.json",Ql=r=>{const n=r.replaceAll("\\","/");if(!n.endsWith(a))return;const e=n.slice(0,-a.length).split("/");return e[e.length-1]},Zl=(r,n)=>{const o=[];for(const[e,l]of Object.entries(r)){const s=Ql(e);if(!s)continue;const c=e.replace(a,Wl),u=n[c];u&&o.push({caseId:s,beforeJson:l,afterJson:u})}return o.sort((e,l)=>e.caseId.localeCompare(l.caseId,void 0,{numeric:!0}))},nt=Symbol("test-diffs-meta-key"),rt=Symbol("test-aggregated-diffs-meta-key"),i={diffsMetaKey:nt,aggregatedDiffsMetaKey:rt},et=r=>{let n;try{n=JSON.parse(r)}catch(o){console.error("Cannot parse JSON:",o),n=void 0}return!n||typeof n!="object"||n===null?{}:n},ot=Object.assign({"../../../../samples/jso-diffs/property/1.1-stringValue-string-to-number/before.json":j,"../../../../samples/jso-diffs/property/1.10-stringValue-string-to-array-items-arrays/before.json":m,"../../../../samples/jso-diffs/property/1.11-stringValue-string-to-array-all-item-types/before.json":f,"../../../../samples/jso-diffs/property/1.2-stringValue-string-to-boolean/before.json":d,"../../../../samples/jso-diffs/property/1.3-stringValue-string-to-null/before.json":_,"../../../../samples/jso-diffs/property/1.4-stringValue-string-to-object-primitive-props/before.json":h,"../../../../samples/jso-diffs/property/1.5-stringValue-string-to-object-props-objects/before.json":A,"../../../../samples/jso-diffs/property/1.6-stringValue-string-to-object-props-arrays/before.json":V,"../../../../samples/jso-diffs/property/1.7-stringValue-string-to-object-all-prop-types/before.json":g,"../../../../samples/jso-diffs/property/1.8-stringValue-string-to-array-primitives/before.json":v,"../../../../samples/jso-diffs/property/1.9-stringValue-string-to-array-objects/before.json":x,"../../../../samples/jso-diffs/property/10.1-arrayObjects-array-objects-to-string/before.json":O,"../../../../samples/jso-diffs/property/10.10-arrayObjects-array-objects-to-array-items-arrays/before.json":I,"../../../../samples/jso-diffs/property/10.11-arrayObjects-array-objects-to-array-all-item-types/before.json":T,"../../../../samples/jso-diffs/property/10.2-arrayObjects-array-objects-to-number/before.json":S,"../../../../samples/jso-diffs/property/10.3-arrayObjects-array-objects-to-boolean/before.json":J,"../../../../samples/jso-diffs/property/10.4-arrayObjects-array-objects-to-null/before.json":N,"../../../../samples/jso-diffs/property/10.5-arrayObjects-array-objects-to-object-primitive-props/before.json":L,"../../../../samples/jso-diffs/property/10.6-arrayObjects-array-objects-to-object-props-objects/before.json":C,"../../../../samples/jso-diffs/property/10.7-arrayObjects-array-objects-to-object-props-arrays/before.json":q,"../../../../samples/jso-diffs/property/10.8-arrayObjects-array-objects-to-object-all-prop-types/before.json":z,"../../../../samples/jso-diffs/property/10.9-arrayObjects-array-objects-to-array-primitives/before.json":E,"../../../../samples/jso-diffs/property/11.1-arrayArrayItems-array-items-arrays-to-string/before.json":$,"../../../../samples/jso-diffs/property/11.10-arrayArrayItems-array-items-arrays-to-array-objects/before.json":F,"../../../../samples/jso-diffs/property/11.11-arrayArrayItems-array-items-arrays-to-array-all-item-types/before.json":D,"../../../../samples/jso-diffs/property/11.2-arrayArrayItems-array-items-arrays-to-number/before.json":K,"../../../../samples/jso-diffs/property/11.3-arrayArrayItems-array-items-arrays-to-boolean/before.json":M,"../../../../samples/jso-diffs/property/11.4-arrayArrayItems-array-items-arrays-to-null/before.json":G,"../../../../samples/jso-diffs/property/11.5-arrayArrayItems-array-items-arrays-to-object-primitive-props/before.json":R,"../../../../samples/jso-diffs/property/11.6-arrayArrayItems-array-items-arrays-to-object-props-objects/before.json":w,"../../../../samples/jso-diffs/property/11.7-arrayArrayItems-array-items-arrays-to-object-props-arrays/before.json":H,"../../../../samples/jso-diffs/property/11.8-arrayArrayItems-array-items-arrays-to-object-all-prop-types/before.json":Y,"../../../../samples/jso-diffs/property/11.9-arrayArrayItems-array-items-arrays-to-array-primitives/before.json":k,"../../../../samples/jso-diffs/property/12.1-arrayAllItemTypes-array-all-item-types-to-string/before.json":B,"../../../../samples/jso-diffs/property/12.10-arrayAllItemTypes-array-all-item-types-to-array-objects/before.json":U,"../../../../samples/jso-diffs/property/12.11-arrayAllItemTypes-array-all-item-types-to-array-items-arrays/before.json":X,"../../../../samples/jso-diffs/property/12.2-arrayAllItemTypes-array-all-item-types-to-number/before.json":W,"../../../../samples/jso-diffs/property/12.3-arrayAllItemTypes-array-all-item-types-to-boolean/before.json":Q,"../../../../samples/jso-diffs/property/12.4-arrayAllItemTypes-array-all-item-types-to-null/before.json":Z,"../../../../samples/jso-diffs/property/12.5-arrayAllItemTypes-array-all-item-types-to-object-primitive-props/before.json":nn,"../../../../samples/jso-diffs/property/12.6-arrayAllItemTypes-array-all-item-types-to-object-props-objects/before.json":rn,"../../../../samples/jso-diffs/property/12.7-arrayAllItemTypes-array-all-item-types-to-object-props-arrays/before.json":en,"../../../../samples/jso-diffs/property/12.8-arrayAllItemTypes-array-all-item-types-to-object-all-prop-types/before.json":on,"../../../../samples/jso-diffs/property/12.9-arrayAllItemTypes-array-all-item-types-to-array-primitives/before.json":ln,"../../../../samples/jso-diffs/property/13.1-stringJsonSchema-add-primitive-json-schema/before.json":tn,"../../../../samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema/before.json":an,"../../../../samples/jso-diffs/property/13.3-stringJsonSchema-remove-primitive-json-schema/before.json":sn,"../../../../samples/jso-diffs/property/13.4-objectJsonSchema-remove-complex-json-schema/before.json":un,"../../../../samples/jso-diffs/property/14.1-stringJsonSchema-description-changed/before.json":pn,"../../../../samples/jso-diffs/property/14.2-stringJsonSchema-enum-changed/before.json":bn,"../../../../samples/jso-diffs/property/14.3-stringJsonSchema-minLength-changed/before.json":cn,"../../../../samples/jso-diffs/property/14.4-stringJsonSchema-maxLength-changed/before.json":Pn,"../../../../samples/jso-diffs/property/14.5-stringJsonSchema-pattern-changed/before.json":yn,"../../../../samples/jso-diffs/property/14.6-stringJsonSchema-format-changed/before.json":jn,"../../../../samples/jso-diffs/property/14.7-stringJsonSchema-default-changed/before.json":mn,"../../../../samples/jso-diffs/property/14.8-stringJsonSchema-examples-changed/before.json":fn,"../../../../samples/jso-diffs/property/15.1-objectJsonSchema-description-changed/before.json":dn,"../../../../samples/jso-diffs/property/15.2-objectJsonSchema-title-changed/before.json":_n,"../../../../samples/jso-diffs/property/15.3-objectJsonSchema-title-added/before.json":hn,"../../../../samples/jso-diffs/property/15.4-objectJsonSchema-title-removed/before.json":An,"../../../../samples/jso-diffs/property/15.5-objectJsonSchema-examples-changed/before.json":Vn,"../../../../samples/jso-diffs/property/15.6-objectJsonSchema-property-added/before.json":gn,"../../../../samples/jso-diffs/property/15.7-objectJsonSchema-property-removed/before.json":vn,"../../../../samples/jso-diffs/property/15.8-objectJsonSchema-required-changed/before.json":xn,"../../../../samples/jso-diffs/property/2.1-numberValue-number-to-string/before.json":On,"../../../../samples/jso-diffs/property/2.10-numberValue-number-to-array-items-arrays/before.json":In,"../../../../samples/jso-diffs/property/2.11-numberValue-number-to-array-all-item-types/before.json":Tn,"../../../../samples/jso-diffs/property/2.2-numberValue-number-to-boolean/before.json":Sn,"../../../../samples/jso-diffs/property/2.3-numberValue-number-to-null/before.json":Jn,"../../../../samples/jso-diffs/property/2.4-numberValue-number-to-object-primitive-props/before.json":Nn,"../../../../samples/jso-diffs/property/2.5-numberValue-number-to-object-props-objects/before.json":Ln,"../../../../samples/jso-diffs/property/2.6-numberValue-number-to-object-props-arrays/before.json":Cn,"../../../../samples/jso-diffs/property/2.7-numberValue-number-to-object-all-prop-types/before.json":qn,"../../../../samples/jso-diffs/property/2.8-numberValue-number-to-array-primitives/before.json":zn,"../../../../samples/jso-diffs/property/2.9-numberValue-number-to-array-objects/before.json":En,"../../../../samples/jso-diffs/property/3.1-booleanValue-boolean-to-string/before.json":$n,"../../../../samples/jso-diffs/property/3.10-booleanValue-boolean-to-array-items-arrays/before.json":Fn,"../../../../samples/jso-diffs/property/3.11-booleanValue-boolean-to-array-all-item-types/before.json":Dn,"../../../../samples/jso-diffs/property/3.2-booleanValue-boolean-to-number/before.json":Kn,"../../../../samples/jso-diffs/property/3.3-booleanValue-boolean-to-null/before.json":Mn,"../../../../samples/jso-diffs/property/3.4-booleanValue-boolean-to-object-primitive-props/before.json":Gn,"../../../../samples/jso-diffs/property/3.5-booleanValue-boolean-to-object-props-objects/before.json":Rn,"../../../../samples/jso-diffs/property/3.6-booleanValue-boolean-to-object-props-arrays/before.json":wn,"../../../../samples/jso-diffs/property/3.7-booleanValue-boolean-to-object-all-prop-types/before.json":Hn,"../../../../samples/jso-diffs/property/3.8-booleanValue-boolean-to-array-primitives/before.json":Yn,"../../../../samples/jso-diffs/property/3.9-booleanValue-boolean-to-array-objects/before.json":kn,"../../../../samples/jso-diffs/property/4.1-nullValue-null-to-string/before.json":Bn,"../../../../samples/jso-diffs/property/4.10-nullValue-null-to-array-items-arrays/before.json":Un,"../../../../samples/jso-diffs/property/4.11-nullValue-null-to-array-all-item-types/before.json":Xn,"../../../../samples/jso-diffs/property/4.2-nullValue-null-to-number/before.json":Wn,"../../../../samples/jso-diffs/property/4.3-nullValue-null-to-boolean/before.json":Qn,"../../../../samples/jso-diffs/property/4.4-nullValue-null-to-object-primitive-props/before.json":Zn,"../../../../samples/jso-diffs/property/4.5-nullValue-null-to-object-props-objects/before.json":nr,"../../../../samples/jso-diffs/property/4.6-nullValue-null-to-object-props-arrays/before.json":rr,"../../../../samples/jso-diffs/property/4.7-nullValue-null-to-object-all-prop-types/before.json":er,"../../../../samples/jso-diffs/property/4.8-nullValue-null-to-array-primitives/before.json":or,"../../../../samples/jso-diffs/property/4.9-nullValue-null-to-array-objects/before.json":lr,"../../../../samples/jso-diffs/property/5.1-objectPrimitiveProps-object-primitive-props-to-string/before.json":tr,"../../../../samples/jso-diffs/property/5.10-objectPrimitiveProps-object-primitive-props-to-array-items-arrays/before.json":ar,"../../../../samples/jso-diffs/property/5.11-objectPrimitiveProps-object-primitive-props-to-array-all-item-types/before.json":sr,"../../../../samples/jso-diffs/property/5.2-objectPrimitiveProps-object-primitive-props-to-number/before.json":ur,"../../../../samples/jso-diffs/property/5.3-objectPrimitiveProps-object-primitive-props-to-boolean/before.json":ir,"../../../../samples/jso-diffs/property/5.4-objectPrimitiveProps-object-primitive-props-to-null/before.json":pr,"../../../../samples/jso-diffs/property/5.5-objectPrimitiveProps-object-primitive-props-to-object-props-objects/before.json":br,"../../../../samples/jso-diffs/property/5.6-objectPrimitiveProps-object-primitive-props-to-object-props-arrays/before.json":cr,"../../../../samples/jso-diffs/property/5.7-objectPrimitiveProps-object-primitive-props-to-object-all-prop-types/before.json":Pr,"../../../../samples/jso-diffs/property/5.8-objectPrimitiveProps-object-primitive-props-to-array-primitives/before.json":yr,"../../../../samples/jso-diffs/property/5.9-objectPrimitiveProps-object-primitive-props-to-array-objects/before.json":jr,"../../../../samples/jso-diffs/property/6.1-objectPropsObjects-object-props-objects-to-string/before.json":mr,"../../../../samples/jso-diffs/property/6.10-objectPropsObjects-object-props-objects-to-array-items-arrays/before.json":fr,"../../../../samples/jso-diffs/property/6.11-objectPropsObjects-object-props-objects-to-array-all-item-types/before.json":dr,"../../../../samples/jso-diffs/property/6.2-objectPropsObjects-object-props-objects-to-number/before.json":_r,"../../../../samples/jso-diffs/property/6.3-objectPropsObjects-object-props-objects-to-boolean/before.json":hr,"../../../../samples/jso-diffs/property/6.4-objectPropsObjects-object-props-objects-to-null/before.json":Ar,"../../../../samples/jso-diffs/property/6.5-objectPropsObjects-object-props-objects-to-object-primitive-props/before.json":Vr,"../../../../samples/jso-diffs/property/6.6-objectPropsObjects-object-props-objects-to-object-props-arrays/before.json":gr,"../../../../samples/jso-diffs/property/6.7-objectPropsObjects-object-props-objects-to-object-all-prop-types/before.json":vr,"../../../../samples/jso-diffs/property/6.8-objectPropsObjects-object-props-objects-to-array-primitives/before.json":xr,"../../../../samples/jso-diffs/property/6.9-objectPropsObjects-object-props-objects-to-array-objects/before.json":Or,"../../../../samples/jso-diffs/property/7.1-objectPropsArrays-object-props-arrays-to-string/before.json":Ir,"../../../../samples/jso-diffs/property/7.10-objectPropsArrays-object-props-arrays-to-array-items-arrays/before.json":Tr,"../../../../samples/jso-diffs/property/7.11-objectPropsArrays-object-props-arrays-to-array-all-item-types/before.json":Sr,"../../../../samples/jso-diffs/property/7.2-objectPropsArrays-object-props-arrays-to-number/before.json":Jr,"../../../../samples/jso-diffs/property/7.3-objectPropsArrays-object-props-arrays-to-boolean/before.json":Nr,"../../../../samples/jso-diffs/property/7.4-objectPropsArrays-object-props-arrays-to-null/before.json":Lr,"../../../../samples/jso-diffs/property/7.5-objectPropsArrays-object-props-arrays-to-object-primitive-props/before.json":Cr,"../../../../samples/jso-diffs/property/7.6-objectPropsArrays-object-props-arrays-to-object-props-objects/before.json":qr,"../../../../samples/jso-diffs/property/7.7-objectPropsArrays-object-props-arrays-to-object-all-prop-types/before.json":zr,"../../../../samples/jso-diffs/property/7.8-objectPropsArrays-object-props-arrays-to-array-primitives/before.json":Er,"../../../../samples/jso-diffs/property/7.9-objectPropsArrays-object-props-arrays-to-array-objects/before.json":$r,"../../../../samples/jso-diffs/property/8.1-objectAllPropTypes-object-all-prop-types-to-string/before.json":Fr,"../../../../samples/jso-diffs/property/8.10-objectAllPropTypes-object-all-prop-types-to-array-items-arrays/before.json":Dr,"../../../../samples/jso-diffs/property/8.11-objectAllPropTypes-object-all-prop-types-to-array-all-item-types/before.json":Kr,"../../../../samples/jso-diffs/property/8.2-objectAllPropTypes-object-all-prop-types-to-number/before.json":Mr,"../../../../samples/jso-diffs/property/8.3-objectAllPropTypes-object-all-prop-types-to-boolean/before.json":Gr,"../../../../samples/jso-diffs/property/8.4-objectAllPropTypes-object-all-prop-types-to-null/before.json":Rr,"../../../../samples/jso-diffs/property/8.5-objectAllPropTypes-object-all-prop-types-to-object-primitive-props/before.json":wr,"../../../../samples/jso-diffs/property/8.6-objectAllPropTypes-object-all-prop-types-to-object-props-objects/before.json":Hr,"../../../../samples/jso-diffs/property/8.7-objectAllPropTypes-object-all-prop-types-to-object-props-arrays/before.json":Yr,"../../../../samples/jso-diffs/property/8.8-objectAllPropTypes-object-all-prop-types-to-array-primitives/before.json":kr,"../../../../samples/jso-diffs/property/8.9-objectAllPropTypes-object-all-prop-types-to-array-objects/before.json":Br,"../../../../samples/jso-diffs/property/9.1-arrayPrimitives-array-primitives-to-string/before.json":Ur,"../../../../samples/jso-diffs/property/9.10-arrayPrimitives-array-primitives-to-array-items-arrays/before.json":Xr,"../../../../samples/jso-diffs/property/9.11-arrayPrimitives-array-primitives-to-array-all-item-types/before.json":Wr,"../../../../samples/jso-diffs/property/9.2-arrayPrimitives-array-primitives-to-number/before.json":Qr,"../../../../samples/jso-diffs/property/9.3-arrayPrimitives-array-primitives-to-boolean/before.json":Zr,"../../../../samples/jso-diffs/property/9.4-arrayPrimitives-array-primitives-to-null/before.json":ne,"../../../../samples/jso-diffs/property/9.5-arrayPrimitives-array-primitives-to-object-primitive-props/before.json":re,"../../../../samples/jso-diffs/property/9.6-arrayPrimitives-array-primitives-to-object-props-objects/before.json":ee,"../../../../samples/jso-diffs/property/9.7-arrayPrimitives-array-primitives-to-object-props-arrays/before.json":oe,"../../../../samples/jso-diffs/property/9.8-arrayPrimitives-array-primitives-to-object-all-prop-types/before.json":le,"../../../../samples/jso-diffs/property/9.9-arrayPrimitives-array-primitives-to-array-objects/before.json":te}),lt=Object.assign({"../../../../samples/jso-diffs/property/1.1-stringValue-string-to-number/after.json":ae,"../../../../samples/jso-diffs/property/1.10-stringValue-string-to-array-items-arrays/after.json":se,"../../../../samples/jso-diffs/property/1.11-stringValue-string-to-array-all-item-types/after.json":ue,"../../../../samples/jso-diffs/property/1.2-stringValue-string-to-boolean/after.json":ie,"../../../../samples/jso-diffs/property/1.3-stringValue-string-to-null/after.json":pe,"../../../../samples/jso-diffs/property/1.4-stringValue-string-to-object-primitive-props/after.json":be,"../../../../samples/jso-diffs/property/1.5-stringValue-string-to-object-props-objects/after.json":ce,"../../../../samples/jso-diffs/property/1.6-stringValue-string-to-object-props-arrays/after.json":Pe,"../../../../samples/jso-diffs/property/1.7-stringValue-string-to-object-all-prop-types/after.json":ye,"../../../../samples/jso-diffs/property/1.8-stringValue-string-to-array-primitives/after.json":je,"../../../../samples/jso-diffs/property/1.9-stringValue-string-to-array-objects/after.json":me,"../../../../samples/jso-diffs/property/10.1-arrayObjects-array-objects-to-string/after.json":fe,"../../../../samples/jso-diffs/property/10.10-arrayObjects-array-objects-to-array-items-arrays/after.json":de,"../../../../samples/jso-diffs/property/10.11-arrayObjects-array-objects-to-array-all-item-types/after.json":_e,"../../../../samples/jso-diffs/property/10.2-arrayObjects-array-objects-to-number/after.json":he,"../../../../samples/jso-diffs/property/10.3-arrayObjects-array-objects-to-boolean/after.json":Ae,"../../../../samples/jso-diffs/property/10.4-arrayObjects-array-objects-to-null/after.json":Ve,"../../../../samples/jso-diffs/property/10.5-arrayObjects-array-objects-to-object-primitive-props/after.json":ge,"../../../../samples/jso-diffs/property/10.6-arrayObjects-array-objects-to-object-props-objects/after.json":ve,"../../../../samples/jso-diffs/property/10.7-arrayObjects-array-objects-to-object-props-arrays/after.json":xe,"../../../../samples/jso-diffs/property/10.8-arrayObjects-array-objects-to-object-all-prop-types/after.json":Oe,"../../../../samples/jso-diffs/property/10.9-arrayObjects-array-objects-to-array-primitives/after.json":Ie,"../../../../samples/jso-diffs/property/11.1-arrayArrayItems-array-items-arrays-to-string/after.json":Te,"../../../../samples/jso-diffs/property/11.10-arrayArrayItems-array-items-arrays-to-array-objects/after.json":Se,"../../../../samples/jso-diffs/property/11.11-arrayArrayItems-array-items-arrays-to-array-all-item-types/after.json":Je,"../../../../samples/jso-diffs/property/11.2-arrayArrayItems-array-items-arrays-to-number/after.json":Ne,"../../../../samples/jso-diffs/property/11.3-arrayArrayItems-array-items-arrays-to-boolean/after.json":Le,"../../../../samples/jso-diffs/property/11.4-arrayArrayItems-array-items-arrays-to-null/after.json":Ce,"../../../../samples/jso-diffs/property/11.5-arrayArrayItems-array-items-arrays-to-object-primitive-props/after.json":qe,"../../../../samples/jso-diffs/property/11.6-arrayArrayItems-array-items-arrays-to-object-props-objects/after.json":ze,"../../../../samples/jso-diffs/property/11.7-arrayArrayItems-array-items-arrays-to-object-props-arrays/after.json":Ee,"../../../../samples/jso-diffs/property/11.8-arrayArrayItems-array-items-arrays-to-object-all-prop-types/after.json":$e,"../../../../samples/jso-diffs/property/11.9-arrayArrayItems-array-items-arrays-to-array-primitives/after.json":Fe,"../../../../samples/jso-diffs/property/12.1-arrayAllItemTypes-array-all-item-types-to-string/after.json":De,"../../../../samples/jso-diffs/property/12.10-arrayAllItemTypes-array-all-item-types-to-array-objects/after.json":Ke,"../../../../samples/jso-diffs/property/12.11-arrayAllItemTypes-array-all-item-types-to-array-items-arrays/after.json":Me,"../../../../samples/jso-diffs/property/12.2-arrayAllItemTypes-array-all-item-types-to-number/after.json":Ge,"../../../../samples/jso-diffs/property/12.3-arrayAllItemTypes-array-all-item-types-to-boolean/after.json":Re,"../../../../samples/jso-diffs/property/12.4-arrayAllItemTypes-array-all-item-types-to-null/after.json":we,"../../../../samples/jso-diffs/property/12.5-arrayAllItemTypes-array-all-item-types-to-object-primitive-props/after.json":He,"../../../../samples/jso-diffs/property/12.6-arrayAllItemTypes-array-all-item-types-to-object-props-objects/after.json":Ye,"../../../../samples/jso-diffs/property/12.7-arrayAllItemTypes-array-all-item-types-to-object-props-arrays/after.json":ke,"../../../../samples/jso-diffs/property/12.8-arrayAllItemTypes-array-all-item-types-to-object-all-prop-types/after.json":Be,"../../../../samples/jso-diffs/property/12.9-arrayAllItemTypes-array-all-item-types-to-array-primitives/after.json":Ue,"../../../../samples/jso-diffs/property/13.1-stringJsonSchema-add-primitive-json-schema/after.json":Xe,"../../../../samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema/after.json":We,"../../../../samples/jso-diffs/property/13.3-stringJsonSchema-remove-primitive-json-schema/after.json":Qe,"../../../../samples/jso-diffs/property/13.4-objectJsonSchema-remove-complex-json-schema/after.json":Ze,"../../../../samples/jso-diffs/property/14.1-stringJsonSchema-description-changed/after.json":no,"../../../../samples/jso-diffs/property/14.2-stringJsonSchema-enum-changed/after.json":ro,"../../../../samples/jso-diffs/property/14.3-stringJsonSchema-minLength-changed/after.json":eo,"../../../../samples/jso-diffs/property/14.4-stringJsonSchema-maxLength-changed/after.json":oo,"../../../../samples/jso-diffs/property/14.5-stringJsonSchema-pattern-changed/after.json":lo,"../../../../samples/jso-diffs/property/14.6-stringJsonSchema-format-changed/after.json":to,"../../../../samples/jso-diffs/property/14.7-stringJsonSchema-default-changed/after.json":ao,"../../../../samples/jso-diffs/property/14.8-stringJsonSchema-examples-changed/after.json":so,"../../../../samples/jso-diffs/property/15.1-objectJsonSchema-description-changed/after.json":uo,"../../../../samples/jso-diffs/property/15.2-objectJsonSchema-title-changed/after.json":io,"../../../../samples/jso-diffs/property/15.3-objectJsonSchema-title-added/after.json":po,"../../../../samples/jso-diffs/property/15.4-objectJsonSchema-title-removed/after.json":bo,"../../../../samples/jso-diffs/property/15.5-objectJsonSchema-examples-changed/after.json":co,"../../../../samples/jso-diffs/property/15.6-objectJsonSchema-property-added/after.json":Po,"../../../../samples/jso-diffs/property/15.7-objectJsonSchema-property-removed/after.json":yo,"../../../../samples/jso-diffs/property/15.8-objectJsonSchema-required-changed/after.json":jo,"../../../../samples/jso-diffs/property/2.1-numberValue-number-to-string/after.json":mo,"../../../../samples/jso-diffs/property/2.10-numberValue-number-to-array-items-arrays/after.json":fo,"../../../../samples/jso-diffs/property/2.11-numberValue-number-to-array-all-item-types/after.json":_o,"../../../../samples/jso-diffs/property/2.2-numberValue-number-to-boolean/after.json":ho,"../../../../samples/jso-diffs/property/2.3-numberValue-number-to-null/after.json":Ao,"../../../../samples/jso-diffs/property/2.4-numberValue-number-to-object-primitive-props/after.json":Vo,"../../../../samples/jso-diffs/property/2.5-numberValue-number-to-object-props-objects/after.json":go,"../../../../samples/jso-diffs/property/2.6-numberValue-number-to-object-props-arrays/after.json":vo,"../../../../samples/jso-diffs/property/2.7-numberValue-number-to-object-all-prop-types/after.json":xo,"../../../../samples/jso-diffs/property/2.8-numberValue-number-to-array-primitives/after.json":Oo,"../../../../samples/jso-diffs/property/2.9-numberValue-number-to-array-objects/after.json":Io,"../../../../samples/jso-diffs/property/3.1-booleanValue-boolean-to-string/after.json":To,"../../../../samples/jso-diffs/property/3.10-booleanValue-boolean-to-array-items-arrays/after.json":So,"../../../../samples/jso-diffs/property/3.11-booleanValue-boolean-to-array-all-item-types/after.json":Jo,"../../../../samples/jso-diffs/property/3.2-booleanValue-boolean-to-number/after.json":No,"../../../../samples/jso-diffs/property/3.3-booleanValue-boolean-to-null/after.json":Lo,"../../../../samples/jso-diffs/property/3.4-booleanValue-boolean-to-object-primitive-props/after.json":Co,"../../../../samples/jso-diffs/property/3.5-booleanValue-boolean-to-object-props-objects/after.json":qo,"../../../../samples/jso-diffs/property/3.6-booleanValue-boolean-to-object-props-arrays/after.json":zo,"../../../../samples/jso-diffs/property/3.7-booleanValue-boolean-to-object-all-prop-types/after.json":Eo,"../../../../samples/jso-diffs/property/3.8-booleanValue-boolean-to-array-primitives/after.json":$o,"../../../../samples/jso-diffs/property/3.9-booleanValue-boolean-to-array-objects/after.json":Fo,"../../../../samples/jso-diffs/property/4.1-nullValue-null-to-string/after.json":Do,"../../../../samples/jso-diffs/property/4.10-nullValue-null-to-array-items-arrays/after.json":Ko,"../../../../samples/jso-diffs/property/4.11-nullValue-null-to-array-all-item-types/after.json":Mo,"../../../../samples/jso-diffs/property/4.2-nullValue-null-to-number/after.json":Go,"../../../../samples/jso-diffs/property/4.3-nullValue-null-to-boolean/after.json":Ro,"../../../../samples/jso-diffs/property/4.4-nullValue-null-to-object-primitive-props/after.json":wo,"../../../../samples/jso-diffs/property/4.5-nullValue-null-to-object-props-objects/after.json":Ho,"../../../../samples/jso-diffs/property/4.6-nullValue-null-to-object-props-arrays/after.json":Yo,"../../../../samples/jso-diffs/property/4.7-nullValue-null-to-object-all-prop-types/after.json":ko,"../../../../samples/jso-diffs/property/4.8-nullValue-null-to-array-primitives/after.json":Bo,"../../../../samples/jso-diffs/property/4.9-nullValue-null-to-array-objects/after.json":Uo,"../../../../samples/jso-diffs/property/5.1-objectPrimitiveProps-object-primitive-props-to-string/after.json":Xo,"../../../../samples/jso-diffs/property/5.10-objectPrimitiveProps-object-primitive-props-to-array-items-arrays/after.json":Wo,"../../../../samples/jso-diffs/property/5.11-objectPrimitiveProps-object-primitive-props-to-array-all-item-types/after.json":Qo,"../../../../samples/jso-diffs/property/5.2-objectPrimitiveProps-object-primitive-props-to-number/after.json":Zo,"../../../../samples/jso-diffs/property/5.3-objectPrimitiveProps-object-primitive-props-to-boolean/after.json":nl,"../../../../samples/jso-diffs/property/5.4-objectPrimitiveProps-object-primitive-props-to-null/after.json":rl,"../../../../samples/jso-diffs/property/5.5-objectPrimitiveProps-object-primitive-props-to-object-props-objects/after.json":el,"../../../../samples/jso-diffs/property/5.6-objectPrimitiveProps-object-primitive-props-to-object-props-arrays/after.json":ol,"../../../../samples/jso-diffs/property/5.7-objectPrimitiveProps-object-primitive-props-to-object-all-prop-types/after.json":ll,"../../../../samples/jso-diffs/property/5.8-objectPrimitiveProps-object-primitive-props-to-array-primitives/after.json":tl,"../../../../samples/jso-diffs/property/5.9-objectPrimitiveProps-object-primitive-props-to-array-objects/after.json":al,"../../../../samples/jso-diffs/property/6.1-objectPropsObjects-object-props-objects-to-string/after.json":sl,"../../../../samples/jso-diffs/property/6.10-objectPropsObjects-object-props-objects-to-array-items-arrays/after.json":ul,"../../../../samples/jso-diffs/property/6.11-objectPropsObjects-object-props-objects-to-array-all-item-types/after.json":il,"../../../../samples/jso-diffs/property/6.2-objectPropsObjects-object-props-objects-to-number/after.json":pl,"../../../../samples/jso-diffs/property/6.3-objectPropsObjects-object-props-objects-to-boolean/after.json":bl,"../../../../samples/jso-diffs/property/6.4-objectPropsObjects-object-props-objects-to-null/after.json":cl,"../../../../samples/jso-diffs/property/6.5-objectPropsObjects-object-props-objects-to-object-primitive-props/after.json":Pl,"../../../../samples/jso-diffs/property/6.6-objectPropsObjects-object-props-objects-to-object-props-arrays/after.json":yl,"../../../../samples/jso-diffs/property/6.7-objectPropsObjects-object-props-objects-to-object-all-prop-types/after.json":jl,"../../../../samples/jso-diffs/property/6.8-objectPropsObjects-object-props-objects-to-array-primitives/after.json":ml,"../../../../samples/jso-diffs/property/6.9-objectPropsObjects-object-props-objects-to-array-objects/after.json":fl,"../../../../samples/jso-diffs/property/7.1-objectPropsArrays-object-props-arrays-to-string/after.json":dl,"../../../../samples/jso-diffs/property/7.10-objectPropsArrays-object-props-arrays-to-array-items-arrays/after.json":_l,"../../../../samples/jso-diffs/property/7.11-objectPropsArrays-object-props-arrays-to-array-all-item-types/after.json":hl,"../../../../samples/jso-diffs/property/7.2-objectPropsArrays-object-props-arrays-to-number/after.json":Al,"../../../../samples/jso-diffs/property/7.3-objectPropsArrays-object-props-arrays-to-boolean/after.json":Vl,"../../../../samples/jso-diffs/property/7.4-objectPropsArrays-object-props-arrays-to-null/after.json":gl,"../../../../samples/jso-diffs/property/7.5-objectPropsArrays-object-props-arrays-to-object-primitive-props/after.json":vl,"../../../../samples/jso-diffs/property/7.6-objectPropsArrays-object-props-arrays-to-object-props-objects/after.json":xl,"../../../../samples/jso-diffs/property/7.7-objectPropsArrays-object-props-arrays-to-object-all-prop-types/after.json":Ol,"../../../../samples/jso-diffs/property/7.8-objectPropsArrays-object-props-arrays-to-array-primitives/after.json":Il,"../../../../samples/jso-diffs/property/7.9-objectPropsArrays-object-props-arrays-to-array-objects/after.json":Tl,"../../../../samples/jso-diffs/property/8.1-objectAllPropTypes-object-all-prop-types-to-string/after.json":Sl,"../../../../samples/jso-diffs/property/8.10-objectAllPropTypes-object-all-prop-types-to-array-items-arrays/after.json":Jl,"../../../../samples/jso-diffs/property/8.11-objectAllPropTypes-object-all-prop-types-to-array-all-item-types/after.json":Nl,"../../../../samples/jso-diffs/property/8.2-objectAllPropTypes-object-all-prop-types-to-number/after.json":Ll,"../../../../samples/jso-diffs/property/8.3-objectAllPropTypes-object-all-prop-types-to-boolean/after.json":Cl,"../../../../samples/jso-diffs/property/8.4-objectAllPropTypes-object-all-prop-types-to-null/after.json":ql,"../../../../samples/jso-diffs/property/8.5-objectAllPropTypes-object-all-prop-types-to-object-primitive-props/after.json":zl,"../../../../samples/jso-diffs/property/8.6-objectAllPropTypes-object-all-prop-types-to-object-props-objects/after.json":El,"../../../../samples/jso-diffs/property/8.7-objectAllPropTypes-object-all-prop-types-to-object-props-arrays/after.json":$l,"../../../../samples/jso-diffs/property/8.8-objectAllPropTypes-object-all-prop-types-to-array-primitives/after.json":Fl,"../../../../samples/jso-diffs/property/8.9-objectAllPropTypes-object-all-prop-types-to-array-objects/after.json":Dl,"../../../../samples/jso-diffs/property/9.1-arrayPrimitives-array-primitives-to-string/after.json":Kl,"../../../../samples/jso-diffs/property/9.10-arrayPrimitives-array-primitives-to-array-items-arrays/after.json":Ml,"../../../../samples/jso-diffs/property/9.11-arrayPrimitives-array-primitives-to-array-all-item-types/after.json":Gl,"../../../../samples/jso-diffs/property/9.2-arrayPrimitives-array-primitives-to-number/after.json":Rl,"../../../../samples/jso-diffs/property/9.3-arrayPrimitives-array-primitives-to-boolean/after.json":wl,"../../../../samples/jso-diffs/property/9.4-arrayPrimitives-array-primitives-to-null/after.json":Hl,"../../../../samples/jso-diffs/property/9.5-arrayPrimitives-array-primitives-to-object-primitive-props/after.json":Yl,"../../../../samples/jso-diffs/property/9.6-arrayPrimitives-array-primitives-to-object-props-objects/after.json":kl,"../../../../samples/jso-diffs/property/9.7-arrayPrimitives-array-primitives-to-object-props-arrays/after.json":Bl,"../../../../samples/jso-diffs/property/9.8-arrayPrimitives-array-primitives-to-object-all-prop-types/after.json":Ul,"../../../../samples/jso-diffs/property/9.9-arrayPrimitives-array-primitives-to-array-objects/after.json":Xl}),tt=Zl(ot,lt),at=Object.fromEntries(tt.map(r=>[r.caseId,r])),b=({caseId:r})=>{const n=at[r];return n?t.jsx(P,{...st(n.beforeJson,n.afterJson)}):t.jsxs("div",{children:["Sample case not found: ",r]})},p=r=>et(r),st=(r,n)=>({mergedSource:y({beforeSource:p(r),afterSource:p(n),diffMetaKeys:i}),initialLevel:1,supportJsonSchema:!0,diffMetaKeys:i}),bt=r=>({name:r,args:{caseId:r},render:n=>t.jsx(b,{caseId:n.caseId})});b.__docgenInfo={description:"",methods:[],displayName:"JsoPropertySamplesStory",props:{caseId:{required:!0,tsType:{name:"string"},description:""}}};export{b as J,bt as c};
