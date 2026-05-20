@@ -1,6 +1,7 @@
+import { isSpecificationExtensionKey } from "@apihub/next-data-model/model/specification-extension-key";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { getValueByPath, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { aggregateDiffsWithRollup } from "@netcracker/qubership-apihub-api-diff";
+import { aggregateDiffsWithRollup, Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
 import { AsyncApiLogger } from "../logging";
 import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
 import {
@@ -66,12 +67,14 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       return null
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const operationsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', diffsMetaKey], this.referenceNamePropertyKey)
     )
     const operationFieldsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, diffsMetaKey], this.referenceNamePropertyKey)
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const operationBindingsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
@@ -79,19 +82,23 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     const channelFieldsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'channel', diffsMetaKey], this.referenceNamePropertyKey)
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channelBindingsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'channel', 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const channelServersDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'channel', 'servers', diffsMetaKey], this.referenceNamePropertyKey)
     )
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const messagesDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'messages', diffsMetaKey], this.referenceNamePropertyKey)
     )
     const messageFieldsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'messages', messageKey, diffsMetaKey], this.referenceNamePropertyKey)
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const messageBindingsDiffsRecord = takeIfDiffsRecord(
       getValueByPath(source, ['operations', operationKey, 'messages', messageKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
@@ -106,6 +113,23 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       const diffDescription = messageFieldsDiffsRecord?.description
       const diffSummary = messageFieldsDiffsRecord?.summary
       const diffAddress = channelFieldsDiffsRecord?.address
+
+      const extensions = transformedWithDiffs.data.content.extensions
+      if (extensions && !(diffsMetaKey in extensions)) {
+        const diffsExtensions = Object.keys(messageFieldsDiffsRecord ?? {}).reduce((acc, key) => {
+          if (!isSpecificationExtensionKey(key)) {
+            return acc
+          }
+          const extensionDiff = messageFieldsDiffsRecord?.[key]
+          if (!extensionDiff) {
+            return acc
+          }
+          acc[key] = extensionDiff
+          return acc
+        }, {} as Record<string, Diff<DiffType>>)
+        transformedWithDiffs.data.content.extensions = Object.assign(extensions, { [diffsMetaKey]: diffsExtensions })
+      }
+
       transformedWithDiffs[diffsMetaKey] = {
         ...(diffTitle ? { title: diffTitle } : {}),
         ...(diffName ? { internalTitle: diffName } : {}),
@@ -121,6 +145,23 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       const diffDescription = channelFieldsDiffsRecord?.description
       const diffSummary = channelFieldsDiffsRecord?.summary
       const diffAddress = channelFieldsDiffsRecord?.address
+
+      const extensions = transformedWithDiffs.data.channel.extensions
+      if (extensions && !(diffsMetaKey in extensions)) {
+        const diffsExtensions = Object.keys(channelFieldsDiffsRecord ?? {}).reduce((acc, key) => {
+          if (!isSpecificationExtensionKey(key)) {
+            return acc
+          }
+          const extensionDiff = channelFieldsDiffsRecord?.[key]
+          if (!extensionDiff) {
+            return acc
+          }
+          acc[key] = extensionDiff
+          return acc
+        }, {} as Record<string, Diff<DiffType>>)
+        transformedWithDiffs.data.channel.extensions = Object.assign(extensions, { [diffsMetaKey]: diffsExtensions })
+      }
+
       transformedWithDiffs.data.channel[diffsMetaKey] = {
         ...(diffTitle ? { title: diffTitle } : {}),
         ...(diffDescription ? { description: diffDescription } : {}),
@@ -134,6 +175,23 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       const diffTitle = operationFieldsDiffsRecord?.title
       const diffDescription = operationFieldsDiffsRecord?.description
       const diffSummary = operationFieldsDiffsRecord?.summary
+
+      const extensions = transformedWithDiffs.data.operation.extensions
+      if (extensions && !(diffsMetaKey in extensions)) {
+        const diffsExtensions = Object.keys(operationFieldsDiffsRecord ?? {}).reduce((acc, key) => {
+          if (!isSpecificationExtensionKey(key)) {
+            return acc
+          }
+          const extensionDiff = operationFieldsDiffsRecord?.[key]
+          if (!extensionDiff) {
+            return acc
+          }
+          acc[key] = extensionDiff
+          return acc
+        }, {} as Record<string, Diff<DiffType>>)
+        transformedWithDiffs.data.operation.extensions = Object.assign(extensions, { [diffsMetaKey]: diffsExtensions })
+      }
+
       transformedWithDiffs.data.operation[diffsMetaKey] = {
         ...(diffTitle ? { title: diffTitle } : {}),
         ...(diffDescription ? { description: diffDescription } : {}),

@@ -5,8 +5,8 @@ import { AsyncApiNodeDataBuilder } from "../../tree/node-data/builder";
 import { NodeDataPickFunction } from "../../../abstract/tree/node-data/builder";
 
 export class AsyncApiNodeDataWithDiffsBuilder extends AsyncApiNodeDataBuilder {
-  public override createNodeValue(kind: string, value: unknown, pick: NodeDataPickFunction): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
-    return super.createNodeValue(kind, value, pick);
+  public override createNodeValue(kind: string, key: PropertyKey, value: unknown, pick: NodeDataPickFunction): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
+    return super.createNodeValue(kind, key, value, pick);
   }
   
   public override createNodeMeta(value: unknown): AsyncApiTreeNodeMeta {

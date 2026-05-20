@@ -1,7 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
-import { SimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { ChangedPropertyKey, DiffStyles, HighlightVariant, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -14,18 +12,30 @@ export class AsyncApiNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
     AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
     AsyncApiTreeNodeKind,
-    AsyncApiTreeNodeMeta
+    AsyncApiTreeNodeMeta,
+    AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
   > {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
+    isHeaderVisible: true,
   }
 
   public aggregate(
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
-    parentNode?: SimpleTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>,
-    containerNode?: ComplexTreeNodeWithDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>,
+    parentNode?: ITreeNodeWithDiffs<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+    >,
+    containerNode?: ITreeNodeWithDiffs<
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
+      AsyncApiTreeNodeKind,
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
+    >,
   ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
@@ -43,6 +53,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       const containerNodeDiff = containerNode.diffs['']
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
         nodeDiffs[''] = containerNodeDiff
+        return nodeDiffs
       } else {
         const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
@@ -56,6 +67,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       const parentNodeDiff = parentNode.diffs['']
       if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
         nodeDiffs[''] = parentNodeDiff
+        return nodeDiffs
       } else {
         const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
@@ -93,31 +105,37 @@ export class AsyncApiNodeDiffsAggregatorKindAny
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     if (isDiffAdd(diff)) {
       beforeStyles = {
+        ...beforeStyles,
         isContentVisible: false,
         backgroundColor: HighlightVariant.Gray,
       }
       afterStyles = {
+        ...afterStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Green,
       }
     }
     if (isDiffRemove(diff)) {
       beforeStyles = {
+        ...beforeStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Red,
       }
       afterStyles = {
+        ...afterStyles,
         isContentVisible: false,
         backgroundColor: HighlightVariant.Gray,
       }
     }
     if (isDiffRename(diff) || isDiffReplace(diff)) {
       beforeStyles = {
+        ...beforeStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Yellow,
         textHighlighterColor: HighlightVariant.Yellow,
       }
       afterStyles = {
+        ...afterStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Yellow,
         textHighlighterColor: HighlightVariant.Yellow,
@@ -129,6 +147,15 @@ export class AsyncApiNodeDiffsAggregatorKindAny
         before: beforeStyles,
         after: afterStyles,
       },
+      flags: {
+        before: {
+          increaseLevel: false,
+        },
+        after: {
+          increaseLevel: false,
+        },
+      },
+      highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
     }
   }
 }

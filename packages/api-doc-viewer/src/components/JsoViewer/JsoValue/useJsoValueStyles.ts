@@ -1,14 +1,21 @@
-type UseJsoValueStylesInput = {
-  isPredefinedValueSet: boolean
+import { useMemo } from "react"
+
+export type JsoValueAppearance = 'text' | 'block'
+
+export type UseJsoValueStylesInput = {
+  appearance: JsoValueAppearance
 }
 
-type UseJsoValueStylesResult = {
-  valueClasses: string[]
-}
+export function useJsoValueStyles(input: UseJsoValueStylesInput): string {
+  const {
+    appearance,
+  } = input
 
-export function useJsoValueStyles(input: UseJsoValueStylesInput): UseJsoValueStylesResult {
-  const { isPredefinedValueSet } = input
-  return {
-    valueClasses: isPredefinedValueSet ? ["bg-gray-100", "px-2", "rounded-md"] : [],
-  }
+  return useMemo(() => {
+    return [
+      'jso-value',
+      'subheader',
+      appearance, // 'text' | 'block'
+    ].filter(Boolean).join(' ')
+  }, [appearance])
 }

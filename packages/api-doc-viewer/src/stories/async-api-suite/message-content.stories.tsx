@@ -248,9 +248,3 @@ export const BindingsOneOptionPayload: Story = createStory(createSource({
     payload: PAYLOAD_SCHEMA,
   },
 }));
-
-export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
-  message: {
-    bindings: { $ref: "#/components/bindings/not-existing-bindings" },
-  },
-}));

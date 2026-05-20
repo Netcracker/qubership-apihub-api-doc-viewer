@@ -1,10 +1,12 @@
 import { ITreeNodeWithDiffs } from "../../abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeKind } from "../types/node-kind";
 import { JsoTreeNodeMeta } from "../types/node-meta";
-import { JsoTreeNodeValue } from "../types/node-value";
+import { JsoTreeNodeDiffsSource } from "./node-diffs-source";
+import { JsoTreeNodeValueWithDiffs } from "./node-value";
 
 export type JsoSimpleTreeNodeWithDiffs = ITreeNodeWithDiffs<
-  JsoTreeNodeValue | null,
+  JsoTreeNodeValueWithDiffs | null,
   JsoTreeNodeKind,
-  JsoTreeNodeMeta
+  JsoTreeNodeMeta,
+  JsoTreeNodeDiffsSource
 >

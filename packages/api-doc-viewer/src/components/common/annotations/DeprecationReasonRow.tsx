@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator"
+import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator"
 import { isDiff, isObject } from "@netcracker/qubership-apihub-api-data-model"
 import { Diff, DiffAction, DiffMetaRecord } from "@netcracker/qubership-apihub-api-diff"
 import { GRAPH_API_DIRECTIVE_DEPRECATED_DEFAULT_REASON } from "@netcracker/qubership-apihub-graphapi"

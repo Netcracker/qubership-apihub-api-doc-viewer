@@ -1,19 +1,19 @@
 import { JsoComplexTreeNode } from "@apihub/next-data-model/model/jso/tree/complex-node.impl";
+import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/tree/node-value";
 import { JsoSimpleTreeNode } from "@apihub/next-data-model/model/jso/tree/simple-node.impl";
 import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
-import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
+import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
-import { JsoTreeNodeValue } from "@apihub/next-data-model/model/jso/types/node-value";
 import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
 import { NodeId, NodeKey } from "../../../utility-types";
 import { TreeBuilder } from "../../abstract/tree/builder";
-import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules";
+import { getJsoCrawlRules } from "../json-crawl-entities/rules/rules.jso";
 import { JsoCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeCrawlState } from "../json-crawl-entities/state/types";
-import { createJsoTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { createJsoTreeBuildingHooks } from "./building-hooks";
 import { JsoNodeDataBuilder } from "./node-data/builder";
 
 type SimpleJsoTreeNodeParams = SimpleTreeNodeParams<
@@ -58,16 +58,13 @@ export class JsoTreeBuilder extends TreeBuilder<
 
     const initialRules: JsoCrawlRule = getJsoCrawlRules()
 
-    const hooks = createJsoTreeBuildingHooks<
-      JsoTreeCrawlState,
-      JsoCrawlRule,
-      TreeNodeParams<JsoTreeNodeValue | null, JsoTreeNodeKind, JsoTreeNodeMeta>
-    >({
+    const hooks = createJsoTreeBuildingHooks({
       source: this.source,
       tree: this.tree,
+      supportedNodeKinds: JsoTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) ? value : null,
+        value: value ?? null,
         newDataLevel: true,
         container,
         parent,
@@ -85,10 +82,23 @@ export class JsoTreeBuilder extends TreeBuilder<
       isSimpleNode: (node): node is JsoSimpleTreeNode => this.isJsoSimpleTreeNode(node),
       isComplexNode: (node): node is JsoComplexTreeNode => this.isJsoComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(
-        value.isPrimitive ||
-        this.supportJsonSchema && value.valueType === JsoPropertyValueTypes.JSON_SCHEMA
-      ),
+      isDisallowedValue: (value) => value === undefined,
+      shouldStopAfterNodeCreation: (node, value) => {
+        if (!isObject(value) && !Array.isArray(value)) {
+          // we can't crawl non-object values
+          return true
+        }
+        const nodeValue = node.value()
+        if (!nodeValue) { // just a type guard
+          return false
+        }
+        // we should not build-in nodes for json schema or multi-schema values into JSO Tree
+        // they will be processed by separate data models
+        return this.supportJsonSchema && (
+          nodeValue.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
+          nodeValue.valueType === JsoPropertyValueTypes.MULTI_SCHEMA
+        )
+      },
     })
 
     syncCrawl<JsoTreeCrawlState, JsoCrawlRule>(
@@ -166,6 +176,7 @@ export class JsoTreeBuilder extends TreeBuilder<
     const { value } = params
     return this.nodeDataBuilder.createNodeValue(
       kind,
+      key,
       value,
       (source, keys) => this.pick(source, keys),
     )

@@ -429,27 +429,3 @@ export const ExtensionsServersOneServer: Story = createStory(createSource({
     }
   }
 }));
-
-export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
-  channel: {
-    bindings: { $ref: "#/components/bindings/not-existing-bindings" },
-  },
-}));
-
-export const EdgeCaseBrokenRefAddressParameter: Story = createStory(createSource({
-  channel: {
-    parameters: {
-      notExistingParameter: {
-        $ref: "#/components/parameters/not-existing-parameter",
-      },
-    },
-  },
-}));
-
-export const EdgeCaseBrokenRefServer: Story = createStory(createSource({
-  channel: {
-    servers: [
-      { $ref: "#/components/servers/not-existing-server" },
-    ]
-  },
-}));

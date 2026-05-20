@@ -1,0 +1,244 @@
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
+import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
+import { isObject } from "@netcracker/qubership-apihub-json-crawl"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
+import { JsoTreeNodeValueWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-value"
+import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
+import { FC, useCallback, useMemo, useState } from "react"
+import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
+import { TextValueVariant } from "../shared-components/TextValue/types"
+import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
+
+type JsoPropertyNodeViewerWithDiffsProps = {
+  node: JsoTreeNodeWithDiffs
+  supportJsonSchema?: boolean
+}
+
+export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsProps> = (props) => {
+  const {
+    node,
+    supportJsonSchema = false,
+  } = props
+
+  const displayMode = useDisplayMode()
+  const diffMetaKeys = useDiffMetaKeys()
+  const { beforeLevel, afterLevel } = useAsyncLevelContext()!
+
+  const [expanded, setExpanded] = useState(true)
+  const onClickExpander = useCallback(() => {
+    setExpanded(prevExpanded => !prevExpanded)
+  }, [])
+
+  const nodeValue = node.value()
+
+  const nodeDiffs = node.diffs
+  const nodeDescendantDiffs = node.descendantDiffs
+  const nodeDiffsSeverities = node.diffsSeverities
+
+  const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
+
+  const subheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      if (!nodeValue) {
+        return <></>
+      }
+
+      if (!nodeValueDiff) {
+        return (
+          <JsoValueWithDiffs
+            isVisible={nodeValue.after.isPrimitive}
+            value={nodeValue.after.value}
+            appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
+          />
+        )
+      }
+
+      const { styles } = nodeValueDiff
+
+      if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+        return (
+          <JsoValueWithDiffs
+            isVisible={styles.before.isContentVisible}
+            value={nodeValue.before.value}
+            appearance={nodeValue.before.isPredefinedValueSet ? 'block' : 'text'}
+            textHighlighterColor={styles.before.textHighlighterColor}
+            borderShadowColor={styles.before.borderShadowColor}
+          />
+        )
+      }
+
+      if (layoutSide === CHANGED_LAYOUT_SIDE) {
+        return (
+          <JsoValueWithDiffs
+            isVisible={styles.after.isContentVisible}
+            value={nodeValue.after.value}
+            appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
+            textHighlighterColor={styles.after.textHighlighterColor}
+            borderShadowColor={styles.after.borderShadowColor}
+          />
+        )
+      }
+
+      return <></>
+    },
+    [nodeValue, nodeValueDiff]
+  )
+
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    return {
+      diff: nodeValueDiff,
+      descendantDiffs: nodeDescendantDiffs,
+      diffsSeverities: nodeDiffsSeverities,
+    }
+  }, [nodeDescendantDiffs, nodeDiffsSeverities, nodeValueDiff])
+
+  const childrenProperties = node.childrenNodes()
+
+  // Flags
+
+  const expandable = useMemo(() => {
+    const hasValue = !!nodeValue
+    // TODO 19.05.26 // In future may be moved to next-data-model
+    const isBeforeValueExpandable = !nodeValue?.before.isPrimitive && nodeValue?.before.valueType !== JsoPropertyValueTypes.UNKNOWN
+    const isAfterValueExpandable = !nodeValue?.after.isPrimitive && nodeValue?.after.valueType !== JsoPropertyValueTypes.UNKNOWN
+    return hasValue && (isBeforeValueExpandable || isAfterValueExpandable)
+  }, [nodeValue])
+
+  const enableHeaderValue = useMemo(() => {
+    return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
+  }, [nodeValue])
+
+  const allChildrenAreDiffs = useMemo(() => {
+    return childrenProperties.every(childProperty => !!childProperty.diffs[''])
+  }, [childrenProperties])
+
+  // JSON Schema properties
+
+  const jsonSchema = useMemo(() => {
+    return (
+      supportJsonSchema
+        ? prepareJsonSchemaForJsoViewer(node.key, nodeValue, nodeValueDiff, diffMetaKeys)
+        : undefined
+    )
+  }, [diffMetaKeys, node.key, nodeValue, nodeValueDiff, supportJsonSchema])
+
+  if (jsonSchema) {
+    if (!diffMetaKeys) {
+      console.error('diffMetaKeys is not defined, but JSON Schema node is defined', node)
+      return null
+    }
+    return (
+      <JsonSchemaDiffViewer
+        key={node.id}
+        schema={jsonSchema}
+        expandedDepth={2}
+        displayMode={displayMode}
+        layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
+        metaKeys={diffMetaKeys}
+        overriddenKind='parameters'
+      />
+    )
+  }
+
+  // ---
+
+  return (
+    <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
+      <TitleRow
+        value={`${node.key}`}
+        expandable={expandable}
+        expanded={expanded}
+        onClickExpander={onClickExpander}
+        variant={TextValueVariant.body}
+        enableHeaderValue={enableHeaderValue}
+        subheader={subheader}
+        usage={TitleRowUsage.JsoProperty}
+        highlightingMode={nodeValueDiff?.highlightingMode}
+        // diffs
+        {...titleRowDiffProps}
+      />
+      {expanded && childrenProperties.map(childProperty => {
+        let nextBeforeLevel = beforeLevel + 1
+        let nextAfterLevel = afterLevel + 1
+        const childNodeValueDiff = childProperty.diffs['']
+        if (childNodeValueDiff && allChildrenAreDiffs) {
+          nextBeforeLevel = childNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
+          nextAfterLevel = childNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
+        }
+        return (
+          <AsyncLevelContextProvider
+            key={childProperty.id}
+            beforeLevel={nextBeforeLevel}
+            afterLevel={nextAfterLevel}
+          >
+            <JsoPropertyNodeViewerWithDiffs
+              node={childProperty}
+              supportJsonSchema={supportJsonSchema}
+            />
+          </AsyncLevelContextProvider>
+        )
+      })}
+    </div>
+  )
+}
+
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: JsoTreeNodeValueWithDiffs | null | undefined,
+  nodeValueDiff: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+
+  if (
+    nodeValue.before.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.before.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA &&
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
+    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) {
+    return undefined
+  }
+
+  const diff = nodeValueDiff?.data
+  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
+
+  if ((
+    nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
+    nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) && isObject(nodeValue.before.value)) {
+    return {
+      type: 'object',
+      properties: {
+        [nodeKey]: nodeValue.before.value,
+        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+      },
+    }
+  }
+
+  if ((
+    nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
+    nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
+  ) && isObject(nodeValue.after.value)) {
+    return {
+      type: 'object',
+      properties: {
+        [nodeKey]: nodeValue.after.value,
+        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+      },
+    }
+  }
+
+  return undefined
+}

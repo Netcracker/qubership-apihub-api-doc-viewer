@@ -6,6 +6,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "generate:async-api-diffs": "node ./scripts/generate-async-api-diffs.mjs"
+    "generate:async-api-diffs": "node ./scripts/generate-async-api-diffs.mjs",
+    "generate:jso-diffs": "node ./scripts/generate-jso-diffs.mjs"
   }
 }

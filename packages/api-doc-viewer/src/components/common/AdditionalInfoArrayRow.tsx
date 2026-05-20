@@ -51,7 +51,7 @@ import {
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
 import { isSeriesItemEmpty, stringifyItem } from '../../utils/common/rows'
-import { LevelIndicator } from '../AsyncApiOperationViewer/LevelIndicator'
+import { LevelIndicator } from '../shared-components/LevelIndicator'
 import { COLOR_SCHEMAS } from '../kit/ux/consts'
 import { BADGE_KIND_DEFAULT } from '../kit/ux/types'
 import { UxBadge } from '../kit/ux/UxBadge'

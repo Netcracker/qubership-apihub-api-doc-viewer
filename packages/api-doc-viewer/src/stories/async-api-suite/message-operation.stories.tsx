@@ -189,9 +189,3 @@ export const ExtensionsBindingsOneOption: Story = createStory(createSource({
     },
   },
 }));
-
-export const EdgeCaseBrokenRefBindings: Story = createStory(createSource({
-  operation: {
-    bindings: { $ref: "#/components/bindings/not-existing-bindings" },
-  },
-}));

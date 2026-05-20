@@ -1,38 +1,36 @@
 import { HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo } from "react"
-import { ResolvedJsoSideState } from "../resolve-jso-side-state"
-import { BaseJsoValue } from "./BaseJsoValue"
-import { useJsoValueWithDiffsStyles } from "./useJsoValueWithDiffsStyles"
+import { JsoValueBase } from "./JsoValueBase"
+import { JsoValueWithDiffsAppearance, useJsoValueWithDiffsStyles } from "./useJsoValueWithDiffsStyles"
 
-type JsoValueWithDiffsProps = {
-  sideState: ResolvedJsoSideState
-  forcedBackgroundColor?: HighlightVariant
-  forcedTextHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
+export type JsoValueWithDiffsProps = {
+  isVisible: boolean
+  value: unknown
+  appearance: JsoValueWithDiffsAppearance
+  textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
+  borderShadowColor?: HighlightVariant
 }
 
 export const JsoValueWithDiffs: FC<JsoValueWithDiffsProps> = memo<JsoValueWithDiffsProps>((props) => {
-  const { sideState, forcedBackgroundColor, forcedTextHighlighterColor } = props
   const {
-    showSubheader,
-    resolvedValue,
-    resolvedValueType,
-    isPredefinedValueSet,
-    sideStyles,
-  } = sideState
-  const { styleClasses, valueClasses } = useJsoValueWithDiffsStyles({
-    isPredefinedValueSet,
-    sideStyles,
-    forcedBackgroundColor,
-    forcedTextHighlighterColor,
+    isVisible,
+    value,
+    appearance,
+    textHighlighterColor,
+    borderShadowColor,
+  } = props
+
+  const className = useJsoValueWithDiffsStyles({
+    appearance,
+    textHighlighterColor,
+    borderShadowColor,
   })
 
   return (
-    <BaseJsoValue
-      showSubheader={showSubheader}
-      resolvedValue={resolvedValue}
-      resolvedValueType={resolvedValueType}
-      styleClasses={styleClasses}
-      valueClasses={valueClasses}
+    <JsoValueBase
+      isVisible={isVisible}
+      value={value}
+      className={className}
     />
   )
 })

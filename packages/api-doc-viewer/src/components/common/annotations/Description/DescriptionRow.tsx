@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LevelIndicator } from "@apihub/components/AsyncApiOperationViewer/LevelIndicator";
+import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
@@ -49,7 +49,7 @@ import {
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge';
 import { EmptyContent } from '../../diffs/EmptyContent';
 import { UnsupportedContent } from '../../diffs/UnsupportedContent';
-import './Description.css';
+import './DescriptionRow.css';
 import { DescriptionFontSize } from "./types/DescriptionFontSize";
 
 const OVERFLOW_LINES_AMOUNT = 5

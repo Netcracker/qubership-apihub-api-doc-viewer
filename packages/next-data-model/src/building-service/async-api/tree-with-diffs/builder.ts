@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -18,7 +18,7 @@ import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/typ
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
-import { createAsyncApiTreeBuildingHooks } from "../shared/tree-building-hooks";
+import { createAsyncApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
@@ -29,7 +29,8 @@ import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./node-diffs-d
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
   AsyncApiTreeNodeKind,
-  AsyncApiTreeNodeMeta
+  AsyncApiTreeNodeMeta,
+  AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
@@ -71,14 +72,10 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     )
     this.logger.debug("[AsyncAPI][WithDiffs] Prepared Source:", preparedSource)
 
-    const hooks = createAsyncApiTreeBuildingHooks<
-      AsyncApiTreeNodeWithDiffs,
-      AsyncApiTreeWithDiffsCrawlState,
-      AsyncApiTreeWithDiffsCrawlRule,
-      TreeNodeWithDiffsParams<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null, AsyncApiTreeNodeKind, AsyncApiTreeNodeMeta>
-    >({
+    const hooks = createAsyncApiTreeWithDiffsBuildingHooks({
       source: preparedSource,
       tree: this.tree,
+      supportedNodeKinds: AsyncApiTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: typeof value === 'object' ? value : null,
@@ -101,7 +98,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+      shouldStopAfterNodeCreation: (_, value) => isObject(value) && Boolean(value.isPrimitive),
     })
 
     syncCrawl<AsyncApiTreeWithDiffsCrawlState, AsyncApiTreeWithDiffsCrawlRule>(
@@ -141,7 +138,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): AsyncApiTreeNodeWithDiffs | undefined {
     const { parent = null, container = null, newDataLevel } = params
@@ -151,7 +149,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       const complexParams: ComplexTreeNodeWithDiffsParams<
         AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
         AsyncApiTreeNodeKind,
-        AsyncApiTreeNodeMeta
+        AsyncApiTreeNodeMeta,
+        AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
       > = {
         type: TreeNodeComplexityTypes.COMPLEX,
         parent: parent && this.isAsyncApiSimpleTreeNodeWithDiffs(parent) ? parent : null,
@@ -170,7 +169,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const simpleParams: SimpleTreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     > = {
       type: TreeNodeComplexityTypes.SIMPLE,
       parent: parent && this.isAsyncApiSimpleTreeNodeWithDiffs(parent) ? parent : null,
@@ -190,7 +190,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): AsyncApiTreeNodeMeta {
     const { value } = params
@@ -204,13 +205,15 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null {
     const { value } = params
 
     return this.nodeDataBuilder.createNodeValue(
       kind,
+      key,
       value,
       (source, keys) => this.pick(source, keys),
     )
@@ -222,7 +225,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
@@ -254,7 +258,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): NodeDescendantDiffs | undefined {
     if (!this.isAsyncApiTreeNodeKind(kind)) {
@@ -304,7 +309,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiTreeNodeMeta
+      AsyncApiTreeNodeMeta,
+      AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
     >,
   ): void {
     const nodeDiffs = this.createNodeDiffs(node.key, kind, params)
@@ -355,13 +361,24 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         styles: {
           before: {
             isContentVisible: true,
+            isHeaderVisible: true,
             backgroundColor: HighlightVariant.Yellow,
           },
           after: {
             isContentVisible: true,
+            isHeaderVisible: true,
             backgroundColor: HighlightVariant.Yellow
           },
         },
+        flags: {
+          before: {
+            increaseLevel: false,
+          },
+          after: {
+            increaseLevel: false,
+          },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
       }
     }
     // ------------

@@ -8,16 +8,18 @@ export interface TreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
+  D extends object | null,
 > extends TreeNodeParams<V, K, M> {
-  parent: ITreeNodeWithDiffs<V, K, M> | null
-  container: ITreeNodeWithDiffs<V, K, M> | null
+  parent: ITreeNodeWithDiffs<V, K, M, D> | null
+  container: ITreeNodeWithDiffs<V, K, M, D> | null
 }
 
 export interface SimpleTreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
-> extends TreeNodeWithDiffsParams<V, K, M> {
+  D extends object | null,
+> extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.SIMPLE
 }
 
@@ -25,7 +27,8 @@ export interface ComplexTreeNodeWithDiffsParams<
   V extends object | null,
   K extends string,
   M extends object,
-> extends TreeNodeWithDiffsParams<V, K, M> {
+  D extends object | null,
+> extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.COMPLEX
 }
 
@@ -37,11 +40,39 @@ export enum HighlightVariant {
 }
 export type DiffStyles = {
   isContentVisible: boolean
+  isHeaderVisible: boolean
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   backgroundColor?: HighlightVariant
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
 }
+export type DiffFlags = {
+  increaseLevel: boolean
+}
+
+export enum DiffHiglightingApplicationArea {
+  Default = 'default',
+  JsoPropertyKey = 'jso-property-key',
+  JsoPropertyValue = 'jso-property-value',
+}
+export enum DiffHighlightingApplicationMode {
+  Default = 'default',
+  Immutable = 'immutable',
+  Invisible = 'invisible',
+}
+export type DiffHighlightingModesByArea = Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
+export const DIFF_HIGHLIGHTING_MODES_DEFAULT: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.Default, DiffHighlightingApplicationMode.Default],
+])
+export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.JsoPropertyKey, DiffHighlightingApplicationMode.Invisible],
+  [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
+])
+export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.JsoPropertyKey, DiffHighlightingApplicationMode.Immutable],
+  [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
+])
+
 export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
 export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
@@ -49,6 +80,11 @@ export type ChangedPropertyMetaData = {
     before: DiffStyles
     after: DiffStyles
   }
+  flags: {
+    before: DiffFlags
+    after: DiffFlags
+  }
+  highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
 }
 export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 
@@ -58,6 +94,7 @@ export enum NodeDiffsSeverityPlacemennt {
   SummaryRow = 'summary-row',
   AddressRow = 'address-row',
   BindingVersionRow = 'binding-version-row',
+  ServerAddressRow = 'server-address-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType
@@ -75,11 +112,12 @@ export interface ITreeNodeWithDiffs<
   V extends object | null = object | null,
   K extends string = string,
   M extends object = object,
+  D extends object | null = object | null
 > extends ITreeNode<V, K, M> {
   parent: ITreeNodeWithDiffs | null
   container: ITreeNodeWithDiffs | null
 
-  diffs: NodeDiffs<V>
+  diffs: NodeDiffs<D>
   diffsSummary: NodeDiffsSummary
   descendantDiffs: NodeDescendantDiffs
   descendantDiffsSummary: NodeDescendantDiffsSummary
@@ -92,19 +130,19 @@ export interface ITreeNodeWithDiffs<
     id: NodeId,
     key: NodeKey,
     parent: ITreeNodeWithDiffs | null,
-  ): ITreeNodeWithDiffs<V, K, M>
+  ): ITreeNodeWithDiffs<V, K, M, D>
 
   value(nestedNodeId?: NodeId): V | null;
 
   meta(): M;
 
-  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<V, K, M>[]
+  childrenNodes(nestedNodeId?: NodeId): ITreeNodeWithDiffs<V, K, M, D>[]
 
-  nestedNodes(): ITreeNodeWithDiffs<V, K, M>[]
+  nestedNodes(): ITreeNodeWithDiffs<V, K, M, D>[]
 
-  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<V, K, M> | null
+  findNestedNode(nestedNodeId?: NodeId, recursive?: boolean): ITreeNodeWithDiffs<V, K, M, D> | null
 
-  addChildNode(node: ITreeNodeWithDiffs<V, K, M>): void
+  addChildNode(node: ITreeNodeWithDiffs<V, K, M, D>): void
 
-  addNestedNode(node: ITreeNodeWithDiffs<V, K, M>): void
+  addNestedNode(node: ITreeNodeWithDiffs<V, K, M, D>): void
 }

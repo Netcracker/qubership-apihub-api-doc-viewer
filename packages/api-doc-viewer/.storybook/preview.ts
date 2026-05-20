@@ -32,9 +32,11 @@ const preview: Preview = {
           'Json Schema Diff Viewer',
           'GraphQL Operation Viewer',
           'GraphQL Operation Diff Viewer',
-          'graphql-compatibility-suite',
+          'GraphQL Compatibility Suite',
           'Async API Suite',
+          'Async API Diffs Suite',
           'JSO Suite',
+          'JSO Diffs Suite',
           '*'
         ]
       }

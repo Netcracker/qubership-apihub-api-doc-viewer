@@ -1,12 +1,18 @@
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
-import { DiffStyles, HighlightVariant, NodeDescendantDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { DiffFlags, DiffHighlightingModesByArea, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, NodeDescendantDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { JsoRawValueUtilities } from "../../../json-crawl-entities/transformers/raw-jso-property-to-base-jso-node-value";
 import { DiffMetaKeys } from "../node-diffs/factory";
 
 export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescendantsDiffsAggregator {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
+    isHeaderVisible: true,
+  }
+
+  private readonly DEFAULT_DIFF_FLAGS: DiffFlags = {
+    increaseLevel: true,
   }
 
   public aggregate(
@@ -18,14 +24,10 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
     if (!isObject(crawlValue)) {
       return undefined;
     }
-    const value = crawlValue.value
-    if (!isObject(value)) {
-      return undefined
-    }
 
     const { diffsMetaKey } = diffsMetaKeys
 
-    const diffs = takeIfDiffsRecord(value[diffsMetaKey])
+    const diffs = takeIfDiffsRecord(crawlValue[diffsMetaKey])
     if (!diffs) {
       return undefined
     }
@@ -36,50 +38,110 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
         continue
       }
 
-      let beforeDiffStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
-      let afterDiffStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+      let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+      let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+
+      let beforeFlags: DiffFlags = this.DEFAULT_DIFF_FLAGS
+      let afterFlags: DiffFlags = this.DEFAULT_DIFF_FLAGS
+
+      let highlightingMode: DiffHighlightingModesByArea = DIFF_HIGHLIGHTING_MODES_DEFAULT
 
       if (isDiffAdd(diff)) {
-        beforeDiffStyles = {
+        const { afterValue } = diff
+        const afterValueType = JsoRawValueUtilities.getValueType(afterValue)
+        const isAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(afterValueType)
+        beforeStyles = {
           isContentVisible: false,
+          isHeaderVisible: false,
           backgroundColor: HighlightVariant.Gray,
         }
-        afterDiffStyles = {
-          isContentVisible: true,
+        beforeFlags = {
+          ...beforeFlags,
+          increaseLevel: false,
+        }
+        afterStyles = {
+          isContentVisible: isAfterValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Green,
         }
+        afterFlags = {
+          ...afterFlags,
+          increaseLevel: true,
+        }
+        highlightingMode = DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY
       }
 
       if (isDiffRemove(diff)) {
-        beforeDiffStyles = {
-          isContentVisible: true,
+        const { beforeValue } = diff
+        const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
+        const isBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(beforeValueType)
+        beforeStyles = {
+          isContentVisible: isBeforeValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Red,
         }
-        afterDiffStyles = {
+        beforeFlags = {
+          ...beforeFlags,
+          increaseLevel: true,
+        }
+        afterStyles = {
           isContentVisible: false,
+          isHeaderVisible: false,
           backgroundColor: HighlightVariant.Gray,
         }
+        afterFlags = {
+          ...afterFlags,
+          increaseLevel: false,
+        }
+        highlightingMode = DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY
       }
 
       if (isDiffReplace(diff)) {
-        beforeDiffStyles = {
-          isContentVisible: true,
+        const { beforeValue, afterValue } = diff
+        const beforeValueType = JsoRawValueUtilities.getValueType(beforeValue)
+        const afterValueType = JsoRawValueUtilities.getValueType(afterValue)
+        const isBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(beforeValueType)
+        const isAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(afterValueType)
+        const isBeforeValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(beforeValueType)
+        const isAfterValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(afterValueType)
+        beforeStyles = {
+          isContentVisible: isBeforeValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Yellow,
-          textHighlighterColor: HighlightVariant.Yellow,
         }
-        afterDiffStyles = {
-          isContentVisible: true,
+        if (isBeforeValuePrimitive) {
+          if (isBeforeValuePredefined) {
+            beforeStyles.borderShadowColor = HighlightVariant.Yellow
+          } else {
+            beforeStyles.textHighlighterColor = HighlightVariant.Yellow
+          }
+        }
+        afterStyles = {
+          isContentVisible: isAfterValuePrimitive,
+          isHeaderVisible: true,
           backgroundColor: HighlightVariant.Yellow,
-          textHighlighterColor: HighlightVariant.Yellow,
         }
+        if (isAfterValuePrimitive) {
+          if (isAfterValuePredefined) {
+            afterStyles.borderShadowColor = HighlightVariant.Yellow
+          } else {
+            afterStyles.textHighlighterColor = HighlightVariant.Yellow
+          }
+        }
+        highlightingMode = DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_DIRECTLY
       }
 
       nodeDescendantDiffs[key] = {
         data: diff,
         styles: {
-          before: beforeDiffStyles,
-          after: afterDiffStyles,
+          before: beforeStyles,
+          after: afterStyles,
         },
+        flags: {
+          before: beforeFlags,
+          after: afterFlags,
+        },
+        highlightingMode: highlightingMode,
       }
     }
 

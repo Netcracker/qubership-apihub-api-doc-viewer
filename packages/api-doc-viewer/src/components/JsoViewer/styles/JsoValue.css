@@ -1,8 +1,16 @@
 .jso-value {
   font-size: 12px;
-  padding-bottom: 2px;
 }
 
-.jso-value-fixed-pool-diff-border_orange {
-  border: 1px solid orange;
+.jso-value.text {
+  font-size: 12px;
+  padding: 4px 0;
+  color: rgb(100, 116, 139);
+}
+
+.jso-value.block {
+  padding: 2px 4px;
+  background-color: rgb(243, 244, 246);
+  border-radius: 4px;
+  color: rgb(100, 116, 139);
 }

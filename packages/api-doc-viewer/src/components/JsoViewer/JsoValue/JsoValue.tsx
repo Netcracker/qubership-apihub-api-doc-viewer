@@ -1,31 +1,28 @@
 import { FC, memo } from "react"
-import { ResolvedJsoSideState } from "../resolve-jso-side-state"
-import { BaseJsoValue } from "./BaseJsoValue"
-import { useJsoValueStyles } from "./useJsoValueStyles"
+import { JsoValueBase } from "./JsoValueBase"
+import { JsoValueAppearance, useJsoValueStyles } from "./useJsoValueStyles"
 
-type JsoValueProps = {
-  sideState: ResolvedJsoSideState
+export type JsoValueProps = {
+  isVisible: boolean
+  value: unknown
+  appearance: JsoValueAppearance
 }
 
 export const JsoValue: FC<JsoValueProps> = memo<JsoValueProps>((props) => {
-  const { sideState } = props
   const {
-    showSubheader,
-    resolvedValue,
-    resolvedValueType,
-    isPredefinedValueSet,
-  } = sideState
-  const { valueClasses } = useJsoValueStyles({ isPredefinedValueSet })
+    isVisible,
+    value,
+    appearance,
+  } = props
+  const className = useJsoValueStyles({
+    appearance,
+  })
 
   return (
-    <div>
-      <BaseJsoValue
-        showSubheader={showSubheader}
-        resolvedValue={resolvedValue}
-        resolvedValueType={resolvedValueType}
-        styleClasses={[]}
-        valueClasses={valueClasses}
-      />
-    </div>
+    <JsoValueBase
+      isVisible={isVisible}
+      value={value}
+      className={className}
+    />
   )
 })

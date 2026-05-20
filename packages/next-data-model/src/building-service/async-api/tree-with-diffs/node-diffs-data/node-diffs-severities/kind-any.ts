@@ -4,7 +4,9 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 
-export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSeveritiesAggregator {
+export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny
+  extends AbstractNodeDiffsSeveritiesAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> {
+
   public aggregate(
     nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>,
   ): NodeDiffsSeverities | undefined {
@@ -35,6 +37,7 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         [NodeDiffsSeverityPlacemennt.SummaryRow]: nodeDiffsSeverity,
         [NodeDiffsSeverityPlacemennt.AddressRow]: nodeDiffsSeverity,
         [NodeDiffsSeverityPlacemennt.BindingVersionRow]: nodeDiffsSeverity,
+        [NodeDiffsSeverityPlacemennt.ServerAddressRow]: nodeDiffsSeverity,
       }
     }
 
@@ -43,6 +46,9 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
     const diffSummary = nodeDiffs['summary']
     const diffAddress = nodeDiffs['address']
     const diffBindingVersion = nodeDiffs['version']
+    // servers
+    const diffServerHost = nodeDiffs['host']
+    const diffServerProtocol = nodeDiffs['protocol']
 
     const diffsSeverities: NodeDiffsSeverities = {}
 
@@ -120,6 +126,26 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDi
         nodeDiffsSeverity.causedAt = diff.afterDeclarationPaths[0]
       }
       diffsSeverities[NodeDiffsSeverityPlacemennt.BindingVersionRow] = nodeDiffsSeverity
+    }
+
+    if (diffServerHost || diffServerProtocol) {
+      const diffServerHostData = diffServerHost?.data
+      const diffServerProtocolData = diffServerProtocol?.data
+
+      const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxDiffByDiffType(diffServerHostData, diffServerProtocolData)
+      if (maxDiff) {
+        const nodeDiffsSeverity: NodeDiffsSeverity = {
+          type: maxDiff.type,
+          causedAt: [],
+        }
+        if (isDiffRemove(maxDiff) || isDiffReplace(maxDiff)) {
+          nodeDiffsSeverity.causedAt = maxDiff.beforeDeclarationPaths[0]
+        }
+        if (isDiffAdd(maxDiff)) {
+          nodeDiffsSeverity.causedAt = maxDiff.afterDeclarationPaths[0]
+        }
+        diffsSeverities[NodeDiffsSeverityPlacemennt.ServerAddressRow] = nodeDiffsSeverity
+      }
     }
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined;
