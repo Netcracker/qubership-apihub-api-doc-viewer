@@ -12,9 +12,15 @@ channels:
       param1:
         description: first parameter
         location: $message.payload#/id
+        schema:
+          type: string
+          minLength: 1
       param2:
         description: second parameter
         location: $message.payload#/id
+        schema:
+          type: string
+          minLength: 1
 operations:
   sendOperation:
     action: send

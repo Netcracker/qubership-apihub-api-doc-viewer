@@ -4,23 +4,10 @@ info:
   version: 1.0.0
 channels:
   testChannel:
-    address: events.{param1}.{param2}
+    address: events.default
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    parameters:
-      param1:
-        description: first parameter
-        location: $message.payload#/id
-        schema:
-          type: string
-          minLength: 1
-      param2:
-        description: second parameter
-        location: $message.payload#/id
-        schema:
-          type: string
-          minLength: 1
 operations:
   sendOperation:
     action: send
@@ -28,6 +15,13 @@ operations:
       $ref: '#/channels/testChannel'
     messages:
       - $ref: '#/components/messages/TestMessage'
+    bindings:
+      kafka:
+        bindingVersion: 1.0.0
+        arbitraryJso:
+          unchanged: keep
+          removed: bye
+          changed: 111
 components:
   messages:
     TestMessage:

@@ -9,6 +9,7 @@ const EXPORT_FILE = path.join(ROOT_DIR, "src", "async-api-diffs.ts");
 
 const SECTION_OPERATION = "operation";
 const SECTION_CHANNEL = "channel";
+const SECTION_CHANNEL_PARAMETERS = "channel-parameters";
 const SECTION_MESSAGE = "message";
 const SECTION_SERVER = "channel-server";
 
@@ -34,19 +35,22 @@ const parameterObject = (description) => ({
   schema: { type: "string", minLength: 1 },
 });
 
-const kafkaTypedBinding = () => ({
+const kafkaInternalJsoBindingBefore = () => ({
   bindingVersion: "1.0.0",
-  stringValue: "hello",
-  numberValue: 7,
-  booleanValue: true,
-  nullValue: null,
-  objectValue: {
-    first: "one",
-    second: 2,
+  arbitraryJso: {
+    unchanged: "keep",
+    removed: "bye",
+    changed: 111,
   },
-  arrayPrimitives: ["x", 1, false],
-  arrayObjects: [{ id: 1 }, { id: 2 }],
-  arrayArrayPrimitives: [["a", "b"], [1, 2], [true, false]],
+});
+
+const kafkaInternalJsoBindingAfter = () => ({
+  bindingVersion: "1.0.0",
+  arbitraryJso: {
+    unchanged: "keep",
+    changed: "test string",
+    added: "new",
+  },
 });
 
 const baseDocument = () => ({
@@ -229,42 +233,170 @@ const addBindingsAndVersionCases = (
   });
 };
 
-const addKafkaTypeCases = (section, objectName, getter, prefix) => {
-  const mutations = [
-    ["string-to-number", (k) => { k.stringValue = 1; }],
-    ["number-to-string", (k) => { k.numberValue = "1"; }],
-    ["string-to-boolean", (k) => { k.stringValue = true; }],
-    ["number-to-null", (k) => { k.numberValue = null; }],
-    ["boolean-to-string", (k) => { k.booleanValue = "true"; }],
-    ["null-to-number", (k) => { k.nullValue = 5; }],
-    ["string-to-array-primitives", (k) => { k.stringValue = ["a", 1, false]; }],
-    ["number-to-array-primitives", (k) => { k.numberValue = ["a", 1, false]; }],
-    ["string-to-array-objects", (k) => { k.stringValue = [{ a: 1 }, { a: 2 }]; }],
-    ["number-to-array-objects", (k) => { k.numberValue = [{ a: 1 }, { a: 2 }]; }],
-    ["string-to-array-arrays-primitives", (k) => { k.stringValue = [["a"], [1], [false]]; }],
-    ["number-to-array-arrays-primitives", (k) => { k.numberValue = [["a"], [1], [false]]; }],
-    ["boolean-to-null", (k) => { k.booleanValue = null; }],
-    ["boolean-to-array-primitives", (k) => { k.booleanValue = ["a", 1, false]; }],
-    ["null-to-array-primitives", (k) => { k.nullValue = ["a", 1, false]; }],
-    ["boolean-to-object", (k) => { k.booleanValue = { changed: true }; }],
-    ["null-to-object", (k) => { k.nullValue = { changed: true }; }],
-    ["array-primitives-to-object", (k) => { k.arrayPrimitives = { changed: true }; }],
-    ["array-objects-to-object", (k) => { k.arrayObjects = { changed: true }; }],
-    ["array-arrays-primitives-to-object", (k) => { k.arrayArrayPrimitives = { changed: true }; }],
-    ["remove-object-property", (k) => { delete k.objectValue.second; }],
-    ["add-object-property", (k) => { k.objectValue.third = "added"; }],
-  ];
+const channelParametersAddressFive = () =>
+  "events.{firstParam}.{secondParam}.{thirdParam}.{fourthParam}.{fifthParam}";
 
-  let index = 1;
-  for (const [name, mutate] of mutations) {
-    addCase(section, `${prefix}.${index}`, `${objectName}.bindings.kafka ${name}`, (doc) => {
-      getter(doc).bindings = { kafka: kafkaTypedBinding() };
-    }, (doc) => {
-      getter(doc).bindings = { kafka: kafkaTypedBinding() };
-      mutate(getter(doc).bindings.kafka);
-    });
-    index += 1;
-  }
+const channelParametersFieldsAddedBefore = () => ({
+  firstParam: { description: "first parameter" },
+  secondParam: { location: "$message.payload#/id" },
+  thirdParam: { location: "$message.payload#/id" },
+  fourthParam: { location: "$message.payload#/id" },
+  fifthParam: { location: "$message.payload#/id" },
+});
+
+const channelParametersFieldsAddedAfter = () => ({
+  firstParam: {
+    description: "first parameter",
+    location: "$message.header#/id",
+  },
+  secondParam: {
+    description: "second parameter",
+    location: "$message.payload#/id",
+  },
+  thirdParam: {
+    location: "$message.payload#/id",
+    enum: ["alpha", "beta"],
+  },
+  fourthParam: {
+    location: "$message.payload#/id",
+    default: "default-value",
+  },
+  fifthParam: {
+    location: "$message.payload#/id",
+    examples: ["example-1", "example-2"],
+  },
+});
+
+const channelParametersFieldsChangedBefore = () => ({
+  firstParam: {
+    description: "first parameter",
+    location: "$message.payload#/id",
+  },
+  secondParam: {
+    description: "second parameter",
+  },
+  thirdParam: {
+    enum: ["alpha", "beta"],
+  },
+  fourthParam: {
+    default: "default-value",
+  },
+  fifthParam: {
+    examples: ["example-1", "example-2"],
+  },
+});
+
+const channelParametersFieldsChangedAfter = () => ({
+  firstParam: {
+    description: "first parameter",
+    location: "$message.header#/id",
+  },
+  secondParam: {
+    description: "updated second parameter description",
+  },
+  thirdParam: {
+    enum: ["alpha", "gamma"],
+  },
+  fourthParam: {
+    default: "changed-default-value",
+  },
+  fifthParam: {
+    examples: ["example-1", "changed-example-2"],
+  },
+});
+
+const addChannelParametersCases = () => {
+  addCase(SECTION_CHANNEL_PARAMETERS, "1", "channel.parameters two added", (doc) => {
+    channel(doc).address = "events.static";
+  }, (doc) => {
+    channel(doc).address = "events.{param1}.{param2}";
+    channel(doc).parameters = {
+      param1: parameterObject("first parameter"),
+      param2: parameterObject("second parameter"),
+    };
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "2", "channel.parameters two removed", (doc) => {
+    channel(doc).address = "events.{param1}.{param2}";
+    channel(doc).parameters = {
+      param1: parameterObject("first parameter"),
+      param2: parameterObject("second parameter"),
+    };
+  }, (doc) => {
+    channel(doc).address = "events.static";
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "3", "channel.parameters second added", (doc) => {
+    channel(doc).address = "events.{param1}";
+    channel(doc).parameters = {
+      param1: { description: "first parameter" },
+    };
+  }, (doc) => {
+    channel(doc).address = "events.{param1}.{param2}";
+    channel(doc).parameters = {
+      param1: { description: "first parameter" },
+      param2: { description: "second parameter" },
+    };
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "4", "channel.parameters second removed", (doc) => {
+    channel(doc).address = "events.{param1}.{param2}";
+    channel(doc).parameters = {
+      param1: { description: "first parameter" },
+      param2: { description: "second parameter" },
+    };
+  }, (doc) => {
+    channel(doc).address = "events.{param1}";
+    channel(doc).parameters = {
+      param1: { description: "first parameter" },
+    };
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "5", "channel.parameters key renamed", (doc) => {
+    channel(doc).address = "events.{param1}.{param2}";
+    channel(doc).parameters = {
+      param1: { description: "first parameter" },
+      param2: { description: "second parameter" },
+    };
+  }, (doc) => {
+    channel(doc).address = "events.{parameter_1}.{param2}";
+    channel(doc).parameters = {
+      parameter_1: { description: "first parameter" },
+      param2: { description: "second parameter" },
+    };
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "6", "channel.parameters fields added", (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsAddedBefore();
+  }, (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsAddedAfter();
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "7", "channel.parameters fields removed", (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsAddedAfter();
+  }, (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsAddedBefore();
+  });
+
+  addCase(SECTION_CHANNEL_PARAMETERS, "8", "channel.parameters fields changed", (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsChangedBefore();
+  }, (doc) => {
+    channel(doc).address = channelParametersAddressFive();
+    channel(doc).parameters = channelParametersFieldsChangedAfter();
+  });
+};
+
+const addKafkaInternalJsoChangesCase = (section, objectName, getter, caseId = "5.1") => {
+  addCase(section, caseId, `${objectName}.bindings.kafka internal-jso-changes`, (doc) => {
+    getter(doc).bindings = { kafka: kafkaInternalJsoBindingBefore() };
+  }, (doc) => {
+    getter(doc).bindings = { kafka: kafkaInternalJsoBindingAfter() };
+  });
 };
 
 const addExtensionsCases = (section, objectName, getter) => {
@@ -571,28 +703,80 @@ const addServerCases = () => {
     addRemovePrefix: "2",
     versionPrefix: "3",
   });
-  addKafkaTypeCases(SECTION_SERVER, "channel.servers[0]", serverGetter, "4.1");
+  addKafkaInternalJsoChangesCase(SECTION_SERVER, "channel-server", serverGetter, "4.1");
+
+  const channelServerPair = () => ({
+    server0: {
+      host: "broker-0.example.com:9092",
+      protocol: "kafka",
+      description: "Main Kafka broker",
+    },
+    server1: {
+      host: "broker-1.example.com:5672",
+      protocol: "amqp",
+      description: "Secondary AMQP broker",
+    },
+  });
+
+  addCase(SECTION_SERVER, "2.3", "channel.servers all added", () => {}, (doc) => {
+    setServers(doc, {
+      server0: {
+        host: "broker-0.example.com:9092",
+        protocol: "kafka",
+        bindings: { kafka: { bindingVersion: "1.0.0" } },
+      },
+    });
+    channel(doc).servers = [{ $ref: "#/servers/server0" }];
+  });
+
+  addCase(SECTION_SERVER, "2.4", "channel.servers all removed", (doc) => {
+    setServers(doc, {
+      server0: {
+        host: "broker-0.example.com:9092",
+        protocol: "kafka",
+        bindings: { kafka: { bindingVersion: "1.0.0" } },
+      },
+    });
+    channel(doc).servers = [{ $ref: "#/servers/server0" }];
+  }, () => {});
+
+  addCase(SECTION_SERVER, "5.1", "channel.servers one item removed", (doc) => {
+    setServers(doc, channelServerPair());
+    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
+  }, (doc) => {
+    setServers(doc, channelServerPair());
+    channel(doc).servers = [{ $ref: "#/servers/server0" }];
+  });
+
+  addCase(SECTION_SERVER, "5.2", "channel.servers one item added", (doc) => {
+    setServers(doc, channelServerPair());
+    channel(doc).servers = [{ $ref: "#/servers/server0" }];
+  }, (doc) => {
+    setServers(doc, channelServerPair());
+    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
+  });
 };
 
 const generateAllCases = () => {
   addTitleDescriptionSummaryCases(SECTION_OPERATION, "operation", operation);
   addBindingsAndVersionCases(SECTION_OPERATION, "operation", operation);
-  addKafkaTypeCases(SECTION_OPERATION, "operation", operation, "5.1");
+  addKafkaInternalJsoChangesCase(SECTION_OPERATION, "operation", operation);
   addExtensionsCases(SECTION_OPERATION, "operation", operation);
 
   addTitleDescriptionSummaryCases(SECTION_CHANNEL, "channel", channel);
   addBindingsAndVersionCases(SECTION_CHANNEL, "channel", channel);
-  addKafkaTypeCases(SECTION_CHANNEL, "channel", channel, "5.1");
+  addKafkaInternalJsoChangesCase(SECTION_CHANNEL, "channel", channel);
   addExtensionsCases(SECTION_CHANNEL, "channel", channel);
   addChannelSpecificCases();
 
   addTitleDescriptionSummaryCases(SECTION_MESSAGE, "message", message);
   addBindingsAndVersionCases(SECTION_MESSAGE, "message", message);
-  addKafkaTypeCases(SECTION_MESSAGE, "message", message, "5.1");
+  addKafkaInternalJsoChangesCase(SECTION_MESSAGE, "message", message);
   addExtensionsCases(SECTION_MESSAGE, "message", message);
   addMessageSchemaCases();
 
   addServerCases();
+  addChannelParametersCases();
 };
 
 const writeYamlPairs = () => {

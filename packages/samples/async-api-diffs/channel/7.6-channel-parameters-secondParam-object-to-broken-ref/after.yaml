@@ -4,23 +4,19 @@ info:
   version: 1.0.0
 channels:
   testChannel:
-    address: events.{param1}.{param2}
+    address: events.{firstParam}.{secondParam}
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
     parameters:
-      param1:
+      firstParam:
         description: first parameter
         location: $message.payload#/id
         schema:
           type: string
           minLength: 1
-      param2:
-        description: second parameter
-        location: $message.payload#/id
-        schema:
-          type: string
-          minLength: 1
+      secondParam:
+        $ref: '#/components/parameters/DoesNotExist'
 operations:
   sendOperation:
     action: send
