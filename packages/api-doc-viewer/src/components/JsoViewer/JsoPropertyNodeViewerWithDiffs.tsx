@@ -2,7 +2,6 @@ import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLe
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
@@ -15,7 +14,6 @@ import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-mo
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
-import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
@@ -33,7 +31,6 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   } = props
 
   const displayMode = useDisplayMode()
-  const level = useLevelContext()
   const diffMetaKeys = useDiffMetaKeys()
   const { beforeLevel, afterLevel } = useAsyncLevelContext()!
 
@@ -135,28 +132,11 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     )
   }, [diffMetaKeys, node.key, nodeValue, nodeValueDiff, supportJsonSchema])
 
-  if (
-    jsonSchema &&
-    nodeValue?.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    !diffMetaKeys
-  ) {
-    return (
-      <JsonSchemaViewer
-        key={node.id}
-        schema={jsonSchema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        initialLevel={level - 1}
-        overriddenKind='parameters'
-      />
-    )
-  }
-
-  if (
-    jsonSchema &&
-    nodeValue?.before.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    diffMetaKeys
-  ) {
+  if (jsonSchema) {
+    if (!diffMetaKeys) {
+      console.error('diffMetaKeys is not defined, but JSON Schema node is defined', node)
+      return null
+    }
     return (
       <JsonSchemaDiffViewer
         key={node.id}
