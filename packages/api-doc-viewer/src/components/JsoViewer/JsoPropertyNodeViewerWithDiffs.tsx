@@ -5,7 +5,9 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
 import { JsoTreeNodeValueWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-value"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
@@ -125,11 +127,13 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   // JSON Schema properties
 
-  const jsonSchema = useMemo(() => (
-    supportJsonSchema
-      ? prepareJsonSchemaForJsoViewer(node.key, nodeValue)
-      : undefined
-  ), [node.key, nodeValue, supportJsonSchema])
+  const jsonSchema = useMemo(() => {
+    return (
+      supportJsonSchema
+        ? prepareJsonSchemaForJsoViewer(node.key, nodeValue, nodeValueDiff, diffMetaKeys)
+        : undefined
+    )
+  }, [diffMetaKeys, node.key, nodeValue, nodeValueDiff, supportJsonSchema])
 
   if (
     jsonSchema &&
@@ -211,6 +215,8 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 function prepareJsonSchemaForJsoViewer(
   nodeKey: NodeKey,
   nodeValue: JsoTreeNodeValueWithDiffs | null | undefined,
+  nodeValueDiff: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
 ): object | undefined {
   if (!nodeValue) {
     return undefined
@@ -225,22 +231,33 @@ function prepareJsonSchemaForJsoViewer(
     return undefined
   }
 
-  if (
+  const diff = nodeValueDiff?.data
+  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
+
+  if ((
     nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
     nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) {
-    return isObject(nodeValue.before.value)
-      ? { type: 'object', properties: { [nodeKey]: nodeValue.before.value } }
-      : undefined
+  ) && isObject(nodeValue.before.value)) {
+    return {
+      type: 'object',
+      properties: {
+        [nodeKey]: nodeValue.before.value,
+        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+      },
+    }
   }
 
-  if (
+  if ((
     nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
     nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) {
-    return isObject(nodeValue.after.value)
-      ? { type: 'object', properties: { [nodeKey]: nodeValue.after.value } }
-      : undefined
+  ) && isObject(nodeValue.after.value)) {
+    return {
+      type: 'object',
+      properties: {
+        [nodeKey]: nodeValue.after.value,
+        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+      },
+    }
   }
 
   return undefined
