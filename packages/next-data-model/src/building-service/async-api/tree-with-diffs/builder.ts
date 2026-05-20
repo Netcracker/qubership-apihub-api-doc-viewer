@@ -98,7 +98,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       // TODO 26.03.26 // Share with regular tree builder and actually other builders in future
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+      shouldStopAfterNodeCreation: (_, value) => isObject(value) && Boolean(value.isPrimitive),
     })
 
     syncCrawl<AsyncApiTreeWithDiffsCrawlState, AsyncApiTreeWithDiffsCrawlRule>(

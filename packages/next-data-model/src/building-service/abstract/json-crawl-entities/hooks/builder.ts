@@ -77,7 +77,7 @@ export interface NewTreeBuildingHooksFactoryParams<
   isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
   isDisallowedValue?: (value: unknown) => boolean
-  shouldStopAfterNodeCreation?: (value: unknown) => boolean
+  shouldStopAfterNodeCreation?: (node: N, value: unknown) => boolean
 }
 
 export function createNewTreeBuildingHooks<
@@ -192,7 +192,7 @@ export function createNewTreeBuildingHooks<
       parent.addChildNode(treeNode);
     }
 
-    if (shouldStopAfterNodeCreation?.(value)) {
+    if (shouldStopAfterNodeCreation?.(treeNode, value)) {
       return { done: true };
     }
 

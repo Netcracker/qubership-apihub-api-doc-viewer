@@ -94,7 +94,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
       isSimpleNode: (node): node is AsyncApiSimpleTreeNode => this.isAsyncApiSimpleTreeNode(node),
       isComplexNode: (node): node is AsyncApiComplexTreeNode => this.isAsyncApiComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
-      shouldStopAfterNodeCreation: (value) => isObject(value) && Boolean(value.isPrimitive),
+      shouldStopAfterNodeCreation: (_, value) => isObject(value) && Boolean(value.isPrimitive),
     })
 
     syncCrawl<AsyncApiTreeCrawlState, AsyncApiCrawlRule>(

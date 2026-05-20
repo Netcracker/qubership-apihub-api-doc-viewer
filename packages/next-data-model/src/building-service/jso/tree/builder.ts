@@ -4,6 +4,7 @@ import { JsoSimpleTreeNode } from "@apihub/next-data-model/model/jso/tree/simple
 import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
+import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
@@ -82,7 +83,22 @@ export class JsoTreeBuilder extends TreeBuilder<
       isComplexNode: (node): node is JsoComplexTreeNode => this.isJsoComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
       isDisallowedValue: (value) => value === undefined,
-      shouldStopAfterNodeCreation: (value) => !isObject(value) && !Array.isArray(value), // restore json schema condition
+      shouldStopAfterNodeCreation: (node, value) => {
+        if (!isObject(value) && !Array.isArray(value)) {
+          // we can't crawl non-object values
+          return true
+        }
+        const nodeValue = node.value()
+        if (!nodeValue) { // just a type guard
+          return false
+        }
+        // we should not build-in nodes for json schema or multi-schema values into JSO Tree
+        // they will be processed by separate data models
+        return (
+          nodeValue.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
+          nodeValue.valueType === JsoPropertyValueTypes.MULTI_SCHEMA
+        )
+      },
     })
 
     syncCrawl<JsoTreeCrawlState, JsoCrawlRule>(

@@ -85,7 +85,24 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
       isDisallowedValue: (value) => value === undefined,
-      shouldStopAfterNodeCreation: (value) => !isObject(value) && !Array.isArray(value),
+      shouldStopAfterNodeCreation: (node, value) => {
+        if (!isObject(value) && !Array.isArray(value)) {
+          // we can't crawl non-object values
+          return true
+        }
+        const nodeValue = node.value()
+        if (!nodeValue) { // just a type guard
+          return false
+        }
+        // we should not build-in nodes for json schema or multi-schema values into JSO Tree
+        // they will be processed by separate data models
+        return (
+          nodeValue.before.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
+          nodeValue.after.valueType === JsoPropertyValueTypes.JSON_SCHEMA ||
+          nodeValue.before.valueType === JsoPropertyValueTypes.MULTI_SCHEMA ||
+          nodeValue.after.valueType === JsoPropertyValueTypes.MULTI_SCHEMA
+        )
+      },
     })
 
     syncCrawl<JsoTreeWithDiffsCrawlState, JsoWithDiffsCrawlRule>(
