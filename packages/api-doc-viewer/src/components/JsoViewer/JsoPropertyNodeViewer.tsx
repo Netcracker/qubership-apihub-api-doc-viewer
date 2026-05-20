@@ -64,20 +64,13 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
       : undefined
   ), [node.key, nodeValue, supportJsonSchema])
 
-  if (
-    jsonSchema &&
-    (
-      nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
-      nodeValue?.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-    )
-  ) {
+  if (jsonSchema) {
     return (
       <JsonSchemaViewer
         key={node.id}
         schema={jsonSchema}
         expandedDepth={2}
         displayMode={displayMode}
-        initialLevel={level - 1}
         overriddenKind='parameters'
       />
     )
@@ -122,6 +115,7 @@ function prepareJsonSchemaForJsoViewer(
   if (!nodeValue) {
     return undefined
   }
+
   if (
     nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
     nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
