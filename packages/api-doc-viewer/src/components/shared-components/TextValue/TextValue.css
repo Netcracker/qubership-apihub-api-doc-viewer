@@ -3,6 +3,10 @@
   color: black;
 }
 
+.text-value.font-normal {
+  font-weight: 400 !important;
+}
+
 h1.text-value {
   font-size: 32px;
   font-weight: 600;

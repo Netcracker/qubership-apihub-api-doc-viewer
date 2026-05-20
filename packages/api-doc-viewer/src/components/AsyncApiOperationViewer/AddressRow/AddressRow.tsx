@@ -53,14 +53,14 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
         <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
           {action.toUpperCase()}
         </div>
-        <div className='text-slate-500'>
-          <TextValue
-            value={address}
-            variant={TextValueVariant.body}
-            layoutSide={layoutSide}
-            diff={diff}
-          />
-        </div>
+        <TextValue
+          value={address}
+          variant={TextValueVariant.h4}
+          layoutSide={layoutSide}
+          diff={diff}
+          fontWeight='normal'
+          fontColor='#626D82'
+        />
       </div>
     </div>
   )

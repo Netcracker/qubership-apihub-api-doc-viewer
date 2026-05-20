@@ -15,6 +15,7 @@ type TextValueProps = {
   layoutSide: LayoutSide
   onClick?: () => void
   fontWeight?: 'normal' | 'bold'
+  fontColor?: string
   label?: string
   // diffs
   diff?: ChangedPropertyMetaData
@@ -55,7 +56,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
 
   // value/font specific
-  const { fontWeight, label } = props
+  const { fontWeight, fontColor, label } = props
 
   const [expanded, setExpanded] = useState(false)
 
@@ -68,8 +69,12 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       return null
     }
     const diffsStyles = isInvisibleDiffHighlighting ? '' : diffsStyleClasses.join(' ')
-    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${diffsStyles}`.trim()
-    const commonProps = { className: commonStyles, onClick: onClick }
+    const commonStyles = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyles}`.trim()
+    const commonProps = {
+      className: commonStyles,
+      onClick: onClick,
+      ...fontColor?.trim() ? { style: { color: fontColor } } : {},
+    }
     resolvedValue = expanded ? resolvedValue : shortenValue(resolvedValue)
     switch (variant) {
       case TextValueVariant.h1:
@@ -87,7 +92,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       case TextValueVariant.body:
         return <span {...commonProps}>{resolvedValue}</span>
     }
-  }, [expanded, isInvisibleDiffHighlighting, onClick, variant])
+  }, [expanded, fontColor, fontWeight, isInvisibleDiffHighlighting, onClick, variant])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []
@@ -156,14 +161,6 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       setExpanded={setExpanded}
     />
   </>, [renderElement, resolvedValue, diffsStyleClasses, isInvisible, expanded, setExpanded])
-
-  if (fontWeight) {
-    return (
-      <div className={`font-${fontWeight}`}>
-        {content}
-      </div>
-    )
-  }
 
   return content
 })
