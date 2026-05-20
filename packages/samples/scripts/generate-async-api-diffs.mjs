@@ -433,105 +433,6 @@ const addExtensionsCases = (section, objectName, getter) => {
   }, () => {});
 };
 
-const addChannelSpecificCases = () => {
-  addCase(SECTION_CHANNEL, "7.1", "channel.parameters added", (doc) => {
-    channel(doc).address = "events.static";
-  }, (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  });
-
-  addCase(SECTION_CHANNEL, "7.2", "channel.parameters removed", (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  }, (doc) => {
-    channel(doc).address = "events.static";
-  });
-
-  addCase(SECTION_CHANNEL, "7.3", "channel.parameters.firstParam removed", (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  }, (doc) => {
-    channel(doc).address = "events.{secondParam}";
-    channel(doc).parameters = {
-      secondParam: parameterObject("second parameter"),
-    };
-  });
-
-  addCase(SECTION_CHANNEL, "7.4", "channel.parameters.secondParam added", (doc) => {
-    channel(doc).address = "events.{firstParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-    };
-  }, (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  });
-
-  addCase(SECTION_CHANNEL, "7.5", "channel.parameters key rename", (doc) => {
-    channel(doc).address = "events.{firstParam}.{secondParam}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      secondParam: parameterObject("second parameter"),
-    };
-  }, (doc) => {
-    channel(doc).address = "events.{firstParam}.{param_2}";
-    channel(doc).parameters = {
-      firstParam: parameterObject("first parameter"),
-      param_2: parameterObject("second parameter"),
-    };
-  });
-
-  const servers = {
-    server0: { host: "broker-0.example.com:9092", protocol: "kafka" },
-    server1: { host: "broker-1.example.com:9092", protocol: "kafka" },
-    server2: { host: "broker-2.example.com:5672", protocol: "amqp" },
-  };
-
-  addCase(SECTION_CHANNEL, "7.8", "channel.servers added", (doc) => {
-    setServers(doc, clone(servers));
-  }, (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  });
-
-  addCase(SECTION_CHANNEL, "7.9", "channel.servers removed", (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  }, (doc) => {
-    setServers(doc, clone(servers));
-  });
-
-  addCase(SECTION_CHANNEL, "7.10", "channel.servers one item added", (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  }, (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }, { $ref: "#/servers/server2" }];
-  });
-
-  addCase(SECTION_CHANNEL, "7.11", "channel.servers one item removed", (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }, { $ref: "#/servers/server2" }];
-  }, (doc) => {
-    setServers(doc, clone(servers));
-    channel(doc).servers = [{ $ref: "#/servers/server0" }, { $ref: "#/servers/server1" }];
-  });
-
-};
-
 const addMessageSchemaCases = () => {
   addCase(SECTION_MESSAGE, "7.1", "message.headers object schema added", () => {}, (doc) => {
     message(doc).headers = {
@@ -724,7 +625,6 @@ const generateAllCases = () => {
   addBindingsAndVersionCases(SECTION_CHANNEL, "channel", channel);
   addKafkaInternalJsoChangesCase(SECTION_CHANNEL, "channel", channel);
   addExtensionsCases(SECTION_CHANNEL, "channel", channel);
-  addChannelSpecificCases();
 
   addTitleDescriptionSummaryCases(SECTION_MESSAGE, "message", message);
   addBindingsAndVersionCases(SECTION_MESSAGE, "message", message);

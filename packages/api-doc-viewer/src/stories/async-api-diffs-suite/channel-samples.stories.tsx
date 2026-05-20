@@ -105,13 +105,4 @@ export const Case_6_2_channel_x_second_removed: Story = createCaseStory("6.2-cha
 export const Case_6_3_channel_x_second_changed: Story = createCaseStory("6.3-channel-x-second-changed");
 export const Case_6_4_channel_x_first_and_x_second_added: Story = createCaseStory("6.4-channel-x-first-and-x-second-added");
 export const Case_6_5_channel_x_first_and_x_second_removed: Story = createCaseStory("6.5-channel-x-first-and-x-second-removed");
-export const Case_7_1_channel_parameters_added: Story = createCaseStory("7.1-channel-parameters-added");
-export const Case_7_2_channel_parameters_removed: Story = createCaseStory("7.2-channel-parameters-removed");
-export const Case_7_3_channel_parameters_firstParam_removed: Story = createCaseStory("7.3-channel-parameters-firstParam-removed");
-export const Case_7_4_channel_parameters_secondParam_added: Story = createCaseStory("7.4-channel-parameters-secondParam-added");
-export const Case_7_5_channel_parameters_key_rename: Story = createCaseStory("7.5-channel-parameters-key-rename");
-export const Case_7_8_channel_servers_added: Story = createCaseStory("7.8-channel-servers-added");
-export const Case_7_9_channel_servers_removed: Story = createCaseStory("7.9-channel-servers-removed");
-export const Case_7_10_channel_servers_one_item_added: Story = createCaseStory("7.10-channel-servers-one-item-added");
-export const Case_7_11_channel_servers_one_item_removed: Story = createCaseStory("7.11-channel-servers-one-item-removed");
 
