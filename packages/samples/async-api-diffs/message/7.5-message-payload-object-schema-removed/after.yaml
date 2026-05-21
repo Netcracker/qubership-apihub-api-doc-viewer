@@ -19,5 +19,3 @@ components:
   messages:
     TestMessage:
       name: TestMessage
-      payload:
-        type: string

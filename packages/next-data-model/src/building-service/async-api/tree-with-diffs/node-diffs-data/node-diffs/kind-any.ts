@@ -92,7 +92,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
     // summary
     const summaryDiff = diffs['summary']
     summaryDiff && this.aggregateTextDiff(summaryDiff, 'summary', nodeDiffs)
-
+    
     return nodeDiffs
   }
 

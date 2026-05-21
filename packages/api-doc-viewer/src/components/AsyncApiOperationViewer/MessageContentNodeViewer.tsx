@@ -3,16 +3,20 @@ import { useDiffTypes } from "@apihub/contexts/DiffTypesContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessageContentPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { FC, useCallback } from "react"
-import { DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
+import { FC, useCallback, useMemo } from "react"
+import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { Aligner } from "../JsoViewer/Aligner"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 
 type MessageContentNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT>
@@ -32,12 +36,34 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const bindingsChild = messageChildren.find(isBindingsNode)
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
+  const headersJsonSchema = useMemo(() => {
+    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
+      return undefined
+    }
+    const headersValue = headersChild.value()
+    if (!headersValue) {
+      return undefined
+    }
+    return prepareJsonSchemaForJsoViewer('Type', headersValue, headersChild.diffs[''], diffMetaKeys)
+  }, [headersChild, diffMetaKeys])
+  const payloadJsonSchema = useMemo(() => {
+    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
+      return undefined
+    }
+    const payloadValue = payloadChild.value()
+    if (!payloadValue) {
+      return undefined
+    }
+    return prepareJsonSchemaForJsoViewer('Type', payloadValue, payloadChild.diffs[''], diffMetaKeys)
+  }, [payloadChild, diffMetaKeys])
+
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
           schema={source}
           displayMode={displayMode}
+          overriddenKind='parameters'
         />
       )
     }
@@ -49,6 +75,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
           metaKeys={diffMetaKeys}
           filters={diffTypes}
           layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
+          overriddenKind='parameters'
         />
       ) : null
     }
@@ -65,7 +92,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             expandable={false}
           />
           <Aligner>
-            {renderJsonSchemaViewer(headersChild.value()?.schema)}
+            {renderJsonSchemaViewer(headersJsonSchema)}
           </Aligner>
         </div>
       )}
@@ -87,10 +114,44 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             expandable={false}
           />
           <Aligner>
-            {renderJsonSchemaViewer(payloadChild.value()?.schema)}
+            {renderJsonSchemaViewer(payloadJsonSchema)}
           </Aligner>
         </div>
       )}
     </div>
   )
+}
+
+function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>,
+  nodeValueDiff: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+
+  const diff = nodeValueDiff?.data
+  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
+
+  return {
+    type: 'object',
+    properties: {
+      [nodeKey]: nodeValue.schema,
+      ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+    },
+  }
+}
+
+function isAsyncApiMessageHeadersNodeWithDiffs(
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | undefined
+): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> {
+  return !!node && node.kind == AsyncApiTreeNodeKinds.MESSAGE_HEADERS && node instanceof SimpleTreeNodeWithDiffs
+}
+
+function isAsyncApiMessagePayloadNodeWithDiffs(
+  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> | undefined
+): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> {
+  return !!node && node.kind == AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD && node instanceof SimpleTreeNodeWithDiffs
 }
