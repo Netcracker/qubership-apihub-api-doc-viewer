@@ -6,13 +6,13 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeMessage } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useMemo } from "react";
-import { AddressRow } from "./AddressRow/AddressRow";
-import { MessageSectionsViewer } from "./MessageSectionsViewer";
 import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
+import { AddressRow, AddressRowProps } from "./AddressRow/AddressRow";
+import { MessageSectionsViewer } from "./MessageSectionsViewer";
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -32,6 +32,17 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     if (nodeDiffs) {
       return {
         diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        descendantDiffs: nodeDescendantDiffs,
+        diffsSeverities: nodeDiffsSeverities,
+      }
+    }
+    return {}
+  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+
+  const addressRowDiffsProps: Pick<AddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (nodeDiffs) {
+      return {
+        diff: nodeDiffs[''] ?? nodeDiffs['address'], // TODO: Check if this is correct
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -91,7 +102,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         action={value?.action ?? ''}
         address={value?.address ?? ''}
         // diffs
-        diff={nodeDiffs?.['address']}
+        {...addressRowDiffsProps}
       />
       {isDescriptionDisplayed && (
         <TextRow
