@@ -14,6 +14,8 @@ import {
 } from "./async-api-spec-transformer";
 
 export interface AsyncApiMessageOrientedSpecDataContentWithDiffs extends AsyncApiMessageOrientedSpecDataContent {
+  headers?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
   [key: symbol]: unknown;
 }
 
@@ -113,6 +115,8 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       const diffDescription = messageFieldsDiffsRecord?.description
       const diffSummary = messageFieldsDiffsRecord?.summary
       const diffAddress = channelFieldsDiffsRecord?.address
+      const diffHeaders = messageFieldsDiffsRecord?.headers
+      const diffPayload = messageFieldsDiffsRecord?.payload
 
       const extensions = transformedWithDiffs.data.content.extensions
       if (extensions && !(diffsMetaKey in extensions)) {
@@ -128,6 +132,15 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
           return acc
         }, {} as Record<string, Diff<DiffType>>)
         transformedWithDiffs.data.content.extensions = Object.assign(extensions, { [diffsMetaKey]: diffsExtensions })
+      }
+
+      const content = transformedWithDiffs.data.content
+      if (content && !(diffsMetaKey in content)) {
+        const diffContent = {
+          ...(diffHeaders ? { headers: diffHeaders } : {}),
+          ...(diffPayload ? { payload: diffPayload } : {}),
+        }
+        transformedWithDiffs.data.content = Object.assign(content, { [diffsMetaKey]: diffContent })
       }
 
       transformedWithDiffs[diffsMetaKey] = {
