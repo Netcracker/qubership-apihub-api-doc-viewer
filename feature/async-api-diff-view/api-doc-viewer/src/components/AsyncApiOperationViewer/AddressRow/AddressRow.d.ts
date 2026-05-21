@@ -1,9 +1,10 @@
-import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
-type AddressRowProps = {
+export type AddressRowProps = {
     action: string;
     address: string;
     diff?: ChangedPropertyMetaData;
+    descendantDiffs?: NodeDescendantDiffs;
+    diffsSeverities?: NodeDiffsSeverities;
 };
 export declare const AddressRow: FC<AddressRowProps>;
-export {};
