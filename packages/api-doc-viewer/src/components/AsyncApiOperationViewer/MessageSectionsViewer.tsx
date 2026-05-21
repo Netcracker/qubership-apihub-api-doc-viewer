@@ -28,11 +28,13 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   const sectionNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const sectionSelectorOptions = useMemo(
     () => sectionNodes.map(node => {
+      const messageSectionTitle = getMessageSectionTitle(node)
+      const messageSectionTestId = getMessageSectionTestId(node)
       if (isMessageSectionNodeWithDiffs(node)) {
         return {
           node: node,
-          title: getMessageSectionTitle(node),
-          testId: getMessageSectionTestId(node),
+          title: messageSectionTitle,
+          testId: messageSectionTestId,
           // diffs
           diffs: node.diffs,
           diffsSummary: node.diffsSummary,
@@ -43,8 +45,8 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       }
       return {
         node: node,
-        title: getMessageSectionTitle(node),
-        testId: getMessageSectionTestId(node)
+        title: messageSectionTitle,
+        testId: messageSectionTestId,
       }
     }),
     [sectionNodes]

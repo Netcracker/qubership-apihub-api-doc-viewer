@@ -328,6 +328,11 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const descendantDiffsSummary = this.createNodeDescendantsDiffsSummary(kind, node.diffs, node.descendantDiffs, params.value, this.diffsMetaKeys)
     if (descendantDiffsSummary) {
       node.descendantDiffsSummary.clear()
+      /* Backward propagation of summary to parent/container nodes.
+        Works for cases when the node is a direct hierarchical descendant at the same tree.
+        The tricky moment here is that visually AsyncAPI Document is the one entity, but
+        actually there are at least 3 different trees: AsyncAPI, JSO, JSON Schema.
+        So, for example, nodes from JSON Schema Tree can't reach their "visual parents" in AsyncAPI Tree. */
       node.addDescendantDiffsSummary(descendantDiffsSummary)
     }
 
