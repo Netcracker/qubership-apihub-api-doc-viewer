@@ -56,13 +56,11 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               styles: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: false,
                   isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: isNextAfterValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Green,
@@ -70,11 +68,9 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               flags: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: false,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: true,
                 },
               },
@@ -105,13 +101,11 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               styles: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: isNextBeforeValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Red,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: false,
                   isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
@@ -119,11 +113,9 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               flags: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: true,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: false,
                 },
               },
@@ -165,13 +157,12 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               styles: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: isNextBeforeValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
+                  textHighlighterColor: HighlightVariant.Yellow,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: false,
                   isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
@@ -179,11 +170,9 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               flags: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: true,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: false,
                 },
               },
@@ -214,25 +203,22 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               styles: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.styles.before,
                   isContentVisible: false,
                   isHeaderVisible: false,
                   backgroundColor: HighlightVariant.Gray,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.styles.after,
                   isContentVisible: isNextAfterValuePrimitive,
                   isHeaderVisible: true,
                   backgroundColor: HighlightVariant.Yellow,
+                  textHighlighterColor: HighlightVariant.Yellow,
                 },
               },
               flags: {
                 before: {
-                  ...parentNodeChangePropertyMetadata.flags.before,
                   increaseLevel: false,
                 },
                 after: {
-                  ...parentNodeChangePropertyMetadata.flags.after,
                   increaseLevel: true,
                 },
               },
