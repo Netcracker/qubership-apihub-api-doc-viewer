@@ -14,6 +14,7 @@ import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-mo
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
+import { UxMarkerPanel } from "../kit/ux/UxMarkerPanel/UxMarkerPanel"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
@@ -43,6 +44,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   const nodeDiffs = node.diffs
   const nodeDescendantDiffs = node.descendantDiffs
+  const nodeDescendantDiffsSummary = node.descendantDiffsSummary
   const nodeDiffsSeverities = node.diffsSeverities
 
   const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
@@ -55,11 +57,18 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
       if (!nodeValueDiff) {
         return (
-          <JsoValueWithDiffs
-            isVisible={nodeValue.after.isPrimitive}
-            value={nodeValue.after.value}
-            appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
-          />
+          <div className='flex flex-row gap-2'>
+            <JsoValueWithDiffs
+              isVisible={nodeValue.after.isPrimitive}
+              value={nodeValue.after.value}
+              appearance={nodeValue.after.isPredefinedValueSet ? 'block' : 'text'}
+            />
+            {!expanded && (
+              <UxMarkerPanel
+                values={Array.from(nodeDescendantDiffsSummary)}
+              />
+            )}
+          </div>
         )
       }
 
@@ -91,7 +100,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
       return <></>
     },
-    [nodeValue, nodeValueDiff]
+    [expanded, nodeDescendantDiffsSummary, nodeValue, nodeValueDiff]
   )
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
