@@ -1,6 +1,7 @@
 import { AbstractNodeDescendantsDiffsSummaryAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-summary-aggregator";
 import { NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
+import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffMetaKeys } from "../node-diffs/factory";
 
 /**
@@ -25,7 +26,7 @@ export class AsyncApiNodeDescendantDiffsSummaryAggregatorKindMessageContent exte
     if (!crawlValue || !diffsMetaKeys) {
       return summary;
     }
-    const { diffsMetaKey } = diffsMetaKeys
+    const { diffsMetaKey, aggregatedDiffsMetaKey } = diffsMetaKeys
 
     const diffsRecordExtensions = takeIfDiffsRecord(
       getValueByPath(crawlValue, ['extensions', diffsMetaKey])
@@ -37,6 +38,46 @@ export class AsyncApiNodeDescendantDiffsSummaryAggregatorKindMessageContent exte
       }
     }
 
+    const aggregatedDiffTypesHeaders = getValueByPath(crawlValue, ['headers', aggregatedDiffsMetaKey])
+    if (this.isDiffsSet(aggregatedDiffTypesHeaders)) {
+      for (const diff of aggregatedDiffTypesHeaders) {
+        if (!diff) { continue; }
+        summary.add(diff.type);
+      }
+    }
+
+    const aggregatedDiffTypesPayload = getValueByPath(crawlValue, ['payload', aggregatedDiffsMetaKey])
+    if (this.isDiffsSet(aggregatedDiffTypesPayload)) {
+      for (const diff of aggregatedDiffTypesPayload) {
+        if (!diff) { continue; }
+        summary.add(diff.type);
+      }
+    }
+
     return summary;
+  }
+
+  // TODO 22.05.26 // Move to shared utils
+  protected isDiffsSet(value: unknown): value is Set<Diff<DiffType>> {
+    if (!value) {
+      return false;
+    }
+    if (!(value instanceof Set)) {
+      return false;
+    }
+    for (const item of value) {
+      if (typeof item !== "object") {
+        return false;
+      }
+      if (
+        !isDiffAdd(item) &&
+        !isDiffRemove(item) &&
+        !isDiffReplace(item) &&
+        !isDiffRename(item)
+      ) {
+        return false;
+      }
+    }
+    return true;
   }
 }
