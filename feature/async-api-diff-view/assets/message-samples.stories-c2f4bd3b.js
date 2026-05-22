@@ -1,4 +1,4 @@
-import{j as P}from"./_commonjs-dynamic-modules-6308e768.js";import{A as _s}from"./AsyncApiOperationDiffsViewer-4ecad75c.js";import{b as fs,T as ys,a as hs}from"./preprocess-b6e64697.js";import{c as Ts,p as Ms}from"./yaml-source-2575e8ef.js";import"./index-f46741a2.js";import"./GraphPropNodeViewer-4970e0cf.js";import"./index-415bee12.js";import"./AsyncApiOperationViewer-6a8d08fe.js";import"./GraphQLOperationViewer-53452c1e.js";import"./GraphQLOperationDiffViewer-e2e0f4bc.js";import"./js-yaml-71a24e1f.js";const bs=`asyncapi: 3.0.0
+import{j as P}from"./_commonjs-dynamic-modules-6308e768.js";import{A as _s}from"./AsyncApiOperationDiffsViewer-a1204f42.js";import{b as fs,T as ys,a as hs}from"./preprocess-b6e64697.js";import{c as Ts,p as Ms}from"./yaml-source-2575e8ef.js";import"./index-f46741a2.js";import"./GraphPropNodeViewer-4970e0cf.js";import"./index-415bee12.js";import"./AsyncApiOperationViewer-6a8d08fe.js";import"./GraphQLOperationViewer-53452c1e.js";import"./GraphQLOperationDiffViewer-e2e0f4bc.js";import"./js-yaml-71a24e1f.js";const bs=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
   version: 1.0.0
