@@ -35,7 +35,7 @@ type CycleCloneFactory<
   ) => N
 }
 
-export interface NewTreeBuildingHooksFactoryParams<
+export interface TreeBuildingHooksFactoryParams<
   V extends object | null,
   K extends string,
   M extends object,
@@ -80,7 +80,7 @@ export interface NewTreeBuildingHooksFactoryParams<
   shouldStopAfterNodeCreation?: (node: N, value: unknown) => boolean
 }
 
-export function createNewTreeBuildingHooks<
+export function createTreeBuildingHooks<
   V extends object | null,
   K extends string,
   M extends object,
@@ -94,7 +94,7 @@ export function createNewTreeBuildingHooks<
     container: N | null
   },
 >(
-  params: NewTreeBuildingHooksFactoryParams<V, K, M, N, S, P>
+  params: TreeBuildingHooksFactoryParams<V, K, M, N, S, P>
 ): [
     SyncCrawlHook<S, R>,
     SyncCrawlHook<S, R>,

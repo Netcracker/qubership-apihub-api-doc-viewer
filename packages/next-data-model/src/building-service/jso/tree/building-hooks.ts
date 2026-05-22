@@ -5,7 +5,7 @@ import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-me
 import { SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { JsoCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeCrawlState } from "../json-crawl-entities/state/types";
-import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
+import { createTreeBuildingHooks, TreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
 
 type JsoTreeBuildingNodeParams = {
   value: object | null
@@ -15,7 +15,7 @@ type JsoTreeBuildingNodeParams = {
 }
 
 export interface JsoTreeBuildingHooksFactoryParams
-  extends NewTreeBuildingHooksFactoryParams<
+  extends TreeBuildingHooksFactoryParams<
     JsoTreeNodeValue | null,
     JsoTreeNodeKind,
     JsoTreeNodeMeta,
@@ -32,7 +32,7 @@ export function createJsoTreeBuildingHooks(
     SyncCrawlHook<JsoTreeCrawlState, JsoCrawlRule>,
     SyncCrawlHook<JsoTreeCrawlState, JsoCrawlRule>,
   ] {
-  return createNewTreeBuildingHooks<
+  return createTreeBuildingHooks<
     JsoTreeNodeValue | null,
     JsoTreeNodeKind,
     JsoTreeNodeMeta,

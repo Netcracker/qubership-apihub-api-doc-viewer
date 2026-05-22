@@ -3,7 +3,7 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
-import { createNewTreeBuildingHooks, NewTreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
+import { createTreeBuildingHooks, TreeBuildingHooksFactoryParams } from "../../abstract/json-crawl-entities/hooks/builder";
 import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
 
@@ -15,7 +15,7 @@ type AsyncApiTreeBuildingNodeParams = {
 }
 
 export interface AsyncApiTreeBuildingHooksFactoryParams
-  extends NewTreeBuildingHooksFactoryParams<
+  extends TreeBuildingHooksFactoryParams<
     AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
     AsyncApiTreeNodeKind,
     AsyncApiTreeNodeMeta,
@@ -32,7 +32,7 @@ export function createAsyncApiTreeBuildingHooks(
   SyncCrawlHook<AsyncApiTreeCrawlState, AsyncApiCrawlRule>,
   SyncCrawlHook<AsyncApiTreeCrawlState, AsyncApiCrawlRule>,
 ] {
-  return createNewTreeBuildingHooks<
+  return createTreeBuildingHooks<
     AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
     AsyncApiTreeNodeKind,
     AsyncApiTreeNodeMeta,
