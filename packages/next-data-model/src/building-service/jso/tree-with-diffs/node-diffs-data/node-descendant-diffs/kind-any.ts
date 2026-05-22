@@ -21,13 +21,14 @@ export class JsoNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescend
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     referenceNamePropertyKey: symbol,
   ): NodeDescendantDiffs | undefined {
-    if (!isObject(crawlValue)) {
+    if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
       return undefined;
     }
 
     const { diffsMetaKey } = diffsMetaKeys
 
-    const diffs = takeIfDiffsRecord(crawlValue[diffsMetaKey])
+    const diffs = takeIfDiffsRecord((crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey])
+
     if (!diffs) {
       return undefined
     }
