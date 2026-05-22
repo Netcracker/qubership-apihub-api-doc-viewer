@@ -26,6 +26,7 @@ export class AsyncApiNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryAgg
     return summary;
   }
 
+  // TODO 22.05.26 // Move to shared utils
   protected isDiffsSet(value: unknown): value is Set<Diff<DiffType>> {
     if (!value) {
       return false;
