@@ -1,3 +1,5 @@
+import { ITreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode } from "../../../../model/abstract/tree/tree-node.interface";
@@ -192,8 +194,23 @@ export function createTreeBuildingHooks<
       parent.addChildNode(treeNode);
     }
 
+    // TODO 22.05.2026 // This is NOT shared logic! It's only diffs-related logic!
+    // So, convert it to extension point!
+    let nextCrawlValue: unknown = value;
     if (shouldStopAfterNodeCreation?.(treeNode, value)) {
-      return { done: true };
+      const descendantDiffs = parent ? (parent as unknown as ITreeNodeWithDiffs<V, K, M, N>).descendantDiffs : undefined;
+      if (!descendantDiffs || !(key in descendantDiffs)) {
+        return { done: true };
+      }
+      const descendantChangedPropertyMetadata = descendantDiffs[key];
+      if (!descendantChangedPropertyMetadata) {
+        return { done: true };
+      }
+
+      const { data } = descendantChangedPropertyMetadata;
+      if (isDiffReplace(data)) {
+        nextCrawlValue = data.beforeValue;
+      }
     }
 
     const newCache = new Map(state.alreadyConvertedValuesCache) as S["alreadyConvertedValuesCache"];
@@ -206,7 +223,7 @@ export function createTreeBuildingHooks<
       newState = createStateForComplexNode(state, treeNode, newCache);
     }
 
-    return { value, state: newState };
+    return { value: nextCrawlValue, state: newState };
   };
 
   return [
