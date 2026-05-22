@@ -36,6 +36,10 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
   private readonly nodeDataBuilder: AsyncApiNodeDataWithDiffsBuilder;
 
+  private static readonly ASYNC_API_NODE_KINDS_WITHOUT_SYNTHETIC_DIFFS = new Set<string>([
+    AsyncApiTreeNodeKinds.MESSAGE_CHANNEL,
+  ])
+
   constructor(
     private readonly source: unknown,
     private readonly referenceNamePropertyKey: symbol,
@@ -352,7 +356,11 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         }
       }
     }
-    if (descendantsMaxDiffType && !nodeDiffs?.[""]) {
+    if (
+      descendantsMaxDiffType &&
+      !nodeDiffs?.[""] &&
+      !AsyncApiTreeWithDiffsBuilder.ASYNC_API_NODE_KINDS_WITHOUT_SYNTHETIC_DIFFS.has(kind)
+    ) {
       node.diffs[""] = {
         data: {
           type: descendantsMaxDiffType,
