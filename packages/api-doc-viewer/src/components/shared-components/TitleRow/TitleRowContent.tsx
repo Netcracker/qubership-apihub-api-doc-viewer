@@ -65,8 +65,12 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     return diffsStyleClasses
   }, [diff, layoutSide])
 
-  const headerValueElement = useMemo(() => <>
-    {enableHeaderValue && (
+  const headerValue = useMemo(() => {
+    if (!enableHeaderValue) {
+      return null
+    }
+
+    return (
       <TextValue
         value={value}
         variant={variant}
@@ -76,13 +80,15 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         highlightingMode={highlightingModeForKey}
         onClick={onClickExpander}
       />
-    )}
-  </>, [enableHeaderValue, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
-
-  return (
-    <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
-      {enableHeader ? <>
-        <div className="flex flex-row items-stretch self-stretch">
+    )
+  }, [enableHeaderValue, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
+  const header = useMemo(() => {
+    if (!enableHeader) {
+      return level > 0 && <LevelIndicator level={level} />
+    }
+    return <>
+      {(expandable || level > 0) && (
+        <div className="flex items-stretch self-stretch">
           <LevelIndicator level={level} />
           <Expander
             expandable={expandable}
@@ -91,10 +97,14 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
             level={level}
           />
         </div>
-        {headerValueElement}
-      </> : <>
-        <LevelIndicator level={level} />
-      </>}
+      )}
+      {headerValue}
+    </>
+  }, [enableHeader, expandable, level, expanded, onClickExpander, headerValue])
+
+  return (
+    <div className={`flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+      {header}
       {subheader?.(layoutSide)}
     </div>
   )
