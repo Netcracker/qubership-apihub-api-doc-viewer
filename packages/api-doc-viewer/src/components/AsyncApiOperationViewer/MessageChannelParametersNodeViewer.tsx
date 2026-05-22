@@ -6,7 +6,6 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
-import { Aligner } from "../JsoViewer/Aligner"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
@@ -81,16 +80,14 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       // diffs
       {...diffsProps}
     />
-    <Aligner>
-      <JsonSchemaDiffViewer
-        schema={addressParameters}
-        expandedDepth={2}
-        displayMode={displayMode}
-        layoutMode={layoutMode}
-        metaKeys={diffMetaKeys}
-        overriddenKind='parameters'
-      />
-    </Aligner>
+    <JsonSchemaDiffViewer
+      schema={addressParameters}
+      expandedDepth={2}
+      displayMode={displayMode}
+      layoutMode={layoutMode}
+      metaKeys={diffMetaKeys}
+      overriddenKind='parameters'
+    />
   </>
 }
 

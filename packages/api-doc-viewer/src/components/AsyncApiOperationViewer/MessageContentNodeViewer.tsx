@@ -3,20 +3,19 @@ import { useDiffTypes } from "@apihub/contexts/DiffTypesContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessageContentPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
+import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
+import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo } from "react"
 import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
-import { Aligner } from "../JsoViewer/Aligner"
-import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
-import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { BindingsNodeViewer } from "./BindingsNodeViewer"
+import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
 type MessageContentNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT>
@@ -91,9 +90,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             variant={TextValueVariant.h3}
             expandable={false}
           />
-          <Aligner>
-            {renderJsonSchemaViewer(headersJsonSchema)}
-          </Aligner>
+          {renderJsonSchemaViewer(headersJsonSchema)}
         </div>
       )}
       {extensionsChild && (
@@ -113,9 +110,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             variant={TextValueVariant.h3}
             expandable={false}
           />
-          <Aligner>
-            {renderJsonSchemaViewer(payloadJsonSchema)}
-          </Aligner>
+          {renderJsonSchemaViewer(payloadJsonSchema)}
         </div>
       )}
     </div>
