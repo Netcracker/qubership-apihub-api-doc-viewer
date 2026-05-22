@@ -74,9 +74,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         diff={diff}
         usage={usage}
         highlightingMode={highlightingModeForKey}
+        onClick={onClickExpander}
       />
     )}
-  </>, [enableHeaderValue, value, variant, layoutSide, diff, usage, highlightingModeForKey])
+  </>, [enableHeaderValue, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
 
   return (
     <div className={`px-2 flex flex-row items-center h-full gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
