@@ -2,7 +2,7 @@ import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/D
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, useCallback, useMemo } from "react"
@@ -72,8 +72,24 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
 
   const renderAddress = useCallback(() => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
+
+    let actionElement: React.ReactNode = (
+      <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
+        {action.toUpperCase()}
+      </div>
+    )
+    if (diff) {
+      if (isDiffAdd(diff.data) && layoutSide === ORIGIN_LAYOUT_SIDE) {
+        actionElement = null
+      }
+      if (isDiffRemove(diff.data) && layoutSide === CHANGED_LAYOUT_SIDE) {
+        actionElement = null
+      }
+    }
+
     if (!partialReplaceCase) {
-      return (
+      return <>
+        {actionElement}
         <TextValue
           value={address}
           variant={TextValueVariant.h4}
@@ -82,11 +98,12 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           fontWeight='normal'
           fontColor='#626D82'
         />
-      )
+      </>
     }
     const { prefix, beforeSuffix, afterSuffix } = partialReplaceCase
     const suffix = layoutSide === ORIGIN_LAYOUT_SIDE ? beforeSuffix : afterSuffix
     return <>
+      {actionElement}
       <TextValue
         value={prefix}
         variant={TextValueVariant.h4}
@@ -103,7 +120,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
         fontColor='#626D82'
       />
     </>
-  }, [address, diff, layoutSide])
+  }, [action, address, diff, layoutSide])
 
   const diffStyles = useMemo(() => {
     const diffStyles: Set<string> = new Set()
@@ -119,11 +136,11 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   }, [diff, layoutSide])
 
   return (
-    <div className={`address-row font-Inter-Medium px-2 ${diffStyles.join(' ')}`}>
-      <div className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3' style={{ paddingLeft: 10, paddingRight: 10 }}>
-        <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
-          {action.toUpperCase()}
-        </div>
+    <div className={`address-row font-Inter-Medium h-full px-2 ${diffStyles.join(' ')}`}>
+      <div
+        className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3'
+        style={{ paddingLeft: 10, paddingRight: 10 }}
+      >
         {renderAddress()}
       </div>
     </div>
