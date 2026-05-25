@@ -800,6 +800,8 @@ components:
   messages:
     TestMessage:
       name: TestMessage
+      payload:
+        type: string
 `,zs=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
@@ -1682,6 +1684,8 @@ components:
   messages:
     TestMessage:
       name: TestMessage
+      payload:
+        type: string
 `,$n=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
