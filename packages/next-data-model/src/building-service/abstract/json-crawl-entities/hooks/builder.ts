@@ -212,6 +212,7 @@ export function createTreeBuildingHooks<
         nextCrawlValue = data.beforeValue;
       }
     }
+    // ---------------------------------------
 
     const newCache = new Map(state.alreadyConvertedValuesCache) as S["alreadyConvertedValuesCache"];
     newCache.set(value, treeNode);

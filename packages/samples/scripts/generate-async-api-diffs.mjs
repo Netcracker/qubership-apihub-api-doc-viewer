@@ -12,6 +12,7 @@ const SECTION_CHANNEL = "channel";
 const SECTION_CHANNEL_PARAMETERS = "channel-parameters";
 const SECTION_MESSAGE = "message";
 const SECTION_SERVER = "channel-server";
+const SECTION_WHOLE_APIHUB_OPERATION = "whole-apihub-operation";
 
 const CASES = [];
 
@@ -96,6 +97,57 @@ const operation = (doc) => doc.operations.sendOperation;
 const channel = (doc) => doc.channels.testChannel;
 const message = (doc) => doc.components.messages.TestMessage;
 const server0 = (doc) => doc.servers.server0;
+
+const testMessageDefinition = () => ({
+  name: "TestMessage",
+  payload: {
+    type: "object",
+    properties: {
+      id: { type: "string" },
+    },
+    required: ["id"],
+  },
+});
+
+const wholeApihubOperationDocument = () => ({
+  asyncapi: "3.0.0",
+  info: {
+    title: "Sample AsyncAPI",
+    version: "1.0.0",
+  },
+  channels: {
+    testChannel: {
+      address: "events.default",
+      messages: {
+        TestMessage: testMessageDefinition(),
+      },
+    },
+  },
+  operations: {
+    sendOperation: {
+      action: "send",
+      channel: { $ref: "#/channels/testChannel" },
+      messages: [{ $ref: "#/channels/testChannel/messages/TestMessage" }],
+    },
+  },
+});
+
+const wholeOperation = (doc) => doc.operations.sendOperation;
+const wholeChannel = (doc) => doc.channels.testChannel;
+
+const addWholeApihubOperationCase = (caseId, description, applyBefore, applyAfter) => {
+  const beforeDoc = wholeApihubOperationDocument();
+  const afterDoc = wholeApihubOperationDocument();
+  applyBefore(beforeDoc);
+  applyAfter(afterDoc);
+  CASES.push({
+    section: SECTION_WHOLE_APIHUB_OPERATION,
+    caseId,
+    description,
+    beforeYaml: yaml.dump(beforeDoc, { noRefs: true, lineWidth: -1 }),
+    afterYaml: yaml.dump(afterDoc, { noRefs: true, lineWidth: -1 }),
+  });
+};
 
 const setServers = (doc, servers) => {
   doc.servers = servers;
@@ -499,6 +551,19 @@ const addMessageSchemaCases = () => {
   });
 };
 
+const addWholeApihubOperationCases = () => {
+  addWholeApihubOperationCase("1.1", "message removed from operation, channel and document", () => {}, (doc) => {
+    delete wholeOperation(doc).messages;
+    delete wholeChannel(doc).messages.TestMessage;
+    delete wholeChannel(doc).messages;
+  });
+
+  addWholeApihubOperationCase("1.2", "message added to operation, channel and document", (doc) => {
+    delete wholeOperation(doc).messages;
+    delete wholeChannel(doc).messages;
+  }, () => {});
+};
+
 const addServerCases = () => {
   addCase(SECTION_SERVER, "1.1", "channel.servers host/protocol changed", (doc) => {
     setServers(doc, {
@@ -634,6 +699,7 @@ const generateAllCases = () => {
 
   addServerCases();
   addChannelParametersCases();
+  addWholeApihubOperationCases();
 };
 
 const writeYamlPairs = () => {

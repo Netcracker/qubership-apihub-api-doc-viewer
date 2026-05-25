@@ -693,6 +693,20 @@ export const asyncApiDiffCases: AsyncApiDiffCase[] = [
     beforeYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.{firstParam}.{secondParam}.{thirdParam}.{fourthParam}.{fifthParam}\n    messages:\n      TestMessage:\n        $ref: '#/components/messages/TestMessage'\n    parameters:\n      firstParam:\n        description: first parameter\n        location: $message.payload#/id\n      secondParam:\n        description: second parameter\n      thirdParam:\n        enum:\n          - alpha\n          - beta\n      fourthParam:\n        default: default-value\n      fifthParam:\n        examples:\n          - example-1\n          - example-2\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n    messages:\n      - $ref: '#/components/messages/TestMessage'\ncomponents:\n  messages:\n    TestMessage:\n      name: TestMessage\n      payload:\n        type: object\n        properties:\n          id:\n            type: string\n        required:\n          - id\n",
     afterYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.{firstParam}.{secondParam}.{thirdParam}.{fourthParam}.{fifthParam}\n    messages:\n      TestMessage:\n        $ref: '#/components/messages/TestMessage'\n    parameters:\n      firstParam:\n        description: first parameter\n        location: $message.header#/id\n      secondParam:\n        description: updated second parameter description\n      thirdParam:\n        enum:\n          - alpha\n          - gamma\n      fourthParam:\n        default: changed-default-value\n      fifthParam:\n        examples:\n          - example-1\n          - changed-example-2\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n    messages:\n      - $ref: '#/components/messages/TestMessage'\ncomponents:\n  messages:\n    TestMessage:\n      name: TestMessage\n      payload:\n        type: object\n        properties:\n          id:\n            type: string\n        required:\n          - id\n",
   },
+  {
+    section: "whole-apihub-operation",
+    caseId: "1.1",
+    description: "message removed from operation, channel and document",
+    beforeYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.default\n    messages:\n      TestMessage:\n        name: TestMessage\n        payload:\n          type: object\n          properties:\n            id:\n              type: string\n          required:\n            - id\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n    messages:\n      - $ref: '#/channels/testChannel/messages/TestMessage'\n",
+    afterYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.default\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n",
+  },
+  {
+    section: "whole-apihub-operation",
+    caseId: "1.2",
+    description: "message added to operation, channel and document",
+    beforeYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.default\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n",
+    afterYaml: "asyncapi: 3.0.0\ninfo:\n  title: Sample AsyncAPI\n  version: 1.0.0\nchannels:\n  testChannel:\n    address: events.default\n    messages:\n      TestMessage:\n        name: TestMessage\n        payload:\n          type: object\n          properties:\n            id:\n              type: string\n          required:\n            - id\noperations:\n  sendOperation:\n    action: send\n    channel:\n      $ref: '#/channels/testChannel'\n    messages:\n      - $ref: '#/channels/testChannel/messages/TestMessage'\n",
+  },
 ];
 
 export const getAsyncApiDiffCase = (section: string, caseId: string): AsyncApiDiffCase | undefined => {
