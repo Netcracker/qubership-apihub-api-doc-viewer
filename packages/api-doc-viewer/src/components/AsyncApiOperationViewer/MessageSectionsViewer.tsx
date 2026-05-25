@@ -2,11 +2,14 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../..";
+import { DiffFloatingBadgeWrapper } from "../shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper";
 import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
 import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
 import { MessageSectionViewer } from "./MessageSectionViewer";
@@ -58,9 +61,42 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     }
   }, [sectionSelectorOptions, selectedSection])
 
+  const nodeDiff = useMemo(
+    () => isMessageSectionSelectorNodeWithDiffs(node) ? node.diffs?.[''] : null,
+    [node]
+  )
+  const nodeDiffCausedAt = useMemo(() => {
+    if (nodeDiff) {
+      const { data } = nodeDiff
+      if (isDiffReplace(data) || isDiffRemove(data)) {
+        return data.beforeDeclarationPaths[0]
+      }
+      if (isDiffAdd(data)) {
+        return data.afterDeclarationPaths[0]
+      }
+    }
+    return null
+  }, [nodeDiff])
+  const diffType = useMemo(() => nodeDiff?.data?.type, [nodeDiff])
+  const diffTypeCause = useMemo(() => {
+    // TODO: Extract to shared utility function
+    const path = nodeDiffCausedAt?.join('.')
+    return path ? `caused by ${path} change` : undefined
+  }, [nodeDiffCausedAt])
+
   const renderSelector = useCallback((layoutSide: LayoutSide) => {
+    const diffsStyles: Set<string> = new Set()
+    if (nodeDiff) {
+      const { styles } = nodeDiff
+      if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+        diffsStyles.add(DiffsClassesBuilder.background(styles.before.backgroundColor))
+      }
+      if (layoutSide === CHANGED_LAYOUT_SIDE) {
+        diffsStyles.add(DiffsClassesBuilder.background(styles.after.backgroundColor))
+      }
+    }
     const selectorElement = (
-      <div className="px-2">
+      <div className={`px-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
         <Selector
           options={sectionSelectorOptions}
           selectedOption={selectedSection}
@@ -72,16 +108,22 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       </div>
     )
     return selectorElement
-  }, [sectionSelectorOptions, selectedSection])
+  }, [nodeDiff, sectionSelectorOptions, selectedSection])
 
   const renderSelectorRow = useCallback(() => {
     switch (layoutMode) {
       case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
         return (
-          <SideBySideLayout
-            left={renderSelector(ORIGIN_LAYOUT_SIDE)}
-            right={renderSelector(CHANGED_LAYOUT_SIDE)}
-          />
+          <DiffFloatingBadgeWrapper
+            diffType={diffType}
+            diffTypeCause={diffTypeCause}
+            hidden={false} // TODO: Implement diffs severities filters
+          >
+            <SideBySideLayout
+              left={renderSelector(ORIGIN_LAYOUT_SIDE)}
+              right={renderSelector(CHANGED_LAYOUT_SIDE)}
+            />
+          </DiffFloatingBadgeWrapper>
         )
       default:
         return (
@@ -90,7 +132,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
           />
         )
     }
-  }, [layoutMode, renderSelector])
+  }, [diffType, diffTypeCause, layoutMode, renderSelector])
 
   return (
     <div className="flex flex-col gap-2">
@@ -128,6 +170,15 @@ function getMessageSectionTestId(node: AsyncApiTreeNode): string {
     default:
       return 'unknown'
   }
+}
+
+function isMessageSectionSelectorNodeWithDiffs(
+  node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs
+): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> {
+  if (!(node instanceof SimpleTreeNodeWithDiffs)) {
+    return false;
+  }
+  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR
 }
 
 function isMessageSectionNodeWithDiffs(
