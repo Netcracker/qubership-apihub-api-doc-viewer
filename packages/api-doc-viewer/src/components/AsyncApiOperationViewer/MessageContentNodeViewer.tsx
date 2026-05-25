@@ -14,6 +14,7 @@ import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
@@ -45,6 +46,17 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     }
     return prepareJsonSchemaForJsoViewer('Type', headersValue, headersChild.diffs[''], diffMetaKeys)
   }, [headersChild, diffMetaKeys])
+
+  const headersTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
+      return {}
+    }
+    return {
+      diff: headersChild.diffs[''],
+      descendantDiffs: headersChild.descendantDiffs,
+      diffsSeverities: headersChild.diffsSeverities,
+    }
+  }, [headersChild])
   const payloadJsonSchema = useMemo(() => {
     if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
       return undefined
@@ -55,6 +67,17 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     }
     return prepareJsonSchemaForJsoViewer('Type', payloadValue, payloadChild.diffs[''], diffMetaKeys)
   }, [payloadChild, diffMetaKeys])
+  const payloadTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
+      return {}
+    }
+    return {
+      diff: payloadChild.diffs[''],
+      descendantDiffs: payloadChild.descendantDiffs,
+      descendantDiffsSummary: payloadChild.descendantDiffsSummary,
+      diffsSeverities: payloadChild.diffsSeverities,
+    }
+  }, [payloadChild])
 
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
@@ -89,6 +112,8 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Headers"
             variant={TextValueVariant.h3}
             expandable={false}
+            // diffs
+            {...headersTitleRowDiffProps}
           />
           {renderJsonSchemaViewer(headersJsonSchema)}
         </div>
@@ -109,6 +134,8 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Payload"
             variant={TextValueVariant.h3}
             expandable={false}
+            // diffs
+            {...payloadTitleRowDiffProps}
           />
           {renderJsonSchemaViewer(payloadJsonSchema)}
         </div>
