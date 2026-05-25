@@ -1,6 +1,6 @@
 import { isSpecificationExtensionKey } from "@apihub/next-data-model/model/specification-extension-key";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { getValueByPath, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
+import { findKeyByValue, getValueByPath, isArray, isObject, isObjective, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { aggregateDiffsWithRollup, Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
 import { AsyncApiLogger } from "../logging";
 import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
@@ -105,6 +105,12 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       getValueByPath(source, ['operations', operationKey, 'messages', messageKey, 'bindings', diffsMetaKey], this.referenceNamePropertyKey)
     )
 
+    const targetMessage = getValueByPath(source, ['operations', operationKey, 'messages', messageKey], this.referenceNamePropertyKey)
+    const targetMessageList = getValueByPath(source, ['operations', operationKey, 'messages'], this.referenceNamePropertyKey)
+    const targetMessageKey = isObject(targetMessage) && isObjective(targetMessageList) ? findKeyByValue(targetMessageList, targetMessage) : undefined
+
+    const wholeOperationDiff = targetMessageKey && typeof targetMessageKey !== 'symbol' ? messagesDiffsRecord?.[targetMessageKey] : undefined
+
     // TODO 31.03.26 // Invent something to migrate 'bindingVersion' diffs from 'binding' property to our synthetic representation for binding
 
     const transformedWithDiffs = transformed as AsyncApiMessageOrientedSpecWithDiffs
@@ -144,6 +150,7 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
       }
 
       transformedWithDiffs[diffsMetaKey] = {
+        ...(wholeOperationDiff ? { ['']: wholeOperationDiff } : {}),
         ...(diffTitle ? { title: diffTitle } : {}),
         ...(diffName ? { internalTitle: diffName } : {}),
         ...(diffDescription ? { description: diffDescription } : {}),

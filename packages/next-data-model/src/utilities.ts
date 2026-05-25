@@ -3,7 +3,11 @@ import { JsonPath } from "@netcracker/qubership-apihub-json-crawl"
 import { AbstractNodeDiffsAggregator } from "./building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 
 export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+  return isObjective(value) && !Array.isArray(value)
+}
+
+export function isObjective(value: unknown): value is Record<PropertyKey, unknown> {
+  return typeof value === 'object' && value !== null
 }
 
 export function isObjectWithStringKeys(value: unknown): value is Record<string, unknown> {
@@ -31,10 +35,16 @@ export function getValueByPath(source: unknown, path: JsonPath, referenceNamePro
       return undefined
     }
 
-    if (isArrayTraversal && isArray(currentValue) && referenceNamePropertyKey) {
-      const matchedElement = currentValue.find((element) =>
-        isObject(element) && element[referenceNamePropertyKey] === pathSegment
-      )
+    if (isArrayTraversal) {
+      let matchedElement
+      if (isObjective(currentValue)) {
+        matchedElement = currentValue[pathSegment]
+      }
+      if (!matchedElement && isArray(currentValue) && referenceNamePropertyKey) {
+        matchedElement = currentValue.find((element) =>
+          isObject(element) && element[referenceNamePropertyKey] === pathSegment
+        )
+      }
       currentValue = matchedElement
       isArrayTraversal = false
       continue
@@ -48,6 +58,10 @@ export function getValueByPath(source: unknown, path: JsonPath, referenceNamePro
   }
 
   return currentValue
+}
+
+export function findKeyByValue(object: Record<PropertyKey, unknown>, value: unknown): PropertyKey | undefined {
+  return Object.keys(object).find((key) => object[key] === value)
 }
 
 export function takeIfDiffsRecord(maybeDiffsRecord: unknown): Partial<Record<string, Diff>> | undefined {
