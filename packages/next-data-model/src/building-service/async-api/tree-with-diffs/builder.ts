@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -10,7 +10,7 @@ import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/t
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { annotation, breaking, deprecated, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { ActionType, annotation, breaking, deprecated, Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
@@ -361,27 +361,76 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       !nodeDiffs?.[""] &&
       AsyncApiTreeWithDiffsBuilder.ASYNC_API_NODE_KINDS_WITH_SYNTHETIC_DIFFS.has(kind)
     ) {
+      const { value } = params
+      const valueKeys = Object.keys(value ?? {})
+      const descendantDiffsKeys = new Set(Object.keys(node.descendantDiffs ?? {}))
+      const allDescendantChanged = valueKeys.every(key => descendantDiffsKeys.has(key))
+      let diffAction: ActionType = DiffAction.replace
+      if (allDescendantChanged) {
+        const [firstValueKey] = valueKeys
+        const firstDescendantDiff = node.descendantDiffs[firstValueKey]
+        if (firstDescendantDiff) {
+          diffAction = firstDescendantDiff.data.action
+        }
+      }
+      const syntheticDiff: Diff = {
+        type: descendantsMaxDiffType,
+        action: diffAction,
+        beforeDeclarationPaths: declarationPaths,
+        afterDeclarationPaths: declarationPaths,
+        beforeValue: null,
+        afterValue: null,
+        scope: 'descendants',
+      } as Diff
+      let beforeStyles: DiffStyles = {
+        isContentVisible: true,
+        isHeaderVisible: true,
+      }
+      let afterStyles: DiffStyles = {
+        isContentVisible: true,
+        isHeaderVisible: true,
+      }
+      if (isDiffRemove(syntheticDiff)) {
+        beforeStyles = {
+          isContentVisible: true,
+          isHeaderVisible: true,
+          backgroundColor: HighlightVariant.Red,
+        }
+        afterStyles = {
+          isContentVisible: false,
+          isHeaderVisible: false,
+          backgroundColor: HighlightVariant.Gray,
+        }
+      }
+      if (isDiffAdd(syntheticDiff)) {
+        beforeStyles = {
+          isContentVisible: false,
+          isHeaderVisible: false,
+          backgroundColor: HighlightVariant.Gray,
+        }
+        afterStyles = {
+          isContentVisible: true,
+          isHeaderVisible: true,
+          backgroundColor: HighlightVariant.Green,
+        }
+      }
+      if (isDiffReplace(syntheticDiff)) {
+        beforeStyles = {
+          isContentVisible: true,
+          isHeaderVisible: true,
+          backgroundColor: HighlightVariant.Yellow,
+        }
+        afterStyles = {
+          isContentVisible: true,
+          isHeaderVisible: true,
+          backgroundColor: HighlightVariant.Yellow,
+        }
+      }
       node.diffs[""] = {
-        data: {
-          type: descendantsMaxDiffType,
-          action: DiffAction.replace,
-          beforeDeclarationPaths: declarationPaths,
-          afterDeclarationPaths: declarationPaths,
-          beforeValue: null,
-          afterValue: null,
-          scope: 'descendants',
-        },
+        data: syntheticDiff,
         styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            backgroundColor: HighlightVariant.Yellow,
-          },
-          after: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            backgroundColor: HighlightVariant.Yellow
-          },
+          before: beforeStyles,
+          after: afterStyles,
         },
         flags: {
           before: {

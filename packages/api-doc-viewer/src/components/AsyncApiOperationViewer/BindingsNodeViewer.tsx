@@ -2,10 +2,11 @@ import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
-import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -118,6 +119,37 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     return {}
   }, [selectedBindingNode])
 
+  const bindingContent = useMemo(() => {
+    if (!selectedBindingNode) {
+      return null
+    }
+    if (isBindingNodeWithDiffs(selectedBindingNode) && diffMetaKeys) {
+      const changedNodeMetadata = selectedBindingNode.diffs['']
+      const mergedBindingValue = prepareBindingValueInCaseOfWhollyChanged(bindingValue, changedNodeMetadata, diffMetaKeys)
+      return (
+        <JsoDiffsViewer
+          mergedSource={mergedBindingValue}
+          displayMode={displayMode}
+          initialLevel={1}
+          supportJsonSchema={true}
+          // diffs specific
+          diffMetaKeys={diffMetaKeys}
+        />
+      )
+    }
+    if (isBindingNode(selectedBindingNode)) {
+      return (
+        <JsoViewer
+          source={bindingValue}
+          displayMode={displayMode}
+          initialLevel={1}
+          supportJsonSchema={true}
+        />
+      )
+    }
+    return null
+  }, [selectedBindingNode, bindingValue, displayMode, diffMetaKeys])
+
   return (
     <div className="flex flex-col gap-1">
       <TitleRow
@@ -140,27 +172,42 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
             // diffs
             {...bindingVersionDiffsProps}
           />
-          {selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode) && diffMetaKeys ? (
-            <JsoDiffsViewer
-              mergedSource={bindingValue}
-              displayMode={displayMode}
-              initialLevel={1}
-              supportJsonSchema={true}
-              // diffs specific
-              diffMetaKeys={diffMetaKeys}
-            />
-          ) : selectedBindingNode && isBindingNode(selectedBindingNode) ? (
-            <JsoViewer
-              source={bindingValue}
-              displayMode={displayMode}
-              initialLevel={1}
-              supportJsonSchema={true}
-            />
-          ) : null}
+          {bindingContent}
         </div>
       )}
     </div>
   )
+}
+
+function prepareBindingValueInCaseOfWhollyChanged(
+  bindingValue: Record<string, unknown> | null,
+  changedNodeMetadata: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys,
+): Record<PropertyKey, unknown> | null {
+  if (!bindingValue) {
+    return null
+  }
+  const diff = changedNodeMetadata?.data
+  if (!diff) {
+    return bindingValue
+  }
+  const { diffsMetaKey } = diffMetaKeys
+  const extendedBindingValue = {
+    ...bindingValue,
+    [diffsMetaKey]: Object.keys(bindingValue).reduce((acc, key) => {
+      acc[key] = diff
+      if (isDiffAdd(diff)) {
+        const afterValue = bindingValue[key]
+        acc[key] = { ...diff, afterValue: afterValue }
+      }
+      if (isDiffRemove(diff)) {
+        const beforeValue = bindingValue[key]
+        acc[key] = { ...diff, beforeValue: beforeValue }
+      }
+      return acc
+    }, {} as Record<PropertyKey, unknown>)
+  }
+  return extendedBindingValue
 }
 
 function isBindingsNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
