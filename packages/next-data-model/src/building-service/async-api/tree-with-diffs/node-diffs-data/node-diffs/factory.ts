@@ -6,6 +6,7 @@ import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { AsyncApiNodeDiffsAggregatorKindBinding } from "./kind-binding";
 import { AsyncApiNodeDiffsAggregatorKindMessage } from "./kind-message";
 import { AsyncApiNodeDiffsAggregatorKindServer } from "./kind-server";
+import { AsyncApiNodeDiffsAggregatorKindServers } from "./kind-servers";
 
 export type DiffMetaKeys = {
   diffsMetaKey: symbol;
@@ -47,6 +48,11 @@ export class AsyncApiNodeDiffsAggregatorFactory {
           this.instances.set(AsyncApiTreeNodeKinds.SERVER, new AsyncApiNodeDiffsAggregatorKindServer());
         }
         return this.instances.get(AsyncApiTreeNodeKinds.SERVER)!;
+      case AsyncApiTreeNodeKinds.SERVERS:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.SERVERS)) {
+          this.instances.set(AsyncApiTreeNodeKinds.SERVERS, new AsyncApiNodeDiffsAggregatorKindServers());
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.SERVERS)!;
       default:
         if (!this.instances.has(null)) {
           this.instances.set(null, new AsyncApiNodeDiffsAggregatorKindAny());

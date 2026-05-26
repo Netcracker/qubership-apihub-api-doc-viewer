@@ -1,5 +1,5 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/async-api/tree-with-diffs/node-diffs-data/node-diffs/factory";
-import { ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from '@netcracker/qubership-apihub-api-diff';
@@ -17,6 +17,17 @@ export abstract class AbstractNodeDiffsAggregator<
     parentNode?: ITreeNodeWithDiffs<V, K, M, D>,
     containerNode?: ITreeNodeWithDiffs<V, K, M, D>,
   ): NodeDiffs<D> | undefined;
+
+  public aggregateByDescendantDiffs(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    crawlValue: object | null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    nodeDiffs: NodeDiffs<D>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    nodeDescendantDiffs: NodeDescendantDiffs,
+  ): NodeDiffs<D> | undefined {
+    return undefined
+  }
 
   public static isDiffsRecord(value: unknown): value is Partial<Record<string, Diff>> {
     if (!isObject(value)) {

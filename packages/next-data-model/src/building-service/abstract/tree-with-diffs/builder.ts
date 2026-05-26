@@ -53,6 +53,13 @@ export abstract class TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<V, K, M, D>,
   ): NodeDescendantDiffs | undefined;
 
+  protected abstract updateNodeDiffsByDescendantDiffs(
+    kind: string,
+    crawlValue: object | null | undefined,
+    nodeDiffs: NodeDiffs<D> | undefined,
+    nodeDescendantDiffs: NodeDescendantDiffs,
+  ): NodeDescendantDiffs | undefined;
+
   protected abstract createNodeDescendantsDiffsSummary(
     kind: string,
     nodeDiffs: NodeDiffs<D> | undefined,
