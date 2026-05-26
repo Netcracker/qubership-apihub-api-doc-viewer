@@ -11,8 +11,16 @@ channels:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        topic: events-topic
+        partitions: 5
       amqp:
         bindingVersion: 0.3.0
+        is: routingKey
+        exchange:
+          name: events-exchange
+          type: topic
+          durable: true
+          autoDelete: false
 operations:
   sendOperation:
     action: send

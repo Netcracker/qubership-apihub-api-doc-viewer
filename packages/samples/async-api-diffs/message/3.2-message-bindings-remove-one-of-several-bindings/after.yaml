@@ -29,3 +29,5 @@ components:
       bindings:
         amqp:
           bindingVersion: 0.3.0
+          contentEncoding: gzip
+          messageType: user.signup

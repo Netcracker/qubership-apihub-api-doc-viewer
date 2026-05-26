@@ -11,6 +11,8 @@ channels:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        topic: events-topic
+        partitions: 5
 operations:
   sendOperation:
     action: send

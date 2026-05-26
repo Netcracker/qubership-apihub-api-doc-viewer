@@ -18,6 +18,10 @@ operations:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        groupId:
+          type: string
+          enum:
+            - consumer-group-1
 components:
   messages:
     TestMessage:

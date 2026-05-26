@@ -18,6 +18,13 @@ operations:
     bindings:
       amqp:
         bindingVersion: 0.3.0
+        expiration: 100000
+        userId: guest
+        cc:
+          - user.logs
+        priority: 10
+        deliveryMode: 2
+        mandatory: false
 components:
   messages:
     TestMessage:

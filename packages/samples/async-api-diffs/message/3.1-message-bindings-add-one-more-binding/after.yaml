@@ -29,5 +29,10 @@ components:
       bindings:
         kafka:
           bindingVersion: 1.0.0
+          key:
+            type: string
+          schemaIdLocation: header
         amqp:
           bindingVersion: 0.3.0
+          contentEncoding: gzip
+          messageType: user.signup

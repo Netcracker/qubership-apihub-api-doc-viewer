@@ -29,3 +29,6 @@ components:
       bindings:
         kafka:
           bindingVersion: 1.0.0
+          key:
+            type: string
+          schemaIdLocation: header

@@ -35,3 +35,5 @@ servers:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        schemaRegistryUrl: https://schema-registry.example.com
+        schemaRegistryVendor: confluent

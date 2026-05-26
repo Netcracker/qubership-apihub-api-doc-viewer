@@ -35,5 +35,8 @@ servers:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        schemaRegistryUrl: https://schema-registry.example.com
+        schemaRegistryVendor: confluent
       amqp:
         bindingVersion: 0.3.0
+        connectionName: sample-server-connection

@@ -57,6 +57,105 @@ const kafkaInternalJsoBindingAfter = () => ({
   },
 });
 
+const defaultKafkaBinding = () => ({
+  bindingVersion: "1.0.0",
+});
+
+const defaultAmqpBinding = () => ({
+  bindingVersion: "0.3.0",
+});
+
+const serverKafkaBinding = () => ({
+  bindingVersion: "1.0.0",
+  schemaRegistryUrl: "https://schema-registry.example.com",
+  schemaRegistryVendor: "confluent",
+});
+
+const serverAmqpBinding = () => ({
+  bindingVersion: "0.3.0",
+  connectionName: "sample-server-connection",
+});
+
+const operationKafkaBinding = () => ({
+  bindingVersion: "1.0.0",
+  groupId: {
+    type: "string",
+    enum: ["consumer-group-1"],
+  },
+});
+
+const operationAmqpBinding = () => ({
+  bindingVersion: "0.3.0",
+  expiration: 100000,
+  userId: "guest",
+  cc: ["user.logs"],
+  priority: 10,
+  deliveryMode: 2,
+  mandatory: false,
+});
+
+const channelKafkaBinding = () => ({
+  bindingVersion: "1.0.0",
+  topic: "events-topic",
+  partitions: 5,
+});
+
+const channelAmqpBinding = () => ({
+  bindingVersion: "0.3.0",
+  is: "routingKey",
+  exchange: {
+    name: "events-exchange",
+    type: "topic",
+    durable: true,
+    autoDelete: false,
+  },
+});
+
+const messageKafkaBinding = () => ({
+  bindingVersion: "1.0.0",
+  key: {
+    type: "string",
+  },
+  schemaIdLocation: "header",
+});
+
+const messageAmqpBinding = () => ({
+  bindingVersion: "0.3.0",
+  contentEncoding: "gzip",
+  messageType: "user.signup",
+});
+
+const ADD_REMOVE_BINDING_DIR_SUFFIXES = [
+  "-bindings-add-one-more-binding",
+  "-bindings-remove-one-of-several-bindings",
+  "-bindings-add-bindings",
+  "-bindings-remove-bindings",
+];
+
+const ADD_REMOVE_BINDING_FACTORIES = {
+  operation: {
+    kafka: operationKafkaBinding,
+    amqp: operationAmqpBinding,
+  },
+  channel: {
+    kafka: channelKafkaBinding,
+    amqp: channelAmqpBinding,
+  },
+  message: {
+    kafka: messageKafkaBinding,
+    amqp: messageAmqpBinding,
+  },
+  server: {
+    kafka: serverKafkaBinding,
+    amqp: serverAmqpBinding,
+  },
+};
+
+const isAddRemoveBindingCase = (item) => {
+  const dirName = `${item.caseId}-${sanitize(item.description)}`;
+  return ADD_REMOVE_BINDING_DIR_SUFFIXES.some((suffix) => dirName.endsWith(suffix));
+};
+
 const baseDocument = () => ({
   asyncapi: "3.0.0",
   info: {
@@ -215,43 +314,50 @@ const addBindingsAndVersionCases = (
   objectName,
   getter,
   numbering = { addRemovePrefix: "3", versionPrefix: "4" },
+  addRemoveBindingFactories = {
+    kafka: defaultKafkaBinding,
+    amqp: defaultAmqpBinding,
+  },
 ) => {
+  const kafkaBinding = addRemoveBindingFactories.kafka;
+  const amqpBinding = addRemoveBindingFactories.amqp;
+
   addCase(section, `${numbering.addRemovePrefix}.1`, `${objectName}.bindings add one more binding`, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: kafkaBinding() };
   }, (doc) => {
     getter(doc).bindings = {
-      kafka: { bindingVersion: "1.0.0" },
-      amqp: { bindingVersion: "0.3.0" },
+      kafka: kafkaBinding(),
+      amqp: amqpBinding(),
     };
   });
 
   addCase(section, `${numbering.addRemovePrefix}.2`, `${objectName}.bindings remove one of several bindings`, (doc) => {
     getter(doc).bindings = {
-      kafka: { bindingVersion: "1.0.0" },
-      amqp: { bindingVersion: "0.3.0" },
+      kafka: kafkaBinding(),
+      amqp: amqpBinding(),
     };
   }, (doc) => {
     getter(doc).bindings = {
-      amqp: { bindingVersion: "0.3.0" },
+      amqp: amqpBinding(),
     };
   });
 
   addCase(section, `${numbering.addRemovePrefix}.3`, `${objectName}.bindings add bindings`, () => {}, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: kafkaBinding() };
   });
 
   addCase(section, `${numbering.addRemovePrefix}.4`, `${objectName}.bindings remove bindings`, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: kafkaBinding() };
   }, () => {});
 
   addCase(section, `${numbering.versionPrefix}.1`, `${objectName}.bindings.kafka.bindingVersion changed`, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: defaultKafkaBinding() };
   }, (doc) => {
     getter(doc).bindings = { kafka: { bindingVersion: "2.0.0" } };
   });
 
   addCase(section, `${numbering.versionPrefix}.2`, `${objectName}.bindings.kafka.bindingVersion removed`, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: defaultKafkaBinding() };
   }, (doc) => {
     getter(doc).bindings = { kafka: {} };
   });
@@ -259,7 +365,7 @@ const addBindingsAndVersionCases = (
   addCase(section, `${numbering.versionPrefix}.3`, `${objectName}.bindings.kafka.bindingVersion added`, (doc) => {
     getter(doc).bindings = { kafka: {} };
   }, (doc) => {
-    getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
+    getter(doc).bindings = { kafka: defaultKafkaBinding() };
   });
 };
 
@@ -600,7 +706,7 @@ const addServerCases = () => {
   addBindingsAndVersionCases(SECTION_SERVER, "channel.servers[0]", serverGetter, {
     addRemovePrefix: "2",
     versionPrefix: "3",
-  });
+  }, ADD_REMOVE_BINDING_FACTORIES.server);
   addKafkaInternalJsoChangesCase(SECTION_SERVER, "channel-server", serverGetter, "4.1");
 
   const channelServerPair = () => ({
@@ -657,17 +763,17 @@ const addServerCases = () => {
 
 const generateAllCases = () => {
   addTitleDescriptionSummaryCases(SECTION_OPERATION, "operation", operation);
-  addBindingsAndVersionCases(SECTION_OPERATION, "operation", operation);
+  addBindingsAndVersionCases(SECTION_OPERATION, "operation", operation, undefined, ADD_REMOVE_BINDING_FACTORIES.operation);
   addKafkaInternalJsoChangesCase(SECTION_OPERATION, "operation", operation);
   addExtensionsCases(SECTION_OPERATION, "operation", operation);
 
   addTitleDescriptionSummaryCases(SECTION_CHANNEL, "channel", channel);
-  addBindingsAndVersionCases(SECTION_CHANNEL, "channel", channel);
+  addBindingsAndVersionCases(SECTION_CHANNEL, "channel", channel, undefined, ADD_REMOVE_BINDING_FACTORIES.channel);
   addKafkaInternalJsoChangesCase(SECTION_CHANNEL, "channel", channel);
   addExtensionsCases(SECTION_CHANNEL, "channel", channel);
 
   addTitleDescriptionSummaryCases(SECTION_MESSAGE, "message", message);
-  addBindingsAndVersionCases(SECTION_MESSAGE, "message", message);
+  addBindingsAndVersionCases(SECTION_MESSAGE, "message", message, undefined, ADD_REMOVE_BINDING_FACTORIES.message);
   addKafkaInternalJsoChangesCase(SECTION_MESSAGE, "message", message);
   addExtensionsCases(SECTION_MESSAGE, "message", message);
   addMessageSchemaCases();
@@ -677,16 +783,49 @@ const generateAllCases = () => {
   addWholeApihubOperationCases();
 };
 
-const writeYamlPairs = () => {
-  fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
-  fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
+const writeYamlPairs = ({ onlyAddRemoveBindingCases = false } = {}) => {
+  if (!onlyAddRemoveBindingCases) {
+    fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
+    fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
+  }
 
-  for (const item of CASES) {
+  const itemsToWrite = onlyAddRemoveBindingCases
+    ? CASES.filter(isAddRemoveBindingCase)
+    : CASES;
+
+  for (const item of itemsToWrite) {
     const caseDir = path.join(OUTPUT_ROOT, item.section, `${item.caseId}-${sanitize(item.description)}`);
     fs.mkdirSync(caseDir, { recursive: true });
     fs.writeFileSync(path.join(caseDir, "before.yaml"), item.beforeYaml, "utf8");
     fs.writeFileSync(path.join(caseDir, "after.yaml"), item.afterYaml, "utf8");
   }
+
+  return itemsToWrite.length;
+};
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const patchExports = (items) => {
+  let content = fs.readFileSync(EXPORT_FILE, "utf8");
+
+  for (const item of items) {
+    const pattern = new RegExp(
+      `(\\{[\\s\\S]*?section: ${JSON.stringify(item.section)},[\\s\\S]*?caseId: ${JSON.stringify(item.caseId)},[\\s\\S]*?description: "${escapeRegExp(item.description)}",[\\s\\S]*?beforeYaml: ")([\\s\\S]*?)(",\\s*\\n\\s*afterYaml: ")([\\s\\S]*?)(",\\s*\\n\\s*\\},)`,
+      "m",
+    );
+
+    if (!pattern.test(content)) {
+      throw new Error(`Export entry not found for ${item.section} ${item.caseId} ${item.description}`);
+    }
+
+    content = content.replace(
+      pattern,
+      (_, prefix, _oldBefore, middle, _oldAfter, suffix) =>
+        `${prefix}${JSON.stringify(item.beforeYaml).slice(1, -1)}${middle}${JSON.stringify(item.afterYaml).slice(1, -1)}${suffix}`,
+    );
+  }
+
+  fs.writeFileSync(EXPORT_FILE, content, "utf8");
 };
 
 const writeExports = () => {
@@ -722,8 +861,16 @@ const writeExports = () => {
   fs.writeFileSync(EXPORT_FILE, lines.join("\n"), "utf8");
 };
 
-generateAllCases();
-writeYamlPairs();
-writeExports();
+const ONLY_ADD_REMOVE_BINDING_CASES = process.argv.includes("--only-add-remove-binding-cases");
 
-console.log(`Generated ${CASES.length} async-api-diff pairs.`);
+generateAllCases();
+
+if (ONLY_ADD_REMOVE_BINDING_CASES) {
+  const writtenCount = writeYamlPairs({ onlyAddRemoveBindingCases: true });
+  patchExports(CASES.filter(isAddRemoveBindingCase));
+  console.log(`Updated ${writtenCount} add/remove binding async-api-diff pairs.`);
+} else {
+  writeYamlPairs();
+  writeExports();
+  console.log(`Generated ${CASES.length} async-api-diff pairs.`);
+}

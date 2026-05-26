@@ -8,6 +8,8 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
+    servers:
+      - $ref: '#/servers/server0'
 operations:
   sendOperation:
     action: send
@@ -26,3 +28,7 @@ components:
             type: string
         required:
           - id
+servers:
+  server0:
+    host: broker-0.example.com:9092
+    protocol: kafka

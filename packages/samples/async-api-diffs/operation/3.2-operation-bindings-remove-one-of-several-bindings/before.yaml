@@ -18,8 +18,19 @@ operations:
     bindings:
       kafka:
         bindingVersion: 1.0.0
+        groupId:
+          type: string
+          enum:
+            - consumer-group-1
       amqp:
         bindingVersion: 0.3.0
+        expiration: 100000
+        userId: guest
+        cc:
+          - user.logs
+        priority: 10
+        deliveryMode: 2
+        mandatory: false
 components:
   messages:
     TestMessage:

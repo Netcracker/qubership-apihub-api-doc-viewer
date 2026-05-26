@@ -35,3 +35,4 @@ servers:
     bindings:
       amqp:
         bindingVersion: 0.3.0
+        connectionName: sample-server-connection
