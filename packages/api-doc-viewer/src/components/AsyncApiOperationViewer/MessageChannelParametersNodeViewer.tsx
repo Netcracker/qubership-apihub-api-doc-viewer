@@ -1,7 +1,10 @@
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
@@ -11,13 +14,14 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
 
+const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
+
 type MessageChannelParametersNodeViewerProps = {
   node:
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
   | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
 }
 
-// TODO: Make it row-like component
 export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNodeViewerProps> = (props) => {
   const { node } = props
 
@@ -32,7 +36,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
 
   return <>
     <TitleRow
-      value='Address Parameters'
+      value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
     />
@@ -68,20 +72,28 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
     }
   }, [node])
 
+  const preparedAddressParameters = useMemo(() => {
+    return prepareJsonSchemaInCaseOfWhollyChanged(
+      addressParameters,
+      node.diffs[''],
+      diffMetaKeys
+    )
+  }, [addressParameters, diffMetaKeys, node.diffs])
+
   if (!diffMetaKeys || !addressParameters) {
     return null
   }
 
   return <>
     <TitleRow
-      value='Address Parameters'
+      value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
       // diffs
       {...diffsProps}
     />
     <JsonSchemaDiffViewer
-      schema={addressParameters}
+      schema={preparedAddressParameters}
       expandedDepth={2}
       displayMode={displayMode}
       layoutMode={layoutMode}
@@ -97,4 +109,32 @@ function isMessageChannelParametersNodeWithDiffs(
     | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS> {
   return node instanceof SimpleTreeNodeWithDiffs
+}
+
+function prepareJsonSchemaInCaseOfWhollyChanged(
+  jsonSchema: Record<string, unknown> | undefined,
+  changedNodeMetadata: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined
+): Record<PropertyKey, unknown> | undefined {
+  if (!jsonSchema || !changedNodeMetadata || !diffMetaKeys) {
+    return jsonSchema
+  }
+  const diff = changedNodeMetadata.data
+  const { diffsMetaKey } = diffMetaKeys
+  const extendedJsonSchema = {
+    ...jsonSchema,
+    [diffsMetaKey]: Object.keys(jsonSchema).reduce((acc, key) => {
+      acc[key] = diff
+      if (isDiffAdd(diff)) {
+        const afterValue = jsonSchema[key]
+        acc[key] = { ...diff, afterValue: afterValue }
+      }
+      if (isDiffRemove(diff)) {
+        const beforeValue = jsonSchema[key]
+        acc[key] = { ...diff, beforeValue: beforeValue }
+      }
+      return acc
+    }, {} as Record<PropertyKey, unknown>)
+  }
+  return extendedJsonSchema
 }
