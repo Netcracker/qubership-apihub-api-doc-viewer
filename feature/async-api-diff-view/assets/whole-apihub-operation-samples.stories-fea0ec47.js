@@ -1,27 +1,27 @@
 import{j as r}from"./_commonjs-dynamic-modules-6308e768.js";import{A as g}from"./AsyncApiOperationDiffsViewer-f2605b4c.js";import{b as h,T as y,a as f}from"./preprocess-b6e64697.js";import{c as b,p as v}from"./yaml-source-2575e8ef.js";import"./index-f46741a2.js";import"./GraphPropNodeViewer-4970e0cf.js";import"./index-415bee12.js";import"./AsyncApiOperationViewer-88e93065.js";import"./GraphQLOperationViewer-53452c1e.js";import"./GraphQLOperationDiffViewer-e2e0f4bc.js";import"./js-yaml-71a24e1f.js";const x=`asyncapi: 3.0.0
-id: 'urn:example:com:sample:asyncapi:maximal-template'
+id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
   version: 1.0.0
   description: A maximal AsyncAPI 3.0 document used as a template fixture.
-  termsOfService: 'https://example.com/terms/'
+  termsOfService: https://example.com/terms/
   contact:
     name: API Support
-    url: 'https://example.com/support'
+    url: https://example.com/support
     email: support@example.com
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   tags:
     - name: template
       description: Template fixture
   externalDocs:
     description: Find more info here
-    url: 'https://example.com/docs'
+    url: https://example.com/docs
 servers:
   production:
     host: '{stage}.broker.example.com:{port}'
-    pathname: '/{env}'
+    pathname: /{env}
     protocol: amqp
     protocolVersion: 0-9-1
     title: Production broker
@@ -36,14 +36,14 @@ servers:
         $ref: '#/components/serverVariables/env'
     security:
       - petstoreAuth:
-          - 'read:users'
-          - 'write:users'
+          - read:users
+          - write:users
     tags:
-      - name: 'env:production'
+      - name: env:production
         description: Production environment
     externalDocs:
       description: Server documentation
-      url: 'https://example.com/docs/servers/production'
+      url: https://example.com/docs/servers/production
     bindings:
       amqp:
         connectionName: template-production
@@ -51,7 +51,7 @@ servers:
 defaultContentType: application/json
 channels:
   UserSignup:
-    address: 'user/{userId}/signedup'
+    address: user/{userId}/signedup
     title: User signup channel
     summary: Channel for user signup events
     description: This channel is used to exchange user signup messages.
@@ -68,7 +68,7 @@ channels:
         description: User related messages
     externalDocs:
       description: Channel documentation
-      url: 'https://example.com/docs/channels/user-signup'
+      url: https://example.com/docs/channels/user-signup
     bindings:
       amqp:
         is: queue
@@ -87,7 +87,7 @@ operations:
       $ref: '#/channels/UserSignup'
     security:
       - petstoreAuth:
-          - 'read:users'
+          - read:users
     tags:
       - name: user
         description: User operations
@@ -95,7 +95,7 @@ operations:
         description: Signup operations
     externalDocs:
       description: Operation documentation
-      url: 'https://example.com/docs/operations/consume-user-signups'
+      url: https://example.com/docs/operations/consume-user-signups
     bindings:
       amqp:
         ack: true
@@ -149,7 +149,7 @@ components:
             type: string
   servers:
     stagingServer:
-      host: 'staging.broker.example.com:5672'
+      host: staging.broker.example.com:5672
       protocol: amqp
       description: Reusable staging server definition
   channels:
@@ -183,7 +183,7 @@ components:
           description: Signup messages
       externalDocs:
         description: Message documentation
-        url: 'https://example.com/docs/messages/user-message'
+        url: https://example.com/docs/messages/user-message
       headers:
         type: object
         properties:
@@ -228,15 +228,15 @@ components:
       description: OAuth2 security scheme for the template API
       flows:
         implicit:
-          authorizationUrl: 'https://example.com/oauth/authorize'
+          authorizationUrl: https://example.com/oauth/authorize
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
         clientCredentials:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: https://example.com/oauth/token
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
     apiKeyAuth:
       type: apiKey
       in: user
@@ -272,11 +272,11 @@ components:
       default: test-user
       examples:
         - test-user
-      location: '$message.payload#/user/id'
+      location: $message.payload#/user/id
   correlationIds:
     default:
       description: Default correlation ID
-      location: '$message.header#/correlationId'
+      location: $message.header#/correlationId
   replies:
     ExampleReply:
       address:
@@ -288,11 +288,11 @@ components:
   replyAddresses:
     replyToHeader:
       description: Reply address taken from the message replyTo header
-      location: '$message.header#/replyTo'
+      location: $message.header#/replyTo
   externalDocs:
     rootDocs:
       description: Reusable external documentation entry
-      url: 'https://example.com/docs/root'
+      url: https://example.com/docs/root
   tags:
     userTag:
       name: user
@@ -340,29 +340,29 @@ components:
         contentEncoding: utf-8
         bindingVersion: 0.3.0
 `,S=`asyncapi: 3.0.0
-id: 'urn:example:com:sample:asyncapi:maximal-template'
+id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
   version: 1.0.0
   description: A maximal AsyncAPI 3.0 document used as a template fixture.
-  termsOfService: 'https://example.com/terms/'
+  termsOfService: https://example.com/terms/
   contact:
     name: API Support
-    url: 'https://example.com/support'
+    url: https://example.com/support
     email: support@example.com
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   tags:
     - name: template
       description: Template fixture
   externalDocs:
     description: Find more info here
-    url: 'https://example.com/docs'
+    url: https://example.com/docs
 servers:
   production:
     host: '{stage}.broker.example.com:{port}'
-    pathname: '/{env}'
+    pathname: /{env}
     protocol: amqp
     protocolVersion: 0-9-1
     title: Production broker
@@ -377,14 +377,14 @@ servers:
         $ref: '#/components/serverVariables/env'
     security:
       - petstoreAuth:
-          - 'read:users'
-          - 'write:users'
+          - read:users
+          - write:users
     tags:
-      - name: 'env:production'
+      - name: env:production
         description: Production environment
     externalDocs:
       description: Server documentation
-      url: 'https://example.com/docs/servers/production'
+      url: https://example.com/docs/servers/production
     bindings:
       amqp:
         connectionName: template-production
@@ -392,7 +392,7 @@ servers:
 defaultContentType: application/json
 channels:
   UserSignup:
-    address: 'user/{userId}/signedup'
+    address: user/{userId}/signedup
     title: User signup channel
     summary: Channel for user signup events
     description: This channel is used to exchange user signup messages.
@@ -409,7 +409,7 @@ channels:
         description: User related messages
     externalDocs:
       description: Channel documentation
-      url: 'https://example.com/docs/channels/user-signup'
+      url: https://example.com/docs/channels/user-signup
     bindings:
       amqp:
         is: queue
@@ -428,7 +428,7 @@ operations:
       $ref: '#/channels/UserSignup'
     security:
       - petstoreAuth:
-          - 'read:users'
+          - read:users
     tags:
       - name: user
         description: User operations
@@ -436,7 +436,7 @@ operations:
         description: Signup operations
     externalDocs:
       description: Operation documentation
-      url: 'https://example.com/docs/operations/consume-user-signups'
+      url: https://example.com/docs/operations/consume-user-signups
     bindings:
       amqp:
         ack: true
@@ -488,7 +488,7 @@ components:
             type: string
   servers:
     stagingServer:
-      host: 'staging.broker.example.com:5672'
+      host: staging.broker.example.com:5672
       protocol: amqp
       description: Reusable staging server definition
   channels:
@@ -522,7 +522,7 @@ components:
           description: Signup messages
       externalDocs:
         description: Message documentation
-        url: 'https://example.com/docs/messages/user-message'
+        url: https://example.com/docs/messages/user-message
       headers:
         type: object
         properties:
@@ -567,15 +567,15 @@ components:
       description: OAuth2 security scheme for the template API
       flows:
         implicit:
-          authorizationUrl: 'https://example.com/oauth/authorize'
+          authorizationUrl: https://example.com/oauth/authorize
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
         clientCredentials:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: https://example.com/oauth/token
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
     apiKeyAuth:
       type: apiKey
       in: user
@@ -611,11 +611,11 @@ components:
       default: test-user
       examples:
         - test-user
-      location: '$message.payload#/user/id'
+      location: $message.payload#/user/id
   correlationIds:
     default:
       description: Default correlation ID
-      location: '$message.header#/correlationId'
+      location: $message.header#/correlationId
   replies:
     ExampleReply:
       address:
@@ -627,11 +627,11 @@ components:
   replyAddresses:
     replyToHeader:
       description: Reply address taken from the message replyTo header
-      location: '$message.header#/replyTo'
+      location: $message.header#/replyTo
   externalDocs:
     rootDocs:
       description: Reusable external documentation entry
-      url: 'https://example.com/docs/root'
+      url: https://example.com/docs/root
   tags:
     userTag:
       name: user
@@ -679,29 +679,29 @@ components:
         contentEncoding: utf-8
         bindingVersion: 0.3.0
 `,U=`asyncapi: 3.0.0
-id: 'urn:example:com:sample:asyncapi:maximal-template'
+id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
   version: 1.0.0
   description: A maximal AsyncAPI 3.0 document used as a template fixture.
-  termsOfService: 'https://example.com/terms/'
+  termsOfService: https://example.com/terms/
   contact:
     name: API Support
-    url: 'https://example.com/support'
+    url: https://example.com/support
     email: support@example.com
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   tags:
     - name: template
       description: Template fixture
   externalDocs:
     description: Find more info here
-    url: 'https://example.com/docs'
+    url: https://example.com/docs
 servers:
   production:
     host: '{stage}.broker.example.com:{port}'
-    pathname: '/{env}'
+    pathname: /{env}
     protocol: amqp
     protocolVersion: 0-9-1
     title: Production broker
@@ -716,14 +716,14 @@ servers:
         $ref: '#/components/serverVariables/env'
     security:
       - petstoreAuth:
-          - 'read:users'
-          - 'write:users'
+          - read:users
+          - write:users
     tags:
-      - name: 'env:production'
+      - name: env:production
         description: Production environment
     externalDocs:
       description: Server documentation
-      url: 'https://example.com/docs/servers/production'
+      url: https://example.com/docs/servers/production
     bindings:
       amqp:
         connectionName: template-production
@@ -731,7 +731,7 @@ servers:
 defaultContentType: application/json
 channels:
   UserSignup:
-    address: 'user/{userId}/signedup'
+    address: user/{userId}/signedup
     title: User signup channel
     summary: Channel for user signup events
     description: This channel is used to exchange user signup messages.
@@ -748,7 +748,7 @@ channels:
         description: User related messages
     externalDocs:
       description: Channel documentation
-      url: 'https://example.com/docs/channels/user-signup'
+      url: https://example.com/docs/channels/user-signup
     bindings:
       amqp:
         is: queue
@@ -767,7 +767,7 @@ operations:
       $ref: '#/channels/UserSignup'
     security:
       - petstoreAuth:
-          - 'read:users'
+          - read:users
     tags:
       - name: user
         description: User operations
@@ -775,7 +775,7 @@ operations:
         description: Signup operations
     externalDocs:
       description: Operation documentation
-      url: 'https://example.com/docs/operations/consume-user-signups'
+      url: https://example.com/docs/operations/consume-user-signups
     bindings:
       amqp:
         ack: true
@@ -827,7 +827,7 @@ components:
             type: string
   servers:
     stagingServer:
-      host: 'staging.broker.example.com:5672'
+      host: staging.broker.example.com:5672
       protocol: amqp
       description: Reusable staging server definition
   channels:
@@ -861,7 +861,7 @@ components:
           description: Signup messages
       externalDocs:
         description: Message documentation
-        url: 'https://example.com/docs/messages/user-message'
+        url: https://example.com/docs/messages/user-message
       headers:
         type: object
         properties:
@@ -906,15 +906,15 @@ components:
       description: OAuth2 security scheme for the template API
       flows:
         implicit:
-          authorizationUrl: 'https://example.com/oauth/authorize'
+          authorizationUrl: https://example.com/oauth/authorize
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
         clientCredentials:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: https://example.com/oauth/token
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
     apiKeyAuth:
       type: apiKey
       in: user
@@ -950,11 +950,11 @@ components:
       default: test-user
       examples:
         - test-user
-      location: '$message.payload#/user/id'
+      location: $message.payload#/user/id
   correlationIds:
     default:
       description: Default correlation ID
-      location: '$message.header#/correlationId'
+      location: $message.header#/correlationId
   replies:
     ExampleReply:
       address:
@@ -966,11 +966,11 @@ components:
   replyAddresses:
     replyToHeader:
       description: Reply address taken from the message replyTo header
-      location: '$message.header#/replyTo'
+      location: $message.header#/replyTo
   externalDocs:
     rootDocs:
       description: Reusable external documentation entry
-      url: 'https://example.com/docs/root'
+      url: https://example.com/docs/root
   tags:
     userTag:
       name: user
@@ -1018,29 +1018,29 @@ components:
         contentEncoding: utf-8
         bindingVersion: 0.3.0
 `,I=`asyncapi: 3.0.0
-id: 'urn:example:com:sample:asyncapi:maximal-template'
+id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
   version: 1.0.0
   description: A maximal AsyncAPI 3.0 document used as a template fixture.
-  termsOfService: 'https://example.com/terms/'
+  termsOfService: https://example.com/terms/
   contact:
     name: API Support
-    url: 'https://example.com/support'
+    url: https://example.com/support
     email: support@example.com
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   tags:
     - name: template
       description: Template fixture
   externalDocs:
     description: Find more info here
-    url: 'https://example.com/docs'
+    url: https://example.com/docs
 servers:
   production:
     host: '{stage}.broker.example.com:{port}'
-    pathname: '/{env}'
+    pathname: /{env}
     protocol: amqp
     protocolVersion: 0-9-1
     title: Production broker
@@ -1055,14 +1055,14 @@ servers:
         $ref: '#/components/serverVariables/env'
     security:
       - petstoreAuth:
-          - 'read:users'
-          - 'write:users'
+          - read:users
+          - write:users
     tags:
-      - name: 'env:production'
+      - name: env:production
         description: Production environment
     externalDocs:
       description: Server documentation
-      url: 'https://example.com/docs/servers/production'
+      url: https://example.com/docs/servers/production
     bindings:
       amqp:
         connectionName: template-production
@@ -1070,7 +1070,7 @@ servers:
 defaultContentType: application/json
 channels:
   UserSignup:
-    address: 'user/{userId}/signedup'
+    address: user/{userId}/signedup
     title: User signup channel
     summary: Channel for user signup events
     description: This channel is used to exchange user signup messages.
@@ -1087,7 +1087,7 @@ channels:
         description: User related messages
     externalDocs:
       description: Channel documentation
-      url: 'https://example.com/docs/channels/user-signup'
+      url: https://example.com/docs/channels/user-signup
     bindings:
       amqp:
         is: queue
@@ -1106,7 +1106,7 @@ operations:
       $ref: '#/channels/UserSignup'
     security:
       - petstoreAuth:
-          - 'read:users'
+          - read:users
     tags:
       - name: user
         description: User operations
@@ -1114,7 +1114,7 @@ operations:
         description: Signup operations
     externalDocs:
       description: Operation documentation
-      url: 'https://example.com/docs/operations/consume-user-signups'
+      url: https://example.com/docs/operations/consume-user-signups
     bindings:
       amqp:
         ack: true
@@ -1168,7 +1168,7 @@ components:
             type: string
   servers:
     stagingServer:
-      host: 'staging.broker.example.com:5672'
+      host: staging.broker.example.com:5672
       protocol: amqp
       description: Reusable staging server definition
   channels:
@@ -1202,7 +1202,7 @@ components:
           description: Signup messages
       externalDocs:
         description: Message documentation
-        url: 'https://example.com/docs/messages/user-message'
+        url: https://example.com/docs/messages/user-message
       headers:
         type: object
         properties:
@@ -1247,15 +1247,15 @@ components:
       description: OAuth2 security scheme for the template API
       flows:
         implicit:
-          authorizationUrl: 'https://example.com/oauth/authorize'
+          authorizationUrl: https://example.com/oauth/authorize
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
         clientCredentials:
-          tokenUrl: 'https://example.com/oauth/token'
+          tokenUrl: https://example.com/oauth/token
           availableScopes:
-            'read:users': Read user data
-            'write:users': Write user data
+            read:users: Read user data
+            write:users: Write user data
     apiKeyAuth:
       type: apiKey
       in: user
@@ -1291,11 +1291,11 @@ components:
       default: test-user
       examples:
         - test-user
-      location: '$message.payload#/user/id'
+      location: $message.payload#/user/id
   correlationIds:
     default:
       description: Default correlation ID
-      location: '$message.header#/correlationId'
+      location: $message.header#/correlationId
   replies:
     ExampleReply:
       address:
@@ -1307,11 +1307,11 @@ components:
   replyAddresses:
     replyToHeader:
       description: Reply address taken from the message replyTo header
-      location: '$message.header#/replyTo'
+      location: $message.header#/replyTo
   externalDocs:
     rootDocs:
       description: Reusable external documentation entry
-      url: 'https://example.com/docs/root'
+      url: https://example.com/docs/root
   tags:
     userTag:
       name: user
