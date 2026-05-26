@@ -39,11 +39,11 @@ export class AsyncApiNodeDiffsAggregatorKindAny
   ): NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
-    if (!isObject(crawlValue)) {
+    if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
       return undefined
     }
 
-    const diffs = crawlValue[diffsMetaKey]
+    const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
 
     const nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> = {}
 
