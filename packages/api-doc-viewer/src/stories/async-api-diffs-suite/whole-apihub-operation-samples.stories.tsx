@@ -49,8 +49,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const OPERATION_KEY = "sendOperation";
-const MESSAGE_KEY = "TestMessage";
+const OPERATION_KEY = "ConsumeUserSignups";
+const MESSAGE_KEY = "UserMessage";
 
 const createSource = (sourceText: string): Record<string, unknown> => parseYamlSource(sourceText);
 
@@ -76,5 +76,5 @@ const createCaseStory = (caseId: string): Story => ({
   render: (args) => <AsyncApiWholeApihubOperationSamplesStory caseId={args.caseId} />,
 });
 
-export const Case_1_1_message_removed_from_operation_channel_and_document: Story = createCaseStory("1.1-message-removed-from-operation,-channel-and-document");
-export const Case_1_2_message_added_to_operation_channel_and_document: Story = createCaseStory("1.2-message-added-to-operation,-channel-and-document");
+export const Case_1_1_message_removed_from_operation_channel_and_document: Story = createCaseStory("1.1-message-removed-from-operation-channel-and-document");
+export const Case_1_2_message_added_to_operation_channel_and_document: Story = createCaseStory("1.2-message-added-to-operation-channel-and-document");
