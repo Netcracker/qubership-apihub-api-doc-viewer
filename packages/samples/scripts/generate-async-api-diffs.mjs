@@ -6,6 +6,11 @@ import yaml from "js-yaml";
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT_ROOT = path.join(ROOT_DIR, "async-api-diffs");
 const EXPORT_FILE = path.join(ROOT_DIR, "src", "async-api-diffs.ts");
+const WHOLE_APIHUB_OPERATION_TEMPLATE_FILE = path.join(
+  ROOT_DIR,
+  "fixtures",
+  "whole-apihub-operation-template.yaml",
+);
 
 const SECTION_OPERATION = "operation";
 const SECTION_CHANNEL = "channel";
@@ -15,8 +20,6 @@ const SECTION_SERVER = "channel-server";
 const SECTION_WHOLE_APIHUB_OPERATION = "whole-apihub-operation";
 
 const CASES = [];
-
-const clone = (value) => JSON.parse(JSON.stringify(value));
 
 const sanitize = (text) => text
   .replaceAll("\\", "-")
@@ -98,42 +101,17 @@ const channel = (doc) => doc.channels.testChannel;
 const message = (doc) => doc.components.messages.TestMessage;
 const server0 = (doc) => doc.servers.server0;
 
-const testMessageDefinition = () => ({
-  name: "TestMessage",
-  payload: {
-    type: "object",
-    properties: {
-      id: { type: "string" },
-    },
-    required: ["id"],
-  },
-});
+const wholeApihubOperationTemplate = yaml.load(
+  fs.readFileSync(WHOLE_APIHUB_OPERATION_TEMPLATE_FILE, "utf8"),
+);
 
-const wholeApihubOperationDocument = () => ({
-  asyncapi: "3.0.0",
-  info: {
-    title: "Sample AsyncAPI",
-    version: "1.0.0",
-  },
-  channels: {
-    testChannel: {
-      address: "events.default",
-      messages: {
-        TestMessage: testMessageDefinition(),
-      },
-    },
-  },
-  operations: {
-    sendOperation: {
-      action: "send",
-      channel: { $ref: "#/channels/testChannel" },
-      messages: [{ $ref: "#/channels/testChannel/messages/TestMessage" }],
-    },
-  },
-});
+const wholeApihubOperationDocument = () => structuredClone(wholeApihubOperationTemplate);
 
-const wholeOperation = (doc) => doc.operations.sendOperation;
-const wholeChannel = (doc) => doc.channels.testChannel;
+const wholeOperation = (doc) => doc.operations.ConsumeUserSignups;
+
+const removeWholeApihubOperationMessages = (doc) => {
+  delete wholeOperation(doc).messages;
+};
 
 const addWholeApihubOperationCase = (caseId, description, applyBefore, applyAfter) => {
   const beforeDoc = wholeApihubOperationDocument();
@@ -238,7 +216,7 @@ const addBindingsAndVersionCases = (
   getter,
   numbering = { addRemovePrefix: "3", versionPrefix: "4" },
 ) => {
-  addCase(section, `${numbering.addRemovePrefix}.1`, `${objectName}.bindings add amqp`, (doc) => {
+  addCase(section, `${numbering.addRemovePrefix}.1`, `${objectName}.bindings add one more binding`, (doc) => {
     getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
   }, (doc) => {
     getter(doc).bindings = {
@@ -247,7 +225,7 @@ const addBindingsAndVersionCases = (
     };
   });
 
-  addCase(section, `${numbering.addRemovePrefix}.2`, `${objectName}.bindings remove kafka`, (doc) => {
+  addCase(section, `${numbering.addRemovePrefix}.2`, `${objectName}.bindings remove one of several bindings`, (doc) => {
     getter(doc).bindings = {
       kafka: { bindingVersion: "1.0.0" },
       amqp: { bindingVersion: "0.3.0" },
@@ -258,11 +236,11 @@ const addBindingsAndVersionCases = (
     };
   });
 
-  addCase(section, `${numbering.addRemovePrefix}.3`, `${objectName}.bindings add kafka`, () => {}, (doc) => {
+  addCase(section, `${numbering.addRemovePrefix}.3`, `${objectName}.bindings add bindings`, () => {}, (doc) => {
     getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
   });
 
-  addCase(section, `${numbering.addRemovePrefix}.4`, `${objectName}.bindings remove kafka`, (doc) => {
+  addCase(section, `${numbering.addRemovePrefix}.4`, `${objectName}.bindings remove bindings`, (doc) => {
     getter(doc).bindings = { kafka: { bindingVersion: "1.0.0" } };
   }, () => {});
 
@@ -552,15 +530,12 @@ const addMessageSchemaCases = () => {
 };
 
 const addWholeApihubOperationCases = () => {
-  addWholeApihubOperationCase("1.1", "message removed from operation, channel and document", () => {}, (doc) => {
-    delete wholeOperation(doc).messages;
-    delete wholeChannel(doc).messages.TestMessage;
-    delete wholeChannel(doc).messages;
+  addWholeApihubOperationCase("1.1", "message removed from operation channel and document", () => {}, (doc) => {
+    removeWholeApihubOperationMessages(doc);
   });
 
-  addWholeApihubOperationCase("1.2", "message added to operation, channel and document", (doc) => {
-    delete wholeOperation(doc).messages;
-    delete wholeChannel(doc).messages;
+  addWholeApihubOperationCase("1.2", "message added to operation channel and document", (doc) => {
+    removeWholeApihubOperationMessages(doc);
   }, () => {});
 };
 

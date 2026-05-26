@@ -42,7 +42,7 @@ const AsyncApiServerSamplesStory = ({ caseId }: { caseId: string }) => {
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "Async API Diffs Suite/Server Samples",
+  title: "Async API Diffs Suite/Channel Server Samples",
   component: AsyncApiServerSamplesStory,
 } satisfies Meta<typeof AsyncApiServerSamplesStory>;
 
@@ -85,8 +85,10 @@ const createCaseStory = (caseId: string): Story => ({
 export const Case_1_1_channel_servers_host_protocol_changed: Story = createCaseStory("1.1-channel-servers-host-protocol-changed");
 export const Case_1_2_channel_servers_description_set: Story = createCaseStory("1.2-channel-servers-description-set");
 export const Case_1_3_channel_servers_summary_set: Story = createCaseStory("1.3-channel-servers-summary-set");
-export const Case_2_1_channel_servers0_bindings_add_amqp: Story = createCaseStory("2.1-channel-servers0-bindings-add-amqp");
-export const Case_2_2_channel_servers0_bindings_remove_kafka: Story = createCaseStory("2.2-channel-servers0-bindings-remove-kafka");
+export const Case_2_1_channel_servers0_bindings_add_one_more_binding: Story = createCaseStory("2.1-channel-servers0-bindings-add-one-more-binding");
+export const Case_2_2_channel_servers0_bindings_remove_one_of_several_bindings: Story = createCaseStory("2.2-channel-servers0-bindings-remove-one-of-several-bindings");
+export const Case_2_3_channel_servers0_bindings_add_bindings: Story = createCaseStory("2.3-channel-servers0-bindings-add-bindings");
+export const Case_2_4_channel_servers0_bindings_remove_bindings: Story = createCaseStory("2.4-channel-servers0-bindings-remove-bindings");
 export const Case_2_3_channel_servers_all_added: Story = createCaseStory("2.3-channel-servers-all-added");
 export const Case_2_4_channel_servers_all_removed: Story = createCaseStory("2.4-channel-servers-all-removed");
 export const Case_3_1_channel_servers0_bindings_kafka_bindingVersion_changed: Story = createCaseStory("3.1-channel-servers0-bindings-kafka-bindingVersion-changed");
