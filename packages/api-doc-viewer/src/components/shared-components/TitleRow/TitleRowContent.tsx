@@ -7,6 +7,7 @@ import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
+import '../../../shared-styles/preceded-by.css'
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TitleRowContentProps, TitleRowUsage } from "./types"
 
@@ -111,7 +112,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   return (
     <div
       data-precededBy={precededBy}
-      className={`flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`title-row-content flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`}
       style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}
     >
       {header}

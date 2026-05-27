@@ -13,6 +13,7 @@ import { DiffFloatingBadgeWrapper } from "../shared-components/DiffFloatingBadge
 import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
 import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+import '../shared-styles/preceded-by.css';
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
@@ -98,8 +99,11 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         diffsStyles.add(DiffsClassesBuilder.background(styles.after.backgroundColor))
       }
     }
-    const selectorElement = (
-      <div data-precededBy={precededBy} className={`px-2 py-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
+    return (
+      <div
+        data-precededBy={precededBy}
+        className={`message-sections-selector px-2 h-full ${Array.from(diffsStyles).join(' ')}`}
+      >
         <Selector
           options={sectionSelectorOptions}
           selectedOption={selectedSection}
@@ -110,7 +114,6 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
         />
       </div>
     )
-    return selectorElement
   }, [nodeDiff, precededBy, sectionSelectorOptions, selectedSection])
 
   const renderSelectorRow = useCallback(() => {

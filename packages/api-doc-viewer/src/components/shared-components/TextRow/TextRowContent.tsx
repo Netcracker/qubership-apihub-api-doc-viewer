@@ -2,6 +2,7 @@ import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { TextValue } from "../TextValue/TextValue"
+import '../../../shared-styles/preceded-by.css'
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import type { TextRowContentProps } from "./types"
 
@@ -38,9 +39,12 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   }, [diff, layoutSide])
 
   return (
-    <div className={`flex h-full px-2 pt-1 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div
+      data-precededBy={precededBy}
+      className={`text-row-content flex h-full px-2 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`}
+      style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}
+    >
       <TextValue
-        data-precededBy={precededBy}
         label={label}
         fontWeight={fontWeight}
         value={value}

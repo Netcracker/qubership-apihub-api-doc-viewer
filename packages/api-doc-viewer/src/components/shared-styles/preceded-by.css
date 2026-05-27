@@ -1,0 +1,169 @@
+/* =============================================================================
+   Padding rules driven by the data-precededBy attribute.
+   Each rule answers: "given what came before me, how much space do I need?"
+
+   Selector anatomy:
+     .<component-class>[data-precededBy="<PrecededBy enum value>"]
+
+   Values correspond 1-to-1 to PrecededBy enum in WithPrecededByProps.ts.
+   padding-bottom closes the internal bottom gap of the row itself.
+   ============================================================================= */
+
+/* ─── TitleRowContent ──────────────────────────────────────────────────────── */
+
+.title-row-content[data-precededBy="message-section-header-high-level"] {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="message-section-header-low-level"] {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="address-row"] {
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="description-row"] {
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="summary-row"] {
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="binding-version-row"] {
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.title-row-content[data-precededBy="message-section-selector"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-precededBy="json-schema-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-precededBy="jso-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-precededBy="server-block"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+/* ─── TextRowContent ────────────────────────────────────────────────────────── */
+/* Overrides Tailwind's pt-1 (4 px) when a specific context is known.
+   When data-precededBy is absent the Tailwind default applies as fallback.    */
+
+.text-row-content[data-precededBy="message-section-header-high-level"] {
+  padding-top: 2px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="message-section-header-low-level"] {
+  padding-top: 2px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="address-row"] {
+  padding-top: 4px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="description-row"] {
+  padding-top: 4px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="summary-row"] {
+  padding-top: 4px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="binding-version-row"] {
+  padding-top: 4px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="message-section-selector"] {
+  padding-top: 8px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="json-schema-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="jso-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 0;
+}
+
+.text-row-content[data-precededBy="server-block"] {
+  padding-top: 8px;
+  padding-bottom: 0;
+}
+
+/* ─── MessageSectionsSelector ───────────────────────────────────────────────── */
+/* Overrides py-2 (8 px each) from Tailwind when a specific context is known.  */
+
+.message-sections-selector[data-precededBy="message-section-header-high-level"] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="message-section-header-low-level"] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="address-row"] {
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="description-row"] {
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="summary-row"] {
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="binding-version-row"] {
+  padding-top: 6px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="message-section-selector"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="json-schema-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="jso-viewer"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.message-sections-selector[data-precededBy="server-block"] {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
