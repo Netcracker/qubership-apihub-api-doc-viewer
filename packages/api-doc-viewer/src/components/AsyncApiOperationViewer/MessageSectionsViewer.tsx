@@ -96,7 +96,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       }
     }
     const selectorElement = (
-      <div className={`px-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
+      <div className={`px-2 py-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
         <Selector
           options={sectionSelectorOptions}
           selectedOption={selectedSection}

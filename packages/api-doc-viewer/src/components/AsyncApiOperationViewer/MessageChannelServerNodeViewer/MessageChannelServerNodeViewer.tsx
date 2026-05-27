@@ -187,7 +187,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const renderAddress = useCallback((layoutSide: LayoutSide) => {
     function renderAddressContent(isInvisible: boolean = false, diffClasses: string[] = []) {
       return (
-        <div className={`px-2 flex flex-row h-full ${diffClasses.join(' ')}`}>
+        <div className={`px-2 pt-2 pb-1 flex flex-row h-full ${diffClasses.join(' ')}`}>
           {!isInvisible && (
             <div className="server-address-container server-address server-subheader">
               {renderProtocol(layoutSide)}

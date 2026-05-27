@@ -1,5 +1,4 @@
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { TextValue } from "../TextValue/TextValue"
@@ -26,32 +25,16 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
     }
     const diffsStyleClasses: string[] = []
     if (layoutSide === ORIGIN_LAYOUT_SIDE) {
-      if (isDiffRemove(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
-      if (isDiffAdd(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
-      if (isDiffReplace(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
-      }
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
     }
     if (layoutSide === CHANGED_LAYOUT_SIDE) {
-      if (isDiffRemove(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
-      if (isDiffAdd(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
-      if (isDiffReplace(data)) {
-        diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
-      }
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
     }
     return diffsStyleClasses
   }, [diff, layoutSide])
 
   return (
-    <div className={`flex h-full px-2 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div className={`flex h-full px-2 pt-1 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       <TextValue
         label={label}
         fontWeight={fontWeight}

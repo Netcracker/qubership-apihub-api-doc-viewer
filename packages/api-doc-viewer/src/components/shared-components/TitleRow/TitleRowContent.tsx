@@ -103,7 +103,10 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   }, [enableHeader, expandable, level, expanded, onClickExpander, headerValue])
 
   return (
-    <div className={`flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
+    <div
+      className={`flex items-center h-full px-2 ${usage === TitleRowUsage.Default ? 'py-1' : ''} gap-2 ${diffsStyleClasses.join(' ')}`}
+      style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}
+    >
       {header}
       {subheader?.(layoutSide)}
     </div>

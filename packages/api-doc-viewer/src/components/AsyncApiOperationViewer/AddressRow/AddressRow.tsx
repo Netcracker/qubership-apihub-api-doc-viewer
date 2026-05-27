@@ -136,7 +136,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   }, [diff, layoutSide])
 
   return (
-    <div className={`address-row font-Inter-Medium h-full px-2 ${diffStyles.join(' ')}`}>
+    <div className={`address-row font-Inter-Medium h-full px-2 py-2 ${diffStyles.join(' ')}`}>
       <div
         className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3'
         style={{ paddingLeft: 10, paddingRight: 10 }}
