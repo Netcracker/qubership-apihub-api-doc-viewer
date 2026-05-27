@@ -17,17 +17,17 @@ import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
-import { BrokenRefViewer } from "./BrokenRefViewer/BrokenRefViewer";
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
 
-type BindingsNodeViewerProps = {
+type BindingsNodeViewerProps = WithPrecededByProps & {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>
   variant?: SizeVariant
 }
 
 export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
-  const { node, variant = SizeVariant.PRIMARY } = props
+  const { node, variant = SizeVariant.PRIMARY, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
 
@@ -128,6 +128,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       const mergedBindingValue = prepareBindingValueInCaseOfWhollyChanged(bindingValue, changedNodeMetadata, diffMetaKeys)
       return (
         <JsoDiffsViewer
+          data-precededBy={PrecededBy.BINDING_VERSION_ROW}
           mergedSource={mergedBindingValue}
           displayMode={displayMode}
           initialLevel={1}
@@ -140,6 +141,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     if (isBindingNode(selectedBindingNode)) {
       return (
         <JsoViewer
+          data-precededBy={PrecededBy.BINDING_VERSION_ROW}
           source={bindingValue}
           displayMode={displayMode}
           initialLevel={1}
@@ -153,6 +155,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   return (
     <div className="flex flex-col">
       <TitleRow
+        data-precededBy={precededBy}
         value='Bindings'
         expandable={false}
         expanded={true}
@@ -161,20 +164,18 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         // diffs
         {...diffsProps}
       />
-      {brokenRef && <BrokenRefViewer value={brokenRef} />}
-      {!brokenRef && (
-        <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col">
-          <TextRow
-            value={bindingVersion}
-            variant={TextValueVariant.body}
-            label="Version"
-            fontWeight='bold'
-            // diffs
-            {...bindingVersionDiffsProps}
-          />
-          {bindingContent}
-        </div>
-      )}
+      <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col">
+        <TextRow
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          value={bindingVersion}
+          variant={TextValueVariant.body}
+          label="Version"
+          fontWeight='bold'
+          // diffs
+          {...bindingVersionDiffsProps}
+        />
+        {bindingContent}
+      </div>
     </div>
   )
 }

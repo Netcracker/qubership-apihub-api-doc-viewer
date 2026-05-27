@@ -1,8 +1,9 @@
 import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import type { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { TextValueVariant } from "../TextValue/types"
+import { WithPrecededByProps } from "../WithPrecededByProps"
 
-export type TextRowProps = {
+export type TextRowProps = WithPrecededByProps & {
   value?: string // Document Mode
   variant: TextValueVariant
   label?: string

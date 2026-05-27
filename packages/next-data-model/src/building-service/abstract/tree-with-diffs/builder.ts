@@ -53,12 +53,18 @@ export abstract class TreeWithDiffsBuilder<
     params: TreeNodeWithDiffsParams<V, K, M, D>,
   ): NodeDescendantDiffs | undefined;
 
-  protected abstract updateNodeDiffsByDescendantDiffs(
+  protected updateNodeDiffsByDescendantDiffs(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     kind: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     crawlValue: object | null | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     nodeDiffs: NodeDiffs<D> | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     nodeDescendantDiffs: NodeDescendantDiffs,
-  ): NodeDescendantDiffs | undefined;
+  ): NodeDescendantDiffs | undefined {
+    return undefined
+  }
 
   protected abstract createNodeDescendantsDiffsSummary(
     kind: string,

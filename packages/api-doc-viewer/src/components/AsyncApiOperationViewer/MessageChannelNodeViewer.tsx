@@ -6,22 +6,23 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
-import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
-import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
-import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { TextRowProps } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { BindingsNodeViewer } from "./BindingsNodeViewer"
+import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
+import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
+import { MessageChannelServersNodeViewer } from "./MessageChannelServersNodeViewer"
 
-type MessageChannelNodeViewerProps = {
+type MessageChannelNodeViewerProps = WithPrecededByProps & {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL>
 }
 
 export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const value = node.value()
 
@@ -78,6 +79,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
+          data-precededBy={precededBy}
           value={value?.title ?? ''}
           expandable={false}
           expanded={true}
@@ -88,6 +90,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {!isTitleDisplayed && (
         <TitleRow
+          data-precededBy={precededBy}
           value={node.key.toString()}
           expandable={false}
           expanded={true}
@@ -98,6 +101,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {isDescriptionDisplayed && (
         <TextRow
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -107,6 +111,11 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {isSummaryDisplayed && (
         <TextRow
+          data-precededBy={
+            isDescriptionDisplayed
+              ? PrecededBy.DESCRIPTION_ROW
+              : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+          }
           value={value?.summary ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -116,10 +125,66 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
 
       {children.length > 0 && (
         <div className="flex flex-col">
-          {parametersChild && <MessageChannelParametersNodeViewer node={parametersChild} />}
-          {serversChild && <MessageChannelServersNodeViewer node={serversChild} />}
-          {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}
-          {bindingsChild && <BindingsNodeViewer node={bindingsChild} />}
+          {parametersChild && (
+            <MessageChannelParametersNodeViewer
+              data-precededBy={
+                isDescriptionDisplayed
+                  ? PrecededBy.DESCRIPTION_ROW
+                  : isSummaryDisplayed
+                    ? PrecededBy.SUMMARY_ROW
+                    : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={parametersChild}
+            />
+          )}
+          {serversChild && (
+            <MessageChannelServersNodeViewer
+              data-precededBy={
+                parametersChild
+                  ? PrecededBy.JSON_SCHEMA_VIEWER
+                  : isDescriptionDisplayed
+                    ? PrecededBy.DESCRIPTION_ROW
+                    : isSummaryDisplayed
+                      ? PrecededBy.SUMMARY_ROW
+                      : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={serversChild}
+            />
+          )}
+          {extensionsChild && (
+            <ExtensionsNodeViewer
+              data-precededBy={
+                serversChild
+                  ? PrecededBy.SERVER_BLOCK
+                  : parametersChild
+                    ? PrecededBy.JSON_SCHEMA_VIEWER
+                    : isDescriptionDisplayed
+                      ? PrecededBy.DESCRIPTION_ROW
+                      : isSummaryDisplayed
+                        ? PrecededBy.SUMMARY_ROW
+                        : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={extensionsChild}
+            />
+          )}
+          {bindingsChild && (
+            <BindingsNodeViewer
+              data-precededBy={
+                extensionsChild
+                  ? PrecededBy.JSO_VIEWER
+                  : serversChild
+                    ? PrecededBy.SERVER_BLOCK
+                    : parametersChild
+                      ? PrecededBy.JSON_SCHEMA_VIEWER
+                      : isDescriptionDisplayed
+                        ? PrecededBy.DESCRIPTION_ROW
+                        : isSummaryDisplayed
+                          ? PrecededBy.SUMMARY_ROW
+                          : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={bindingsChild}
+            />
+          )}
         </div>
       )}
     </div>

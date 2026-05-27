@@ -12,16 +12,19 @@ import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../..";
 import { DiffFloatingBadgeWrapper } from "../shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper";
 import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
 import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
 
-type MessageSectionsViewerProps = {
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
+type MessageSectionsViewerProps = WithPrecededByProps & {
+  node:
+  | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
+  | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>
 }
 
 export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const layoutMode = useLayoutMode()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -96,7 +99,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       }
     }
     const selectorElement = (
-      <div className={`px-2 py-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
+      <div data-precededBy={precededBy} className={`px-2 py-2 h-full ${Array.from(diffsStyles).join(' ')}`}>
         <Selector
           options={sectionSelectorOptions}
           selectedOption={selectedSection}
@@ -108,7 +111,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       </div>
     )
     return selectorElement
-  }, [nodeDiff, sectionSelectorOptions, selectedSection])
+  }, [nodeDiff, precededBy, sectionSelectorOptions, selectedSection])
 
   const renderSelectorRow = useCallback(() => {
     switch (layoutMode) {
@@ -139,7 +142,10 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       {renderSelectorRow()}
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>
-          <MessageSectionViewer node={selectedSection.node} />
+          <MessageSectionViewer
+            data-precededBy={PrecededBy.MESSAGE_SECTION_SELECTOR}
+            node={selectedSection.node}
+          />
         </div>
       )}
     </div>

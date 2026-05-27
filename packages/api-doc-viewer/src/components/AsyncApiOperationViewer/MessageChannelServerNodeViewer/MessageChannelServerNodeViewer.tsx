@@ -2,6 +2,7 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useCallback, useMemo } from "react"
 
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
@@ -17,24 +18,20 @@ import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
-import { BrokenRefViewer } from "../BrokenRefViewer/BrokenRefViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
 import { SizeVariant } from "../types/SizeVariant"
 import './MessageChannelServerNodeViewer.css'
 
-type MessageChannelServerNodeViewerProps = {
+type MessageChannelServerNodeViewerProps = WithPrecededByProps & {
   node:
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>
   | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER>
 }
 
 export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerProps> = memo(props => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const value = useMemo(() => node.value(), [node])
-  const meta = useMemo(() => node.meta(), [node])
-
-  const brokenRef = useMemo(() => meta?.brokenRef, [meta])
 
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
@@ -186,15 +183,19 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const renderAddress = useCallback((layoutSide: LayoutSide) => {
     function renderAddressContent(isInvisible: boolean = false, diffClasses: string[] = []) {
+      if (isInvisible) {
+        return null
+      }
       return (
-        <div className={`px-2 pt-2 pb-1 flex flex-row h-full ${diffClasses.join(' ')}`}>
-          {!isInvisible && (
-            <div className="server-address-container server-address server-subheader">
-              {renderProtocol(layoutSide)}
-              ://
-              {renderHost(layoutSide)}
-            </div>
-          )}
+        <div
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          className={`px-2 pt-2 pb-1 flex flex-row h-full ${diffClasses.join(' ')}`}
+        >
+          <div className="server-address-container server-address server-subheader">
+            {renderProtocol(layoutSide)}
+            ://
+            {renderHost(layoutSide)}
+          </div>
         </div>
       )
     }
@@ -231,59 +232,73 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
+  if (!value) {
+    return null
+  }
+
   return (
     <div className='flex flex-col'>
-      {brokenRef && <BrokenRefViewer value={brokenRef} />}
-      {!brokenRef && value && <>
-        {isTitleDisplayed && (
-          <TitleRow
-            value={value.title}
-            expandable={false}
-            expanded={true}
-            variant={TextValueVariant.h4}
-            // diffs
-            {...titleRowDiffsProps}
-          />
-        )}
-        {!isTitleDisplayed && (
-          <TitleRow
-            value={node.key.toString()}
-            expandable={false}
-            expanded={true}
-            variant={TextValueVariant.h4}
-            // diffs
-            {...titleRowDiffsProps}
-          />
-        )}
-        <ServerAddressRow
-          renderAddress={renderAddress}
+      {isTitleDisplayed && (
+        <TitleRow
+          data-precededBy={precededBy}
+          value={value.title}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h4}
           // diffs
-          {...serverAddressRowDiffsProps}
+          {...titleRowDiffsProps}
         />
-        {isDescriptionDisplayed && (
-          <TextRow
-            value={value?.description ?? ''}
-            variant={TextValueVariant.body}
-            // diffs
-            {...descriptionRowDiffProps}
-          />
-        )}
-        {isSummaryDisplayed && (
-          <TextRow
-            value={value?.summary ?? ''}
-            variant={TextValueVariant.body}
-            // diffs
-            {...summaryRowDiffProps}
-          />
-        )}
-      </>}
-      {!brokenRef && children.length > 0 && bindingsChild && (
-        <div className="flex flex-col">
-          <BindingsNodeViewer
-            node={bindingsChild}
-            variant={SizeVariant.SECONDARY}
-          />
-        </div>
+      )}
+      {!isTitleDisplayed && (
+        <TitleRow
+          data-precededBy={precededBy}
+          value={node.key.toString()}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h4}
+          // diffs
+          {...titleRowDiffsProps}
+        />
+      )}
+      <ServerAddressRow
+        renderAddress={renderAddress}
+        // diffs
+        {...serverAddressRowDiffsProps}
+      />
+      {isDescriptionDisplayed && (
+        <TextRow
+          data-precededBy={PrecededBy.ADDRESS_ROW}
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...descriptionRowDiffProps}
+        />
+      )}
+      {isSummaryDisplayed && (
+        <TextRow
+          data-precededBy={
+            isDescriptionDisplayed
+              ? PrecededBy.DESCRIPTION_ROW
+              : PrecededBy.ADDRESS_ROW
+          }
+          value={value?.summary ?? ''}
+          variant={TextValueVariant.body}
+          // diffs
+          {...summaryRowDiffProps}
+        />
+      )}
+      {bindingsChild && (
+        <BindingsNodeViewer
+          data-precededBy={
+            isSummaryDisplayed
+              ? PrecededBy.SUMMARY_ROW
+              : isDescriptionDisplayed
+                ? PrecededBy.DESCRIPTION_ROW
+                : PrecededBy.ADDRESS_ROW
+          }
+          node={bindingsChild}
+          variant={SizeVariant.SECONDARY}
+        />
       )}
     </div>
   )

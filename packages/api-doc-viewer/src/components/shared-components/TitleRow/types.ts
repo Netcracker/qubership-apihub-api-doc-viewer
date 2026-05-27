@@ -7,13 +7,14 @@ import type {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
+import { WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TitleRowUsage {
   Default = 'default',
   JsoProperty = 'jso-property',
 }
 
-export type TitleRowProps = {
+export type TitleRowProps = WithPrecededByProps & {
   value?: string // Document Mode
   expandable: boolean
   expanded?: boolean

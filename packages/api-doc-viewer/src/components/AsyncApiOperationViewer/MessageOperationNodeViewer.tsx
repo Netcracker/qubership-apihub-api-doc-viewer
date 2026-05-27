@@ -6,20 +6,21 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageOperation } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
-import { BindingsNodeViewer } from "./BindingsNodeViewer"
-import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { TextRowProps } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { BindingsNodeViewer } from "./BindingsNodeViewer"
+import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
-type MessageOperationNodeViewerProps = {
+type MessageOperationNodeViewerProps = WithPrecededByProps & {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>
 }
 
 export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const value = node.value()
 
@@ -74,6 +75,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
+          data-precededBy={precededBy}
           value={value?.title ?? ''}
           variant={TextValueVariant.h2}
           expandable={false}
@@ -84,6 +86,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {!isTitleDisplayed && (
         <TitleRow
+          data-precededBy={precededBy}
           value={node.key.toString()}
           variant={TextValueVariant.h2}
           expandable={false}
@@ -94,6 +97,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {isDescriptionDisplayed && (
         <TextRow
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -102,6 +106,11 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {isSummaryDisplayed && (
         <TextRow
+          data-precededBy={
+            isDescriptionDisplayed
+              ? PrecededBy.DESCRIPTION_ROW
+              : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+          }
           value={value?.summary ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -111,8 +120,32 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
 
       {children.length > 0 && (
         <div className="flex flex-col">
-          {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}
-          {bindingsChild && <BindingsNodeViewer node={bindingsChild} />}
+          {extensionsChild && (
+            <ExtensionsNodeViewer
+              data-precededBy={
+                isSummaryDisplayed
+                  ? PrecededBy.SUMMARY_ROW
+                  : isDescriptionDisplayed
+                    ? PrecededBy.DESCRIPTION_ROW
+                    : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={extensionsChild}
+            />
+          )}
+          {bindingsChild && (
+            <BindingsNodeViewer
+              data-precededBy={
+                extensionsChild
+                  ? PrecededBy.JSO_VIEWER
+                  : isSummaryDisplayed
+                    ? PrecededBy.SUMMARY_ROW
+                    : isDescriptionDisplayed
+                      ? PrecededBy.DESCRIPTION_ROW
+                      : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+              }
+              node={bindingsChild}
+            />
+          )}
         </div>
       )}
     </div>

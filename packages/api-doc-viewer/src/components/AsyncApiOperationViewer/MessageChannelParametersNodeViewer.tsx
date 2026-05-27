@@ -13,22 +13,28 @@ import { JsoViewer } from "../JsoViewer/JsoViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 
 const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
 
-type MessageChannelParametersNodeViewerProps = {
+type MessageChannelParametersNodeViewerProps = WithPrecededByProps & {
   node:
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
   | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
 }
 
 export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const layoutMode = useLayoutMode()
 
   if (isMessageChannelParametersNodeWithDiffs(node)) {
-    return <MessageChannelParametersNodeWithDiffsViewer node={node} />
+    return (
+      <MessageChannelParametersNodeWithDiffsViewer
+        data-precededBy={precededBy}
+        node={node}
+      />
+    )
   }
 
   const value = node.value()
@@ -36,11 +42,13 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
 
   return <>
     <TitleRow
+      data-precededBy={precededBy}
       value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
     />
     <JsoViewer
+      data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       source={addressParameters}
       initialLevel={1}
       supportJsonSchema={true}
@@ -49,12 +57,12 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
   </>
 }
 
-type MessageChannelParametersNodeWithDiffsViewerProps = {
+type MessageChannelParametersNodeWithDiffsViewerProps = WithPrecededByProps & {
   node: AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
 }
 
 const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNodeWithDiffsViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
   const layoutMode = useLayoutMode()
@@ -86,6 +94,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
 
   return <>
     <TitleRow
+      data-precededBy={precededBy}
       value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
@@ -93,6 +102,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       {...diffsProps}
     />
     <JsonSchemaDiffViewer
+      data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={preparedAddressParameters}
       expandedDepth={2}
       displayMode={displayMode}

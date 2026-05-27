@@ -7,6 +7,7 @@ import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
+import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TitleRowContentProps, TitleRowUsage } from "./types"
 
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
@@ -26,8 +27,12 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     highlightingMode = DIFF_HIGHLIGHTING_MODES_DEFAULT,
   } = props
 
+  // diffs specific
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
+
+  // indents specific
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const highlightingModeForKey = useMemo(() => {
     switch (usage) {
@@ -72,6 +77,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
     return (
       <TextValue
+        data-precededBy={precededBy}
         value={value}
         variant={variant}
         layoutSide={layoutSide}
@@ -81,14 +87,14 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         onClick={onClickExpander}
       />
     )
-  }, [enableHeaderValue, value, usage, highlightingModeForKey, variant, layoutSide, diff, onClickExpander])
+  }, [enableHeaderValue, precededBy, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
   const header = useMemo(() => {
     if (!enableHeader) {
       return level > 0 && <LevelIndicator level={level} />
     }
     return <>
       {(expandable || level > 0) && (
-        <div className="flex items-stretch self-stretch">
+        <div data-precededBy={precededBy} className="flex items-stretch self-stretch">
           <LevelIndicator level={level} />
           <Expander
             expandable={expandable}
@@ -100,11 +106,12 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       )}
       {headerValue}
     </>
-  }, [enableHeader, expandable, level, expanded, onClickExpander, headerValue])
+  }, [enableHeader, expandable, level, precededBy, expanded, onClickExpander, headerValue])
 
   return (
     <div
-      className={`flex items-center h-full px-2 ${usage === TitleRowUsage.Default ? 'py-1' : ''} gap-2 ${diffsStyleClasses.join(' ')}`}
+      data-precededBy={precededBy}
+      className={`flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`}
       style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}
     >
       {header}

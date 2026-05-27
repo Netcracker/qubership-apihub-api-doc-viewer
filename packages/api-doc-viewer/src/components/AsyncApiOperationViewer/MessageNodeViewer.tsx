@@ -11,6 +11,7 @@ import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { AddressRow, AddressRowProps } from "./AddressRow/AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
 
@@ -106,6 +107,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       />
       {isDescriptionDisplayed && (
         <TextRow
+          data-precededBy={PrecededBy.ADDRESS_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -114,6 +116,11 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       {isSummaryDisplayed && (
         <TextRow
+          data-precededBy={
+            isDescriptionDisplayed
+              ? PrecededBy.DESCRIPTION_ROW
+              : PrecededBy.ADDRESS_ROW
+          }
           value={value?.summary ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -121,24 +128,37 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       <MessageChildrenViewer
+        data-precededBy={
+          isSummaryDisplayed
+            ? PrecededBy.SUMMARY_ROW
+            : isDescriptionDisplayed
+              ? PrecededBy.DESCRIPTION_ROW
+              : PrecededBy.ADDRESS_ROW
+        }
         children={children}
       />
     </div>
   )
 }
 
-type OperationChildrenViewerProps = {
+type OperationChildrenViewerProps = WithPrecededByProps & {
   children: AsyncApiTreeNode[]
 }
 
 const MessageChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
-  const { children } = props
+  const { children, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   return (
     <div className="flex flex-col">
       {children.map(child => {
         if (isMessageSectionSelectorNode(child)) {
-          return <MessageSectionsViewer key={child.key} node={child} />
+          return (
+            <MessageSectionsViewer
+              data-precededBy={precededBy}
+              key={child.key}
+              node={child}
+            />
+          )
         }
         return null
       })}

@@ -15,15 +15,16 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
-type MessageContentNodeViewerProps = {
+type MessageContentNodeViewerProps = WithPrecededByProps & {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT>
 }
 
 export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
   const layoutMode = useLayoutMode()
@@ -83,15 +84,17 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}
           overriddenKind='parameters'
         />
       )
     }
-    if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
-      return diffMetaKeys ? (
+    if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE && diffMetaKeys) {
+      return (
         <JsonSchemaDiffViewer
+          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}
           metaKeys={diffMetaKeys}
@@ -99,7 +102,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
           layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
           overriddenKind='parameters'
         />
-      ) : null
+      )
     }
     return null
   }, [diffMetaKeys, diffTypes, displayMode, layoutMode])
@@ -109,6 +112,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       {headersChild && (
         <div className="flex flex-col">
           <TitleRow
+            data-precededBy={precededBy}
             value="Headers"
             variant={TextValueVariant.h3}
             expandable={false}
@@ -120,17 +124,36 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       )}
       {extensionsChild && (
         <ExtensionsNodeViewer
+          data-precededBy={
+            headersChild
+              ? PrecededBy.JSON_SCHEMA_VIEWER
+              : precededBy
+          }
           node={extensionsChild}
         />
       )}
       {bindingsChild && (
         <BindingsNodeViewer
+          data-precededBy={
+            headersChild
+              ? PrecededBy.JSON_SCHEMA_VIEWER
+              : extensionsChild
+                ? PrecededBy.JSO_VIEWER
+                : precededBy
+          }
           node={bindingsChild}
         />
       )}
       {payloadChild && (
         <div className="flex flex-col">
           <TitleRow
+            data-precededBy={
+              headersChild
+                ? PrecededBy.JSON_SCHEMA_VIEWER
+                : extensionsChild || bindingsChild
+                  ? PrecededBy.JSO_VIEWER
+                  : precededBy
+            }
             value="Payload"
             variant={TextValueVariant.h3}
             expandable={false}

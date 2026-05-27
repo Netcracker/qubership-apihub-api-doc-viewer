@@ -8,8 +8,9 @@ import { JsoViewer } from "../JsoViewer/JsoViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 
-type SpecificationExtensionsProps = {
+type SpecificationExtensionsProps = WithPrecededByProps & {
   node:
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
   | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
@@ -17,7 +18,7 @@ type SpecificationExtensionsProps = {
 
 // TODO: Make it row-like component
 export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) => {
-  const { node } = props
+  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const diffMetaKeys = useDiffMetaKeys()
 
@@ -38,6 +39,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
 
   return <>
     <TitleRow
+      data-precededBy={precededBy}
       value='Extensions'
       expandable={false}
       variant={TextValueVariant.h3}
@@ -47,12 +49,14 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
     />
     {diffMetaKeys ? (
       <JsoDiffsViewer
+        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         mergedSource={extensions}
         initialLevel={1}
         diffMetaKeys={diffMetaKeys}
       />
     ) : (
       <JsoViewer
+        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         source={extensions}
         initialLevel={1}
       />

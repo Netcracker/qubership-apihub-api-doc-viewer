@@ -2,6 +2,7 @@ import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { TextValue } from "../TextValue/TextValue"
+import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import type { TextRowContentProps } from "./types"
 
 const TITLE_ROW_MIN_HEIGHT = 18 + 4 + 4 // font size + padding top + padding bottom
@@ -11,6 +12,9 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
 
   // value/font specific
   const { label, fontWeight } = props
+
+  // indents specific
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
@@ -36,6 +40,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div className={`flex h-full px-2 pt-1 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`} style={{ minHeight: TITLE_ROW_MIN_HEIGHT }}>
       <TextValue
+        data-precededBy={precededBy}
         label={label}
         fontWeight={fontWeight}
         value={value}
