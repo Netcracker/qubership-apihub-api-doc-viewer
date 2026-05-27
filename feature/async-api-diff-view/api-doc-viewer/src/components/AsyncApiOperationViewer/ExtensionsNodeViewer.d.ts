@@ -1,7 +1,8 @@
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from '../../../../next-data-model/src/model/async-api/types/aliases';
 import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/async-api/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-type SpecificationExtensionsProps = {
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type SpecificationExtensionsProps = WithPrecededByProps & {
     node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.EXTENSIONS>;
 };
 export declare const ExtensionsNodeViewer: FC<SpecificationExtensionsProps>;
