@@ -25,6 +25,8 @@ export abstract class AbstractNodeDiffsAggregator<
     nodeDiffs: NodeDiffs<D>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     nodeDescendantDiffs: NodeDescendantDiffs,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    diffMetaKeys: DiffMetaKeys,
   ): NodeDiffs<D> | undefined {
     return undefined
   }

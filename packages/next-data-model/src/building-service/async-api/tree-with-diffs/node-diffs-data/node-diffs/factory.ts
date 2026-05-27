@@ -5,6 +5,7 @@ import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/t
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { AsyncApiNodeDiffsAggregatorKindBinding } from "./kind-binding";
 import { AsyncApiNodeDiffsAggregatorKindMessage } from "./kind-message";
+import { AsyncApiNodeDiffsAggregatorKindParameters } from "./kind-parameters";
 import { AsyncApiNodeDiffsAggregatorKindServer } from "./kind-server";
 import { AsyncApiNodeDiffsAggregatorKindServers } from "./kind-servers";
 
@@ -43,6 +44,11 @@ export class AsyncApiNodeDiffsAggregatorFactory {
           this.instances.set(AsyncApiTreeNodeKinds.MESSAGE, new AsyncApiNodeDiffsAggregatorKindMessage());
         }
         return this.instances.get(AsyncApiTreeNodeKinds.MESSAGE)!;
+      case AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS)) {
+          this.instances.set(AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS, new AsyncApiNodeDiffsAggregatorKindParameters());
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS)!;
       case AsyncApiTreeNodeKinds.SERVER:
         if (!this.instances.has(AsyncApiTreeNodeKinds.SERVER)) {
           this.instances.set(AsyncApiTreeNodeKinds.SERVER, new AsyncApiNodeDiffsAggregatorKindServer());

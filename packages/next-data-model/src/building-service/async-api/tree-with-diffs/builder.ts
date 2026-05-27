@@ -288,7 +288,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     }
     return AsyncApiNodeDiffsAggregatorFactory
       .instance(kind)
-      .aggregateByDescendantDiffs(crawlValue, nodeDiffs, nodeDescendantDiffs)
+      .aggregateByDescendantDiffs(crawlValue, nodeDiffs, nodeDescendantDiffs, this.diffsMetaKeys)
   }
 
   protected createNodeDescendantsDiffsSummary(
