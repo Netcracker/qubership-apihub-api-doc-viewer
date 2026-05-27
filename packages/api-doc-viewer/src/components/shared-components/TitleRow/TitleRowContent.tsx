@@ -7,7 +7,7 @@ import { FC, memo, useMemo } from "react"
 import { Expander } from "../Expander"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
-import '../../../shared-styles/preceded-by.css'
+import '../../shared-styles/preceded-by.css'
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TitleRowContentProps, TitleRowUsage } from "./types"
 

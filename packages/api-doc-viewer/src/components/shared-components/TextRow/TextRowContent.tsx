@@ -2,7 +2,7 @@ import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
 import { TextValue } from "../TextValue/TextValue"
-import '../../../shared-styles/preceded-by.css'
+import '../../shared-styles/preceded-by.css'
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import type { TextRowContentProps } from "./types"
 
