@@ -7,7 +7,7 @@ import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 
 type SpecificationExtensionsProps = {
   node:
@@ -24,12 +24,13 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
   const value = node.value()
   const extensions = value?.rawValues ?? {}
 
-  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
+  const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'> = useMemo(() => {
     if (isExtensionsNodeWithDiffs(node)) {
       return {
         diff: node.diffs[''],
         descendantDiffs: node.descendantDiffs,
         diffsSeverities: node.diffsSeverities,
+        highlightingMode: node.diffs['']?.highlightingMode,
       }
     }
     return {}
@@ -40,6 +41,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       value='Extensions'
       expandable={false}
       variant={TextValueVariant.h3}
+      usage={TitleRowUsage.JsoProperty}
       // diffs
       {...diffsProps}
     />

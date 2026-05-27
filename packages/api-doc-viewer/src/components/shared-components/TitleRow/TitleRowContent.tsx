@@ -81,7 +81,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         onClick={onClickExpander}
       />
     )
-  }, [enableHeaderValue, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
+  }, [enableHeaderValue, value, usage, highlightingModeForKey, variant, layoutSide, diff, onClickExpander])
   const header = useMemo(() => {
     if (!enableHeader) {
       return level > 0 && <LevelIndicator level={level} />
