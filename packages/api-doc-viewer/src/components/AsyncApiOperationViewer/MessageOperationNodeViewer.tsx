@@ -71,7 +71,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
           value={value?.title ?? ''}
@@ -110,7 +110,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
 
       {children.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}
           {bindingsChild && <BindingsNodeViewer node={bindingsChild} />}
         </div>

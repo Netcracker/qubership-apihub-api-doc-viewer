@@ -75,7 +75,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
           value={value?.title ?? ''}
@@ -115,7 +115,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
 
       {children.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           {parametersChild && <MessageChannelParametersNodeViewer node={parametersChild} />}
           {serversChild && <MessageChannelServersNodeViewer node={serversChild} />}
           {extensionsChild && <ExtensionsNodeViewer node={extensionsChild} />}

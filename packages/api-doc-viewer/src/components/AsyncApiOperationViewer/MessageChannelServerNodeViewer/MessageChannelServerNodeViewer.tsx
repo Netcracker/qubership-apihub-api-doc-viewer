@@ -232,7 +232,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col'>
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && value && <>
         {isTitleDisplayed && (
@@ -278,7 +278,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
         )}
       </>}
       {!brokenRef && children.length > 0 && bindingsChild && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <BindingsNodeViewer
             node={bindingsChild}
             variant={SizeVariant.SECONDARY}

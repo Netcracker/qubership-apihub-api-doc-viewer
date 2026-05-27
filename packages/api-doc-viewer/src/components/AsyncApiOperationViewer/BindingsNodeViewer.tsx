@@ -151,7 +151,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   }, [selectedBindingNode, bindingValue, displayMode, diffMetaKeys])
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       <TitleRow
         value='Bindings'
         expandable={false}
@@ -163,7 +163,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       />
       {brokenRef && <BrokenRefViewer value={brokenRef} />}
       {!brokenRef && (
-        <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col gap-1">
+        <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col">
           <TextRow
             value={bindingVersion}
             variant={TextValueVariant.body}

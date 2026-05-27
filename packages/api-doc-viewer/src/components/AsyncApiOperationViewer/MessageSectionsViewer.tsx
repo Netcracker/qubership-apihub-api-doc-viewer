@@ -135,7 +135,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   }, [diffType, diffTypeCause, layoutMode, renderSelector])
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {renderSelectorRow()}
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>

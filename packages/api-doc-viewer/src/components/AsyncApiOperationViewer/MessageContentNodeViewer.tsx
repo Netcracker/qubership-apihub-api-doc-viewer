@@ -105,9 +105,9 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   }, [diffMetaKeys, diffTypes, displayMode, layoutMode])
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       {headersChild && (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col">
           <TitleRow
             value="Headers"
             variant={TextValueVariant.h3}
@@ -129,7 +129,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
         />
       )}
       {payloadChild && (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col">
           <TitleRow
             value="Payload"
             variant={TextValueVariant.h3}
