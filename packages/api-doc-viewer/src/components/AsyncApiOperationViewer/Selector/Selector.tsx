@@ -5,8 +5,8 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
-import "./Selector.css"
 import { SizeVariant } from "../types/SizeVariant"
+import "./Selector.css"
 
 const EMPTY_DIFFS_SUMMARY = new Set<DiffType>()
 
@@ -38,33 +38,12 @@ export const Selector: FC<SelectorProps> = (props) => {
   return (
     <div className='flex flex-row gap-2'>
       {options.map((option) => {
-        const { diffs, diffsSummary, descendantDiffsSummary } = option
-        const diffsRelatedClassesList = []
-        let isInvisible = false
-        if (diffs || diffsSummary || descendantDiffsSummary) {
-          // resolve diffs
-          const diffWholeNode = diffs?.[""]
-          if (diffWholeNode) {
-            const { styles } = diffWholeNode
-            switch (layoutSide) {
-              case ORIGIN_LAYOUT_SIDE:
-                diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.before.borderShadowColor))
-                isInvisible = diffWholeNode.data.action === DiffAction.add
-                break;
-              case CHANGED_LAYOUT_SIDE:
-                diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor))
-                isInvisible = diffWholeNode.data.action === DiffAction.remove
-                break;
-            }
-          }
-          if (diffsSummary || descendantDiffsSummary) {
-            const safeDiffsSummary = diffsSummary ?? EMPTY_DIFFS_SUMMARY
-            const safeDescendantDiffsSummary = descendantDiffsSummary ?? EMPTY_DIFFS_SUMMARY
-            const combinedDiffsSummary = new Set([...safeDiffsSummary, ...safeDescendantDiffsSummary])
-            const resolvedDiffType = maxDiffType(combinedDiffsSummary)
-            diffsRelatedClassesList.push(resolvedDiffType ? DiffsClassesBuilder.roundMarker(resolvedDiffType) : '')
-          }
-        }
+        const { diffsRelatedClassesList, isInvisible } = resolveOptionDiffPresentation({
+          diffs: option.diffs,
+          diffsSummary: option.diffsSummary,
+          descendantDiffsSummary: option.descendantDiffsSummary,
+          layoutSide,
+        })
         if (isInvisible) {
           return null
         }
@@ -86,4 +65,52 @@ export const Selector: FC<SelectorProps> = (props) => {
       })}
     </div>
   )
+}
+
+type ResolveOptionDiffPresentationParams<V extends object | null = object | null> = {
+  diffs?: NodeDiffs<V>
+  diffsSummary?: NodeDiffsSummary
+  descendantDiffsSummary?: NodeDescendantDiffsSummary
+  layoutSide: LayoutSide
+}
+
+type ResolveOptionDiffPresentationResult = {
+  diffsRelatedClassesList: string[]
+  isInvisible: boolean
+}
+
+function resolveOptionDiffPresentation<V extends object | null = object | null>(
+  params: ResolveOptionDiffPresentationParams<V>,
+): ResolveOptionDiffPresentationResult {
+  const { diffs, diffsSummary, descendantDiffsSummary, layoutSide } = params
+  const diffsRelatedClassesList: string[] = []
+  let isInvisible = false
+  if (diffs || diffsSummary || descendantDiffsSummary) {
+    const diffWholeNode = diffs?.[""]
+    if (diffWholeNode) {
+      const { styles } = diffWholeNode
+      switch (layoutSide) {
+        case ORIGIN_LAYOUT_SIDE:
+          if (!diffWholeNode.inherited) {
+            diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.before.borderShadowColor))
+          }
+          isInvisible = diffWholeNode.data.action === DiffAction.add
+          break
+        case CHANGED_LAYOUT_SIDE:
+          if (!diffWholeNode.inherited) {
+            diffsRelatedClassesList.push(DiffsClassesBuilder.borderShadow(styles.after.borderShadowColor))
+          }
+          isInvisible = diffWholeNode.data.action === DiffAction.remove
+          break
+      }
+    }
+    if (!diffWholeNode?.inherited && (diffsSummary || descendantDiffsSummary)) {
+      const safeDiffsSummary = diffsSummary ?? EMPTY_DIFFS_SUMMARY
+      const safeDescendantDiffsSummary = descendantDiffsSummary ?? EMPTY_DIFFS_SUMMARY
+      const combinedDiffsSummary = new Set([...safeDiffsSummary, ...safeDescendantDiffsSummary])
+      const resolvedDiffType = maxDiffType(combinedDiffsSummary)
+      diffsRelatedClassesList.push(resolvedDiffType ? DiffsClassesBuilder.roundMarker(resolvedDiffType) : '')
+    }
+  }
+  return { diffsRelatedClassesList, isInvisible }
 }

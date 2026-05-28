@@ -85,6 +85,7 @@ export type ChangedPropertyMetaData = {
     after: DiffFlags
   }
   highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
+  inherited?: boolean
 }
 export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 

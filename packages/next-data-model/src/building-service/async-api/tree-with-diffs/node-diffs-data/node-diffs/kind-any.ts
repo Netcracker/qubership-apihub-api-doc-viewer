@@ -52,7 +52,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       // If container wholly added/removed, it means that all the descendants are wholly added/removed
       const containerNodeDiff = containerNode.diffs['']
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
-        nodeDiffs[''] = containerNodeDiff
+        nodeDiffs[''] = { ...containerNodeDiff, inherited: true }
         return nodeDiffs
       } else {
         const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
@@ -66,7 +66,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
       // If parent wholly added/removed, it means that all the descendants are wholly added/removed
       const parentNodeDiff = parentNode.diffs['']
       if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
-        nodeDiffs[''] = parentNodeDiff
+        nodeDiffs[''] = { ...parentNodeDiff, inherited: true }
         return nodeDiffs
       } else {
         const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
@@ -92,7 +92,7 @@ export class AsyncApiNodeDiffsAggregatorKindAny
     // summary
     const summaryDiff = diffs['summary']
     summaryDiff && this.aggregateTextDiff(summaryDiff, 'summary', nodeDiffs)
-    
+
     return nodeDiffs
   }
 
