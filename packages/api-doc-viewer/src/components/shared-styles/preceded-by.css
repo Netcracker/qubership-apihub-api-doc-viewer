@@ -15,6 +15,10 @@
   padding-bottom: 4px;
 }
 
+.jso-property .title-row-content {
+  padding-bottom: 0;
+}
+
 .title-row-content[data-precededBy="root"] {
   padding-top: 8px;
   padding-bottom: 8px;
@@ -38,7 +42,7 @@
 }
 
 .title-row-content[data-precededBy="binding-version-row"] {
-  padding-top: 4px;
+  padding-top: 8px;
 }
 
 .title-row-content[data-precededBy="message-section-selector"] {
@@ -56,6 +60,11 @@
 
 .title-row-content[data-precededBy="server-block"] {
   padding-top: 8px;
+}
+
+.title-row-content[data-precededBy="server-address-row"] {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 /* ─── TextRowContent ────────────────────────────────────────────────────────── */

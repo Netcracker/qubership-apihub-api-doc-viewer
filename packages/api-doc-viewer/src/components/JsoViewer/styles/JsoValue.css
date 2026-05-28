@@ -1,10 +1,10 @@
 .jso-value {
   font-size: 12px;
+  margin-bottom: 2px;
 }
 
 .jso-value.text {
   font-size: 12px;
-  padding: 4px 0;
   color: rgb(100, 116, 139);
 }
 

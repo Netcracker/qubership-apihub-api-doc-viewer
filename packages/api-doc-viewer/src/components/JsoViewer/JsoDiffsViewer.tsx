@@ -12,10 +12,11 @@ import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import '../shared-styles/diffs/index.css'
 import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
-import '../shared-styles/diffs/index.css';
 
-type JsoDiffsViewerProps = {
+type JsoDiffsViewerProps = WithPrecededByProps & {
   mergedSource: unknown
   displayMode?: DisplayMode
   initialLevel?: number
@@ -49,6 +50,9 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       diffTypes,
     } = props
 
+    // indent-specific
+    const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+
     const referenceNamePropertyKey = Symbol('referenceName')
 
     const builder = useMemo(
@@ -77,8 +81,13 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
               <AsyncLevelContextProvider beforeLevel={initialLevel} afterLevel={initialLevel}>
                 <div data-testid='jso-diffs-viewer'>
-                  {jsoProperties.map(jsoProperty => (
+                  {jsoProperties.map((jsoProperty, index) => (
                     <JsoPropertyNodeViewerWithDiffs
+                      data-precededBy={
+                        index === 0
+                          ? precededBy
+                          : PrecededBy.JSO_PROPERTY
+                      }
                       key={jsoProperty.id}
                       node={jsoProperty}
                       supportJsonSchema={supportJsonSchema}

@@ -18,18 +18,19 @@ import { UxMarkerPanel } from "../kit/ux/UxMarkerPanel/UxMarkerPanel"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 
-type JsoPropertyNodeViewerWithDiffsProps = {
+type JsoPropertyNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: JsoTreeNodeWithDiffs
   supportJsonSchema?: boolean
 }
 
 export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsProps> = (props) => {
-  const {
-    node,
-    supportJsonSchema = false,
-  } = props
+  const { node, supportJsonSchema = false } = props
+
+  // indent-specific
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
   const diffMetaKeys = useDiffMetaKeys()
@@ -164,6 +165,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
+        data-precededBy={precededBy}
         value={`${node.key}`}
         expandable={expandable}
         expanded={expanded}
@@ -191,6 +193,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
             afterLevel={nextAfterLevel}
           >
             <JsoPropertyNodeViewerWithDiffs
+              data-precededBy={PrecededBy.JSO_PROPERTY}
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />

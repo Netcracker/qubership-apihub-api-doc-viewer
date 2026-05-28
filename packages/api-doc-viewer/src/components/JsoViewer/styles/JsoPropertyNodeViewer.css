@@ -7,3 +7,8 @@
 .jso-property .subheader {
   font-size: 12px;
 }
+
+.jso-property .text-value {
+  line-height: 2;
+  padding-bottom: 3px;
+}

@@ -10,18 +10,19 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { JsoValue } from "./JsoValue/JsoValue"
 
-type JsoPropertyNodeViewerProps = {
+type JsoPropertyNodeViewerProps = WithPrecededByProps & {
   node: JsoTreeNode
   supportJsonSchema?: boolean
 }
 
 export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => {
-  const {
-    node,
-    supportJsonSchema = false,
-  } = props
+  const { node, supportJsonSchema = false } = props
+
+  // indent-specific
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
@@ -81,6 +82,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
+        data-precededBy={precededBy}
         value={`${node.key}`}
         expandable={expandable}
         expanded={expanded}
@@ -98,6 +100,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
             value={nextLevel}
           >
             <JsoPropertyNodeViewer
+              data-precededBy={PrecededBy.JSO_PROPERTY}
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />
