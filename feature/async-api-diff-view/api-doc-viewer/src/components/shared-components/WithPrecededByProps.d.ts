@@ -1,5 +1,6 @@
 export declare const ATTRIBUTE_PRECEDED_BY = "data-precededBy";
 export declare enum PrecededBy {
+    ROOT = "root",
     ADDRESS_ROW = "address-row",
     DESCRIPTION_ROW = "description-row",
     SUMMARY_ROW = "summary-row",
@@ -9,7 +10,8 @@ export declare enum PrecededBy {
     JSON_SCHEMA_VIEWER = "json-schema-viewer",
     JSO_VIEWER = "jso-viewer",
     BINDING_VERSION_ROW = "binding-version-row",
-    SERVER_BLOCK = "server-block"
+    SERVER_BLOCK = "server-block",
+    SERVER_ADDRESS_ROW = "server-address-row"
 }
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;
