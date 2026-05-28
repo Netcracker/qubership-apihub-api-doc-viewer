@@ -1,4 +1,4 @@
-import{j as r}from"./_commonjs-dynamic-modules-6308e768.js";import{A as g}from"./AsyncApiOperationDiffsViewer-5874809a.js";import{b as h,T as y,a as f}from"./preprocess-06e10d9a.js";import{c as b,p as v}from"./yaml-source-2575e8ef.js";import"./index-f46741a2.js";import"./GraphPropNodeViewer-bcbf8025.js";import"./index-415bee12.js";import"./AsyncApiOperationViewer-20a79b1b.js";import"./GraphQLOperationViewer-3137d7eb.js";import"./GraphQLOperationDiffViewer-c08599d6.js";import"./js-yaml-71a24e1f.js";const x=`asyncapi: 3.0.0
+import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{A as g}from"./AsyncApiOperationDiffsViewer-5874809a.js";import{b as h,T as y,a as f}from"./preprocess-06e10d9a.js";import{c as b,p as v}from"./yaml-source-2575e8ef.js";import"./index-f46741a2.js";import"./GraphPropNodeViewer-bcbf8025.js";import"./index-415bee12.js";import"./AsyncApiOperationViewer-20a79b1b.js";import"./GraphQLOperationViewer-3137d7eb.js";import"./GraphQLOperationDiffViewer-c08599d6.js";import"./js-yaml-71a24e1f.js";const x=`asyncapi: 3.0.0
 id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
@@ -35,9 +35,7 @@ servers:
       env:
         $ref: '#/components/serverVariables/env'
     security:
-      - petstoreAuth:
-          - read:users
-          - write:users
+      - $ref: '#/components/securitySchemes/petstoreAuth'
     tags:
       - name: env:production
         description: Production environment
@@ -86,8 +84,7 @@ operations:
     channel:
       $ref: '#/channels/UserSignup'
     security:
-      - petstoreAuth:
-          - read:users
+      - $ref: '#/components/securitySchemes/petstoreAuthRead'
     tags:
       - name: user
         description: User operations
@@ -136,17 +133,17 @@ components:
           type: string
           description: Marketing campaign id
     AvroUserRecord:
-      schemaFormat: application/vnd.apache.avro+json;version=1.9.0
-      schema:
-        type: record
-        name: User
-        namespace: com.example
-        doc: User information
-        fields:
-          - name: displayName
-            type: string
-          - name: email
-            type: string
+      type: object
+      title: User
+      description: User information (Avro record equivalent)
+      required:
+        - displayName
+        - email
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
   servers:
     stagingServer:
       host: staging.broker.example.com:5672
@@ -237,6 +234,23 @@ components:
           availableScopes:
             read:users: Read user data
             write:users: Write user data
+      scopes:
+        - read:users
+        - write:users
+    petstoreAuthRead:
+      type: oauth2
+      description: OAuth2 security scheme for read-only operation access
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          availableScopes:
+            read:users: Read user data
+        clientCredentials:
+          tokenUrl: https://example.com/oauth/token
+          availableScopes:
+            read:users: Read user data
+      scopes:
+        - read:users
     apiKeyAuth:
       type: apiKey
       in: user
@@ -328,6 +342,10 @@ components:
     amqpChannelBinding:
       amqp:
         is: queue
+        queue:
+          name: reusable.queue
+          durable: true
+          exclusive: false
         bindingVersion: 0.3.0
   operationBindings:
     amqpOperationBinding:
@@ -376,9 +394,7 @@ servers:
       env:
         $ref: '#/components/serverVariables/env'
     security:
-      - petstoreAuth:
-          - read:users
-          - write:users
+      - $ref: '#/components/securitySchemes/petstoreAuth'
     tags:
       - name: env:production
         description: Production environment
@@ -427,8 +443,7 @@ operations:
     channel:
       $ref: '#/channels/UserSignup'
     security:
-      - petstoreAuth:
-          - read:users
+      - $ref: '#/components/securitySchemes/petstoreAuthRead'
     tags:
       - name: user
         description: User operations
@@ -475,17 +490,17 @@ components:
           type: string
           description: Marketing campaign id
     AvroUserRecord:
-      schemaFormat: application/vnd.apache.avro+json;version=1.9.0
-      schema:
-        type: record
-        name: User
-        namespace: com.example
-        doc: User information
-        fields:
-          - name: displayName
-            type: string
-          - name: email
-            type: string
+      type: object
+      title: User
+      description: User information (Avro record equivalent)
+      required:
+        - displayName
+        - email
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
   servers:
     stagingServer:
       host: staging.broker.example.com:5672
@@ -576,6 +591,23 @@ components:
           availableScopes:
             read:users: Read user data
             write:users: Write user data
+      scopes:
+        - read:users
+        - write:users
+    petstoreAuthRead:
+      type: oauth2
+      description: OAuth2 security scheme for read-only operation access
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          availableScopes:
+            read:users: Read user data
+        clientCredentials:
+          tokenUrl: https://example.com/oauth/token
+          availableScopes:
+            read:users: Read user data
+      scopes:
+        - read:users
     apiKeyAuth:
       type: apiKey
       in: user
@@ -667,6 +699,10 @@ components:
     amqpChannelBinding:
       amqp:
         is: queue
+        queue:
+          name: reusable.queue
+          durable: true
+          exclusive: false
         bindingVersion: 0.3.0
   operationBindings:
     amqpOperationBinding:
@@ -715,9 +751,7 @@ servers:
       env:
         $ref: '#/components/serverVariables/env'
     security:
-      - petstoreAuth:
-          - read:users
-          - write:users
+      - $ref: '#/components/securitySchemes/petstoreAuth'
     tags:
       - name: env:production
         description: Production environment
@@ -766,8 +800,7 @@ operations:
     channel:
       $ref: '#/channels/UserSignup'
     security:
-      - petstoreAuth:
-          - read:users
+      - $ref: '#/components/securitySchemes/petstoreAuthRead'
     tags:
       - name: user
         description: User operations
@@ -814,17 +847,17 @@ components:
           type: string
           description: Marketing campaign id
     AvroUserRecord:
-      schemaFormat: application/vnd.apache.avro+json;version=1.9.0
-      schema:
-        type: record
-        name: User
-        namespace: com.example
-        doc: User information
-        fields:
-          - name: displayName
-            type: string
-          - name: email
-            type: string
+      type: object
+      title: User
+      description: User information (Avro record equivalent)
+      required:
+        - displayName
+        - email
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
   servers:
     stagingServer:
       host: staging.broker.example.com:5672
@@ -915,6 +948,23 @@ components:
           availableScopes:
             read:users: Read user data
             write:users: Write user data
+      scopes:
+        - read:users
+        - write:users
+    petstoreAuthRead:
+      type: oauth2
+      description: OAuth2 security scheme for read-only operation access
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          availableScopes:
+            read:users: Read user data
+        clientCredentials:
+          tokenUrl: https://example.com/oauth/token
+          availableScopes:
+            read:users: Read user data
+      scopes:
+        - read:users
     apiKeyAuth:
       type: apiKey
       in: user
@@ -1006,6 +1056,10 @@ components:
     amqpChannelBinding:
       amqp:
         is: queue
+        queue:
+          name: reusable.queue
+          durable: true
+          exclusive: false
         bindingVersion: 0.3.0
   operationBindings:
     amqpOperationBinding:
@@ -1017,7 +1071,7 @@ components:
       amqp:
         contentEncoding: utf-8
         bindingVersion: 0.3.0
-`,I=`asyncapi: 3.0.0
+`,A=`asyncapi: 3.0.0
 id: urn:example:com:sample:asyncapi:maximal-template
 info:
   title: Maximal AsyncAPI 3.0 Template
@@ -1054,9 +1108,7 @@ servers:
       env:
         $ref: '#/components/serverVariables/env'
     security:
-      - petstoreAuth:
-          - read:users
-          - write:users
+      - $ref: '#/components/securitySchemes/petstoreAuth'
     tags:
       - name: env:production
         description: Production environment
@@ -1105,8 +1157,7 @@ operations:
     channel:
       $ref: '#/channels/UserSignup'
     security:
-      - petstoreAuth:
-          - read:users
+      - $ref: '#/components/securitySchemes/petstoreAuthRead'
     tags:
       - name: user
         description: User operations
@@ -1155,17 +1206,17 @@ components:
           type: string
           description: Marketing campaign id
     AvroUserRecord:
-      schemaFormat: application/vnd.apache.avro+json;version=1.9.0
-      schema:
-        type: record
-        name: User
-        namespace: com.example
-        doc: User information
-        fields:
-          - name: displayName
-            type: string
-          - name: email
-            type: string
+      type: object
+      title: User
+      description: User information (Avro record equivalent)
+      required:
+        - displayName
+        - email
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
   servers:
     stagingServer:
       host: staging.broker.example.com:5672
@@ -1256,6 +1307,23 @@ components:
           availableScopes:
             read:users: Read user data
             write:users: Write user data
+      scopes:
+        - read:users
+        - write:users
+    petstoreAuthRead:
+      type: oauth2
+      description: OAuth2 security scheme for read-only operation access
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          availableScopes:
+            read:users: Read user data
+        clientCredentials:
+          tokenUrl: https://example.com/oauth/token
+          availableScopes:
+            read:users: Read user data
+      scopes:
+        - read:users
     apiKeyAuth:
       type: apiKey
       in: user
@@ -1347,6 +1415,10 @@ components:
     amqpChannelBinding:
       amqp:
         is: queue
+        queue:
+          name: reusable.queue
+          durable: true
+          exclusive: false
         bindingVersion: 0.3.0
   operationBindings:
     amqpOperationBinding:
@@ -1358,4 +1430,4 @@ components:
       amqp:
         contentEncoding: utf-8
         bindingVersion: 0.3.0
-`,A=Object.assign({"../../../../samples/async-api-diffs/whole-apihub-operation/1.1-message-removed-from-operation-channel-and-document/before.yaml":x,"../../../../samples/async-api-diffs/whole-apihub-operation/1.2-message-added-to-operation-channel-and-document/before.yaml":S}),C=Object.assign({"../../../../samples/async-api-diffs/whole-apihub-operation/1.1-message-removed-from-operation-channel-and-document/after.yaml":U,"../../../../samples/async-api-diffs/whole-apihub-operation/1.2-message-added-to-operation-channel-and-document/after.yaml":I}),$=b(A,C),q=Object.fromEntries($.map(e=>[e.caseId,e])),d=({caseId:e})=>{const n=q[e];return n?r.jsx(g,{...R(n.beforeYaml,n.afterYaml)}):r.jsxs("div",{children:["Sample case not found: ",e]})},H={title:"Async API Diffs Suite/Whole Apihub Operation Samples",component:d},T="ConsumeUserSignups",M="UserMessage",t=e=>v(e),R=(e,n)=>({devMode:!0,mergedSource:h({beforeSource:t(e),afterSource:t(n)}),operationKeys:{operationKey:T,messageKey:M},referenceNamePropertyKey:y,diffMetaKeys:f}),u=e=>({name:e,args:{caseId:e},render:n=>r.jsx(d,{caseId:n.caseId})}),s=u("1.1-message-removed-from-operation-channel-and-document"),a=u("1.2-message-added-to-operation-channel-and-document");var i,o,p;s.parameters={...s.parameters,docs:{...(i=s.parameters)==null?void 0:i.docs,source:{originalSource:'createCaseStory("1.1-message-removed-from-operation-channel-and-document")',...(p=(o=s.parameters)==null?void 0:o.docs)==null?void 0:p.source}}};var m,c,l;a.parameters={...a.parameters,docs:{...(m=a.parameters)==null?void 0:m.docs,source:{originalSource:'createCaseStory("1.2-message-added-to-operation-channel-and-document")',...(l=(c=a.parameters)==null?void 0:c.docs)==null?void 0:l.source}}};const K=["Case_1_1_message_removed_from_operation_channel_and_document","Case_1_2_message_added_to_operation_channel_and_document"];export{s as Case_1_1_message_removed_from_operation_channel_and_document,a as Case_1_2_message_added_to_operation_channel_and_document,K as __namedExportsOrder,H as default};
+`,I=Object.assign({"../../../../samples/async-api-diffs/whole-apihub-operation/1.1-message-removed-from-operation-channel-and-document/before.yaml":x,"../../../../samples/async-api-diffs/whole-apihub-operation/1.2-message-added-to-operation-channel-and-document/before.yaml":S}),q=Object.assign({"../../../../samples/async-api-diffs/whole-apihub-operation/1.1-message-removed-from-operation-channel-and-document/after.yaml":U,"../../../../samples/async-api-diffs/whole-apihub-operation/1.2-message-added-to-operation-channel-and-document/after.yaml":A}),$=b(I,q),C=Object.fromEntries($.map(e=>[e.caseId,e])),d=({caseId:e})=>{const n=C[e];return n?t.jsx(g,{...M(n.beforeYaml,n.afterYaml)}):t.jsxs("div",{children:["Sample case not found: ",e]})},z={title:"Async API Diffs Suite/Whole Apihub Operation Samples",component:d},R="ConsumeUserSignups",T="UserMessage",r=e=>v(e),M=(e,n)=>({devMode:!0,mergedSource:h({beforeSource:r(e),afterSource:r(n)}),operationKeys:{operationKey:R,messageKey:T},referenceNamePropertyKey:y,diffMetaKeys:f}),u=e=>({name:e,args:{caseId:e},render:n=>t.jsx(d,{caseId:n.caseId})}),s=u("1.1-message-removed-from-operation-channel-and-document"),a=u("1.2-message-added-to-operation-channel-and-document");var i,o,p;s.parameters={...s.parameters,docs:{...(i=s.parameters)==null?void 0:i.docs,source:{originalSource:'createCaseStory("1.1-message-removed-from-operation-channel-and-document")',...(p=(o=s.parameters)==null?void 0:o.docs)==null?void 0:p.source}}};var c,m,l;a.parameters={...a.parameters,docs:{...(c=a.parameters)==null?void 0:c.docs,source:{originalSource:'createCaseStory("1.2-message-added-to-operation-channel-and-document")',...(l=(m=a.parameters)==null?void 0:m.docs)==null?void 0:l.source}}};const H=["Case_1_1_message_removed_from_operation_channel_and_document","Case_1_2_message_added_to_operation_channel_and_document"];export{s as Case_1_1_message_removed_from_operation_channel_and_document,a as Case_1_2_message_added_to_operation_channel_and_document,H as __namedExportsOrder,z as default};
