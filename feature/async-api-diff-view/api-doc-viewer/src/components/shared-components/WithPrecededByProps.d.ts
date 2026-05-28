@@ -9,6 +9,7 @@ export declare enum PrecededBy {
     MESSAGE_SECTION_HEADER_LOW_LEVEL = "message-section-header-low-level",
     JSON_SCHEMA_VIEWER = "json-schema-viewer",
     JSO_VIEWER = "jso-viewer",
+    JSO_PROPERTY = "jso-property",
     BINDING_VERSION_ROW = "binding-version-row",
     SERVER_BLOCK = "server-block",
     SERVER_ADDRESS_ROW = "server-address-row"

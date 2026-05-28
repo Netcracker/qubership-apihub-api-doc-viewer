@@ -1,6 +1,7 @@
 import { JsoTreeNodeWithDiffs } from '../../../../next-data-model/src/model/jso/types/aliases';
 import { FC } from '../../../../../node_modules/react';
-type JsoPropertyNodeViewerWithDiffsProps = {
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type JsoPropertyNodeViewerWithDiffsProps = WithPrecededByProps & {
     node: JsoTreeNodeWithDiffs;
     supportJsonSchema?: boolean;
 };

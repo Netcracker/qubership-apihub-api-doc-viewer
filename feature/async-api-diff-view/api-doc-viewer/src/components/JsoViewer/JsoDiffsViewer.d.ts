@@ -2,7 +2,8 @@ import { DiffMetaKeys } from '../../../../api-data-model/src';
 import { DiffType } from "@netcracker/qubership-apihub-api-diff";
 import { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from "../..";
-type JsoDiffsViewerProps = {
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type JsoDiffsViewerProps = WithPrecededByProps & {
     mergedSource: unknown;
     displayMode?: DisplayMode;
     initialLevel?: number;

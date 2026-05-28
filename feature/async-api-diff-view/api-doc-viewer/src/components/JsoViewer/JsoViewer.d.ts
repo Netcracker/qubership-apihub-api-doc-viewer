@@ -1,6 +1,7 @@
 import { FC } from '../../../../../node_modules/react';
 import { DisplayMode, LayoutMode } from "../..";
-type JsoViewerProps = {
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type JsoViewerProps = WithPrecededByProps & {
     source: object | null;
     displayMode?: DisplayMode;
     layoutMode?: LayoutMode;
