@@ -1,6 +1,7 @@
 export const ATTRIBUTE_PRECEDED_BY = 'data-precededBy'
 
 export enum PrecededBy {
+  ROOT = 'root',
   ADDRESS_ROW = 'address-row',
   DESCRIPTION_ROW = 'description-row',
   SUMMARY_ROW = 'summary-row',
@@ -15,6 +16,7 @@ export enum PrecededBy {
     we use fixed indent for `server-block` element independently of its children 
   */
   SERVER_BLOCK = 'server-block',
+  SERVER_ADDRESS_ROW = 'server-address-row',
 }
 
 export type WithPrecededByProps = {

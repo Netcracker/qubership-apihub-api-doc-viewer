@@ -83,6 +83,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
+          data-precededBy={PrecededBy.ROOT}
           value={value?.title ?? ''}
           expandable={false}
           variant={TextValueVariant.h1}
@@ -92,6 +93,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       {!isTitleDisplayed && (
         <TitleRow
+          data-precededBy={PrecededBy.ROOT}
           value={node.key.toString()}
           expandable={false}
           variant={TextValueVariant.h1}
@@ -100,6 +102,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       <AddressRow
+        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         action={value?.action ?? ''}
         address={value?.address ?? ''}
         // diffs

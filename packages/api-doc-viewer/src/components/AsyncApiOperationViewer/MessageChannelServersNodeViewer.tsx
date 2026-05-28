@@ -36,7 +36,7 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
   }, [node])
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
       <TitleRow
         data-precededBy={precededBy}
         value='Servers'
@@ -46,17 +46,19 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
         // diffs
         {...titleRowDiffProps}
       />
-      {children.map((child, index) => (
-        <MessageChannelServerNodeViewer
-          data-precededBy={
-            index === 0
-              ? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
-              : PrecededBy.SERVER_BLOCK
-          }
-          key={child.id}
-          node={child}
-        />
-      ))}
+      <div className='flex flex-col gap-2'>
+        {children.map((child, index) => (
+          <MessageChannelServerNodeViewer
+            data-precededBy={
+              index === 0
+                ? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
+                : PrecededBy.SERVER_BLOCK
+            }
+            key={child.id}
+            node={child}
+          />
+        ))}
+      </div>
     </div>
   )
 })

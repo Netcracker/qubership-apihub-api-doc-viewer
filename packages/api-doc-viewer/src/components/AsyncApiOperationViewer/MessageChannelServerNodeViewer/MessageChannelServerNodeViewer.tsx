@@ -183,19 +183,18 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const renderAddress = useCallback((layoutSide: LayoutSide) => {
     function renderAddressContent(isInvisible: boolean = false, diffClasses: string[] = []) {
-      if (isInvisible) {
-        return null
-      }
       return (
         <div
           data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
-          className={`px-2 pt-2 pb-1 flex flex-row h-full ${diffClasses.join(' ')}`}
+          className={`px-2 py-2 flex flex-row h-full ${diffClasses.join(' ')}`}
         >
-          <div className="server-address-container server-address server-subheader">
-            {renderProtocol(layoutSide)}
-            ://
-            {renderHost(layoutSide)}
-          </div>
+          {!isInvisible && (
+            <div className="server-address-container server-address server-subheader">
+              {renderProtocol(layoutSide)}
+              ://
+              {renderHost(layoutSide)}
+            </div>
+          )}
         </div>
       )
     }
@@ -267,7 +266,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       />
       {isDescriptionDisplayed && (
         <TextRow
-          data-precededBy={PrecededBy.ADDRESS_ROW}
+          data-precededBy={PrecededBy.SERVER_ADDRESS_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -279,7 +278,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           data-precededBy={
             isDescriptionDisplayed
               ? PrecededBy.DESCRIPTION_ROW
-              : PrecededBy.ADDRESS_ROW
+              : PrecededBy.SERVER_ADDRESS_ROW
           }
           value={value?.summary ?? ''}
           variant={TextValueVariant.body}
@@ -294,7 +293,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
               ? PrecededBy.SUMMARY_ROW
               : isDescriptionDisplayed
                 ? PrecededBy.DESCRIPTION_ROW
-                : PrecededBy.ADDRESS_ROW
+                : PrecededBy.SERVER_ADDRESS_ROW
           }
           node={bindingsChild}
           variant={SizeVariant.SECONDARY}

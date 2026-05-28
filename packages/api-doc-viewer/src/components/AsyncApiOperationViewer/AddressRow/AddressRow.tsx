@@ -1,4 +1,5 @@
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -12,7 +13,7 @@ import { TextValue } from "../../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import "./AddressRow.css"
 
-export type AddressRowProps = {
+export type AddressRowProps = WithPrecededByProps & {
   action: string
   address: string
   // diffs
@@ -69,6 +70,9 @@ type AddressRowContentProps = AddressRowProps & {
 
 const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   const { action, address, layoutSide, diff } = props
+
+  // indent-specific
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const renderAddress = useCallback(() => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
@@ -136,7 +140,10 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   }, [diff, layoutSide])
 
   return (
-    <div className={`address-row font-Inter-Medium h-full px-2 py-2 ${diffStyles.join(' ')}`}>
+    <div
+      data-precededBy={precededBy}
+      className={`address-row address-row-content font-Inter-Medium h-full px-2 ${diffStyles.join(' ')}`}
+    >
       <div
         className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3'
         style={{ paddingLeft: 10, paddingRight: 10 }}
