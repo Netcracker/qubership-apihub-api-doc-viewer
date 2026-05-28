@@ -35,9 +35,7 @@ servers:
       env:
         $ref: '#/components/serverVariables/env'
     security:
-      - petstoreAuth:
-          - read:users
-          - write:users
+      - $ref: '#/components/securitySchemes/petstoreAuth'
     tags:
       - name: env:production
         description: Production environment
@@ -86,8 +84,7 @@ operations:
     channel:
       $ref: '#/channels/UserSignup'
     security:
-      - petstoreAuth:
-          - read:users
+      - $ref: '#/components/securitySchemes/petstoreAuthRead'
     tags:
       - name: user
         description: User operations
@@ -134,17 +131,17 @@ components:
           type: string
           description: Marketing campaign id
     AvroUserRecord:
-      schemaFormat: application/vnd.apache.avro+json;version=1.9.0
-      schema:
-        type: record
-        name: User
-        namespace: com.example
-        doc: User information
-        fields:
-          - name: displayName
-            type: string
-          - name: email
-            type: string
+      type: object
+      title: User
+      description: User information (Avro record equivalent)
+      required:
+        - displayName
+        - email
+      properties:
+        displayName:
+          type: string
+        email:
+          type: string
   servers:
     stagingServer:
       host: staging.broker.example.com:5672
@@ -235,6 +232,23 @@ components:
           availableScopes:
             read:users: Read user data
             write:users: Write user data
+      scopes:
+        - read:users
+        - write:users
+    petstoreAuthRead:
+      type: oauth2
+      description: OAuth2 security scheme for read-only operation access
+      flows:
+        implicit:
+          authorizationUrl: https://example.com/oauth/authorize
+          availableScopes:
+            read:users: Read user data
+        clientCredentials:
+          tokenUrl: https://example.com/oauth/token
+          availableScopes:
+            read:users: Read user data
+      scopes:
+        - read:users
     apiKeyAuth:
       type: apiKey
       in: user
@@ -326,6 +340,10 @@ components:
     amqpChannelBinding:
       amqp:
         is: queue
+        queue:
+          name: reusable.queue
+          durable: true
+          exclusive: false
         bindingVersion: 0.3.0
   operationBindings:
     amqpOperationBinding:
