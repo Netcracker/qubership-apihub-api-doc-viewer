@@ -92,21 +92,19 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         subheader={subheader}
         usage={TitleRowUsage.JsoProperty}
       />
-      {expanded && childrenProperties.map(childProperty => {
-        const nextLevel = level + 1
-        return (
-          <LevelContext.Provider
-            key={childProperty.id}
-            value={nextLevel}
-          >
+      {expanded && (
+        <LevelContext.Provider
+          value={level + 1}
+        >
+          {childrenProperties.map(childProperty => (
             <JsoPropertyNodeViewer
               data-precededBy={PrecededBy.JSO_PROPERTY}
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />
-          </LevelContext.Provider>
-        )
-      })}
+          ))}
+        </LevelContext.Provider>
+      )}
     </div>
   )
 }

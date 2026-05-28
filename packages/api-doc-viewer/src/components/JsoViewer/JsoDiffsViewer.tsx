@@ -6,8 +6,9 @@ import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
-import { DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { ActionType, DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
+import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
@@ -74,12 +75,28 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       return null
     }
 
+    const allChildrenAreDiffs = areAllChildrenDiffs(jsoProperties)
+
+    const [nextBeforeLevel, nextAfterLevel] = (() => {
+      let _nextBeforeLevel = initialLevel
+      let _nextAfterLevel = initialLevel
+
+      const [firstJsoProperty] = jsoProperties
+      const firstChildNodeValueDiff = firstJsoProperty.diffs['']
+      if (firstChildNodeValueDiff && allChildrenAreDiffs) {
+        _nextBeforeLevel = firstChildNodeValueDiff.flags.before.increaseLevel ? initialLevel : initialLevel - 1
+        _nextAfterLevel = firstChildNodeValueDiff.flags.after.increaseLevel ? initialLevel : initialLevel - 1
+      }
+
+      return [_nextBeforeLevel, _nextAfterLevel]
+    })()
+
     return (
       <DiffMetaKeysContext.Provider value={diffMetaKeys}>
         <DiffTypesContext.Provider value={diffTypes}>
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-              <AsyncLevelContextProvider beforeLevel={initialLevel} afterLevel={initialLevel}>
+              <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
                 <div data-testid='jso-diffs-viewer'>
                   {jsoProperties.map((jsoProperty, index) => (
                     <JsoPropertyNodeViewerWithDiffs
@@ -101,3 +118,22 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       </DiffMetaKeysContext.Provider>
     )
   })
+
+// TODO: Deduplicate!
+function areAllChildrenDiffs(jsoProperties: JsoTreeNodeWithDiffs[]): boolean {
+  let diffAction: ActionType | undefined
+  for (const jsoProperty of jsoProperties) {
+    const childNodeValueDiff = jsoProperty.diffs['']
+    if (!childNodeValueDiff) {
+      return false
+    }
+    if (!diffAction) {
+      diffAction = childNodeValueDiff.data.action
+      continue
+    }
+    if (diffAction !== childNodeValueDiff.data.action) {
+      return false
+    }
+  }
+  return true
+}

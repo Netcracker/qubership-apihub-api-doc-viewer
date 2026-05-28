@@ -5,6 +5,7 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
+import { ActionType } from "@netcracker/qubership-apihub-api-diff"
 import { isObject } from "@netcracker/qubership-apihub-json-crawl"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
@@ -128,10 +129,6 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     return !nodeValue?.before.isArrayItem && !nodeValue?.after.isArrayItem
   }, [nodeValue])
 
-  const allChildrenAreDiffs = useMemo(() => {
-    return childrenProperties.every(childProperty => !!childProperty.diffs[''])
-  }, [childrenProperties])
-
   // JSON Schema properties
 
   const jsonSchema = useMemo(() => {
@@ -162,6 +159,22 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   // ---
 
+  const allChildrenAreDiffs = areAllChildrenDiffs(childrenProperties)
+
+  const [nextBeforeLevel, nextAfterLevel] = (() => {
+    let _nextBeforeLevel = beforeLevel + 1
+    let _nextAfterLevel = afterLevel + 1
+
+    const [firstJsoProperty] = childrenProperties
+    const firstChildNodeValueDiff = firstJsoProperty?.diffs['']
+    if (firstChildNodeValueDiff && allChildrenAreDiffs) {
+      _nextBeforeLevel = firstChildNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
+      _nextAfterLevel = firstChildNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
+    }
+
+    return [_nextBeforeLevel, _nextAfterLevel]
+  })()
+
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
@@ -178,28 +191,21 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
         // diffs
         {...titleRowDiffProps}
       />
-      {expanded && childrenProperties.map(childProperty => {
-        let nextBeforeLevel = beforeLevel + 1
-        let nextAfterLevel = afterLevel + 1
-        const childNodeValueDiff = childProperty.diffs['']
-        if (childNodeValueDiff && allChildrenAreDiffs) {
-          nextBeforeLevel = childNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
-          nextAfterLevel = childNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel
-        }
-        return (
-          <AsyncLevelContextProvider
-            key={childProperty.id}
-            beforeLevel={nextBeforeLevel}
-            afterLevel={nextAfterLevel}
-          >
+      {expanded && (
+        <AsyncLevelContextProvider
+          beforeLevel={nextBeforeLevel}
+          afterLevel={nextAfterLevel}
+        >
+          {childrenProperties.map(childProperty => (
             <JsoPropertyNodeViewerWithDiffs
               data-precededBy={PrecededBy.JSO_PROPERTY}
+              key={childProperty.id}
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />
-          </AsyncLevelContextProvider>
-        )
-      })}
+          ))}
+        </AsyncLevelContextProvider>
+      )}
     </div>
   )
 }
@@ -253,4 +259,23 @@ function prepareJsonSchemaForJsoViewer(
   }
 
   return undefined
+}
+
+// TODO: Deduplicate!
+function areAllChildrenDiffs(jsoProperties: JsoTreeNodeWithDiffs[]): boolean {
+  let diffAction: ActionType | undefined
+  for (const jsoProperty of jsoProperties) {
+    const childNodeValueDiff = jsoProperty.diffs['']
+    if (!childNodeValueDiff) {
+      return false
+    }
+    if (!diffAction) {
+      diffAction = childNodeValueDiff.data.action
+      continue
+    }
+    if (diffAction !== childNodeValueDiff.data.action) {
+      return false
+    }
+  }
+  return true
 }
