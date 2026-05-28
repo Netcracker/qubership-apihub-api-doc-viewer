@@ -3,6 +3,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, memo, useCallback, useMemo } from "react"
 
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
@@ -186,7 +187,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return (
         <div
           data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
-          className={`px-2 py-2 flex flex-row h-full ${diffClasses.join(' ')}`}
+          className={`${X_AXIS_PADDING_ROWS_ASYNC_API} py-2 flex flex-row h-full ${diffClasses.join(' ')}`}
         >
           {!isInvisible && (
             <div className="server-address-container server-address server-subheader">

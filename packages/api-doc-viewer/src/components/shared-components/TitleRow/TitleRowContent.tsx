@@ -1,3 +1,4 @@
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -110,7 +111,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   return (
     <div
       data-precededBy={precededBy}
-      className={`title-row-content flex items-center h-full px-2 gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`title-row-content flex items-center h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}
       {subheader?.(layoutSide)}

@@ -1,5 +1,6 @@
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -142,7 +143,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   return (
     <div
       data-precededBy={precededBy}
-      className={`address-row address-row-content font-Inter-Medium h-full px-2 ${diffStyles.join(' ')}`}
+      className={`address-row address-row-content font-Inter-Medium h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffStyles.join(' ')}`}
     >
       <div
         className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3'

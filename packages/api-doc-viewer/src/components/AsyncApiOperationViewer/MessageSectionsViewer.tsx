@@ -14,6 +14,7 @@ import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
 import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import '../shared-styles/preceded-by.css';
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../shared-styles/tailwind-classnames";
 import { MessageSectionViewer } from "./MessageSectionViewer";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
@@ -102,7 +103,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     return (
       <div
         data-precededBy={precededBy}
-        className={`message-sections-selector px-2 h-full ${Array.from(diffsStyles).join(' ')}`}
+        className={`message-sections-selector ${X_AXIS_PADDING_ROWS_ASYNC_API} h-full ${Array.from(diffsStyles).join(' ')}`}
       >
         <Selector
           options={sectionSelectorOptions}

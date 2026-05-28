@@ -1,3 +1,4 @@
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { FC, memo, useMemo } from "react"
@@ -39,7 +40,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededBy={precededBy}
-      className={`text-row-content flex h-full px-2 gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`}
+      className={`text-row-content flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`}
     >
       <TextValue
         label={label}
