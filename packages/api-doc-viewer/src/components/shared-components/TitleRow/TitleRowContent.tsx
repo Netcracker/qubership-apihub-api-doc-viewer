@@ -111,7 +111,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   return (
     <div
       data-precededBy={precededBy}
-      className={`title-row-content flex items-center h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`title-row-content flex items-center h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${usage === TitleRowUsage.JsoProperty ? 'min-h-[26px]' : ''} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}
       {subheader?.(layoutSide)}
