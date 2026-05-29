@@ -56,6 +56,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       parent: null,
       container: null,
       alreadyConvertedValuesCache: new Map(),
+      diffMetaKeys: this.diffsMetaKeys,
     }
 
     const initialRules: JsoWithDiffsCrawlRule = getJsoWithDiffsCrawlRules()
@@ -76,11 +77,13 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         parent: node,
         container: null,
         alreadyConvertedValuesCache: cache,
+        diffMetaKeys: this.diffsMetaKeys,
       }),
       createStateForComplexNode: (state, node, cache) => ({
         parent: state.parent,
         container: node,
         alreadyConvertedValuesCache: cache,
+        diffMetaKeys: this.diffsMetaKeys,
       }),
       isSimpleNode: (node) => node.type === TreeNodeComplexityTypes.SIMPLE,
       isComplexNode: (node) => node.type === TreeNodeComplexityTypes.COMPLEX,

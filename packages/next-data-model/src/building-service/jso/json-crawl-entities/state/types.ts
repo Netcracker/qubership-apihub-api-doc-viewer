@@ -5,6 +5,11 @@ import { JsoTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/types/al
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind"
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta"
 
+type DiffMetaKeys = {
+  diffsMetaKey: symbol;
+  aggregatedDiffsMetaKey: symbol;
+}
+
 export type JsoTreeCrawlState = CommonState<
   JsoTreeNodeValue | null,
   JsoTreeNodeKind,
@@ -16,4 +21,6 @@ export type JsoTreeWithDiffsCrawlState = CommonState<
   JsoTreeNodeKind,
   JsoTreeNodeMeta,
   JsoTreeNodeWithDiffs
->
+> & {
+  diffMetaKeys: DiffMetaKeys
+}

@@ -1,5 +1,6 @@
 import { JsoTreeNodeValue, JsoTreeNodeValueBase } from "@apihub/next-data-model/model/jso/tree/node-value"
 import { JsoPropertyValueType, JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type"
+import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import {
   JSON_SCHEMA_NODE_TYPES,
   JSON_SCHEMA_PROPERTY_ADDITIONAL_ITEMS,
@@ -40,7 +41,7 @@ import {
   JSON_SCHEMA_PROPERTY_UNIQUE_ITEMS,
   JSON_SCHEMA_PROPERTY_WRITE_ONLY
 } from "@netcracker/qubership-apihub-api-unifier"
-import { isObject } from "../../../../utilities"
+import { isObject, isObjective, takeIfDiffsRecord } from "../../../../utilities"
 
 export class JsoRawValueUtilities {
   public static readonly DEFAULT_BASE_JSO_NODE_VALUE: JsoTreeNodeValueBase = {
@@ -221,5 +222,56 @@ export class JsoRawValueUtilities {
       return true
     }
     return false
+  }
+
+  public static mergeComparisonBetweenArrayAndObject(
+    value: unknown,
+    diffsMetaKey: symbol,
+  ): unknown {
+    if (!isObjective(value)) {
+      return value
+    }
+
+    const diffsRecord = takeIfDiffsRecord(value[diffsMetaKey])
+    if (!diffsRecord) {
+      return value
+    }
+
+    const valueKeys = new Set<string>(Object.keys(value))
+    const valueDiffsKeys = new Set<string>(Object.keys(diffsRecord))
+    const commonKeys: Set<string> = valueKeys.intersection(valueDiffsKeys)
+
+    const mergedValue: Record<PropertyKey, unknown> = { ...value }
+
+    for (const key of commonKeys) {
+      const valueItem = value[key]
+      const valueDiffItem = diffsRecord[key]
+      if (valueItem === undefined || valueDiffItem === undefined) {
+        continue
+      }
+
+      if (!isDiffReplace(valueDiffItem)) {
+        continue
+      }
+
+      const { beforeValue, afterValue } = valueDiffItem
+      const isBeforeValueObject = isObject(beforeValue)
+      const isBeforeValueArray = Array.isArray(beforeValue)
+      const isAfterValueObject = isObject(afterValue)
+      const isAfterValueArray = Array.isArray(afterValue)
+
+      const isChangeBetweenArrayAndObject =
+        isBeforeValueArray && isAfterValueObject ||
+        isBeforeValueObject && isAfterValueArray
+
+      if (!isChangeBetweenArrayAndObject) {
+        continue
+      }
+
+      const mergedValueItem: Record<PropertyKey, unknown> = { ...beforeValue, ...afterValue }
+      mergedValue[key] = mergedValueItem
+    }
+
+    return mergedValue
   }
 }

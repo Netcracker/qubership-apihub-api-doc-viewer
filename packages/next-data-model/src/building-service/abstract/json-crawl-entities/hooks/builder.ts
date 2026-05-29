@@ -198,7 +198,9 @@ export function createTreeBuildingHooks<
     // So, convert it to extension point!
     let nextCrawlValue: unknown = value;
     if (shouldStopAfterNodeCreation?.(treeNode, value)) {
-      const descendantDiffs = parent ? (parent as unknown as ITreeNodeWithDiffs<V, K, M, N>).descendantDiffs : undefined;
+      const descendantDiffs = parent
+        ? (parent as unknown as ITreeNodeWithDiffs<V, K, M, N>).descendantDiffs
+        : undefined;
       if (!descendantDiffs || !(key in descendantDiffs)) {
         return { done: true };
       }
