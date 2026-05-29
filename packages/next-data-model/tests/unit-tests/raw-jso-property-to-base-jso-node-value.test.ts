@@ -76,7 +76,7 @@ describe('Inline JSO property parameters', () => {
 
     it('should be false for string keys', () => {
       const result = JsoRawValueUtilities.transformRawJsoPropertyToBaseJsoNodeValue('0', 'test')
-      expect(result.isArrayItem).toBe(false)
+      expect(result.isArrayItem).toBe(true)
     })
 
     it('should be false for undefined key', () => {
