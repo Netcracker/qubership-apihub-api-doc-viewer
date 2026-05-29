@@ -257,13 +257,13 @@ export class JsoNodeDiffsAggregatorKindAny
               },
               styles: {
                 before: {
-                  isContentVisible: nextBeforeValue !== undefined,
+                  isContentVisible: nextBeforeValue !== undefined && isNextBeforeValuePrimitive,
                   isHeaderVisible: nextBeforeValue !== undefined,
                   backgroundColor: nextBeforeValue === undefined ? HighlightVariant.Gray : HighlightVariant.Yellow,
                   textHighlighterColor: nextBeforeValue !== undefined ? HighlightVariant.Yellow : undefined,
                 },
                 after: {
-                  isContentVisible: nextAfterValue !== undefined,
+                  isContentVisible: nextAfterValue !== undefined && isNextAfterValuePrimitive,
                   isHeaderVisible: nextAfterValue !== undefined,
                   backgroundColor: nextAfterValue === undefined ? HighlightVariant.Gray : HighlightVariant.Yellow,
                   textHighlighterColor: nextAfterValue !== undefined ? HighlightVariant.Yellow : undefined,
