@@ -18,10 +18,10 @@ import { LevelIndicator } from "@apihub/components/shared-components/LevelIndica
 import { isDiff } from "@netcracker/qubership-apihub-api-data-model";
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff";
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { DEFAULT_STRIKETHROUGH_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../../consts/changes';
+import { INLINE_CONTENT_DIFF_COLOR_SCHEMAS, NODE_DIFF_COLOR_MAP } from '../../../../consts/changes';
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
@@ -251,12 +251,9 @@ const Value: FC<ValueProps> = props => {
   const removed = diffRemove($changes)
   const replaced = diffReplace($changes)
 
-  let strikethrough: boolean = false
-
   if (isValueChanged && (isSideBySideDiffsLayoutMode || isInlineDiffsLayoutMode)) {
     if (originSide) {
       if (removed || replaced) {
-        strikethrough = enableDiffs
         const [
           isExpandableBeforeValue,
           shortenBeforeValue
@@ -287,9 +284,24 @@ const Value: FC<ValueProps> = props => {
     setIsExpandable?.(isExpandable)
   }, [isExpandable, setIsExpandable]);
 
+  const diffColorSchema = useMemo(() => {
+    if (!enableDiffs) {
+      return ''
+    }
+    if (added) {
+      return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+    }
+    if (removed) {
+      return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+    }
+    if (replaced) {
+      return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
+    }
+  }, [added, enableDiffs, removed, replaced])
+
   return (
     <ReactMarkdown
-      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${strikethrough ? DEFAULT_STRIKETHROUGH_VALUE_CLASS : ''}`}
+      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${diffColorSchema}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}

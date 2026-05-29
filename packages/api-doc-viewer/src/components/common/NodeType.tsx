@@ -139,10 +139,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (originSide) {
           diffStyles = classes(
             getIf(
-              diffTypeForTypeIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
-            getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
               $typeChange?.action ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[$typeChange.action] : ''
             )
@@ -167,10 +163,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (originSide) {
           diffStyles = classes(
             getIf(
-              diffTypeForTypeIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
-            getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
             )
@@ -194,10 +186,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (typeReplaced) {
         if (originSide) {
           diffStyles = classes(
-            getIf(
-              diffTypeForTypeIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
             getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
@@ -226,10 +214,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       let diffStylesAfter: unknown = null
       if (typeRemoved) {
         diffStylesBefore = classes(
-          getIf(
-            diffTypeForTypeIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
           getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
             INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
@@ -275,10 +259,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (typeReplaced) {
         diffStylesBefore = classes(
           getIf(
-            diffTypeForTypeIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
-          getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
             INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
           )
@@ -304,10 +284,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (nullableRemoved) {
           if (originSide) {
             const diffStyles = classes(
-              getIf(
-                diffTypeForNullableIncluded && contentChangesStrikethrough,
-                DEFAULT_STRIKETHROUGH_VALUE_CLASS
-              ),
               getIf(
                 diffTypeForNullableIncluded && contentChangesColorizing,
                 INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
@@ -342,10 +318,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (isInlineDiffsLayoutMode) {
         if (nullableRemoved) {
           const diffStylesBefore = classes(
-            getIf(
-              diffTypeForNullableIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
             getIf(
               diffTypeForNullableIncluded && contentChangesColorizing,
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
@@ -382,10 +354,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (originSide) {
           diffStyles = classes(
             getIf(
-              diffTypeForEntityIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
-            getIf(
               diffTypeForEntityIncluded && contentChangesColorizing,
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
             )
@@ -417,10 +385,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (entityReplaced) {
         if (originSide) {
           diffStyles = classes(
-            getIf(
-              diffTypeForEntityIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
             getIf(
               diffTypeForEntityIncluded && contentChangesColorizing,
               INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
@@ -482,10 +446,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (entityReplaced) {
         const diffStylesBefore = classes(
           getIf(
-            diffTypeForEntityIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
-          getIf(
             diffTypeForEntityIncluded && contentChangesColorizing,
             INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
           )
@@ -516,7 +476,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   return (
     <div className="inline-flex flex-row gap-1 items-center">
-      {brokenRef && <WarningIcon/>}
+      {brokenRef && <WarningIcon />}
       {actualType && <div className="inline">{actualType}{actualEntity} {showNullable ? actualNullable : null}</div>}
       {combiner && <div className="inline">({combiner})</div>}
     </div>
