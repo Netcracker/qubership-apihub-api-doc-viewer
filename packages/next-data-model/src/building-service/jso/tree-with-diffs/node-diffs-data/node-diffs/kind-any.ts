@@ -240,8 +240,62 @@ export class JsoNodeDiffsAggregatorKindAny
 
           // complex <-> complex
           if (!isBeforeValuePrimitive && this.isComplexValue(beforeValue) && !isAfterValuePrimitive && this.isComplexValue(afterValue)) {
-            // TODO: IMPLEMENT COMPLEX <-> COMPLEX DIFFS AGGREGATION
-            nodeDiffs[''] = parentNodeChangePropertyMetadata
+            const nextBeforeValue = beforeValue[nodeKey]
+            const nextAfterValue = afterValue[nodeKey]
+            const nextBeforeValueType = JsoRawValueUtilities.getValueType(nextBeforeValue)
+            const nextAfterValueType = JsoRawValueUtilities.getValueType(nextAfterValue)
+            const isNextBeforeValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextBeforeValueType)
+            const isNextAfterValuePrimitive = JsoRawValueUtilities.isPrimitiveValue(nextAfterValueType)
+            const isNextBeforeValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(nextBeforeValueType)
+            const isNextAfterValuePredefined = JsoRawValueUtilities.isPredefinedValueSet(nextAfterValueType)
+
+            const propertyMetadata: ChangedPropertyMetaData = {
+              data: {
+                ...diff,
+                beforeValue: nextBeforeValue,
+                afterValue: nextAfterValue,
+              },
+              styles: {
+                before: {
+                  isContentVisible: nextBeforeValue !== undefined,
+                  isHeaderVisible: nextBeforeValue !== undefined,
+                  backgroundColor: nextBeforeValue === undefined ? HighlightVariant.Gray : HighlightVariant.Yellow,
+                  textHighlighterColor: nextBeforeValue !== undefined ? HighlightVariant.Yellow : undefined,
+                },
+                after: {
+                  isContentVisible: nextAfterValue !== undefined,
+                  isHeaderVisible: nextAfterValue !== undefined,
+                  backgroundColor: nextAfterValue === undefined ? HighlightVariant.Gray : HighlightVariant.Yellow,
+                  textHighlighterColor: nextAfterValue !== undefined ? HighlightVariant.Yellow : undefined,
+                },
+              },
+              flags: {
+                before: {
+                  increaseLevel: true,
+                },
+                after: {
+                  increaseLevel: true,
+                },
+              },
+              highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
+              inherited: true,
+            }
+
+            if (isNextBeforeValuePrimitive) {
+              propertyMetadata.styles.before.textHighlighterColor = HighlightVariant.Yellow
+            }
+            if (isNextAfterValuePrimitive) {
+              propertyMetadata.styles.after.textHighlighterColor = HighlightVariant.Yellow
+            }
+
+            if (isNextBeforeValuePredefined) {
+              propertyMetadata.styles.before.borderShadowColor = HighlightVariant.Yellow
+            }
+            if (isNextAfterValuePredefined) {
+              propertyMetadata.styles.after.borderShadowColor = HighlightVariant.Yellow
+            }
+
+            nodeDiffs[''] = propertyMetadata
             return nodeDiffs
           }
         }

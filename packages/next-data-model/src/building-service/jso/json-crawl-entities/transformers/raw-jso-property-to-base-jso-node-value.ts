@@ -61,8 +61,21 @@ export class JsoRawValueUtilities {
           ? key.toString()
           : `${key}`
     )
-    const isArrayItem = typeof key === 'number' && key >= 0
+    const isArrayItem = JsoRawValueUtilities.isArrayItemKey(key)
     return JsoRawValueUtilities.transformRawJsoValueToBaseJsoNodeValue(value, title, isArrayItem)
+  }
+
+  private static isArrayItemKey(key: PropertyKey | null | undefined): boolean {
+    if (key === undefined || key === null) {
+      return false
+    }
+    if (typeof key === 'string') {
+      return Number.parseInt(key) >= 0
+    }
+    if (typeof key === 'number') {
+      return key >= 0
+    }
+    return true
   }
 
   public static transformRawJsoValueToBaseJsoNodeValue(value: unknown, title: string = '', isArrayItem: boolean = false): JsoTreeNodeValueBase {
