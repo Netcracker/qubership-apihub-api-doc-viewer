@@ -30,7 +30,8 @@ import { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 import type { FC, ReactNode } from 'react'
 import {
   BLOCK_CONTENT_DIFF_COLOR_MAP,
-  DEFAULT_STRIKETHROUGH_VALUE_CLASS,
+  DEFAULT_MUTED_VALUE_CLASS,
+  INLINE_CONTENT_DIFF_COLOR_SCHEMAS,
   NODE_DIFF_COLOR_MAP
 } from '../../consts/changes'
 import {
@@ -63,12 +64,12 @@ import {
   maxDiffTypeFromDiffs
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
-import { handleSeriesItem, isSeriesItemEmpty, stringifyItem } from '../../utils/common/rows'
-import { LevelIndicator } from '../shared-components/LevelIndicator'
+import { handleSeriesItem, stringifyItem } from '../../utils/common/rows'
 import { COLOR_SCHEMAS } from '../kit/ux/consts'
 import { BADGE_KIND_DEFAULT } from '../kit/ux/types'
 import { UxBadge } from '../kit/ux/UxBadge'
 import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
+import { LevelIndicator } from '../shared-components/LevelIndicator'
 import { EmptyContent } from './diffs/EmptyContent'
 import { UnsupportedContent } from './diffs/UnsupportedContent'
 
@@ -169,7 +170,6 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               !itemDefined ? '' : stringifyItem(handleSeriesItem(itemKey, item))
             const handledReplacedItem =
               !replacedItemDefined ? '' : stringifyItem(handleSeriesItem(itemKey, $itemChange.beforeValue))
-            const isEmptyItem = isSeriesItemEmpty(handledItem, handledReplacedItem)
 
             let itemView: string | ReactNode = handledItem === ''
               ? <span className={DEFAULT_SERIES_ITEM_TEXT_COLOR}>{DEFAULT_SERIES_ITEM}</span>
@@ -178,23 +178,25 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
             if (isSideBySideDiffsLayoutMode) {
               if (itemRemoved) {
                 if (originSide) {
-                  const diffSchemaForContainer = isEmptyItem
-                    ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                    : DEFAULT_STRIKETHROUGH_VALUE_CLASS
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded ? DEFAULT_MUTED_VALUE_CLASS : ''}`}>
                       {itemView}
                     </div>
                 }
               }
               if (itemReplaced) {
                 if (originSide) {
-                  const diffSchemaForContainer = isEmptyItem
-                    ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                    : DEFAULT_STRIKETHROUGH_VALUE_CLASS
+                  const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
                   itemView =
                     <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
                       {handledReplacedItem || DEFAULT_SERIES_ITEM}
+                    </div>
+                }
+                if (changedSide) {
+                  const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
+                  itemView =
+                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                      {itemView}
                     </div>
                 }
               }
@@ -202,17 +204,13 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
 
             if (isInlineDiffsLayoutMode) {
               if (itemRemoved) {
-                const diffSchemaForContainer = isEmptyItem
-                  ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                  : DEFAULT_STRIKETHROUGH_VALUE_CLASS
                 itemView =
-                  <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                  <div className={`inline ${diffTypeForItemIncluded ? DEFAULT_MUTED_VALUE_CLASS : ''}`}>
                     {itemView}
                   </div>
               }
               if (itemReplaced) {
-                const diffSchemaForContainer =
-                  `${DEFAULT_STRIKETHROUGH_VALUE_CLASS} ${isEmptyItem ? DEFAULT_SERIES_ITEM_TEXT_COLOR : ''}`
+                const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
                 itemView = <>
                   <div className={`inline mr-1 ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
                     {handledReplacedItem || DEFAULT_SERIES_ITEM}
