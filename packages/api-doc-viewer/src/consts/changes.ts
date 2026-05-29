@@ -36,9 +36,9 @@ export const NODE_DIFF_COLOR_MAP: Partial<Record<ActionType, string>> = {
 }
 
 export const BLOCK_CONTENT_DIFF_COLOR_MAP: Partial<Record<ActionType, string>> = {
-  [DiffAction.add]: 'border border-green-500',
-  [DiffAction.remove]: 'border border-red-500',
-  [DiffAction.replace]: 'border border-amber-500',
+  [DiffAction.add]: DiffsClassesBuilder.borderShadow(HighlightVariant.Green),
+  [DiffAction.remove]: DiffsClassesBuilder.borderShadow(HighlightVariant.Red),
+  [DiffAction.replace]: DiffsClassesBuilder.borderShadow(HighlightVariant.Yellow),
 }
 
 export const INLINE_CONTENT_DIFF_COLOR_SCHEMAS: Partial<Record<ActionType, string>> = {
@@ -57,3 +57,5 @@ export const CHANGE_SEVERITIES: Record<DiffType, number> = {
 }
 
 export const DEFAULT_STRIKETHROUGH_VALUE_CLASS = 'line-through'
+
+export const DEFAULT_MUTED_VALUE_CLASS = DiffsClassesBuilder.fontMuted()

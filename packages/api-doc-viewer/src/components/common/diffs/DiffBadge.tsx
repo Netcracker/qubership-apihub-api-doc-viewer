@@ -16,7 +16,7 @@
 
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { FC } from 'react'
-import { BLOCK_CONTENT_DIFF_COLOR_MAP, DEFAULT_STRIKETHROUGH_VALUE_CLASS } from '../../../consts/changes'
+import { BLOCK_CONTENT_DIFF_COLOR_MAP, DEFAULT_MUTED_VALUE_CLASS } from '../../../consts/changes'
 import { useChangeSeverityFilters } from '../../../contexts/ChangeSeverityFiltersContext'
 import { LayoutSide } from '../../../types/internal/LayoutSide'
 import { LayoutMode } from '../../../types/LayoutMode'
@@ -57,7 +57,7 @@ export const DiffBadge: FC<DiffBadgeProps> = (props) => {
   const propertyChanged = !isDocumentLayoutMode && isNodeOrContentChanged && !!$changes
 
   if (!propertyChanged) {
-    return <UxBadge text={label} colorSchema={colorSchema}/>
+    return <UxBadge text={label} colorSchema={colorSchema} />
   }
 
   const diffAction = $changes!.action
@@ -70,20 +70,21 @@ export const DiffBadge: FC<DiffBadgeProps> = (props) => {
 
   if (!diffTypeIncluded) {
     return removedRule || addedRule
-      ? <UxBadge text={label} colorSchema={COLOR_SCHEMAS[BADGE_KIND_DEFAULT]}/>
+      ? <UxBadge text={label} colorSchema={COLOR_SCHEMAS[BADGE_KIND_DEFAULT]} />
       : null
-  } else {
-    if (removedRule) {
-      return (
-        <UxBadge
-          text={<span className={DEFAULT_STRIKETHROUGH_VALUE_CLASS}>{label}</span>}
-          colorSchema={diffColorSchema}
-        />
-      )
-    }
-    if (addedRule) {
-      return <UxBadge text={label} colorSchema={diffColorSchema}/>
-    }
   }
+
+  if (removedRule) {
+    return (
+      <UxBadge
+        text={<span className={DEFAULT_MUTED_VALUE_CLASS}>{label}</span>}
+        colorSchema={diffColorSchema}
+      />
+    )
+  }
+  if (addedRule) {
+    return <UxBadge text={label} colorSchema={diffColorSchema} />
+  }
+
   return null
 }
