@@ -186,16 +186,14 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               }
               if (itemReplaced) {
                 if (originSide) {
-                  const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {handledReplacedItem || DEFAULT_SERIES_ITEM}
                     </div>
                 }
                 if (changedSide) {
-                  const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {itemView}
                     </div>
                 }
@@ -210,12 +208,13 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
                   </div>
               }
               if (itemReplaced) {
-                const diffSchemaForContainer = [DEFAULT_MUTED_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]].join(' ')
                 itemView = <>
-                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {handledReplacedItem || DEFAULT_SERIES_ITEM}
                   </div>
-                  {itemView}
+                  <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    {itemView}
+                  </div>
                 </>
               }
             }

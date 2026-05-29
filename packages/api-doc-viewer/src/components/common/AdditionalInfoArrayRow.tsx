@@ -19,7 +19,8 @@ import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { FC, ReactNode } from 'react'
 import {
   BLOCK_CONTENT_DIFF_COLOR_MAP,
-  DEFAULT_STRIKETHROUGH_VALUE_CLASS,
+  DEFAULT_MUTED_VALUE_CLASS,
+  INLINE_CONTENT_DIFF_COLOR_SCHEMAS,
   NODE_DIFF_COLOR_MAP
 } from '../../consts/changes'
 import {
@@ -50,12 +51,12 @@ import {
   maxDiffTypeFromDiffs
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
-import { isSeriesItemEmpty, stringifyItem } from '../../utils/common/rows'
-import { LevelIndicator } from '../shared-components/LevelIndicator'
+import { stringifyItem } from '../../utils/common/rows'
 import { COLOR_SCHEMAS } from '../kit/ux/consts'
 import { BADGE_KIND_DEFAULT } from '../kit/ux/types'
 import { UxBadge } from '../kit/ux/UxBadge'
 import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
+import { LevelIndicator } from '../shared-components/LevelIndicator'
 import { EmptyContent } from './diffs/EmptyContent'
 import { UnsupportedContent } from './diffs/UnsupportedContent'
 
@@ -187,7 +188,6 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
               !itemDefined ? '' : stringifyItem(item)
             const handledReplacedItem =
               !replacedItemDefined ? '' : stringifyItem($itemChange.beforeValue)
-            const isEmptyItem = isSeriesItemEmpty(handledItem, handledReplacedItem)
 
             let itemView: string | ReactNode = handledItem === ''
               ? <span className={DEFAULT_SERIES_ITEM_TEXT_COLOR}>{DEFAULT_SERIES_ITEM}</span>
@@ -196,23 +196,23 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
             if (isSideBySideDiffsLayoutMode) {
               if (itemRemoved) {
                 if (originSide) {
-                  const diffSchemaForContainer = isEmptyItem
-                    ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                    : DEFAULT_STRIKETHROUGH_VALUE_CLASS
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded ? DEFAULT_MUTED_VALUE_CLASS : ''}`}>
                       {itemView}
                     </div>
                 }
               }
               if (itemReplaced) {
                 if (originSide) {
-                  const diffSchemaForContainer = isEmptyItem
-                    ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                    : DEFAULT_STRIKETHROUGH_VALUE_CLASS
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {handledReplacedItem || DEFAULT_SERIES_ITEM}
+                    </div>
+                }
+                if (changedSide) {
+                  itemView =
+                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                      {itemView}
                     </div>
                 }
               }
@@ -220,22 +220,19 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
 
             if (isInlineDiffsLayoutMode) {
               if (itemRemoved) {
-                const diffSchemaForContainer = isEmptyItem
-                  ? DEFAULT_SERIES_ITEM_TEXT_COLOR
-                  : DEFAULT_STRIKETHROUGH_VALUE_CLASS
                 itemView =
-                  <div className={`inline ${diffTypeForItemIncluded ? diffSchemaForContainer : ''}`}>
+                  <div className={`inline ${diffTypeForItemIncluded ? DEFAULT_MUTED_VALUE_CLASS : ''}`}>
                     {itemView}
                   </div>
               }
               if (itemReplaced) {
-                const diffSchemaForContainerBefore =
-                  `${DEFAULT_STRIKETHROUGH_VALUE_CLASS} ${isEmptyItem ? DEFAULT_SERIES_ITEM_TEXT_COLOR : ''}`
                 itemView = <>
-                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? diffSchemaForContainerBefore : ''}`}>
+                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {handledReplacedItem || DEFAULT_SERIES_ITEM}
                   </div>
-                  {itemView}
+                  <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    {itemView}
+                  </div>
                 </>
               }
             }
