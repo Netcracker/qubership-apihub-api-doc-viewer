@@ -1,6 +1,7 @@
 import { NestingIndicatorTitle } from "@apihub/components/common/NestingIndicatorTitle";
 import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer";
+import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper";
 import { SideBySideLayout } from "@apihub/components/shared-components/Layout/SideBySideLayout";
 import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
 import { DEFAULT_ROW_PADDING_LEFT } from "@apihub/constants/configuration";
@@ -8,11 +9,69 @@ import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { useLevelContext } from "@apihub/contexts/LevelContext";
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { DiffMetaKeys, IJsonSchemaBaseType, NodeChange } from "@netcracker/qubership-apihub-api-data-model";
-import type { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { isDiffAdd, isDiffRemove, isDiffReplace, type Diff, type DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
+import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isSpecificationExtensionKey, SpecificationExtensionKey } from "@netcracker/qubership-apihub-next-data-model/model/specification-extension-key";
-import { FC, useMemo } from "react";
+import { FC, memo, useMemo } from "react";
+
+type ExtensionsSubheaderProps = {
+  diff: Diff | undefined
+  layoutSide: LayoutSide
+}
+
+const ExtensionsSubheader: FC<ExtensionsSubheaderProps> = memo<ExtensionsSubheaderProps>((props) => {
+  const { diff, layoutSide } = props
+
+  const level = useLevelContext()
+
+  const { diffStylesClasses, isVisible } = useMemo(() => {
+    if (!diff) {
+      return {
+        diffStylesClasses: [],
+        isVisible: true,
+      }
+    }
+    let isVisible = true
+    const diffStylesClasses: Set<string> = new Set()
+    if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+      if (isDiffAdd(diff)) {
+        diffStylesClasses.add(DiffsClassesBuilder.background(HighlightVariant.Gray))
+        isVisible = false
+      }
+      if (isDiffRemove(diff)) {
+        diffStylesClasses.add(DiffsClassesBuilder.background(HighlightVariant.Red))
+      }
+    }
+    if (layoutSide === CHANGED_LAYOUT_SIDE) {
+      if (isDiffAdd(diff)) {
+        diffStylesClasses.add(DiffsClassesBuilder.background(HighlightVariant.Green))
+      }
+      if (isDiffRemove(diff)) {
+        diffStylesClasses.add(DiffsClassesBuilder.background(HighlightVariant.Gray))
+        isVisible = false
+      }
+    }
+    return {
+      diffStylesClasses: Array.from(diffStylesClasses),
+      isVisible: isVisible,
+    }
+  }, [diff, layoutSide])
+
+  return (
+    <div className={`flex flex-row h-full ${DEFAULT_ROW_PADDING_LEFT} ${diffStylesClasses.join(' ')}`}>
+      <LevelIndicator level={level + 1} lastInvisible />
+      {isVisible && (
+        <NestingIndicatorTitle>
+          Extensions
+        </NestingIndicatorTitle>
+      )}
+    </div>
+  )
+})
 
 type ExtensionsProps = {
   extensions: NonNullable<IJsonSchemaBaseType['extensions']>
@@ -31,6 +90,22 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
   const inlineDiffsLayout = layoutMode === INLINE_DIFFS_LAYOUT_MODE
   const sideBySideLayout = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
 
+  const nodeDiff = useMemo(() => nodeChangeToDiff($nodeChange), [$nodeChange])
+
+  const subheaderDiffTypeForBadge = useMemo(() => nodeDiff?.type, [nodeDiff])
+  const subheaderDiffTypeCauseForBadge = useMemo(() => {
+    if (!nodeDiff) {
+      return undefined
+    }
+    if (isDiffRemove(nodeDiff) || isDiffReplace(nodeDiff)) {
+      return `caused by ${nodeDiff.beforeDeclarationPaths[0]} change`
+    }
+    if (isDiffAdd(nodeDiff)) {
+      return `caused by ${nodeDiff.afterDeclarationPaths[0]} change`
+    }
+    return undefined
+  }, [nodeDiff])
+
   const subheader = useMemo(() => {
     const subheaderElement = (
       <div className={`flex flex-row ${DEFAULT_ROW_PADDING_LEFT}`}>
@@ -45,19 +120,27 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
         return null // TODO: Not supported yet
       case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:
         return (
-          <SideBySideLayout left={subheaderElement} right={subheaderElement} />
+          <DiffFloatingBadgeWrapper
+            diffType={subheaderDiffTypeForBadge}
+            diffTypeCause={subheaderDiffTypeCauseForBadge}
+          >
+            <SideBySideLayout
+              left={<ExtensionsSubheader diff={nodeDiff} layoutSide={ORIGIN_LAYOUT_SIDE} />}
+              right={<ExtensionsSubheader diff={nodeDiff} layoutSide={CHANGED_LAYOUT_SIDE} />}
+            />
+          </DiffFloatingBadgeWrapper>
         )
       default:
         return subheaderElement
     }
-  }, [layoutMode, level])
+  }, [layoutMode, level, nodeDiff, subheaderDiffTypeCauseForBadge, subheaderDiffTypeForBadge])
 
   const jsoViewerElement = useMemo(() => {
     if (inlineDiffsLayout) {
       return null // TODO: Not supported yet
     }
     if (sideBySideLayout && diffMetaKeys) {
-      const extensionsWithNodeChange = injectNodeChangeToExtensions(extensions, $nodeChange, diffMetaKeys)
+      const extensionsWithNodeChange = injectNodeChangeToExtensions(extensions, nodeDiff, diffMetaKeys)
       return (
         <JsoDiffsViewer
           mergedSource={extensionsWithNodeChange}
@@ -74,7 +157,7 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
         initialLevel={level + 1}
       />
     )
-  }, [inlineDiffsLayout, sideBySideLayout, diffMetaKeys, extensions, level, $nodeChange, displayMode])
+  }, [inlineDiffsLayout, sideBySideLayout, diffMetaKeys, extensions, level, nodeDiff, displayMode])
 
   if (!jsoViewerElement) {
     return null
@@ -99,14 +182,10 @@ function nodeChangeToDiff(nodeChange?: NodeChange): Diff | undefined {
 
 function injectNodeChangeToExtensions(
   extensions: Record<SpecificationExtensionKey, unknown>,
-  nodeChange: NodeChange | undefined,
+  nodeChange: Diff | undefined,
   metaKeys: DiffMetaKeys | undefined,
 ): Record<SpecificationExtensionKey, unknown> {
   if (!nodeChange || !metaKeys) {
-    return extensions
-  }
-  const diff = nodeChangeToDiff(nodeChange)
-  if (!diff) {
     return extensions
   }
   const extensionsKeys = Object.keys(extensions)
@@ -115,7 +194,7 @@ function injectNodeChangeToExtensions(
     if (!isSpecificationExtensionKey(extensionKey)) {
       continue
     }
-    extensionsDiffsRecord[extensionKey] = diff
+    extensionsDiffsRecord[extensionKey] = nodeChange
   }
   return {
     ...extensions,
