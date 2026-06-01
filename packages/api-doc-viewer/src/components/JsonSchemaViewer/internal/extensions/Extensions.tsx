@@ -9,15 +9,20 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { useLevelContext } from "@apihub/contexts/LevelContext";
 import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode";
-import { IJsonSchemaBaseType } from "@netcracker/qubership-apihub-api-data-model";
+import { DiffMetaKeys, IJsonSchemaBaseType, NodeChange } from "@netcracker/qubership-apihub-api-data-model";
+import type { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { isSpecificationExtensionKey, SpecificationExtensionKey } from "@netcracker/qubership-apihub-next-data-model/model/specification-extension-key";
 import { FC, useMemo } from "react";
 
 type ExtensionsProps = {
   extensions: NonNullable<IJsonSchemaBaseType['extensions']>
+  $nodeChange?: NodeChange
 }
 
+const STUB_DIFF_TYPES: DiffType[] = []
+
 export const Extensions: FC<ExtensionsProps> = (props) => {
-  const { extensions } = props
+  const { extensions, $nodeChange } = props
 
   const level = useLevelContext()
   const displayMode = useDisplayMode()
@@ -52,13 +57,14 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
       return null // TODO: Not supported yet
     }
     if (sideBySideLayout && diffMetaKeys) {
+      const extensionsWithNodeChange = injectNodeChangeToExtensions(extensions, $nodeChange, diffMetaKeys)
       return (
         <JsoDiffsViewer
-          mergedSource={extensions}
+          mergedSource={extensionsWithNodeChange}
           initialLevel={level + 1}
           displayMode={displayMode}
           diffMetaKeys={diffMetaKeys}
-          diffTypes={[]}
+          diffTypes={STUB_DIFF_TYPES}
         />
       )
     }
@@ -68,7 +74,7 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
         initialLevel={level + 1}
       />
     )
-  }, [inlineDiffsLayout, sideBySideLayout, diffMetaKeys, extensions, level, displayMode])
+  }, [inlineDiffsLayout, sideBySideLayout, diffMetaKeys, extensions, level, $nodeChange, displayMode])
 
   if (!jsoViewerElement) {
     return null
@@ -80,4 +86,39 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
       {jsoViewerElement}
     </div>
   )
+}
+
+function nodeChangeToDiff(nodeChange?: NodeChange): Diff | undefined {
+  if (!nodeChange) {
+    return undefined
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { depth, ...diff } = nodeChange
+  return diff
+}
+
+function injectNodeChangeToExtensions(
+  extensions: Record<SpecificationExtensionKey, unknown>,
+  nodeChange: NodeChange | undefined,
+  metaKeys: DiffMetaKeys | undefined,
+): Record<SpecificationExtensionKey, unknown> {
+  if (!nodeChange || !metaKeys) {
+    return extensions
+  }
+  const diff = nodeChangeToDiff(nodeChange)
+  if (!diff) {
+    return extensions
+  }
+  const extensionsKeys = Object.keys(extensions)
+  const extensionsDiffsRecord: Record<SpecificationExtensionKey, Diff> = {}
+  for (const extensionKey of extensionsKeys) {
+    if (!isSpecificationExtensionKey(extensionKey)) {
+      continue
+    }
+    extensionsDiffsRecord[extensionKey] = diff
+  }
+  return {
+    ...extensions,
+    [metaKeys.diffsMetaKey]: extensionsDiffsRecord,
+  }
 }

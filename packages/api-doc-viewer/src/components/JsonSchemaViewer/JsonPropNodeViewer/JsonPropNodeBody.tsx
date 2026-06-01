@@ -142,6 +142,7 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
               {extensions && (
                 <Extensions
                   extensions={extensions}
+                  $nodeChange={$nodeChange}
                 />
               )}
             </div>
