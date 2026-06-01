@@ -394,3 +394,212 @@ export const ExtensionsOnObject: Story = {
     metaKeys: DIFF_META_KEYS,
   }
 }
+
+export const ExtensionsWhollyAddedOnObject: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          }
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ExtensionsWhollyRemovedOnObject: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const AddedPropertyWithExtensions: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          }
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          },
+          addedProperty: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const RemovedPropertyWithExtensions: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          },
+          addedProperty: {
+            type: 'string',
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            type: 'string',
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ExtensionsOnCircularObject: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      circular: true,
+      beforeSchema: {
+        $ref: '#/components/schemas/A'
+      },
+      beforeAdditionalComponents: {
+        schemas: {
+          A: {
+            type: 'object',
+            properties: {
+              prop: { $ref: '#/components/schemas/A' }
+            },
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-removed-extension': 'removed value',
+            'x-changed-extension': true,
+          }
+        }
+      },
+      afterSchema: {
+        $ref: '#/components/schemas/A'
+      },
+      afterAdditionalComponents: {
+        schemas: {
+          A: {
+            type: 'object',
+            properties: {
+              prop: {
+                $ref: '#/components/schemas/A'
+              }
+            },
+            'x-string-extension': 'value',
+            'x-integer-extension': 1,
+            'x-boolean-extension': true,
+            'x-number-extension': 1.0,
+            'x-array-extension': [1, 2, 3],
+            'x-object-extension': {
+              key: 'value',
+            },
+            'x-added-extension': 42,
+            'x-changed-extension': false,
+          }
+        }
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
