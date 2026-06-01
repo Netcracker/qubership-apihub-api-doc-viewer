@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 export interface ViewComponent {
-    captureScreenshot(): Promise<Buffer | string>;
+    captureScreenshot(): Promise<Uint8Array>;
 }
