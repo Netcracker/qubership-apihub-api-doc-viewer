@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
 import { DiffNodeMeta, DiffNodeValue } from '@netcracker/qubership-apihub-api-data-model'
+import { isExpandableTreeNode } from '@netcracker/qubership-apihub-api-state-model'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { isExpandableTreeNode } from '@netcracker/qubership-apihub-api-state-model'
 import { buildNodeTitleData, buildNodeTypeData } from '../../../builders/nodes'
 import { useLayoutMode } from '../../../contexts/LayoutModeContext'
 import { useLevelContext } from '../../../contexts/LevelContext'
@@ -36,11 +37,10 @@ import {
   isRootNode
 } from '../../../utils/nodes'
 import { Annotations } from '../../common/annotations/Annotations'
+import { Extensions } from '../internal/extensions/Extensions'
 import { HeaderRow } from '../internal/layout/HeaderRow'
 import { Validations } from '../internal/validations/Validations'
 import { isPropNodeState } from '../types/nodes.guards'
-import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
-import { Extensions } from '../internal/extensions/Extensions'
 
 export type JsonPropNodeBodyProps = PropsWithoutChangesSummary<
   JsonPropNodePropsWithState &
@@ -141,7 +141,6 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
               />
               {extensions && (
                 <Extensions
-                  shift={isRoot}
                   extensions={extensions}
                 />
               )}
