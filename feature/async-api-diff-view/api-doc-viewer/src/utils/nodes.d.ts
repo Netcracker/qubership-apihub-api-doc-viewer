@@ -46,6 +46,7 @@ export declare function isNumberValue(value?: JsonSchemaNodeValue | GraphSchemaN
 export declare function isBooleanValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
 export declare function isObjectValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
 export declare function isArrayValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function valueHasExtensions(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
 export declare function hasNoContent(node?: AnyTreeNode | null): boolean;
 export declare function hasNoValidationsAndAnnotations(node?: AnyTreeNode | null): boolean;
 export declare function onToggleExpander(state: IModelStatePropNode<AnyTreeNode>, reactStateCallback: Dispatch<SetStateAction<boolean>>, mode?: ExpandingMode): void;
