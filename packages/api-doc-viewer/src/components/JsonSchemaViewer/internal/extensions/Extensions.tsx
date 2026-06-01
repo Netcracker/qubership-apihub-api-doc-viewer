@@ -17,6 +17,7 @@ import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isSpecificationExtensionKey, SpecificationExtensionKey } from "@netcracker/qubership-apihub-next-data-model/model/specification-extension-key";
+import { getValueByPath, takeIfDiffsRecord } from "@netcracker/qubership-apihub-next-data-model/utilities";
 import { FC, memo, useMemo } from "react";
 
 type ExtensionsSubheaderProps = {
@@ -91,7 +92,13 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
   const inlineDiffsLayout = layoutMode === INLINE_DIFFS_LAYOUT_MODE
   const sideBySideLayout = layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
 
-  const nodeDiff = useMemo(() => nodeChangeToDiff($nodeChange), [$nodeChange])
+  const nodeDiff = useMemo(() => {
+    let nodeDiff: Diff | undefined = nodeChangeToDiff($nodeChange)
+    if (!nodeDiff) {
+      nodeDiff = inferNodeDiff(extensions, diffMetaKeys)
+    }
+    return nodeDiff
+  }, [$nodeChange, extensions, diffMetaKeys])
 
   const subheaderDiffTypeForBadge = useMemo(() => nodeDiff?.type, [nodeDiff])
   const subheaderDiffTypeCauseForBadge = useMemo(() => {
@@ -202,4 +209,35 @@ function injectNodeChangeToExtensions(
     ...extensions,
     [metaKeys.diffsMetaKey]: extensionsDiffsRecord,
   }
+}
+
+function inferNodeDiff(
+  extensions: Record<SpecificationExtensionKey, unknown>,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): Diff | undefined {
+  if (!diffMetaKeys) {
+    return undefined
+  }
+  const { diffsMetaKey } = diffMetaKeys
+  const extensionsKeys = Object.keys(extensions)
+  const extensionsDiffsRecord = takeIfDiffsRecord(
+    getValueByPath(extensions, [diffsMetaKey]),
+  )
+  if (!extensionsDiffsRecord) {
+    return undefined
+  }
+  const changedExtensionsKeys = Object.keys(extensionsDiffsRecord)
+  if (changedExtensionsKeys.length === 0) {
+    return undefined
+  }
+  if (extensionsKeys.length !== changedExtensionsKeys.length) {
+    return undefined
+  }
+  const diff: Diff | undefined = extensionsDiffsRecord[changedExtensionsKeys[0]]
+  for (const changedExtensionKey of changedExtensionsKeys) {
+    if (extensionsDiffsRecord[changedExtensionKey]?.action !== diff?.action) {
+      return undefined
+    }
+  }
+  return diff
 }
