@@ -35,3 +35,8 @@ export declare const PrimitiveChanged: Story;
 export declare const ObjectiveHeaderChanged: Story;
 export declare const ExtensionsOnPrimitive: Story;
 export declare const ExtensionsOnObject: Story;
+export declare const ExtensionsWhollyAddedOnObject: Story;
+export declare const ExtensionsWhollyRemovedOnObject: Story;
+export declare const AddedPropertyWithExtensions: Story;
+export declare const RemovedPropertyWithExtensions: Story;
+export declare const ExtensionsOnCircularObject: Story;
