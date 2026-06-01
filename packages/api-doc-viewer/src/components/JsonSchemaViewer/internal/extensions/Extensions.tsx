@@ -1,4 +1,7 @@
+import { NestingIndicatorTitle } from "@apihub/components/common/NestingIndicatorTitle";
 import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer";
+import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
+import { DEFAULT_ROW_PADDING_LEFT } from "@apihub/constants/configuration";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { useLevelContext } from "@apihub/contexts/LevelContext";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
@@ -53,8 +56,14 @@ const ExtensionsContent: FC<ExtensionsContentProps> = (props) => {
   const width = sideBySideDiffsLayout ? 'w-1/2' : 'w-full'
 
   return (
-    <div className={`flex flex-row gap-6 ${width}`}>
+    <div className={`${width}`}>
       <div className='flex flex-col'>
+        <div className={`flex flex-row ${DEFAULT_ROW_PADDING_LEFT}`}>
+          <LevelIndicator level={level + 1} lastInvisible />
+          <NestingIndicatorTitle>
+            Extensions
+          </NestingIndicatorTitle>
+        </div>
         {extensions.map((extension) => (
           <JsoViewer
             key={Object.keys(extension)[0]}
