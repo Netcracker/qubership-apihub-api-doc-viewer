@@ -9,7 +9,7 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, useMemo } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
-import { JsoViewer } from "../JsoViewer/JsoViewer"
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
@@ -26,7 +26,7 @@ type MessageChannelParametersNodeViewerProps = WithPrecededByProps & {
 export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNodeViewerProps> = (props) => {
   const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
-  const layoutMode = useLayoutMode()
+  const displayMode = useDisplayMode()
 
   if (isMessageChannelParametersNodeWithDiffs(node)) {
     return (
@@ -47,12 +47,12 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
       expandable={false}
       variant={TextValueVariant.h3}
     />
-    <JsoViewer
+    <JsonSchemaViewer
       data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
-      source={addressParameters}
-      initialLevel={1}
-      supportJsonSchema={true}
-      layoutMode={layoutMode}
+      schema={addressParameters}
+      expandedDepth={2}
+      displayMode={displayMode}
+      overriddenKind='parameters'
     />
   </>
 }

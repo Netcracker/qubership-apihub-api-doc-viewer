@@ -13,6 +13,7 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { INLINE_DIFFS_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode";
 import { DiffMetaKeys, IJsonSchemaBaseType, NodeChange } from "@netcracker/qubership-apihub-api-data-model";
 import { isDiffAdd, isDiffRemove, isDiffReplace, type Diff, type DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isSpecificationExtensionKey, SpecificationExtensionKey } from "@netcracker/qubership-apihub-next-data-model/model/specification-extension-key";
@@ -97,13 +98,14 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
     if (!nodeDiff) {
       return undefined
     }
+    let path: JsonPath = []
     if (isDiffRemove(nodeDiff) || isDiffReplace(nodeDiff)) {
-      return `caused by ${nodeDiff.beforeDeclarationPaths[0]} change`
+      path = nodeDiff.beforeDeclarationPaths[0] ?? []
     }
     if (isDiffAdd(nodeDiff)) {
-      return `caused by ${nodeDiff.afterDeclarationPaths[0]} change`
+      path = nodeDiff.afterDeclarationPaths[0] ?? []
     }
-    return undefined
+    return path.length > 0 ? `caused by ${path.join('.')} change` : undefined
   }, [nodeDiff])
 
   const subheader = useMemo(() => {
