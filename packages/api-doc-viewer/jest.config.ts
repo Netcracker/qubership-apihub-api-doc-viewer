@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-const path = require('path')
-const { prepareJestConfig } = require('@netcracker/qubership-apihub-jest-chrome-in-docker-environment')
-
-module.exports = prepareJestConfig(
-  path.resolve(__dirname, './common-it-test.jest.config.cjs'),
-  path.resolve(__dirname, './common-puppeteer.config.cjs'),
-  {
-    dockerImage: 'ghcr.io/netcracker/qubership-apihub-nodejs-dev-image:1.9.0',
+module.exports = {
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      tsconfig: {
+        module: 'CommonJS',
+        moduleResolution: 'node',
+        jsx: 'react-jsx',
+      },
+    }],
   },
-)
+  testRegex: '(/tests/.*\\.(test|spec)|(\\.|/)(test|spec))\\.(ts?|tsx?|js?|jsx?)$',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  testEnvironment: 'node',
+}
