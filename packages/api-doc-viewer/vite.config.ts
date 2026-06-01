@@ -48,6 +48,7 @@ export default defineConfig({
       '@netcracker/qubership-apihub-api-data-model': path.resolve(__dirname, '../api-data-model/src'),
       '@netcracker/qubership-apihub-next-data-model': path.resolve(__dirname, '../next-data-model/src'),
       '@netcracker/qubership-apihub-samples': path.resolve(__dirname, '../samples/src'),
+      '@apihub/api-data-model': path.resolve(__dirname, '../api-data-model/src'),
       '@apihub/next-data-model': path.resolve(__dirname, '../next-data-model/src'),
 
       // Internal aliases (within this package)
