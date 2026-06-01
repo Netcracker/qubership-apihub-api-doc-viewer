@@ -38,14 +38,17 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
   const headersJsonSchema = useMemo(() => {
-    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
+    if (!headersChild) {
       return undefined
     }
     const headersValue = headersChild.value()
     if (!headersValue) {
       return undefined
     }
-    return prepareJsonSchemaForJsoViewer('Type', headersValue, headersChild.diffs[''], diffMetaKeys)
+    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
+      return prepareJsonSchemaForJsoViewer('Type', headersValue)
+    }
+    return prepareJsonSchemaForJsoDiffsViewer('Type', headersValue, headersChild.diffs[''], diffMetaKeys)
   }, [headersChild, diffMetaKeys])
 
   const headersTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
@@ -59,14 +62,17 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     }
   }, [headersChild])
   const payloadJsonSchema = useMemo(() => {
-    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
+    if (!payloadChild) {
       return undefined
     }
     const payloadValue = payloadChild.value()
     if (!payloadValue) {
       return undefined
     }
-    return prepareJsonSchemaForJsoViewer('Type', payloadValue, payloadChild.diffs[''], diffMetaKeys)
+    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
+      return prepareJsonSchemaForJsoViewer('Type', payloadValue)
+    }
+    return prepareJsonSchemaForJsoDiffsViewer('Type', payloadValue, payloadChild.diffs[''], diffMetaKeys)
   }, [payloadChild, diffMetaKeys])
   const payloadTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
@@ -168,6 +174,22 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
 }
 
 function prepareJsonSchemaForJsoViewer(
+  nodeKey: NodeKey,
+  nodeValue: AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>,
+): object | undefined {
+  if (!nodeValue) {
+    return undefined
+  }
+
+  return {
+    type: 'object',
+    properties: {
+      [nodeKey]: nodeValue.schema,
+    },
+  }
+}
+
+function prepareJsonSchemaForJsoDiffsViewer(
   nodeKey: NodeKey,
   nodeValue: AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>,
   nodeValueDiff: ChangedPropertyMetaData | undefined,
