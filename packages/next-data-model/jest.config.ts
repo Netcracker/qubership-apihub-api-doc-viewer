@@ -21,6 +21,8 @@ module.exports = {
   //   "^@netcracker/qubership-apihub-api-diff$":'<rootDir>/../qubership-apihub-api-diff/src',
   // },
   moduleNameMapper: {
+    "^@apihub/api-data-model$": "<rootDir>/../api-data-model/src",
+    "^@apihub/api-data-model/(.*)$": "<rootDir>/../api-data-model/src/$1",
     "^@apihub/next-data-model/building-service$": "<rootDir>/src/building-service",
     "^@apihub/next-data-model/building-service/(.*)$": "<rootDir>/src/building-service/$1",
     "^@apihub/next-data-model/model$": "<rootDir>/src/model",
