@@ -121,6 +121,9 @@ export function createTreeBuildingHooks<
     if (typeof key === "symbol") {
       return;
     }
+    if (!isObject(value) && !isArray(value)) {
+      return { value };
+    }
 
     const { alreadyConvertedValuesCache, parent, container } = state;
     const alreadyExisted = alreadyConvertedValuesCache.get(value);
@@ -217,7 +220,9 @@ export function createTreeBuildingHooks<
     // ---------------------------------------
 
     const newCache = new Map(state.alreadyConvertedValuesCache) as S["alreadyConvertedValuesCache"];
-    newCache.set(value, treeNode);
+    if (isObject(value) || isArray(value)) {
+      newCache.set(value, treeNode);
+    }
 
     let newState: S;
     if (isSimpleNode(treeNode)) {
