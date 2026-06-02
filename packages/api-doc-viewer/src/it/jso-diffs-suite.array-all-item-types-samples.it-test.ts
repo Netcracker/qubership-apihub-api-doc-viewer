@@ -16,7 +16,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.1-arrayAllItemTypes-array-all-item-types-to-string', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-1-arrayallitemtypes-array-all-item-types-to-string'
+      'jso-diffs-suite-arrayallitemtypes--case-12-1-array-all-item-types-array-all-item-types-to-string'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.2-arrayAllItemTypes-array-all-item-types-to-number', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-2-arrayallitemtypes-array-all-item-types-to-number'
+      'jso-diffs-suite-arrayallitemtypes--case-12-2-array-all-item-types-array-all-item-types-to-number'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.3-arrayAllItemTypes-array-all-item-types-to-boolean', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-3-arrayallitemtypes-array-all-item-types-to-boolean'
+      'jso-diffs-suite-arrayallitemtypes--case-12-3-array-all-item-types-array-all-item-types-to-boolean'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.4-arrayAllItemTypes-array-all-item-types-to-null', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-4-arrayallitemtypes-array-all-item-types-to-null'
+      'jso-diffs-suite-arrayallitemtypes--case-12-4-array-all-item-types-array-all-item-types-to-null'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.5-arrayAllItemTypes-array-all-item-types-to-object-primitive-props', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-5-arrayallitemtypes-array-all-item-types-to-object-primitive-props'
+      'jso-diffs-suite-arrayallitemtypes--case-12-5-array-all-item-types-array-all-item-types-to-object-primitive-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.6-arrayAllItemTypes-array-all-item-types-to-object-props-objects', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-6-arrayallitemtypes-array-all-item-types-to-object-props-objects'
+      'jso-diffs-suite-arrayallitemtypes--case-12-6-array-all-item-types-array-all-item-types-to-object-props-objects'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -70,7 +70,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.7-arrayAllItemTypes-array-all-item-types-to-object-props-arrays', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-7-arrayallitemtypes-array-all-item-types-to-object-props-arrays'
+      'jso-diffs-suite-arrayallitemtypes--case-12-7-array-all-item-types-array-all-item-types-to-object-props-arrays'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -79,7 +79,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.8-arrayAllItemTypes-array-all-item-types-to-object-all-prop-types', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-8-arrayallitemtypes-array-all-item-types-to-object-all-prop-types'
+      'jso-diffs-suite-arrayallitemtypes--case-12-8-array-all-item-types-array-all-item-types-to-object-all-prop-types'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -88,7 +88,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.9-arrayAllItemTypes-array-all-item-types-to-array-primitives', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-9-arrayallitemtypes-array-all-item-types-to-array-primitives'
+      'jso-diffs-suite-arrayallitemtypes--case-12-9-array-all-item-types-array-all-item-types-to-array-primitives'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -97,7 +97,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.10-arrayAllItemTypes-array-all-item-types-to-array-objects', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-10-arrayallitemtypes-array-all-item-types-to-array-objects'
+      'jso-diffs-suite-arrayallitemtypes--case-12-10-array-all-item-types-array-all-item-types-to-array-objects'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -106,7 +106,7 @@ describe('JSO Diffs Suite - arrayAllItemTypes', () => {
   it('12.11-arrayAllItemTypes-array-all-item-types-to-array-items-arrays', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-arrayallitemtypes--case-12-11-arrayallitemtypes-array-all-item-types-to-array-items-arrays'
+      'jso-diffs-suite-arrayallitemtypes--case-12-11-array-all-item-types-array-all-item-types-to-array-items-arrays'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

@@ -180,7 +180,7 @@ describe('Async API Diffs Suite - Channel Samples', () => {
   it('4.1-channel-bindings-kafka-bindingVersion-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-4-1-channel-bindings-kafka-bindingversion-changed'
+      'async-api-diffs-suite-channel-samples--case-4-1-channel-bindings-kafka-binding-version-changed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -191,7 +191,7 @@ describe('Async API Diffs Suite - Channel Samples', () => {
   it('4.2-channel-bindings-kafka-bindingVersion-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-4-2-channel-bindings-kafka-bindingversion-removed'
+      'async-api-diffs-suite-channel-samples--case-4-2-channel-bindings-kafka-binding-version-removed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -202,7 +202,7 @@ describe('Async API Diffs Suite - Channel Samples', () => {
   it('4.3-channel-bindings-kafka-bindingVersion-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-4-3-channel-bindings-kafka-bindingversion-added'
+      'async-api-diffs-suite-channel-samples--case-4-3-channel-bindings-kafka-binding-version-added'
     )
     component = await story.viewComponent()
     await switchToChannelSection()

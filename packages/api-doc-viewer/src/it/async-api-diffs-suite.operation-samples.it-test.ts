@@ -180,7 +180,7 @@ describe('Async API Diffs Suite - Operation Samples', () => {
   it('4.1-operation-bindings-kafka-bindingVersion-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-operation-samples--case-4-1-operation-bindings-kafka-bindingversion-changed'
+      'async-api-diffs-suite-operation-samples--case-4-1-operation-bindings-kafka-binding-version-changed'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -191,7 +191,7 @@ describe('Async API Diffs Suite - Operation Samples', () => {
   it('4.2-operation-bindings-kafka-bindingVersion-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-operation-samples--case-4-2-operation-bindings-kafka-bindingversion-removed'
+      'async-api-diffs-suite-operation-samples--case-4-2-operation-bindings-kafka-binding-version-removed'
     )
     component = await story.viewComponent()
     await switchToOperationSection()
@@ -202,7 +202,7 @@ describe('Async API Diffs Suite - Operation Samples', () => {
   it('4.3-operation-bindings-kafka-bindingVersion-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-operation-samples--case-4-3-operation-bindings-kafka-bindingversion-added'
+      'async-api-diffs-suite-operation-samples--case-4-3-operation-bindings-kafka-binding-version-added'
     )
     component = await story.viewComponent()
     await switchToOperationSection()

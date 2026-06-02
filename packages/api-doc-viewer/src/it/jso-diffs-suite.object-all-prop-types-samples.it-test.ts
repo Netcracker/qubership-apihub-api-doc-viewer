@@ -16,7 +16,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.1-objectAllPropTypes-object-all-prop-types-to-string', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-1-objectallproptypes-object-all-prop-types-to-string'
+      'jso-diffs-suite-objectallproptypes--case-8-1-object-all-prop-types-object-all-prop-types-to-string'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.2-objectAllPropTypes-object-all-prop-types-to-number', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-2-objectallproptypes-object-all-prop-types-to-number'
+      'jso-diffs-suite-objectallproptypes--case-8-2-object-all-prop-types-object-all-prop-types-to-number'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -34,7 +34,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.3-objectAllPropTypes-object-all-prop-types-to-boolean', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-3-objectallproptypes-object-all-prop-types-to-boolean'
+      'jso-diffs-suite-objectallproptypes--case-8-3-object-all-prop-types-object-all-prop-types-to-boolean'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -43,7 +43,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.4-objectAllPropTypes-object-all-prop-types-to-null', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-4-objectallproptypes-object-all-prop-types-to-null'
+      'jso-diffs-suite-objectallproptypes--case-8-4-object-all-prop-types-object-all-prop-types-to-null'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -52,7 +52,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.5-objectAllPropTypes-object-all-prop-types-to-object-primitive-props', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-5-objectallproptypes-object-all-prop-types-to-object-primitive-props'
+      'jso-diffs-suite-objectallproptypes--case-8-5-object-all-prop-types-object-all-prop-types-to-object-primitive-props'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -61,7 +61,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.6-objectAllPropTypes-object-all-prop-types-to-object-props-objects', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-6-objectallproptypes-object-all-prop-types-to-object-props-objects'
+      'jso-diffs-suite-objectallproptypes--case-8-6-object-all-prop-types-object-all-prop-types-to-object-props-objects'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -70,7 +70,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.7-objectAllPropTypes-object-all-prop-types-to-object-props-arrays', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-7-objectallproptypes-object-all-prop-types-to-object-props-arrays'
+      'jso-diffs-suite-objectallproptypes--case-8-7-object-all-prop-types-object-all-prop-types-to-object-props-arrays'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -79,7 +79,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.8-objectAllPropTypes-object-all-prop-types-to-array-primitives', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-8-objectallproptypes-object-all-prop-types-to-array-primitives'
+      'jso-diffs-suite-objectallproptypes--case-8-8-object-all-prop-types-object-all-prop-types-to-array-primitives'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -88,7 +88,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.9-objectAllPropTypes-object-all-prop-types-to-array-objects', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-9-objectallproptypes-object-all-prop-types-to-array-objects'
+      'jso-diffs-suite-objectallproptypes--case-8-9-object-all-prop-types-object-all-prop-types-to-array-objects'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -97,7 +97,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.10-objectAllPropTypes-object-all-prop-types-to-array-items-arrays', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-10-objectallproptypes-object-all-prop-types-to-array-items-arrays'
+      'jso-diffs-suite-objectallproptypes--case-8-10-object-all-prop-types-object-all-prop-types-to-array-items-arrays'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -106,7 +106,7 @@ describe('JSO Diffs Suite - objectAllPropTypes', () => {
   it('8.11-objectAllPropTypes-object-all-prop-types-to-array-all-item-types', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-objectallproptypes--case-8-11-objectallproptypes-object-all-prop-types-to-array-all-item-types'
+      'jso-diffs-suite-objectallproptypes--case-8-11-object-all-prop-types-object-all-prop-types-to-array-all-item-types'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

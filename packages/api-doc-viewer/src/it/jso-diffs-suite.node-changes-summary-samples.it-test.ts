@@ -16,7 +16,7 @@ describe('JSO Diffs Suite - nodeChangesSummary', () => {
   it('16.1-nodeChangesSummary-on-object', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-nodechangessummary--case-16-1-nodechangessummary-on-object'
+      'jso-diffs-suite-nodechangessummary--case-16-1-node-changes-summary-on-object'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
@@ -25,7 +25,7 @@ describe('JSO Diffs Suite - nodeChangesSummary', () => {
   it('16.2-nodeChangesSummary-on-array', async () => {
     story = await storyPage(
       page,
-      'jso-diffs-suite-nodechangessummary--case-16-2-nodechangessummary-on-array'
+      'jso-diffs-suite-nodechangessummary--case-16-2-node-changes-summary-on-array'
     )
     component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()

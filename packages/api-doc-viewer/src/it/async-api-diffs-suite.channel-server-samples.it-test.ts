@@ -59,7 +59,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('2.1-channel-servers0-bindings-add-one-more-binding', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-2-1-channel-servers0-bindings-add-one-more-binding'
+      'async-api-diffs-suite-channel-server-samples--case-2-1-channel-servers-0-bindings-add-one-more-binding'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -70,7 +70,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('2.2-channel-servers0-bindings-remove-one-of-several-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-2-2-channel-servers0-bindings-remove-one-of-several-bindings'
+      'async-api-diffs-suite-channel-server-samples--case-2-2-channel-servers-0-bindings-remove-one-of-several-bindings'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -81,7 +81,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('2.3-channel-servers0-bindings-add-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-2-3-channel-servers0-bindings-add-bindings'
+      'async-api-diffs-suite-channel-server-samples--case-2-3-channel-servers-0-bindings-add-bindings'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -92,7 +92,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('2.4-channel-servers0-bindings-remove-bindings', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-2-4-channel-servers0-bindings-remove-bindings'
+      'async-api-diffs-suite-channel-server-samples--case-2-4-channel-servers-0-bindings-remove-bindings'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -125,7 +125,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('3.1-channel-servers0-bindings-kafka-bindingVersion-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-3-1-channel-servers0-bindings-kafka-bindingversion-changed'
+      'async-api-diffs-suite-channel-server-samples--case-3-1-channel-servers-0-bindings-kafka-binding-version-changed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -136,7 +136,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('3.2-channel-servers0-bindings-kafka-bindingVersion-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-3-2-channel-servers0-bindings-kafka-bindingversion-removed'
+      'async-api-diffs-suite-channel-server-samples--case-3-2-channel-servers-0-bindings-kafka-binding-version-removed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -147,7 +147,7 @@ describe('Async API Diffs Suite - Channel Server Samples', () => {
   it('3.3-channel-servers0-bindings-kafka-bindingVersion-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-server-samples--case-3-3-channel-servers0-bindings-kafka-bindingversion-added'
+      'async-api-diffs-suite-channel-server-samples--case-3-3-channel-servers-0-bindings-kafka-binding-version-added'
     )
     component = await story.viewComponent()
     await switchToChannelSection()

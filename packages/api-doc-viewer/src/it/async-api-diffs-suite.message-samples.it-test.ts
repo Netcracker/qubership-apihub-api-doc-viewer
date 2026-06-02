@@ -161,7 +161,7 @@ describe('Async API Diffs Suite - Message Samples', () => {
   it('4.1-message-bindings-kafka-bindingVersion-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-4-1-message-bindings-kafka-bindingversion-changed'
+      'async-api-diffs-suite-message-samples--case-4-1-message-bindings-kafka-binding-version-changed'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
@@ -171,7 +171,7 @@ describe('Async API Diffs Suite - Message Samples', () => {
   it('4.2-message-bindings-kafka-bindingVersion-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-4-2-message-bindings-kafka-bindingversion-removed'
+      'async-api-diffs-suite-message-samples--case-4-2-message-bindings-kafka-binding-version-removed'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
@@ -181,7 +181,7 @@ describe('Async API Diffs Suite - Message Samples', () => {
   it('4.3-message-bindings-kafka-bindingVersion-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-4-3-message-bindings-kafka-bindingversion-added'
+      'async-api-diffs-suite-message-samples--case-4-3-message-bindings-kafka-binding-version-added'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
