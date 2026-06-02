@@ -66,6 +66,7 @@ export type AdditionalInfoArrayRowProps = PropsWithoutChangesSummary<
     $changesKey: string
     title: string
     items: unknown[]
+    isPredefinedValuesSet?: boolean
   } &
   PropsWithChanges
 >
@@ -76,6 +77,7 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
     $changesKey,
     title,
     items,
+    isPredefinedValuesSet = false,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
     $nodeChange,
@@ -242,6 +244,7 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
               diffTypeForItemIncluded && $itemAction ? BLOCK_CONTENT_DIFF_COLOR_MAP[$itemAction] : ''
             ].join(' ')
 
+            // TODO 01.06.26 // REFACTOR: Use DiffBadge component!
             return (
               <UxBadge
                 key={`value-${index}`}

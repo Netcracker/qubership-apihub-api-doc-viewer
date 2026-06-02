@@ -78,6 +78,7 @@ export type AdditionalInfoObjectRowProps = PropsWithoutChangesSummary<
   {
     title: string
     items: Record<string | number, unknown>
+    isPredefinedValuesSet?: boolean
     $changesKeys: string[]
   } &
   PropsWithChanges
@@ -90,6 +91,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
     items,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
+    isPredefinedValuesSet = false,
     $changesKeys,
     $nodeChange,
     $changes,
@@ -224,6 +226,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               diffTypeForItemIncluded && diffActionForItem ? BLOCK_CONTENT_DIFF_COLOR_MAP[diffActionForItem] : ''
             ].join(' ')
 
+            // TODO 01.06.26 // REFACTOR: Use DiffBadge component!
             return (
               <UxBadge
                 key={`value-${index}`}
