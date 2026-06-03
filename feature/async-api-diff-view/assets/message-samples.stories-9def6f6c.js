@@ -256,7 +256,7 @@ components:
             type: string
         required:
           - id
-      description: message moved value
+      description: this description will be moved to summary
 `,fn=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
@@ -285,7 +285,7 @@ components:
             type: string
         required:
           - id
-      summary: message moved value
+      summary: this summary will be moved to description
 `,hn=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
@@ -1478,7 +1478,7 @@ components:
             type: string
         required:
           - id
-      summary: message moved value
+      summary: here it is!
 `,sa=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI
@@ -1507,7 +1507,7 @@ components:
             type: string
         required:
           - id
-      description: message moved value
+      description: here it is!
 `,na=`asyncapi: 3.0.0
 info:
   title: Sample AsyncAPI

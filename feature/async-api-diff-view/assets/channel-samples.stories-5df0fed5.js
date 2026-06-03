@@ -238,7 +238,7 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    description: channel moved value
+    description: this description will be moved to summary
 operations:
   sendOperation:
     action: send
@@ -267,7 +267,7 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    summary: channel moved value
+    summary: this is summary will be moved to description
 operations:
   sendOperation:
     action: send
@@ -934,7 +934,7 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    summary: channel moved value
+    summary: here it is!
 operations:
   sendOperation:
     action: send
@@ -963,7 +963,7 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    description: channel moved value
+    description: here it is!
 operations:
   sendOperation:
     action: send
