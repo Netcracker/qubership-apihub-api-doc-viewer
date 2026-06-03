@@ -35,8 +35,32 @@ const preview: Preview = {
           'GraphQL Compatibility Suite',
           'Async API Suite',
           'Async API Diffs Suite',
+          [
+            'Whole Apihub Operation Samples',
+            'Message Samples',
+            'Channel Samples',
+            'Operation Samples',
+            'Channel Parameters Samples',
+            'Channel Server Samples',
+          ],
           'JSO Suite',
           'JSO Diffs Suite',
+          [
+            'stringValue',
+            'numberValue',
+            'booleanValue',
+            'nullValue',
+            'objectPrimitiveProps',
+            'objectPropsObjects',
+            'objectPropsArrays',
+            'objectAllPropTypes',
+            'arrayPrimitives',
+            'arrayObjects',
+            'arrayArrayItems',
+            'arrayAllItemTypes',
+            'stringJsonSchema',
+            'objectJsonSchema',
+          ],
           '*'
         ]
       }
