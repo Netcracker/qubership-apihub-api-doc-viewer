@@ -15,7 +15,7 @@ operations:
       $ref: '#/channels/testChannel'
     messages:
       - $ref: '#/components/messages/TestMessage'
-    summary: operation moved value
+    summary: this summary will be moved to description
 components:
   messages:
     TestMessage:

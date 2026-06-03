@@ -26,4 +26,4 @@ components:
             type: string
         required:
           - id
-      summary: message moved value
+      summary: here it is!

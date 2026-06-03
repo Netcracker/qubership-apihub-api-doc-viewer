@@ -8,7 +8,7 @@ channels:
     messages:
       TestMessage:
         $ref: '#/components/messages/TestMessage'
-    summary: channel moved value
+    summary: this is summary will be moved to description
 operations:
   sendOperation:
     action: send
