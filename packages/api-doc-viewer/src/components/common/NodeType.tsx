@@ -140,7 +140,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
           diffStyles = classes(
             getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
-              $typeChange?.action ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[$typeChange.action] : ''
+              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
             )
           )
           actualType =
@@ -151,7 +151,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (changedSide) {
           diffStyles = getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
           actualType =
             <div className={`inline ${diffStyles}`}>
@@ -164,7 +164,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
           diffStyles = classes(
             getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
-              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
             )
           )
           actualType =
@@ -175,7 +175,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (changedSide) {
           diffStyles = getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            $typeChange?.action ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[$typeChange.action] : ''
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
           actualType =
             <div className={`inline ${diffStyles}`}>
@@ -188,7 +188,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
           diffStyles = classes(
             getIf(
               diffTypeForTypeIncluded && contentChangesColorizing,
-              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
             )
           )
           actualType =
@@ -199,7 +199,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (changedSide) {
           diffStyles = getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
           actualType =
             <div className={`inline ${diffStyles}`}>
@@ -216,12 +216,12 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         diffStylesBefore = classes(
           getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
         )
         diffStylesAfter = getIf(
           diffTypeForTypeIncluded && contentChangesColorizing,
-          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
         )
         actualType = <>
           <div className={`inline ${diffStylesBefore}`}>
@@ -235,17 +235,13 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       if (typeAdded) {
         diffStylesBefore = classes(
           getIf(
-            diffTypeForTypeIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
-          getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
         )
         diffStylesAfter = getIf(
           diffTypeForTypeIncluded && contentChangesColorizing,
-          $typeChange?.action ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[$typeChange.action] : ''
+          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
         )
         actualType = <>
           <div className={`inline ${diffStylesBefore}`}>
@@ -260,12 +256,12 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         diffStylesBefore = classes(
           getIf(
             diffTypeForTypeIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
         )
         diffStylesAfter = getIf(
           diffTypeForTypeIncluded && contentChangesColorizing,
-          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
         )
         actualType = <>
           <div className={`inline ${diffStylesBefore}`}>
@@ -387,7 +383,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
           diffStyles = classes(
             getIf(
               diffTypeForEntityIncluded && contentChangesColorizing,
-              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
             )
           )
           const replacedFormatValue =
@@ -406,7 +402,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         if (changedSide) {
           diffStyles = getIf(
             diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
           actualEntity =
             <div className={`inline ${diffStyles}`}>
@@ -447,12 +443,12 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
         const diffStylesBefore = classes(
           getIf(
             diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
+            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
           )
         )
         const diffStylesAfter = getIf(
           diffTypeForEntityIncluded && contentChangesColorizing,
-          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
+          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
         )
         const replacedFormatValue =
           diffReplace($formatChange)
