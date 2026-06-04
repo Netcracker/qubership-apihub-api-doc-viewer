@@ -4,6 +4,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -30,12 +31,12 @@ export const AddressRow: FC<AddressRowProps> = (props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
 
+  const diffSeverityRecord = useMemo(() => diffsSeverities?.["address-row"], [diffsSeverities])
   const diffType = useMemo(() => diff?.data.type, [diff])
-  const diffTypeCause = useMemo(() => {
-    // TODO: Extract to shared utility function
-    const path = diffsSeverities?.["address-row"]?.causedAt?.join('.')
-    return path ? `caused by ${path} change` : undefined
-  }, [diffsSeverities])
+  const diffTypeCause = useMemo(
+    () => buildDiffCauseByPathCausedAt(diffSeverityRecord?.causedAt),
+    [diffSeverityRecord]
+  )
 
   switch (layoutMode) {
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:

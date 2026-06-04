@@ -32,7 +32,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -43,7 +43,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const addressRowDiffsProps: Pick<AddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['address'], // TODO: Check if this is correct
+        diff: nodeDiffs[''] ?? nodeDiffs['address'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }
@@ -54,7 +54,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const descriptionRowDiffsProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['description'], // TODO: Check if this is correct
+        diff: nodeDiffs[''] ?? nodeDiffs['description'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
         diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
@@ -66,7 +66,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
   const summaryRowDiffsProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['summary'], // TODO: Check if this is correct
+        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
         diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,

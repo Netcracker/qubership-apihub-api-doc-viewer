@@ -1,6 +1,7 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { FC, memo, useMemo } from "react"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { OneSideLayout } from "../Layout/OneSideLayout"
@@ -13,12 +14,12 @@ export const TitleRow: FC<TitleRowProps> = memo<TitleRowProps>(props => {
 
   const { diff, diffsSeverities, enableHeaderValue } = props
 
-  const diffType = useMemo(() => diffsSeverities?.["title-row"]?.type, [diffsSeverities])
-  const diffTypeCause = useMemo(() => {
-    // TODO: Extract to shared utility function
-    const path = diffsSeverities?.["title-row"]?.causedAt?.join('.')
-    return path ? `caused by ${path} change` : undefined
-  }, [diffsSeverities])
+  const diffSeverityRecord = useMemo(() => diffsSeverities?.["title-row"], [diffsSeverities])
+  const diffType = useMemo(() => diffSeverityRecord?.type, [diffSeverityRecord])
+  const diffTypeCause = useMemo(
+    () => buildDiffCauseByPathCausedAt(diffSeverityRecord?.causedAt),
+    [diffSeverityRecord]
+  )
 
   switch (layoutMode) {
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:

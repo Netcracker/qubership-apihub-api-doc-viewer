@@ -1,6 +1,7 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo, useMemo } from "react"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
@@ -14,12 +15,12 @@ export const TextRow: FC<TextRowProps> = memo<TextRowProps>(props => {
 
   const { diffsSeverities, diffsSeverityPlacement = NodeDiffsSeverityPlacemennt.DescriptionRow } = props
 
-  const diffType = useMemo(() => diffsSeverities?.[diffsSeverityPlacement]?.type, [diffsSeverities, diffsSeverityPlacement])
-  const diffTypeCause = useMemo(() => {
-    // TODO: Extract to shared utility function
-    const path = diffsSeverities?.[diffsSeverityPlacement]?.causedAt?.join('.')
-    return path ? `caused by ${path} change` : undefined
-  }, [diffsSeverities, diffsSeverityPlacement])
+  const diffSeverityRecord = useMemo(() => diffsSeverities?.[diffsSeverityPlacement], [diffsSeverities, diffsSeverityPlacement])
+  const diffType = useMemo(() => diffSeverityRecord?.type, [diffSeverityRecord])
+  const diffTypeCause = useMemo(
+    () => buildDiffCauseByPathCausedAt(diffSeverityRecord?.causedAt),
+    [diffSeverityRecord]
+  )
 
   switch (layoutMode) {
     case SIDE_BY_SIDE_DIFFS_LAYOUT_MODE:

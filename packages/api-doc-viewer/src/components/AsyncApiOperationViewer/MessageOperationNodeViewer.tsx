@@ -35,7 +35,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (nodeDiffs) {
       return {
-        diff: nodeDiffs[''] ?? nodeDiffs['title'], // TODO: Check if this is correct
+        diff: nodeDiffs[''] ?? nodeDiffs['title'],
         descendantDiffs: nodeDescendantDiffs,
         diffsSeverities: nodeDiffsSeverities,
       }

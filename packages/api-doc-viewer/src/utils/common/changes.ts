@@ -38,6 +38,7 @@ import {
   SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
 } from '../../types/LayoutMode'
 import { isDefined } from './checkers'
+import { JsonPath } from '@netcracker/qubership-apihub-json-crawl'
 
 export function diffAdd(diff?: Diff): diff is DiffAdd {
   return !!diff && isDiffAdd(diff)
@@ -55,21 +56,29 @@ export function diffRename(diff?: Diff): diff is DiffRename {
   return !!diff && isDiffRename(diff)
 }
 
+/** @deprecated Use buildDiffCauseByPathCausedAt instead */
 export function buildOpenApiDiffCause(diff: Diff | undefined): string | undefined {
   if (!diff) {
     return undefined
   }
-  const paths = []
+  const pathDiffCausedAt: JsonPath = []
   if (hasAfterDeclarationPaths(diff)) {
     let path = diff.afterDeclarationPaths?.[0]
     path = path && startFromOpenApiComponents(path) ? path : []
-    paths.push(...path)
+    pathDiffCausedAt.push(...path)
   } else if (hasBeforeDeclarationPaths(diff)) {
     let path = diff.beforeDeclarationPaths?.[0]
     path = path && startFromOpenApiComponents(path) ? path : []
-    paths.push(...path)
+    pathDiffCausedAt.push(...path)
   }
-  return paths.length ? `caused by ${paths.join('.')} change` : ''
+  return pathDiffCausedAt.length ? `caused by ${pathDiffCausedAt.join('.')} change` : ''
+}
+
+export function buildDiffCauseByPathCausedAt(path: JsonPath | undefined): string | undefined {
+  if (!path) {
+    return undefined
+  }
+  return path.length ? `caused by ${path.join('.')} change` : undefined
 }
 
 export function maxDiffType(diffTypes: Set<DiffType> | DiffType[]): DiffType | undefined {
