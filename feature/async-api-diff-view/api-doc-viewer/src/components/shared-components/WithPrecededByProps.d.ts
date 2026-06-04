@@ -1,4 +1,4 @@
-export declare const ATTRIBUTE_PRECEDED_BY = "data-precededBy";
+export declare const ATTRIBUTE_PRECEDED_BY = "data-precededby";
 export declare enum PrecededBy {
     ROOT = "root",
     ADDRESS_ROW = "address-row",
