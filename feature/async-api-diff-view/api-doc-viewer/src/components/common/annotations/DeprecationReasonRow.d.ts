@@ -31,7 +31,7 @@ type ValueProps = {
     layoutMode: LayoutMode;
     layoutSide: LayoutSide;
     $changes?: Diff | DiffMetaRecord;
-    diffFromNode?: boolean;
+    highlightWholeDiff?: boolean;
 };
 export declare const DeprecationReasonValue: FC<ValueProps>;
 export {};
