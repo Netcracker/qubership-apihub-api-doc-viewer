@@ -3,7 +3,7 @@ import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/op
 import { findKeyByValue, getValueByPath, isArray, isObject, isObjective, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { aggregateDiffsWithRollup, Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
 import { AsyncApiLogger } from "../logging";
-import { DiffMetaKeys } from "../tree-with-diffs/node-diffs-data/node-diffs/factory";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import {
   AsyncApiMessageOrientedSpec,
   AsyncApiMessageOrientedSpecData,

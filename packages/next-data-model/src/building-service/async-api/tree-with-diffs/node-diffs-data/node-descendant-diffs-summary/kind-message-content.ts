@@ -1,7 +1,7 @@
 import { AbstractNodeDescendantsDiffsSummaryAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-summary-aggregator";
 import { NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { DiffMetaKeys } from "../node-diffs/factory";
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 /**
  * Forward collecting diffs summary for MESSAGE_CONTENT node.

@@ -3,7 +3,7 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-m
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { DiffMetaKeys } from "./factory";
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 // Here is implemented approach "descendant diffs === diff of whole node"

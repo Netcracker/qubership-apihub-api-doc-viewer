@@ -3,7 +3,7 @@ import { NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/ab
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { DiffMetaKeys } from "../node-diffs/factory";
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class AsyncApiNodeDescendantDiffsAggregatorKindBindings extends AbstractNodeDescendantsDiffsAggregator {
   public override aggregate(

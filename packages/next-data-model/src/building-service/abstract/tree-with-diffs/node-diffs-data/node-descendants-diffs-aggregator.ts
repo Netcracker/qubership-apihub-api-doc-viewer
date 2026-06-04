@@ -1,4 +1,4 @@
-import { DiffMetaKeys } from "@apihub/next-data-model/building-service/async-api/tree-with-diffs/node-diffs-data/node-diffs/factory";
+import { DiffMetaKeys } from "./diff-meta-keys";
 import { DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 

@@ -10,11 +10,6 @@ import { AsyncApiNodeDiffsAggregatorKindParameters } from "./kind-parameters";
 import { AsyncApiNodeDiffsAggregatorKindServer } from "./kind-server";
 import { AsyncApiNodeDiffsAggregatorKindServers } from "./kind-servers";
 
-export type DiffMetaKeys = {
-  diffsMetaKey: symbol;
-  aggregatedDiffsMetaKey: symbol;
-}
-
 export class AsyncApiNodeDiffsAggregatorFactory {
   private static readonly instances = new Map<
     AsyncApiTreeNodeKind | null,

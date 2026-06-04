@@ -24,7 +24,8 @@ import { JsoNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-dat
 import { JsoNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
 import { JsoNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
 import { JsoNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
-import { DiffMetaKeys, JsoNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
+import { JsoNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   JsoTreeNodeValueWithDiffs | null,

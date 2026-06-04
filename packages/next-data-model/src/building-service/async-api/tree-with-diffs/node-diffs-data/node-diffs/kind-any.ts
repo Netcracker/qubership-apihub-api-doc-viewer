@@ -1,4 +1,5 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { ChangedPropertyKey, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
@@ -6,8 +7,6 @@ import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/t
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
-import { DiffMetaKeys } from "./factory";
-
 export class AsyncApiNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
     AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,

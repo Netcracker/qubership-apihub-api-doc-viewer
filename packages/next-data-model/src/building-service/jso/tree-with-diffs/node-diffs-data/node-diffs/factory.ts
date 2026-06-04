@@ -5,11 +5,6 @@ import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-ki
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoNodeDiffsAggregatorKindAny } from "./kind-any";
 
-export type DiffMetaKeys = {
-  diffsMetaKey: symbol;
-  aggregatedDiffsMetaKey: symbol;
-}
-
 export class JsoNodeDiffsAggregatorFactory {
   private static readonly instances = new Map<
     JsoTreeNodeKind | null,

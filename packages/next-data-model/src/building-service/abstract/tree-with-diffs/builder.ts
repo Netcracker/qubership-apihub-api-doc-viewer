@@ -1,7 +1,7 @@
 import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { ITreeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree.interface";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { DiffMetaKeys } from "../../async-api/tree-with-diffs/node-diffs-data/node-diffs/factory";
+import { DiffMetaKeys } from "./node-diffs-data/diff-meta-keys";
 import { TreeBuilder } from "../tree/builder";
 
 export abstract class TreeWithDiffsBuilder<

@@ -24,7 +24,8 @@ import { AsyncApiNodeDescendantDiffsAggregatorFactory as AsyncApiNodeDescendantD
 import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
 import { AsyncApiNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
-import { AsyncApiNodeDiffsAggregatorFactory, DiffMetaKeys } from "./node-diffs-data/node-diffs/factory";
+import { AsyncApiNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
