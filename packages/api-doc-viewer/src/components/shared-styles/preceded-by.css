@@ -1,9 +1,9 @@
 /* =============================================================================
-   Padding rules driven by the data-precededBy attribute.
+   Padding rules driven by the data-precededby attribute.
    Each rule answers: "given what came before me, how much space do I need?"
 
    Selector anatomy:
-     .<component-class>[data-precededBy="<PrecededBy enum value>"]
+     .<component-class>[data-precededby="<PrecededBy enum value>"]
 
    Values correspond 1-to-1 to PrecededBy enum in WithPrecededByProps.ts.
    padding-bottom closes the internal bottom gap of the row itself.
@@ -19,103 +19,103 @@
   padding-bottom: 0;
 }
 
-.title-row-content[data-precededBy="root"] {
+.title-row-content[data-precededby="root"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.title-row-content[data-precededBy="message-section-header-high-level"] {
+.title-row-content[data-precededby="message-section-header-high-level"] {
   padding-top: 8px;
 }
 
-.title-row-content[data-precededBy="message-section-header-low-level"] {
+.title-row-content[data-precededby="message-section-header-low-level"] {
   padding-top: 2px;
 }
 
-.title-row-content[data-precededBy="address-row"] {
+.title-row-content[data-precededby="address-row"] {
   padding-top: 4px;
 }
 
-.title-row-content[data-precededBy="description-row"],
-.title-row-content[data-precededBy="summary-row"] {
+.title-row-content[data-precededby="description-row"],
+.title-row-content[data-precededby="summary-row"] {
   padding-top: 12px;
 }
 
-.title-row-content[data-precededBy="binding-version-row"] {
+.title-row-content[data-precededby="binding-version-row"] {
   padding-top: 8px;
 }
 
-.title-row-content[data-precededBy="message-section-selector"] {
+.title-row-content[data-precededby="message-section-selector"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.title-row-content[data-precededBy="json-schema-viewer"] {
+.title-row-content[data-precededby="json-schema-viewer"] {
   padding-top: 16px;
 }
 
-.title-row-content[data-precededBy="jso-viewer"] {
+.title-row-content[data-precededby="jso-viewer"] {
   padding-top: 16px;
 }
 
-.title-row-content[data-precededBy="server-block"] {
+.title-row-content[data-precededby="server-block"] {
   padding-top: 8px;
 }
 
-.title-row-content[data-precededBy="server-address-row"] {
+.title-row-content[data-precededby="server-address-row"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
 /* ─── TextRowContent ────────────────────────────────────────────────────────── */
 /* Overrides Tailwind's pt-1 (4 px) when a specific context is known.
-   When data-precededBy is absent the Tailwind default applies as fallback.    */
+   When data-precededby is absent the Tailwind default applies as fallback.    */
 
-.text-row-content[data-precededBy="message-section-header-high-level"] {
+.text-row-content[data-precededby="message-section-header-high-level"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.text-row-content[data-precededBy="message-section-header-low-level"] {
+.text-row-content[data-precededby="message-section-header-low-level"] {
   padding-top: 2px;
 }
 
-.text-row-content[data-precededBy="address-row"] {
+.text-row-content[data-precededby="address-row"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.text-row-content[data-precededBy="server-address-row"] {
+.text-row-content[data-precededby="server-address-row"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.text-row-content[data-precededBy="description-row"] {
+.text-row-content[data-precededby="description-row"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-.text-row-content[data-precededBy="summary-row"] {
+.text-row-content[data-precededby="summary-row"] {
   padding-top: 16px;
 }
 
-.text-row-content[data-precededBy="binding-version-row"] {
+.text-row-content[data-precededby="binding-version-row"] {
   padding-top: 4px;
 }
 
-.text-row-content[data-precededBy="message-section-selector"] {
+.text-row-content[data-precededby="message-section-selector"] {
   padding-top: 8px;
 }
 
-.text-row-content[data-precededBy="json-schema-viewer"] {
+.text-row-content[data-precededby="json-schema-viewer"] {
   padding-top: 8px;
 }
 
-.text-row-content[data-precededBy="jso-viewer"] {
+.text-row-content[data-precededby="jso-viewer"] {
   padding-top: 8px;
 }
 
-.text-row-content[data-precededBy="server-block"] {
+.text-row-content[data-precededby="server-block"] {
   padding-top: 8px;
 }
 
@@ -126,46 +126,46 @@
   padding-bottom: 12px;
 }
 
-.message-sections-selector[data-precededBy="message-section-header-high-level"] {
+.message-sections-selector[data-precededby="message-section-header-high-level"] {
   padding-top: 4px;
 }
 
-.message-sections-selector[data-precededBy="message-section-header-low-level"] {
+.message-sections-selector[data-precededby="message-section-header-low-level"] {
   padding-top: 4px;
 }
 
-.message-sections-selector[data-precededBy="address-row"] {
+.message-sections-selector[data-precededby="address-row"] {
   padding-top: 8px;
 }
 
-.message-sections-selector[data-precededBy="description-row"],
-.message-sections-selector[data-precededBy="summary-row"] {
+.message-sections-selector[data-precededby="description-row"],
+.message-sections-selector[data-precededby="summary-row"] {
   padding-top: 12px;
 }
 
-.message-sections-selector[data-precededBy="binding-version-row"] {
+.message-sections-selector[data-precededby="binding-version-row"] {
   padding-top: 6px;
 }
 
-.message-sections-selector[data-precededBy="message-section-selector"] {
+.message-sections-selector[data-precededby="message-section-selector"] {
   padding-top: 8px;
 }
 
-.message-sections-selector[data-precededBy="json-schema-viewer"] {
+.message-sections-selector[data-precededby="json-schema-viewer"] {
   padding-top: 8px;
 }
 
-.message-sections-selector[data-precededBy="jso-viewer"] {
+.message-sections-selector[data-precededby="jso-viewer"] {
   padding-top: 8px;
 }
 
-.message-sections-selector[data-precededBy="server-block"] {
+.message-sections-selector[data-precededby="server-block"] {
   padding-top: 8px;
 }
 
 /* ─── AddressRowContent ─────────────────────────────────────────────────────── */
 
-.address-row-content[data-precededBy="message-section-header-high-level"] {
+.address-row-content[data-precededby="message-section-header-high-level"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }

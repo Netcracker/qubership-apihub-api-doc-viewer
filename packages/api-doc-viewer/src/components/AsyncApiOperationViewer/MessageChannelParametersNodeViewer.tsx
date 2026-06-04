@@ -31,7 +31,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
   if (isMessageChannelParametersNodeWithDiffs(node)) {
     return (
       <MessageChannelParametersNodeWithDiffsViewer
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         node={node}
       />
     )
@@ -42,13 +42,13 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
 
   return <>
     <TitleRow
-      data-precededBy={precededBy}
+      data-precededby={precededBy}
       value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
     />
     <JsonSchemaViewer
-      data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+      data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={addressParameters}
       expandedDepth={2}
       displayMode={displayMode}
@@ -94,7 +94,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
 
   return <>
     <TitleRow
-      data-precededBy={precededBy}
+      data-precededby={precededBy}
       value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
@@ -102,7 +102,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       {...diffsProps}
     />
     <JsonSchemaDiffViewer
-      data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+      data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={preparedAddressParameters}
       expandedDepth={2}
       displayMode={displayMode}

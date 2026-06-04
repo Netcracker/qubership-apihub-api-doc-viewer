@@ -1,4 +1,4 @@
-export const ATTRIBUTE_PRECEDED_BY = 'data-precededBy'
+export const ATTRIBUTE_PRECEDED_BY = 'data-precededby'
 
 export enum PrecededBy {
   ROOT = 'root',
@@ -13,7 +13,7 @@ export enum PrecededBy {
   JSO_PROPERTY = 'jso-property',
   BINDING_VERSION_ROW = 'binding-version-row',
   /* Assumption: 
-    to simplify logic of data-precededBy prop 
+    to simplify logic of data-precededby prop 
     we use fixed indent for `server-block` element independently of its children 
   */
   SERVER_BLOCK = 'server-block',

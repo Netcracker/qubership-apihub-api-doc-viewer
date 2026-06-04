@@ -83,7 +83,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
-          data-precededBy={PrecededBy.ROOT}
+          data-precededby={PrecededBy.ROOT}
           value={value?.title ?? ''}
           expandable={false}
           variant={TextValueVariant.h1}
@@ -93,7 +93,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       {!isTitleDisplayed && (
         <TitleRow
-          data-precededBy={PrecededBy.ROOT}
+          data-precededby={PrecededBy.ROOT}
           value={node.key.toString()}
           expandable={false}
           variant={TextValueVariant.h1}
@@ -102,7 +102,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       <AddressRow
-        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+        data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         action={value?.action ?? ''}
         address={value?.address ?? ''}
         // diffs
@@ -110,7 +110,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       />
       {isDescriptionDisplayed && (
         <TextRow
-          data-precededBy={PrecededBy.ADDRESS_ROW}
+          data-precededby={PrecededBy.ADDRESS_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -119,7 +119,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       {isSummaryDisplayed && (
         <TextRow
-          data-precededBy={
+          data-precededby={
             isDescriptionDisplayed
               ? PrecededBy.DESCRIPTION_ROW
               : PrecededBy.ADDRESS_ROW
@@ -131,7 +131,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
         />
       )}
       <MessageChildrenViewer
-        data-precededBy={
+        data-precededby={
           isSummaryDisplayed
             ? PrecededBy.SUMMARY_ROW
             : isDescriptionDisplayed
@@ -157,7 +157,7 @@ const MessageChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
         if (isMessageSectionSelectorNode(child)) {
           return (
             <MessageSectionsViewer
-              data-precededBy={precededBy}
+              data-precededby={precededBy}
               key={child.key}
               node={child}
             />

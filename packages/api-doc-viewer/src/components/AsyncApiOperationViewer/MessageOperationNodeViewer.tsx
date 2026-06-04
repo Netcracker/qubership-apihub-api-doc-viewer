@@ -75,7 +75,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={value?.title ?? ''}
           variant={TextValueVariant.h2}
           expandable={false}
@@ -86,7 +86,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {!isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={node.key.toString()}
           variant={TextValueVariant.h2}
           expandable={false}
@@ -97,7 +97,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {isDescriptionDisplayed && (
         <TextRow
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -106,7 +106,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
       {isSummaryDisplayed && (
         <TextRow
-          data-precededBy={
+          data-precededby={
             isDescriptionDisplayed
               ? PrecededBy.DESCRIPTION_ROW
               : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
@@ -122,7 +122,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         <div className="flex flex-col">
           {extensionsChild && (
             <ExtensionsNodeViewer
-              data-precededBy={
+              data-precededby={
                 isSummaryDisplayed
                   ? PrecededBy.SUMMARY_ROW
                   : isDescriptionDisplayed
@@ -134,7 +134,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
           )}
           {bindingsChild && (
             <BindingsNodeViewer
-              data-precededBy={
+              data-precededby={
                 extensionsChild
                   ? PrecededBy.JSO_VIEWER
                   : isSummaryDisplayed

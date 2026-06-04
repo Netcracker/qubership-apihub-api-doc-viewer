@@ -128,7 +128,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       const mergedBindingValue = prepareBindingValueInCaseOfWhollyChanged(bindingValue, changedNodeMetadata, diffMetaKeys)
       return (
         <JsoDiffsViewer
-          data-precededBy={PrecededBy.BINDING_VERSION_ROW}
+          data-precededby={PrecededBy.BINDING_VERSION_ROW}
           mergedSource={mergedBindingValue}
           displayMode={displayMode}
           initialLevel={1}
@@ -141,7 +141,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
     if (isBindingNode(selectedBindingNode)) {
       return (
         <JsoViewer
-          data-precededBy={PrecededBy.BINDING_VERSION_ROW}
+          data-precededby={PrecededBy.BINDING_VERSION_ROW}
           source={bindingValue}
           displayMode={displayMode}
           initialLevel={1}
@@ -155,7 +155,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   return (
     <div className="flex flex-col">
       <TitleRow
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         value='Bindings'
         expandable={false}
         expanded={true}
@@ -166,7 +166,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       />
       <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col">
         <TextRow
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={bindingVersion}
           variant={TextValueVariant.body}
           label="Version"

@@ -39,7 +39,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
 
   return <>
     <TitleRow
-      data-precededBy={precededBy}
+      data-precededby={precededBy}
       value='Extensions'
       expandable={false}
       variant={TextValueVariant.h3}
@@ -49,14 +49,14 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
     />
     {diffMetaKeys ? (
       <JsoDiffsViewer
-        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+        data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         mergedSource={extensions}
         initialLevel={1}
         diffMetaKeys={diffMetaKeys}
       />
     ) : (
       <JsoViewer
-        data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+        data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         source={extensions}
         initialLevel={1}
       />

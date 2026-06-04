@@ -67,7 +67,7 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
           <div data-testid='jso-viewer'>
             {jsoProperties.map((jsoProperty, index) => (
               <JsoPropertyNodeViewer
-                data-precededBy={
+                data-precededby={
                   index === 0
                     ? precededBy
                     : PrecededBy.JSO_PROPERTY

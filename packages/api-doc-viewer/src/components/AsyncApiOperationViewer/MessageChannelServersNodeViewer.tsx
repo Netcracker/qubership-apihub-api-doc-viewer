@@ -38,7 +38,7 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
   return (
     <div className='flex flex-col'>
       <TitleRow
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         value='Servers'
         expandable={false}
         expanded={true}
@@ -48,7 +48,7 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
       />
       {children.map((child, index) => (
         <MessageChannelServerNodeViewer
-          data-precededBy={
+          data-precededby={
             index === 0
               ? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
               : PrecededBy.SERVER_BLOCK

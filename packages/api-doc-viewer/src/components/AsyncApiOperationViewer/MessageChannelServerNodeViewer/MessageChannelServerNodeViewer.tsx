@@ -186,7 +186,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     function renderAddressContent(isInvisible: boolean = false, diffClasses: string[] = []) {
       return (
         <div
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           className={`${X_AXIS_PADDING_ROWS_ASYNC_API} py-2 flex flex-row h-full ${diffClasses.join(' ')}`}
         >
           {!isInvisible && (
@@ -240,7 +240,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     <div className='flex flex-col'>
       {isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={value.title}
           expandable={false}
           expanded={true}
@@ -251,7 +251,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       )}
       {!isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={node.key.toString()}
           expandable={false}
           expanded={true}
@@ -267,7 +267,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       />
       {isDescriptionDisplayed && (
         <TextRow
-          data-precededBy={PrecededBy.SERVER_ADDRESS_ROW}
+          data-precededby={PrecededBy.SERVER_ADDRESS_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -276,7 +276,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       )}
       {isSummaryDisplayed && (
         <TextRow
-          data-precededBy={
+          data-precededby={
             isDescriptionDisplayed
               ? PrecededBy.DESCRIPTION_ROW
               : PrecededBy.SERVER_ADDRESS_ROW
@@ -289,7 +289,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       )}
       {bindingsChild && (
         <BindingsNodeViewer
-          data-precededBy={
+          data-precededby={
             isSummaryDisplayed
               ? PrecededBy.SUMMARY_ROW
               : isDescriptionDisplayed

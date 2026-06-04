@@ -82,7 +82,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
   return (
     <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
       <TitleRow
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         value={`${node.key}`}
         expandable={expandable}
         expanded={expanded}
@@ -98,7 +98,7 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
         >
           {childrenProperties.map(childProperty => (
             <JsoPropertyNodeViewer
-              data-precededBy={PrecededBy.JSO_PROPERTY}
+              data-precededby={PrecededBy.JSO_PROPERTY}
               node={childProperty}
               supportJsonSchema={supportJsonSchema}
             />

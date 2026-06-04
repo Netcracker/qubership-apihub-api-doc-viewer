@@ -39,7 +39,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
 
   return (
     <div
-      data-precededBy={precededBy}
+      data-precededby={precededBy}
       className={`text-row-content flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`}
     >
       <TextValue

@@ -77,7 +77,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
     return (
       <TextValue
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         value={value}
         variant={variant}
         layoutSide={layoutSide}
@@ -94,7 +94,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     }
     return <>
       {(expandable || level > 0) && (
-        <div data-precededBy={precededBy} className="flex items-stretch self-stretch">
+        <div data-precededby={precededBy} className="flex items-stretch self-stretch">
           <LevelIndicator level={level} />
           <Expander
             expandable={expandable}
@@ -110,7 +110,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
   return (
     <div
-      data-precededBy={precededBy}
+      data-precededby={precededBy}
       className={`title-row-content flex items-center h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${usage === TitleRowUsage.JsoProperty ? 'min-h-[26px]' : ''} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}

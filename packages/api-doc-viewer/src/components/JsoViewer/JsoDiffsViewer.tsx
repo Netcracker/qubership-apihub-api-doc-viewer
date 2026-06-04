@@ -100,7 +100,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
                 <div data-testid='jso-diffs-viewer'>
                   {jsoProperties.map((jsoProperty, index) => (
                     <JsoPropertyNodeViewerWithDiffs
-                      data-precededBy={
+                      data-precededby={
                         index === 0
                           ? precededBy
                           : PrecededBy.JSO_PROPERTY

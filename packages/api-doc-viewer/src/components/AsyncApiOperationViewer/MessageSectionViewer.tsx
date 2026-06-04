@@ -19,13 +19,13 @@ export const MessageSectionViewer: FC<MessageSectionViewerProps> = (props) => {
   const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   if (isMessageContentNode(node)) {
-    return <MessageContentNodeViewer data-precededBy={precededBy} node={node} />
+    return <MessageContentNodeViewer data-precededby={precededBy} node={node} />
   }
   if (isMessageChannelNode(node)) {
-    return <MessageChannelNodeViewer data-precededBy={precededBy} node={node} />
+    return <MessageChannelNodeViewer data-precededby={precededBy} node={node} />
   }
   if (isMessageOperationNode(node)) {
-    return <MessageOperationNodeViewer data-precededBy={precededBy} node={node} />
+    return <MessageOperationNodeViewer data-precededby={precededBy} node={node} />
   }
 
   return null

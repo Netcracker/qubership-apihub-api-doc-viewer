@@ -79,7 +79,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
     <div className="flex flex-col">
       {isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={value?.title ?? ''}
           expandable={false}
           expanded={true}
@@ -90,7 +90,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {!isTitleDisplayed && (
         <TitleRow
-          data-precededBy={precededBy}
+          data-precededby={precededBy}
           value={node.key.toString()}
           expandable={false}
           expanded={true}
@@ -101,7 +101,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {isDescriptionDisplayed && (
         <TextRow
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
           variant={TextValueVariant.body}
           // diffs
@@ -111,7 +111,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
       )}
       {isSummaryDisplayed && (
         <TextRow
-          data-precededBy={
+          data-precededby={
             isDescriptionDisplayed
               ? PrecededBy.DESCRIPTION_ROW
               : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
@@ -127,7 +127,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         <div className="flex flex-col">
           {parametersChild && (
             <MessageChannelParametersNodeViewer
-              data-precededBy={
+              data-precededby={
                 isDescriptionDisplayed
                   ? PrecededBy.DESCRIPTION_ROW
                   : isSummaryDisplayed
@@ -139,7 +139,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           )}
           {serversChild && (
             <MessageChannelServersNodeViewer
-              data-precededBy={
+              data-precededby={
                 parametersChild
                   ? PrecededBy.JSON_SCHEMA_VIEWER
                   : isDescriptionDisplayed
@@ -153,7 +153,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           )}
           {extensionsChild && (
             <ExtensionsNodeViewer
-              data-precededBy={
+              data-precededby={
                 serversChild
                   ? PrecededBy.SERVER_BLOCK
                   : parametersChild
@@ -169,7 +169,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
           )}
           {bindingsChild && (
             <BindingsNodeViewer
-              data-precededBy={
+              data-precededby={
                 extensionsChild
                   ? PrecededBy.JSO_VIEWER
                   : serversChild

@@ -90,7 +90,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
         <JsonSchemaViewer
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}
           overriddenKind='parameters'
@@ -100,7 +100,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE && diffMetaKeys) {
       return (
         <JsonSchemaDiffViewer
-          data-precededBy={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}
           metaKeys={diffMetaKeys}
@@ -118,7 +118,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       {headersChild && (
         <div className="flex flex-col">
           <TitleRow
-            data-precededBy={precededBy}
+            data-precededby={precededBy}
             value="Headers"
             variant={TextValueVariant.h3}
             expandable={false}
@@ -130,7 +130,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       )}
       {extensionsChild && (
         <ExtensionsNodeViewer
-          data-precededBy={
+          data-precededby={
             headersChild
               ? PrecededBy.JSON_SCHEMA_VIEWER
               : precededBy
@@ -140,7 +140,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       )}
       {bindingsChild && (
         <BindingsNodeViewer
-          data-precededBy={
+          data-precededby={
             headersChild
               ? PrecededBy.JSON_SCHEMA_VIEWER
               : extensionsChild
@@ -153,7 +153,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       {payloadChild && (
         <div className="flex flex-col">
           <TitleRow
-            data-precededBy={
+            data-precededby={
               headersChild
                 ? PrecededBy.JSON_SCHEMA_VIEWER
                 : extensionsChild || bindingsChild

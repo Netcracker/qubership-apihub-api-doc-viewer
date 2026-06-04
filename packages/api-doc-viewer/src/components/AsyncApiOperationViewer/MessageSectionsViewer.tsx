@@ -102,7 +102,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     }
     return (
       <div
-        data-precededBy={precededBy}
+        data-precededby={precededBy}
         className={`message-sections-selector ${X_AXIS_PADDING_ROWS_ASYNC_API} h-full ${Array.from(diffsStyles).join(' ')}`}
       >
         <Selector
@@ -147,7 +147,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>
           <MessageSectionViewer
-            data-precededBy={PrecededBy.MESSAGE_SECTION_SELECTOR}
+            data-precededby={PrecededBy.MESSAGE_SECTION_SELECTOR}
             node={selectedSection.node}
           />
         </div>
