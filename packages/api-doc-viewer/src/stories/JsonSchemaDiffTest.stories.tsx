@@ -311,6 +311,38 @@ export const ObjectiveHeaderChanged: Story = {
   }
 }
 
+export const ObjectToArray: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        title:'ObjectiveType',
+        type: 'object',
+        description: 'Objective Type',
+        properties: {
+          id: {
+            type: 'string',
+            enum: ['1', '2', '3'],
+          },
+        },
+      },
+      afterSchema: {
+        type: 'array',
+        title: 'IterableType',
+        description: 'Iterable Type',
+        items: {
+          type: 'number',
+          minimum: 1,
+          maximum: 100,
+          exclusiveMaximum: true,
+        },
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
 export const ExtensionsOnPrimitive: Story = {
   args: {
     schema: prepareJsonDiffSchema({
