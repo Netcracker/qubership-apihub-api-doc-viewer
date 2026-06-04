@@ -454,6 +454,7 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
         layoutMode={layoutMode}
         layoutSide={layoutSide}
         $changes={isItemDetailsChanged ? deprecationReasonChange : undefined}
+        highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
       />
     ) : null
 
@@ -479,6 +480,7 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
                   layoutMode={layoutMode}
                   layoutSide={layoutSide}
                   $changes={isItemDetailsChanged ? descriptionChange : undefined}
+                  highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
                 />
               )}
             </div>

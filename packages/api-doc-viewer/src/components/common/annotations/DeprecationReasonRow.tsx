@@ -105,7 +105,6 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
             layoutMode={layoutMode}
             layoutSide={layoutSide}
             $changes={$change}
-            diffFromNode={$change === $nodeChange}
           />
           {isInlineDiffsLayoutMode && itemReplaced && (
             <Value
@@ -114,7 +113,6 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
               layoutMode={layoutMode}
               layoutSide={CHANGED_LAYOUT_SIDE}
               $changes={$change}
-              diffFromNode={$change === $nodeChange}
             />
           )}
         </div>
@@ -173,7 +171,7 @@ type ValueProps = {
   layoutMode: LayoutMode
   layoutSide: LayoutSide
   $changes?: Diff | DiffMetaRecord
-  diffFromNode?: boolean
+  highlightWholeDiff?: boolean
 }
 
 const Value: FC<ValueProps> = props => {
@@ -182,18 +180,26 @@ const Value: FC<ValueProps> = props => {
     layoutMode,
     layoutSide,
     $changes,
-    diffFromNode = false
+    highlightWholeDiff = false
   } = props
 
   const { isInlineDiffsLayoutMode, isSideBySideDiffsLayoutMode } = getLayoutModeFlags(layoutMode)
-  const { originSide } = getLayoutSideFlags(layoutSide)
+  const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
   const valueChanged = isDiff($changes)
   const valueRemoved = valueChanged && diffRemove($changes)
   const valueReplaced = valueChanged && diffReplace($changes)
   const valueAdded = valueChanged && diffAdd($changes)
 
-  const { removed, replaced } = {
+  const { added, removed, replaced } = {
+    added: valueChanged && (
+      valueAdded || (
+        valueReplaced &&
+        isObject($changes.afterValue) &&
+        'reason' in $changes.afterValue &&
+        typeof $changes.afterValue.reason === 'string'
+      )
+    ),
     removed: valueChanged && (
       valueRemoved || (
         valueReplaced &&
@@ -222,10 +228,21 @@ const Value: FC<ValueProps> = props => {
             : `${$changes.beforeValue}`
         )
       }
-      if (valueRemoved) {
+      if (valueRemoved && highlightWholeDiff) {
         diffColorSchema = INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
       }
-      if (valueAdded) {
+    }
+    if (changedSide && (added || replaced)) {
+      if (valueReplaced) {
+        diffColorSchema = INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
+        value = (
+          isObject($changes.afterValue) && 'reason' in $changes.afterValue &&
+          typeof $changes.afterValue.reason === 'string'
+          ? `${$changes.afterValue.reason}`
+          : `${$changes.afterValue}`
+        )
+      }
+      if (valueAdded && highlightWholeDiff) {
         diffColorSchema = INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
       }
     }
@@ -234,7 +251,7 @@ const Value: FC<ValueProps> = props => {
   return (
     <div className={`text-xs text-slate-700`}>
       <b className="font-Inter-Bolder mr-1">Deprecation reason:</b>
-      <span className={`${enableDiffs && !diffFromNode ? diffColorSchema ?? '' : ''}`}>
+      <span className={`${enableDiffs ? diffColorSchema ?? '' : ''}`}>
         {value}
       </span>
     </div>

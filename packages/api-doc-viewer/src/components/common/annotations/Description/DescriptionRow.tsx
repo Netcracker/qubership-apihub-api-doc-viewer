@@ -224,6 +224,7 @@ type ValueProps = {
   layoutMode: LayoutMode
   layoutSide: LayoutSide
   $changes?: Diff
+  highlightWholeDiff?: boolean
 }
 
 const Value: FC<ValueProps> = props => {
@@ -235,7 +236,8 @@ const Value: FC<ValueProps> = props => {
     enableDiffs,
     layoutMode,
     layoutSide,
-    $changes
+    $changes,
+    highlightWholeDiff = false
   } = props
 
   const [isExpandableInitialValue, shortenInitialValue] = shortenDescription(props.value, expanded)
@@ -288,20 +290,20 @@ const Value: FC<ValueProps> = props => {
     if (!enableDiffs) {
       return ''
     }
-    if (added) {
+    if (added && highlightWholeDiff) {
       return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
     }
-    if (removed) {
+    if (removed && highlightWholeDiff) {
       return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
     }
     if (replaced) {
       return INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace]
     }
-  }, [added, enableDiffs, removed, replaced])
+  }, [enableDiffs, added, highlightWholeDiff, removed, replaced])
 
   return (
     <ReactMarkdown
-      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${diffColorSchema}`}
+      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${enableDiffs ? diffColorSchema ?? '' : ''}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}
