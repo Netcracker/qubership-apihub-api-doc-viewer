@@ -105,25 +105,27 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
         />
       </>
     }
-    const { prefix, beforeSuffix, afterSuffix } = partialReplaceCase
+    const { prefix, beforeSuffix, afterSuffix, diff: partialReplaceDiff } = partialReplaceCase
     const suffix = layoutSide === ORIGIN_LAYOUT_SIDE ? beforeSuffix : afterSuffix
     return <>
       {actionElement}
-      <TextValue
-        value={prefix}
-        variant={TextValueVariant.h4}
-        layoutSide={layoutSide}
-        fontWeight='normal'
-        fontColor='#626D82'
-      />
-      <TextValue
-        value={suffix}
-        variant={TextValueVariant.h4}
-        layoutSide={layoutSide}
-        diff={diff}
-        fontWeight='normal'
-        fontColor='#626D82'
-      />
+      <div className='flex flex-row'>
+        <TextValue
+          value={prefix}
+          variant={TextValueVariant.h4}
+          layoutSide={layoutSide}
+          fontWeight='normal'
+          fontColor='#626D82'
+        />
+        <TextValue
+          value={suffix}
+          variant={TextValueVariant.h4}
+          layoutSide={layoutSide}
+          diff={partialReplaceDiff}
+          fontWeight='normal'
+          fontColor='#626D82'
+        />
+      </div>
     </>
   }, [action, address, diff, layoutSide])
 
@@ -159,6 +161,7 @@ type PartialReplaceCase = {
   prefix: string
   beforeSuffix: string
   afterSuffix: string
+  diff: ChangedPropertyMetaData
 }
 
 function detectPartialReplaceCase(
@@ -179,9 +182,18 @@ function detectPartialReplaceCase(
   if (prefix !== afterPrefix) {
     return false
   }
+  const newDiffData = {
+    ...data,
+    beforeValue: beforeValue.replace(prefix, ''),
+    afterValue: afterValue.replace(prefix, ''),
+  }
   return {
     prefix,
     beforeSuffix: beforeBraceIndex === -1 ? '' : beforeValue.slice(beforeBraceIndex),
     afterSuffix: afterBraceIndex === -1 ? '' : afterValue.slice(afterBraceIndex),
+    diff: {
+      ...changedPropertyMetaData,
+      data: newDiffData,
+    },
   }
 }
