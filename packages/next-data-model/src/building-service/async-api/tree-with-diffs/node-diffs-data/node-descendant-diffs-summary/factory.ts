@@ -1,6 +1,7 @@
 import { AbstractNodeDescendantsDiffsSummaryAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-summary-aggregator";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiNodeDescendantDiffsSummaryAggregatorKindAny } from "./kind-any";
+import { AsyncApiNodeDescendantDiffsSummaryAggregatorKindBinding } from "./kind-binding";
 import { AsyncApiNodeDescendantDiffsSummaryAggregatorKindChannel } from "./kind-channel";
 import { AsyncApiNodeDescendantDiffsSummaryAggregatorKindMessageContent } from "./kind-message-content";
 import { AsyncApiNodeDescendantDiffsSummaryAggregatorKindOperation } from "./kind-operation";
@@ -12,6 +13,12 @@ export class AsyncApiNodeDescendantDiffsAggregatorFactory {
     kind: AsyncApiTreeNodeKind,
   ): AbstractNodeDescendantsDiffsSummaryAggregator {
     switch (kind) {
+      case AsyncApiTreeNodeKinds.BINDING:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.BINDING)) {
+          const instance = new AsyncApiNodeDescendantDiffsSummaryAggregatorKindBinding();
+          this.instances.set(AsyncApiTreeNodeKinds.BINDING, instance);
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.BINDING)!;
       case AsyncApiTreeNodeKinds.MESSAGE_CONTENT:
         if (!this.instances.has(AsyncApiTreeNodeKinds.MESSAGE_CONTENT)) {
           const instance = new AsyncApiNodeDescendantDiffsSummaryAggregatorKindMessageContent();

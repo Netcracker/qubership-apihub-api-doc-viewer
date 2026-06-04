@@ -4,7 +4,7 @@ import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utili
 import { DiffMetaKeys } from "../node-diffs/factory";
 
 /**
- * Forward collecting diffs summary for MESSAGE_CHANNEL node.
+ * Forward collecting diffs summary for MESSAGE_OPERATION node.
  * This is necessary because some fields under the node in renderred view are not direct descendants of the node.
  * It means that such descendants can't be reached by the backward propagation of diffs summary to parent/container nodes
  * in common mechanism and we have to collect the summary here.
