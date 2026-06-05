@@ -1,5 +1,5 @@
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
-import { NodeDiffs, NodeDiffsSeverities, NodeDiffsSeverity, NodeDiffsSeverityPlacemennt } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { NODE_LEVEL_DIFF_KEY, NodeDiffs, NodeDiffsSeverities, NodeDiffsSeverity, NodeDiffsSeverityPlacemennt } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 
@@ -7,7 +7,7 @@ export class JsoNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDiffsSe
   public aggregate(
     nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource>,
   ): NodeDiffsSeverities | undefined {
-    const wholeNodeDiff = nodeDiffs[""];
+    const wholeNodeDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY];
     if (wholeNodeDiff) {
       const diff = wholeNodeDiff.data;
       const nodeDiffsSeverity: NodeDiffsSeverity = {

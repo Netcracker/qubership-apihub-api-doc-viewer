@@ -1,6 +1,6 @@
-import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
 import { JsoTreeNodeValueWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-value";
 import { JsoTreeNodeKind } from "@apihub/next-data-model/model/jso/types/node-kind";
@@ -35,7 +35,7 @@ export class JsoNodeDiffsAggregatorKindAny
     const nodeDiffs: NodeDiffs<JsoTreeNodeDiffsSource> = {}
 
     if (parentNode) {
-      const parentNodeChangePropertyMetadata = parentNode.diffs['']
+      const parentNodeChangePropertyMetadata = parentNode.diffs[NODE_LEVEL_DIFF_KEY]
       if (parentNodeChangePropertyMetadata) {
         const { data: diff } = parentNodeChangePropertyMetadata
         // add/remove object property/array item in parent
@@ -78,11 +78,11 @@ export class JsoNodeDiffsAggregatorKindAny
               inherited: true,
             }
 
-            nodeDiffs[''] = propertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
             return nodeDiffs
           }
 
-          nodeDiffs[''] = parentNodeChangePropertyMetadata
+          nodeDiffs[NODE_LEVEL_DIFF_KEY] = parentNodeChangePropertyMetadata
           return nodeDiffs
         }
 
@@ -123,11 +123,11 @@ export class JsoNodeDiffsAggregatorKindAny
               highlightingMode: DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY,
               inherited: true,
             }
-            nodeDiffs[''] = propertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
             return nodeDiffs
           }
 
-          nodeDiffs[''] = parentNodeChangePropertyMetadata
+          nodeDiffs[NODE_LEVEL_DIFF_KEY] = parentNodeChangePropertyMetadata
           return nodeDiffs
         }
 
@@ -140,7 +140,7 @@ export class JsoNodeDiffsAggregatorKindAny
 
           // primitive <-> primitive
           if (isBeforeValuePrimitive && isAfterValuePrimitive) {
-            nodeDiffs[''] = parentNodeChangePropertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = parentNodeChangePropertyMetadata
             return nodeDiffs
           }
 
@@ -187,7 +187,7 @@ export class JsoNodeDiffsAggregatorKindAny
             if (isNextBeforeValuePredefined) {
               propertyMetadata.styles.before.borderShadowColor = HighlightVariant.Yellow
             }
-            nodeDiffs[''] = propertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
             return nodeDiffs
           }
 
@@ -234,7 +234,7 @@ export class JsoNodeDiffsAggregatorKindAny
             if (isNextAfterValuePredefined) {
               propertyMetadata.styles.after.borderShadowColor = HighlightVariant.Yellow
             }
-            nodeDiffs[''] = propertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
             return nodeDiffs
           }
 
@@ -295,7 +295,7 @@ export class JsoNodeDiffsAggregatorKindAny
               propertyMetadata.styles.after.borderShadowColor = HighlightVariant.Yellow
             }
 
-            nodeDiffs[''] = propertyMetadata
+            nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
             return nodeDiffs
           }
         }
@@ -303,7 +303,7 @@ export class JsoNodeDiffsAggregatorKindAny
         // add/remove object property/array item itself
         const propertyMetadata = parentNode.descendantDiffs[nodeKey]
         if (propertyMetadata) {
-          nodeDiffs[''] = propertyMetadata
+          nodeDiffs[NODE_LEVEL_DIFF_KEY] = propertyMetadata
           return nodeDiffs
         }
       }

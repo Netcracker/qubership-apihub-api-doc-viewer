@@ -1,6 +1,6 @@
-import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { DiffFlags, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffFlags, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -38,7 +38,7 @@ export class AsyncApiNodeDiffsAggregatorKindParameters extends AsyncApiNodeDiffs
     nodeDescendantDiffs: NodeDescendantDiffs,
     diffMetaKeys: DiffMetaKeys,
   ): NodeDiffs<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS> | null> | undefined {
-    if (nodeDiffs['']) {
+    if (nodeDiffs[NODE_LEVEL_DIFF_KEY]) {
       return nodeDiffs
     }
     const parameters = getValueByPath(crawlValue, ['rawValues', 'properties'])
@@ -87,7 +87,7 @@ export class AsyncApiNodeDiffsAggregatorKindParameters extends AsyncApiNodeDiffs
         backgroundColor: HighlightVariant.Gray,
       }
     }
-    nodeDiffs[''] = {
+    nodeDiffs[NODE_LEVEL_DIFF_KEY] = {
       data: firtDescendantDiff,
       styles: {
         before: beforeStyles,

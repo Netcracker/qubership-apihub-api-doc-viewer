@@ -1,6 +1,6 @@
-import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { ChangedPropertyKey, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { ChangedPropertyKey, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -49,28 +49,28 @@ export class AsyncApiNodeDiffsAggregatorKindAny
     if (containerNode) {
       // Support inheritance of node diff from container
       // If container wholly added/removed, it means that all the descendants are wholly added/removed
-      const containerNodeDiff = containerNode.diffs['']
+      const containerNodeDiff = containerNode.diffs[NODE_LEVEL_DIFF_KEY]
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
-        nodeDiffs[''] = { ...containerNodeDiff, inherited: true }
+        nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...containerNodeDiff, inherited: true }
         return nodeDiffs
       } else {
         const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
-          nodeDiffs[''] = maybeNodeDiffs
+          nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
           return nodeDiffs
         }
       }
     } else if (parentNode) {
       // Support inheritance of node diff from parent
       // If parent wholly added/removed, it means that all the descendants are wholly added/removed
-      const parentNodeDiff = parentNode.diffs['']
+      const parentNodeDiff = parentNode.diffs[NODE_LEVEL_DIFF_KEY]
       if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
-        nodeDiffs[''] = { ...parentNodeDiff, inherited: true }
+        nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...parentNodeDiff, inherited: true }
         return nodeDiffs
       } else {
         const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
         if (maybeNodeDiffs) {
-          nodeDiffs[''] = maybeNodeDiffs
+          nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
           return nodeDiffs
         }
       }

@@ -1,6 +1,6 @@
-import { DiffMetaKeys } from "./diff-meta-keys";
-import { DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { DiffMetaKeys } from "./diff-meta-keys";
 
 export abstract class AbstractNodeDescendantsDiffsAggregator {
   protected static readonly DEFAULT_DIFF_STYLES: DiffStyles = {
@@ -60,7 +60,7 @@ export abstract class AbstractNodeDescendantsDiffsAggregator {
         textHighlighterColor: HighlightVariant.Yellow,
       }
     }
-    nodeDiffs[''] = {
+    nodeDiffs[NODE_LEVEL_DIFF_KEY] = {
       data: diff,
       styles: {
         before: beforeStyles,

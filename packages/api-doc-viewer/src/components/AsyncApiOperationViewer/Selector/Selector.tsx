@@ -2,7 +2,7 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { FC } from "react"
 import { SizeVariant } from "../types/SizeVariant"
@@ -86,7 +86,7 @@ function resolveOptionDiffPresentation<V extends object | null = object | null>(
   const diffsRelatedClassesList: string[] = []
   let isInvisible = false
   if (diffs || diffsSummary || descendantDiffsSummary) {
-    const diffWholeNode = diffs?.[""]
+    const diffWholeNode = diffs?.[NODE_LEVEL_DIFF_KEY]
     if (diffWholeNode) {
       const { styles } = diffWholeNode
       switch (layoutSide) {

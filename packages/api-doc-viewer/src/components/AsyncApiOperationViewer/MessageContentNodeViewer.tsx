@@ -5,6 +5,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessageContentPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
 import { wrapJsonSchemaForDiffsViewer, wrapJsonSchemaForViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageHeaders, AsyncApiTreeNodeValueTypeMessagePayload } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -155,6 +156,8 @@ type MessageContentChildNode =
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
 
+const TITLE_FOR_WRAPPED_JSON_SCHEMA = 'Type'
+
 function prepareMessageContentChildJsonSchema(
   child: MessageContentChildNode | undefined,
   diffMetaKeys: DiffMetaKeys | undefined,
@@ -167,9 +170,9 @@ function prepareMessageContentChildJsonSchema(
     return undefined
   }
   if (!(child instanceof SimpleTreeNodeWithDiffs)) {
-    return wrapJsonSchemaForViewer('Type', value.schema)
+    return wrapJsonSchemaForViewer(TITLE_FOR_WRAPPED_JSON_SCHEMA, value.schema)
   }
-  return wrapJsonSchemaForDiffsViewer('Type', value.schema, child.diffs[''], diffMetaKeys)
+  return wrapJsonSchemaForDiffsViewer(TITLE_FOR_WRAPPED_JSON_SCHEMA, value.schema, child.diffs[NODE_LEVEL_DIFF_KEY], diffMetaKeys)
 }
 
 function isAsyncApiMessageHeadersNodeWithDiffs(

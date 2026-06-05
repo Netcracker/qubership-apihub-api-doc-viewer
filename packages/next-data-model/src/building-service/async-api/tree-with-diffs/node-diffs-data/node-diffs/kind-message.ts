@@ -1,6 +1,6 @@
-import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import { DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
@@ -42,7 +42,7 @@ export class AsyncApiNodeDiffsAggregatorKindMessage extends AsyncApiNodeDiffsAgg
     const diffs = crawlValue[diffsMetaKey]
     if (AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
       // whole operation diff
-      const wholeOperationDiff = diffs['']
+      const wholeOperationDiff = diffs[NODE_LEVEL_DIFF_KEY]
       if (wholeOperationDiff) {
         let beforeStyles: DiffStyles = { isContentVisible: true, isHeaderVisible: true }
         let afterStyles: DiffStyles = { isContentVisible: true, isHeaderVisible: true }
@@ -70,7 +70,7 @@ export class AsyncApiNodeDiffsAggregatorKindMessage extends AsyncApiNodeDiffsAgg
             backgroundColor: HighlightVariant.Gray,
           }
         }
-        nodeDiffs[''] = {
+        nodeDiffs[NODE_LEVEL_DIFF_KEY] = {
           data: wholeOperationDiff,
           highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
           styles: {

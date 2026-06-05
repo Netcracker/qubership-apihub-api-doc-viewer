@@ -1,9 +1,9 @@
-import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
+import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 // Here is implemented approach "descendant diffs === diff of whole node"
@@ -33,7 +33,7 @@ export class AsyncApiNodeDiffsAggregatorKindServers extends AsyncApiNodeDiffsAgg
     nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVERS> | null>,
     nodeDescendantDiffs: NodeDescendantDiffs,
   ): NodeDiffs<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVERS> | null> | undefined {
-    if (nodeDiffs['']) {
+    if (nodeDiffs[NODE_LEVEL_DIFF_KEY]) {
       return nodeDiffs
     }
     if (!Array.isArray(crawlValue)) {
@@ -48,7 +48,7 @@ export class AsyncApiNodeDiffsAggregatorKindServers extends AsyncApiNodeDiffsAgg
     if (!firtDescendantDiff) {
       return undefined
     }
-    nodeDiffs[''] = firtDescendantDiff
+    nodeDiffs[NODE_LEVEL_DIFF_KEY] = firtDescendantDiff
     return nodeDiffs
   }
 }

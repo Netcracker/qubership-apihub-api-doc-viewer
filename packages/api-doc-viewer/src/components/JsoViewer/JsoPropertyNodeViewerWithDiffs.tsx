@@ -6,8 +6,9 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
 import { prepareJsonSchemaForJsoDiffsViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
-import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsoTreeNodeDiffsSource } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-diffs-source"
+import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
@@ -44,7 +45,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const nodeDiffs = node.diffs
   const nodeDescendantDiffsSummary = node.descendantDiffsSummary
 
-  const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
+  const nodeValueDiff = useMemo(() => nodeDiffs[NODE_LEVEL_DIFF_KEY], [nodeDiffs])
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -160,7 +161,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
     let _nextAfterLevel = afterLevel + 1
 
     const [firstJsoProperty] = childrenProperties
-    const firstChildNodeValueDiff = firstJsoProperty?.diffs['']
+    const firstChildNodeValueDiff = firstJsoProperty?.diffs[NODE_LEVEL_DIFF_KEY]
     if (firstChildNodeValueDiff && allChildrenAreDiffs) {
       _nextBeforeLevel = firstChildNodeValueDiff.flags.before.increaseLevel ? beforeLevel + 1 : beforeLevel
       _nextAfterLevel = firstChildNodeValueDiff.flags.after.increaseLevel ? afterLevel + 1 : afterLevel

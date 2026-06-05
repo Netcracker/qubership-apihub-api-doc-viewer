@@ -5,9 +5,11 @@ import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
@@ -15,7 +17,6 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import '../shared-styles/diffs/index.css'
 import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
-import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
 
 type JsoDiffsViewerProps = WithPrecededByProps & {
   mergedSource: unknown
@@ -82,7 +83,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       let _nextAfterLevel = initialLevel
 
       const [firstJsoProperty] = jsoProperties
-      const firstChildNodeValueDiff = firstJsoProperty.diffs['']
+      const firstChildNodeValueDiff = firstJsoProperty.diffs[NODE_LEVEL_DIFF_KEY]
       if (firstChildNodeValueDiff && allChildrenAreDiffs) {
         _nextBeforeLevel = firstChildNodeValueDiff.flags.before.increaseLevel ? initialLevel : initialLevel - 1
         _nextAfterLevel = firstChildNodeValueDiff.flags.after.increaseLevel ? initialLevel : initialLevel - 1

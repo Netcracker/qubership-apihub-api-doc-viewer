@@ -6,7 +6,7 @@ import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
-import { ChangedPropertyMetaData, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValueTypeBinding } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
@@ -107,7 +107,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(selectedBindingNode)
       return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, {
         resolveDiff: (diffs, getDiffByKey) => {
-          const changedNodeMetadata = diffs['']
+          const changedNodeMetadata = diffs[NODE_LEVEL_DIFF_KEY]
           if (changedNodeMetadata && !isDiffReplace(changedNodeMetadata.data)) {
             return changedNodeMetadata
           }
@@ -125,7 +125,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
       return null
     }
     if (isBindingNodeWithDiffs(selectedBindingNode) && diffMetaKeys) {
-      const changedNodeMetadata = selectedBindingNode.diffs['']
+      const changedNodeMetadata = selectedBindingNode.diffs[NODE_LEVEL_DIFF_KEY]
       const mergedBindingValue = prepareBindingValueInCaseOfWhollyChanged(bindingValue, changedNodeMetadata, diffMetaKeys)
       return (
         <JsoDiffsViewer

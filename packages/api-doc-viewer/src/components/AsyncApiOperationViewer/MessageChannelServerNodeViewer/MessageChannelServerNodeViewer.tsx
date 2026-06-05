@@ -11,8 +11,9 @@ import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracke
 import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
-import { HighlightVariant, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
+import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextRowProps } from "../../shared-components/TextRow/types"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
@@ -20,7 +21,6 @@ import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
-import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
 import { SizeVariant } from "../types/SizeVariant"
 import './MessageChannelServerNodeViewer.css'
 
@@ -66,7 +66,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     return buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, {
       resolveDiff: (diffs, getDiffByKey) => {
         const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(getDiffByKey('protocol'), getDiffByKey('host'))
-        return diffs[''] ?? maxDiff
+        return diffs[NODE_LEVEL_DIFF_KEY] ?? maxDiff
       },
     })
   }, [nodeDiffState])
@@ -185,7 +185,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     if (!(isServerNodeWithDiffs(node))) {
       return renderAddressContent()
     }
-    const changedPropertyMetadata = node.diffs?.[''] ?? serverAddressRowDiffsProps.diff
+    const changedPropertyMetadata = node.diffs?.[NODE_LEVEL_DIFF_KEY] ?? serverAddressRowDiffsProps.diff
     if (!changedPropertyMetadata) {
       return renderAddressContent()
     }

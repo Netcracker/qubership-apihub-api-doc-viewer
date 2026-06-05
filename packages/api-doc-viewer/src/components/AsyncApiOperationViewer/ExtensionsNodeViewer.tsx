@@ -1,5 +1,6 @@
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeExtensions } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -33,7 +34,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       const rowDiffProps = buildRowDiffProps<AsyncApiTreeNodeValueTypeExtensions>(nodeDiffState)
       return {
         ...rowDiffProps,
-        highlightingMode: node.diffs['']?.highlightingMode,
+        highlightingMode: node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode,
       }
     }
     return {}

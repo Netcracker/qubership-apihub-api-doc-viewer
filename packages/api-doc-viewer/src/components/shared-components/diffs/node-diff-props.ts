@@ -1,5 +1,6 @@
 import {
   ChangedPropertyMetaData,
+  NODE_LEVEL_DIFF_KEY,
   NodeDescendantDiffs,
   NodeDiffs,
   NodeDiffsSeverities,
@@ -89,7 +90,7 @@ export function buildRowDiffProps<V extends object = object>(
   const keyedDiff = diffKey ? getDiffByKey(diffKey) : undefined
   const diff = resolveDiff
     ? resolveDiff(nodeDiffs, getDiffByKey)
-    : (fallbackToNodeDiff ? nodeDiffs[""] ?? keyedDiff : keyedDiff)
+    : (fallbackToNodeDiff ? nodeDiffs[NODE_LEVEL_DIFF_KEY] ?? keyedDiff : keyedDiff)
 
   return {
     diff,

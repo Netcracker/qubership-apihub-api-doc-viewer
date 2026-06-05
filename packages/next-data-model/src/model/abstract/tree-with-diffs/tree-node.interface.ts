@@ -73,7 +73,11 @@ export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY: DiffHighli
   [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
 ])
 
-export type ChangedPropertyKey<V extends object | null = object | null> = "" | (V extends null ? never : keyof V)
+export const NODE_LEVEL_DIFF_KEY = "" as const
+
+export type ChangedPropertyKey<V extends object | null = object | null> =
+  | typeof NODE_LEVEL_DIFF_KEY
+  | (V extends null ? never : keyof V)
 export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
   styles: {

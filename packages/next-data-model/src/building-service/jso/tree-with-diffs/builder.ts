@@ -1,4 +1,4 @@
-import { NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { JsoComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/jso/tree-with-diffs/complex-node.impl";
 import { JsoTreeNodeDiffsSource } from "@apihub/next-data-model/model/jso/tree-with-diffs/node-diffs-source";
@@ -13,6 +13,7 @@ import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
 import { getJsoWithDiffsCrawlRules } from "../json-crawl-entities/rules/rules.jso-with-diffs";
 import { JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
@@ -25,7 +26,6 @@ import { JsoNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-
 import { JsoNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
 import { JsoNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
 import { JsoNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
-import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   JsoTreeNodeValueWithDiffs | null,
@@ -158,7 +158,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     this.assignNodeDiffs(treeNode, kind, params)
 
     const nodeDiffs = treeNode.diffs
-    const nodeChangePropertyMetdata = nodeDiffs['']
+    const nodeChangePropertyMetdata = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeChangePropertyMetdata) {
       const { data: diff } = nodeChangePropertyMetdata
       if (isDiffAdd(diff)) {
@@ -339,7 +339,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private isComplexTypeTransitionReplaceDiffNode(
     node: JsoSimpleTreeNodeWithDiffs | JsoComplexTreeNodeWithDiffs,
   ): boolean {
-    const candidateDiff = node.diffs["value"] ?? node.diffs[""]
+    const candidateDiff = node.diffs["value"] ?? node.diffs[NODE_LEVEL_DIFF_KEY]
     if (!candidateDiff || !isDiffReplace(candidateDiff.data)) {
       return false
     }
@@ -359,7 +359,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   ): boolean {
     return Boolean(
       node.diffsSeverities["title-row"] &&
-      !node.diffs[""] &&
+      !node.diffs[NODE_LEVEL_DIFF_KEY] &&
       !node.diffs["value"],
     )
   }

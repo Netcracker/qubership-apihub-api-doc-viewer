@@ -5,6 +5,7 @@ import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -67,7 +68,11 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   }, [sectionSelectorOptions, selectedSection])
 
   const nodeDiff = useMemo(
-    () => isMessageSectionSelectorNodeWithDiffs(node) ? node.diffs?.[''] : null,
+    () => (
+      isMessageSectionSelectorNodeWithDiffs(node)
+        ? node.diffs?.[NODE_LEVEL_DIFF_KEY]
+        : null
+    ),
     [node]
   )
   const nodeDiffCausedAt = useMemo(() => {

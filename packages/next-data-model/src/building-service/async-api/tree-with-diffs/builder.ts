@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, DiffStyles, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -13,6 +13,7 @@ import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { ActionType, annotation, breaking, deprecated, Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
 import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
@@ -25,7 +26,6 @@ import { AsyncApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/
 import { AsyncApiNodeDiffsSeveritiesAggregatorFactory } from "./node-diffs-data/node-diffs-severities/factory";
 import { AsyncApiNodeDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-diffs-summary/factory";
 import { AsyncApiNodeDiffsAggregatorFactory } from "./node-diffs-data/node-diffs/factory";
-import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
@@ -378,7 +378,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     }
     if (
       descendantsMaxDiffType &&
-      !nodeDiffs?.[""] &&
+      !nodeDiffs?.[NODE_LEVEL_DIFF_KEY] &&
       AsyncApiTreeWithDiffsBuilder.ASYNC_API_NODE_KINDS_WITH_SYNTHETIC_DIFFS.has(kind)
     ) {
       const { value } = params
@@ -446,7 +446,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
           backgroundColor: HighlightVariant.Yellow,
         }
       }
-      node.diffs[""] = {
+      node.diffs[NODE_LEVEL_DIFF_KEY] = {
         data: syntheticDiff,
         styles: {
           before: beforeStyles,

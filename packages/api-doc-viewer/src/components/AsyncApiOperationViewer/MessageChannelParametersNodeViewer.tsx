@@ -4,7 +4,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
-import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeChannelParameters } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -82,7 +82,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   const preparedAddressParameters = useMemo(() => {
     return prepareJsonSchemaInCaseOfWhollyChanged(
       addressParameters,
-      node.diffs[''],
+      node.diffs[NODE_LEVEL_DIFF_KEY],
       diffMetaKeys
     )
   }, [addressParameters, diffMetaKeys, node.diffs])

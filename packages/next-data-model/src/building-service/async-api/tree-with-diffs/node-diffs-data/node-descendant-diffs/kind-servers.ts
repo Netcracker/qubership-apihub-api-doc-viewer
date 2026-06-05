@@ -1,9 +1,9 @@
+import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDescendantsDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-descendants-diffs-aggregator";
-import { NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { getValueByPath, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 
 export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNodeDescendantsDiffsAggregator {
   public override aggregate(
@@ -42,7 +42,7 @@ export class AsyncApiNodeDescendantDiffsAggregatorKindServers extends AbstractNo
       }
       somethingChanged = true
       this.aggregateWholeNodeDiff<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>(diffServer, nodeDiffs)
-      nodeDescendantDiffs[serverKey] = nodeDiffs['']
+      nodeDescendantDiffs[serverKey] = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     }
 
     return somethingChanged ? nodeDescendantDiffs : undefined;
