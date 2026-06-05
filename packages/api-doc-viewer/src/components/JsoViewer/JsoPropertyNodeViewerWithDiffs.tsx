@@ -4,15 +4,10 @@ import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
-import { ActionType } from "@netcracker/qubership-apihub-api-diff"
-import { isObject } from "@netcracker/qubership-apihub-json-crawl"
-import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
-import { JsoTreeNodeValueWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-value"
+import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
+import { prepareJsonSchemaForJsoDiffsViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
-import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { UxMarkerPanel } from "../kit/ux/UxMarkerPanel/UxMarkerPanel"
@@ -134,7 +129,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const jsonSchema = useMemo(() => {
     return (
       supportJsonSchema
-        ? prepareJsonSchemaForJsoViewer(node.key, nodeValue, nodeValueDiff, diffMetaKeys)
+        ? prepareJsonSchemaForJsoDiffsViewer(node.key, nodeValue, nodeValueDiff, diffMetaKeys)
         : undefined
     )
   }, [diffMetaKeys, node.key, nodeValue, nodeValueDiff, supportJsonSchema])
@@ -159,7 +154,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
   // ---
 
-  const allChildrenAreDiffs = areAllChildrenDiffs(childrenProperties)
+  const allChildrenAreDiffs = isSameDiffActionForAll(childrenProperties)
 
   const [nextBeforeLevel, nextAfterLevel] = (() => {
     let _nextBeforeLevel = beforeLevel + 1
@@ -208,74 +203,4 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
       )}
     </div>
   )
-}
-
-function prepareJsonSchemaForJsoViewer(
-  nodeKey: NodeKey,
-  nodeValue: JsoTreeNodeValueWithDiffs | null | undefined,
-  nodeValueDiff: ChangedPropertyMetaData | undefined,
-  diffMetaKeys: DiffMetaKeys | undefined,
-): object | undefined {
-  if (!nodeValue) {
-    return undefined
-  }
-
-  if (
-    nodeValue.before.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    nodeValue.before.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA &&
-    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    nodeValue.after.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) {
-    return undefined
-  }
-
-  const diff = nodeValueDiff?.data
-  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
-
-  if ((
-    nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
-    nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) && isObject(nodeValue.before.value)) {
-    return {
-      type: 'object',
-      properties: {
-        [nodeKey]: nodeValue.before.value,
-        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
-      },
-    }
-  }
-
-  if ((
-    nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
-    nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) && isObject(nodeValue.after.value)) {
-    return {
-      type: 'object',
-      properties: {
-        [nodeKey]: nodeValue.after.value,
-        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
-      },
-    }
-  }
-
-  return undefined
-}
-
-// TODO: Deduplicate!
-function areAllChildrenDiffs(jsoProperties: JsoTreeNodeWithDiffs[]): boolean {
-  let diffAction: ActionType | undefined
-  for (const jsoProperty of jsoProperties) {
-    const childNodeValueDiff = jsoProperty.diffs['']
-    if (!childNodeValueDiff) {
-      return false
-    }
-    if (!diffAction) {
-      diffAction = childNodeValueDiff.data.action
-      continue
-    }
-    if (diffAction !== childNodeValueDiff.data.action) {
-      return false
-    }
-  }
-  return true
 }

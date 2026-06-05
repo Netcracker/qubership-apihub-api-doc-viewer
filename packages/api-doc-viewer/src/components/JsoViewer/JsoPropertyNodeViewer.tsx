@@ -1,10 +1,7 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { isObject } from "@netcracker/qubership-apihub-json-crawl"
-import { AsyncApiNodeJsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value-type"
-import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree/node-value"
+import { prepareJsonSchemaForJsoViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { JsoTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
-import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { TextValueVariant } from "../shared-components/TextValue/types"
@@ -107,24 +104,4 @@ export const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps> = (props) => 
       )}
     </div>
   )
-}
-
-function prepareJsonSchemaForJsoViewer(
-  nodeKey: NodeKey,
-  nodeValue: JsoTreeNodeValueBase | null | undefined,
-): object | undefined {
-  if (!nodeValue) {
-    return undefined
-  }
-
-  if (
-    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA &&
-    nodeValue.valueType !== AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
-  ) {
-    return undefined
-  }
-
-  return isObject(nodeValue.value)
-    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
-    : undefined
 }

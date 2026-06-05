@@ -6,9 +6,8 @@ import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
-import { ActionType, DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { JsoTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/jso/tree-with-diffs/builder"
-import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
 import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
@@ -16,6 +15,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import '../shared-styles/diffs/index.css'
 import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
+import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
 
 type JsoDiffsViewerProps = WithPrecededByProps & {
   mergedSource: unknown
@@ -75,7 +75,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       return null
     }
 
-    const allChildrenAreDiffs = areAllChildrenDiffs(jsoProperties)
+    const allChildrenAreDiffs = isSameDiffActionForAll(jsoProperties)
 
     const [nextBeforeLevel, nextAfterLevel] = (() => {
       let _nextBeforeLevel = initialLevel
@@ -118,22 +118,3 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       </DiffMetaKeysContext.Provider>
     )
   })
-
-// TODO: Deduplicate!
-function areAllChildrenDiffs(jsoProperties: JsoTreeNodeWithDiffs[]): boolean {
-  let diffAction: ActionType | undefined
-  for (const jsoProperty of jsoProperties) {
-    const childNodeValueDiff = jsoProperty.diffs['']
-    if (!childNodeValueDiff) {
-      return false
-    }
-    if (!diffAction) {
-      diffAction = childNodeValueDiff.data.action
-      continue
-    }
-    if (diffAction !== childNodeValueDiff.data.action) {
-      return false
-    }
-  }
-  return true
-}
