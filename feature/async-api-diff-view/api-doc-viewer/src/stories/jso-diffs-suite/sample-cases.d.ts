@@ -1,7 +1,7 @@
-export type RawJsonSources = Record<string, string>;
+export type RawYamlSources = Record<string, string>;
 export type SampleCase = {
     caseId: string;
-    beforeJson: string;
-    afterJson: string;
+    beforeYaml: string;
+    afterYaml: string;
 };
-export declare const collectSampleCases: (beforeFiles: RawJsonSources, afterFiles: RawJsonSources) => SampleCase[];
+export declare const collectSampleCases: (beforeFiles: RawYamlSources, afterFiles: RawYamlSources) => SampleCase[];
