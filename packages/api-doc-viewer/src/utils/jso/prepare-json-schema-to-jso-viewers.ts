@@ -6,6 +6,44 @@ import { JsoTreeNodeValueBase } from "@netcracker/qubership-apihub-next-data-mod
 import { isObject } from "@netcracker/qubership-apihub-next-data-model/utilities"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 
+export function wrapJsonSchemaForViewer(
+  nodeKey: NodeKey,
+  schema: object | undefined,
+): object | undefined {
+  if (!schema) {
+    return undefined
+  }
+
+  return {
+    type: 'object',
+    properties: {
+      [nodeKey]: schema,
+    },
+  }
+}
+
+export function wrapJsonSchemaForDiffsViewer(
+  nodeKey: NodeKey,
+  schema: object | undefined,
+  nodeValueDiff: ChangedPropertyMetaData | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): object | undefined {
+  if (!schema) {
+    return undefined
+  }
+
+  const diff = nodeValueDiff?.data
+  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
+
+  return {
+    type: 'object',
+    properties: {
+      [nodeKey]: schema,
+      ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
+    },
+  }
+}
+
 export function prepareJsonSchemaForJsoViewer(
   nodeKey: NodeKey,
   nodeValue: JsoTreeNodeValueBase | null | undefined
@@ -20,7 +58,7 @@ export function prepareJsonSchemaForJsoViewer(
   }
 
   return isObject(nodeValue.value)
-    ? { type: 'object', properties: { [nodeKey]: nodeValue.value } }
+    ? wrapJsonSchemaForViewer(nodeKey, nodeValue.value)
     : undefined
 }
 
@@ -41,33 +79,18 @@ export function prepareJsonSchemaForJsoDiffsViewer(
     return undefined
   }
 
-  const diff = nodeValueDiff?.data
-  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
-
   if ((
     nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
     nodeValue.before.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
   ) && isObject(nodeValue.before.value)) {
-    return {
-      type: 'object',
-      properties: {
-        [nodeKey]: nodeValue.before.value,
-        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
-      },
-    }
+    return wrapJsonSchemaForDiffsViewer(nodeKey, nodeValue.before.value, nodeValueDiff, diffMetaKeys)
   }
 
   if ((
     nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.JSON_SCHEMA ||
     nodeValue.after.valueType === AsyncApiNodeJsoPropertyValueTypes.MULTI_SCHEMA
   ) && isObject(nodeValue.after.value)) {
-    return {
-      type: 'object',
-      properties: {
-        [nodeKey]: nodeValue.after.value,
-        ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
-      },
-    }
+    return wrapJsonSchemaForDiffsViewer(nodeKey, nodeValue.after.value, nodeValueDiff, diffMetaKeys)
   }
 
   return undefined

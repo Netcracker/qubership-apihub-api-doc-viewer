@@ -3,12 +3,11 @@ import { useDiffTypes } from "@apihub/contexts/DiffTypesContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessageContentPayloadNode } from "@apihub/utils/async-api/node-type-checkers"
+import { wrapJsonSchemaForDiffsViewer, wrapJsonSchemaForViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
-import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueTypeMessageHeaders, AsyncApiTreeNodeValueTypeMessagePayload } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
+import { AsyncApiTreeNodeValueTypeMessageHeaders, AsyncApiTreeNodeValueTypeMessagePayload } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useCallback, useMemo } from "react"
 import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
@@ -39,11 +38,11 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
   const headersJsonSchema = useMemo(
-    () => prepareMessageChildJsonSchema(headersChild, diffMetaKeys),
+    () => prepareMessageContentChildJsonSchema(headersChild, diffMetaKeys),
     [headersChild, diffMetaKeys],
   )
   const payloadJsonSchema = useMemo(
-    () => prepareMessageChildJsonSchema(payloadChild, diffMetaKeys),
+    () => prepareMessageContentChildJsonSchema(payloadChild, diffMetaKeys),
     [payloadChild, diffMetaKeys],
   )
 
@@ -152,49 +151,11 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   )
 }
 
-function prepareJsonSchemaForJsoViewer(
-  nodeKey: NodeKey,
-  nodeValue: AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>,
-): object | undefined {
-  if (!nodeValue) {
-    return undefined
-  }
-
-  return {
-    type: 'object',
-    properties: {
-      [nodeKey]: nodeValue.schema,
-    },
-  }
-}
-
-function prepareJsonSchemaForJsoDiffsViewer(
-  nodeKey: NodeKey,
-  nodeValue: AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>,
-  nodeValueDiff: ChangedPropertyMetaData | undefined,
-  diffMetaKeys: DiffMetaKeys | undefined,
-): object | undefined {
-  if (!nodeValue) {
-    return undefined
-  }
-
-  const diff = nodeValueDiff?.data
-  const diffsMetaKey = diffMetaKeys?.diffsMetaKey
-
-  return {
-    type: 'object',
-    properties: {
-      [nodeKey]: nodeValue.schema,
-      ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
-    },
-  }
-}
-
 type MessageContentChildNode =
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
   | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
 
-function prepareMessageChildJsonSchema(
+function prepareMessageContentChildJsonSchema(
   child: MessageContentChildNode | undefined,
   diffMetaKeys: DiffMetaKeys | undefined,
 ): object | undefined {
@@ -206,9 +167,9 @@ function prepareMessageChildJsonSchema(
     return undefined
   }
   if (!(child instanceof SimpleTreeNodeWithDiffs)) {
-    return prepareJsonSchemaForJsoViewer('Type', value)
+    return wrapJsonSchemaForViewer('Type', value.schema)
   }
-  return prepareJsonSchemaForJsoDiffsViewer('Type', value, child.diffs[''], diffMetaKeys)
+  return wrapJsonSchemaForDiffsViewer('Type', value.schema, child.diffs[''], diffMetaKeys)
 }
 
 function isAsyncApiMessageHeadersNodeWithDiffs(
