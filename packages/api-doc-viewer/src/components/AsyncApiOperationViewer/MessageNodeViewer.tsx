@@ -1,6 +1,5 @@
 import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-checkers";
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
@@ -13,6 +12,7 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { buildRowDiffProps, useNodeDiffState } from "../shared-components/diffs/node-diff-props";
+import { isMessageNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import { AddressRow, AddressRowProps } from "./AddressRow/AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
 
@@ -147,8 +147,4 @@ const MessageChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
       })}
     </div>
   )
-}
-
-function isMessageNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE> {
-  return node.kind == AsyncApiTreeNodeKinds.MESSAGE && node instanceof SimpleTreeNodeWithDiffs
 }

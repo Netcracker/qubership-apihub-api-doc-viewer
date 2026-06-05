@@ -10,7 +10,6 @@ import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
@@ -19,6 +18,7 @@ import { TextRowProps } from "../../shared-components/TextRow/types"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
+import { isServerNodeWithDiffs } from "../../shared-utilities/tree-node-guards"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
 import { SizeVariant } from "../types/SizeVariant"
@@ -286,7 +286,3 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     </div>
   )
 })
-
-function isServerNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER> {
-  return node.kind == AsyncApiTreeNodeKinds.SERVER && node instanceof SimpleTreeNodeWithDiffs
-}

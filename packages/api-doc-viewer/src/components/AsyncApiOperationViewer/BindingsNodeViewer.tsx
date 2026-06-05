@@ -4,8 +4,6 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
-import { ComplexTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/complex-node.impl";
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
@@ -20,6 +18,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+import { isBindingNodeWithDiffs, isBindingsNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import { Selector, SelectorOption } from "./Selector/Selector";
 import { SizeVariant } from "./types/SizeVariant";
 
@@ -210,12 +209,4 @@ function prepareBindingValueInCaseOfWhollyChanged(
     }, {} as Record<PropertyKey, unknown>)
   }
   return extendedBindingValue
-}
-
-function isBindingsNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
-  return node.kind == AsyncApiTreeNodeKinds.BINDINGS && node instanceof ComplexTreeNodeWithDiffs
-}
-
-function isBindingNodeWithDiffs(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING> {
-  return node.kind == AsyncApiTreeNodeKinds.BINDING && node instanceof SimpleTreeNodeWithDiffs
 }

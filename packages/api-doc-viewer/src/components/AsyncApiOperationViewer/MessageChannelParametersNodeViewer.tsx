@@ -3,7 +3,6 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
@@ -16,6 +15,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { isMessageChannelParametersNodeWithDiffs } from "../shared-utilities/tree-node-guards"
 
 const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
 
@@ -110,14 +110,6 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       overriddenKind='parameters'
     />
   </>
-}
-
-function isMessageChannelParametersNodeWithDiffs(
-  node:
-    | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
-    | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
-): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS> {
-  return node instanceof SimpleTreeNodeWithDiffs
 }
 
 function prepareJsonSchemaInCaseOfWhollyChanged(

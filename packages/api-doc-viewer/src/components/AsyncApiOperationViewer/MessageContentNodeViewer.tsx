@@ -6,7 +6,7 @@ import { isBindingsNode, isExtensionsNode, isMessageContentHeadersNode, isMessag
 import { wrapJsonSchemaForDiffsViewer, wrapJsonSchemaForViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
+import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { AsyncApiTreeNodeValueTypeMessageHeaders, AsyncApiTreeNodeValueTypeMessagePayload } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useCallback, useMemo } from "react"
@@ -17,6 +17,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { isAsyncApiMessageHeadersNodeWithDiffs, isAsyncApiMessagePayloadNodeWithDiffs } from "../shared-utilities/tree-node-guards"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 
@@ -173,16 +174,4 @@ function prepareMessageContentChildJsonSchema(
     return wrapJsonSchemaForViewer(TITLE_FOR_WRAPPED_JSON_SCHEMA, value.schema)
   }
   return wrapJsonSchemaForDiffsViewer(TITLE_FOR_WRAPPED_JSON_SCHEMA, value.schema, child.diffs[NODE_LEVEL_DIFF_KEY], diffMetaKeys)
-}
-
-function isAsyncApiMessageHeadersNodeWithDiffs(
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> | undefined
-): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS> {
-  return !!node && node.kind == AsyncApiTreeNodeKinds.MESSAGE_HEADERS && node instanceof SimpleTreeNodeWithDiffs
-}
-
-function isAsyncApiMessagePayloadNodeWithDiffs(
-  node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> | undefined
-): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD> {
-  return !!node && node.kind == AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD && node instanceof SimpleTreeNodeWithDiffs
 }
