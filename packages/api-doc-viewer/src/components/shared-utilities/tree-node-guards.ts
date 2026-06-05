@@ -29,24 +29,24 @@ export function isTreeNodeWithDiffs<T extends { kind: PropertyKey }>(
 
 export function isBindingsNodeWithDiffs(
   node:
-    | AsyncApiTreeNode
-    | AsyncApiTreeNodeWithDiffs
+    | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>
+    | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>>(node, ComplexTreeNodeWithDiffs, AsyncApiTreeNodeKinds.BINDINGS);
 }
 
 export function isBindingNodeWithDiffs(
   node:
-    | AsyncApiTreeNode
-    | AsyncApiTreeNodeWithDiffs
+    | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>
+    | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING>
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING>>(node, SimpleTreeNodeWithDiffs, AsyncApiTreeNodeKinds.BINDING);
 }
 
 export function isExtensionsNodeWithDiffs(
   node:
-    | AsyncApiTreeNode
-    | AsyncApiTreeNodeWithDiffs
+    | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
+    | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.EXTENSIONS>
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.EXTENSIONS> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.EXTENSIONS>>(node, SimpleTreeNodeWithDiffs)
 }
@@ -102,7 +102,8 @@ export function isAsyncApiMessagePayloadNodeWithDiffs(
 
 export function isMessageNodeWithDiffs(
   node:
-    | AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs
+    | AsyncApiTreeNode
+    | AsyncApiTreeNodeWithDiffs
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE>>(node, SimpleTreeNodeWithDiffs, AsyncApiTreeNodeKinds.MESSAGE);
 }
