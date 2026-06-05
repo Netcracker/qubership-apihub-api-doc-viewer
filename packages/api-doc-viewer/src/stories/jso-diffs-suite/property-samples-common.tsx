@@ -4,15 +4,15 @@ import type { ComponentProps } from "react";
 import { prepareJsoDiffsDocument } from "../preprocess";
 import { collectSampleCases } from "./sample-cases";
 import { TEST_DIFF_META_KEYS } from "./shared-test-data";
-import { parseJsonSource } from "./json-source";
+import { parseYamlSource } from "../async-api-diffs-suite/yaml-source";
 
 const beforeFiles = import.meta.glob(
-  "../../../../samples/jso-diffs/property/*/before.json",
+  "../../../../samples/jso-diffs/property/*/before.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
 const afterFiles = import.meta.glob(
-  "../../../../samples/jso-diffs/property/*/after.json",
+  "../../../../samples/jso-diffs/property/*/after.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
@@ -38,7 +38,7 @@ export const JsoPropertySamplesStory = ({ caseId }: JsoPropertySamplesStoryProps
 
   return (
     <JsoDiffsViewer
-      {...createViewerArgs(selected.beforeJson, selected.afterJson)}
+      {...createViewerArgs(selected.beforeYaml, selected.afterYaml)}
     />
   );
 };
@@ -46,7 +46,7 @@ export const JsoPropertySamplesStory = ({ caseId }: JsoPropertySamplesStoryProps
 export type JsoPropertySamplesStoryMeta = Meta<typeof JsoPropertySamplesStory>;
 export type JsoPropertySamplesStoryObj = StoryObj<JsoPropertySamplesStoryMeta>;
 
-const createSource = (sourceText: string): Record<string, unknown> => parseJsonSource(sourceText);
+const createSource = (sourceText: string): Record<string, unknown> => parseYamlSource(sourceText);
 
 const createViewerArgs = (beforeSourceText: string, afterSourceText: string): JsoDiffsViewerProps => ({
   mergedSource: prepareJsoDiffsDocument({
