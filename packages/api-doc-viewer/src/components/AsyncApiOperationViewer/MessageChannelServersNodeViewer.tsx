@@ -27,7 +27,8 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (isNodeWithDiffs(node)) {
-      return buildRowDiffProps<object>(toNodeDiffState<object>(node))
+      const nodeDiffState = toNodeDiffState<object>(node)
+      return buildRowDiffProps<object>(nodeDiffState)
     }
     return {}
   }, [node])

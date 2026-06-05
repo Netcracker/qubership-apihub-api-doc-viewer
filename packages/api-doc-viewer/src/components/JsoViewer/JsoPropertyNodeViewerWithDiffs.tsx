@@ -101,7 +101,8 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   )
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return buildRowDiffProps<JsoTreeNodeDiffsSource>(toNodeDiffState<JsoTreeNodeDiffsSource>(node), {
+    const nodeDiffState = toNodeDiffState<JsoTreeNodeDiffsSource>(node)
+    return buildRowDiffProps<JsoTreeNodeDiffsSource>(nodeDiffState, {
       resolveDiff: () => nodeValueDiff,
     })
   }, [node, nodeValueDiff])

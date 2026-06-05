@@ -38,45 +38,29 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const bindingsChild = messageChildren.find(isBindingsNode)
   const payloadChild = messageChildren.find(isMessageContentPayloadNode)
 
-  const headersJsonSchema = useMemo(() => {
-    if (!headersChild) {
-      return undefined
-    }
-    const headersValue = headersChild.value()
-    if (!headersValue) {
-      return undefined
-    }
-    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
-      return prepareJsonSchemaForJsoViewer('Type', headersValue)
-    }
-    return prepareJsonSchemaForJsoDiffsViewer('Type', headersValue, headersChild.diffs[''], diffMetaKeys)
-  }, [headersChild, diffMetaKeys])
+  const headersJsonSchema = useMemo(
+    () => prepareMessageChildJsonSchema(headersChild, diffMetaKeys),
+    [headersChild, diffMetaKeys],
+  )
+  const payloadJsonSchema = useMemo(
+    () => prepareMessageChildJsonSchema(payloadChild, diffMetaKeys),
+    [payloadChild, diffMetaKeys],
+  )
 
   const headersTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
       return {}
     }
-    return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageHeaders>(toNodeDiffState<AsyncApiTreeNodeValueTypeMessageHeaders>(headersChild))
+    const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessageHeaders>(headersChild)
+    return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageHeaders>(nodeDiffState)
   }, [headersChild])
-  const payloadJsonSchema = useMemo(() => {
-    if (!payloadChild) {
-      return undefined
-    }
-    const payloadValue = payloadChild.value()
-    if (!payloadValue) {
-      return undefined
-    }
-    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
-      return prepareJsonSchemaForJsoViewer('Type', payloadValue)
-    }
-    return prepareJsonSchemaForJsoDiffsViewer('Type', payloadValue, payloadChild.diffs[''], diffMetaKeys)
-  }, [payloadChild, diffMetaKeys])
   const payloadTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
       return {}
     }
+    const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessagePayload>(payloadChild)
     return {
-      ...buildRowDiffProps<AsyncApiTreeNodeValueTypeMessagePayload>(toNodeDiffState<AsyncApiTreeNodeValueTypeMessagePayload>(payloadChild)),
+      ...buildRowDiffProps<AsyncApiTreeNodeValueTypeMessagePayload>(nodeDiffState),
       descendantDiffsSummary: payloadChild.descendantDiffsSummary,
     }
   }, [payloadChild])
@@ -204,6 +188,27 @@ function prepareJsonSchemaForJsoDiffsViewer(
       ...(diff && diffsMetaKey ? { [diffsMetaKey]: { [nodeKey]: diff } } : {}),
     },
   }
+}
+
+type MessageContentChildNode =
+  | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>
+  | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_PAYLOAD>
+
+function prepareMessageChildJsonSchema(
+  child: MessageContentChildNode | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): object | undefined {
+  if (!child) {
+    return undefined
+  }
+  const value = child.value()
+  if (!value) {
+    return undefined
+  }
+  if (!(child instanceof SimpleTreeNodeWithDiffs)) {
+    return prepareJsonSchemaForJsoViewer('Type', value)
+  }
+  return prepareJsonSchemaForJsoDiffsViewer('Type', value, child.diffs[''], diffMetaKeys)
 }
 
 function isAsyncApiMessageHeadersNodeWithDiffs(

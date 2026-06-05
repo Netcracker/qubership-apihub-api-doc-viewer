@@ -75,7 +75,8 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   const diffMetaKeys = useDiffMetaKeys()
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return buildRowDiffProps<AsyncApiTreeNodeValueTypeChannelParameters>(toNodeDiffState<AsyncApiTreeNodeValueTypeChannelParameters>(node))
+    const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeChannelParameters>(node)
+    return buildRowDiffProps<AsyncApiTreeNodeValueTypeChannelParameters>(nodeDiffState)
   }, [node])
 
   const preparedAddressParameters = useMemo(() => {

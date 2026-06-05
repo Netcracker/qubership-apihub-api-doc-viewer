@@ -96,14 +96,16 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (isBindingsNodeWithDiffs(node)) {
-      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(node))
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(node)
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState)
     }
     return {}
   }, [node])
 
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
-      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(selectedBindingNode), {
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(selectedBindingNode)
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, {
         resolveDiff: (diffs, getDiffByKey) => {
           const changedNodeMetadata = diffs['']
           if (changedNodeMetadata && !isDiffReplace(changedNodeMetadata.data)) {

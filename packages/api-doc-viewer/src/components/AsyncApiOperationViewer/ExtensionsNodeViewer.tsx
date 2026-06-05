@@ -29,7 +29,8 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'> = useMemo(() => {
     if (isExtensionsNodeWithDiffs(node)) {
-      const rowDiffProps = buildRowDiffProps<AsyncApiTreeNodeValueTypeExtensions>(toNodeDiffState<AsyncApiTreeNodeValueTypeExtensions>(node))
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeExtensions>(node)
+      const rowDiffProps = buildRowDiffProps<AsyncApiTreeNodeValueTypeExtensions>(nodeDiffState)
       return {
         ...rowDiffProps,
         highlightingMode: node.diffs['']?.highlightingMode,
