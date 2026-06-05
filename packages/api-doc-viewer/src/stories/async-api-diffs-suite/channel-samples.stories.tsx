@@ -1,14 +1,11 @@
-import {
-  AsyncApiOperationDiffsViewer,
-  type AsyncApiOperationDiffsViewerProps
-} from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
+import { AsyncApiOperationDiffsViewer } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
 import type { Meta, StoryObj } from "@storybook/react";
-import { userEvent, within } from "@storybook/test";
-import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/shared-test-data";
-import { prepareAsyncApiDiffsDocument } from "../preprocess";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
-import { parseYamlSource } from "../utils/parse-yaml-source";
-import { TEST_DIFF_META_KEYS } from "./shared-test-data";
+import {
+  createAsyncApiCaseStoryFactory,
+  createAsyncApiSampleById,
+  createAsyncApiViewerArgs
+} from "./async-api-diffs-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/async-api-diffs/channel/*/before.yaml",
@@ -21,10 +18,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = Object.fromEntries(sampleCases.map((item) => [item.caseId, item])) as Record<
-  string,
-  (typeof sampleCases)[number]
->;
+const sampleById = createAsyncApiSampleById(sampleCases);
 
 const AsyncApiChannelSamplesStory = ({ caseId }: { caseId: string }) => {
   const selected = sampleById[caseId];
@@ -53,34 +47,18 @@ type Story = StoryObj<typeof meta>;
 const OPERATION_KEY = "sendOperation";
 const MESSAGE_KEY = "TestMessage";
 
-const createSource = (sourceText: string): Record<string, unknown> => parseYamlSource(sourceText);
-
-const createViewerArgs = (beforeSourceText: string, afterSourceText: string): AsyncApiOperationDiffsViewerProps => ({
-  devMode: true,
-  mergedSource: prepareAsyncApiDiffsDocument({
-    beforeSource: createSource(beforeSourceText),
-    afterSource: createSource(afterSourceText),
-  }),
-  operationKeys: {
+const createViewerArgs = (beforeSourceText: string, afterSourceText: string) =>
+  createAsyncApiViewerArgs(beforeSourceText, afterSourceText, {
     operationKey: OPERATION_KEY,
     messageKey: MESSAGE_KEY,
-  },
-  referenceNamePropertyKey: TEST_REFERENCE_NAME_PROPERTY,
-  diffMetaKeys: TEST_DIFF_META_KEYS,
-});
+  });
 
-const createCaseStory = (caseId: string): Story => ({
-  name: caseId,
-  args: {
-    caseId,
-  },
-  render: (args) => <AsyncApiChannelSamplesStory caseId={args.caseId} />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const buttons = await canvas.findAllByTestId("message-channel");
-    await userEvent.click(buttons[0]);
-  },
-});
+const createCaseStoryBase = createAsyncApiCaseStoryFactory(
+  AsyncApiChannelSamplesStory,
+  "message-channel",
+);
+
+const createCaseStory = (caseId: string): Story => createCaseStoryBase(caseId);
 
 export const Case_1_1_channel_title_changed: Story = createCaseStory("1.1-channel-title-changed");
 export const Case_1_2_channel_title_removed: Story = createCaseStory("1.2-channel-title-removed");
