@@ -2,13 +2,13 @@ import {
   AsyncApiOperationDiffsViewer,
   type AsyncApiOperationDiffsViewerProps
 } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
-import { userEvent, within } from "@storybook/test";
 import type { Meta, StoryObj } from "@storybook/react";
+import { userEvent, within } from "@storybook/test";
 import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/shared-test-data";
 import { prepareAsyncApiDiffsDocument } from "../preprocess";
-import { collectSampleCases } from "./sample-cases";
+import { collectSampleCases } from "../utils/diffs-samples-cases";
+import { parseYamlSource } from "../utils/parse-yaml-source";
 import { TEST_DIFF_META_KEYS } from "./shared-test-data";
-import { parseYamlSource } from "./yaml-source";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/async-api-diffs/channel/*/before.yaml",

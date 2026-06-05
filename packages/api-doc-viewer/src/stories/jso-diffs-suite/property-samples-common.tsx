@@ -2,9 +2,9 @@ import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer";
 import type { Meta, StoryObj } from "@storybook/react";
 import type { ComponentProps } from "react";
 import { prepareJsoDiffsDocument } from "../preprocess";
-import { collectSampleCases } from "./sample-cases";
+import { collectSampleCases } from "../utils/diffs-samples-cases";
+import { parseYamlSource } from "../utils/parse-yaml-source";
 import { TEST_DIFF_META_KEYS } from "./shared-test-data";
-import { parseYamlSource } from "../async-api-diffs-suite/yaml-source";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/jso-diffs/property/*/before.yaml",

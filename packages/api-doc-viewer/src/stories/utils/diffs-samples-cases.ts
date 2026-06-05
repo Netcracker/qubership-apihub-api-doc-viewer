@@ -1,3 +1,4 @@
+
 export type RawYamlSources = Record<string, string>;
 
 export type SampleCase = {
@@ -5,10 +6,8 @@ export type SampleCase = {
   beforeYaml: string;
   afterYaml: string;
 };
-
 const BEFORE_SUFFIX = "/before.yaml";
 const AFTER_SUFFIX = "/after.yaml";
-
 const extractCaseId = (beforePath: string): string | undefined => {
   const normalized = beforePath.replaceAll("\\", "/");
   if (!normalized.endsWith(BEFORE_SUFFIX)) {
