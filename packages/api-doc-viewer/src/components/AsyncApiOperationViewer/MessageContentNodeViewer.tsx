@@ -7,7 +7,7 @@ import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
+import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueTypeMessageHeaders, AsyncApiTreeNodeValueTypeMessagePayload } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { FC, useCallback, useMemo } from "react"
 import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
@@ -56,7 +56,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
       return {}
     }
-    return buildRowDiffProps(toNodeDiffState(headersChild))
+    return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageHeaders>(toNodeDiffState<AsyncApiTreeNodeValueTypeMessageHeaders>(headersChild))
   }, [headersChild])
   const payloadJsonSchema = useMemo(() => {
     if (!payloadChild) {
@@ -76,7 +76,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       return {}
     }
     return {
-      ...buildRowDiffProps(toNodeDiffState(payloadChild)),
+      ...buildRowDiffProps<AsyncApiTreeNodeValueTypeMessagePayload>(toNodeDiffState<AsyncApiTreeNodeValueTypeMessagePayload>(payloadChild)),
       descendantDiffsSummary: payloadChild.descendantDiffsSummary,
     }
   }, [payloadChild])

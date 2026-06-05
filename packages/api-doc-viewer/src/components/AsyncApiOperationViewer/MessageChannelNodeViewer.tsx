@@ -33,16 +33,16 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const nodeDiffState = useNodeDiffState(node, isMessageChannelNodeWithDiffs)
+  const nodeDiffState = useNodeDiffState<AsyncApiTreeNodeValueTypeMessageChannel, AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs>(node, isMessageChannelNodeWithDiffs)
   const { nodeDiffs } = nodeDiffState
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, { diffKey: "title" }),
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageChannel>(nodeDiffState, { diffKey: "title" }),
     [nodeDiffState],
   )
 
   const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageChannel>(nodeDiffState, {
       diffKey: "description",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
     }),
@@ -50,7 +50,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   )
 
   const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageChannel>(nodeDiffState, {
       diffKey: "summary",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
     }),

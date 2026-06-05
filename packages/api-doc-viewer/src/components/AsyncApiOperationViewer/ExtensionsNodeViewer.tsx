@@ -2,6 +2,7 @@ import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeValueTypeExtensions } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
@@ -28,7 +29,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'> = useMemo(() => {
     if (isExtensionsNodeWithDiffs(node)) {
-      const rowDiffProps = buildRowDiffProps(toNodeDiffState(node))
+      const rowDiffProps = buildRowDiffProps<AsyncApiTreeNodeValueTypeExtensions>(toNodeDiffState<AsyncApiTreeNodeValueTypeExtensions>(node))
       return {
         ...rowDiffProps,
         highlightingMode: node.diffs['']?.highlightingMode,

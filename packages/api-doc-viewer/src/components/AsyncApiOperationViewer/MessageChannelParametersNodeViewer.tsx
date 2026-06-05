@@ -7,6 +7,7 @@ import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
+import { AsyncApiTreeNodeValueTypeChannelParameters } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
@@ -74,7 +75,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   const diffMetaKeys = useDiffMetaKeys()
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return buildRowDiffProps(toNodeDiffState(node))
+    return buildRowDiffProps<AsyncApiTreeNodeValueTypeChannelParameters>(toNodeDiffState<AsyncApiTreeNodeValueTypeChannelParameters>(node))
   }, [node])
 
   const preparedAddressParameters = useMemo(() => {

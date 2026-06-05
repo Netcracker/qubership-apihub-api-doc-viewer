@@ -7,6 +7,7 @@ import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isSameDiffActionForAll } from "@apihub/utils/jso/infer-node-change-from-children-changes"
 import { prepareJsonSchemaForJsoDiffsViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { JsoTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/aliases"
+import { JsoTreeNodeDiffsSource } from "@netcracker/qubership-apihub-next-data-model/model/jso/tree-with-diffs/node-diffs-source"
 import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-model/model/jso/types/node-value-type"
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
@@ -100,7 +101,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   )
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return buildRowDiffProps(toNodeDiffState(node), {
+    return buildRowDiffProps<JsoTreeNodeDiffsSource>(toNodeDiffState<JsoTreeNodeDiffsSource>(node), {
       resolveDiff: () => nodeValueDiff,
     })
   }, [node, nodeValueDiff])

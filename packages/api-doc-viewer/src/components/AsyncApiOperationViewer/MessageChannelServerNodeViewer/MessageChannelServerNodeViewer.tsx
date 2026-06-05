@@ -38,16 +38,16 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
 
-  const nodeDiffState = useNodeDiffState(node, isServerNodeWithDiffs)
+  const nodeDiffState = useNodeDiffState<AsyncApiTreeNodeValueTypeServer, AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs>(node, isServerNodeWithDiffs)
   const { nodeDiffs } = nodeDiffState
 
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, { diffKey: "title" }),
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, { diffKey: "title" }),
     [nodeDiffState],
   )
 
   const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, {
       diffKey: "description",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
     }),
@@ -55,7 +55,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   )
 
   const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, {
       diffKey: "summary",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
     }),
@@ -63,7 +63,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   )
 
   const serverAddressRowDiffsProps: Pick<ServerAddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return buildRowDiffProps(nodeDiffState, {
+    return buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, {
       resolveDiff: (diffs, getDiffByKey) => {
         const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(getDiffByKey('protocol'), getDiffByKey('host'))
         return diffs[''] ?? maxDiff

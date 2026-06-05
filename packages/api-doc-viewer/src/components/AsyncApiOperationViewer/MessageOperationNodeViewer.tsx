@@ -29,16 +29,16 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const bindingsChild = children.find(isBindingsNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const nodeDiffState = useNodeDiffState(node, isMessageOperationNodeWithDiffs)
+  const nodeDiffState = useNodeDiffState<AsyncApiTreeNodeValueTypeMessageOperation, AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs>(node, isMessageOperationNodeWithDiffs)
   const { nodeDiffs } = nodeDiffState
 
   const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, { diffKey: "title" }),
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageOperation>(nodeDiffState, { diffKey: "title" }),
     [nodeDiffState],
   )
 
   const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageOperation>(nodeDiffState, {
       diffKey: "description",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
     }),
@@ -46,7 +46,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   )
 
   const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
-    () => buildRowDiffProps(nodeDiffState, {
+    () => buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageOperation>(nodeDiffState, {
       diffKey: "summary",
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
     }),

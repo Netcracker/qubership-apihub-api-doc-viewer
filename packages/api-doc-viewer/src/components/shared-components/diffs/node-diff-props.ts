@@ -20,13 +20,13 @@ export type NodeDiffState<V extends object = object> = {
 }
 
 type BuildRowDiffPropsConfig<V extends object = object> = {
-  diffKey?: keyof V | string
+  diffKey?: keyof V
   fallbackToNodeDiff?: boolean
   includeDescendantDiffs?: boolean
   diffsSeverityPlacement?: NodeDiffsSeverityPlacemennt
   resolveDiff?: (
     diffs: NodeDiffs<V>,
-    getDiffByKey: (key: keyof V | string) => ChangedPropertyMetaData | undefined,
+    getDiffByKey: (key: keyof V) => ChangedPropertyMetaData | undefined,
   ) => ChangedPropertyMetaData | undefined
 }
 
@@ -37,7 +37,7 @@ export type RowDiffProps = {
   diffsSeverityPlacement?: NodeDiffsSeverityPlacemennt
 }
 
-export function useNodeDiffState<V extends object, N>(
+export function useNodeDiffState<V extends object, N = unknown>(
   node: N,
   isNodeWithDiffs: (node: N) => node is N & NodeWithDiffState<V>,
 ): NodeDiffState<V> {
@@ -70,7 +70,7 @@ export function buildRowDiffProps<V extends object = object>(
   config: BuildRowDiffPropsConfig<V> = {},
 ): RowDiffProps {
   const {
-    diffKey = "",
+    diffKey,
     fallbackToNodeDiff = true,
     includeDescendantDiffs = true,
     diffsSeverityPlacement,
@@ -81,8 +81,12 @@ export function buildRowDiffProps<V extends object = object>(
     return {}
   }
 
-  const getDiffByKey = (key: keyof V | string) => nodeDiffs[key as keyof NodeDiffs<V>] as ChangedPropertyMetaData | undefined
-  const keyedDiff = getDiffByKey(diffKey)
+  const diffEntries = Object.entries(nodeDiffs)
+  const getDiffByKey = (key: keyof V): ChangedPropertyMetaData | undefined => {
+    const matchedDiff = diffEntries.find(([entryKey]) => entryKey === String(key))
+    return matchedDiff?.[1]
+  }
+  const keyedDiff = diffKey ? getDiffByKey(diffKey) : undefined
   const diff = resolveDiff
     ? resolveDiff(nodeDiffs, getDiffByKey)
     : (fallbackToNodeDiff ? nodeDiffs[""] ?? keyedDiff : keyedDiff)
