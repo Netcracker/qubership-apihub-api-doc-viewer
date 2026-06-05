@@ -13,16 +13,16 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
  *
  * @param node node to test (may be `null`/`undefined`)
  * @param withDiffsConstructor class whose instances represent a "with diffs" node
- * @param kind optional node kind that `node.kind` must match before the instance check
+ * @param kind optional node kind (or list of kinds) that `node.kind` must match before the instance check
  */
 export function isTreeNodeWithDiffs<T extends { kind: PropertyKey }>(
   node: { kind: PropertyKey } | null | undefined,
   withDiffsConstructor: abstract new (...args: never[]) => object,
-  kind?: PropertyKey,
+  kind?: PropertyKey | PropertyKey[],
 ): node is T {
   return (
     !!node &&
-    (kind === undefined || node.kind === kind) &&
+    (kind === undefined || (Array.isArray(kind) ? kind.includes(node.kind) : node.kind === kind)) &&
     node instanceof withDiffsConstructor
   )
 }
@@ -114,4 +114,32 @@ export function isMessageOperationNodeWithDiffs(
     | AsyncApiTreeNodeWithDiffs
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>>(node, SimpleTreeNodeWithDiffs, AsyncApiTreeNodeKinds.MESSAGE_OPERATION)
+}
+
+export function isMessageSectionSelectorNodeWithDiffs(
+  node:
+    | AsyncApiTreeNode
+    | AsyncApiTreeNodeWithDiffs
+): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> {
+  return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>>(node, SimpleTreeNodeWithDiffs, AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR)
+}
+
+export function isMessageSectionNodeWithDiffs(
+  node:
+    | AsyncApiTreeNode
+    | AsyncApiTreeNodeWithDiffs
+): node is AsyncApiTreeNodeWithDiffs<
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+  | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
+> {
+  return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
+    | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
+  >>(node, SimpleTreeNodeWithDiffs, [
+    AsyncApiTreeNodeKinds.MESSAGE_CONTENT,
+    AsyncApiTreeNodeKinds.MESSAGE_CHANNEL,
+    AsyncApiTreeNodeKinds.MESSAGE_OPERATION,
+  ])
 }

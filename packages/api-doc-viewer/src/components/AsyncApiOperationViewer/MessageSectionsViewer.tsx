@@ -4,7 +4,6 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
-import { SimpleTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/simple-node.impl";
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
@@ -14,6 +13,7 @@ import { DiffFloatingBadgeWrapper } from "../shared-components/DiffFloatingBadge
 import { OneSideLayout } from "../shared-components/Layout/OneSideLayout";
 import { SideBySideLayout } from "../shared-components/Layout/SideBySideLayout";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+import { isMessageSectionNodeWithDiffs, isMessageSectionSelectorNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import '../shared-styles/preceded-by.css';
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../shared-styles/tailwind-classnames";
 import { MessageSectionViewer } from "./MessageSectionViewer";
@@ -185,30 +185,4 @@ function getMessageSectionTestId(node: AsyncApiTreeNode): string {
     default:
       return 'unknown'
   }
-}
-
-function isMessageSectionSelectorNodeWithDiffs(
-  node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs
-): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> {
-  if (!(node instanceof SimpleTreeNodeWithDiffs)) {
-    return false;
-  }
-  return node.kind === AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR
-}
-
-function isMessageSectionNodeWithDiffs(
-  node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs
-): node is AsyncApiTreeNodeWithDiffs<
-  | typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT
-  | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL
-  | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION
-> {
-  if (!(node instanceof SimpleTreeNodeWithDiffs)) {
-    return false;
-  }
-  return [
-    AsyncApiTreeNodeKinds.MESSAGE_CONTENT,
-    AsyncApiTreeNodeKinds.MESSAGE_CHANNEL,
-    AsyncApiTreeNodeKinds.MESSAGE_OPERATION,
-  ].includes(node.kind)
 }
