@@ -12,6 +12,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props";
 import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
@@ -94,27 +95,24 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (isBindingsNodeWithDiffs(node)) {
-      return {
-        diff: node.diffs[''],
-        descendantDiffs: node.descendantDiffs,
-        diffsSeverities: node.diffsSeverities,
-      }
+      return buildRowDiffProps(toNodeDiffState(node))
     }
     return {}
   }, [node])
 
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
-      const changeNodeMetadata = selectedBindingNode.diffs['']
-      let changePropertyMetadata = changeNodeMetadata
-      if (!changePropertyMetadata || isDiffReplace(changePropertyMetadata.data)) {
-        changePropertyMetadata = selectedBindingNode.diffs['version']
-      }
-      return {
-        diff: changePropertyMetadata,
-        diffsSeverities: selectedBindingNode.diffsSeverities,
+      return buildRowDiffProps(toNodeDiffState(selectedBindingNode), {
+        resolveDiff: (diffs, getDiffByKey) => {
+          const changedNodeMetadata = diffs['']
+          if (changedNodeMetadata && !isDiffReplace(changedNodeMetadata.data)) {
+            return changedNodeMetadata
+          }
+          return getDiffByKey('version')
+        },
+        includeDescendantDiffs: false,
         diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
-      }
+      })
     }
     return {}
   }, [selectedBindingNode])

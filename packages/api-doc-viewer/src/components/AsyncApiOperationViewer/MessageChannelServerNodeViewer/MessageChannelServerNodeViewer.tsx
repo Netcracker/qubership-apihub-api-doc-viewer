@@ -20,6 +20,7 @@ import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
+import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
 import { SizeVariant } from "../types/SizeVariant"
 import './MessageChannelServerNodeViewer.css'
 
@@ -37,56 +38,38 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
 
-  const nodeDiffs = useMemo(() => isServerNodeWithDiffs(node) ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => isServerNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => isServerNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
+  const nodeDiffState = useNodeDiffState(node, isServerNodeWithDiffs)
+  const { nodeDiffs } = nodeDiffState
 
-  const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['title'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-      }
-    }
-    return {}
-  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+  const titleRowDiffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, { diffKey: "title" }),
+    [nodeDiffState],
+  )
 
-  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['description'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
-      }
-    }
-    return {}
-  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, {
+      diffKey: "description",
+      diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
+    }),
+    [nodeDiffState],
+  )
 
-  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
-      }
-    }
-    return {}
-  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, {
+      diffKey: "summary",
+      diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
+    }),
+    [nodeDiffState],
+  )
 
   const serverAddressRowDiffsProps: Pick<ServerAddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(nodeDiffs['protocol'], nodeDiffs['host'])
-      return {
-        diff: nodeDiffs[''] ?? maxDiff,
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-      }
-    }
-    return {}
-  }, [nodeDescendantDiffs, nodeDiffs, nodeDiffsSeverities])
+    return buildRowDiffProps(nodeDiffState, {
+      resolveDiff: (diffs, getDiffByKey) => {
+        const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(getDiffByKey('protocol'), getDiffByKey('host'))
+        return diffs[''] ?? maxDiff
+      },
+    })
+  }, [nodeDiffState])
 
   const renderProtocol = useCallback((layoutSide: LayoutSide) => {
     if (!value) {

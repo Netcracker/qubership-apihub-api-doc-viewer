@@ -11,6 +11,7 @@ import { JsoPropertyValueTypes } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useCallback, useMemo, useState } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { UxMarkerPanel } from "../kit/ux/UxMarkerPanel/UxMarkerPanel"
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
@@ -40,9 +41,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const nodeValue = node.value()
 
   const nodeDiffs = node.diffs
-  const nodeDescendantDiffs = node.descendantDiffs
   const nodeDescendantDiffsSummary = node.descendantDiffsSummary
-  const nodeDiffsSeverities = node.diffsSeverities
 
   const nodeValueDiff = useMemo(() => nodeDiffs[''], [nodeDiffs])
 
@@ -101,12 +100,10 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   )
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return {
-      diff: nodeValueDiff,
-      descendantDiffs: nodeDescendantDiffs,
-      diffsSeverities: nodeDiffsSeverities,
-    }
-  }, [nodeDescendantDiffs, nodeDiffsSeverities, nodeValueDiff])
+    return buildRowDiffProps(toNodeDiffState(node), {
+      resolveDiff: () => nodeValueDiff,
+    })
+  }, [node, nodeValueDiff])
 
   const childrenProperties = node.childrenNodes()
 

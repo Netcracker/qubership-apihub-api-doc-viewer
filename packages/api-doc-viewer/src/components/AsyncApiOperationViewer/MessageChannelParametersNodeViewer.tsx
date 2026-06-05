@@ -10,6 +10,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useMemo } from "react"
 import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
@@ -73,11 +74,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   const diffMetaKeys = useDiffMetaKeys()
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    return {
-      diff: node.diffs[''],
-      descendantDiffs: node.descendantDiffs,
-      diffsSeverities: node.diffsSeverities,
-    }
+    return buildRowDiffProps(toNodeDiffState(node))
   }, [node])
 
   const preparedAddressParameters = useMemo(() => {

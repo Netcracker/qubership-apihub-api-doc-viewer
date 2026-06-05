@@ -7,6 +7,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props";
 import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer/MessageChannelServerNodeViewer";
 
 type MessageChannelServersNodeViewerProps = WithPrecededByProps & {
@@ -26,11 +27,7 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (isNodeWithDiffs(node)) {
-      return {
-        diff: node.diffs[''],
-        descendantDiffs: node.descendantDiffs,
-        diffsSeverities: node.diffsSeverities,
-      }
+      return buildRowDiffProps(toNodeDiffState(node))
     }
     return {}
   }, [node])

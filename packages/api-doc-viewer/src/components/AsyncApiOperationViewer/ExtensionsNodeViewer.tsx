@@ -5,6 +5,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { FC, useMemo } from "react"
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "../JsoViewer/JsoViewer"
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
@@ -27,10 +28,9 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'> = useMemo(() => {
     if (isExtensionsNodeWithDiffs(node)) {
+      const rowDiffProps = buildRowDiffProps(toNodeDiffState(node))
       return {
-        diff: node.diffs[''],
-        descendantDiffs: node.descendantDiffs,
-        diffsSeverities: node.diffsSeverities,
+        ...rowDiffProps,
         highlightingMode: node.diffs['']?.highlightingMode,
       }
     }

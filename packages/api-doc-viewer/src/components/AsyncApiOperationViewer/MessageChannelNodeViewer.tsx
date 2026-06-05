@@ -12,6 +12,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { buildRowDiffProps, useNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
 import { ExtensionsNodeViewer } from "./ExtensionsNodeViewer"
 import { MessageChannelParametersNodeViewer } from "./MessageChannelParametersNodeViewer"
@@ -32,44 +33,29 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
   const serversChild = children.find(isServersNode)
   const extensionsChild = children.find(isExtensionsNode)
 
-  const nodeDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffs : undefined, [node])
-  const nodeDescendantDiffs = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.descendantDiffs : undefined, [node])
-  const nodeDiffsSeverities = useMemo(() => isMessageChannelNodeWithDiffs(node) ? node.diffsSeverities : undefined, [node])
+  const nodeDiffState = useNodeDiffState(node, isMessageChannelNodeWithDiffs)
+  const { nodeDiffs } = nodeDiffState
 
-  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['title'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-      }
-    }
-    return {}
-  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+  const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, { diffKey: "title" }),
+    [nodeDiffState],
+  )
 
-  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['description'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
-      }
-    }
-    return {}
-  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+  const descriptionRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, {
+      diffKey: "description",
+      diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
+    }),
+    [nodeDiffState],
+  )
 
-  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (nodeDiffs) {
-      return {
-        diff: nodeDiffs[''] ?? nodeDiffs['summary'],
-        descendantDiffs: nodeDescendantDiffs,
-        diffsSeverities: nodeDiffsSeverities,
-        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
-      }
-    }
-    return {}
-  }, [nodeDiffs, nodeDescendantDiffs, nodeDiffsSeverities])
+  const summaryRowDiffProps: Pick<TextRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(
+    () => buildRowDiffProps(nodeDiffState, {
+      diffKey: "summary",
+      diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.SummaryRow,
+    }),
+    [nodeDiffState],
+  )
 
   const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'title'), [value, nodeDiffs])
   const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageChannel>(value, nodeDiffs, 'description'), [value, nodeDiffs])

@@ -12,6 +12,7 @@ import { NodeKey } from "@netcracker/qubership-apihub-next-data-model/utility-ty
 import { FC, useCallback, useMemo } from "react"
 import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, JsonSchemaDiffViewer, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../.."
 import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
+import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../shared-components/TitleRow/types"
@@ -55,11 +56,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
       return {}
     }
-    return {
-      diff: headersChild.diffs[''],
-      descendantDiffs: headersChild.descendantDiffs,
-      diffsSeverities: headersChild.diffsSeverities,
-    }
+    return buildRowDiffProps(toNodeDiffState(headersChild))
   }, [headersChild])
   const payloadJsonSchema = useMemo(() => {
     if (!payloadChild) {
@@ -79,10 +76,8 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
       return {}
     }
     return {
-      diff: payloadChild.diffs[''],
-      descendantDiffs: payloadChild.descendantDiffs,
+      ...buildRowDiffProps(toNodeDiffState(payloadChild)),
       descendantDiffsSummary: payloadChild.descendantDiffsSummary,
-      diffsSeverities: payloadChild.diffsSeverities,
     }
   }, [payloadChild])
 
