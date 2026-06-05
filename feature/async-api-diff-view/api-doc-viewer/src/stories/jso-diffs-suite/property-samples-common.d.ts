@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-declare const sampleCases: import("./sample-cases").SampleCase[];
+declare const sampleCases: import("../utils/diffs-samples-cases").SampleCase[];
 export declare const sampleById: Record<string, (typeof sampleCases)[number]>;
 export type JsoPropertySamplesStoryProps = {
     caseId: string;

@@ -1,1 +1,0 @@
-import{j as a}from"./js-yaml-71a24e1f.js";const s=e=>{let r;try{r=JSON.parse(e)}catch(o){console.error("Cannot parse JSON:",o),r=void 0}try{r||(r=a.load(e))}catch(o){console.error("Cannot parse YAML:",o),r=void 0}return!r||typeof r!="object"?{}:r};export{s as p};
