@@ -16,9 +16,9 @@
 import { Diff } from "@netcracker/qubership-apihub-api-diff";
 export type ValueRangeInitialData = Partial<{
     minimum: number;
-    exclusiveMinimum: boolean;
+    exclusiveMinimum: number | boolean;
     maximum: number;
-    exclusiveMaximum: boolean;
+    exclusiveMaximum: number | boolean;
 }>;
 export type ValueRangeDiffData = Partial<{
     minimum: Diff;
