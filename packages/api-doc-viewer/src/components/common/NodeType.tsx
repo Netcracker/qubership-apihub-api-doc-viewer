@@ -371,149 +371,43 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       }
     }
 
-    // Entity
-    const entityRemoved = formatRemoved || titleRemoved
-    const entityAdded = formatAdded || titleAdded
-    const entityReplaced = formatReplaced || titleReplaced
+    // Entity (title + format qualifier) — rendered with per-part diff coloring:
+    // only the changed sub-part (title or format) is colorized; when BOTH change,
+    // the whole bracketed string is colorized.
+    const titleChanged = titleAdded || titleRemoved || titleReplaced
+    const formatChanged = formatAdded || formatRemoved || formatReplaced
+    const bothChangedIncluded =
+      titleChanged && diffTypeForTitleIncluded &&
+      formatChanged && diffTypeForFormatIncluded
 
-    const diffTypeForEntityIncluded = diffTypeForFormatIncluded || diffTypeForTitleIncluded
-
-    if (isSideBySideDiffsLayoutMode) {
-      let diffStyles: unknown = null
-      if (entityRemoved) {
-        if (originSide) {
-          diffStyles = classes(
-            getIf(
-              diffTypeForEntityIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
-            getIf(
-              diffTypeForEntityIncluded && contentChangesColorizing,
-              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
-            )
-          )
-          actualEntity =
-            <div className={`inline ${diffStyles}`}>
-              {wrappedEntity}
-            </div>
-        }
-        if (changedSide) {
-          actualEntity = null
-        }
-      }
-      if (entityAdded) {
-        if (originSide) {
-          actualEntity = null
-        }
-        if (changedSide) {
-          diffStyles = getIf(
-            diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
-          )
-          actualEntity =
-            <div className={`inline ${diffStyles}`}>
-              {wrappedEntity}
-            </div>
-        }
-      }
-      if (entityReplaced) {
-        if (originSide) {
-          diffStyles = classes(
-            getIf(
-              diffTypeForEntityIncluded && contentChangesStrikethrough,
-              DEFAULT_STRIKETHROUGH_VALUE_CLASS
-            ),
-            getIf(
-              diffTypeForEntityIncluded && contentChangesColorizing,
-              INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
-            )
-          )
-          const beforeQualifier =
-            diffReplace($formatChange)
-              ? $formatChange.beforeValue as string
-              : qualifier
-          const beforeTitle =
-            diffReplace($titleChange)
-              ? $titleChange.beforeValue as string
-              : title
-          actualEntity =
-            <div className={`inline ${diffStyles}`}>
-              {wrapAsEntity(buildEntityString(beforeTitle, beforeQualifier))}
-            </div>
-        }
-        if (changedSide) {
-          diffStyles = getIf(
-            diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
-          )
-          actualEntity =
-            <div className={`inline ${diffStyles}`}>
-              {wrappedEntity}
-            </div>
-        }
-      }
+    const titleInput: QualifierPartInput = {
+      value: title,
+      beforeValue: beforeValueOf($titleChange),
+      added: titleAdded,
+      removed: titleRemoved,
+      replaced: titleReplaced,
+      included: diffTypeForTitleIncluded,
+    }
+    const formatInput: QualifierPartInput = {
+      value: qualifier,
+      beforeValue: beforeValueOf($formatChange),
+      added: formatAdded,
+      removed: formatRemoved,
+      replaced: formatReplaced,
+      included: diffTypeForFormatIncluded,
     }
 
-    if (isInlineDiffsLayoutMode) {
-      if (entityRemoved) {
-        const diffStylesBefore = classes(
-          getIf(
-            diffTypeForEntityIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
-          getIf(
-            diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
-          )
-        )
-        actualEntity =
-          <div className={`inline ${diffStylesBefore}`}>
-            {wrappedEntity}
-          </div>
-      }
-      if (entityAdded) {
-        const diffStylesAfter = getIf(
-          diffTypeForEntityIncluded && contentChangesColorizing,
-          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
-        )
-        actualEntity =
-          <div className={`inline ${diffStylesAfter}`}>
-            {wrappedEntity}
-          </div>
-      }
-      if (entityReplaced) {
-        const diffStylesBefore = classes(
-          getIf(
-            diffTypeForEntityIncluded && contentChangesStrikethrough,
-            DEFAULT_STRIKETHROUGH_VALUE_CLASS
-          ),
-          getIf(
-            diffTypeForEntityIncluded && contentChangesColorizing,
-            INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]
-          )
-        )
-        const diffStylesAfter = getIf(
-          diffTypeForEntityIncluded && contentChangesColorizing,
-          INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]
-        )
-        const beforeQualifier =
-          diffReplace($formatChange)
-            ? $formatChange.beforeValue as string
-            : qualifier
-        const beforeTitle =
-          diffReplace($titleChange)
-            ? $titleChange.beforeValue as string
-            : title
-        actualEntity = <>
-          <div className={`inline ${diffStylesBefore}`}>
-            {wrapAsEntity(buildEntityString(beforeTitle, beforeQualifier))}
-          </div>
-          <div className={`inline ${diffStylesAfter}`}>
-            {wrappedEntity}
-          </div>
-        </>
-      }
-    }
+    actualEntity = renderQualifierDiff({
+      titleInput,
+      formatInput,
+      bothChanged: bothChangedIncluded,
+      isSideBySide: isSideBySideDiffsLayoutMode,
+      isInline: isInlineDiffsLayoutMode,
+      originSide,
+      changedSide,
+      colorizing: contentChangesColorizing,
+      strikethrough: contentChangesStrikethrough,
+    })
   }
 
   return (
@@ -532,6 +426,160 @@ function buildEntityString(title: string | undefined, qualifier: string | undefi
 
 function wrapAsEntity(entity: unknown): ReactNode {
   return <>{'<'}{entity}{'>'}</>
+}
+
+type QualifierPartInput = {
+  value: string | undefined        // after-state value of this part
+  beforeValue: string | undefined  // before-state value (for remove/replace)
+  added: boolean
+  removed: boolean
+  replaced: boolean
+  included: boolean                // is this part's change included by the active filters
+}
+
+type QualifierPart = {
+  originNode: ReactNode | null   // side-by-side origin side (before state)
+  changedNode: ReactNode | null  // side-by-side changed side (after state)
+  inlineSeq: ReactNode[]         // inline fragments in order (before, then after)
+}
+
+function beforeValueOf(change: unknown): string | undefined {
+  if (change && typeof change === 'object' && 'beforeValue' in change) {
+    const value = (change as { beforeValue?: unknown }).beforeValue
+    return typeof value === 'string' ? value : undefined
+  }
+  return undefined
+}
+
+function partStyles(
+  included: boolean,
+  colorizing: boolean,
+  strikethrough: boolean,
+): { removeCls: string; addCls: string } {
+  const removeCls = classes(
+    getIf(included && strikethrough, DEFAULT_STRIKETHROUGH_VALUE_CLASS),
+    getIf(included && colorizing, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.remove]),
+  )
+  const addCls = getIf(included && colorizing, INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.add]) ?? ''
+  return { removeCls, addCls }
+}
+
+function styledText(text: string, cls: string): ReactNode {
+  return <span className={`inline ${cls}`.trimEnd()}>{text}</span>
+}
+
+function buildQualifierPart(
+  input: QualifierPartInput,
+  colorizing: boolean,
+  strikethrough: boolean,
+): QualifierPart {
+  const { value, beforeValue, added, removed, replaced, included } = input
+  const { removeCls, addCls } = partStyles(included, colorizing, strikethrough)
+
+  if (added) {
+    const after = value != null ? styledText(value, addCls) : null
+    return { originNode: null, changedNode: after, inlineSeq: after ? [after] : [] }
+  }
+  if (removed) {
+    const removedValue = beforeValue ?? value
+    const before = removedValue != null ? styledText(removedValue, removeCls) : null
+    return { originNode: before, changedNode: null, inlineSeq: before ? [before] : [] }
+  }
+  if (replaced) {
+    const before = beforeValue != null ? styledText(beforeValue, removeCls) : null
+    const after = value != null ? styledText(value, addCls) : null
+    return {
+      originNode: before,
+      changedNode: after,
+      inlineSeq: [before, after].filter(Boolean) as ReactNode[],
+    }
+  }
+  // unchanged
+  const neutral = value != null ? styledText(value, '') : null
+  return { originNode: neutral, changedNode: neutral, inlineSeq: neutral ? [neutral] : [] }
+}
+
+function joinNodes(nodes: ReactNode[], separator: string): ReactNode[] {
+  const out: ReactNode[] = []
+  nodes.forEach((node, index) => {
+    if (index > 0) {
+      out.push(<span key={`sep-${index}`} className="inline">{separator}</span>)
+    }
+    out.push(<span key={`seg-${index}`} className="inline">{node}</span>)
+  })
+  return out
+}
+
+function joinInlineFragments(fragments: ReactNode[]): ReactNode {
+  const out: ReactNode[] = []
+  fragments.forEach((fragment, index) => {
+    if (index > 0) {
+      out.push(<span key={`gap-${index}`} className="inline">{' '}</span>)
+    }
+    out.push(<span key={`frag-${index}`} className="inline">{fragment}</span>)
+  })
+  return <span className="inline">{out}</span>
+}
+
+function bracketize(inner: ReactNode[], wrapperCls: string): ReactNode | null {
+  if (inner.length === 0) {
+    return null
+  }
+  return <span className={`inline ${wrapperCls}`.trimEnd()}>{'<'}{inner}{'>'}</span>
+}
+
+function renderQualifierDiff(params: {
+  titleInput: QualifierPartInput
+  formatInput: QualifierPartInput
+  bothChanged: boolean
+  isSideBySide: boolean
+  isInline: boolean
+  originSide: boolean
+  changedSide: boolean
+  colorizing: boolean
+  strikethrough: boolean
+}): ReactNode | null {
+  const {
+    titleInput, formatInput, bothChanged,
+    isSideBySide, isInline, originSide,
+    colorizing, strikethrough,
+  } = params
+
+  const titlePart = buildQualifierPart(titleInput, colorizing, strikethrough)
+  const formatPart = buildQualifierPart(formatInput, colorizing, strikethrough)
+
+  // styling for the bracket wrapper when BOTH parts changed (colorize the whole string)
+  const bothIncluded = titleInput.included && formatInput.included
+  const { removeCls, addCls } = partStyles(bothIncluded, colorizing, strikethrough)
+
+  if (isSideBySide) {
+    if (originSide) {
+      const segments = joinNodes(
+        [titlePart.originNode, formatPart.originNode].filter(Boolean) as ReactNode[],
+        ', ',
+      )
+      return bracketize(segments, bothChanged ? removeCls : '')
+    }
+    // changed side
+    const segments = joinNodes(
+      [titlePart.changedNode, formatPart.changedNode].filter(Boolean) as ReactNode[],
+      ', ',
+    )
+    return bracketize(segments, bothChanged ? addCls : '')
+  }
+
+  if (isInline) {
+    const partNodes: ReactNode[] = []
+    if (titlePart.inlineSeq.length) {
+      partNodes.push(joinInlineFragments(titlePart.inlineSeq))
+    }
+    if (formatPart.inlineSeq.length) {
+      partNodes.push(joinInlineFragments(formatPart.inlineSeq))
+    }
+    return bracketize(joinNodes(partNodes, ', '), '')
+  }
+
+  return null
 }
 
 function getIf<T>(condition: boolean, value: T | undefined): T | null {
