@@ -372,14 +372,10 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
     }
 
     // Entity (title + format qualifier) — rendered with per-part diff coloring:
-    // only the changed sub-part (title or format) is colorized; when BOTH change,
-    // the whole bracketed string is colorized.
-    const titleChanged = titleAdded || titleRemoved || titleReplaced
-    const formatChanged = formatAdded || formatRemoved || formatReplaced
-    const bothChangedIncluded =
-      titleChanged && diffTypeForTitleIncluded &&
-      formatChanged && diffTypeForFormatIncluded
-
+    // only the changed sub-part (title or format) is colorized. The triangular brackets
+    // (and separator) are colorized only when EVERY present part is itself changed — i.e.
+    // the whole bracketed string is the change (e.g. `string` <-> `string<date-time>`, or
+    // both parts changing at once). They stay neutral when an unchanged part is present.
     const titleInput: QualifierPartInput = {
       value: title,
       beforeValue: beforeValueOf($titleChange),
@@ -400,11 +396,9 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
     actualEntity = renderQualifierDiff({
       titleInput,
       formatInput,
-      bothChanged: bothChangedIncluded,
       isSideBySide: isSideBySideDiffsLayoutMode,
       isInline: isInlineDiffsLayoutMode,
       originSide,
-      changedSide,
       colorizing: contentChangesColorizing,
       strikethrough: contentChangesStrikethrough,
     })
@@ -531,52 +525,52 @@ function bracketize(inner: ReactNode[], wrapperCls: string): ReactNode | null {
 function renderQualifierDiff(params: {
   titleInput: QualifierPartInput
   formatInput: QualifierPartInput
-  bothChanged: boolean
   isSideBySide: boolean
   isInline: boolean
   originSide: boolean
-  changedSide: boolean
   colorizing: boolean
   strikethrough: boolean
 }): ReactNode | null {
   const {
-    titleInput, formatInput, bothChanged,
+    titleInput, formatInput,
     isSideBySide, isInline, originSide,
     colorizing, strikethrough,
   } = params
 
-  const titlePart = buildQualifierPart(titleInput, colorizing, strikethrough)
-  const formatPart = buildQualifierPart(formatInput, colorizing, strikethrough)
+  // Bracket styles, applied only when every present part is changed (computed as included,
+  // since that condition already implies the parts' changes are included).
+  const { removeCls, addCls } = partStyles(true, colorizing, strikethrough)
 
-  // styling for the bracket wrapper when BOTH parts changed (colorize the whole string)
-  const bothIncluded = titleInput.included && formatInput.included
-  const { removeCls, addCls } = partStyles(bothIncluded, colorizing, strikethrough)
+  const parts = [
+    { input: titleInput, part: buildQualifierPart(titleInput, colorizing, strikethrough) },
+    { input: formatInput, part: buildQualifierPart(formatInput, colorizing, strikethrough) },
+  ]
 
   if (isSideBySide) {
     if (originSide) {
-      const segments = joinNodes(
-        [titlePart.originNode, formatPart.originNode].filter(Boolean) as ReactNode[],
-        ', ',
-      )
-      return bracketize(segments, bothChanged ? removeCls : '')
+      // origin shows the BEFORE state: parts that are removed/replaced/unchanged
+      const present = parts.filter(({ part }) => part.originNode != null)
+      const allChanged = present.length > 0 &&
+        present.every(({ input }) => (input.removed || input.replaced) && input.included)
+      const segments = joinNodes(present.map(({ part }) => part.originNode) as ReactNode[], ', ')
+      return bracketize(segments, allChanged ? removeCls : '')
     }
-    // changed side
-    const segments = joinNodes(
-      [titlePart.changedNode, formatPart.changedNode].filter(Boolean) as ReactNode[],
-      ', ',
-    )
-    return bracketize(segments, bothChanged ? addCls : '')
+    // changed side shows the AFTER state: parts that are added/replaced/unchanged
+    const present = parts.filter(({ part }) => part.changedNode != null)
+    const allChanged = present.length > 0 &&
+      present.every(({ input }) => (input.added || input.replaced) && input.included)
+    const segments = joinNodes(present.map(({ part }) => part.changedNode) as ReactNode[], ', ')
+    return bracketize(segments, allChanged ? addCls : '')
   }
 
   if (isInline) {
-    const partNodes: ReactNode[] = []
-    if (titlePart.inlineSeq.length) {
-      partNodes.push(joinInlineFragments(titlePart.inlineSeq))
-    }
-    if (formatPart.inlineSeq.length) {
-      partNodes.push(joinInlineFragments(formatPart.inlineSeq))
-    }
-    return bracketize(joinNodes(partNodes, ', '), '')
+    const present = parts.filter(({ part }) => part.inlineSeq.length > 0)
+    // brackets get a single color only when all present parts move in one direction
+    const allAdded = present.length > 0 && present.every(({ input }) => input.added && input.included)
+    const allRemoved = present.length > 0 && present.every(({ input }) => input.removed && input.included)
+    const bracketCls = allAdded ? addCls : allRemoved ? removeCls : ''
+    const partNodes = present.map(({ part }) => joinInlineFragments(part.inlineSeq))
+    return bracketize(joinNodes(partNodes, ', '), bracketCls)
   }
 
   return null
