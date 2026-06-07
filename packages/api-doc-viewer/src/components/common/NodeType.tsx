@@ -45,6 +45,7 @@ export type NodeTypeProps = PropsWithoutChangesSummary<
 >
 
 const SEPARATOR = ' '
+const TITLE_TYPE_SEPARATOR = ': '
 
 /* FIXME 30.08.24 //
     There are a lot of places in NodeType when we use hardcoded action, not calculated from real data.
@@ -72,8 +73,6 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   const filters = useChangeSeverityFilters()
 
-  const entityString = buildEntityString(title, qualifier)
-  const wrappedEntity = entityString ? wrapAsEntity(entityString) : null
   const resolvedNullableText = nullable ? NULLABLE_TYPE_SUFFIX_TEXT : null
 
   const $typeChange = isDiff($changes?.type) ? $changes?.type : undefined
@@ -132,7 +131,9 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   let actualType: string | ReactNode = type
   let actualNullable: string | ReactNode = resolvedNullableText
-  let actualEntity: ReactNode | null = wrappedEntity
+  // Title is rendered as a prefix (`<title>: `), format as a parenthesized suffix (`(<format>)`).
+  let actualTitle: ReactNode | null = title != null ? `${title}${TITLE_TYPE_SEPARATOR}` : null
+  let actualFormat: ReactNode | null = qualifier != null ? `(${qualifier})` : null
   if (!isDocumentLayoutMode) {
     // Node Type
     if (isSideBySideDiffsLayoutMode) {
@@ -371,11 +372,8 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       }
     }
 
-    // Entity (title + format qualifier) — rendered with per-part diff coloring:
-    // only the changed sub-part (title or format) is colorized. The triangular brackets
-    // (and separator) are colorized only when EVERY present part is itself changed — i.e.
-    // the whole bracketed string is the change (e.g. `string` <-> `string<date-time>`, or
-    // both parts changing at once). They stay neutral when an unchanged part is present.
+    // Title prefix (`<title>: `) and format suffix (`(<format>)`) are independent tokens,
+    // each colorized as a whole (including its decoration) by its own change.
     const titleInput: QualifierPartInput = {
       value: title,
       beforeValue: beforeValueOf($titleChange),
@@ -393,9 +391,18 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       included: diffTypeForFormatIncluded,
     }
 
-    actualEntity = renderQualifierDiff({
-      titleInput,
-      formatInput,
+    actualTitle = renderScalarDiff({
+      input: titleInput,
+      decorate: (text) => `${text}${TITLE_TYPE_SEPARATOR}`,
+      isSideBySide: isSideBySideDiffsLayoutMode,
+      isInline: isInlineDiffsLayoutMode,
+      originSide,
+      colorizing: contentChangesColorizing,
+      strikethrough: contentChangesStrikethrough,
+    })
+    actualFormat = renderScalarDiff({
+      input: formatInput,
+      decorate: (text) => `(${text})`,
       isSideBySide: isSideBySideDiffsLayoutMode,
       isInline: isInlineDiffsLayoutMode,
       originSide,
@@ -407,19 +414,10 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
   return (
     <div className="inline-flex flex-row gap-1 items-center">
       {brokenRef && <WarningIcon />}
-      {actualType && <div className="inline">{actualType}{actualEntity} {showNullable ? actualNullable : null}</div>}
+      {actualType && <div className="inline">{actualTitle}{actualType}{actualFormat} {showNullable ? actualNullable : null}</div>}
       {combiner && <div className="inline">({combiner})</div>}
     </div>
   )
-}
-
-function buildEntityString(title: string | undefined, qualifier: string | undefined): string | undefined {
-  const parts = [title, qualifier].filter(Boolean) as string[]
-  return parts.length > 0 ? parts.join(', ') : undefined
-}
-
-function wrapAsEntity(entity: unknown): ReactNode {
-  return <>{'<'}{entity}{'>'}</>
 }
 
 type QualifierPartInput = {
@@ -429,12 +427,6 @@ type QualifierPartInput = {
   removed: boolean
   replaced: boolean
   included: boolean                // is this part's change included by the active filters
-}
-
-type QualifierPart = {
-  originNode: ReactNode | null   // side-by-side origin side (before state)
-  changedNode: ReactNode | null  // side-by-side changed side (after state)
-  inlineSeq: ReactNode[]         // inline fragments in order (before, then after)
 }
 
 function beforeValueOf(change: unknown): string | undefined {
@@ -462,48 +454,6 @@ function styledText(text: string, cls: string): ReactNode {
   return <span className={`inline ${cls}`.trimEnd()}>{text}</span>
 }
 
-function buildQualifierPart(
-  input: QualifierPartInput,
-  colorizing: boolean,
-  strikethrough: boolean,
-): QualifierPart {
-  const { value, beforeValue, added, removed, replaced, included } = input
-  const { removeCls, addCls } = partStyles(included, colorizing, strikethrough)
-
-  if (added) {
-    const after = value != null ? styledText(value, addCls) : null
-    return { originNode: null, changedNode: after, inlineSeq: after ? [after] : [] }
-  }
-  if (removed) {
-    const removedValue = beforeValue ?? value
-    const before = removedValue != null ? styledText(removedValue, removeCls) : null
-    return { originNode: before, changedNode: null, inlineSeq: before ? [before] : [] }
-  }
-  if (replaced) {
-    const before = beforeValue != null ? styledText(beforeValue, removeCls) : null
-    const after = value != null ? styledText(value, addCls) : null
-    return {
-      originNode: before,
-      changedNode: after,
-      inlineSeq: [before, after].filter(Boolean) as ReactNode[],
-    }
-  }
-  // unchanged
-  const neutral = value != null ? styledText(value, '') : null
-  return { originNode: neutral, changedNode: neutral, inlineSeq: neutral ? [neutral] : [] }
-}
-
-function joinNodes(nodes: ReactNode[], separator: string): ReactNode[] {
-  const out: ReactNode[] = []
-  nodes.forEach((node, index) => {
-    if (index > 0) {
-      out.push(<span key={`sep-${index}`} className="inline">{separator}</span>)
-    }
-    out.push(<span key={`seg-${index}`} className="inline">{node}</span>)
-  })
-  return out
-}
-
 function joinInlineFragments(fragments: ReactNode[]): ReactNode {
   const out: ReactNode[] = []
   fragments.forEach((fragment, index) => {
@@ -515,62 +465,76 @@ function joinInlineFragments(fragments: ReactNode[]): ReactNode {
   return <span className="inline">{out}</span>
 }
 
-function bracketize(inner: ReactNode[], wrapperCls: string): ReactNode | null {
-  if (inner.length === 0) {
-    return null
-  }
-  return <span className={`inline ${wrapperCls}`.trimEnd()}>{'<'}{inner}{'>'}</span>
-}
-
-function renderQualifierDiff(params: {
-  titleInput: QualifierPartInput
-  formatInput: QualifierPartInput
+// Renders a single scalar qualifier (title or format) as one token, decorating the value
+// (e.g. `<title>: ` or `(<format>)`) and colorizing the whole decorated token by its own change.
+function renderScalarDiff(params: {
+  input: QualifierPartInput
+  decorate: (text: string) => string
   isSideBySide: boolean
   isInline: boolean
   originSide: boolean
   colorizing: boolean
   strikethrough: boolean
 }): ReactNode | null {
-  const {
-    titleInput, formatInput,
-    isSideBySide, isInline, originSide,
-    colorizing, strikethrough,
-  } = params
+  const { input, decorate, isSideBySide, isInline, originSide, colorizing, strikethrough } = params
+  const { value, beforeValue, added, removed, replaced, included } = input
+  const { removeCls, addCls } = partStyles(included, colorizing, strikethrough)
 
-  // Bracket styles, applied only when every present part is changed (computed as included,
-  // since that condition already implies the parts' changes are included).
-  const { removeCls, addCls } = partStyles(true, colorizing, strikethrough)
-
-  const parts = [
-    { input: titleInput, part: buildQualifierPart(titleInput, colorizing, strikethrough) },
-    { input: formatInput, part: buildQualifierPart(formatInput, colorizing, strikethrough) },
-  ]
+  const decorated = (text: string | undefined): string | null => (text != null ? decorate(text) : null)
+  const token = (text: string | null, cls: string): ReactNode | null => (text != null ? styledText(text, cls) : null)
 
   if (isSideBySide) {
     if (originSide) {
-      // origin shows the BEFORE state: parts that are removed/replaced/unchanged
-      const present = parts.filter(({ part }) => part.originNode != null)
-      const allChanged = present.length > 0 &&
-        present.every(({ input }) => (input.removed || input.replaced) && input.included)
-      const segments = joinNodes(present.map(({ part }) => part.originNode) as ReactNode[], ', ')
-      return bracketize(segments, allChanged ? removeCls : '')
+      // origin shows the BEFORE state
+      if (added) {
+        return null
+      }
+      if (removed) {
+        return token(decorated(beforeValue ?? value), removeCls)
+      }
+      if (replaced) {
+        return token(decorated(beforeValue), removeCls)
+      }
+      return token(decorated(value), '')
     }
-    // changed side shows the AFTER state: parts that are added/replaced/unchanged
-    const present = parts.filter(({ part }) => part.changedNode != null)
-    const allChanged = present.length > 0 &&
-      present.every(({ input }) => (input.added || input.replaced) && input.included)
-    const segments = joinNodes(present.map(({ part }) => part.changedNode) as ReactNode[], ', ')
-    return bracketize(segments, allChanged ? addCls : '')
+    // changed side shows the AFTER state
+    if (removed) {
+      return null
+    }
+    if (added || replaced) {
+      return token(decorated(value), addCls)
+    }
+    return token(decorated(value), '')
   }
 
   if (isInline) {
-    const present = parts.filter(({ part }) => part.inlineSeq.length > 0)
-    // brackets get a single color only when all present parts move in one direction
-    const allAdded = present.length > 0 && present.every(({ input }) => input.added && input.included)
-    const allRemoved = present.length > 0 && present.every(({ input }) => input.removed && input.included)
-    const bracketCls = allAdded ? addCls : allRemoved ? removeCls : ''
-    const partNodes = present.map(({ part }) => joinInlineFragments(part.inlineSeq))
-    return bracketize(joinNodes(partNodes, ', '), bracketCls)
+    const fragments: ReactNode[] = []
+    if (added) {
+      const after = token(decorated(value), addCls)
+      if (after) {
+        fragments.push(after)
+      }
+    } else if (removed) {
+      const before = token(decorated(beforeValue ?? value), removeCls)
+      if (before) {
+        fragments.push(before)
+      }
+    } else if (replaced) {
+      const before = token(decorated(beforeValue), removeCls)
+      const after = token(decorated(value), addCls)
+      if (before) {
+        fragments.push(before)
+      }
+      if (after) {
+        fragments.push(after)
+      }
+    } else {
+      const neutral = token(decorated(value), '')
+      if (neutral) {
+        fragments.push(neutral)
+      }
+    }
+    return fragments.length > 0 ? joinInlineFragments(fragments) : null
   }
 
   return null
