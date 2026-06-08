@@ -15,7 +15,7 @@
  */
 
 import { isDiff } from '@netcracker/qubership-apihub-api-data-model'
-import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
+import { Diff, DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { FC, ReactNode } from 'react'
 import { DEFAULT_STRIKETHROUGH_VALUE_CLASS, INLINE_CONTENT_DIFF_COLOR_SCHEMAS } from '../../consts/changes'
 import { NULLABLE_TYPE_SUFFIX_TEXT, UNKNOWN_TYPE_TEXT } from '../../consts/types'
@@ -26,6 +26,7 @@ import { PropsWithoutChangesSummary } from '../../types/PropsWithoutChangesSumma
 import { LayoutSide } from '../../types/internal/LayoutSide'
 import { PropsWithChanges } from '../../types/internal/PropsWithChanges'
 import {
+  diffRemove,
   diffReplace,
   getLayoutModeFlags,
   getLayoutSideFlags,
@@ -132,8 +133,8 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
   let actualNullable: string | ReactNode = resolvedNullableText
   // Rendered as `<type>[(<format>)][<<title>>]`, e.g. `string(date-time)<MyTitle>`:
   // format is a parenthesized suffix, title an angle-bracketed suffix after it.
-  let actualFormat: ReactNode | null = qualifier != null ? `(${qualifier})` : null
-  let actualTitle: ReactNode | null = title != null ? `<${title}>` : null
+  let actualFormat: ReactNode | null = hasText(qualifier) ? `(${qualifier})` : null
+  let actualTitle: ReactNode | null = hasText(title) ? `<${title}>` : null
   if (!isDocumentLayoutMode) {
     // Node Type
     if (isSideBySideDiffsLayoutMode) {
@@ -429,10 +430,14 @@ type QualifierPartInput = {
   included: boolean                // is this part's change included by the active filters
 }
 
-function beforeValueOf(change: unknown): string | undefined {
-  if (change && typeof change === 'object' && 'beforeValue' in change) {
-    const value = (change as { beforeValue?: unknown }).beforeValue
-    return typeof value === 'string' ? value : undefined
+// non-null and not blank (treats empty / whitespace-only as absent)
+function hasText(value: string | undefined): value is string {
+  return !!value && value.trim().length > 0
+}
+
+function beforeValueOf(change?: Diff): string | undefined {
+  if (diffRemove(change) || diffReplace(change)) {
+    return typeof change.beforeValue === 'string' ? change.beforeValue : undefined
   }
   return undefined
 }
@@ -480,8 +485,9 @@ function renderScalarDiff(params: {
   const { value, beforeValue, added, removed, replaced, included } = input
   const { removeCls, addCls } = partStyles(included, colorizing, strikethrough)
 
-  const decorated = (text: string | undefined): string | null => (text != null ? decorate(text) : null)
-  const token = (text: string | null, cls: string): ReactNode | null => (text != null ? styledText(text, cls) : null)
+  // Renders one decorated token, or null when the value is absent / blank.
+  const renderToken = (raw: string | undefined, cls: string): ReactNode | null =>
+    hasText(raw) ? styledText(decorate(raw), cls) : null
 
   if (isSideBySide) {
     if (originSide) {
@@ -490,38 +496,38 @@ function renderScalarDiff(params: {
         return null
       }
       if (removed) {
-        return token(decorated(beforeValue ?? value), removeCls)
+        return renderToken(beforeValue ?? value, removeCls)
       }
       if (replaced) {
-        return token(decorated(beforeValue), removeCls)
+        return renderToken(beforeValue, removeCls)
       }
-      return token(decorated(value), '')
+      return renderToken(value, '')
     }
     // changed side shows the AFTER state
     if (removed) {
       return null
     }
     if (added || replaced) {
-      return token(decorated(value), addCls)
+      return renderToken(value, addCls)
     }
-    return token(decorated(value), '')
+    return renderToken(value, '')
   }
 
   if (isInline) {
     const fragments: ReactNode[] = []
     if (added) {
-      const after = token(decorated(value), addCls)
+      const after = renderToken(value, addCls)
       if (after) {
         fragments.push(after)
       }
     } else if (removed) {
-      const before = token(decorated(beforeValue ?? value), removeCls)
+      const before = renderToken(beforeValue ?? value, removeCls)
       if (before) {
         fragments.push(before)
       }
     } else if (replaced) {
-      const before = token(decorated(beforeValue), removeCls)
-      const after = token(decorated(value), addCls)
+      const before = renderToken(beforeValue, removeCls)
+      const after = renderToken(value, addCls)
       if (before) {
         fragments.push(before)
       }
@@ -529,7 +535,7 @@ function renderScalarDiff(params: {
         fragments.push(after)
       }
     } else {
-      const neutral = token(decorated(value), '')
+      const neutral = renderToken(value, '')
       if (neutral) {
         fragments.push(neutral)
       }
