@@ -15,9 +15,9 @@ type NodeWithDiffState<V extends object = object> = {
 }
 
 export type NodeDiffState<V extends object = object> = {
-  nodeDiffs: NodeDiffs<V> | undefined
-  nodeDescendantDiffs: NodeDescendantDiffs | undefined
-  nodeDiffsSeverities: NodeDiffsSeverities | undefined
+  nodeDiffs?: NodeDiffs<V>
+  nodeDescendantDiffs?: NodeDescendantDiffs
+  nodeDiffsSeverities?: NodeDiffsSeverities
 }
 
 type BuildRowDiffPropsConfig<V extends object = object> = {
@@ -42,20 +42,10 @@ export function useNodeDiffState<V extends object, N = unknown>(
   node: N,
   isNodeWithDiffs: (node: N) => node is N & NodeWithDiffState<V>,
 ): NodeDiffState<V> {
-  return useMemo(() => {
-    if (!isNodeWithDiffs(node)) {
-      return {
-        nodeDiffs: undefined,
-        nodeDescendantDiffs: undefined,
-        nodeDiffsSeverities: undefined,
-      }
-    }
-    return {
-      nodeDiffs: node.diffs,
-      nodeDescendantDiffs: node.descendantDiffs,
-      nodeDiffsSeverities: node.diffsSeverities,
-    }
-  }, [isNodeWithDiffs, node])
+  return useMemo(
+    () => !isNodeWithDiffs(node) ? {} : toNodeDiffState<V>(node),
+    [isNodeWithDiffs, node]
+  )
 }
 
 export function toNodeDiffState<V extends object>(node: NodeWithDiffState<V>): NodeDiffState<V> {

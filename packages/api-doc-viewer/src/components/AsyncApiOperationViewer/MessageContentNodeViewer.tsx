@@ -15,7 +15,7 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { isAsyncApiMessageHeadersNodeWithDiffs, isAsyncApiMessagePayloadNodeWithDiffs } from "../shared-utilities/tree-node-guards"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
@@ -49,21 +49,18 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   )
 
   const headersTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (!isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
-      return {}
+    if (isAsyncApiMessageHeadersNodeWithDiffs(headersChild)) {
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessageHeaders>(headersChild)
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageHeaders>(nodeDiffState)
     }
-    const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessageHeaders>(headersChild)
-    return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessageHeaders>(nodeDiffState)
+    return {}
   }, [headersChild])
   const payloadTitleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (!isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
-      return {}
+    if (isAsyncApiMessagePayloadNodeWithDiffs(payloadChild)) {
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessagePayload>(payloadChild)
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeMessagePayload>(nodeDiffState)
     }
-    const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeMessagePayload>(payloadChild)
-    return {
-      ...buildRowDiffProps<AsyncApiTreeNodeValueTypeMessagePayload>(nodeDiffState),
-      descendantDiffsSummary: payloadChild.descendantDiffsSummary,
-    }
+    return {}
   }, [payloadChild])
 
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
@@ -102,6 +99,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Headers"
             variant={TextValueVariant.h3}
             expandable={false}
+            usage={TitleRowUsage.AsyncApiSection}
             // diffs
             {...headersTitleRowDiffProps}
           />
@@ -143,6 +141,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Payload"
             variant={TextValueVariant.h3}
             expandable={false}
+            usage={TitleRowUsage.AsyncApiSection}
             // diffs
             {...payloadTitleRowDiffProps}
           />

@@ -75,13 +75,14 @@ export function isServerNodeWithDiffs(
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER>>(node, SimpleTreeNodeWithDiffs, AsyncApiTreeNodeKinds.SERVER)
 }
 
-export function isNodeWithDiffs(
+export function isServersNodeWithDiffs(
   node:
     | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVERS>
     | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVERS>
 ): node is AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVERS> {
   return isTreeNodeWithDiffs<AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVERS>>(node, SimpleTreeNodeWithDiffs);
 }
+
 export function isAsyncApiMessageHeadersNodeWithDiffs(
   node:
     | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_HEADERS>

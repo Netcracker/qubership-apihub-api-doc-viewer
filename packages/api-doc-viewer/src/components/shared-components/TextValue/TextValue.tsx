@@ -122,20 +122,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-          if (isDefaultDiffHighlighting) {
+          if (isDefaultDiffHighlighting && usage !== TitleRowUsage.AsyncApiSection) {
             if (isDiffRemove(data)) {
-              // TODO 18.05.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-              resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue as string | undefined
+              resolvedValue = stringOrUndefined(data.beforeValue)
             }
             if (isDiffReplace(data)) {
               if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
                 diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
               }
-              // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-              resolvedValue = typeof data.beforeValue !== typeof value ? value : data.beforeValue as string | undefined
+              resolvedValue = stringOrUndefined(data.beforeValue)
             }
             if (isDiffRename(data)) {
-              resolvedValue = data.beforeKey as string | undefined
+              resolvedValue = stringOrUndefined(data.beforeKey)
             }
           }
           if (isDiffAdd(data)) {
@@ -144,20 +142,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           break
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-          if (isDefaultDiffHighlighting) {
+          if (isDefaultDiffHighlighting && usage !== TitleRowUsage.AsyncApiSection) {
             if (isDiffAdd(data)) {
-              // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-              resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue as string | undefined
+              resolvedValue = stringOrUndefined(data.afterValue)
             }
             if (isDiffReplace(data)) {
               if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
                 diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
               }
-              // TODO 26.03.26 // This is a WA, fix it later. It's important to detect if diff is not for value but for whole node
-              resolvedValue = typeof data.afterValue !== typeof value ? value : data.afterValue as string | undefined
+              resolvedValue = stringOrUndefined(data.afterValue)
             }
             if (isDiffRename(data)) {
-              resolvedValue = data.afterKey as string | undefined
+              resolvedValue = stringOrUndefined(data.afterKey)
             }
           }
           if (isDiffRemove(data)) {
@@ -197,4 +193,8 @@ function shortenValue(value: string | undefined): string | undefined {
     return undefined
   }
   return ArrayUtils.trim(value.split('\n')).slice(0, OVERFLOW_LINES_AMOUNT).join('\n')
+}
+
+function stringOrUndefined(value: unknown | undefined): string | undefined {
+  return typeof value === 'string' ? value : undefined
 }

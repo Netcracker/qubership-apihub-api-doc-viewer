@@ -34,6 +34,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       const rowDiffProps = buildRowDiffProps<AsyncApiTreeNodeValueTypeExtensions>(nodeDiffState)
       return {
         ...rowDiffProps,
+        // case of whole node diffs
         highlightingMode: node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode,
       }
     }
@@ -46,7 +47,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       value='Extensions'
       expandable={false}
       variant={TextValueVariant.h3}
-      usage={TitleRowUsage.JsoProperty}
+      usage={TitleRowUsage.AsyncApiSection}
       // diffs
       {...diffsProps}
     />

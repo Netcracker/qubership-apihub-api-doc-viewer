@@ -3,11 +3,11 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
-import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
+import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
-import { AsyncApiTreeNodeValueTypeBinding } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
+import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueTypeBinding } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
@@ -16,7 +16,7 @@ import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
-import { TitleRowProps } from "../shared-components/TitleRow/types";
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { isBindingNodeWithDiffs, isBindingsNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import { Selector, SelectorOption } from "./Selector/Selector";
@@ -95,8 +95,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
 
   const diffsProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     if (isBindingsNodeWithDiffs(node)) {
-      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(node)
-      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState)
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS>>(node)
+      return buildRowDiffProps<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDINGS>>(nodeDiffState)
     }
     return {}
   }, [node])
@@ -104,17 +104,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
       const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(selectedBindingNode)
-      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, {
-        resolveDiff: (diffs, getDiffByKey) => {
-          const changedNodeMetadata = diffs[NODE_LEVEL_DIFF_KEY]
-          if (changedNodeMetadata && !isDiffReplace(changedNodeMetadata.data)) {
-            return changedNodeMetadata
-          }
-          return getDiffByKey('version')
-        },
-        includeDescendantDiffs: false,
-        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
-      })
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, { diffKey: 'version', fallbackToNodeDiff: false })
     }
     return {}
   }, [selectedBindingNode])
@@ -161,6 +151,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         expanded={true}
         variant={variant === SizeVariant.PRIMARY ? TextValueVariant.h3 : TextValueVariant.h5}
         subheader={titleRowSubheader}
+        usage={TitleRowUsage.AsyncApiSection}
         // diffs
         {...diffsProps}
       />

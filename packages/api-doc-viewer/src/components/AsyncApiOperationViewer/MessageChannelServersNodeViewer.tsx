@@ -1,13 +1,14 @@
 import { isServerNode } from "@apihub/utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
+import { AsyncApiTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, memo, useMemo } from "react";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props";
-import { isNodeWithDiffs } from "../shared-utilities/tree-node-guards";
+import { isServersNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import { MessageChannelServerNodeViewer } from "./MessageChannelServerNodeViewer/MessageChannelServerNodeViewer";
 
 type MessageChannelServersNodeViewerProps = WithPrecededByProps & {
@@ -26,9 +27,9 @@ export const MessageChannelServersNodeViewer: FC<MessageChannelServersNodeViewer
   )
 
   const titleRowDiffProps: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
-    if (isNodeWithDiffs(node)) {
-      const nodeDiffState = toNodeDiffState<object>(node)
-      return buildRowDiffProps<object>(nodeDiffState)
+    if (isServersNodeWithDiffs(node)) {
+      const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVERS>>(node)
+      return buildRowDiffProps<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.SERVERS>>(nodeDiffState)
     }
     return {}
   }, [node])

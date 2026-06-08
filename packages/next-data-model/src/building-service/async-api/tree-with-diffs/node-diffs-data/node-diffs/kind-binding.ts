@@ -1,12 +1,12 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "@apihub/next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { getValueByPath, isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, DiffType, isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class AsyncApiNodeDiffsAggregatorKindBinding extends AsyncApiNodeDiffsAggregatorKindAny {
@@ -45,6 +45,7 @@ export class AsyncApiNodeDiffsAggregatorKindBinding extends AsyncApiNodeDiffsAgg
         if (isDiffRemove(data)) {
           styles.before.borderShadowColor = HighlightVariant.Red
         }
+        this.aggregateBindingVersionDiffByWholeNodeDiff(diffNode, nodeDiffs)
       }
     }
 
@@ -63,5 +64,23 @@ export class AsyncApiNodeDiffsAggregatorKindBinding extends AsyncApiNodeDiffsAgg
     }
 
     return Object.keys(nodeDiffs).length > 0 ? nodeDiffs : undefined;
+  }
+
+  private aggregateBindingVersionDiffByWholeNodeDiff(
+    nodeChangedMetadata: ChangedPropertyMetaData,
+    nodeDiffs: NodeDiffs<AsyncApiTreeNodeValue<typeof AsyncApiTreeNodeKinds.BINDING> | null>
+  ): void {
+    const { data: diff } = nodeChangedMetadata
+    let newDiff: Diff<DiffType> | undefined
+    if (isDiffAdd(diff) && isObject(diff.afterValue)) {
+      const bindingVersion = diff.afterValue['bindingVersion']
+      newDiff = { ...diff, afterValue: bindingVersion }
+      this.aggregateTextDiff(newDiff, 'version', nodeDiffs)
+    }
+    if (isDiffRemove(diff) && isObject(diff.beforeValue)) {
+      const bindingVersion = diff.beforeValue['bindingVersion']
+      newDiff = { ...diff, beforeValue: bindingVersion }
+      this.aggregateTextDiff(newDiff, 'version', nodeDiffs)
+    }
   }
 }

@@ -13,7 +13,7 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { isMessageChannelParametersNodeWithDiffs } from "../shared-utilities/tree-node-guards"
 
@@ -97,6 +97,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       value={MESSAGE_CHANNEL_PARAMETERS_TITLE}
       expandable={false}
       variant={TextValueVariant.h3}
+      usage={TitleRowUsage.AsyncApiSection}
       // diffs
       {...diffsProps}
     />
