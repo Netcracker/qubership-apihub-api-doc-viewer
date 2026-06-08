@@ -45,7 +45,6 @@ export type NodeTypeProps = PropsWithoutChangesSummary<
 >
 
 const SEPARATOR = ' '
-const TITLE_TYPE_SEPARATOR = ': '
 
 /* FIXME 30.08.24 //
     There are a lot of places in NodeType when we use hardcoded action, not calculated from real data.
@@ -131,9 +130,10 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   let actualType: string | ReactNode = type
   let actualNullable: string | ReactNode = resolvedNullableText
-  // Title is rendered as a prefix (`<title>: `), format as a parenthesized suffix (`(<format>)`).
-  let actualTitle: ReactNode | null = title != null ? `${title}${TITLE_TYPE_SEPARATOR}` : null
+  // Rendered as `<type>[(<format>)][<<title>>]`, e.g. `string(date-time)<MyTitle>`:
+  // format is a parenthesized suffix, title an angle-bracketed suffix after it.
   let actualFormat: ReactNode | null = qualifier != null ? `(${qualifier})` : null
+  let actualTitle: ReactNode | null = title != null ? `<${title}>` : null
   if (!isDocumentLayoutMode) {
     // Node Type
     if (isSideBySideDiffsLayoutMode) {
@@ -393,7 +393,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
     actualTitle = renderScalarDiff({
       input: titleInput,
-      decorate: (text) => `${text}${TITLE_TYPE_SEPARATOR}`,
+      decorate: (text) => `<${text}>`,
       isSideBySide: isSideBySideDiffsLayoutMode,
       isInline: isInlineDiffsLayoutMode,
       originSide,
@@ -414,7 +414,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
   return (
     <div className="inline-flex flex-row gap-1 items-center">
       {brokenRef && <WarningIcon />}
-      {actualType && <div className="inline">{actualTitle}{actualType}{actualFormat} {showNullable ? actualNullable : null}</div>}
+      {actualType && <div className="inline">{actualType}{actualFormat}{actualTitle} {showNullable ? actualNullable : null}</div>}
       {combiner && <div className="inline">({combiner})</div>}
     </div>
   )
