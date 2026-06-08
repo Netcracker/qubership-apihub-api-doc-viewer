@@ -5,9 +5,9 @@ type NodeWithDiffState<V extends object = object> = {
     diffsSeverities: NodeDiffsSeverities;
 };
 export type NodeDiffState<V extends object = object> = {
-    nodeDiffs: NodeDiffs<V> | undefined;
-    nodeDescendantDiffs: NodeDescendantDiffs | undefined;
-    nodeDiffsSeverities: NodeDiffsSeverities | undefined;
+    nodeDiffs?: NodeDiffs<V>;
+    nodeDescendantDiffs?: NodeDescendantDiffs;
+    nodeDiffsSeverities?: NodeDiffsSeverities;
 };
 type BuildRowDiffPropsConfig<V extends object = object> = {
     diffKey?: keyof V;
