@@ -15,7 +15,7 @@ import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
 import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { TitleRowProps } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { isAsyncApiMessageHeadersNodeWithDiffs, isAsyncApiMessagePayloadNodeWithDiffs } from "../shared-utilities/tree-node-guards"
 import { BindingsNodeViewer } from "./BindingsNodeViewer"
@@ -99,7 +99,6 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Headers"
             variant={TextValueVariant.h3}
             expandable={false}
-            usage={TitleRowUsage.AsyncApiSection}
             // diffs
             {...headersTitleRowDiffProps}
           />
@@ -141,7 +140,6 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
             value="Payload"
             variant={TextValueVariant.h3}
             expandable={false}
-            usage={TitleRowUsage.AsyncApiSection}
             // diffs
             {...payloadTitleRowDiffProps}
           />

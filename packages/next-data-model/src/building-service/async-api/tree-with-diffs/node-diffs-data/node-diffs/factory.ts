@@ -4,6 +4,7 @@ import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { AsyncApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { AsyncApiNodeDiffsAggregatorKindBinding } from "./kind-binding";
+import { AsyncApiNodeDiffsAggregatorKindBindings } from "./kind-bindings";
 import { AsyncApiNodeDiffsAggregatorKindExtensions } from "./kind-extensions";
 import { AsyncApiNodeDiffsAggregatorKindMessage } from "./kind-message";
 import { AsyncApiNodeDiffsAggregatorKindParameters } from "./kind-parameters";
@@ -35,6 +36,11 @@ export class AsyncApiNodeDiffsAggregatorFactory {
           this.instances.set(AsyncApiTreeNodeKinds.BINDING, new AsyncApiNodeDiffsAggregatorKindBinding());
         }
         return this.instances.get(AsyncApiTreeNodeKinds.BINDING)!;
+      case AsyncApiTreeNodeKinds.BINDINGS:
+        if (!this.instances.has(AsyncApiTreeNodeKinds.BINDINGS)) {
+          this.instances.set(AsyncApiTreeNodeKinds.BINDINGS, new AsyncApiNodeDiffsAggregatorKindBindings());
+        }
+        return this.instances.get(AsyncApiTreeNodeKinds.BINDINGS)!;
       case AsyncApiTreeNodeKinds.EXTENSIONS:
         if (!this.instances.has(AsyncApiTreeNodeKinds.EXTENSIONS)) {
           this.instances.set(AsyncApiTreeNodeKinds.EXTENSIONS, new AsyncApiNodeDiffsAggregatorKindExtensions());

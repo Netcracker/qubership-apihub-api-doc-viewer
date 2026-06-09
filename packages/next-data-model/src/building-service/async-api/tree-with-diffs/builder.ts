@@ -1,4 +1,4 @@
-import { ComplexTreeNodeWithDiffsParams, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ComplexTreeNodeWithDiffsParams, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, SimpleTreeNodeWithDiffsParams, TreeNodeWithDiffsParams } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { AsyncApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/complex-node.impl";
 import { AsyncApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/async-api/tree-with-diffs/simple-node.impl";
@@ -10,8 +10,8 @@ import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/t
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
-import { ActionType, annotation, breaking, deprecated, Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
-import { JsonPath, syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
+import { annotation, breaking, deprecated, DiffType, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
+import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
@@ -36,10 +36,6 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   public readonly tree: AsyncApiTreeWithDiffs;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
   private readonly nodeDataBuilder: AsyncApiNodeDataWithDiffsBuilder;
-
-  private static readonly ASYNC_API_NODE_KINDS_WITH_SYNTHETIC_DIFFS = new Set<string>([
-    AsyncApiTreeNodeKinds.BINDINGS,
-  ])
 
   constructor(
     private readonly source: unknown,
@@ -359,111 +355,6 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
         So, for example, nodes from JSON Schema Tree can't reach their "visual parents" in AsyncAPI Tree. */
       node.addDescendantDiffsSummary(descendantDiffsSummary)
     }
-
-    // ---------------
-    // TODO 01.04.26 // Refactor this to use the new diffs summary
-    const descendantsMaxDiffType = descendantDiffsSummary ? this.maxDiffType(descendantDiffsSummary) : undefined
-    const declarationPaths: JsonPath[] = []
-    for (const descendantDiff of Object.values(node.descendantDiffs)) {
-      if (!descendantDiff) {
-        continue
-      }
-      if (descendantDiff.data.type === descendantsMaxDiffType) {
-        if (isDiffRemove(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-          declarationPaths.push(descendantDiff.data.beforeDeclarationPaths[0])
-        } else if (isDiffAdd(descendantDiff.data) || isDiffReplace(descendantDiff.data)) {
-          declarationPaths.push(descendantDiff.data.afterDeclarationPaths[0])
-        }
-      }
-    }
-    if (
-      descendantsMaxDiffType &&
-      !nodeDiffs?.[NODE_LEVEL_DIFF_KEY] &&
-      AsyncApiTreeWithDiffsBuilder.ASYNC_API_NODE_KINDS_WITH_SYNTHETIC_DIFFS.has(kind)
-    ) {
-      const { value } = params
-      const valueKeys = Object.keys(value ?? {})
-      const descendantDiffsKeys = new Set(Object.keys(node.descendantDiffs ?? {}))
-      const allDescendantChanged = valueKeys.every(key => descendantDiffsKeys.has(key))
-      let diffAction: ActionType = DiffAction.replace
-      if (allDescendantChanged) {
-        const [firstValueKey] = valueKeys
-        const firstDescendantDiff = node.descendantDiffs[firstValueKey]
-        if (firstDescendantDiff) {
-          diffAction = firstDescendantDiff.data.action
-        }
-      }
-      const syntheticDiff: Diff = {
-        type: descendantsMaxDiffType,
-        action: diffAction,
-        beforeDeclarationPaths: declarationPaths,
-        afterDeclarationPaths: declarationPaths,
-        beforeValue: null,
-        afterValue: null,
-        scope: 'descendants',
-      } as Diff
-      let beforeStyles: DiffStyles = {
-        isContentVisible: true,
-        isHeaderVisible: true,
-      }
-      let afterStyles: DiffStyles = {
-        isContentVisible: true,
-        isHeaderVisible: true,
-      }
-      if (isDiffRemove(syntheticDiff)) {
-        beforeStyles = {
-          isContentVisible: true,
-          isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Red,
-        }
-        afterStyles = {
-          isContentVisible: false,
-          isHeaderVisible: false,
-          backgroundColor: HighlightVariant.Gray,
-        }
-      }
-      if (isDiffAdd(syntheticDiff)) {
-        beforeStyles = {
-          isContentVisible: false,
-          isHeaderVisible: false,
-          backgroundColor: HighlightVariant.Gray,
-        }
-        afterStyles = {
-          isContentVisible: true,
-          isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Green,
-        }
-      }
-      if (isDiffReplace(syntheticDiff)) {
-        beforeStyles = {
-          isContentVisible: true,
-          isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Yellow,
-        }
-        afterStyles = {
-          isContentVisible: true,
-          isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Yellow,
-        }
-      }
-      node.diffs[NODE_LEVEL_DIFF_KEY] = {
-        data: syntheticDiff,
-        styles: {
-          before: beforeStyles,
-          after: afterStyles,
-        },
-        flags: {
-          before: {
-            increaseLevel: false,
-          },
-          after: {
-            increaseLevel: false,
-          },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-    // ------------
 
     const diffsSeverities = this.createNodeDiffsSeverities(kind, node.diffs)
     diffsSeverities && Object.assign(node.diffsSeverities, diffsSeverities)

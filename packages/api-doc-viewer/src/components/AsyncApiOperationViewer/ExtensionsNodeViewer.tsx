@@ -47,7 +47,7 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       value='Extensions'
       expandable={false}
       variant={TextValueVariant.h3}
-      usage={TitleRowUsage.AsyncApiSection}
+      usage={TitleRowUsage.JsoProperty}
       // diffs
       {...diffsProps}
     />

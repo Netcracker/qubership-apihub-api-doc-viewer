@@ -16,7 +16,7 @@ import { TextRow } from "../shared-components/TextRow/TextRow";
 import { TextRowProps } from "../shared-components/TextRow/types";
 import { TextValueVariant } from "../shared-components/TextValue/types";
 import { TitleRow } from "../shared-components/TitleRow/TitleRow";
-import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types";
+import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { isBindingNodeWithDiffs, isBindingsNodeWithDiffs } from "../shared-utilities/tree-node-guards";
 import { Selector, SelectorOption } from "./Selector/Selector";
@@ -151,7 +151,6 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         expanded={true}
         variant={variant === SizeVariant.PRIMARY ? TextValueVariant.h3 : TextValueVariant.h5}
         subheader={titleRowSubheader}
-        usage={TitleRowUsage.AsyncApiSection}
         // diffs
         {...diffsProps}
       />

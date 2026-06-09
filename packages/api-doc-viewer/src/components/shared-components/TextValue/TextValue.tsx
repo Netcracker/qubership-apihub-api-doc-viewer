@@ -122,18 +122,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       switch (layoutSide) {
         case ORIGIN_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
-          if (isDefaultDiffHighlighting && usage !== TitleRowUsage.AsyncApiSection) {
+          if (isDefaultDiffHighlighting) {
             if (isDiffRemove(data)) {
-              resolvedValue = stringOrUndefined(data.beforeValue)
+              resolvedValue = isString(data.beforeValue) ? data.beforeValue : resolvedValue
             }
             if (isDiffReplace(data)) {
               if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
                 diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
               }
-              resolvedValue = stringOrUndefined(data.beforeValue)
+              resolvedValue = isString(data.beforeValue) ? data.beforeValue : resolvedValue
             }
             if (isDiffRename(data)) {
-              resolvedValue = stringOrUndefined(data.beforeKey)
+              resolvedValue = isString(data.beforeKey) ? data.beforeKey : resolvedValue
             }
           }
           if (isDiffAdd(data)) {
@@ -142,18 +142,18 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           break
         case CHANGED_LAYOUT_SIDE:
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.after.textHighlighterColor))
-          if (isDefaultDiffHighlighting && usage !== TitleRowUsage.AsyncApiSection) {
+          if (isDefaultDiffHighlighting) {
             if (isDiffAdd(data)) {
-              resolvedValue = stringOrUndefined(data.afterValue)
+              resolvedValue = isString(data.afterValue) ? data.afterValue : resolvedValue
             }
             if (isDiffReplace(data)) {
               if (usage === TitleRowUsage.JsoProperty && !isInvisibleDiffHighlighting) {
                 diffsStyleClasses.push(DiffsClassesBuilder.highlighter(HighlightVariant.Yellow))
               }
-              resolvedValue = stringOrUndefined(data.afterValue)
+              resolvedValue = isString(data.afterValue) ? data.afterValue : resolvedValue
             }
             if (isDiffRename(data)) {
-              resolvedValue = stringOrUndefined(data.afterKey)
+              resolvedValue = isString(data.afterKey) ? data.afterKey : resolvedValue
             }
           }
           if (isDiffRemove(data)) {
@@ -195,6 +195,6 @@ function shortenValue(value: string | undefined): string | undefined {
   return ArrayUtils.trim(value.split('\n')).slice(0, OVERFLOW_LINES_AMOUNT).join('\n')
 }
 
-function stringOrUndefined(value: unknown | undefined): string | undefined {
-  return typeof value === 'string' ? value : undefined
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
 }
