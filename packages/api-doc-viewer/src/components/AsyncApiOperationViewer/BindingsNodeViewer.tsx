@@ -4,7 +4,7 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide";
 import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
-import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueTypeBinding } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
@@ -104,7 +104,11 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingVersionDiffsProps: Pick<TextRowProps, 'diff' | 'diffsSeverities' | 'diffsSeverityPlacement'> = useMemo(() => {
     if (selectedBindingNode && isBindingNodeWithDiffs(selectedBindingNode)) {
       const nodeDiffState = toNodeDiffState<AsyncApiTreeNodeValueTypeBinding>(selectedBindingNode)
-      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, { diffKey: 'version', fallbackToNodeDiff: false })
+      return buildRowDiffProps<AsyncApiTreeNodeValueTypeBinding>(nodeDiffState, {
+        diffKey: 'version',
+        fallbackToNodeDiff: false,
+        diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.BindingVersionRow,
+      })
     }
     return {}
   }, [selectedBindingNode])
