@@ -131,9 +131,10 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
 
   let actualType: string | ReactNode = type
   let actualNullable: string | ReactNode = resolvedNullableText
-  // Rendered as `<type>[(<format>)][<<title>>]`, e.g. `string(date-time)<MyTitle>`:
-  // format is a parenthesized suffix, title an angle-bracketed suffix after it.
-  let actualFormat: ReactNode | null = hasText(qualifier) ? `(${qualifier})` : null
+  // Rendered as `<type>[(<qualifier>)][<<title>>]`, e.g. `string(date-time)<MyTitle>`:
+  // the qualifier (for a JSON type, its `format`) is a parenthesized suffix,
+  // title an angle-bracketed suffix after it.
+  let actualQualifier: ReactNode | null = hasText(qualifier) ? `(${qualifier})` : null
   let actualTitle: ReactNode | null = hasText(title) ? `<${title}>` : null
   if (!isDocumentLayoutMode) {
     // Node Type
@@ -373,8 +374,9 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       }
     }
 
-    // Title prefix (`<title>: `) and format suffix (`(<format>)`) are independent tokens,
+    // The qualifier (`(...)`) and title (`<...>`) are independent suffix tokens,
     // each colorized as a whole (including its decoration) by its own change.
+    // For a JSON type the qualifier slot is fed from the `format` keyword's change.
     const titleInput: QualifierPartInput = {
       value: title,
       beforeValue: beforeValueOf($titleChange),
@@ -383,7 +385,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       replaced: titleReplaced,
       included: diffTypeForTitleIncluded,
     }
-    const formatInput: QualifierPartInput = {
+    const qualifierInput: QualifierPartInput = {
       value: qualifier,
       beforeValue: beforeValueOf($formatChange),
       added: formatAdded,
@@ -401,8 +403,8 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
       colorizing: contentChangesColorizing,
       strikethrough: contentChangesStrikethrough,
     })
-    actualFormat = renderScalarDiff({
-      input: formatInput,
+    actualQualifier = renderScalarDiff({
+      input: qualifierInput,
       decorate: (text) => `(${text})`,
       isSideBySide: isSideBySideDiffsLayoutMode,
       isInline: isInlineDiffsLayoutMode,
@@ -415,7 +417,7 @@ export const NodeType: FC<NodeTypeProps> = (props) => {
   return (
     <div className="inline-flex flex-row gap-1 items-center">
       {brokenRef && <WarningIcon />}
-      {actualType && <div className="inline">{actualType}{actualFormat}{actualTitle} {showNullable ? actualNullable : null}</div>}
+      {actualType && <div className="inline">{actualType}{actualQualifier}{actualTitle} {showNullable ? actualNullable : null}</div>}
       {combiner && <div className="inline">({combiner})</div>}
     </div>
   )
@@ -470,8 +472,8 @@ function joinInlineFragments(fragments: ReactNode[]): ReactNode {
   return <span className="inline">{out}</span>
 }
 
-// Renders a single scalar qualifier (title or format) as one token, decorating the value
-// (e.g. `<title>: ` or `(<format>)`) and colorizing the whole decorated token by its own change.
+// Renders a single decorated scalar token (the title `<...>` or the qualifier `(...)`),
+// colorizing the whole decorated token by its own change.
 function renderScalarDiff(params: {
   input: QualifierPartInput
   decorate: (text: string) => string
