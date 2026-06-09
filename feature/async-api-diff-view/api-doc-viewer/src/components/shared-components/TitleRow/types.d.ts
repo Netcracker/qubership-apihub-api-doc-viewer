@@ -5,7 +5,6 @@ import { TextValueVariant } from "../TextValue/types";
 import { WithPrecededByProps } from "../WithPrecededByProps";
 export declare enum TitleRowUsage {
     Default = "default",
-    AsyncApiSection = "async-api-section",
     JsoProperty = "jso-property"
 }
 export type TitleRowProps = WithPrecededByProps & {
