@@ -124,6 +124,25 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           diffsStyleClasses.push(DiffsClassesBuilder.highlighter(styles.before.textHighlighterColor))
           if (isDefaultDiffHighlighting) {
             if (isDiffRemove(data)) {
+              /*
+              TODO 09.06.26:
+              This handling was added to fix the issue when, for example, we display diff in header of Message Node when it was wholly added/removed,
+              but provided `value` is just a string (title or node key) and `beforeValue/afterValue` from diff is an object.
+              
+              Disadvantages of this approach:
+              - Here we insist on assumption that in that case `value` is always appropriate value and is always a string. But technically it can be wrong.
+              - This approach misleads new concept of ADV that `api-doc-viewer` package is just a renderer, it doesn't have any data handling logic.
+              - It requires additional responsibility of users of the component (e.g. MessageNodeViewer) which MUST NOT know about internal TextValue logic. 
+              They must guarantee that provided `value` is always appropriate value and is always a string.
+
+              So, first attempt to refactor this approach is failed because simple solution (blocking this logic of resolving value from diff) broke
+              TextValue usages where this case is not applicable.
+
+              The best solution is re-synthesize diffs with synthetic `beforeValue/afterValue` values, but it breaks other concept: as less data as possible.
+              We do not want to store a lot of synthetic data which is almost the same as original data.
+
+              This comment is related to all the logic of reassigning `resolvedValue` from `data` below.
+              */
               resolvedValue = isString(data.beforeValue) ? data.beforeValue : resolvedValue
             }
             if (isDiffReplace(data)) {
