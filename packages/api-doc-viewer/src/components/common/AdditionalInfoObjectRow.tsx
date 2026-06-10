@@ -97,6 +97,8 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
     $changes,
   } = props
 
+  const isArbitraryValuesSet = !isPredefinedValuesSet
+
   const filters = useChangeSeverityFilters()
 
   const $rowChanges = getRowChanges($changes, $changesKeys)
@@ -172,6 +174,8 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               !itemDefined ? '' : stringifyItem(handleSeriesItem(itemKey, item))
             const handledReplacedItem =
               !replacedItemDefined ? '' : stringifyItem(handleSeriesItem(itemKey, $itemChange.beforeValue))
+            console.log('item key', itemKey, item, handledItem, handledReplacedItem)
+
 
             let itemView: string | ReactNode = handledItem === ''
               ? <span className={DEFAULT_SERIES_ITEM_TEXT_COLOR}>{DEFAULT_SERIES_ITEM}</span>
@@ -189,13 +193,13 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               if (itemReplaced) {
                 if (originSide) {
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {handledReplacedItem || DEFAULT_SERIES_ITEM}
                     </div>
                 }
                 if (changedSide) {
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {itemView}
                     </div>
                 }
@@ -211,10 +215,10 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
               }
               if (itemReplaced) {
                 itemView = <>
-                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                  <div className={`inline mr-1 ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {handledReplacedItem || DEFAULT_SERIES_ITEM}
                   </div>
-                  <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                  <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {itemView}
                   </div>
                 </>
@@ -223,7 +227,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
 
             const diffColorSchemaForItem = [
               COLOR_SCHEMAS[BADGE_KIND_DEFAULT],
-              diffTypeForItemIncluded && diffActionForItem ? BLOCK_CONTENT_DIFF_COLOR_MAP[diffActionForItem] : ''
+              diffTypeForItemIncluded && diffActionForItem && isPredefinedValuesSet ? BLOCK_CONTENT_DIFF_COLOR_MAP[diffActionForItem] : ''
             ].join(' ')
 
             // TODO 01.06.26 // REFACTOR: Use DiffBadge component!

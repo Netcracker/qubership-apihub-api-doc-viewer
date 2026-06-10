@@ -84,6 +84,8 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
     $changes,
   } = props
 
+  const isArbitraryValuesSet = !isPredefinedValuesSet
+
   const filters = useChangeSeverityFilters()
 
   const $rowChanges = $changes?.[$changesKey]
@@ -207,13 +209,13 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
               if (itemReplaced) {
                 if (originSide) {
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {handledReplacedItem || DEFAULT_SERIES_ITEM}
                     </div>
                 }
                 if (changedSide) {
                   itemView =
-                    <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                    <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                       {itemView}
                     </div>
                 }
@@ -229,10 +231,10 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
               }
               if (itemReplaced) {
                 itemView = <>
-                  <div className={`inline mr-1 ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                  <div className={`inline mr-1 ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {handledReplacedItem || DEFAULT_SERIES_ITEM}
                   </div>
-                  <div className={`inline ${diffTypeForItemIncluded ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
+                  <div className={`inline ${diffTypeForItemIncluded && isArbitraryValuesSet ? INLINE_CONTENT_DIFF_COLOR_SCHEMAS[DiffAction.replace] : ''}`}>
                     {itemView}
                   </div>
                 </>
@@ -241,7 +243,7 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
 
             const diffColorSchemaForItem = [
               COLOR_SCHEMAS[BADGE_KIND_DEFAULT],
-              diffTypeForItemIncluded && $itemAction ? BLOCK_CONTENT_DIFF_COLOR_MAP[$itemAction] : ''
+              diffTypeForItemIncluded && $itemAction && isPredefinedValuesSet ? BLOCK_CONTENT_DIFF_COLOR_MAP[$itemAction] : ''
             ].join(' ')
 
             // TODO 01.06.26 // REFACTOR: Use DiffBadge component!
