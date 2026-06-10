@@ -116,6 +116,7 @@ export const AllowedValuesRow: FC<AllowedValuesRowProps> = (props) => {
         level={level}
         $nodeChange={$nodeChange}
         $changes={$changesAsOfArray}
+        isPredefinedValuesSet={true}
       />
     )
   }

@@ -243,7 +243,9 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
 
             const diffColorSchemaForItem = [
               COLOR_SCHEMAS[BADGE_KIND_DEFAULT],
-              diffTypeForItemIncluded && $itemAction && isPredefinedValuesSet ? BLOCK_CONTENT_DIFF_COLOR_MAP[$itemAction] : ''
+              diffTypeForItemIncluded && $itemAction && (itemRemoved || itemAdded || itemReplaced && isPredefinedValuesSet)
+                ? BLOCK_CONTENT_DIFF_COLOR_MAP[$itemAction]
+                : ''
             ].join(' ')
 
             // TODO 01.06.26 // REFACTOR: Use DiffBadge component!

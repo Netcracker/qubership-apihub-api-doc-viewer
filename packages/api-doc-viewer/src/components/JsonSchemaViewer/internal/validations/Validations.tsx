@@ -39,7 +39,6 @@ import { isDefined } from '../../../../utils/common/checkers'
 import {
   isAdditionalPropertyNode,
   isArrayValue,
-  isBooleanValue,
   isNumberValue,
   isObjectValue,
   isPatternPropertyNode,
@@ -91,7 +90,6 @@ export const Validations: FC<ValidationsProps> = (props) => {
   const isArray = isArrayValue(nodeValue)
   // TODO 02.09.24 // Do we check parent node value due to pattern properties?
   const isObject = isObjectValue(nodeValue) || isObjectValue(parentNodeValue)
-  const isBoolean = isBooleanValue(nodeValue)
 
   const {
     any,
