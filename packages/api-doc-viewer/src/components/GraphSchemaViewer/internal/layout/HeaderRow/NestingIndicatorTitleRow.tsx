@@ -51,7 +51,6 @@ export type NestingIndicatorTitleRowProps = PropsWithShift & {
 }
 
 const CONTENT_CHANGES_COLORIZING = false
-const CONTENT_CHANGES_STRIKETHROUGH = false
 
 export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (props) => {
   const {
@@ -111,7 +110,6 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
           layoutMode={layoutMode}
           layoutSide={layoutSide}
           contentChangesColorizing={CONTENT_CHANGES_COLORIZING}
-          contentChangesStrikethrough={CONTENT_CHANGES_STRIKETHROUGH}
           $changes={$changes}
         />
       </Content>
@@ -123,7 +121,7 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
     return (
       <div className={`flex flex-row relative ${diffTypeIncluded ? diffBackground : ''}`}>
         {diffType && diffTypeIncluded && (isNodeChanged || isContentChanged) && (
-          <UxDiffFloatingBadge variant={diffType} message={diffTypeCause}/>
+          <UxDiffFloatingBadge variant={diffType} message={diffTypeCause} />
         )}
         <Content
           shift={shift}
@@ -136,7 +134,6 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
             layoutMode={layoutMode}
             layoutSide={layoutSide}
             contentChangesColorizing={CONTENT_CHANGES_COLORIZING}
-            contentChangesStrikethrough={CONTENT_CHANGES_STRIKETHROUGH}
             $changes={isContentChanged ? $changes : undefined}
           />
         </Content>
@@ -179,7 +176,7 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
     return (
       <div className={`flex flex-row relative ${diffTypeIncluded ? diffBackground : ''}`}>
         {diffType && diffTypeIncluded && (isNodeChanged || isContentChanged) && (
-          <UxDiffFloatingBadge variant={diffType} message={diffTypeCause}/>
+          <UxDiffFloatingBadge variant={diffType} message={diffTypeCause} />
         )}
         {isContentChanged && beforeAndAfterTypesComplex || isNodeChanged && nodeRemoved
           ? (
@@ -194,12 +191,11 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
                 layoutMode={layoutMode}
                 layoutSide={ORIGIN_LAYOUT_SIDE}
                 contentChangesColorizing={CONTENT_CHANGES_COLORIZING}
-                contentChangesStrikethrough={CONTENT_CHANGES_STRIKETHROUGH}
                 $changes={isContentChanged ? $changes : undefined}
               />
             </Content>
           )
-          : <EmptyContent level={$nodeChange?.depth ?? depth}/>}
+          : <EmptyContent level={$nodeChange?.depth ?? depth} />}
         {isContentChanged && beforeAndAfterTypesComplex || isNodeChanged && nodeAdded
           ? (
             <Content
@@ -213,17 +209,16 @@ export const NestingIndicatorTitleRow: FC<NestingIndicatorTitleRowProps> = (prop
                 layoutMode={layoutMode}
                 layoutSide={CHANGED_LAYOUT_SIDE}
                 contentChangesColorizing={CONTENT_CHANGES_COLORIZING}
-                contentChangesStrikethrough={CONTENT_CHANGES_STRIKETHROUGH}
                 $changes={isContentChanged ? $changes : undefined}
               />
             </Content>
           )
-          : <EmptyContent level={$nodeChange?.depth ?? depth}/>}
+          : <EmptyContent level={$nodeChange?.depth ?? depth} />}
       </div>
     )
   }
 
-  return <UnsupportedContent layoutMode={layoutMode}/>
+  return <UnsupportedContent layoutMode={layoutMode} />
 }
 
 type NestingIndicatorTitleRowContentProps = PropsWithShift & ContentProps & {
@@ -248,9 +243,9 @@ const Content: FC<NestingIndicatorTitleRowContentProps> = (props) => {
 
   return (
     <div className={`flex flex-row ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
-      <LevelIndicator level={level} lastInvisible={true}/>
+      <LevelIndicator level={level} lastInvisible={true} />
       <div className="text-xs text-slate-400 border-b border-slate-400 w-max pt-1"
-           style={{ marginLeft: '-1px' }}
+        style={{ marginLeft: '-1px' }}
       >
         {children}
       </div>
