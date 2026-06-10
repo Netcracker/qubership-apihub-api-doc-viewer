@@ -21,7 +21,6 @@ import { PropsWithChanges } from '../../types/internal/PropsWithChanges';
 export type NodeTypeProps = PropsWithoutChangesSummary<NodeTypeData & Partial<{
     layoutSide: LayoutSide;
     contentChangesColorizing: boolean;
-    contentChangesStrikethrough: boolean;
     showNullable: boolean;
 }> & PropsWithChanges>;
 export declare const NodeType: FC<NodeTypeProps>;
