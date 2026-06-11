@@ -19,11 +19,11 @@
 .ux-badge_info {
   background-color: rgb(224 242 254);
   color: rgb(29 78 216);
+  border-color: rgb(224 242 254);
 }
 
 .ux-badge_warning {
   background-color: rgb(254 252 232);
-  box-shadow: inset 0 0 0 1px rgb(202 138 4 / 20%);
   color: rgb(133 77 14);
   border-color: rgb(133 77 14);
 }
@@ -36,14 +36,12 @@
 
 .ux-badge_error {
   background-color: rgb(254 242 242);
-  box-shadow: inset 0 0 0 1px rgb(220 38 38 / 10%);
   color: rgb(185 28 28);
   border-color: rgb(185 28 28);
 }
 
 .ux-badge_success {
   background-color: rgb(240 253 244);
-  box-shadow: inset 0 0 0 1px rgb(22 163 74 / 20%);
   color: rgb(21 128 61);
   border-color: rgb(21 128 61);
 }
@@ -65,20 +63,17 @@
 .ux-badge_operation-query {
   background-color: rgb(34 197 94);
   border-color: rgb(34 197 94);
-  box-shadow: inset 0 0 0 1px rgb(34 197 94 / 20%);
   color: rgb(255 255 255);
 }
 
 .ux-badge_operation-mutation {
   background-color: rgb(56 189 248);
   border-color: rgb(56 189 248);
-  box-shadow: inset 0 0 0 1px rgb(56 189 248 / 20%);
   color: rgb(255 255 255);
 }
 
 .ux-badge_operation-subscription {
   background-color: rgb(245 158 11);
   border-color: rgb(245 158 11);
-  box-shadow: inset 0 0 0 1px rgb(245 158 11 / 20%);
   color: rgb(255 255 255);
 }
