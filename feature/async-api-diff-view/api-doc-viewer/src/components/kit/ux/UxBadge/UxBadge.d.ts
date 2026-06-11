@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffType } from '@netcracker/qubership-apihub-api-diff';
-import type { FC } from '../../../../../../../node_modules/react';
-type FloatingVariant = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-export type UxDiffMarkerProps = {
-    variant: DiffType;
-    tooltip?: DiffType;
-    floating?: FloatingVariant;
+import type { FC, ReactNode } from '../../../../../../../node_modules/react';
+import { ColorSchema } from '../../../../types/aliases/common';
+import { BadgeKind } from './types';
+export type BadgeProps = {
+    kind?: BadgeKind;
+    text: string | ReactNode;
+    colorSchema?: ColorSchema;
+    inline?: boolean;
 };
-export declare const UxDiffMarker: FC<UxDiffMarkerProps>;
-export {};
+export declare const UxBadge: FC<BadgeProps>;
