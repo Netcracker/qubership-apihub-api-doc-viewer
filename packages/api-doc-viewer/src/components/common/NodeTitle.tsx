@@ -23,8 +23,8 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from '../../types
 import { LayoutMode } from '../../types/LayoutMode'
 import { NodeTitleData } from '../../types/NodeTitleData'
 import { diffRename } from '../../utils/common/changes'
-import { BADGE_KIND_INFO } from "../kit/ux/types"
-import { UxBadge } from '../kit/ux/UxBadge'
+import { BADGE_KIND_INFO } from "../kit/ux/UxBadge/types"
+import { UxBadge } from '../kit/ux/UxBadge/UxBadge'
 import { NullableAsterisk } from './NullableAsterisk'
 import { RequiredStar } from './RequiredStar'
 

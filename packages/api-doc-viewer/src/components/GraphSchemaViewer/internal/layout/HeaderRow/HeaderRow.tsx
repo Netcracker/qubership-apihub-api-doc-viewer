@@ -67,7 +67,7 @@ import { EmptyContent } from '../../../../common/diffs/EmptyContent'
 import { UnsupportedContent } from '../../../../common/diffs/UnsupportedContent'
 import { Expander } from '../../../../common/layout/Expander/Expander'
 import { CircularRefIcon } from '../../../../kit/icons/CircularRefIcon'
-import { UxBadge } from '../../../../kit/ux/UxBadge'
+import { UxBadge } from '../../../../kit/ux/UxBadge/UxBadge'
 // import { UxContextMenu } from '../../../../kit/ux/UxContextMenu/UxContextMenu'
 // import { ToggleContextMenuHandlerOptions } from '../../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler'
 import { LevelIndicator } from '@apihub/components/shared-components/LevelIndicator'
@@ -104,9 +104,9 @@ export type NullabilityPosition =
   | typeof NULLABILITY_POSITION_TYPE
 
 const OPERATION_METHOD_COLOR_SCHEMAS_MAP: Record<string, ColorSchema> = {
-  [QUERY_OPERATION_METHOD]: 'bg-green-500 text-white ring-green-500/20',
-  [MUTATION_OPERATION_METHOD]: 'bg-sky-400 text-white ring-sky-400/20',
-  [SUBSCRIPTION_OPERATION_METHOD]: 'bg-amber-500 text-white ring-amber-500/20',
+  [QUERY_OPERATION_METHOD]: 'ux-badge_operation-query',
+  [MUTATION_OPERATION_METHOD]: 'ux-badge_operation-mutation',
+  [SUBSCRIPTION_OPERATION_METHOD]: 'ux-badge_operation-subscription',
 }
 
 const TRACKED_KEYS_VALUES_CHANGES: string[] = ['type', 'nullable', 'title']
@@ -324,9 +324,9 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
             />
           </div>
         )}
-        <div className="flex flex-row items-center gap-2 pt-2 pb-1">
+        <div className={`flex flex-row items-center gap-2 ${method ? 'py-2' : 'pt-2 pb-1'}`}>
           <div
-            className={`flex flex-row gap-2 text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}
+            className={`flex flex-row gap-2 items-center text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}
             onClick={isExpandable ? onToggleExpander : undefined}
           // onContextMenu={defaultOnContextMenu(isExpandable, onToggleContextMenu)}
           >

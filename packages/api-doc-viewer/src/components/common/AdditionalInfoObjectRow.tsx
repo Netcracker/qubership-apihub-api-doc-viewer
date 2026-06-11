@@ -65,9 +65,9 @@ import {
 } from '../../utils/common/changes'
 import { isDefined } from '../../utils/common/checkers'
 import { handleSeriesItem, stringifyItem } from '../../utils/common/rows'
-import { COLOR_SCHEMAS } from '../kit/ux/consts'
-import { BADGE_KIND_DEFAULT } from '../kit/ux/types'
-import { UxBadge } from '../kit/ux/UxBadge'
+import { getUxBadgeColorSchema } from '../kit/ux/UxBadge/consts'
+import { BADGE_KIND_DEFAULT } from '../kit/ux/UxBadge/types'
+import { UxBadge } from '../kit/ux/UxBadge/UxBadge'
 import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { LevelIndicator } from '../shared-components/LevelIndicator'
 import { EmptyContent } from './diffs/EmptyContent'
@@ -83,6 +83,8 @@ export type AdditionalInfoObjectRowProps = PropsWithoutChangesSummary<
   } &
   PropsWithChanges
 >
+
+const TITLE_INLINE_STYLES = { paddingTop: 3 }
 
 export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props) => {
   const {
@@ -142,7 +144,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
       <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         <div className="flex flex-row flex-wrap items-start gap-2 py-1">
-          <div className="inline text-xs font-normal text-slate-500">
+          <div className="inline text-xs font-normal text-slate-500" style={TITLE_INLINE_STYLES}>
             {title}:
           </div>
           {Object.entries(items).map(([itemKey, item], index) => {
@@ -224,7 +226,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
             }
 
             const diffColorSchemaForItem = [
-              COLOR_SCHEMAS[BADGE_KIND_DEFAULT],
+              getUxBadgeColorSchema(BADGE_KIND_DEFAULT),
               diffTypeForItemIncluded && diffActionForItem && (itemRemoved || itemAdded || itemReplaced && isPredefinedValuesSet)
                 ? BLOCK_CONTENT_DIFF_COLOR_MAP[diffActionForItem]
                 : ''

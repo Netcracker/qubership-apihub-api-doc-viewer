@@ -10,7 +10,8 @@
 
 .jso-value.block {
   padding: 2px 4px;
+  color: rgb(100, 116, 139);
   background-color: rgb(243, 244, 246);
   border-radius: 4px;
-  color: rgb(100, 116, 139);
+  border: 1px solid #D5DCE3;
 }

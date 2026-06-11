@@ -68,9 +68,9 @@ import { DiffBadge } from '../../../../common/diffs/DiffBadge'
 import { EmptyContent } from '../../../../common/diffs/EmptyContent'
 import { UnsupportedContent } from '../../../../common/diffs/UnsupportedContent'
 import { DefaultWrappers, Wrapper as Deprecation } from '../../../../common/Wrapper'
-import { COLOR_SCHEMAS } from '../../../../kit/ux/consts'
-import { BADGE_KIND_DEFAULT } from '../../../../kit/ux/types'
-import { UxBadge } from '../../../../kit/ux/UxBadge'
+import { getUxBadgeColorSchema } from '../../../../kit/ux/UxBadge/consts'
+import { BADGE_KIND_DEFAULT } from '../../../../kit/ux/UxBadge/types'
+import { UxBadge } from '../../../../kit/ux/UxBadge/UxBadge'
 import { UxDiffFloatingBadge } from '../../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { changesToChange, isDefaultDeprecationReason, isObjectWithoutPayload } from '../../../utils'
 
@@ -466,7 +466,7 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
           <div className="flex flex-row items-start gap-2 py-1">
             <UxBadge
               text={renderedItem}
-              colorSchema={COLOR_SCHEMAS[BADGE_KIND_DEFAULT]}
+              colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT)}
             />
             <div className="flex flex-col text-xs text-slate-600">
               <Deprecation

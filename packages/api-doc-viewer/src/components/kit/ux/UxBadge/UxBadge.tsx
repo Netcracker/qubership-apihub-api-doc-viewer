@@ -15,10 +15,11 @@
  */
 
 import type { FC, ReactNode } from 'react'
-import { memo } from 'react'
-import { COLOR_SCHEMAS, COMMON_LAYOUT_STYLE, COMMON_LAYOUT_STYLE_WITHOUT_BORDER } from './consts'
-import { BADGE_KIND_ALTERNATIVE_INFO, BADGE_KIND_DEFAULT, BADGE_KIND_INFO, BadgeKind } from './types'
-import { ColorSchema } from '../../../types/aliases/common'
+import { memo, useMemo } from 'react'
+import { ColorSchema } from '../../../../types/aliases/common'
+import { getUxBadgeColorSchema } from './consts'
+import { BADGE_KIND_DEFAULT, BadgeKind } from './types'
+import './UxBadge.css'
 
 export type BadgeProps = {
   kind?: BadgeKind
@@ -29,14 +30,15 @@ export type BadgeProps = {
 
 export const UxBadge: FC<BadgeProps> = memo<BadgeProps>(props => {
   const { text, kind = BADGE_KIND_DEFAULT, colorSchema, inline } = props
-  let mainStyle = [ BADGE_KIND_DEFAULT, BADGE_KIND_INFO, BADGE_KIND_ALTERNATIVE_INFO ].includes(kind)
-    ? COMMON_LAYOUT_STYLE_WITHOUT_BORDER
-    : COMMON_LAYOUT_STYLE
-  if (inline) {
-    mainStyle = `inline-flex ${mainStyle}`
-  }
+
+  const classes = useMemo(() => ([
+    'ux-badge',
+    inline ? 'inline-flex' : '',
+    colorSchema || getUxBadgeColorSchema(kind),
+  ]).join(' '), [inline, colorSchema, kind])
+
   return (
-    <div className={`${mainStyle} ${colorSchema || COLOR_SCHEMAS[kind]}`}>
+    <div className={classes}>
       <pre style={{ fontFamily: 'Inter' }}>
         {text}
       </pre>

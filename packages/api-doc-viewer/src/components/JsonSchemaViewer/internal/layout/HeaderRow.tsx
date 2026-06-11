@@ -58,11 +58,11 @@ import { CircularRefIcon } from '../../../kit/icons/CircularRefIcon'
 // import { UxContextMenu } from '../../../kit/ux/UxContextMenu/UxContextMenu'
 // import { ToggleContextMenuHandlerOptions } from '../../../kit/ux/UxContextMenu/types/ToggleContextMenuHandler'
 import { LevelIndicator } from '@apihub/components/shared-components/LevelIndicator'
+import { getUxBadgeColorSchema } from '../../../kit/ux/UxBadge/consts'
+import { BADGE_KIND_DEFAULT_OUTLINE } from '../../../kit/ux/UxBadge/types'
 import { UxDiffFloatingBadge } from '../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { UxMarkerPanel } from '../../../kit/ux/UxMarkerPanel/UxMarkerPanel'
 import { UxTooltip } from '../../../kit/ux/UxTooltip/UxTooltip'
-import { COLOR_SCHEMAS } from '../../../kit/ux/consts'
-import { BADGE_KIND_DEFAULT_OUTLINE } from '../../../kit/ux/types'
 
 export type HeaderRowState = {
   isExpandable?: boolean
@@ -216,7 +216,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
       {propMediaType && (
         <DiffBadge
           label={propMediaType}
-          colorSchema={COLOR_SCHEMAS[BADGE_KIND_DEFAULT_OUTLINE]}
+          colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT_OUTLINE)}
           layoutMode={layoutMode}
           layoutSide={layoutSide}
           isNodeChanged={false}
@@ -235,7 +235,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
               isExpandable={isExpandable}
               expanded={expanded}
               onToggleExpander={onToggleExpander}
-              // onToggleContextMenu={onToggleContextMenu}
+            // onToggleContextMenu={onToggleContextMenu}
             />
           </div>
         )}
