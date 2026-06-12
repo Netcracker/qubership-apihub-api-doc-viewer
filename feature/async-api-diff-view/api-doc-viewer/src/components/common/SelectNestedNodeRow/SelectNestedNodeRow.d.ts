@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DiffNodeValue } from '../../../../../api-data-model/src';
-import type { FC } from '../../../../../../node_modules/react';
+import { type FC } from '../../../../../../node_modules/react';
 import { NodeId } from '../../../types/aliases/nodes';
 import { PropsWithChanges } from '../../../types/internal/PropsWithChanges';
 import { PropsWithNestedChangesSummary } from '../../../types/internal/PropsWithChangesSummary';

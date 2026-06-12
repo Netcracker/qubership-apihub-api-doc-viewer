@@ -44,3 +44,5 @@ export declare const ExtensionsOnCircularObject: Story;
 export declare const AllConstraintsChanged: Story;
 export declare const AppendCombinerItem: Story;
 export declare const PopCombinerItem: Story;
+export declare const ChangesInsideFirstCombinerItem: Story;
+export declare const ChangesInsideLastCombinerItem: Story;
