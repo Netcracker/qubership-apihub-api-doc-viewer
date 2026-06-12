@@ -7,7 +7,8 @@ export type TextRowProps = WithPrecededByProps & {
   value?: string // Document Mode
   variant: TextValueVariant
   label?: string
-  fontWeight?: 'normal' | 'bold'
+  textFontWeight?: 'normal' | 'medium' | 'bold'
+  labelFontWeight?: 'normal' | 'medium' | 'bold'
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs

@@ -101,7 +101,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           variant={TextValueVariant.h4}
           layoutSide={layoutSide}
           diff={diff}
-          fontWeight='normal'
+          textFontWeight='normal'
           fontColor='#626D82'
         />
       </>
@@ -115,7 +115,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           value={prefix}
           variant={TextValueVariant.h4}
           layoutSide={layoutSide}
-          fontWeight='normal'
+          textFontWeight='normal'
           fontColor='#626D82'
         />
         <TextValue
@@ -123,7 +123,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           variant={TextValueVariant.h4}
           layoutSide={layoutSide}
           diff={partialReplaceDiff}
-          fontWeight='normal'
+          textFontWeight='normal'
           fontColor='#626D82'
         />
       </div>

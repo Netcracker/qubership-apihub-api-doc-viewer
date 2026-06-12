@@ -14,7 +14,8 @@ type TextValueProps = {
   variant: TextValueVariant
   layoutSide: LayoutSide
   onClick?: () => void
-  fontWeight?: 'normal' | 'bold'
+  labelFontWeight?: 'normal' | 'medium' | 'bold'
+  textFontWeight?: 'normal' | 'medium' | 'bold'
   fontColor?: string
   label?: string
   // diffs
@@ -56,7 +57,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
 
   // value/font specific
-  const { fontWeight, fontColor, label } = props
+  const { textFontWeight, labelFontWeight, fontColor, label } = props
 
   const [expanded, setExpanded] = useState(false)
 
@@ -69,7 +70,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       return null
     }
     const diffsStyles = isInvisibleDiffHighlighting ? '' : diffsStyleClasses.join(' ')
-    const commonStylesWithoutDiffs = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${fontWeight ? `font-${fontWeight}` : ''}`.trim()
+    const commonStylesWithoutDiffs = `text-value ${onClick ? 'hover:cursor-pointer' : ''} ${textFontWeight ? `font-${textFontWeight}` : ''}`.trim()
     const commonStyles = `${commonStylesWithoutDiffs} ${diffsStyles}`.trim()
     const commonProps = {
       onClick: onClick,
@@ -103,7 +104,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     if (label) {
       return renderByVariant(
         <>
-          <span className="font-bold">{`${label}: `}</span>
+          <span className={labelFontWeight ? `font-${labelFontWeight}` : 'font-bold'}>{`${label}: `}</span>
           <span className={diffsStyles}>{resolvedValue}</span>
         </>,
         commonStylesWithoutDiffs,
@@ -111,7 +112,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     }
 
     return renderByVariant(resolvedValue, commonStyles)
-  }, [expanded, fontColor, fontWeight, isInvisibleDiffHighlighting, label, onClick, variant])
+  }, [expanded, fontColor, isInvisibleDiffHighlighting, label, labelFontWeight, onClick, textFontWeight, variant])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []

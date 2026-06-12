@@ -11,7 +11,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   const { value, variant, layoutSide } = props
 
   // value/font specific
-  const { label, fontWeight } = props
+  const { label, labelFontWeight, textFontWeight } = props
 
   // indents specific
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
@@ -40,11 +40,12 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
-      className={`text-row-content flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${fontWeight ? `font-${fontWeight}` : ''} ${diffsStyleClasses.join(' ')}`}
+      className={`text-row-content flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       <TextValue
         label={label}
-        fontWeight={fontWeight}
+        labelFontWeight={labelFontWeight}
+        textFontWeight={textFontWeight}
         value={value}
         variant={variant}
         layoutSide={layoutSide}

@@ -164,7 +164,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           value={bindingVersion}
           variant={TextValueVariant.body}
           label="Version"
-          fontWeight='bold'
+          labelFontWeight='medium'
+          textFontWeight='medium'
           // diffs
           {...bindingVersionDiffsProps}
         />
