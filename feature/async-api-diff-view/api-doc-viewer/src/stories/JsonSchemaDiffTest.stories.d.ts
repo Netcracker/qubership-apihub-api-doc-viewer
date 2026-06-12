@@ -42,3 +42,5 @@ export declare const AddedPropertyWithExtensions: Story;
 export declare const RemovedPropertyWithExtensions: Story;
 export declare const ExtensionsOnCircularObject: Story;
 export declare const AllConstraintsChanged: Story;
+export declare const AppendCombinerItem: Story;
+export declare const PopCombinerItem: Story;
