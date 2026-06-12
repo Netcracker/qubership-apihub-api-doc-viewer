@@ -33,7 +33,7 @@ import {
   isDiffReplace,
 } from '@netcracker/qubership-apihub-api-diff'
 import type { FC } from 'react'
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
 import {
   DEFAULT_LAYOUT_MODE,
@@ -436,30 +436,38 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
         )
       )
 
-    const componentDiffBadge = isDeprecated ? (
-      <DiffBadge
-        key="diff-badge"
-        label={DEPRECATED_TAG}
-        layoutSide={layoutSide}
-        layoutMode={layoutMode}
-        colorSchema={AMBER_TAG_COLOR_SCHEMA}
-        isNodeChanged={isNodeChanged}
-        isContentChanged={isItemSelfChanged || isItemDetailsChanged}
-        // here we provide "add", "remove", skip "replace"
-        $changes={isItemDetailsChanged ? applyDiffReplaceAlias(undefined, deprecationReasonChange) : undefined}
-      />
-    ) : null
-    const componentDeprecationReason = shouldDisplayReason ? (
-      <DeprecationReasonValue
-        key="deprecation-reason-value"
-        value={initialDeprecationReason}
-        enableDiffs={diffTypeIncluded}
-        layoutMode={layoutMode}
-        layoutSide={layoutSide}
-        $changes={isItemDetailsChanged ? deprecationReasonChange : undefined}
-        highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
-      />
-    ) : null
+    const componentDiffBadge = useMemo(() => (
+      isDeprecated ? (
+        <DiffBadge
+          key="diff-badge"
+          label={DEPRECATED_TAG}
+          layoutSide={layoutSide}
+          layoutMode={layoutMode}
+          colorSchema={AMBER_TAG_COLOR_SCHEMA}
+          isNodeChanged={isNodeChanged}
+          isContentChanged={isItemSelfChanged || isItemDetailsChanged}
+          // here we provide "add", "remove", skip "replace"
+          $changes={isItemDetailsChanged ? applyDiffReplaceAlias(undefined, deprecationReasonChange) : undefined}
+        />
+      ) : null
+    ), [isDeprecated, layoutSide])
+    const componentDeprecationReason = useMemo(() => (
+      shouldDisplayReason ? (
+        <DeprecationReasonValue
+          key="deprecation-reason-value"
+          value={initialDeprecationReason}
+          enableDiffs={diffTypeIncluded}
+          layoutMode={layoutMode}
+          layoutSide={layoutSide}
+          $changes={isItemDetailsChanged ? deprecationReasonChange : undefined}
+          highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
+        />
+      ) : null
+    ), [itemAdded, itemRemoved, layoutSide, shouldDisplayReason])
+    const deprecationComponentsList = useMemo(
+      () => ([componentDeprecationReason, componentDiffBadge].filter(Boolean)),
+      [componentDeprecationReason, componentDiffBadge]
+    )
 
     return (
       <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
@@ -471,9 +479,9 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
               colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT)}
             />
             <div className="flex flex-col items-start text-xs text-slate-600 gap-1" style={TEXT_PADDING_TOP}>
-              {shouldDisplayReason && (
+              {deprecationComponentsList.length > 0 && (
                 <Deprecation
-                  children={[componentDeprecationReason, componentDiffBadge]}
+                  children={deprecationComponentsList}
                   wrapper={DefaultWrappers.DivGap2}
                 />
               )}
