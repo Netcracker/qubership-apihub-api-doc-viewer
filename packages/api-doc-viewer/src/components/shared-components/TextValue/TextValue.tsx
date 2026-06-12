@@ -208,19 +208,30 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
 })
 
 const OVERFLOW_LINES_AMOUNT = 5
+const OVERFLOW_CHARACTERS_AMOUNT = 300
 
 function isExpandable(value: string | undefined): boolean {
   if (!value) {
     return false
   }
-  return ArrayUtils.trim(value.split('\n')).length > OVERFLOW_LINES_AMOUNT
+  return (
+    value.length > OVERFLOW_CHARACTERS_AMOUNT ||
+    ArrayUtils.trim(value.split('\n')).length > OVERFLOW_LINES_AMOUNT
+  )
 }
 
 function shortenValue(value: string | undefined): string | undefined {
   if (!value) {
     return undefined
   }
-  return ArrayUtils.trim(value.split('\n')).slice(0, OVERFLOW_LINES_AMOUNT).join('\n')
+  if (value.length > OVERFLOW_CHARACTERS_AMOUNT) {
+    return value.slice(0, OVERFLOW_CHARACTERS_AMOUNT) + '...'
+  }
+  const lines = ArrayUtils.trim(value.split('\n'))
+  if (lines.length > OVERFLOW_LINES_AMOUNT) {
+    return lines.slice(0, OVERFLOW_LINES_AMOUNT).join('\n') + '...'
+  }
+  return value
 }
 
 function isString(value: unknown): value is string {
