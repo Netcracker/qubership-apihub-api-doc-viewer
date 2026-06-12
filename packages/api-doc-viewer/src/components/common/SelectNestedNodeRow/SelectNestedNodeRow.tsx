@@ -16,21 +16,22 @@
 
 import { DiffNodeValue, isDiff } from '@netcracker/qubership-apihub-api-data-model'
 import { Diff, DiffAction, DiffType } from '@netcracker/qubership-apihub-api-diff'
+import { DiffsClassesBuilder } from '@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities'
+import { HighlightVariant } from '@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface'
 import type { FC } from 'react'
-import { NODE_DIFF_COLOR_MAP } from '../../consts/changes'
-import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT } from '../../consts/configuration'
-import { useChangeSeverityFilters } from '../../contexts/ChangeSeverityFiltersContext'
-import { useItemChangedFlags } from '../../hooks/changes'
-import '../../index.css'
-import { NodeId } from '../../types/aliases/nodes'
-import { ContentProps } from '../../types/internal/ContentProps'
-import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from '../../types/internal/LayoutSide'
-import { PropsWithChanges } from '../../types/internal/PropsWithChanges'
-import { PropsWithNestedChangesSummary } from '../../types/internal/PropsWithChangesSummary'
-import { LayoutMode } from '../../types/LayoutMode'
-import { NodeTypeData } from '../../types/NodeTypeData'
-import { PropsWithoutChangesSummary } from '../../types/PropsWithoutChangesSummary'
-import { ArrayUtils } from '../../utils/common/arrays'
+import { DEFAULT_MUTED_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../consts/changes'
+import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT } from '../../../consts/configuration'
+import { useChangeSeverityFilters } from '../../../contexts/ChangeSeverityFiltersContext'
+import { useItemChangedFlags } from '../../../hooks/changes'
+import { NodeId } from '../../../types/aliases/nodes'
+import { ContentProps } from '../../../types/internal/ContentProps'
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from '../../../types/internal/LayoutSide'
+import { PropsWithChanges } from '../../../types/internal/PropsWithChanges'
+import { PropsWithNestedChangesSummary } from '../../../types/internal/PropsWithChangesSummary'
+import { LayoutMode } from '../../../types/LayoutMode'
+import { NodeTypeData } from '../../../types/NodeTypeData'
+import { PropsWithoutChangesSummary } from '../../../types/PropsWithoutChangesSummary'
+import { ArrayUtils } from '../../../utils/common/arrays'
 import {
   DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR,
   filterChangesList,
@@ -39,14 +40,16 @@ import {
   isDiffTypeIncluded,
   maxDiffTypeFromDiffs,
   maxDiffTypeFromNodeSummary
-} from '../../utils/common/changes'
-import { LevelIndicator } from '../shared-components/LevelIndicator'
-import { UxDiffFloatingBadge } from '../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
-import { UxDiffMarker } from '../kit/ux/UxMarker/UxDiffMarker'
-import { EmptyContent } from './diffs/EmptyContent'
-import { UnsupportedContent } from './diffs/UnsupportedContent'
-import { NestingIndicatorTitle } from "./NestingIndicatorTitle"
-import { NodeType } from './NodeType'
+} from '../../../utils/common/changes'
+import '../../../index.css'
+import { UxDiffFloatingBadge } from '../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
+import { UxDiffMarker } from '../../kit/ux/UxMarker/UxDiffMarker'
+import { LevelIndicator } from '../../shared-components/LevelIndicator'
+import { EmptyContent } from '../diffs/EmptyContent'
+import { UnsupportedContent } from '../diffs/UnsupportedContent'
+import { NestingIndicatorTitle } from "../NestingIndicatorTitle"
+import { NodeType } from '../NodeType'
+import './SelectNestedNodeRow.css'
 
 export type SelectNestedNodeRowProps = PropsWithoutChangesSummary<
   {
@@ -240,26 +243,26 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
   const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
   const { itemAdded, itemRemoved, itemReplaced } = useItemChangedFlags($nodeChange?.action)
 
-  let diffColorSchema = 'ring-1 ring-slate-300'
+  let diffColorSchema = ''
   if (diffsByNodeEnabled && !isDocumentLayoutMode) {
     if (itemRemoved) {
-      diffColorSchema = 'ring-1 ring-red-500'
+      diffColorSchema = DiffsClassesBuilder.borderShadow(HighlightVariant.Red)
       if (originSide) {
-        diffColorSchema = `${diffColorSchema} line-through`
+        diffColorSchema = `${diffColorSchema} ${DEFAULT_MUTED_VALUE_CLASS}`
       }
     }
     if (itemAdded) {
-      diffColorSchema = 'ring-1 ring-green-500'
+      diffColorSchema = DiffsClassesBuilder.borderShadow(HighlightVariant.Green)
     }
     if (itemReplaced) {
-      diffColorSchema = 'ring-1 ring-amber-500'
+      diffColorSchema = DiffsClassesBuilder.borderShadow(HighlightVariant.Yellow)
       if (originSide) {
-        diffColorSchema = `${diffColorSchema} line-through`
+        diffColorSchema = `${diffColorSchema} ${DEFAULT_MUTED_VALUE_CLASS}`
       }
     }
   }
 
-  const selectedColorSchema = currentNodeId === selectedNodeId ? 'bg-slate-300' : 'bg-white'
+  const selectedColorSchema = currentNodeId === selectedNodeId ? 'selected' : ''
 
   if (
     isSideBySideDiffsLayoutMode && (
@@ -272,7 +275,7 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
     <div className="relative">
       <button
         key={`nested-${currentNodeId}`}
-        className={`rounded-md text-slate-600 text-xs px-2 pb-1 pt-0.5 ${diffColorSchema} ${selectedColorSchema}`}
+        className={`button-selector-option ${diffColorSchema} ${selectedColorSchema}`}
         onClick={() => onSelect(currentNodeId)}
       >
         <NodeType

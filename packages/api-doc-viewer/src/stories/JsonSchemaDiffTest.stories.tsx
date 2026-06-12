@@ -315,7 +315,7 @@ export const ObjectToArray: Story = {
   args: {
     schema: prepareJsonDiffSchema({
       beforeSchema: {
-        title:'ObjectiveType',
+        title: 'ObjectiveType',
         type: 'object',
         description: 'Objective Type',
         properties: {
@@ -775,7 +775,7 @@ export const AllConstraintsChanged: Story = {
             enum: [{ id: 'c', name: 'd' }],
             const: { id: 'c', name: 'd' },
             default: { id: 'e', name: 'f' },
-            examples: [{ id: 'c', name: 'Carol', email: 'carol@example.com' }],
+            examples: [{ id: 'c', name: 'Carol', email: 'carol@test.com' }],
           },
         },
       },
@@ -784,4 +784,66 @@ export const AllConstraintsChanged: Story = {
     layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
     metaKeys: DIFF_META_KEYS,
   },
+}
+
+export const AppendCombinerItem: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+            ]
+          },
+        },
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+              { type: 'integer' },
+            ]
+          },
+        },
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const PopCombinerItem: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+              { type: 'integer' },
+            ]
+          },
+        },
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+            ]
+          },
+        },
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
 }
