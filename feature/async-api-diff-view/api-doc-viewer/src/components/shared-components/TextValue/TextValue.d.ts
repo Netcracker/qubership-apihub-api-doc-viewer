@@ -11,7 +11,8 @@ type TextValueProps = {
     onClick?: () => void;
     labelFontWeight?: 'normal' | 'medium' | 'bold';
     textFontWeight?: 'normal' | 'medium' | 'bold';
-    fontColor?: string;
+    labelColor?: string;
+    textColor?: string;
     label?: string;
     diff?: ChangedPropertyMetaData;
     usage?: TitleRowUsage;
