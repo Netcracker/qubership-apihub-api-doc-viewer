@@ -775,7 +775,7 @@ export const AllConstraintsChanged: Story = {
             enum: [{ id: 'c', name: 'd' }],
             const: { id: 'c', name: 'd' },
             default: { id: 'e', name: 'f' },
-            examples: [{ id: 'c', name: 'Carol', email: 'carol@test.com' }],
+            examples: [{ id: 'c', name: 'Carol', email: 'example@example.com' }],
           },
         },
       },
