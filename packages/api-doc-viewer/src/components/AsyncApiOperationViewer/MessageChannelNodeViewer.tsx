@@ -90,7 +90,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         <TextRow
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h5}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
@@ -105,7 +105,7 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
               : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
           }
           value={value?.summary ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h5}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs

@@ -253,7 +253,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
         <TextRow
           data-precededby={PrecededBy.SERVER_ADDRESS_ROW}
           value={value?.description ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h6}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
@@ -268,7 +268,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
               : PrecededBy.SERVER_ADDRESS_ROW
           }
           value={value?.summary ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h6}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs

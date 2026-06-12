@@ -86,7 +86,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
         <TextRow
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h5}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
@@ -101,7 +101,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
               : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
           }
           value={value?.summary ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.h5}
           textFontWeight='normal'
           textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
