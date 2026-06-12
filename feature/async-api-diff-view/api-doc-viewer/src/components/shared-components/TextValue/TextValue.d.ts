@@ -9,7 +9,8 @@ type TextValueProps = {
     variant: TextValueVariant;
     layoutSide: LayoutSide;
     onClick?: () => void;
-    fontWeight?: 'normal' | 'bold';
+    labelFontWeight?: 'normal' | 'medium' | 'bold';
+    textFontWeight?: 'normal' | 'medium' | 'bold';
     fontColor?: string;
     label?: string;
     diff?: ChangedPropertyMetaData;
