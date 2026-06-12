@@ -314,6 +314,8 @@ type AllowedValueRowProps = PropsWithShift & {
   level?: number
 }
 
+const TEXT_PADDING_TOP = { paddingTop: 3 }
+
 const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
   const {
     shift = false,
@@ -468,11 +470,13 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
               text={renderedItem}
               colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT)}
             />
-            <div className="flex flex-col text-xs text-slate-600">
-              <Deprecation
-                children={[componentDeprecationReason, componentDiffBadge]}
-                wrapper={DefaultWrappers.DivGap2}
-              />
+            <div className="flex flex-col items-start text-xs text-slate-600 gap-1" style={TEXT_PADDING_TOP}>
+              {shouldDisplayReason && (
+                <Deprecation
+                  children={[componentDeprecationReason, componentDiffBadge]}
+                  wrapper={DefaultWrappers.DivGap2}
+                />
+              )}
               {isDefined(initialDescription) && (
                 <DescriptionValue
                   value={initialDescription!}

@@ -301,9 +301,18 @@ const Value: FC<ValueProps> = props => {
     }
   }, [enableDiffs, added, highlightWholeDiff, removed, replaced])
 
+  const classes = useMemo(
+    () => ([
+      getFontSizeClass(fontSize),
+      'text-slate-700',
+      enableDiffs ? diffColorSchema ?? '' : '',
+    ].filter(Boolean).join(' ')),
+    [fontSize, enableDiffs, diffColorSchema]
+  )
+
   return (
     <ReactMarkdown
-      className={`markdown ${getFontSizeClass(fontSize)} text-slate-700 ${enableDiffs ? diffColorSchema ?? '' : ''}`}
+      className={`markdown ${classes}`}
       remarkPlugins={[remarkGfm]}
     >
       {value}
