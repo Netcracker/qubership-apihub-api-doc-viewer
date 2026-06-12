@@ -18,11 +18,12 @@ import { DiffNodeValue, isDiff } from '@netcracker/qubership-apihub-api-data-mod
 import { Diff, DiffAction, DiffType } from '@netcracker/qubership-apihub-api-diff'
 import { DiffsClassesBuilder } from '@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities'
 import { HighlightVariant } from '@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface'
-import type { FC } from 'react'
+import { useMemo, type FC } from 'react'
 import { DEFAULT_MUTED_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../consts/changes'
 import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT } from '../../../consts/configuration'
 import { useChangeSeverityFilters } from '../../../contexts/ChangeSeverityFiltersContext'
 import { useItemChangedFlags } from '../../../hooks/changes'
+import '../../../index.css'
 import { NodeId } from '../../../types/aliases/nodes'
 import { ContentProps } from '../../../types/internal/ContentProps'
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from '../../../types/internal/LayoutSide'
@@ -41,9 +42,7 @@ import {
   maxDiffTypeFromDiffs,
   maxDiffTypeFromNodeSummary
 } from '../../../utils/common/changes'
-import '../../../index.css'
 import { UxDiffFloatingBadge } from '../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
-import { UxDiffMarker } from '../../kit/ux/UxMarker/UxDiffMarker'
 import { LevelIndicator } from '../../shared-components/LevelIndicator'
 import { EmptyContent } from '../diffs/EmptyContent'
 import { UnsupportedContent } from '../diffs/UnsupportedContent'
@@ -264,6 +263,16 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
 
   const selectedColorSchema = currentNodeId === selectedNodeId ? 'selected' : ''
 
+  const classes = useMemo(
+    () => ([
+      'button-selector-option',
+      diffColorSchema,
+      selectedColorSchema,
+      diffsByDescendantsEnabled && diffTypeByDescendants ? DiffsClassesBuilder.roundMarker(diffTypeByDescendants) : '',
+    ].filter(Boolean).join(' ')),
+    [diffColorSchema, diffTypeByDescendants, diffsByDescendantsEnabled, selectedColorSchema]
+  )
+
   if (
     isSideBySideDiffsLayoutMode && (
       itemRemoved && changedSide ||
@@ -275,7 +284,7 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
     <div className="relative">
       <button
         key={`nested-${currentNodeId}`}
-        className={`button-selector-option ${diffColorSchema} ${selectedColorSchema}`}
+        className={classes}
         onClick={() => onSelect(currentNodeId)}
       >
         <NodeType
@@ -287,13 +296,6 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
           layoutSide={layoutSide}
         />
       </button>
-      {diffsByDescendantsEnabled && diffTypeByDescendants && (
-        <UxDiffMarker
-          variant={diffTypeByDescendants}
-          tooltip={diffTypeByDescendants}
-          floating="top-right"
-        />
-      )}
     </div>
   )
 }

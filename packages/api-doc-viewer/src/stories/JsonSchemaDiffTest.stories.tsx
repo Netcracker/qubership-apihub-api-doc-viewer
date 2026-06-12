@@ -847,3 +847,67 @@ export const PopCombinerItem: Story = {
     metaKeys: DIFF_META_KEYS,
   }
 }
+
+export const ChangesInsideFirstCombinerItem: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'integer', description: 'Default value is 42', examples: [24] },
+              { type: 'string' },
+            ]
+          },
+        },
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'integer', default: 42, examples: [42] },
+              { type: 'string' },
+            ]
+          },
+        },
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
+
+export const ChangesInsideLastCombinerItem: Story = {
+  args: {
+    schema: prepareJsonDiffSchema({
+      beforeSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+              { type: 'integer', description: 'Default value is 42', examples: [24] },
+            ]
+          },
+        },
+      },
+      afterSchema: {
+        type: 'object',
+        properties: {
+          prop: {
+            oneOf: [
+              { type: 'string' },
+              { type: 'integer', default: 42, examples: [42] },
+            ]
+          },
+        },
+      },
+      target: RESPONSE_200_BODY_TARGET,
+    }),
+    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+    metaKeys: DIFF_META_KEYS,
+  }
+}
