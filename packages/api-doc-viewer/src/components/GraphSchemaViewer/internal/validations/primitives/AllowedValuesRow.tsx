@@ -68,9 +68,6 @@ import { DiffBadge } from '../../../../common/diffs/DiffBadge'
 import { EmptyContent } from '../../../../common/diffs/EmptyContent'
 import { UnsupportedContent } from '../../../../common/diffs/UnsupportedContent'
 import { DefaultWrappers, Wrapper as Deprecation } from '../../../../common/Wrapper'
-import { getUxBadgeColorSchema } from '../../../../kit/ux/UxBadge/consts'
-import { BADGE_KIND_DEFAULT } from '../../../../kit/ux/UxBadge/types'
-import { UxBadge } from '../../../../kit/ux/UxBadge/UxBadge'
 import { UxDiffFloatingBadge } from '../../../../kit/ux/UxFloatingBadge/UxDiffFloatingBadge'
 import { changesToChange, isDefaultDeprecationReason, isObjectWithoutPayload } from '../../../utils'
 
@@ -135,7 +132,7 @@ export const AllowedValuesRow: FC<AllowedValuesRowProps> = (props) => {
         layoutMode={layoutMode}
       />
       {keys.map(item => {
-        const { description = '', deprecationReason } = values[item] ?? {}
+        const { description, deprecationReason } = values[item] ?? {}
 
         let descriptionChange: Diff | undefined
         let deprecationReasonChange: Diff | undefined
@@ -314,7 +311,7 @@ type AllowedValueRowProps = PropsWithShift & {
   level?: number
 }
 
-const TEXT_PADDING_TOP = { paddingTop: 3 }
+const ENUM_VALUE_TEXT_PADDING_TOP = { paddingTop: 2 }
 
 const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
   const {
@@ -400,7 +397,7 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
     const itemRemoved = diffRemove(valueChange)
     const itemDefined = isDefined(initialValue)
 
-    let renderedItem: string | ReactNode | null = itemDefined ? stringifyItem(initialValue) : ''
+    let renderedItem: string | null = itemDefined ? stringifyItem(initialValue) ?? '' : ''
 
     if (
       isSideBySideDiffsLayoutMode && (
@@ -453,15 +450,17 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
     ), [isDeprecated, layoutSide])
     const componentDeprecationReason = useMemo(() => (
       shouldDisplayReason ? (
-        <DeprecationReasonValue
-          key="deprecation-reason-value"
-          value={initialDeprecationReason}
-          enableDiffs={diffTypeIncluded}
-          layoutMode={layoutMode}
-          layoutSide={layoutSide}
-          $changes={isItemDetailsChanged ? deprecationReasonChange : undefined}
-          highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
-        />
+        <div style={ENUM_VALUE_TEXT_PADDING_TOP}>
+          <DeprecationReasonValue
+            key="deprecation-reason-value"
+            value={initialDeprecationReason}
+            enableDiffs={diffTypeIncluded}
+            layoutMode={layoutMode}
+            layoutSide={layoutSide}
+            $changes={isItemDetailsChanged ? deprecationReasonChange : undefined}
+            highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
+          />
+        </div>
       ) : null
     ), [itemAdded, itemRemoved, layoutSide, shouldDisplayReason])
     const deprecationComponentsList = useMemo(
@@ -474,11 +473,15 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
         <LevelIndicator level={level} />
         {renderedItem && (
           <div className="flex flex-row items-start gap-2 py-1">
-            <UxBadge
-              text={renderedItem}
-              colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT)}
+            <DiffBadge
+              label={renderedItem}
+              layoutMode={layoutMode}
+              layoutSide={layoutSide}
+              isNodeChanged={isNodeChanged}
+              isContentChanged={isItemSelfChanged}
+              $changes={itemAdded || itemRemoved ? valueChange : undefined}
             />
-            <div className="flex flex-col items-start text-xs text-slate-600 gap-1" style={TEXT_PADDING_TOP}>
+            <div className="flex flex-col items-start text-xs text-slate-600 gap-1">
               {deprecationComponentsList.length > 0 && (
                 <Deprecation
                   children={deprecationComponentsList}
@@ -486,15 +489,17 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
                 />
               )}
               {isDefined(initialDescription) && (
-                <DescriptionValue
-                  value={initialDescription!}
-                  // diffs
-                  enableDiffs={diffTypeIncluded}
-                  layoutMode={layoutMode}
-                  layoutSide={layoutSide}
-                  $changes={isItemDetailsChanged ? descriptionChange : undefined}
-                  highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
-                />
+                <div style={ENUM_VALUE_TEXT_PADDING_TOP}>
+                  <DescriptionValue
+                    value={initialDescription!}
+                    // diffs
+                    enableDiffs={diffTypeIncluded}
+                    layoutMode={layoutMode}
+                    layoutSide={layoutSide}
+                    $changes={isItemDetailsChanged ? descriptionChange : undefined}
+                    highlightWholeDiff={!isNodeChanged && !itemAdded && !itemRemoved}
+                  />
+                </div>
               )}
             </div>
           </div>

@@ -71,7 +71,7 @@ export type AdditionalInfoArrayRowProps = PropsWithoutChangesSummary<
   PropsWithChanges
 >
 
-const TITLE_INLINE_STYLES = { paddingTop: 3 }
+const TITLE_INLINE_STYLES = { paddingTop: 2 }
 
 export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) => {
   const {
