@@ -1,6 +1,6 @@
 /* TODO 12.06.2026 // Deduplicate this with Selector.css */
 
-button.button-selector-option {
+button.legacy-button-selector-option {
   /* bg-slate-100 */
   background-color: white;
   border: 1px solid #8F9EB4;
@@ -10,21 +10,21 @@ button.button-selector-option {
   font-size: 0.75rem;
 }
 
-.button-selector-option_disabled {
+.legacy-button-selector-option_disabled {
   cursor: default !important;
 }
 
-button.button-selector-option:hover {
+button.legacy-button-selector-option:hover {
   /* bg-slate-200 */
   background-color: #D5DCE3;
   cursor: pointer;
 }
 
-button.button-selector-option:focus {
+button.legacy-button-selector-option:focus {
   outline: none;
 }
 
-button.button-selector-option.selected {
+button.legacy-button-selector-option.selected {
   /* bg-slate-300 */
   background-color: #D5DCE3;
   color: #626D82;

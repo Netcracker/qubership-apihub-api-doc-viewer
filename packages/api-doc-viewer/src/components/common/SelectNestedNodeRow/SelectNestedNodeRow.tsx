@@ -265,7 +265,7 @@ const DiffButton: FC<DiffButtonProps> = (props) => {
 
   const classes = useMemo(
     () => ([
-      'button-selector-option',
+      'legacy-button-selector-option',
       diffColorSchema,
       selectedColorSchema,
       diffsByDescendantsEnabled && diffTypeByDescendants ? DiffsClassesBuilder.roundMarker(diffTypeByDescendants) : '',
