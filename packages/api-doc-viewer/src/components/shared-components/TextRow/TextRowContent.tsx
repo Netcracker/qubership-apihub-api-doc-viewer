@@ -11,7 +11,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   const { value, variant, layoutSide } = props
 
   // value/font specific
-  const { label, labelFontWeight, textFontWeight } = props
+  const { label, labelFontWeight, textFontWeight, labelColor, textColor } = props
 
   // indents specific
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
@@ -46,6 +46,8 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
         label={label}
         labelFontWeight={labelFontWeight}
         textFontWeight={textFontWeight}
+        labelColor={labelColor}
+        textColor={textColor}
         value={value}
         variant={variant}
         layoutSide={layoutSide}

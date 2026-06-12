@@ -9,6 +9,8 @@ export type TextRowProps = WithPrecededByProps & {
   label?: string
   textFontWeight?: 'normal' | 'medium' | 'bold'
   labelFontWeight?: 'normal' | 'medium' | 'bold'
+  labelColor?: string
+  textColor?: string
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs

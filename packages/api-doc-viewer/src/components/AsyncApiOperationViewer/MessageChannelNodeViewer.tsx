@@ -6,6 +6,7 @@ import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { AsyncApiTreeNodeValueTypeMessageChannel } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
 import { FC, useMemo } from "react"
 import { TextRow } from "../shared-components/TextRow/TextRow"
+import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowProps } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
@@ -89,11 +90,12 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
         <TextRow
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={value?.description ?? ''}
-          variant={TextValueVariant.body}
+          variant={TextValueVariant.h4}
+          textFontWeight='normal'
+          textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
           {...descriptionRowDiffProps}
         />
-
       )}
       {isSummaryDisplayed && (
         <TextRow
@@ -103,7 +105,9 @@ export const MessageChannelNodeViewer: FC<MessageChannelNodeViewerProps> = (prop
               : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
           }
           value={value?.summary ?? ''}
-          variant={TextValueVariant.body}
+          variant={TextValueVariant.h4}
+          textFontWeight='normal'
+          textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
           {...summaryRowDiffProps}
         />

@@ -2,6 +2,7 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useCallback, useMemo } from "react"
 
+import { DEFAULT_LONG_TEXT_COLOR } from "@apihub/components/shared-components/TextRow/consts"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -252,7 +253,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
         <TextRow
           data-precededby={PrecededBy.SERVER_ADDRESS_ROW}
           value={value?.description ?? ''}
-          variant={TextValueVariant.body}
+          variant={TextValueVariant.h4}
+          textFontWeight='normal'
+          textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
           {...descriptionRowDiffProps}
         />
@@ -265,7 +268,9 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
               : PrecededBy.SERVER_ADDRESS_ROW
           }
           value={value?.summary ?? ''}
-          variant={TextValueVariant.body}
+          variant={TextValueVariant.h4}
+          textFontWeight='normal'
+          textColor={DEFAULT_LONG_TEXT_COLOR}
           // diffs
           {...summaryRowDiffProps}
         />

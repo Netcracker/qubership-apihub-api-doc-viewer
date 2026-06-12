@@ -16,7 +16,8 @@ type TextValueProps = {
   onClick?: () => void
   labelFontWeight?: 'normal' | 'medium' | 'bold'
   textFontWeight?: 'normal' | 'medium' | 'bold'
-  fontColor?: string
+  labelColor?: string
+  textColor?: string
   label?: string
   // diffs
   diff?: ChangedPropertyMetaData
@@ -57,7 +58,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
 
   // value/font specific
-  const { textFontWeight, labelFontWeight, fontColor, label } = props
+  const { textFontWeight, labelFontWeight, labelColor, textColor, label } = props
 
   const [expanded, setExpanded] = useState(false)
 
@@ -74,7 +75,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     const commonStyles = `${commonStylesWithoutDiffs} ${diffsStyles}`.trim()
     const commonProps = {
       onClick: onClick,
-      ...fontColor?.trim() ? { style: { color: fontColor } } : {},
+      ...textColor?.trim() ? { style: { color: textColor } } : {},
     }
     resolvedValue = expanded ? resolvedValue : shortenValue(resolvedValue)
 
@@ -104,7 +105,12 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     if (label) {
       return renderByVariant(
         <>
-          <span className={labelFontWeight ? `font-${labelFontWeight}` : 'font-bold'}>{`${label}: `}</span>
+          <span
+            className={labelFontWeight ? `font-${labelFontWeight}` : 'font-bold'}
+            style={labelColor?.trim() ? { color: labelColor } : {}}
+          >
+            {`${label}: `}
+          </span>
           <span className={diffsStyles}>{resolvedValue}</span>
         </>,
         commonStylesWithoutDiffs,
@@ -112,7 +118,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     }
 
     return renderByVariant(resolvedValue, commonStyles)
-  }, [expanded, fontColor, isInvisibleDiffHighlighting, label, labelFontWeight, onClick, textFontWeight, variant])
+  }, [expanded, isInvisibleDiffHighlighting, label, labelColor, labelFontWeight, onClick, textColor, textFontWeight, variant])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []
@@ -187,14 +193,16 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
-  const content = useMemo(() => <>
+  const content = useMemo(() => <div className="flex flex-col items-start gap-1">
     {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
-    <Expander
-      isExpandable={isExpandable(resolvedValue)}
-      expanded={expanded}
-      setExpanded={setExpanded}
-    />
-  </>, [renderElement, resolvedValue, diffsStyleClasses, isInvisible, expanded, setExpanded])
+    {!isInvisible && (
+      <Expander
+        isExpandable={isExpandable(resolvedValue)}
+        expanded={expanded}
+        setExpanded={setExpanded}
+      />
+    )}
+  </div>, [renderElement, resolvedValue, diffsStyleClasses, isInvisible, expanded, setExpanded])
 
   return content
 })
