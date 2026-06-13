@@ -78,40 +78,170 @@ describe('Async API Diffs Suite - Message Samples', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.4-message-summary-changed', async () => {
+  it('2.4-message-long-description-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-2-4-message-summary-changed'
+      'async-api-diffs-suite-message-samples--case-2-4-message-long-description-changed'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.5-message-summary-removed', async () => {
+  it('2.5-message-long-description-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-2-5-message-summary-removed'
+      'async-api-diffs-suite-message-samples--case-2-5-message-long-description-removed'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.6-message-description-moved-to-summary', async () => {
+  it('2.6-message-long-description-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-2-6-message-description-moved-to-summary'
+      'async-api-diffs-suite-message-samples--case-2-6-message-long-description-added'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.7-message-summary-moved-to-description', async () => {
+  it('2.7-message-summary-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-message-samples--case-2-7-message-summary-moved-to-description'
+      'async-api-diffs-suite-message-samples--case-2-7-message-summary-changed'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.8-message-summary-removed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-8-message-summary-removed'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.9-message-summary-added', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-9-message-summary-added'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.10-message-long-summary-changed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-10-message-long-summary-changed'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.11-message-long-summary-removed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-11-message-long-summary-removed'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.12-message-long-summary-added', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-12-message-long-summary-added'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.13-message-description-moved-to-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-13-message-description-moved-to-summary'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.14-message-long-description-moved-to-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-14-message-long-description-moved-to-summary'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.15-message-long-description-moved-to-long-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-15-message-long-description-moved-to-long-summary'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.16-message-description-moved-to-long-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-16-message-description-moved-to-long-summary'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.17-message-summary-moved-to-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-17-message-summary-moved-to-description'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.18-message-long-summary-moved-to-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-18-message-long-summary-moved-to-description'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.19-message-long-summary-moved-to-long-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-19-message-long-summary-moved-to-long-description'
+    )
+    component = await story.viewComponent()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.20-message-summary-moved-to-long-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-message-samples--case-2-20-message-summary-moved-to-long-description'
     )
     component = await story.viewComponent()
     await waitForHtmlRenderingComplete()

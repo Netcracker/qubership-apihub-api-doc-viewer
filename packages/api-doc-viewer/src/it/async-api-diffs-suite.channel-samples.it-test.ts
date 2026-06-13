@@ -89,10 +89,10 @@ describe('Async API Diffs Suite - Channel Samples', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.4-channel-summary-changed', async () => {
+  it('2.4-channel-long-description-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-2-4-channel-summary-changed'
+      'async-api-diffs-suite-channel-samples--case-2-4-channel-long-description-changed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -100,10 +100,10 @@ describe('Async API Diffs Suite - Channel Samples', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.5-channel-summary-removed', async () => {
+  it('2.5-channel-long-description-removed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-2-5-channel-summary-removed'
+      'async-api-diffs-suite-channel-samples--case-2-5-channel-long-description-removed'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -111,10 +111,10 @@ describe('Async API Diffs Suite - Channel Samples', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.6-channel-description-moved-to-summary', async () => {
+  it('2.6-channel-long-description-added', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-2-6-channel-description-moved-to-summary'
+      'async-api-diffs-suite-channel-samples--case-2-6-channel-long-description-added'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
@@ -122,10 +122,153 @@ describe('Async API Diffs Suite - Channel Samples', () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
-  it('2.7-channel-summary-moved-to-description', async () => {
+  it('2.7-channel-summary-changed', async () => {
     story = await storyPage(
       page,
-      'async-api-diffs-suite-channel-samples--case-2-7-channel-summary-moved-to-description'
+      'async-api-diffs-suite-channel-samples--case-2-7-channel-summary-changed'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.8-channel-summary-removed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-8-channel-summary-removed'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.9-channel-summary-added', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-9-channel-summary-added'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.10-channel-long-summary-changed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-10-channel-long-summary-changed'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.11-channel-long-summary-removed', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-11-channel-long-summary-removed'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.12-channel-long-summary-added', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-12-channel-long-summary-added'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.13-channel-description-moved-to-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-13-channel-description-moved-to-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.14-channel-long-description-moved-to-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-14-channel-long-description-moved-to-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.15-channel-long-description-moved-to-long-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-15-channel-long-description-moved-to-long-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.16-channel-description-moved-to-long-summary', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-16-channel-description-moved-to-long-summary'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.17-channel-summary-moved-to-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-17-channel-summary-moved-to-description'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.18-channel-long-summary-moved-to-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-18-channel-long-summary-moved-to-description'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.19-channel-long-summary-moved-to-long-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-19-channel-long-summary-moved-to-long-description'
+    )
+    component = await story.viewComponent()
+    await switchToChannelSection()
+    await waitForHtmlRenderingComplete()
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
+  })
+
+  it('2.20-channel-summary-moved-to-long-description', async () => {
+    story = await storyPage(
+      page,
+      'async-api-diffs-suite-channel-samples--case-2-20-channel-summary-moved-to-long-description'
     )
     component = await story.viewComponent()
     await switchToChannelSection()
