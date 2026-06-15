@@ -23,8 +23,7 @@ import { INLINE_CONTENT_DIFF_COLOR_SCHEMAS, NODE_DIFF_COLOR_MAP } from '../../..
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  DEFAULT_ROW_PADDING_LEFT,
-  SHIFTED_ROW_PADDING_LEFT
+  LEGACY_X_AXIS_ROW_PADDING_LEFT
 } from '../../../consts/configuration'
 import { useChangeSeverityFilters } from '../../../contexts/ChangeSeverityFiltersContext'
 import '../../../index.css'
@@ -55,7 +54,6 @@ export type DeprecationReasonRowProps = PropsWithoutChangesSummary<
 
 export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
   const {
-    shift = false,
     value,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
@@ -96,7 +94,7 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
     // FIXME 28.11.23 // Fix this component when it's clear how $changes for deprecation reason are provided not in enum
 
     return (
-      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         <div className="inline-block py-1">
           <Value

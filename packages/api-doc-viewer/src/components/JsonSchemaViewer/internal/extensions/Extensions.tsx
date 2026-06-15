@@ -4,7 +4,7 @@ import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer";
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper";
 import { SideBySideLayout } from "@apihub/components/shared-components/Layout/SideBySideLayout";
 import { LevelIndicator } from "@apihub/components/shared-components/LevelIndicator";
-import { DEFAULT_ROW_PADDING_LEFT } from "@apihub/constants/configuration";
+import { LEGACY_X_AXIS_ROW_PADDING_LEFT } from "@apihub/constants/configuration";
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
@@ -64,7 +64,7 @@ const ExtensionsSubheader: FC<ExtensionsSubheaderProps> = memo<ExtensionsSubhead
   }, [diff, layoutSide])
 
   return (
-    <div className={`flex flex-row h-full ${DEFAULT_ROW_PADDING_LEFT} ${diffStylesClasses.join(' ')}`}>
+    <div className={`flex flex-row h-full ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${diffStylesClasses.join(' ')}`}>
       <LevelIndicator level={level + 1} lastInvisible />
       {isVisible && (
         <NestingIndicatorTitle>
@@ -117,7 +117,7 @@ export const Extensions: FC<ExtensionsProps> = (props) => {
 
   const subheader = useMemo(() => {
     const subheaderElement = (
-      <div className={`flex flex-row ${DEFAULT_ROW_PADDING_LEFT}`}>
+      <div className={`flex flex-row ${LEGACY_X_AXIS_ROW_PADDING_LEFT}`}>
         <LevelIndicator level={level + 1} lastInvisible />
         <NestingIndicatorTitle>
           Extensions

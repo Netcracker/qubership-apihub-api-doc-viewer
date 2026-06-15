@@ -19,7 +19,7 @@ import { DiffNodeMeta, DiffNodeValue, isDiff } from '@netcracker/qubership-apihu
 import { Diff, DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import type { FC, PropsWithChildren } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
-import { DEFAULT_ROW_PADDING_LEFT, SHIFTED_ROW_PADDING_LEFT } from '../../../../../consts/configuration'
+import { LEGACY_X_AXIS_ROW_PADDING_LEFT } from '../../../../../consts/configuration'
 import { useChangeSeverityFilters } from '../../../../../contexts/ChangeSeverityFiltersContext'
 import { ContentProps } from '../../../../../types/internal/ContentProps'
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from '../../../../../types/internal/LayoutSide'
@@ -242,7 +242,7 @@ const Content: FC<NestingIndicatorTitleRowContentProps> = (props) => {
   const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
   return (
-    <div className={`flex flex-row ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+    <div className={`flex flex-row ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
       <LevelIndicator level={level} lastInvisible={true} />
       <div className="text-xs text-slate-400 border-b border-slate-400 w-max pt-1"
         style={{ marginLeft: '-1px' }}

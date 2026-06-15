@@ -25,8 +25,7 @@ import { INLINE_CONTENT_DIFF_COLOR_SCHEMAS, NODE_DIFF_COLOR_MAP } from '../../..
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  DEFAULT_ROW_PADDING_LEFT,
-  SHIFTED_ROW_PADDING_LEFT
+  LEGACY_X_AXIS_ROW_PADDING_LEFT
 } from '../../../../consts/configuration';
 import { useChangeSeverityFilters } from '../../../../contexts/ChangeSeverityFiltersContext';
 import '../../../../index.css';
@@ -79,7 +78,6 @@ export type DescriptionRowProps = PropsWithoutChangesSummary<
 
 export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
-    shift = false,
     value,
     fontSize = DescriptionFontSize.LEGACY,
     layoutMode = DEFAULT_LAYOUT_MODE,
@@ -125,7 +123,7 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         <div className="py-1">
           <Value

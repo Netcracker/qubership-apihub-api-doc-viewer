@@ -22,8 +22,7 @@ import { useCallback /*, useState */ } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
 import {
   DEFAULT_LAYOUT_MODE,
-  DEFAULT_ROW_PADDING_LEFT,
-  SHIFTED_ROW_PADDING_LEFT,
+  LEGACY_X_AXIS_ROW_PADDING_LEFT,
 } from '../../../../../consts/configuration'
 // import {
 //   COLLAPSE_ALL_MENU_ITEM,
@@ -128,7 +127,6 @@ export type GraphSpecificProps = {
 
 export const HeaderRow: FC<HeaderRowProps> = (props) => {
   const {
-    shift = false,
     nodeTitleData,
     nodeTypeData,
     isCircularRef,
@@ -310,7 +308,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-row gap-2 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-2 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         {!isOperation && (
           <div className="flex flex-row relative">
             <LevelIndicator level={level} />

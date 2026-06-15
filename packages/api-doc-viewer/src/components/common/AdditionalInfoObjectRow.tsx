@@ -37,10 +37,9 @@ import {
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  DEFAULT_ROW_PADDING_LEFT,
   DEFAULT_SERIES_ITEM,
   DEFAULT_SERIES_ITEM_TEXT_COLOR,
-  SHIFTED_ROW_PADDING_LEFT
+  LEGACY_X_AXIS_ROW_PADDING_LEFT
 } from '../../consts/configuration'
 import { useChangeSeverityFilters } from '../../contexts/ChangeSeverityFiltersContext'
 import '../../index.css'
@@ -88,7 +87,6 @@ const TITLE_INLINE_STYLES = { paddingTop: 3 }
 
 export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props) => {
   const {
-    shift = false,
     title,
     items,
     layoutMode = DEFAULT_LAYOUT_MODE,
@@ -141,7 +139,7 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
     const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
     return (
-      <div className={`flex flex-row gap-6 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         <div className="flex flex-row flex-wrap items-start gap-2 py-1">
           <div className="inline text-xs font-normal text-slate-500" style={TITLE_INLINE_STYLES}>

@@ -20,7 +20,7 @@ import { DiffsClassesBuilder } from '@netcracker/qubership-apihub-next-data-mode
 import { HighlightVariant } from '@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface'
 import { useMemo, type FC } from 'react'
 import { DEFAULT_MUTED_VALUE_CLASS, NODE_DIFF_COLOR_MAP } from '../../../consts/changes'
-import { DEFAULT_LAYOUT_MODE, DEFAULT_ROW_PADDING_LEFT } from '../../../consts/configuration'
+import { DEFAULT_LAYOUT_MODE, LEGACY_X_AXIS_ROW_PADDING_LEFT } from '../../../consts/configuration'
 import { useChangeSeverityFilters } from '../../../contexts/ChangeSeverityFiltersContext'
 import { useItemChangedFlags } from '../../../hooks/changes'
 import '../../../index.css'
@@ -119,7 +119,7 @@ export const SelectNestedNodeRow: FC<SelectNestedNodeRowProps> = (props) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
 
     return (
-      <div className={`flex flex-col ${DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-col ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         <div className="flex flex-row">
           <LevelIndicator level={level} lastInvisible={true} />
           <NestingIndicatorTitle>{combiner}</NestingIndicatorTitle>

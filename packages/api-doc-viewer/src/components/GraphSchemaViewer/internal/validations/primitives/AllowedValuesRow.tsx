@@ -38,8 +38,7 @@ import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  DEFAULT_ROW_PADDING_LEFT,
-  SHIFTED_ROW_PADDING_LEFT,
+  LEGACY_X_AXIS_ROW_PADDING_LEFT,
 } from '../../../../../consts/configuration'
 import { AMBER_TAG_COLOR_SCHEMA, DEPRECATED_TAG } from '../../../../../consts/tags'
 import { ALLOWED_VALUES_LABEL } from '../../../../../consts/validations'
@@ -208,7 +207,7 @@ const AllowedValuesHeaderRowContent: FC<AllowedValuesHeaderRowProps & ContentPro
   }
 
   return (
-    <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+    <div className={`flex flex-row gap-5 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
       <LevelIndicator level={level} />
       {labelNode}
     </div>
@@ -469,7 +468,7 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
     )
 
     return (
-      <div className={`flex flex-row gap-5 ${shift ? SHIFTED_ROW_PADDING_LEFT : DEFAULT_ROW_PADDING_LEFT} ${width}`}>
+      <div className={`flex flex-row gap-5 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
         <LevelIndicator level={level} />
         {renderedItem && (
           <div className="flex flex-row items-start gap-2 py-1">
