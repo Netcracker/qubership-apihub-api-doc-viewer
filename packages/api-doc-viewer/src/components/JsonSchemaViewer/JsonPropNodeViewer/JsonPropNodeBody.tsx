@@ -92,6 +92,7 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
 
   // Common data
   const isRoot = isRootNode(node)
+  const reserveExpanderSpace = isRoot
 
   const customizationOptions = useCustomizationOptions()
 
@@ -130,12 +131,12 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
             <div data-name="Content" className="flex flex-col">
               {/* TODO 01.11.23 // "shift" is a WA, find way better */}
               <Annotations
-                shift={isRoot}
+                shift={reserveExpanderSpace}
                 state={state}
                 $nodeChange={$nodeChange}
               />
               <Validations
-                shift={isRoot}
+                shift={reserveExpanderSpace}
                 state={state}
                 $nodeChange={$nodeChange}
               />

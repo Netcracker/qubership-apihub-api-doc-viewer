@@ -54,6 +54,7 @@ export type DeprecationReasonRowProps = PropsWithoutChangesSummary<
 
 export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
   const {
+    shift = false,
     value,
     layoutMode = DEFAULT_LAYOUT_MODE,
     level = DEFAULT_ROW_DEPTH,
@@ -90,12 +91,19 @@ export const DeprecationReasonRow: FC<DeprecationReasonRowProps> = (props) => {
 
   const Content: FC<ContentProps> = ({ layoutSide }) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
+    const rowClasses = [
+      'flex flex-row',
+      !shift && 'gap-6',
+      LEGACY_X_AXIS_ROW_PADDING_LEFT,
+      width,
+    ].filter(Boolean).join(' ')
 
     // FIXME 28.11.23 // Fix this component when it's clear how $changes for deprecation reason are provided not in enum
 
     return (
-      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
+      <div className={rowClasses}>
         <LevelIndicator level={level} />
+        {shift && <div className="w-5" />}
         <div className="inline-block py-1">
           <Value
             value={value}

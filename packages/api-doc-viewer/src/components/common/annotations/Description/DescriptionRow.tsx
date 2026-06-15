@@ -78,6 +78,7 @@ export type DescriptionRowProps = PropsWithoutChangesSummary<
 
 export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
   const {
+    shift = false,
     value,
     fontSize = DescriptionFontSize.LEGACY,
     layoutMode = DEFAULT_LAYOUT_MODE,
@@ -121,10 +122,17 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
 
   const Content: FC<ContentProps> = ({ layoutSide }) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
+    const rowClasses = [
+      'flex flex-row',
+      !shift && 'gap-6',
+      LEGACY_X_AXIS_ROW_PADDING_LEFT,
+      width,
+    ].filter(Boolean).join(' ')
 
     return (
-      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
+      <div className={rowClasses}>
         <LevelIndicator level={level} />
+        {shift && <div className="w-5" />}
         <div className="py-1">
           <Value
             value={value}

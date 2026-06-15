@@ -229,6 +229,13 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
 
     const noSubHeaderSide = useNoSubHeaderSide()
     const noSubHeader = noSubHeaderSide && noSubHeaderSide === layoutSide
+    const operationPlaceholder = isOperation
+    const rowClasses = [
+      'flex flex-row',
+      !operationPlaceholder && 'gap-2',
+      LEGACY_X_AXIS_ROW_PADDING_LEFT,
+      width,
+    ].filter(Boolean).join(' ')
 
     const SubHeader: FC = () => <>
       {ArrayUtils.isNotEmpty(args) && (
@@ -308,20 +315,22 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     </>
 
     return (
-      <div className={`flex flex-row gap-2 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
-        {!isOperation && (
-          <div className="flex flex-row relative">
-            <LevelIndicator level={level} />
-            <Expander
-              isRoot={isRoot}
-              isOperation={isOperation}
-              isExpandable={isExpandable}
-              expanded={expanded}
-              onToggleExpander={onToggleExpander}
-              // onToggleContextMenu={onToggleContextMenu}
-            />
-          </div>
-        )}
+      <div className={rowClasses}>
+        <div className="flex flex-row relative">
+          <LevelIndicator level={level} />
+          {operationPlaceholder
+            ? <div className="w-5" />
+            : (
+              <Expander
+                isRoot={isRoot}
+                isOperation={isOperation}
+                isExpandable={isExpandable}
+                expanded={expanded}
+                onToggleExpander={onToggleExpander}
+                // onToggleContextMenu={onToggleContextMenu}
+              />
+            )}
+        </div>
         <div className={`flex flex-row items-center gap-2 ${method ? 'py-2' : 'pt-2 pb-1'}`}>
           <div
             className={`flex flex-row gap-2 items-center text-xs text-black font-Inter-Medium ${isExpandable ? 'hover:cursor-pointer' : ''}`}

@@ -87,6 +87,7 @@ const TITLE_INLINE_STYLES = { paddingTop: 3 }
 
 export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props) => {
   const {
+    shift = false,
     title,
     items,
     layoutMode = DEFAULT_LAYOUT_MODE,
@@ -135,12 +136,19 @@ export const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps> = (props)
 
   const Content: FC<ContentProps> = ({ layoutSide }) => {
     const width = isSideBySideDiffsLayoutMode ? 'w-1/2' : 'w-full'
+    const rowClasses = [
+      'flex flex-row',
+      !shift && 'gap-6',
+      LEGACY_X_AXIS_ROW_PADDING_LEFT,
+      width,
+    ].filter(Boolean).join(' ')
 
     const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
     return (
-      <div className={`flex flex-row gap-6 ${LEGACY_X_AXIS_ROW_PADDING_LEFT} ${width}`}>
+      <div className={rowClasses}>
         <LevelIndicator level={level} />
+        {shift && <div className="w-5" />}
         <div className="flex flex-row flex-wrap items-start gap-2 py-1">
           <div className="inline text-xs font-normal text-slate-500" style={TITLE_INLINE_STYLES}>
             {title}:
