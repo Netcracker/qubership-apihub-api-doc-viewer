@@ -11,6 +11,7 @@ import { WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TitleRowUsage {
   Default = 'default',
+  AsyncApiJsoSection = 'async-api-jso-section',
   JsoProperty = 'jso-property',
 }
 

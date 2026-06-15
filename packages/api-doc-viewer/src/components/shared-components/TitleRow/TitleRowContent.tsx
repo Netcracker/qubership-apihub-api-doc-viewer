@@ -52,6 +52,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     switch (usage) {
       case TitleRowUsage.Default:
         return highlightingMode.get(DiffHiglightingApplicationArea.Default)!
+      case TitleRowUsage.AsyncApiJsoSection:
       case TitleRowUsage.JsoProperty:
         return highlightingMode.get(DiffHiglightingApplicationArea.JsoPropertyKey)!
     }
