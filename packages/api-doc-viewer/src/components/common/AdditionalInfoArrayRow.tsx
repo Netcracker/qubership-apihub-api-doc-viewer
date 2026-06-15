@@ -28,7 +28,6 @@ import {
   DEFAULT_ROW_DEPTH,
   DEFAULT_SERIES_ITEM,
   DEFAULT_SERIES_ITEM_TEXT_COLOR,
-  LEGACY_X_AXIS_ROW_PADDING_LEFT
 } from '../../consts/configuration'
 import { useChangeSeverityFilters } from '../../contexts/ChangeSeverityFiltersContext'
 import '../../index.css'
@@ -156,7 +155,6 @@ export const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps> = (props) =
     const rowClasses = [
       'flex flex-row',
       !shift && 'gap-6',
-      LEGACY_X_AXIS_ROW_PADDING_LEFT,
       width,
     ].filter(Boolean).join(' ')
 

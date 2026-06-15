@@ -25,7 +25,6 @@ import { INLINE_CONTENT_DIFF_COLOR_SCHEMAS, NODE_DIFF_COLOR_MAP } from '../../..
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  LEGACY_X_AXIS_ROW_PADDING_LEFT
 } from '../../../../consts/configuration';
 import { useChangeSeverityFilters } from '../../../../contexts/ChangeSeverityFiltersContext';
 import '../../../../index.css';
@@ -125,7 +124,6 @@ export const DescriptionRow: FC<DescriptionRowProps> = (props) => {
     const rowClasses = [
       'flex flex-row',
       !shift && 'gap-6',
-      LEGACY_X_AXIS_ROW_PADDING_LEFT,
       width,
     ].filter(Boolean).join(' ')
 

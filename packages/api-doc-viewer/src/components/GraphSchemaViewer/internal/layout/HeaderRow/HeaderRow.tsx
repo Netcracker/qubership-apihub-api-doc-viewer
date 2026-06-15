@@ -21,8 +21,7 @@ import type { FC } from 'react'
 import { useCallback /*, useState */ } from 'react'
 import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
 import {
-  DEFAULT_LAYOUT_MODE,
-  LEGACY_X_AXIS_ROW_PADDING_LEFT,
+  DEFAULT_LAYOUT_MODE
 } from '../../../../../consts/configuration'
 // import {
 //   COLLAPSE_ALL_MENU_ITEM,
@@ -233,7 +232,6 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
     const rowClasses = [
       'flex flex-row',
       !operationPlaceholder && 'gap-2',
-      LEGACY_X_AXIS_ROW_PADDING_LEFT,
       width,
     ].filter(Boolean).join(' ')
 

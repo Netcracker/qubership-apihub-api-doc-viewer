@@ -38,7 +38,6 @@ import { NODE_DIFF_COLOR_MAP } from '../../../../../consts/changes'
 import {
   DEFAULT_LAYOUT_MODE,
   DEFAULT_ROW_DEPTH,
-  LEGACY_X_AXIS_ROW_PADDING_LEFT,
 } from '../../../../../consts/configuration'
 import { AMBER_TAG_COLOR_SCHEMA, DEPRECATED_TAG } from '../../../../../consts/tags'
 import { ALLOWED_VALUES_LABEL } from '../../../../../consts/validations'
@@ -190,7 +189,6 @@ const AllowedValuesHeaderRowContent: FC<AllowedValuesHeaderRowProps & ContentPro
   const rowClasses = [
     'flex flex-row',
     !shift && 'gap-5',
-    LEGACY_X_AXIS_ROW_PADDING_LEFT,
     width,
   ].filter(Boolean).join(' ')
 
@@ -399,7 +397,6 @@ const AllowedValueRow: FC<AllowedValueRowProps> = (props) => {
     const rowClasses = [
       'flex flex-row',
       !shift && 'gap-5',
-      LEGACY_X_AXIS_ROW_PADDING_LEFT,
       width,
     ].filter(Boolean).join(' ')
 
