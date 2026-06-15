@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -11,6 +11,20 @@ import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TitleRowContentProps, TitleRowUsage } from "./types"
+
+const TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TitleRowUsage, string>> = {
+  [TitleRowUsage.JsoProperty]: X_AXIS_PADDING_ROWS_JSO,
+}
+
+const TITLE_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TitleRowUsage, string[]>> = {
+  [TitleRowUsage.JsoProperty]: ['min-h-[26px]'],
+}
+
+function getTitleRowClassesByUsage(usage: TitleRowUsage): string {
+  const xAxisPaddingClass = TITLE_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  const additionalClasses = TITLE_ROW_ADDITIONAL_CLASSES_BY_USAGE[usage] ?? []
+  return [xAxisPaddingClass, ...additionalClasses].join(' ')
+}
 
 export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentProps>((props) => {
   const {
@@ -108,10 +122,14 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     </>
   }, [enableHeader, expandable, level, precededBy, expanded, onClickExpander, headerValue])
 
+  const usageDrivenClasses = useMemo(() => {
+    return getTitleRowClassesByUsage(usage)
+  }, [usage])
+
   return (
     <div
       data-precededby={precededBy}
-      className={`title-row-content flex items-center h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${usage === TitleRowUsage.JsoProperty ? 'min-h-[26px]' : ''} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`title-row-content flex items-center h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}
       {subheader?.(layoutSide)}

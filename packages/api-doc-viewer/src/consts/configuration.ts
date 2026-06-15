@@ -27,7 +27,7 @@ export const DEFAULT_ROW_DEPTH = 0
 
 // Layout
 
-export const LEGACY_X_AXIS_ROW_PADDING_LEFT = 'pl-4'
+export const LEGACY_X_AXIS_ROW_PADDING_LEFT = 'pl-0'
 
 // Defaults & Placeholders
 
