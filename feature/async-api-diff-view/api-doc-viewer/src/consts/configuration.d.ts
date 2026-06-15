@@ -19,6 +19,5 @@ export declare const DIFF_META_KEY: unique symbol;
 export declare const DEFAULT_DISPLAY_MODE = "detailed";
 export declare const DEFAULT_LAYOUT_MODE = "document";
 export declare const DEFAULT_ROW_DEPTH = 0;
-export declare const LEGACY_X_AXIS_ROW_PADDING_LEFT = "pl-4";
 export declare const DEFAULT_SERIES_ITEM = "<empty string>";
 export declare const DEFAULT_SERIES_ITEM_TEXT_COLOR = "text-gray-400/[.8]";
