@@ -1,16 +1,16 @@
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types/compare"
-import { TableKeys } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/table-keys"
+import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/navigation-callback"
+import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/table-key"
 import { FC, memo } from "react"
 import { DiffMetaKeys } from "../../types/DiffMetaKeys"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { ForeignKeyCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/foreign-key-callback"
 
 export type DdlTableDiffsViewerProps = {
   mergedSource: unknown
-  tableKeys?: TableKeys
-  foreignKeyCallback: ForeignKeyCallback
+  tableKey?: TableKey
+  navigationCallback: NavigationCallback
   // techincal props
   displayMode?: DisplayMode
   devMode?: boolean

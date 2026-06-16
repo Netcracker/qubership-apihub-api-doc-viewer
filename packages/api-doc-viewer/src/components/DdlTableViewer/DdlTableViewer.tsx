@@ -1,14 +1,14 @@
+import { DisplayMode } from "@apihub/types/DisplayMode"
+import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/navigation-callback"
+import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/table-key"
 import { FC, memo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
-import { DisplayMode } from "@apihub/types/DisplayMode"
-import { TableKeys } from "@apihub/next-data-model/shared/ddl-api/types/table-keys"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { ForeignKeyCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/foreign-key-callback"
 
 export type DdlTableViewerProps = {
   source: unknown
-  tableKeys: TableKeys
-  foreignKeyCallback: ForeignKeyCallback
+  tableKey: TableKey
+  navigationCallback: NavigationCallback
   // techincal props
   displayMode?: DisplayMode
   devMode?: boolean
