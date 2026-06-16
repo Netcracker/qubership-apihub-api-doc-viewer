@@ -1,13 +1,12 @@
-.jso-property .title-row {
+.jso-property .title-row-content {
   font-size: 12px;
   font-weight: 400;
-  margin-bottom: 2px;
+}
+
+.jso-property .title-row-content .text-value {
+  font-size: 12px;
 }
 
 .jso-property .subheader {
   font-size: 12px;
-}
-
-.jso-property .text-value {
-  padding-bottom: 3px;
 }
