@@ -1,6 +1,6 @@
 import { DisplayMode } from "@apihub/types/DisplayMode"
-import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/navigation-callback"
-import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddl-api/types/table-key"
+import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
+import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
 import { FC, memo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
