@@ -1,11 +1,11 @@
-import { FC } from '../../../../../node_modules/react';
 import { DisplayMode } from '../../types/DisplayMode';
-import { TableKeys } from '../../../../next-data-model/src/shared/ddl-api/types/table-keys';
-import { ForeignKeyCallback } from '../../../../next-data-model/src/shared/ddl-api/types/foreign-key-callback';
+import { NavigationCallback } from '../../../../next-data-model/src/shared/ddlapi/types/navigation-callback';
+import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { FC } from '../../../../../node_modules/react';
 export type DdlTableViewerProps = {
     source: unknown;
-    tableKeys: TableKeys;
-    foreignKeyCallback: ForeignKeyCallback;
+    tableKey: TableKey;
+    navigationCallback: NavigationCallback;
     displayMode?: DisplayMode;
     devMode?: boolean;
 };
