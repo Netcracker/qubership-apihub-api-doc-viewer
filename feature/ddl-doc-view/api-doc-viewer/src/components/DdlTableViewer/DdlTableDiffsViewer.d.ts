@@ -6,7 +6,7 @@ import { FC } from '../../../../../node_modules/react';
 import { DiffMetaKeys } from "../../types/DiffMetaKeys";
 export type DdlTableDiffsViewerProps = {
     mergedSource: unknown;
-    tableKey?: TableKey;
+    tableKey: TableKey;
     navigationCallback: NavigationCallback;
     displayMode?: DisplayMode;
     devMode?: boolean;
