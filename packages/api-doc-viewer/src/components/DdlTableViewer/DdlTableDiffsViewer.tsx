@@ -9,7 +9,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 
 export type DdlTableDiffsViewerProps = {
   mergedSource: unknown
-  tableKey?: TableKey
+  tableKey: TableKey
   navigationCallback: NavigationCallback
   // techincal props
   displayMode?: DisplayMode
