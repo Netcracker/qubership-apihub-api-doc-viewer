@@ -15,6 +15,11 @@
  */
 
 import type {StorybookConfig} from "@storybook/react-vite";
+import path from "path";
+import { fileURLToPath } from "url";
+import { mergeConfig } from "vite";
+
+const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -40,6 +45,16 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: "tag",
+  },
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      resolve: {
+        alias: {
+          // Prevent libpg-query.wasm from being bundled/fetched in the static showcase.
+          "pgsql-parser": path.resolve(storybookDir, "stubs/pgsql-parser.ts"),
+        },
+      },
+    });
   },
 };
 
