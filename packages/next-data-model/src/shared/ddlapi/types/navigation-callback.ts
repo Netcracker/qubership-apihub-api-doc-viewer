@@ -1,1 +1,1 @@
-export type NavigationCallback = (schema: string, table: string, column: string) => string
+export type NavigationCallback = (schema: string, table: string, column: string) => void

@@ -1,15 +1,17 @@
 /**
- * Browser-safe stub for pgsql-parser in Storybook / screenshot-test builds.
+ * Browser-safe stub for pgsql-parser in the main Storybook bundle.
  *
- * api-unifier and api-diff depend on ddlapi for model constants only; they never
- * call buildFromDdl in the browser. Without this alias, Vite bundles libpg-query
- * and tries to fetch libpg-query.wasm from /assets/, which breaks screenshot tests.
+ * api-unifier / api-diff need ddlapi model constants only; they never call
+ * buildFromDdl during screenshot tests. The stub keeps libpg-query (WASM) out of
+ * shared chunks so Puppeteer stories do not fetch libpg-query.wasm on every page.
+ *
+ * Real parsing for ddlapi-suite stories lives in a separate async chunk — see
+ * build-from-ddl-browser.ts and the conditional resolver in main.ts.
  */
 
 const unavailable = (): never => {
   throw new Error(
-    'pgsql-parser is unavailable in the Storybook browser build. ' +
-      'Use pre-built ddlapi Realm fixtures instead of buildFromDdl.',
+    'pgsql-parser stub: buildFromDdl is only available via buildFromDdlInBrowser() in ddlapi-suite stories.',
   )
 }
 

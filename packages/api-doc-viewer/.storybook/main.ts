@@ -18,6 +18,9 @@ import type {StorybookConfig} from "@storybook/react-vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
+import { conditionalPgsqlParserPlugin } from "./conditional-pgsql-parser";
+import { libpgQueryWasmInteropPlugin } from "./libpg-query-wasm-interop";
+import { libpgQueryWasmPlugin } from "./libpg-query-wasm-plugin";
 
 const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -48,11 +51,17 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) {
     return mergeConfig(config, {
-      resolve: {
-        alias: {
-          // Prevent libpg-query.wasm from being bundled/fetched in the static showcase.
-          "pgsql-parser": path.resolve(storybookDir, "stubs/pgsql-parser.ts"),
-        },
+      plugins: [
+        conditionalPgsqlParserPlugin(storybookDir),
+        libpgQueryWasmInteropPlugin(storybookDir),
+        libpgQueryWasmPlugin(storybookDir),
+      ],
+      assetsInclude: ["**/*.wasm"],
+      optimizeDeps: {
+        exclude: [
+          "pgsql-parser",
+          "@netcracker/qubership-apihub-ddlapi",
+        ],
       },
     });
   },
