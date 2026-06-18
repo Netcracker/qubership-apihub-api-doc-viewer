@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-06-18T13:12:10.637801+00:00'
+generated_at: '2026-06-18T14:30:51.672973+00:00'
 apm_version: 0.20.0
 dependencies:
 - repo_url: Netcracker/qubership-ai-packages
@@ -42,6 +42,26 @@ dependencies:
     .claude/skills/ddlapi-using/SKILL.md: sha256:5ad4180402ea212e08aa2137d03bde5976dc8eb72e0164d0e54bfa03bf62fa0a
     .cursor/rules/ddlapi-using.mdc: sha256:90554d14dcea6999074084c82cdabe92c9049452d6291ecc1570344c630a64f7
   content_hash: sha256:f8607a5e2bd008b11a29fa9009e71d054447c85322ca7ee94d834bd87193ddf0
+- repo_url: Netcracker/qubership-apihub-json-crawl
+  host: github.com
+  resolved_commit: 0369e2f8ed62aae8f062dc94005c34d5b67a7b9a
+  resolved_ref: feature/apm-infra
+  virtual_path: agent-packages/json-crawl-using
+  is_virtual: true
+  package_type: apm_package
+  deployed_files:
+  - .agents/skills/json-crawl-using
+  - .agents/skills/json-crawl-using/SKILL.md
+  - .claude/rules/json-crawl-using.md
+  - .claude/skills/json-crawl-using
+  - .claude/skills/json-crawl-using/SKILL.md
+  - .cursor/rules/json-crawl-using.mdc
+  deployed_file_hashes:
+    .agents/skills/json-crawl-using/SKILL.md: sha256:455e88672bdb8344ef7a7ae0e7a95579fa31028bc931848f76502ab19bac130c
+    .claude/rules/json-crawl-using.md: sha256:c8f0f561812ab7fc8f91a98b4d63b81e6be210c4cb547d15644c5ea6b15c0b10
+    .claude/skills/json-crawl-using/SKILL.md: sha256:455e88672bdb8344ef7a7ae0e7a95579fa31028bc931848f76502ab19bac130c
+    .cursor/rules/json-crawl-using.mdc: sha256:70de39849a1f70361f1ff1399e568e8972eb0c4f32dedbc0a4b9186b784fb934
+  content_hash: sha256:976d85c15a6836f69136b8a557915639c7dfb00715b4b0b2b4c711f2adb19096
 - repo_url: _local/api-doc-viewer-authoring
   package_type: apm_package
   deployed_files:
