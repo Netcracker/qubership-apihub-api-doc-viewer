@@ -1,0 +1,94 @@
+---
+description: Extend next-data-model tree builders, diff aggregators, and json-crawl rules for viewer data layers.
+---
+
+# Authoring next-data-model
+
+next-data-model is the type-safe successor to `api-data-model`. It builds
+tree structures consumed by api-doc-viewer components. Code lives under
+`packages/next-data-model/src/`.
+
+## Layered layout
+
+Two top-level layers; never mix responsibilities:
+
+| Layer | Path | Role |
+| --- | --- | --- |
+| Model | `src/model/` | Tree node types, interfaces, implementations |
+| Building service | `src/building-service/` | Builders, crawl rules, diff aggregators |
+
+Each layer has **abstract** contracts plus **spec-specific** implementations
+(`jso/`, `async-api/`). Abstract code defines shared API; spec sub-layers
+implement node kinds, meta, and crawl behaviour.
+
+When adding a feature, extend abstract contracts first, then wire the JSO
+and/or AsyncAPI sub-layer — do not fork logic only in one sub-layer unless
+the behaviour is genuinely spec-specific.
+
+## Tree without diffs
+
+`TreeBuilder` subclasses (e.g. `JsoTreeBuilder`) crawl the source document
+via `json-crawl` rules, create nodes through `node-data/builder.ts`, and
+assemble a spec tree (`JsoTree`, `AsyncApiTree`, …).
+
+Node values hold document fragments picked by typed allow-lists; meta holds
+structural facts (kind, complexity, keys).
+
+## Tree with diffs
+
+`TreeWithDiffsBuilder` subclasses (e.g. `JsoTreeWithDiffsBuilder`) extend the
+plain builder. After each node is created, **aggregator factories** under
+`node-diffs-data/` populate diff-related fields:
+
+| Field | Meaning |
+| --- | --- |
+| `nodeDiffs` | Diffs on this node; keys are property names, except `""` (`NODE_LEVEL_DIFF_KEY`) for whole-node add/remove/replace |
+| `nodeDescendantDiffs` | Summarised diffs from direct descendants; keys match descendant `key` |
+| `nodeDiffsSummary` / `nodeDescendantDiffsSummary` | Unique diff-type sets for badges |
+| `nodeDiffsSeverities` | Severity per UI placement (`title-row`, `description-row`, …) |
+
+Aggregators are spec-specific factories returning kind-aware implementations
+(`JsoNodeDiffsAggregatorFactory`, etc.). Register new aggregation steps in
+the builder's `createNodeDiffs()` flow, not in the view layer.
+
+## Diff inheritance contract
+
+Inherited root diffs (`nodeDiffs[""]`) follow **parent-first** lookup:
+
+1. Parent `nodeDiffs[""]` (add/remove), then parent `nodeDescendantDiffs[nodeKey]`.
+2. If absent, repeat on the container node.
+3. Reuse the source diff object reference — do not clone.
+
+Severity propagation for complex transitions uses the same parent-first
+traversal. Descendant diff summaries include **add/remove only** — exclude
+replace from the descendant summary contract.
+
+Key resolution for value-level diff rendering:
+
+- `DiffAdd` / `DiffRemove` → key `""`.
+- `DiffReplace` primitive→primitive → key `"value"`.
+- `DiffReplace` with a complex side → key `""`.
+
+Full phased actions and entity IDs are in
+`packages/api-doc-viewer/jso-diffs-implementation-actions.md`.
+
+## Crawl rules
+
+Document traversal rules live in
+`src/building-service/<spec>/json-crawl-entities/rules/`. Builders pass
+initial rules to `syncCrawl` and state through typed crawl-state objects.
+Extend rules trees (`CrawlRules`) with path segments; keep transformers in
+`transformers/` and building hooks co-located with the builder.
+
+## Tests
+
+Unit tests for builders and aggregators live in `packages/next-data-model/tests/`
+(Jest). Add focused tests when changing inheritance, summary scope, or
+severity propagation — do not rely on screenshot tests alone for data-layer
+regressions.
+
+## Cross-package boundary
+
+View components in `packages/api-doc-viewer` import builders and node types
+by subpath. Keep diff meta key configuration (`DiffMetaKeys`) supplied by the
+caller; the data layer reads keys from crawl state, not from React context.
