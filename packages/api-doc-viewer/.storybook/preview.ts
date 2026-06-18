@@ -72,6 +72,7 @@ const preview: Preview = {
           'DDL API Suite',
           [
             'Simple Table',
+            'Table Samples',
           ],
           '*'
         ]

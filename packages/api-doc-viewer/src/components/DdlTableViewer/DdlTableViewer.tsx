@@ -28,7 +28,13 @@ export const DdlTableViewer: FC<DdlTableViewerProps> =
   })
 
 const DdlTableViewerInner: FC<DdlTableViewerProps> =
-  memo<DdlTableViewerProps>(() => {
+  memo<DdlTableViewerProps>((props) => {
+    const { source, tableKey, navigationCallback } = props;
+
+    console.debug('DDL API Source:', source);
+    console.debug('DDL API Table Key:', tableKey);
+    console.debug('DDL API Navigation Callback:', navigationCallback);
+    
     return (
       <div>
         <h1>DDL Table Viewer</h1>
