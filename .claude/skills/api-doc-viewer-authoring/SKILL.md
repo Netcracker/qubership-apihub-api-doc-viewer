@@ -69,6 +69,17 @@ New node viewers should follow the established pattern: memoised FC, optional
 `ErrorBoundary`, `LevelContext` / `AsyncLevelContextProvider` for nesting
 depth, `WithPrecededByProps` for indent connectors.
 
+## React hooks
+
+Never invoke hooks conditionally. Call every hook (`useMemo`, `useState`,
+`useCallback`, `useContext`, custom hooks, etc.) on every render, in a fixed
+order, before any early `return`.
+
+Common viewer pattern: outer wrapper may return `null` when `source === null`
+**before** rendering an inner component; the inner component runs all hooks,
+then returns `null` when the tree root is missing or the wrong kind (see
+`AsyncApiOperationViewer` / `DdlTableViewer`).
+
 ## Storybook and samples
 
 Stories live in `src/stories/` grouped by suite (`jso-suite/`,
