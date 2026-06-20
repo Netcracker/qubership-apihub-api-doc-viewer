@@ -13,6 +13,7 @@ declare const meta: {
         layoutMode?: import("..").LayoutMode;
         initialLevel?: number;
         supportJsonSchema?: boolean;
+        devMode?: boolean;
     }>;
     parameters: {};
     argTypes: {
