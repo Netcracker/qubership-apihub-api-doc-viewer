@@ -12,10 +12,10 @@ import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/
 import { DdlApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/complex-node.impl";
 import { DdlApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/simple-node.impl";
 import { JsoTreeWithDiffs as DdlApiTreeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/tree.impl";
-import { DdlApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/types/aliases";
-import { DdlApiTreeNodeKind, DdlApiTreeNodeKinds, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
-import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
+import { DdlApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/types/aliases";
+import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
+import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
@@ -77,9 +77,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       alreadyConvertedValuesCache: new Map(),
     }
 
-    const initialRules: DdlApiTreeWithDiffsCrawlRule = getDdlApiCrawlRules<DdlApiTreeWithDiffsCrawlState>(
-      DdlApiTreeNodeKinds.TABLE,
-    )
+    const initialRules: DdlApiTreeWithDiffsCrawlRule = getDdlApiCrawlRules<DdlApiTreeWithDiffsCrawlState>()
 
     this.logger.debug('[DDL API][WithDiffs] Prepared Source:', preparedSource)
 

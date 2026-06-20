@@ -1,8 +1,8 @@
 import { DdlApiComplexTreeNode } from "@apihub/next-data-model/model/ddlapi/tree/complex-node.impl";
+import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiSimpleTreeNode } from "@apihub/next-data-model/model/ddlapi/tree/simple-node.impl";
 import { DdlApiTree } from "@apihub/next-data-model/model/ddlapi/tree/tree.impl";
-import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
-import { DdlApiTreeNodeKind, DdlApiTreeNodeKinds, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
+import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
@@ -67,7 +67,7 @@ export class DdlApiTreeBuilder extends TreeBuilder<
       alreadyConvertedValuesCache: new Map(),
     }
 
-    const initialRules: DdlApiCrawlRule = getDdlApiCrawlRules(DdlApiTreeNodeKinds.TABLE)
+    const initialRules: DdlApiCrawlRule = getDdlApiCrawlRules()
 
     this.logger.debug('[DDL API] Prepared Source:', preparedSource)
 

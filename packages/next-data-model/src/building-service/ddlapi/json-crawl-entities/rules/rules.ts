@@ -4,7 +4,7 @@ import { DdlApiTreeCrawlState } from "../state/types";
 import { DdlApiCrawlRule } from "./types";
 
 export function getDdlApiCrawlRules<S extends DdlApiTreeCrawlState = DdlApiTreeCrawlState>(
-  kind: DdlApiTreeNodeKind
+  kind: DdlApiTreeNodeKind = DdlApiTreeNodeKinds.TABLE
 ): CrawlRules<DdlApiCrawlRule<S>> {
   return {
     '/columns': {
