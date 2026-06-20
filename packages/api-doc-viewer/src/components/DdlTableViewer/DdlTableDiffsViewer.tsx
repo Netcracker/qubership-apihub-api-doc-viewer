@@ -1,9 +1,10 @@
 import { DisplayMode } from "@apihub/types/DisplayMode"
-import { DiffType } from "@netcracker/qubership-apihub-api-diff/dist/types/compare"
+import { DiffMetaKeys } from "@apihub/types/DiffMetaKeys"
+import { DdlApiTreeWithDiffsBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
+import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
-import { FC, memo } from "react"
-import { DiffMetaKeys } from "../../types/DiffMetaKeys"
+import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 
@@ -26,14 +27,40 @@ export const DdlTableDiffsViewer: FC<DdlTableDiffsViewerProps> =
     }
 
     return (
-      <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="Async API Operation Viewer" />}>
+      <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="DDL Table Diffs Viewer" />}>
         <DdlTableDiffsViewerInner {...props} />
       </ErrorBoundary>
     )
   })
 
 const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
-  memo<DdlTableDiffsViewerProps>(() => {
+  memo<DdlTableDiffsViewerProps>(props => {
+    const {
+      mergedSource: source,
+      tableKey,
+      navigationCallback,
+      devMode = false,
+      diffMetaKeys,
+    } = props
+
+    const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
+
+    const treeBuilder = useMemo(
+      () => new DdlApiTreeWithDiffsBuilder({
+        source,
+        tableKey,
+        diffsMetaKeys: diffMetaKeys,
+        logger,
+      }),
+      [source, tableKey, diffMetaKeys, logger],
+    )
+    const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
+
+    logger.debug('[DDL API Diffs] Original Source:', source)
+    logger.debug('[DDL API Diffs] Table Key:', tableKey)
+    logger.debug('[DDL API Diffs] Navigation Callback:', navigationCallback)
+    logger.debug('[DDL API Diffs] Tree:', tree)
+
     return (
       <div>
         <h1>DDL Table Diffs Viewer</h1>

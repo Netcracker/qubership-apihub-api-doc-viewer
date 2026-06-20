@@ -59,7 +59,13 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeWithDiffsBuilder(source, referenceNamePropertyKey, diffMetaKeys, operationKeys, logger),
+      () => new AsyncApiTreeWithDiffsBuilder({
+        source,
+        referenceNamePropertyKey,
+        diffsMetaKeys: diffMetaKeys,
+        operationKeys,
+        logger,
+      }),
       [source, referenceNamePropertyKey, diffMetaKeys, operationKeys, logger]
     )
     const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])
