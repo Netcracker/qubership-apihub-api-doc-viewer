@@ -18,12 +18,37 @@ Two top-level layers; never mix responsibilities:
 | Building service | `src/building-service/` | Builders, crawl rules, diff aggregators |
 
 Each layer has **abstract** contracts plus **spec-specific** implementations
-(`jso/`, `async-api/`). Abstract code defines shared API; spec sub-layers
-implement node kinds, meta, and crawl behaviour.
+(`jso/`, `async-api/`, `ddlapi/`, …). Abstract code defines shared API; spec
+sub-layers implement node kinds, meta, and crawl behaviour.
 
-When adding a feature, extend abstract contracts first, then wire the JSO
-and/or AsyncAPI sub-layer — do not fork logic only in one sub-layer unless
-the behaviour is genuinely spec-specific.
+When adding a feature, extend abstract contracts first, then wire the JSO,
+AsyncAPI, and/or DDL API sub-layer — do not fork logic only in one sub-layer
+unless the behaviour is genuinely spec-specific.
+
+## Encapsulation in building service
+
+Do **not** mix a class hierarchy with exported free functions in sibling files.
+
+| Avoid | Prefer |
+| --- | --- |
+| `shared/foo-helper.ts` exporting `buildX()` / `formatY()` imported by transformers | `protected` / `private` methods on the transformer (or builder) class |
+| Shared plain functions between plain and with-diffs paths | **Inheritance**: base transformer + subclass override/hook |
+| Exporting internal preparation steps | Export only public entry types: transformer/builder classes, crawl-rule getters, shared **types** |
+
+Rationale:
+
+1. Free helpers break encapsulation — they look like a public utility API.
+2. They hide that the logic belongs to one cohesive preparation pipeline.
+
+**Pattern:** `DdlApiSpecTransformer` owns Realm → crawl-document mapping as
+private methods; `DdlApiSpecWithDiffsTransformer` extends it and overrides
+`attachDiffMetadataToTableOrientedSpec()` (or an equivalent hook), reusing
+`transformSourceToTableOrientedSpec()` from the base class.
+
+If a module grows very large, split by **class** (e.g. a non-exported nested
+class in the same file), not by exported functions. Exception: `json-crawl`
+transformer **functions** referenced from crawl rules remain functions — they
+are rule hooks, not domain preparation logic.
 
 ## Tree without diffs
 
