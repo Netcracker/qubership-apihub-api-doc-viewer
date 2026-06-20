@@ -1,0 +1,46 @@
+import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
+import { DdlApiLogger } from "../logging";
+import {
+  DdlApiSpecTransformer,
+  DdlApiTableOrientedSpec,
+  DdlApiTableOrientedSpecColumnsSection,
+  DdlApiTableOrientedSpecIndexesSection,
+} from "./ddl-api-spec-transformer";
+
+export interface DdlApiTableOrientedSpecColumnsSectionWithDiffs extends DdlApiTableOrientedSpecColumnsSection {
+  [key: symbol]: unknown;
+}
+
+export interface DdlApiTableOrientedSpecIndexesSectionWithDiffs extends DdlApiTableOrientedSpecIndexesSection {
+  [key: symbol]: unknown;
+}
+
+export interface DdlApiTableOrientedSpecWithDiffs extends DdlApiTableOrientedSpec {
+  readonly columns: DdlApiTableOrientedSpecColumnsSectionWithDiffs;
+  readonly indexes: DdlApiTableOrientedSpecIndexesSectionWithDiffs;
+  [key: symbol]: unknown;
+}
+
+export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
+  constructor(
+    logger: DdlApiLogger,
+    protected readonly diffsMetaKeys: DiffMetaKeys,
+  ) {
+    super(logger)
+  }
+
+  public transformSourceToTableOrientedSpecWithDiffs(
+    source: unknown,
+    tableKey: TableKey,
+  ): DdlApiTableOrientedSpecWithDiffs | null {
+    const prepared = this.transformSourceToTableOrientedSpec(source, tableKey)
+    if (!prepared) {
+      return null
+    }
+
+    // TODO: attach merged-document diff metadata under diffsMetaKeys on crawl fragments
+    void this.diffsMetaKeys
+    return prepared as DdlApiTableOrientedSpecWithDiffs
+  }
+}
