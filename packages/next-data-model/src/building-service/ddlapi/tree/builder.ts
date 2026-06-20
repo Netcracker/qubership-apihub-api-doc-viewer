@@ -14,7 +14,7 @@ import { NodeDataPickFunction } from "../../abstract/tree/node-data/builder";
 import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeCrawlState } from "../json-crawl-entities/state/types";
-import { createDdlApiLogger, DdlApiLogger } from "../logging";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { DdlApiSpecTransformer } from "../shared/ddl-api-spec-transformer";
 import { createDdlApiTreeBuildingHooks } from "./building-hooks";
 import { DdlApiNodeDataBuilder } from "./node-data/builder";
@@ -43,7 +43,7 @@ export class DdlApiTreeBuilder extends TreeBuilder<
   constructor(
     private readonly source: unknown,
     private readonly tableKey: TableKey,
-    private readonly logger: DdlApiLogger = createDdlApiLogger(),
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new DdlApiTree();

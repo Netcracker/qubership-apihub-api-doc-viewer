@@ -49,7 +49,7 @@ import {
   DDL_API_COLUMNS_SECTION_TITLE,
   DDL_API_INDEXES_SECTION_TITLE,
 } from "../json-crawl-entities/transformers/constants/constants";
-import { DdlApiLogger } from "../logging";
+import { BuildingServiceLogger } from "../../../loggers";
 
 export interface DdlApiTableOrientedSpecColumnsSection extends DdlApiSectionHeaderRowValue {
   readonly items: readonly DdlApiColumnRowValue[];
@@ -67,7 +67,7 @@ export interface DdlApiTableOrientedSpec extends DdlApiTableRowValue {
 
 export class DdlApiSpecTransformer {
   constructor(
-    protected readonly logger: DdlApiLogger,
+    protected readonly logger: BuildingServiceLogger,
   ) { }
 
   public transformSourceToTableOrientedSpec(

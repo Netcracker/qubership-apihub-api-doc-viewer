@@ -5,6 +5,7 @@ import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
@@ -39,6 +40,7 @@ export class JsoTreeBuilder extends TreeBuilder<
   constructor(
     private readonly source: unknown,
     private readonly supportJsonSchema: boolean = false,
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new JsoTree();

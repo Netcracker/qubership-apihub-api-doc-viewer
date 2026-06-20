@@ -1,6 +1,6 @@
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { DdlApiLogger } from "../logging";
+import { BuildingServiceLogger } from "../../../loggers";
 import {
   DdlApiSpecTransformer,
   DdlApiTableOrientedSpec,
@@ -24,7 +24,7 @@ export interface DdlApiTableOrientedSpecWithDiffs extends DdlApiTableOrientedSpe
 
 export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   constructor(
-    logger: DdlApiLogger,
+    logger: BuildingServiceLogger,
     protected readonly diffsMetaKeys: DiffMetaKeys,
   ) {
     super(logger)

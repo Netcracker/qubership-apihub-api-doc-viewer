@@ -1,7 +1,8 @@
 import { DisplayMode } from "@apihub/types/DisplayMode"
+import { DdlApiTreeBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
 import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
-import { FC, memo } from "react"
+import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 
@@ -29,12 +30,21 @@ export const DdlTableViewer: FC<DdlTableViewerProps> =
 
 const DdlTableViewerInner: FC<DdlTableViewerProps> =
   memo<DdlTableViewerProps>((props) => {
-    const { source, tableKey, navigationCallback } = props;
+    const { source, tableKey, navigationCallback, devMode = false } = props
 
-    console.debug('DDL API Source:', source);
-    console.debug('DDL API Table Key:', tableKey);
-    console.debug('DDL API Navigation Callback:', navigationCallback);
-    
+    const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
+
+    const treeBuilder = useMemo(
+      () => new DdlApiTreeBuilder(source, tableKey, logger),
+      [source, tableKey, logger],
+    )
+    const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
+
+    logger.debug('[DDL API] Original Source:', source)
+    logger.debug('[DDL API] Table Key:', tableKey)
+    logger.debug('[DDL API] Navigation Callback:', navigationCallback)
+    logger.debug('[DDL API] Tree:', tree)
+
     return (
       <div>
         <h1>DDL Table Viewer</h1>

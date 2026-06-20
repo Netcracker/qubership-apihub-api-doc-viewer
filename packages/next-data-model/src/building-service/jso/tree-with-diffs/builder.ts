@@ -14,7 +14,7 @@ import { annotation, breaking, deprecated, DiffType, isDiffAdd, isDiffRemove, is
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { AsyncApiLogger, createAsyncApiLogger } from "../../async-api/logging";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { getJsoWithDiffsCrawlRules } from "../json-crawl-entities/rules/rules.jso-with-diffs";
 import { JsoWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { JsoTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
@@ -41,7 +41,7 @@ export class JsoTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     private readonly supportJsonSchema: boolean = false,
     private readonly referenceNamePropertyKey: symbol,
     private readonly diffsMetaKeys: DiffMetaKeys,
-    private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new JsoTreeWithDiffs()

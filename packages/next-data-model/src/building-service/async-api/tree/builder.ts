@@ -13,7 +13,7 @@ import { TreeBuilder } from "../../abstract/tree/builder";
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeCrawlState } from "../json-crawl-entities/state/types";
-import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { AsyncApiSpecTransformer } from "../shared/async-api-spec-transformer";
 import { createAsyncApiTreeBuildingHooks } from "./building-hooks";
 import { AsyncApiNodeDataBuilder } from "./node-data/builder";
@@ -43,7 +43,7 @@ export class AsyncApiTreeBuilder extends TreeBuilder<
     private readonly source: unknown,
     private readonly referenceNamePropertyKey: symbol,
     private readonly operationKeys?: OperationKeys,
-    private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new AsyncApiTree();

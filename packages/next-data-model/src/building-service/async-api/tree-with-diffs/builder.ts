@@ -17,7 +17,7 @@ import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/dif
 import { getAsyncApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { AsyncApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { AsyncApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { AsyncApiLogger, createAsyncApiLogger } from "../logging";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { AsyncApiSpecWithDiffsTransformer } from "../shared/async-api-spec-with-diffs-transformer";
 import { createAsyncApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { AsyncApiNodeDataWithDiffsBuilder } from "./node-data/builder";
@@ -42,7 +42,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     private readonly referenceNamePropertyKey: symbol,
     private readonly diffsMetaKeys: DiffMetaKeys,
     private readonly operationKeys?: OperationKeys,
-    private readonly logger: AsyncApiLogger = createAsyncApiLogger(),
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new AsyncApiTreeWithDiffs()

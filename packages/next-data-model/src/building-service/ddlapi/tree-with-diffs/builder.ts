@@ -25,7 +25,7 @@ import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/dif
 import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { createDdlApiLogger, DdlApiLogger } from "../logging";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { DdlApiSpecWithDiffsTransformer } from "../shared/ddl-api-spec-with-diffs-transformer";
 import { createDdlApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { DdlApiNodeDataWithDiffsBuilder } from "./node-data/builder";
@@ -50,7 +50,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     private readonly tableKey: TableKey,
     private readonly diffsMetaKeys: DiffMetaKeys,
     private readonly referenceNamePropertyKey: symbol,
-    private readonly logger: DdlApiLogger = createDdlApiLogger(),
+    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
   ) {
     super()
     this.tree = new DdlApiTreeWithDiffs()
