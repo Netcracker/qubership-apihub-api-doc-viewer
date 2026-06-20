@@ -50,6 +50,29 @@ class in the same file), not by exported functions. Exception: `json-crawl`
 transformer **functions** referenced from crawl rules remain functions — they
 are rule hooks, not domain preparation logic.
 
+## Type narrowing (type guards)
+
+When you would write a type assertion (`value as SomeType`) and are confident
+the runtime shape matches, prefer a **type guard** (`value is SomeType`) instead.
+
+| Avoid | Prefer |
+| --- | --- |
+| `schemaType as IntegerType` after a `kind` check | `isIntegerType(schemaType)` from shared guards |
+| `spec as DdlApiTableOrientedSpecWithDiffs` | Explicit construction or a guard-backed factory method |
+| Scattered `as` at every call site | Reusable guards in `src/utilities.ts` or `src/shared/<spec>/guards/` |
+
+Type guards are **too generic to hide inside a single class** — place them in the
+package shared utilities area when reused (see `src/shared/ddlapi/guards/`).
+Domain preparation logic stays on the transformer/builder; guards only narrow types.
+
+Apply this rule in `packages/next-data-model/` and `packages/api-doc-viewer/` when
+you touch code that needs narrowing. Exceptions: `as const`, import aliases, and
+reduce accumulators typed via a generic parameter instead of `as`.
+
+**Pattern:** `DdlApiSpecTransformer` uses `isBoolType`, `isIntegerType`, … from
+`shared/ddlapi/guards/`; `DdlApiSpecWithDiffsTransformer` builds the with-diffs
+spec via `createTableOrientedSpecWithDiffs()` instead of casting.
+
 ## Tree without diffs
 
 `TreeBuilder` subclasses (e.g. `JsoTreeBuilder`) crawl the source document
