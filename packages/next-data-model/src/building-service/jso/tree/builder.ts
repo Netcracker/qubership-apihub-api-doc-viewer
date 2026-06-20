@@ -5,6 +5,7 @@ import { JsoTree } from "@apihub/next-data-model/model/jso/tree/tree.impl";
 import { JsoTreeNodeKind, JsoTreeNodeKindsList } from "@apihub/next-data-model/model/jso/types/node-kind";
 import { JsoTreeNodeMeta } from "@apihub/next-data-model/model/jso/types/node-meta";
 import { JsoPropertyValueTypes } from "@apihub/next-data-model/model/jso/types/node-value-type";
+import { JsoTreeBuilderParams } from "@apihub/next-data-model/shared/jso/types/tree-builder-params";
 import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
@@ -35,14 +36,22 @@ export class JsoTreeBuilder extends TreeBuilder<
   JsoTreeNodeMeta
 > {
   public readonly tree: JsoTree;
+  private readonly source: unknown;
+  private readonly supportJsonSchema: boolean;
+  private readonly logger: BuildingServiceLogger;
   private readonly nodeDataBuilder: JsoNodeDataBuilder;
 
-  constructor(
-    private readonly source: unknown,
-    private readonly supportJsonSchema: boolean = false,
-    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
-  ) {
+  constructor(params: JsoTreeBuilderParams) {
+    const {
+      source,
+      supportJsonSchema = false,
+      logger = createBuildingServiceLogger(),
+    } = params
+
     super()
+    this.source = source
+    this.supportJsonSchema = supportJsonSchema
+    this.logger = logger
     this.tree = new JsoTree();
     this.nodeDataBuilder = new JsoNodeDataBuilder()
   }

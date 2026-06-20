@@ -50,7 +50,11 @@ const JsoViewerInner: FC<JsoViewerProps> = memo<JsoViewerProps>(props => {
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
   const builder = useMemo(
-    () => new JsoTreeBuilder(source, supportJsonSchema, logger),
+    () => new JsoTreeBuilder({
+      source,
+      supportJsonSchema,
+      logger,
+    }),
     [source, supportJsonSchema, logger],
   )
   const tree = useMemo(() => builder.build(), [builder])

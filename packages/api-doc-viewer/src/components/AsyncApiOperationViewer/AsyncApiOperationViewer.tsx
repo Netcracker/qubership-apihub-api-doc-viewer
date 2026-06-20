@@ -49,7 +49,12 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
     const logger = useMemo(() => createAsyncApiLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
-      () => new AsyncApiTreeBuilder(source, referenceNamePropertyKey, operationKeys, logger),
+      () => new AsyncApiTreeBuilder({
+        source,
+        referenceNamePropertyKey,
+        operationKeys,
+        logger,
+      }),
       [source, operationKeys, referenceNamePropertyKey, logger]
     )
     const tree = useMemo(() => treeBuilder?.build() ?? null, [treeBuilder])

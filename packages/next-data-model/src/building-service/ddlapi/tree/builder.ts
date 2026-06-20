@@ -5,6 +5,7 @@ import { DdlApiTree } from "@apihub/next-data-model/model/ddlapi/tree/tree.impl"
 import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
+import { DdlApiTreeBuilderParams } from "@apihub/next-data-model/shared/ddlapi/types/tree-builder-params";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
 import { ComplexTreeNodeParams, ITreeNode, SimpleTreeNodeParams, TreeNodeComplexityTypes, TreeNodeParams } from "../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../utilities";
@@ -37,15 +38,23 @@ export class DdlApiTreeBuilder extends TreeBuilder<
   DdlApiTreeNodeMeta
 > {
   public readonly tree: DdlApiTree;
+  private readonly source: unknown;
+  private readonly tableKey: TableKey;
+  private readonly logger: BuildingServiceLogger;
   private readonly specificationTransformer: DdlApiSpecTransformer;
   private readonly nodeDataBuilder: DdlApiNodeDataBuilder;
 
-  constructor(
-    private readonly source: unknown,
-    private readonly tableKey: TableKey,
-    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
-  ) {
+  constructor(params: DdlApiTreeBuilderParams) {
+    const {
+      source,
+      tableKey,
+      logger = createBuildingServiceLogger(),
+    } = params
+
     super()
+    this.source = source
+    this.tableKey = tableKey
+    this.logger = logger
     this.tree = new DdlApiTree();
     this.specificationTransformer = new DdlApiSpecTransformer(this.logger)
     this.nodeDataBuilder = new DdlApiNodeDataBuilder()

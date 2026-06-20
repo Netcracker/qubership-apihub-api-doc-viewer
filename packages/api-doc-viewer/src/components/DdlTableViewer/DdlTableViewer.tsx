@@ -35,7 +35,11 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
     const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
-      () => new DdlApiTreeBuilder(source, tableKey, logger),
+      () => new DdlApiTreeBuilder({
+        source,
+        tableKey,
+        logger,
+      }),
       [source, tableKey, logger],
     )
     const tree = useMemo(() => treeBuilder.build(), [treeBuilder])

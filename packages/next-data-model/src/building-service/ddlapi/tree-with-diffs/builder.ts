@@ -17,15 +17,16 @@ import { DdlApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/ty
 import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
+import { DdlApiTreeWithDiffsBuilderParams } from "@apihub/next-data-model/shared/ddlapi/types/tree-builder-params";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
+import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { TreeWithDiffsBuilder } from "../../abstract/tree-with-diffs/builder";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
 import { DdlApiSpecWithDiffsTransformer } from "../shared/ddl-api-spec-with-diffs-transformer";
 import { createDdlApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { DdlApiNodeDataWithDiffsBuilder } from "./node-data/builder";
@@ -42,17 +43,26 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
 > {
   public readonly tree: DdlApiTreeWithDiffs;
+  private readonly source: unknown;
+  private readonly tableKey: TableKey;
+  private readonly diffsMetaKeys: DiffMetaKeys;
+  private readonly logger: BuildingServiceLogger;
   private readonly specificationTransformer: DdlApiSpecWithDiffsTransformer;
   private readonly nodeDataBuilder: DdlApiNodeDataWithDiffsBuilder;
 
-  constructor(
-    private readonly source: unknown,
-    private readonly tableKey: TableKey,
-    private readonly diffsMetaKeys: DiffMetaKeys,
-    private readonly referenceNamePropertyKey: symbol,
-    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
-  ) {
+  constructor(params: DdlApiTreeWithDiffsBuilderParams) {
+    const {
+      source,
+      tableKey,
+      diffsMetaKeys,
+      logger = createBuildingServiceLogger(),
+    } = params
+
     super()
+    this.source = source
+    this.tableKey = tableKey
+    this.diffsMetaKeys = diffsMetaKeys
+    this.logger = logger
     this.tree = new DdlApiTreeWithDiffs()
     this.specificationTransformer = new DdlApiSpecWithDiffsTransformer(
       this.logger,
@@ -270,7 +280,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     }
     return DdlApiNodeDescendantDiffsAggregatorFactory
       .instance(kind)
-      .aggregate(params.value, this.diffsMetaKeys, this.referenceNamePropertyKey)
+      .aggregate(params.value, this.diffsMetaKeys)
   }
 
   protected updateNodeDiffsByDescendantDiffs(

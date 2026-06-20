@@ -8,6 +8,7 @@ import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds, AsyncApiTreeNodeKindsList 
 import { AsyncApiTreeNodeMeta } from "@apihub/next-data-model/model/async-api/types/node-meta";
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
+import { AsyncApiTreeWithDiffsBuilderParams } from "@apihub/next-data-model/shared/async-api/types/tree-builder-params";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { annotation, breaking, deprecated, DiffType, nonBreaking, risky, unclassified } from "@netcracker/qubership-apihub-api-diff";
@@ -34,17 +35,29 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null
 > {
   public readonly tree: AsyncApiTreeWithDiffs;
+  private readonly source: unknown;
+  private readonly referenceNamePropertyKey: symbol;
+  private readonly diffsMetaKeys: DiffMetaKeys;
+  private readonly operationKeys?: OperationKeys;
+  private readonly logger: BuildingServiceLogger;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
   private readonly nodeDataBuilder: AsyncApiNodeDataWithDiffsBuilder;
 
-  constructor(
-    private readonly source: unknown,
-    private readonly referenceNamePropertyKey: symbol,
-    private readonly diffsMetaKeys: DiffMetaKeys,
-    private readonly operationKeys?: OperationKeys,
-    private readonly logger: BuildingServiceLogger = createBuildingServiceLogger(),
-  ) {
+  constructor(params: AsyncApiTreeWithDiffsBuilderParams) {
+    const {
+      source,
+      referenceNamePropertyKey,
+      diffsMetaKeys,
+      operationKeys,
+      logger = createBuildingServiceLogger(),
+    } = params
+
     super()
+    this.source = source
+    this.referenceNamePropertyKey = referenceNamePropertyKey
+    this.diffsMetaKeys = diffsMetaKeys
+    this.operationKeys = operationKeys
+    this.logger = logger
     this.tree = new AsyncApiTreeWithDiffs()
     this.specificationTransformer = new AsyncApiSpecWithDiffsTransformer(
       this.referenceNamePropertyKey,

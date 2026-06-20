@@ -43,19 +43,16 @@ const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
       diffMetaKeys,
     } = props
 
-    const referenceNamePropertyKey = Symbol('referenceName')
-
     const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
     const treeBuilder = useMemo(
-      () => new DdlApiTreeWithDiffsBuilder(
+      () => new DdlApiTreeWithDiffsBuilder({
         source,
         tableKey,
-        diffMetaKeys,
-        referenceNamePropertyKey,
+        diffsMetaKeys: diffMetaKeys,
         logger,
-      ),
-      [source, tableKey, diffMetaKeys, referenceNamePropertyKey, logger],
+      }),
+      [source, tableKey, diffMetaKeys, logger],
     )
     const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
 

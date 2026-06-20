@@ -58,19 +58,16 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
     // indent-specific
     const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
-    const referenceNamePropertyKey = Symbol('referenceName')
-
     const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
     const builder = useMemo(
-      () => new JsoTreeWithDiffsBuilder(
+      () => new JsoTreeWithDiffsBuilder({
         source,
         supportJsonSchema,
-        referenceNamePropertyKey,
-        diffMetaKeys,
+        diffsMetaKeys: diffMetaKeys,
         logger,
-      ),
-      [source, supportJsonSchema, referenceNamePropertyKey, diffMetaKeys, logger],
+      }),
+      [source, supportJsonSchema, diffMetaKeys, logger],
     )
     const tree = useMemo(() => builder.build(), [builder])
 
