@@ -39,8 +39,24 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return null
     }
 
+    return this.attachDiffMetadataToTableOrientedSpec(prepared)
+  }
+
+  protected attachDiffMetadataToTableOrientedSpec(
+    spec: DdlApiTableOrientedSpec,
+  ): DdlApiTableOrientedSpecWithDiffs {
     // TODO: attach merged-document diff metadata under diffsMetaKeys on crawl fragments
     void this.diffsMetaKeys
-    return prepared as DdlApiTableOrientedSpecWithDiffs
+    return this.createTableOrientedSpecWithDiffs(spec)
+  }
+
+  protected createTableOrientedSpecWithDiffs(
+    spec: DdlApiTableOrientedSpec,
+  ): DdlApiTableOrientedSpecWithDiffs {
+    return {
+      ...spec,
+      columns: { ...spec.columns },
+      indexes: { ...spec.indexes },
+    }
   }
 }
