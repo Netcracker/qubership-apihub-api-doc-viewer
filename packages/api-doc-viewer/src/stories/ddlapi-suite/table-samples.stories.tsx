@@ -102,6 +102,7 @@ const createSampleStory = (sampleId: string): Story => {
         source={loaded!.realm}
         tableKey={sample.tableKey}
         navigationCallback={navigationCallback}
+        devMode
       />
     ),
   };

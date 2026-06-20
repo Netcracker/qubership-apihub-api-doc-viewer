@@ -57,6 +57,7 @@ export const PrimaryKeyAndDefaults: Story = {
       source={loaded!.realm}
       tableKey={{ schemaName: "public", name: "items" }}
       navigationCallback={navigationCallback}
+      devMode
     />
   ),
 };
