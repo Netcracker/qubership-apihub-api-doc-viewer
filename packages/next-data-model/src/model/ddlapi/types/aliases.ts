@@ -4,8 +4,15 @@ import { DdlApiTreeNodeValue } from "../tree/node-value"
 import { DdlApiTreeNodeKind } from "./node-kind"
 import { DdlApiTreeNodeMeta } from "./node-meta"
 
-export type DdlApiTreeNode =
-  ITreeNode<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null, DdlApiTreeNodeKind, DdlApiTreeNodeMeta>
+export type DdlApiTreeNode<
+  K extends DdlApiTreeNodeKind = DdlApiTreeNodeKind
+> = ITreeNode<DdlApiTreeNodeValue<K> | null, K, DdlApiTreeNodeMeta>
 
-export type DdlApiTreeNodeWithDiffs =
-  ITreeNodeWithDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null, DdlApiTreeNodeKind, DdlApiTreeNodeMeta, DdlApiTreeNodeValue<DdlApiTreeNodeKind>>
+export type DdlApiTreeNodeWithDiffs<
+  K extends DdlApiTreeNodeKind = DdlApiTreeNodeKind
+> = ITreeNodeWithDiffs<
+  DdlApiTreeNodeValue<K> | null,
+  K,
+  DdlApiTreeNodeMeta,
+  DdlApiTreeNodeValue<K>
+>

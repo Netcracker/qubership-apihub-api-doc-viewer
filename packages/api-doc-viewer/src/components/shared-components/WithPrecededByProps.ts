@@ -18,6 +18,12 @@ export enum PrecededBy {
   */
   SERVER_BLOCK = 'server-block',
   SERVER_ADDRESS_ROW = 'server-address-row',
+  DDL_TABLE_HEADER_ROW = 'ddl-table-header-row',
+  DDL_TABLE_SCHEMA_ROW = 'ddl-table-schema-row',
+  DDL_TABLE_DESCRIPTION_ROW = 'ddl-table-description-row',
+  DDL_SECTION_HEADER = 'ddl-section-header',
+  DDL_COLUMN_ROW = 'ddl-column-row',
+  DDL_INDEX_ROW = 'ddl-index-row',
 }
 
 export type WithPrecededByProps = {
