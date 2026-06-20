@@ -80,6 +80,28 @@ Common viewer pattern: outer wrapper may return `null` when `source === null`
 then returns `null` when the tree root is missing or the wrong kind (see
 `AsyncApiOperationViewer` / `DdlTableViewer`).
 
+## Type narrowing (type guards)
+
+When you would write a type assertion (`value as SomeType`) or assign
+`childrenNodes()` to a wider node array via a type annotation alone, prefer a
+**type guard** (`value is SomeType`) instead.
+
+| Avoid | Prefer |
+| --- | --- |
+| `node.childrenNodes() as DdlApiTreeNode[]` | `getDdlApiChildNodes(node)` |
+| `const children: DdlApiTreeNode[] = parent.childrenNodes()` | `getDdlApiChildNodes(parent)` |
+| Per-kind `as` at every viewer call site | Reusable guards in `src/utils/<spec>/node-type-checkers.ts` |
+
+`ITreeNode.childrenNodes()` is typed with the **parent** node's value/kind
+generics, so child lists need guard-backed helpers before dispatching to
+per-kind viewers. Place guards next to other viewer utilities (see
+`src/utils/ddlapi/node-type-checkers.ts`: `isColumnNode`, `getColumnChildNodes`,
+…). Exceptions: `as const`, import aliases, and reduce accumulators typed via a
+generic parameter instead of `as`.
+
+Apply this rule in `packages/api-doc-viewer/` when touching tree walk or node
+dispatch code. For builder/transformer narrowing, see `next-data-model-authoring`.
+
 ## Storybook and samples
 
 Stories live in `src/stories/` grouped by suite (`jso-suite/`,
