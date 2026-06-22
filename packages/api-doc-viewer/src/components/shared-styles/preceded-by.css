@@ -93,27 +93,84 @@
   padding-bottom: 8px;
 }
 
+.title-row-content[data-precededby="ddl-column-after-additional-info-row"] {
+  margin-top: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .title-row-content[data-precededby="ddl-index-row"] {
   padding-top: 8px;
 }
 
-.ddl-api-property .title-row-content[data-precededby="ddl-section-header"] {
-  padding-top: 0;
-  margin-top: 8px;
-}
-
 .ddl-api-property .title-row-content {
+  padding-top: 0;
   padding-bottom: 0;
 }
 
-.ddl-api-property .title-row-content[data-precededby="ddl-column-row"] {
-  padding-top: 0;
-  padding-bottom: 0;
+.ddl-api-property .level-indicator-column {
+  align-self: stretch;
+}
+
+/* First column/index title — keep existing top margin from section header. */
+.ddl-api-property .title-row-content[data-precededby="ddl-section-header"] {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* .ddl-api-property .title-row-content[data-precededby="ddl-section-header"] .ddl-api-property-row-body {
+  padding-top: 8px;
+  padding-bottom: 8px;
+} */
+
+/*
+  Middle and last column/index titles: symmetric vertical padding on content only.
+  LevelIndicator spans the full row height (min 26 px) for a continuous line.
+*/
+.ddl-api-property .title-row-content[data-precededby="ddl-column-row"] .ddl-api-property-row-body,
+.ddl-api-property .title-row-content[data-precededby="ddl-column-after-additional-info-row"] .ddl-api-property-row-body,
+.ddl-api-property .title-row-content[data-precededby="ddl-index-row"] .ddl-api-property-row-body {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.ddl-api-property .title-row-content[data-precededby="ddl-column-row"],
+.ddl-api-property .title-row-content[data-precededby="ddl-column-after-additional-info-row"],
+.ddl-api-property .title-row-content[data-precededby="ddl-index-row"] {
   margin-top: 0;
   margin-bottom: 0;
 }
 
+/* Last column/index row in list — 16 px bottom margin on TitleRow or AdditionalInfoRow. */
+.ddl-api-property .title-row-content[data-ddl-list-last-row="true"],
+.ddl-api-property .additional-info-row-content[data-ddl-list-last-row="true"] {
+  margin-bottom: 0;
+}
+
 /* DDL API End */
+
+/* ─── AdditionalInfoRowContent ─────────────────────────────────────────────── */
+
+.additional-info-row-content[data-precededby="ddl-column-row"] {
+  padding-top: 4px;
+}
+
+.additional-info-row-content[data-precededby="ddl-column-after-additional-info-row"] {
+  padding-top: 0;
+}
+
+.ddl-api-property .additional-info-row-content,
+.ddl-api-property .additional-info-row-content[data-precededby="ddl-column-row"],
+.ddl-api-property .additional-info-row-content[data-precededby="ddl-column-after-additional-info-row"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ddl-api-property .additional-info-row-content[data-precededby="ddl-column-row"] .ddl-api-property-row-body,
+.ddl-api-property .additional-info-row-content[data-precededby="ddl-column-after-additional-info-row"] .ddl-api-property-row-body {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
 
 /* ─── TextRowContent ────────────────────────────────────────────────────────── */
 /* Overrides Tailwind's pt-1 (4 px) when a specific context is known.

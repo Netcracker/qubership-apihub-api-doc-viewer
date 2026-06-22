@@ -8,7 +8,7 @@ import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadges } from "./ColumnRowBadges"
 import { ADDITIONAL_INFO_LABEL_DEFAULT, ADDITIONAL_INFO_LABEL_GENERATED } from "./conts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
@@ -18,10 +18,17 @@ import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
 type ColumnNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>
+  additionalInfoPrecededBy?: PrecededBy
+  isLastInList?: boolean
 }
 
 export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
-  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const {
+    node,
+    additionalInfoPrecededBy = PrecededBy.DDL_COLUMN_ROW,
+    isLastInList = false,
+    [ATTRIBUTE_PRECEDED_BY]: precededBy,
+  } = props
 
   const displayMode = useDisplayMode()
   const value = node.value()
@@ -86,6 +93,11 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     [displayMode, value?.description],
   )
 
+  const hasAdditionalInfoRows = !!(value?.defaultValue || value?.generatedExpression)
+  const isTitleListLastRow = isLastInList && !hasAdditionalInfoRows
+  const isDefaultAdditionalInfoListLastRow = isLastInList && !!value?.defaultValue && !value?.generatedExpression
+  const isGeneratedAdditionalInfoListLastRow = isLastInList && !!value?.generatedExpression
+
   if (!value) {
     return null
   }
@@ -94,6 +106,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     <div data-testid="ddl-column-node-viewer" className="flex flex-col ddl-api-property">
       <TitleRow
         data-precededby={precededBy}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}
         value={value.columnName}
         expandable={false}
         expanded={true}
@@ -112,14 +125,20 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
       )}
       {value.defaultValue && (
         <AdditionalInfoRow
-          data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          data-precededby={additionalInfoPrecededBy}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
         />
       )}
       {value.generatedExpression && (
         <AdditionalInfoRow
-          data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          data-precededby={
+            value.defaultValue
+              ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
+              : additionalInfoPrecededBy
+          }
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_GENERATED}
           subheader={generatedAdditionalInfoSubheader}
         />

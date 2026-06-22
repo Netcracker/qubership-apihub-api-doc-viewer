@@ -6,17 +6,18 @@ import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
-import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>
+  isLastInList?: boolean
 }
 
 export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
-  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { node, isLastInList = false, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const value = node.value()
 
@@ -63,6 +64,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
     <div data-testid="ddl-index-node-viewer" className="flex flex-col ddl-api-property">
       <TitleRow
         data-precededby={precededBy}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isLastInList || undefined }}
         value={indexTitle}
         expandable={false}
         expanded={true}

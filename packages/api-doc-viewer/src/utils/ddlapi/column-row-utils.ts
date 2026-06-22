@@ -1,0 +1,11 @@
+import { DdlApiColumnRowValue } from '@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value'
+
+export function hasDdlColumnAdditionalInfoRows(
+  value: DdlApiColumnRowValue | null | undefined,
+): boolean {
+  if (!value) {
+    return false
+  }
+
+  return !!(value.defaultValue || value.generatedExpression)
+}

@@ -176,23 +176,165 @@ stack and passes domain content into `subheader`; `AdditionalInfoRow` only
 provides layout/indent/label styling — it does not import badges or formatters.
 
 **Indent:** mirror `TitleRowContent` (`LevelIndicator` + expander column), but
-replace `Expander` / `NestingHorizontalIndicator` with an empty **`w-5`**
-spacer. This is not `LevelIndicator lastInvisible` and not removing vertical
-lines entirely.
+replace `Expander` / `NestingHorizontalIndicator` with an empty **`w-4`**
+spacer (same horizontal footprint as the expander column). This is not
+`LevelIndicator lastInvisible` and not removing vertical lines entirely.
 
 **Label styling:** `#626D82`, `font-size: 12px`, `font-weight: 400`
 (`.additional-info-row-label`).
 
-**Integration example** (append after existing header/description rows):
+### Property list viewers (DDL columns/indexes, JSO, future specs)
+
+Several viewers render a **flat or nested list of properties** under a section
+header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
+`JsoPropertyNodeViewer`, …) wrapped in a property container class
+(`.ddl-api-property`, `.jso-property`, …).
+
+| Concern | List parent (e.g. `ColumnsNodeViewer`, `IndexesNodeViewer`) | Item node viewer (e.g. `ColumnNodeViewer`) |
+| --- | --- | --- |
+| Section `TitleRow` | Own `data-precededby` from ancestor | — |
+| `LevelContext` | `Provider value={level + 1}` around children | Consumes level for `LevelIndicator` |
+| Cross-sibling `data-precededby` | **Precompute in one pass** (`buildColumnViewerContexts`, `buildIndexViewerContexts`) | Receive as props; do not inspect previous sibling |
+| List position (first / middle / last) | Set `isLastInList`; pass to children | Apply terminal-row marker on **last structural row** |
+| Vertical spacing between items | — | CSS via `preceded-by.css` + list markers |
+
+**Reference implementations:**
+
+- DDL columns — `ColumnsNodeViewer` → `ColumnNodeViewer` (stacked
+  `TitleRow` / `TextRow` / `AdditionalInfoRow`).
+- DDL indexes — `IndexesNodeViewer` → `IndexNodeViewer` (title only today;
+  same list-spacing rules).
+- JSO — `JsoViewer` → `JsoPropertyNodeViewer` (recursive; continuous vertical
+  lines without extra row-body split because `.jso-property` rows carry **no**
+  vertical padding on the row wrapper).
+
+When adding OpenAPI / JSON Schema / GraphQL property lists, mirror the **list
+parent precomputes context, item viewer renders stack** split — do not embed
+“what came before in the list” logic inside each child.
+
+### `LevelIndicator` continuity and row height (non-obvious)
+
+Product expectation for property lists:
+
+1. **Continuous vertical grey line** through all items in a section (no 1 px
+   white gaps between row segments).
+2. **Minimum row height 26 px** — the vertical line segment must span the full
+   row, not a shorter inner band.
+3. **Symmetric vertical indents** between items in the **content** area (8 px
+   typical for title rows, 4 px for compact additional-info rows).
+4. **First item** — keep top margin from section header (8 px on
+   `DDL_SECTION_HEADER`).
+5. **Last item** — 16 px bottom margin on the **terminal row** (`TitleRow` or
+   last `AdditionalInfoRow`, not description `TextRow` unless product says
+   otherwise).
+
+**Why this is easy to break (session lesson):**
+
+Row components (`.title-row-content`, `.additional-info-row-content`) are flex
+rows. `LevelIndicator` lives in the **flex content box**. **Vertical padding or
+margin on the row wrapper** sits outside that box (or creates empty bands the
+line does not paint). Symptom: short grey segments and visible gaps — even when
+`min-h-[26px]` is set on the row.
+
+**Correct layout for `.ddl-api-property` (DDL — implemented):**
+
+```
+.title-row-content.flex.items-stretch.min-h-[26px]   ← NO vertical padding
+├── .level-indicator-column.self-stretch           ← line spans full row height
+│   ├── LevelIndicator
+│   └── Expander (or w-4 spacer on AdditionalInfoRow)
+└── .ddl-api-property-row-body                       ← vertical padding HERE only
+    ├── TextValue (title)
+    └── subheader (type, badges, …)
+```
+
+- `TitleRowUsage.DdlApiProperty` in `TitleRowContent`: indent column in
+  `header`; **`headerValue` only inside** `.ddl-api-property-row-body` — never
+  in both (duplicates titles and breaks layout).
+- Non-DDL `TitleRow` stays `{header}{subheader}` unchanged.
+- Row wrappers inside `.ddl-api-property` must **explicitly zero** vertical
+  padding in CSS — global `[data-precededby="ddl-column-row"]` rules still add
+  `padding-top` / `padding-bottom` unless overridden with
+  `.ddl-api-property .title-row-content { padding-top: 0; padding-bottom: 0; }`.
+
+**Margin vs padding for list spacing:**
+
+- **Padding on `.ddl-api-property-row-body`** — content indents; line stays
+  continuous.
+- **Margin on row wrapper** — only for **list boundaries** (first item
+  `margin-top: 8px` from section; last item `margin-bottom: 16px` via
+  `data-ddl-list-last-row="true"`).
+- **Never** use `margin-top` between middle list items — it creates line gaps.
+
+### `data-precededby`, list markers, and CSS
+
+Row components set `data-precededby={PrecededBy…}`. Enum values in
+`WithPrecededByProps.ts` must stay in sync with selectors in
+`shared-styles/preceded-by.css`.
+
+**Separate attribute for list terminal row:**
+
+- `data-ddl-list-last-row="true"` (`ATTRIBUTE_DDL_LIST_LAST_ROW`) — 16 px
+  bottom margin on the row content element; does not replace `data-precededby`
+  (chain context for top spacing is still needed).
+
+**Columns list — parent precomputes (`buildColumnViewerContexts`):**
+
+| Prop / attribute | Set on | When |
+| --- | --- | --- |
+| `data-precededby` | `ColumnNodeViewer` → `TitleRow` | First: `DDL_SECTION_HEADER`; later: `DDL_COLUMN_ROW`, or `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when **previous** column had ≥1 `AdditionalInfoRow` |
+| `additionalInfoPrecededBy` | each `AdditionalInfoRow` | `DDL_COLUMN_ROW` default; `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when previous column had additional-info rows |
+| (within column) generated row | second `AdditionalInfoRow` | `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when default row exists above |
+| `isLastInList` | `ColumnNodeViewer` | From parent index; drives `data-ddl-list-last-row` on terminal row |
+| `data-ddl-list-last-row` | `TitleRow` or last `AdditionalInfoRow` | Last column in list: title if no additional-info rows; else last additional-info row |
+
+Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
+(`defaultValue` or `generatedExpression` on `node.value()`).
+
+**Indexes list — same pattern (`buildIndexViewerContexts`):**
+
+| Prop | When |
+| --- | --- |
+| `DDL_SECTION_HEADER` | First index title |
+| `DDL_INDEX_ROW` | Later index titles |
+| `data-ddl-list-last-row` | Last index `TitleRow` only (no `AdditionalInfoRow` yet) |
+
+**CSS checklist** when adding a new property-list family:
+
+1. Add `.your-property-class .title-row-content { padding-top: 0; padding-bottom: 0; }`.
+2. Put inter-item vertical spacing on a **content wrapper**, not the row root.
+3. Use `items-stretch` on the row when an indent column must fill row height.
+4. Override global `data-precededby` padding rules with **more specific**
+   `.your-property-class .title-row-content[data-precededby="…"]` selectors.
+5. Verify in DOM: one title text node per row; vertical line height ≥ row height.
+
+### Pitfalls from DDL column/index spacing work
+
+| Mistake | Symptom | Fix |
+| --- | --- | --- |
+| Padding on row wrapper for “symmetric indent” | Gaps in vertical line; lines &lt; 26 px | Padding on content wrapper only |
+| `headerValue` in both `header` and row body (`DdlApiProperty`) | Duplicated column/index titles | Indent in `header`; title + subheader only in row body |
+| `{headerValue}{subheader}` replaced by `{rowBody}` for all usages | Section headers duplicated (`Columns Columns`) | Non-DDL: keep `{header}{subheader}`; DDL only uses row body |
+| Global `preceded-by.css` rules assumed scoped | Mystery padding on `.ddl-api-property` rows | Explicit zero padding on property row wrappers |
+| `margin-top` on middle list items | Line breaks between siblings | Use content padding; margin only first/last |
+| Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
+| `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |
+
+### Integration example (column default value row)
+
+Append after existing `TitleRow` / optional `TextRow`:
 
 ```tsx
-<AdditionalInfoRow
-  data-precededby={PrecededBy.DDL_COLUMN_ROW}
-  label={value.columnType.label}
-  subheader={(_layoutSide) => (
-    <AdditionalInfoPiece isVisible value={value.columnType.label} />
-  )}
-/>
+{value.defaultValue && (
+  <AdditionalInfoRow
+    data-precededby={additionalInfoPrecededBy}
+    {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
+    label={ADDITIONAL_INFO_LABEL_DEFAULT}
+    subheader={(_layoutSide) => (
+      <AdditionalInfoPiece isVisible value={value.defaultValue} />
+    )}
+  />
+)}
 ```
 
 ## Monorepo paths

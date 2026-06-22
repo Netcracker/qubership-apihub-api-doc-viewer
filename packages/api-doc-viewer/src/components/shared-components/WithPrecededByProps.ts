@@ -1,4 +1,5 @@
 export const ATTRIBUTE_PRECEDED_BY = 'data-precededby'
+export const ATTRIBUTE_DDL_LIST_LAST_ROW = 'data-ddl-list-last-row'
 
 export enum PrecededBy {
   ROOT = 'root',
@@ -23,9 +24,15 @@ export enum PrecededBy {
   DDL_TABLE_DESCRIPTION_ROW = 'ddl-table-description-row',
   DDL_SECTION_HEADER = 'ddl-section-header',
   DDL_COLUMN_ROW = 'ddl-column-row',
+  /** Follows a sibling column block that ended with an additional-info row. */
+  DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = 'ddl-column-after-additional-info-row',
   DDL_INDEX_ROW = 'ddl-index-row',
 }
 
 export type WithPrecededByProps = {
   [ATTRIBUTE_PRECEDED_BY]?: PrecededBy
+}
+
+export type WithDdlListLastRowProps = {
+  [ATTRIBUTE_DDL_LIST_LAST_ROW]?: boolean
 }

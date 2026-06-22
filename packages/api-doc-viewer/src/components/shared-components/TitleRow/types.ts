@@ -7,7 +7,7 @@ import type {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
-import { WithPrecededByProps } from "../WithPrecededByProps"
+import { WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TitleRowUsage {
   Default = 'default',
@@ -16,7 +16,7 @@ export enum TitleRowUsage {
   DdlApiProperty = 'ddl-api-property',
 }
 
-export type TitleRowProps = WithPrecededByProps & {
+export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
   value?: string // Document Mode
   expandable: boolean
   expanded?: boolean
