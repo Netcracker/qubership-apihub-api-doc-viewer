@@ -35,6 +35,7 @@ type ValueProps = {
     layoutMode: LayoutMode;
     layoutSide: LayoutSide;
     $changes?: Diff;
+    highlightWholeDiff?: boolean;
 };
 export declare const DescriptionValue: FC<ValueProps>;
 export type DescriptionExpanderProps = Partial<{

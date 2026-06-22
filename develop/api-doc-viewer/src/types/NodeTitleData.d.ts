@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GraphApiDiffTreeNode, GraphApiTreeNode, JsonSchemaDiffTreeNode } from '../../../api-data-model/src';
-import { BadgeKind } from '../components/kit/ux/types';
+import { BadgeKind } from '../components/kit/ux/UxBadge/types';
 import { CustomizationOptions } from '../contexts/CustomizationOptionsContext';
 export type NodeTitleData = Partial<{
     title: string | number;

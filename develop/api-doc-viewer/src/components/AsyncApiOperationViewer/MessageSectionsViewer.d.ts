@@ -1,8 +1,9 @@
-import { AsyncApiTreeNode } from '../../../../next-data-model/src/model/async-api/types/aliases';
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from '../../../../next-data-model/src/model/async-api/types/aliases';
 import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/async-api/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-type MessageSectionsViewerProps = {
-    node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>;
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type MessageSectionsViewerProps = WithPrecededByProps & {
+    node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>;
 };
 export declare const MessageSectionsViewer: FC<MessageSectionsViewerProps>;
 export {};

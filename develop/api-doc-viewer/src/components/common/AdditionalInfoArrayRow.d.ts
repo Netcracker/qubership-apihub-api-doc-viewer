@@ -21,5 +21,6 @@ export type AdditionalInfoArrayRowProps = PropsWithoutChangesSummary<PropsWithSh
     $changesKey: string;
     title: string;
     items: unknown[];
+    isPredefinedValuesSet?: boolean;
 } & PropsWithChanges>;
 export declare const AdditionalInfoArrayRow: FC<AdditionalInfoArrayRowProps>;

@@ -20,6 +20,7 @@ import { PropsWithoutChangesSummary } from '../../types/PropsWithoutChangesSumma
 export type AdditionalInfoObjectRowProps = PropsWithoutChangesSummary<PropsWithShift & {
     title: string;
     items: Record<string | number, unknown>;
+    isPredefinedValuesSet?: boolean;
     $changesKeys: string[];
 } & PropsWithChanges>;
 export declare const AdditionalInfoObjectRow: FC<AdditionalInfoObjectRowProps>;

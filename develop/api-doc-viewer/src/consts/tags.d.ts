@@ -17,5 +17,5 @@ export declare const REQUIRED_TAG = "required";
 export declare const DEPRECATED_TAG = "deprecated";
 export declare const READ_ONLY_TAG = "read-only";
 export declare const WRITE_ONLY_TAG = "write-only";
-export declare const BLUE_TAG_COLOR_SCHEMA = "bg-sky-400 text-white ring-sky-400/20";
-export declare const AMBER_TAG_COLOR_SCHEMA = "bg-amber-500 text-white ring-amber-500/20";
+export declare const BLUE_TAG_COLOR_SCHEMA = "ux-badge_tag-blue";
+export declare const AMBER_TAG_COLOR_SCHEMA = "ux-badge_tag-amber";

@@ -18,7 +18,6 @@ import type { StoryObj } from '@storybook/react';
 import type { ComponentProps } from '../../../../node_modules/react';
 type StoryArgs = ComponentProps<typeof AsyncApiOperationViewer> & {
     sourceText: string;
-    operationType?: string;
 };
 declare const meta: {
     title: string;
@@ -36,11 +35,6 @@ declare const meta: {
             control: "text";
         };
         displayMode: {
-            control: "select";
-            options: string[];
-            defaultValue: string;
-        };
-        operationType: {
             control: "select";
             options: string[];
             defaultValue: string;
