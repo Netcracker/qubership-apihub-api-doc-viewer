@@ -20,7 +20,8 @@ export type NodeTypeData = Partial<{
     brokenRef: string;
     type: string;
     nullable: boolean;
-    entity: string;
+    title: string;
+    qualifier: string;
     combiner: string;
 }>;
 export type NodeTypeDataOptions<S, N, V> = Partial<S> & {
