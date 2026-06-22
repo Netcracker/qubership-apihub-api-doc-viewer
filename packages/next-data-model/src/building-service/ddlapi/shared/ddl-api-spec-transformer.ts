@@ -210,10 +210,13 @@ export class DdlApiSpecTransformer {
       .map(part => this.formatIndexPartName(part))
       .filter(partName => partName.length > 0)
 
+    const comment = findAttr(index.attrs, AttrKind.Comment)
+
     return {
       ...(index.name ? { indexName: index.name } : {}),
       partNames,
       isUnique: index.unique === true,
+      ...(comment ? { description: comment.text } : {}),
     }
   }
 

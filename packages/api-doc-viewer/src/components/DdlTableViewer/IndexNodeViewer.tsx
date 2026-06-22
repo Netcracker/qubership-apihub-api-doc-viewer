@@ -1,12 +1,16 @@
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useCallback, useMemo } from "react"
+import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
+import { TextRow } from "../shared-components/TextRow/TextRow"
+import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
-import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
 import { formatIndexPartNames } from "./formatters"
@@ -19,6 +23,7 @@ type IndexNodeViewerProps = WithPrecededByProps & {
 export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   const { node, isLastInList = false, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
+  const displayMode = useDisplayMode()
   const value = node.value()
 
   const indexTitle = useMemo(() => {
@@ -56,6 +61,13 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
     [value],
   )
 
+  const isDescriptionDisplayed = useMemo(
+    () => displayMode === DETAILED_DISPLAY_MODE && !!value?.description,
+    [displayMode, value?.description],
+  )
+
+  const isTitleListLastRow = isLastInList
+
   if (!value) {
     return null
   }
@@ -64,7 +76,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
     <div data-testid="ddl-index-node-viewer" className="flex flex-col ddl-api-property">
       <TitleRow
         data-precededby={precededBy}
-        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isLastInList || undefined }}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}
         value={indexTitle}
         expandable={false}
         expanded={true}
@@ -72,6 +84,15 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         subheader={value.indexName || value.isUnique ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
       />
+      {isDescriptionDisplayed && (
+        <TextRow
+          data-precededby={PrecededBy.DDL_INDEX_ROW}
+          value={value.description ?? ''}
+          variant={TextValueVariant.h4}
+          textFontWeight="normal"
+          textColor={DEFAULT_LONG_TEXT_COLOR}
+        />
+      )}
     </div>
   )
 }

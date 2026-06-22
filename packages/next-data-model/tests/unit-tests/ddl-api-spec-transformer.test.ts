@@ -49,3 +49,27 @@ describe('DdlApiSpecTransformer column row value', () => {
     expect(fullNameColumn?.defaultValue).toBeUndefined()
   })
 })
+
+describe('DdlApiSpecTransformer index row value', () => {
+  const transformer = new DdlApiSpecTransformer(createBuildingServiceLogger())
+
+  it('extracts description from COMMENT ON INDEX', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TABLE public.users (
+        login character varying(30) NOT NULL
+      );
+
+      CREATE INDEX users_login_idx ON public.users (login);
+
+      COMMENT ON INDEX users_login_idx IS 'Stub index comment for ddlapi sample fixture tests.';
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 'users',
+    })
+
+    expect(spec?.indexes.items[0]?.description).toBe(
+      'Stub index comment for ddlapi sample fixture tests.',
+    )
+  })
+})

@@ -97,6 +97,7 @@ export class DdlApiNodeDataBuilder extends AbstractNodeDataBuilder<
           'indexName',
           'partNames',
           'isUnique',
+          'description',
         ] satisfies (keyof DdlApiIndexRowValue)[];
       default:
         return [];

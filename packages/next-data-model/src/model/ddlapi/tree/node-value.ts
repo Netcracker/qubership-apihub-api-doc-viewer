@@ -23,7 +23,7 @@ import { DdlApiTreeNodeKind, DdlApiTreeNodeKinds } from '../types/node-kind'
  * {@link DdlApiColumnRowValue.isPrimaryKey} on column rows.
  */
 
-/** Optional COMMENT ON text attached to a table or column. Source: `findAttr(attrs, Comment).text`. */
+/** Optional COMMENT ON text attached to a table, column, or index. Source: `findAttr(attrs, Comment).text`. */
 export interface DdlApiRowDescription {
   readonly description?: string
 }
@@ -264,8 +264,9 @@ export interface DdlApiColumnRowValue extends DdlApiRowDescription {
  * | `indexName` | `Index.name` (may be absent for unnamed inline UNIQUE) |
  * | `partNames` | ordered display for each `IndexPart`: `part.column.name` or formatted `part.expr` |
  * | `isUnique` | `Index.unique === true` |
+ * | `description` | COMMENT ON INDEX | `findAttr(index.attrs, Comment)?.text` |
  */
-export interface DdlApiIndexRowValue {
+export interface DdlApiIndexRowValue extends DdlApiRowDescription {
   readonly indexName?: string
   readonly partNames: readonly string[]
   readonly isUnique: boolean
