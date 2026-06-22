@@ -2,14 +2,14 @@ import type { LayoutSide } from '../../../types/internal/LayoutSide';
 import type { ChangedPropertyMetaData, DiffHighlightingApplicationMode, DiffHiglightingApplicationArea, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import type { ReactElement } from '../../../../../../node_modules/react';
 import { TextValueVariant } from "../TextValue/types";
-import { WithPrecededByProps } from "../WithPrecededByProps";
+import { WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps";
 export declare enum TitleRowUsage {
     Default = "default",
     AsyncApiJsoSection = "async-api-jso-section",
     JsoProperty = "jso-property",
     DdlApiProperty = "ddl-api-property"
 }
-export type TitleRowProps = WithPrecededByProps & {
+export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
     value?: string;
     expandable: boolean;
     expanded?: boolean;
