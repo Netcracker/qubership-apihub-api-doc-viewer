@@ -169,7 +169,8 @@
 
 /* DDL API */
 
-.text-row-content[data-precededby="ddl-table-header-row"] {
+.text-row-content[data-precededby="ddl-table-header-row"],
+.ddl-schema-name-block-row[data-precededby="ddl-table-header-row"] {
   padding-top: 8px;
   padding-bottom: 8px;
 }

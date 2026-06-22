@@ -10,6 +10,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnsNodeViewer } from "./ColumnsNodeViewer"
+import { DdlSchemaNameBlock } from "./DdlSchemaNameBlock/DdlSchemaNameBlock"
 import { IndexesNodeViewer } from "./IndexesNodeViewer"
 
 type TableNodeViewerProps = WithPrecededByProps & {
@@ -40,12 +41,9 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
         variant={TextValueVariant.h1}
       />
       {isSchemaNameDisplayed && (
-        <TextRow
+        <DdlSchemaNameBlock
           data-precededby={PrecededBy.DDL_TABLE_HEADER_ROW}
-          value={value?.schemaName ?? ''}
-          variant={TextValueVariant.h4}
-          textFontWeight="normal"
-          textColor={DEFAULT_LONG_TEXT_COLOR}
+          schemaName={value?.schemaName ?? ''}
         />
       )}
       {isDescriptionDisplayed && (
