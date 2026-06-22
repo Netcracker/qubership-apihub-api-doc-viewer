@@ -25,10 +25,10 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       {level > 0 && (
         <div data-precededby={precededBy} className="flex items-stretch self-stretch">
           <LevelIndicator level={level} />
-          <div className="w-5" aria-hidden="true" />
+          <div className="w-4" aria-hidden="true" />
         </div>
       )}
-      <span className="additional-info-row-label">{label}</span>
+      <span className="additional-info-row-label">{`${label}:`}</span>
       {subheader?.(layoutSide)}
     </div>
   )

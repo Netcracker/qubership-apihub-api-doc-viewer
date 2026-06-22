@@ -88,6 +88,8 @@ export class DdlApiNodeDataBuilder extends AbstractNodeDataBuilder<
           'generatedBy',
           'isUnique',
           'isNotNull',
+          'defaultValue',
+          'generatedExpression',
           'description',
         ] satisfies (keyof DdlApiColumnRowValue)[];
       case DdlApiTreeNodeKinds.INDEX:

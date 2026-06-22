@@ -10,6 +10,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadges } from "./ColumnRowBadges"
+import { ADDITIONAL_INFO_LABEL_DEFAULT, ADDITIONAL_INFO_LABEL_GENERATED } from "./conts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
@@ -46,17 +47,34 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     [value],
   )
 
-  const additionalInfoSubheader = useCallback(
+  const defaultAdditionalInfoSubheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_layoutSide: LayoutSide) => {
-      if (!value) {
+      if (!value?.defaultValue) {
         return <></>
       }
 
       return (
         <AdditionalInfoPiece
           isVisible={true}
-          value={value.columnType.label}
+          value={value.defaultValue}
+        />
+      )
+    },
+    [value],
+  )
+
+  const generatedAdditionalInfoSubheader = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_layoutSide: LayoutSide) => {
+      if (!value?.generatedExpression) {
+        return <></>
+      }
+
+      return (
+        <AdditionalInfoPiece
+          isVisible={true}
+          value={value.generatedExpression}
         />
       )
     },
@@ -92,11 +110,20 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           textColor={DEFAULT_LONG_TEXT_COLOR}
         />
       )}
-      <AdditionalInfoRow
-        data-precededby={PrecededBy.DDL_COLUMN_ROW}
-        label={value.columnType.label}
-        subheader={additionalInfoSubheader}
-      />
+      {value.defaultValue && (
+        <AdditionalInfoRow
+          data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          label={ADDITIONAL_INFO_LABEL_DEFAULT}
+          subheader={defaultAdditionalInfoSubheader}
+        />
+      )}
+      {value.generatedExpression && (
+        <AdditionalInfoRow
+          data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          label={ADDITIONAL_INFO_LABEL_GENERATED}
+          subheader={generatedAdditionalInfoSubheader}
+        />
+      )}
     </div>
   )
 }

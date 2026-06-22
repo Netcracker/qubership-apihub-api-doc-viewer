@@ -12,14 +12,10 @@ import {
   isBoolType,
   isDecimalType,
   isEnumType,
-  isExprWithLiteralValue,
-  isExprWithRawText,
   isFloatType,
   isIntegerType,
   isJSONType,
-  isLiteralExpr,
   isPgDomainSchemaType,
-  isRawExpr,
   isSchemaTypeWithTypeName,
   isSpatialType,
   isStringType,
@@ -28,12 +24,12 @@ import {
   isUUIDType,
   PgDomainSchemaType,
 } from "@apihub/next-data-model/shared/ddlapi/guards";
+import { formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
 import {
   AttrKind,
   Column,
   ColumnType,
   Expr,
-  ExprKind,
   findAttr,
   ForeignKey,
   Index,
@@ -199,8 +195,10 @@ export class DdlApiSpecTransformer {
       isGenerated,
       ...(identity ? { generatedBy: 'identity' as const } : {}),
       ...(generatedExpr && !identity ? { generatedBy: 'expression' as const } : {}),
+      ...(generatedExpr ? { generatedExpression: generatedExpr.expr } : {}),
       isUnique: this.isUniqueColumn(table, column),
       isNotNull: column.type?.null === false,
+      ...(column.default !== undefined ? { defaultValue: formatDdlExpr(column.default) } : {}),
       ...(comment ? { description: comment.text } : {}),
     }
   }
@@ -428,25 +426,10 @@ export class DdlApiSpecTransformer {
       return part.column.name
     }
 
-    const expression = part.expr
-    if (!expression) {
+    if (!part.expr) {
       return ''
     }
 
-    switch (expression.kind) {
-      case ExprKind.Literal:
-        return isLiteralExpr(expression) ? expression.value : expression.kind
-      case ExprKind.RawExpr:
-        return isRawExpr(expression) ? expression.expr : expression.kind
-      default: {
-        if (isExprWithRawText(expression)) {
-          return expression.expr
-        }
-        if (isExprWithLiteralValue(expression)) {
-          return expression.value
-        }
-        return expression.kind
-      }
-    }
+    return formatDdlExpr(part.expr)
   }
 }

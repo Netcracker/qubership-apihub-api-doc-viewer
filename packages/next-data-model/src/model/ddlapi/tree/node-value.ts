@@ -236,6 +236,8 @@ export interface DdlApiColumnTypeRaw extends DdlApiColumnTypeBase {
  * | `isUnique` | single-column unique index/constraint | `Table.indexes[*].unique && parts.length === 1 && parts[0].column === column` |
  * | `isNotNull` | explicit NOT NULL | `ColumnType.null === false` (`undefined` → false; explicit `NULL` → false) |
  * | `description` | COMMENT ON COLUMN | `findAttr(column.attrs, Comment)?.text` |
+ * | `defaultValue` | `Column.default` present | `Column.default` → {@link formatDdlExpr} |
+ * | `generatedExpression` | `GeneratedExpr` attr (not IDENTITY) | `findAttr(column.attrs, GeneratedExpr).expr` |
  */
 export interface DdlApiColumnRowValue extends DdlApiRowDescription {
   readonly columnName: string
@@ -247,6 +249,8 @@ export interface DdlApiColumnRowValue extends DdlApiRowDescription {
   readonly generatedBy?: 'identity' | 'expression'
   readonly isUnique: boolean
   readonly isNotNull: boolean
+  readonly defaultValue?: string
+  readonly generatedExpression?: string
 }
 
 /**
