@@ -1,13 +1,13 @@
+import { CHANGED_LAYOUT_SIDE, LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { CHANGED_LAYOUT_SIDE, LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
-import { BADGE_KIND_DEFAULT_OUTLINE } from "../kit/ux/UxBadge/types"
 import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { WithPrecededByProps, ATTRIBUTE_PRECEDED_BY } from "../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerProps = WithPrecededByProps & {
@@ -47,7 +47,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
             />
           )}
           {value.isUnique && (
-            <UxBadge kind={BADGE_KIND_DEFAULT_OUTLINE} text="unique" inline />
+            <UxBadge text="unique" colorSchema={DDL_API_UNIQUE_BADGE_COLOR_SCHEMA} inline />
           )}
         </div>
       )

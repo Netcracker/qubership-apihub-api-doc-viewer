@@ -23,6 +23,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   const value = node.value()
 
   const subheader = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_layoutSide: LayoutSide) => {
       if (!value) {
         return <></>
