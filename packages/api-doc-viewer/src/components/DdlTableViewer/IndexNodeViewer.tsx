@@ -6,6 +6,7 @@ import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
 import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
 import { formatIndexPartNames } from "./formatters"
@@ -68,6 +69,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         expanded={true}
         variant={TextValueVariant.body}
         subheader={value.indexName || value.isUnique ? subheader : undefined}
+        usage={TitleRowUsage.DdlApiProperty}
       />
     </div>
   )

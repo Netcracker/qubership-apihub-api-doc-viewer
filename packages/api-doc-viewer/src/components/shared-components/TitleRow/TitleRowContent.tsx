@@ -18,6 +18,7 @@ const TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TitleRowUsage, string>> 
 
 const TITLE_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TitleRowUsage, string[]>> = {
   [TitleRowUsage.JsoProperty]: ['min-h-[26px]'],
+  [TitleRowUsage.DdlApiProperty]: ['min-h-[26px]'],
 }
 
 function getTitleRowClassesByUsage(usage: TitleRowUsage): string {

@@ -11,6 +11,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadges } from "./ColumnRowBadges"
+import { TitleRowUsage } from "../shared-components/TitleRow/types"
 
 type ColumnNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -62,6 +63,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
         expanded={true}
         variant={TextValueVariant.body}
         subheader={subheader}
+        usage={TitleRowUsage.DdlApiProperty}
       />
       {isDescriptionDisplayed && (
         <TextRow

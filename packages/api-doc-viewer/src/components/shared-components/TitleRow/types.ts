@@ -13,6 +13,7 @@ export enum TitleRowUsage {
   Default = 'default',
   AsyncApiJsoSection = 'async-api-jso-section',
   JsoProperty = 'jso-property',
+  DdlApiProperty = 'ddl-api-property',
 }
 
 export type TitleRowProps = WithPrecededByProps & {
