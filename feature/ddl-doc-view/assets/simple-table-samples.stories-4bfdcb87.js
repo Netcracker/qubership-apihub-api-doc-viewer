@@ -1,4 +1,4 @@
-import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{D as s}from"./DdlTableViewer-1eea9965.js";import{b as T}from"./build-from-ddl-browser-9cce9ff0.js";import"./index-f46741a2.js";import"./UxBadge-68872688.js";import"./iframe-38dd4c51.js";import"../sb-preview/runtime.js";const D=`CREATE TABLE items (
+import{j as t}from"./_commonjs-dynamic-modules-6308e768.js";import{D as s}from"./DdlTableViewer-1eea9965.js";import{b as T}from"./build-from-ddl-browser-7592e6a1.js";import"./index-f46741a2.js";import"./UxBadge-68872688.js";import"./iframe-57f0e3c9.js";import"../sb-preview/runtime.js";const D=`CREATE TABLE items (
   id bigint PRIMARY KEY,
   sku varchar(64) NOT NULL UNIQUE,
   quantity integer NOT NULL DEFAULT 0
