@@ -19,6 +19,10 @@ export const ColumnsNodeViewer: FC<ColumnsNodeViewerProps> = (props) => {
   const value = node.value()
   const columnNodes = getColumnChildNodes(node.childrenNodes())
 
+  if (columnNodes.length === 0) {
+    return null
+  }
+
   return (
     <div data-testid="ddl-columns-node-viewer" className="flex flex-col">
       <TitleRow

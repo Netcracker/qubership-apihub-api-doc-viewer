@@ -30,16 +30,6 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
   const isDescriptionDisplayed =
     displayMode === DETAILED_DISPLAY_MODE && !!value?.description
 
-  const sectionsPrecededBy = (() => {
-    if (isDescriptionDisplayed) {
-      return PrecededBy.DDL_TABLE_DESCRIPTION_ROW
-    }
-    if (isSchemaNameDisplayed) {
-      return PrecededBy.DDL_TABLE_SCHEMA_ROW
-    }
-    return precededBy
-  })()
-
   return (
     <div data-testid="ddl-table-node-viewer" className="flex flex-col">
       <TitleRow
@@ -73,16 +63,26 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
       )}
       {columnsChild && (
         <ColumnsNodeViewer
-          data-precededby={sectionsPrecededBy}
+          data-precededby={
+            isDescriptionDisplayed
+              ? PrecededBy.DDL_TABLE_DESCRIPTION_ROW
+              : isSchemaNameDisplayed
+                ? PrecededBy.DDL_TABLE_SCHEMA_ROW
+                : PrecededBy.DDL_TABLE_HEADER_ROW
+          }
           node={columnsChild}
         />
       )}
       {indexesChild && (
         <IndexesNodeViewer
           data-precededby={
-            columnsChild
-              ? PrecededBy.DDL_SECTION_HEADER
-              : sectionsPrecededBy
+            columnsChild?.childrenNodes().length
+              ? PrecededBy.DDL_COLUMN_ROW
+              : isDescriptionDisplayed
+                ? PrecededBy.DDL_TABLE_DESCRIPTION_ROW
+                : isSchemaNameDisplayed
+                  ? PrecededBy.DDL_TABLE_SCHEMA_ROW
+                  : PrecededBy.DDL_TABLE_HEADER_ROW
           }
           node={indexesChild}
         />

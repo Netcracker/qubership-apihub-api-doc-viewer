@@ -19,6 +19,10 @@ export const IndexesNodeViewer: FC<IndexesNodeViewerProps> = (props) => {
   const value = node.value()
   const indexNodes = getIndexChildNodes(node.childrenNodes())
 
+  if (indexNodes.length === 0) {
+    return null
+  }
+
   return (
     <div data-testid="ddl-indexes-node-viewer" className="flex flex-col">
       <TitleRow
