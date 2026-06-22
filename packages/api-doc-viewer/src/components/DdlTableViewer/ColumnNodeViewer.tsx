@@ -54,7 +54,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   }
 
   return (
-    <div data-testid="ddl-column-node-viewer" className="flex flex-col">
+    <div data-testid="ddl-column-node-viewer" className="flex flex-col ddl-api-property">
       <TitleRow
         data-precededby={precededBy}
         value={value.columnName}

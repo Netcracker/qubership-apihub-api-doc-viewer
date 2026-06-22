@@ -19,6 +19,10 @@
   padding-bottom: 0;
 }
 
+.ddl-api-property .title-row-content {
+  padding-bottom: 0;
+}
+
 .title-row-content[data-precededby="root"] {
   padding-top: 8px;
   padding-bottom: 8px;
