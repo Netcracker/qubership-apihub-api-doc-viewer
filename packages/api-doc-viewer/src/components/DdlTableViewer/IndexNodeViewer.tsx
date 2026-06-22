@@ -1,13 +1,13 @@
-import { CHANGED_LAYOUT_SIDE, LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useCallback, useMemo } from "react"
 import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
-import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
 import { formatIndexPartNames } from "./formatters"
 
@@ -40,11 +40,10 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
       return (
         <div className="flex flex-wrap items-center gap-2">
           {value.indexName && (
-            <TextValue
+            <DdlApiPropertyValue
+              isVisible={true}
               value={`(${formatIndexPartNames(value.partNames)})`}
-              variant={TextValueVariant.body}
-              layoutSide={CHANGED_LAYOUT_SIDE}
-              textFontWeight="normal"
+              appearance="text"
             />
           )}
           {value.isUnique && (

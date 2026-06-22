@@ -14,6 +14,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { DdlTableViewerContext } from "./DdlTableViewerContext"
 import { TableNodeViewer } from "./TableNodeViewer"
 import '../../index.css'
+import './styles/index.css'
 
 export type DdlTableViewerProps = {
   source: unknown

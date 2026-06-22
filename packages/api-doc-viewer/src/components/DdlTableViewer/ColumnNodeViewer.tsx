@@ -1,16 +1,16 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { CHANGED_LAYOUT_SIDE, LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
-import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadges } from "./ColumnRowBadges"
+import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 
 type ColumnNodeViewerProps = WithPrecededByProps & {
@@ -32,11 +32,10 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
 
       return (
         <div className="flex flex-wrap items-center gap-2">
-          <TextValue
+          <DdlApiPropertyValue
+            isVisible={true}
             value={value.columnType.label}
-            variant={TextValueVariant.body}
-            layoutSide={CHANGED_LAYOUT_SIDE}
-            textFontWeight="normal"
+            appearance="text"
           />
           <ColumnRowBadges value={value} />
         </div>
