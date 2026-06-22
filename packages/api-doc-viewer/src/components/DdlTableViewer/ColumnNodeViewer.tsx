@@ -12,6 +12,8 @@ import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../share
 import { ColumnRowBadges } from "./ColumnRowBadges"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
+import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
 type ColumnNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -39,6 +41,23 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           />
           <ColumnRowBadges value={value} />
         </div>
+      )
+    },
+    [value],
+  )
+
+  const additionalInfoSubheader = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_layoutSide: LayoutSide) => {
+      if (!value) {
+        return <></>
+      }
+
+      return (
+        <AdditionalInfoPiece
+          isVisible={true}
+          value={value.columnType.label}
+        />
       )
     },
     [value],
@@ -73,6 +92,11 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           textColor={DEFAULT_LONG_TEXT_COLOR}
         />
       )}
+      <AdditionalInfoRow
+        data-precededby={PrecededBy.DDL_COLUMN_ROW}
+        label={value.columnType.label}
+        subheader={additionalInfoSubheader}
+      />
     </div>
   )
 }
