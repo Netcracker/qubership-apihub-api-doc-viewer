@@ -128,6 +128,73 @@ DDL stories parse SQL through `buildFromDdlInBrowser` (dynamic import with
 touching DDL crawl or navigation, also apply the `ddlapi-using` skill from
 the ddlapi package.
 
+### Stacked rows — do not collapse into one custom row
+
+Many viewers are a **vertical stack** of row components, not one row with
+everything inline. Reference patterns:
+
+| Viewer / area | Stack |
+| --- | --- |
+| `JsonPropNodeBody` | `HeaderRow` → `Annotations` / `Validations` / `Extensions` |
+| Legacy JSON Schema | `HeaderRow` → `AdditionalInfoArrayRow` / `AdditionalInfoObjectRow` |
+| DDL column (evolving) | `TitleRow` → optional `TextRow` → `AdditionalInfoRow` |
+
+**Clarify before coding** when a task mentions a row “like” an existing viewer
+but with layout differences:
+
+1. **Replace** existing JSX, or **append** a new row below code that must stay
+   unchanged?
+2. Should metadata live in `TitleRow.subheader` (same line as title) or on a
+   **separate row below** the header?
+
+**Common misread (session lesson):** assuming “subheader” always means
+`TitleRow.subheader` on one line. For DDL additional metadata, the product
+intent is often a **second row** (`AdditionalInfoRow`) with label + externally
+composed chips — analogous to `AdditionalInfoArrayRow`, not a fork of
+`TitleRow`.
+
+**Scope discipline:**
+
+- Do **not** replace `TitleRow` with a bespoke row or refactor sibling node
+  viewers unless explicitly requested.
+- Do **not** generalize `JsoValue`, remove `DdlApiPropertyValue`, or touch
+  unrelated viewers as part of adding one new row — that is “redundant impact”.
+- Prefer **additive** changes: keep existing `TitleRow` / `TextRow` blocks;
+  append new rows after them.
+
+### `AdditionalInfoRow` and `AdditionalInfoPiece` (DDL)
+
+Location: `packages/api-doc-viewer/src/components/DdlTableViewer/`.
+
+| Component | Role |
+| --- | --- |
+| `AdditionalInfoRow` | Follow-on row: `label` + `subheader` callback (same API shape as `TitleRow`) |
+| `AdditionalInfoPiece` | Block-only value chip (JsoValue `.block` styling); no `text` variant |
+
+**Orchestration:** the **node viewer** (`ColumnNodeViewer`, etc.) owns the
+stack and passes domain content into `subheader`; `AdditionalInfoRow` only
+provides layout/indent/label styling — it does not import badges or formatters.
+
+**Indent:** mirror `TitleRowContent` (`LevelIndicator` + expander column), but
+replace `Expander` / `NestingHorizontalIndicator` with an empty **`w-5`**
+spacer. This is not `LevelIndicator lastInvisible` and not removing vertical
+lines entirely.
+
+**Label styling:** `#626D82`, `font-size: 12px`, `font-weight: 400`
+(`.additional-info-row-label`).
+
+**Integration example** (append after existing header/description rows):
+
+```tsx
+<AdditionalInfoRow
+  data-precededby={PrecededBy.DDL_COLUMN_ROW}
+  label={value.columnType.label}
+  subheader={(_layoutSide) => (
+    <AdditionalInfoPiece isVisible value={value.columnType.label} />
+  )}
+/>
+```
+
 ## Monorepo paths
 
 Source imports use the `@apihub/` alias (maps to `packages/api-doc-viewer/src`).
