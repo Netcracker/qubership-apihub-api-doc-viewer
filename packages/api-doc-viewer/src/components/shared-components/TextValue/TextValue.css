@@ -53,3 +53,40 @@ span.text-value.text-value-body2 {
   font-size: 13px;
   font-weight: 400;
 }
+
+.text-value-expander {
+  font-family: 'Inter Variable';
+  line-height: 1;
+}
+
+.text-value-expander--h1 {
+  font-size: 32px;
+}
+
+.text-value-expander--h2 {
+  font-size: 24px;
+}
+
+.text-value-expander--h3 {
+  font-size: 20px;
+}
+
+.text-value-expander--h4 {
+  font-size: 18px;
+}
+
+.text-value-expander--h5 {
+  font-size: 15px;
+}
+
+.text-value-expander--h6 {
+  font-size: 13px;
+}
+
+.text-value-expander--body1 {
+  font-size: 12px;
+}
+
+.text-value-expander--body2 {
+  font-size: 13px;
+}

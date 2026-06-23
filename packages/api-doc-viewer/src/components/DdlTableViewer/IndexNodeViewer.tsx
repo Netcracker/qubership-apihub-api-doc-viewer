@@ -88,7 +88,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         <TextRow
           data-precededby={PrecededBy.DDL_INDEX_ROW}
           value={value.description ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.body1}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
         />
