@@ -97,8 +97,10 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           return <h5 {...variantProps}>{content}</h5>
         case TextValueVariant.h6:
           return <h6 {...variantProps}>{content}</h6>
-        case TextValueVariant.body:
-          return <span {...variantProps}>{content}</span>
+        case TextValueVariant.body1:
+          return <span {...variantProps} className={`${className} text-value-body1`.trim()}>{content}</span>
+        case TextValueVariant.body2:
+          return <span {...variantProps} className={`${className} text-value-body2`.trim()}>{content}</span>
       }
     }
 

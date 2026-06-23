@@ -254,6 +254,19 @@
   padding-top: 8px;
 }
 
+.ddl-api-property .text-row-content,
+.ddl-api-property .text-row-content[data-precededby="ddl-column-row"],
+.ddl-api-property .text-row-content[data-precededby="ddl-index-row"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ddl-api-property .text-row-content[data-precededby="ddl-column-row"] .ddl-api-property-row-body,
+.ddl-api-property .text-row-content[data-precededby="ddl-index-row"] .ddl-api-property-row-body {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
 /* DDL API End */
 
 /* ─── MessageSectionsSelector ───────────────────────────────────────────────── */

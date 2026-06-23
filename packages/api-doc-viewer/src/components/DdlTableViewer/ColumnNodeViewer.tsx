@@ -110,7 +110,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
         value={value.columnName}
         expandable={false}
         expanded={true}
-        variant={TextValueVariant.body}
+        variant={TextValueVariant.body2}
         subheader={subheader}
         usage={TitleRowUsage.DdlApiProperty}
       />
@@ -118,7 +118,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
         <TextRow
           data-precededby={PrecededBy.DDL_COLUMN_ROW}
           value={value.description ?? ''}
-          variant={TextValueVariant.h4}
+          variant={TextValueVariant.body2}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
         />

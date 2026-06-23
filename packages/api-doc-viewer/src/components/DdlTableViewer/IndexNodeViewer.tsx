@@ -80,7 +80,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         value={indexTitle}
         expandable={false}
         expanded={true}
-        variant={TextValueVariant.body}
+        variant={TextValueVariant.body2}
         subheader={value.indexName || value.isUnique ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
       />

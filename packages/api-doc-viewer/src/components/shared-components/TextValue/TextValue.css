@@ -44,7 +44,12 @@ h6.text-value {
   font-weight: 600;
 }
 
-span.text-value {
+span.text-value.text-value-body1 {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+span.text-value.text-value-body2 {
   font-size: 13px;
   font-weight: 400;
 }
