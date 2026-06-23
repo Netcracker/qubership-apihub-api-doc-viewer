@@ -1,4 +1,3 @@
-import { DescriptionFontSize } from '../../common/annotations/Description/types/DescriptionFontSize';
 import { ChangedPropertyMetaData, DiffHighlightingApplicationMode } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { Dispatch, FC, SetStateAction } from '../../../../../../node_modules/react';
@@ -22,7 +21,7 @@ export type TextExpanderProps = Partial<{
     isExpandable: boolean;
     expanded: boolean;
     setExpanded: Dispatch<SetStateAction<boolean>>;
-    fontSize?: DescriptionFontSize;
+    variant: TextValueVariant;
 }>;
 export declare const TextValue: FC<TextValueProps>;
 export {};
