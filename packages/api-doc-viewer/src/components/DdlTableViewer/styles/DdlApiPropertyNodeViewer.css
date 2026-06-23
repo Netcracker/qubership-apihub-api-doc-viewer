@@ -7,6 +7,15 @@
   font-size: 12px;
 }
 
+.ddl-api-property .text-row-content {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.ddl-api-property .text-row-content .text-value {
+  font-size: 12px;
+}
+
 .ddl-api-property .subheader {
   font-size: 12px;
 }
