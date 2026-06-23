@@ -43,6 +43,3 @@ export declare const AddressParametersBindingsOneOption: Story;
 export declare const AddressParametersServersOneServer: Story;
 export declare const ExtensionsBindingsOneOption: Story;
 export declare const ExtensionsServersOneServer: Story;
-export declare const EdgeCaseBrokenRefBindings: Story;
-export declare const EdgeCaseBrokenRefAddressParameter: Story;
-export declare const EdgeCaseBrokenRefServer: Story;

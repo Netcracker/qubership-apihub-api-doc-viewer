@@ -1,10 +1,8 @@
 import { JsoTreeNode } from '../../../../next-data-model/src/model/jso/types/aliases';
-import { JsoTreeNodeKinds } from '../../../../next-data-model/src/model/jso/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-type JsoPropertyNodeViewerProps = {
-    node: JsoTreeNode<typeof JsoTreeNodeKinds.PROPERTY>;
-    expandable: boolean;
-    expanded?: boolean;
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type JsoPropertyNodeViewerProps = WithPrecededByProps & {
+    node: JsoTreeNode;
     supportJsonSchema?: boolean;
 };
 export declare const JsoPropertyNodeViewer: FC<JsoPropertyNodeViewerProps>;

@@ -16,9 +16,10 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import('../../../../../node_modules/react').FC<{
+    component: import('../../../../../node_modules/react').FC<import("../../components/shared-components/WithPrecededByProps").WithPrecededByProps & {
         source: object | null;
         displayMode?: import("../..").DisplayMode;
+        layoutMode?: import("../..").LayoutMode;
         initialLevel?: number;
         supportJsonSchema?: boolean;
     }>;
@@ -34,6 +35,7 @@ declare const meta: {
     args: {
         source: {};
         supportJsonSchema: true;
+        initialLevel: number;
     };
 };
 export default meta;

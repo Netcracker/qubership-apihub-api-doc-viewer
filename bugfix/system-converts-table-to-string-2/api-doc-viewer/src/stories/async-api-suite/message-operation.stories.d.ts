@@ -26,4 +26,3 @@ export declare const DescriptionSummary: Story;
 export declare const DescriptionExtensions: Story;
 export declare const DescriptionBindingsOneOption: Story;
 export declare const ExtensionsBindingsOneOption: Story;
-export declare const EdgeCaseBrokenRefBindings: Story;
