@@ -1,4 +1,4 @@
-import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{A as c}from"./AsyncApiOperationViewer-e1bc9dd1.js";import{j as u}from"./js-yaml-71a24e1f.js";import{T as m,p as l}from"./preprocess-49192cfc.js";import"./index-f46741a2.js";import"./UxBadge-0da8dd7b.js";import"./DdlTableViewer-55f8f2db.js";import"./GraphPropNodeViewer-d0bd3285.js";import"./index-415bee12.js";import"./GraphQLOperationDiffViewer-b3350f26.js";import"./GraphQLOperationViewer-31a8ac53.js";const N={title:"Debug/Async Api Viewer",component:c,argTypes:{source:{control:{disable:!0},table:{disable:!0}},sourceText:{control:"text"},displayMode:{control:"select",options:["simple","detailed"],defaultValue:"detailed"}},args:{sourceText:`{
+import{j as u}from"./_commonjs-dynamic-modules-6308e768.js";import{A as c}from"./AsyncApiOperationViewer-e1bc9dd1.js";import{p as d}from"./public-api-61cc4044.js";import{T as m,p as l}from"./preprocess-49192cfc.js";import"./index-f46741a2.js";import"./UxBadge-0da8dd7b.js";import"./DdlTableViewer-55f8f2db.js";import"./GraphPropNodeViewer-d0bd3285.js";import"./index-415bee12.js";import"./GraphQLOperationDiffViewer-b3350f26.js";import"./GraphQLOperationViewer-31a8ac53.js";const M={title:"Debug/Async Api Viewer",component:c,argTypes:{source:{control:{disable:!0},table:{disable:!0}},sourceText:{control:"text"},displayMode:{control:"select",options:["simple","detailed"],defaultValue:"detailed"}},args:{sourceText:`{
   "asyncapi": "3.0.0",
   "operations": {
     "send-operation-with-nothing": {
@@ -25,7 +25,7 @@ import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{A as c}from".
       }
     }
   }
-}`,operationKeys:{operationKey:"test-operation",messageKey:"test-message"},referenceNamePropertyKey:m},render:p=>{const{sourceText:n,...i}=p;let e;try{e=JSON.parse(n)}catch(s){console.error("Cannot parse JSON:",s),e=void 0}try{e||(e=u.load(n))}catch(s){console.error("Cannot parse YAML:",s),e=void 0}return(!e||typeof e!="object")&&(e={}),console.debug("Parsed source:",e),d.jsx(c,{...i,source:l({source:e})},n)}};var o,t,a;r.parameters={...r.parameters,docs:{...(o=r.parameters)==null?void 0:o.docs,source:{originalSource:`{
+}`,operationKeys:{operationKey:"test-operation",messageKey:"test-message"},referenceNamePropertyKey:m},render:p=>{const{sourceText:n,...i}=p;let e;try{e=JSON.parse(n)}catch(s){console.error("Cannot parse JSON:",s),e=void 0}try{e||(e=d(n))}catch(s){console.error("Cannot parse YAML:",s),e=void 0}return(!e||typeof e!="object")&&(e={}),console.debug("Parsed source:",e),u.jsx(c,{...i,source:l({source:e})},n)}};var o,t,a;r.parameters={...r.parameters,docs:{...(o=r.parameters)==null?void 0:o.docs,source:{originalSource:`{
   args: {
     devMode: true,
     sourceText: \`{
@@ -69,7 +69,7 @@ import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{A as c}from".
     }
     try {
       if (!parsedSource) {
-        parsedSource = YAML.load(sourceText);
+        parsedSource = parse(sourceText);
       }
     } catch (error) {
       console.error('Cannot parse YAML:', error);
@@ -83,4 +83,4 @@ import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{A as c}from".
       source: parsedSource
     })} />;
   }
-}`,...(a=(t=r.parameters)==null?void 0:t.docs)==null?void 0:a.source}}};const O=["Debug"];export{r as Debug,O as __namedExportsOrder,N as default};
+}`,...(a=(t=r.parameters)==null?void 0:t.docs)==null?void 0:a.source}}};const O=["Debug"];export{r as Debug,O as __namedExportsOrder,M as default};

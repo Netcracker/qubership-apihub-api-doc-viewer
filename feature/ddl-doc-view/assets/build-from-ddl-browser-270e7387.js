@@ -1,1 +1,0 @@
-import{_ as e}from"./iframe-c32708c3.js";async function a(r,o){const{buildFromDdl:t}=await e(()=>import("./index-73804988.js").then(i=>i.i),["./index-73804988.js","./iframe-c32708c3.js"],import.meta.url);return t(r,o)}export{a as b};
