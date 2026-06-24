@@ -33,7 +33,7 @@ const TEST_IDS: string[] = [
   'line',
   'lseg',
   'macaddr',
-  'macaddr8',
+  'macaddr-8',
   'money',
   'numeric',
   'numeric-precision-scale',
