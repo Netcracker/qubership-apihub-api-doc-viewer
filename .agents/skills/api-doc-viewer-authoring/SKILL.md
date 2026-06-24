@@ -162,6 +162,19 @@ composed chips — analogous to `AdditionalInfoArrayRow`, not a fork of
 - Prefer **additive** changes: keep existing `TitleRow` / `TextRow` blocks;
   append new rows after them.
 
+### Generated column badge (`ColumnRowBadges`)
+
+When `DdlApiColumnRowValue.isGenerated` is true, `ColumnRowBadges` shows a single
+**generated** badge. Do **not** branch badge text on `generatedBy`:
+
+- `generatedBy: 'identity'` (PostgreSQL `GENERATED … AS IDENTITY`) and
+  `generatedBy: 'expression'` (`GENERATED ALWAYS AS (…) STORED`) both render
+  **generated**.
+- Keep `generatedBy` on the data model unchanged — it distinguishes ddlapi
+  sources for other consumers; only the viewer collapses the label.
+- For expression-generated columns, the SQL expression still appears on the
+  separate `AdditionalInfoRow` (label `As`) when `generatedExpression` is set.
+
 ### `AdditionalInfoRow` and `AdditionalInfoPiece` (DDL)
 
 Location: `packages/api-doc-viewer/src/components/DdlTableViewer/`.

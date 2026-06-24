@@ -23,8 +23,10 @@ export const ColumnRowBadges: FC<ColumnRowBadgesProps> = memo<ColumnRowBadgesPro
         <UxBadge text="not null" colorSchema={DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA} inline />
       )}
       {value.isGenerated && (
+        // Badge label is always "generated". `generatedBy` ('identity' | 'expression') is
+        // preserved on the data model for consumers; the viewer does not distinguish them.
         <UxBadge
-          text={value.generatedBy === 'identity' ? 'identity' : 'generated'}
+          text="generated"
           colorSchema={DDL_API_GENERATED_BADGE_COLOR_SCHEMA}
           inline
         />
