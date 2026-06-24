@@ -52,22 +52,35 @@ Helpers in `src/it/service/`:
 
 ## Generated vs hand-written suites
 
-**Generated** (do not edit by hand — regenerate instead):
+**Filename rule:** use `.generated.it-test.ts` / `.generated.stories.tsx` **only**
+when stories are driven by samples from
+[`Netcracker/qubership-apihub-compatibility-suites`](https://github.com/Netcracker/qubership-apihub-compatibility-suites).
+Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
+`*.it-test.ts` / `*.stories.tsx` even when a bin script regenerates them.
+
+**Generated — compatibility suites only** (do not edit by hand; regenerate):
 
 - GraphQL compatibility suite — `bin/generate-compatibility-suite-stories.mjs`
   and `bin/generate-compatibility-suite-tests.mjs` →
-  `src/stories/compatibility-suite/` and `src/it/compatibility-suite/`.
+  `src/stories/compatibility-suite/*.generated.stories.tsx` and
+  `src/it/compatibility-suite/*.generated.it-test.ts`.
+
+**Regenerated from local samples** (do not edit by hand; run generators):
+
+- DDL API suites — `bin/generate-ddl-suite-stories.mjs` and
+  `bin/generate-ddl-suite-tests.mjs` → `src/stories/ddlapi-suite/` and
+  `src/it/ddlapi-suite/*.it-test.ts` (no `generated` in the filename).
 
 **Hand-written** (edit stories and matching IT files together):
 
-- JSO general suite, AsyncAPI suites, diff sample suites under
+- JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under
   `packages/samples/`, export a story, and append a matching `it(...)` with
   the correct story ID.
 
 Run `npm run generate-stories` / `npm run generate-tests` before screenshot
-runs when compatibility-suite sources changed.
+runs when compatibility-suite or DDL sample fixtures changed.
 
 ## Flaky rendering
 
