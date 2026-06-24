@@ -126,12 +126,14 @@
 /*
   Middle and last column/index titles: symmetric vertical padding on content only.
   LevelIndicator spans the full row height (min 26 px) for a continuous line.
+  Use 3 px (not 4 px) top/bottom here: 26 px row − 6 px padding = 20 px content
+  area, which fits UxBadge (~19 px: 1 px pad + 12 px × 1.5 line-height on pre).
 */
 .ddl-api-property .title-row-content[data-precededby="ddl-column-row"] .ddl-api-property-row-body,
 .ddl-api-property .title-row-content[data-precededby="ddl-column-after-additional-info-row"] .ddl-api-property-row-body,
 .ddl-api-property .title-row-content[data-precededby="ddl-index-row"] .ddl-api-property-row-body {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .ddl-api-property .title-row-content[data-precededby="ddl-column-row"],

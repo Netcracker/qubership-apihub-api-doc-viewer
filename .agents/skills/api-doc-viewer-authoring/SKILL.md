@@ -220,8 +220,9 @@ Product expectation for property lists:
    white gaps between row segments).
 2. **Minimum row height 26 px** — the vertical line segment must span the full
    row, not a shorter inner band.
-3. **Symmetric vertical indents** between items in the **content** area (8 px
-   typical for title rows, 4 px for compact additional-info rows).
+3. **Symmetric vertical indents** between items in the **content** area (6 px
+   between middle title rows today: 3 px + 3 px row-body padding; 4 px per side
+   only where content fits — see **UxBadge height budget** below).
 4. **First item** — keep top margin from section header (8 px on
    `DDL_SECTION_HEADER`).
 5. **Last item** — 16 px bottom margin on the **terminal row** (`TitleRow` or
@@ -265,6 +266,39 @@ line does not paint). Symptom: short grey segments and visible gaps — even whe
   `margin-top: 8px` from section; last item `margin-bottom: 16px` via
   `data-ddl-list-last-row="true"`).
 - **Never** use `margin-top` between middle list items — it creates line gaps.
+
+**UxBadge height budget (session lesson — do not regress):**
+
+Middle column/index title rows use `min-h-[26px]`, `items-stretch`, and vertical
+padding on `.ddl-api-property-row-body` only (see `preceded-by.css` for
+`ddl-column-row`, `ddl-column-after-additional-info-row`, `ddl-index-row`).
+First list items use `DDL_SECTION_HEADER` with **no** row-body padding — badges
+look fine there; middle items looked “wrong” until padding was reduced.
+
+**Math (border-box row-body inside a 26 px row):**
+
+| Component | Height |
+| --- | --- |
+| `UxBadge` (`.ux-badge` + `<pre>`) | ~**19 px** (1 px top pad + 12 px × 1.5 line-height) |
+| Symmetric row-body padding **4 + 4** | 8 px → **18 px** inner area → badge squeezed (~1 px); pill text looks shifted/clipped at the bottom |
+| Symmetric row-body padding **3 + 3** | 6 px → **20 px** inner area → badge fits |
+
+Confirmed in browser DevTools: equal `padding-top` / `padding-bottom` **≥ 4 px**
+reproduces the defect; **≤ 3 px** per side does not. Asymmetric padding “fixes”
+it only because total vertical padding drops below 8 px.
+
+**Implemented rule** (`preceded-by.css`): **3 px** top/bottom on title-row
+row-body for middle list markers (not 4 px). `AdditionalInfoRow` / description
+`TextRow` may keep 4 px where they do not host `UxBadge` in the title band.
+
+**If you change badge typography or row min-height**, re-check this budget before
+raising padding back to 4 px. Alternatives: `min-h-[27px]` only on rows that
+contain `UxBadge` (19 + 8 = 27), or shrink badge CSS to ≤ 18 px — do not combine
+26 px row + 8 px padding + ~19 px badge.
+
+**Not the root cause:** extra wrapper in `ColumnRowBadges`, different
+`data-precededby` alone, or `UxBadge` props — same badge markup; middle rows
+differ by row-body padding + fixed 26 px cross-size.
 
 ### `data-precededby`, list markers, and CSS
 
@@ -319,6 +353,7 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | `margin-top` on middle list items | Line breaks between siblings | Use content padding; margin only first/last |
 | Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
 | `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |
+| Row-body padding **4 + 4 px** on middle title rows with `UxBadge` | Badge bottom indent wrong; text ~1 px low/clipped | Keep **3 + 3 px** on title-row row-body, or raise row min-height to **27 px** with 4 px padding, or shrink badge to ≤ 18 px |
 
 ### Integration example (column default value row)
 
