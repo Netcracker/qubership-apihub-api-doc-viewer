@@ -17,6 +17,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
+  id: "ddl-api-suite-column-types",
   title: "DDL API Suite/Column Types",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

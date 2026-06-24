@@ -17,6 +17,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
+  id: "ddl-api-suite-indexes",
   title: "DDL API Suite/Indexes",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

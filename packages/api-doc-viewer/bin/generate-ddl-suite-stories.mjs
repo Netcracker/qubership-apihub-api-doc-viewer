@@ -34,6 +34,8 @@ const toPascalCase = (caseId) =>
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join("");
 
+const makeMetaId = (suiteId) => `ddl-api-suite-${suiteId}`;
+
 const collectCaseIds = (suiteId) =>
   readdirSync(path.join(samplesRoot, suiteId), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -44,6 +46,7 @@ const collectCaseIds = (suiteId) =>
     .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }));
 
 const printStoryFile = ({ suiteId, title }) => {
+  const metaId = makeMetaId(suiteId);
   const caseIds = collectCaseIds(suiteId);
   const exports = caseIds
     .map(
@@ -71,6 +74,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
+  id: "${metaId}",
   title: "${title}",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;
