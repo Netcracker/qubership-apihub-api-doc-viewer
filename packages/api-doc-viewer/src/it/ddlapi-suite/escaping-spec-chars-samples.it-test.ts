@@ -17,6 +17,7 @@ const TEST_IDS: string[] = [
   'default-value-quoted',
   'default-value-tab',
   'default-value-unicode',
+  'generated-expression-composite',
   'generated-expression-quoted',
 ]
 

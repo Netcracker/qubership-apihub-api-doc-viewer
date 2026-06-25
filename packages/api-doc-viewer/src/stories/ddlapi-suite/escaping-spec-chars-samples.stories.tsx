@@ -34,4 +34,5 @@ export const DefaultValueLf: Story = createCaseStory("default-value-lf");
 export const DefaultValueQuoted: Story = createCaseStory("default-value-quoted");
 export const DefaultValueTab: Story = createCaseStory("default-value-tab");
 export const DefaultValueUnicode: Story = createCaseStory("default-value-unicode");
+export const GeneratedExpressionComposite: Story = createCaseStory("generated-expression-composite");
 export const GeneratedExpressionQuoted: Story = createCaseStory("generated-expression-quoted");
