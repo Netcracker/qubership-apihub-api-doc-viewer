@@ -28,7 +28,11 @@ export function stringifyItem(item: unknown | undefined): string | undefined {
     return ''
   }
   if (!isObject(item)) {
-    return typeof item === 'string' ? item : `${item}`
+    if (typeof item === 'string') {
+      const stringified = JSON.stringify(item)
+      return stringified.slice(1, -1)
+    }
+    return `${item}`
   }
   return JSON.stringify(item, null, 2)
 }
