@@ -26,6 +26,11 @@ const SUITES = [
     title: "DDL API Suite/Indexes",
     testFileName: "indexes-samples.it-test.ts",
   },
+  {
+    suiteId: "escaping-spec-chars",
+    title: "DDL API Suite/Escaping Spec Chars",
+    testFileName: "escaping-spec-chars-samples.it-test.ts",
+  },
 ];
 
 const makeMetaId = (suiteId) => `ddl-api-suite-${suiteId}`;

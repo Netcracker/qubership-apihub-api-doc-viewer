@@ -26,6 +26,11 @@ const SUITES = [
     title: "DDL API Suite/Indexes",
     storyFileName: "indexes-samples.stories.tsx",
   },
+  {
+    suiteId: "escaping-spec-chars",
+    title: "DDL API Suite/Escaping Spec Chars",
+    storyFileName: "escaping-spec-chars-samples.stories.tsx",
+  },
 ];
 
 const toPascalCase = (caseId) =>
