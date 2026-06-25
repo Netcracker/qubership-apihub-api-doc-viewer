@@ -29,6 +29,7 @@ export function stringifyItem(item: unknown | undefined): string | undefined {
   }
   if (!isObject(item)) {
     if (typeof item === 'string') {
+      // this is a fix for special characters in string values, e.g. \r, \n, \t, etc.
       const stringified = JSON.stringify(item)
       return stringified.slice(1, -1)
     }
