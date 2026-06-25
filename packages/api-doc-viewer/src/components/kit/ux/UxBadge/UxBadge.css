@@ -1,3 +1,5 @@
+/* stylelint-disable selector-class-pattern -- modifier classes shared with TS/TSX */
+
 .ux-badge {
   border-radius: 4px;
   padding: 1px 8px 0;

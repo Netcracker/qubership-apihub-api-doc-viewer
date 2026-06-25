@@ -1,4 +1,4 @@
-@import './DdlApiPropertyNodeViewer.css';
-@import './DdlApiPropertyValue.css';
-@import './AdditionalInfoRow.css';
-@import './AdditionalInfoPiece.css';
+@import url('./DdlApiPropertyNodeViewer.css');
+@import url('./DdlApiPropertyValue.css');
+@import url('./AdditionalInfoRow.css');
+@import url('./AdditionalInfoPiece.css');

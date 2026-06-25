@@ -15,7 +15,7 @@ the contracts that the type signatures alone do not make obvious.
 import { buildFromDdl, TypeKind, ObjectKind, PgAttrKind, PgObjectKind, PgTypeKind } from '@netcracker/qubership-apihub-ddlapi'
 ```
 
-Everything is re-exported from the package entry (`index.ts`); internal module
+Everything is reexported from the package entry (`index.ts`); internal module
 paths are unstable and must not be imported directly. The package ships dual
 ESM/CJS builds with type declarations.
 
@@ -126,7 +126,7 @@ const issues: DdlNonFatalError[] = []
 const realm = await buildFromDdl(ddl, { onError: e => issues.push(e) })
 ```
 
-- It is `async`; the first call initialises the parser WASM.
+- It is `async`; the first call initialises the parser Wasm.
 - **Only these statements are parsed:** `CREATE TABLE`, `CREATE [UNIQUE] INDEX`,
   `CREATE TYPE` (enum/composite/range), `CREATE DOMAIN`, `CREATE TRIGGER`, and
   `COMMENT ON`. Everything else — `ALTER`, `DROP`, `CREATE VIEW`/`SEQUENCE`/
@@ -175,7 +175,7 @@ for (const ref of extractor.tables()) {            // { schema, name }, source o
 
 Contract details that the signatures do not make obvious:
 
-- **Two-phase by design.** `prepareDdlExtractor` parses once (async, WASM); each
+- **Two-phase by design.** `prepareDdlExtractor` parses once (async, Wasm); each
   `extractTable` is synchronous and meant to be called once per table.
 - **Pass a `TableRef`, already normalized.** `extractTable({ schema, name })` does a
   direct key lookup — identifiers must be in model-normalized form (unquoted →

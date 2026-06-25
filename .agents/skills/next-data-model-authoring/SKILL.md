@@ -126,7 +126,7 @@ Document traversal rules live in
 `src/building-service/<spec>/json-crawl-entities/rules/`. Builders pass
 initial rules to `syncCrawl` and state through typed crawl-state objects.
 Extend rules trees (`CrawlRules`) with path segments; keep transformers in
-`transformers/` and building hooks co-located with the builder.
+`transformers/` and building hooks colocateed with the builder.
 
 ## Tests
 

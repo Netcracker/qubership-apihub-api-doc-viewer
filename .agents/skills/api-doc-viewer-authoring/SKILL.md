@@ -196,7 +196,7 @@ spacer (same horizontal footprint as the expander column). This is not
 **Label styling:** `#626D82`, `font-size: 12px`, `font-weight: 400`
 (`.additional-info-row-label`).
 
-### Property list viewers (DDL columns/indexes, JSO, future specs)
+### Property list viewers (DDL columns/indices, JSO, future specs)
 
 Several viewers render a **flat or nested list of properties** under a section
 header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
@@ -215,7 +215,7 @@ header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
 
 - DDL columns — `ColumnsNodeViewer` → `ColumnNodeViewer` (stacked
   `TitleRow` / `TextRow` / `AdditionalInfoRow`).
-- DDL indexes — `IndexesNodeViewer` → `IndexNodeViewer` (title only today;
+- DDL indices — `IndexesNodeViewer` → `IndexNodeViewer` (title only today;
   same list-spacing rules).
 - JSO — `JsoViewer` → `JsoPropertyNodeViewer` (recursive; continuous vertical
   lines without extra row-body split because `.jso-property` rows carry **no**
@@ -252,7 +252,7 @@ line does not paint). Symptom: short grey segments and visible gaps — even whe
 
 **Correct layout for `.ddl-api-property` (DDL — implemented):**
 
-```
+```text
 .title-row-content.flex.items-stretch.min-h-[26px]   ← NO vertical padding
 ├── .level-indicator-column.self-stretch           ← line spans full row height
 │   ├── LevelIndicator
@@ -338,7 +338,7 @@ Row components set `data-precededby={PrecededBy…}`. Enum values in
 Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 (`defaultValue` or `generatedExpression` on `node.value()`).
 
-**Indexes list — same pattern (`buildIndexViewerContexts`):**
+**Indices list — same pattern (`buildIndexViewerContexts`):**
 
 | Prop | When |
 | --- | --- |

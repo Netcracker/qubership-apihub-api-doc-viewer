@@ -175,6 +175,7 @@
 }
 
 /* ─── TextRowContent ────────────────────────────────────────────────────────── */
+
 /* Overrides Tailwind's pt-1 (4 px) when a specific context is known.
    When data-precededby is absent the Tailwind default applies as fallback.    */
 
@@ -272,6 +273,7 @@
 /* DDL API End */
 
 /* ─── MessageSectionsSelector ───────────────────────────────────────────────── */
+
 /* Overrides py-2 (8 px each) from Tailwind when a specific context is known.  */
 
 .message-sections-selector {

@@ -11,7 +11,7 @@ or aggregators (see `next-data-model-authoring`).
 
 ## Import paths
 
-The package root re-exports AsyncAPI builders only:
+The package root reexports AsyncAPI builders only:
 
 ```typescript
 import {

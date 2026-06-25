@@ -30,7 +30,7 @@ or level-order traversal.
 ## `JsonPath` — shared address type
 
 `JsonPath` is `PropertyKey[]`. Every APIHUB layer stores document locations as
-json-crawl paths: diff entries, origin chains, tree node ids (`'#' +
+json-crawl paths: diff entries, origin chains, tree node IDs (`'#' +
 buildPointer(path)` from api-unifier), validation errors, and UI change
 highlights. Keys in a path are whatever the crawler visited — strings, numbers,
 and symbols (though most hooks skip symbol keys; see below).
