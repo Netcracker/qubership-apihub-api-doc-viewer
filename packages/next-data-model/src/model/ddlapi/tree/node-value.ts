@@ -67,7 +67,7 @@ export interface DdlApiForeignKeyTarget {
  *
  * Mirrors every member of ddlapi `SchemaType` from `types.d.ts`, plus fallbacks.
  * Always includes {@link DdlApiColumnTypeValue.label} — the exact string the viewer
- * prints between column name and chips (e.g. `character varying(30)`, `numeric(10,2)`).
+ * prints between column name and chips (e.g. `character varying (30)`, `numeric (10, 2)`).
  *
  * Builder formatting rules (one variant per `SchemaType.kind`):
  *
@@ -75,16 +75,16 @@ export interface DdlApiForeignKeyTarget {
  * |--------|----------------------------|-----------------|
  * | `BoolType` | `boolean` | `boolean` |
  * | `IntegerType` | `integer`, `bigint`, `smallint`, `serial`, … | `integer` |
- * | `DecimalType` | `numeric`, `decimal` + `precision`/`scale` | `numeric(10,2)` |
+ * | `DecimalType` | `numeric`, `decimal` + `precision`/`scale` | `numeric (10, 2)` |
  * | `FloatType` | `real`, `double precision` + optional `precision` | `double precision` |
- * | `StringType` | `varchar`, `char`, `character varying`, … + optional `size` | `varchar(255)` |
+ * | `StringType` | `varchar`, `char`, `character varying`, … + optional `size` | `varchar (255)` |
  * | `BinaryType` | `bytea`, `blob`, … + optional `size` | `bytea` |
- * | `TimeType` | `date`, `time`, `timestamp`, `timestamptz`, … + optional `precision`/`scale` | `timestamp(6)` |
+ * | `TimeType` | `date`, `time`, `timestamp`, `timestamptz`, … + optional `precision`/`scale` | `timestamp (6)` |
  * | `JSONType` | `json`, `jsonb` | `jsonb` |
  * | `SpatialType` | `point`, `polygon`, … | `point` |
  * | `UUIDType` | `uuid` | `uuid` |
  * | `EnumType` | optional named `type` + `values[]` | `status` or first value list in detailed mode |
- * | `UnsupportedType` | `text`, `interval`, `money`, `inet`, arrays, … | dialect spelling in `typeName` |
+ * | `UnsupportedType` | `text`, `interval`, `money`, `inet`, arrays, … | dialect spelling in `typeName` (e.g. `bit (8)`) |
  * | `Domain` (`PgTypeKind`) | PostgreSQL domain object on column | domain name, optionally with base type |
  * | `UnknownType` | any other escape-hatch `kind` string | best-effort from object fields |
  * | `Raw` | `ColumnType.raw` when `type` is absent or unmapped | raw SQL fragment |

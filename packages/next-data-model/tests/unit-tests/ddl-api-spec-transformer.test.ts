@@ -48,6 +48,44 @@ describe('DdlApiSpecTransformer column row value', () => {
     expect(fullNameColumn?.generatedExpression).toBe("(first_name || ' ') || last_name")
     expect(fullNameColumn?.defaultValue).toBeUndefined()
   })
+
+  it('formats parameterized column type labels with a space before parentheses', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TABLE public.items (
+        amount numeric(10, 2) NOT NULL,
+        code character varying(30) NOT NULL
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 'items',
+    })
+
+    const amountColumn = spec?.columns.items.find(column => column.columnName === 'amount')
+    const codeColumn = spec?.columns.items.find(column => column.columnName === 'code')
+
+    expect(amountColumn?.columnType.label).toBe('numeric (10, 2)')
+    expect(codeColumn?.columnType.label).toBe('varchar (30)')
+  })
+
+  it('formats unsupported precomposed type labels with a space before parentheses', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TABLE public.flags (
+        fixed bit(8) NOT NULL,
+        variable bit varying(16) NOT NULL
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 'flags',
+    })
+
+    const fixedColumn = spec?.columns.items.find(column => column.columnName === 'fixed')
+    const variableColumn = spec?.columns.items.find(column => column.columnName === 'variable')
+
+    expect(fixedColumn?.columnType.label).toBe('bit (8)')
+    expect(variableColumn?.columnType.label).toBe('bit varying (16)')
+  })
 })
 
 describe('DdlApiSpecTransformer index row value', () => {

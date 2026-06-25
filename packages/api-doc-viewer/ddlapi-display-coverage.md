@@ -107,16 +107,16 @@ the label from each `SchemaType` kind:
 | --- | --- | --- |
 | `BoolType` | `type` | `boolean` |
 | `IntegerType` | `type`, optional `unsigned` (unsigned not shown separately) | `integer`, `bigint`, `serial`, … |
-| `DecimalType` | `type`, `precision`, `scale` | `numeric(10,2)` |
+| `DecimalType` | `type`, `precision`, `scale` | `numeric (10, 2)` |
 | `FloatType` | `type`, optional `precision` | `double precision` |
-| `StringType` | `type`, optional `size` | `character varying(30)` |
+| `StringType` | `type`, optional `size` | `character varying (30)` |
 | `BinaryType` | `type`, optional `size` | `bytea` |
-| `TimeType` | `type`, optional `precision`, `scale` | `timestamp(6)` |
+| `TimeType` | `type`, optional `precision`, `scale` | `timestamp (6)` |
 | `JSONType` | `type` | `jsonb` |
 | `SpatialType` | `type` | `point` |
 | `UUIDType` | `type` | `uuid` |
 | `EnumType` | named `type` or first of `values[]` | `status` or first enum literal |
-| `UnsupportedType` | raw dialect `type` | `interval`, `text`, array spelling, … |
+| `UnsupportedType` | raw dialect `type` | `interval`, `bit (8)`, `bit varying (16)`, … |
 | `PgTypeKind.Domain` | domain `type` name | domain name (not base type in label) |
 | `UnknownType` / other escape hatch | best-effort `type` or `kind` | driver-specific |
 | (fallback) | `ColumnType.raw` | raw SQL fragment |

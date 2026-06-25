@@ -392,28 +392,32 @@ export class DdlApiSpecTransformer {
   }
 
   private formatSchemaTypeLabel(schemaType: SchemaType): string {
+    let label: string
+
     if (isDecimalType(schemaType)) {
-      return this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision, schemaType.scale)
+      label = this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision, schemaType.scale)
+    } else if (isStringType(schemaType)) {
+      label = this.formatParameterizedTypeLabel(schemaType.type, schemaType.size)
+    } else if (isBinaryType(schemaType)) {
+      label = this.formatParameterizedTypeLabel(schemaType.type, schemaType.size)
+    } else if (isFloatType(schemaType)) {
+      label = this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision)
+    } else if (isTimeType(schemaType)) {
+      label = this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision, schemaType.scale)
+    } else if (isEnumType(schemaType)) {
+      label = schemaType.type ?? schemaType.values[0] ?? 'enum'
+    } else if (isSchemaTypeWithTypeName(schemaType)) {
+      label = schemaType.type
+    } else {
+      label = schemaType.kind
     }
-    if (isStringType(schemaType)) {
-      return this.formatParameterizedTypeLabel(schemaType.type, schemaType.size)
-    }
-    if (isBinaryType(schemaType)) {
-      return this.formatParameterizedTypeLabel(schemaType.type, schemaType.size)
-    }
-    if (isFloatType(schemaType)) {
-      return this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision)
-    }
-    if (isTimeType(schemaType)) {
-      return this.formatParameterizedTypeLabel(schemaType.type, schemaType.precision, schemaType.scale)
-    }
-    if (isEnumType(schemaType)) {
-      return schemaType.type ?? schemaType.values[0] ?? 'enum'
-    }
-    if (isSchemaTypeWithTypeName(schemaType)) {
-      return schemaType.type
-    }
-    return schemaType.kind
+
+    return this.normalizeTypeLabelSpacing(label)
+  }
+
+  /** Ensures a space before `(` when parameters are embedded in the type string (e.g. `bit(8)`). */
+  private normalizeTypeLabelSpacing(label: string): string {
+    return label.replace(/(?<=\S)\(/g, ' (')
   }
 
   private formatParameterizedTypeLabel(typeName: string, ...parameters: readonly (number | undefined)[]): string {
@@ -421,7 +425,7 @@ export class DdlApiSpecTransformer {
     if (definedParameters.length === 0) {
       return typeName
     }
-    return `${typeName}(${definedParameters.join(', ')})`
+    return `${typeName} (${definedParameters.join(', ')})`
   }
 
   private formatIndexPartName(part: { column?: { name: string }; expr?: Expr }): string {
