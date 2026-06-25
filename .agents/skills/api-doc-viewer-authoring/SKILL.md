@@ -196,7 +196,7 @@ spacer (same horizontal footprint as the expander column). This is not
 **Label styling:** `#626D82`, `font-size: 12px`, `font-weight: 400`
 (`.additional-info-row-label`).
 
-### Property list viewers (DDL columns/indices, JSO, future specs)
+### Property list viewers (DDL columns/indexes, JSO, future specs)
 
 Several viewers render a **flat or nested list of properties** under a section
 header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
@@ -215,7 +215,7 @@ header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
 
 - DDL columns — `ColumnsNodeViewer` → `ColumnNodeViewer` (stacked
   `TitleRow` / `TextRow` / `AdditionalInfoRow`).
-- DDL indices — `IndexesNodeViewer` → `IndexNodeViewer` (title only today;
+- DDL indexes — `IndexesNodeViewer` → `IndexNodeViewer` (title only today;
   same list-spacing rules).
 - JSO — `JsoViewer` → `JsoPropertyNodeViewer` (recursive; continuous vertical
   lines without extra row-body split because `.jso-property` rows carry **no**
@@ -338,7 +338,7 @@ Row components set `data-precededby={PrecededBy…}`. Enum values in
 Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 (`defaultValue` or `generatedExpression` on `node.value()`).
 
-**Indices list — same pattern (`buildIndexViewerContexts`):**
+**Indexes list — same pattern (`buildIndexViewerContexts`):**
 
 | Prop | When |
 | --- | --- |

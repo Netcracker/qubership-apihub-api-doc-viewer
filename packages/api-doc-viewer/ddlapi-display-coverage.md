@@ -73,15 +73,15 @@ Use these tags in the **Not displayed** tables when triaging tickets or tests.
 
 **Notes (display rules):**
 
-- `Table.primaryKey` is **never** a row in the Indices section; PK appears only as the **PK**
+- `Table.primaryKey` is **never** a row in the Indexes section; PK appears only as the **PK**
   badge on column rows.
 - `generatedBy` (`'identity' \| 'expression'`) is stored on the view-model but the badge text is
   always **generated** (identity vs expression is collapsed in the viewer).
 - Explicit `NULL` (`ColumnType.null === true`) and absent nullability (`undefined`) do **not**
   show a badge.
-- Composite unique indices do **not** set `isUnique` on individual columns.
+- Composite unique indexes do **not** set `isUnique` on individual columns.
 
-### Indices section (`IndexesNodeViewer`)
+### Indexes section (`IndexesNodeViewer`)
 
 | UI element | Condition | ddlapi source | View-model field |
 | --- | --- | --- | --- |
@@ -94,7 +94,7 @@ Use these tags in the **Not displayed** tables when triaging tickets or tests.
 
 **Notes:**
 
-- Only `Table.indexes` are listed — not `Table.primaryKey`, not schema-level indices.
+- Only `Table.indexes` are listed — not `Table.primaryKey`, not schema-level indexes.
 - `IndexPart.seqNo` is used for sort order only (not shown).
 - Expression index parts (`IndexPart.expr`) are formatted via `formatDdlExpr`.
 
@@ -322,7 +322,7 @@ Not displayed — tag **`ndm-future`**.
    is **no viewer change** until classified from **`ndm-future`** → product → viewer.
 
 4. **Do not treat as bugs (baseline):**
-   - no Indices row for primary key;
+   - no Indexes row for primary key;
    - no **nullable** badge;
    - `public` schema name hidden;
    - composite unique not on columns;
