@@ -5,3 +5,4 @@ export declare const DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA = "ux-badge_ddl-api_not
 export declare const DDL_API_GENERATED_BADGE_COLOR_SCHEMA = "ux-badge_ddl-api_generated";
 export declare const ADDITIONAL_INFO_LABEL_DEFAULT = "Default";
 export declare const ADDITIONAL_INFO_LABEL_GENERATED = "As";
+export declare const ADDITIONAL_INFO_LABEL_VALUES = "Values";
