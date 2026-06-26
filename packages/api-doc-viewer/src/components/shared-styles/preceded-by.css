@@ -143,7 +143,7 @@
   margin-bottom: 0;
 }
 
-/* Last column/index row in list — 16 px bottom margin on TitleRow or AdditionalInfoRow. */
+/* Last column/index row in list — 0 px bottom margin on TitleRow or AdditionalInfoRow. */
 .ddl-api-property .title-row-content[data-ddl-list-last-row="true"],
 .ddl-api-property .additional-info-row-content[data-ddl-list-last-row="true"] {
   margin-bottom: 0;
