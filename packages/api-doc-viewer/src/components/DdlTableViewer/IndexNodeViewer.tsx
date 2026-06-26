@@ -7,6 +7,7 @@ import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
+import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
@@ -91,6 +92,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
           variant={TextValueVariant.body1}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
+          usage={TextRowUsage.DdlApiProperty}
         />
       )}
     </div>

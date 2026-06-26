@@ -6,6 +6,7 @@ import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
+import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
@@ -152,6 +153,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           variant={TextValueVariant.body2}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
+          usage={TextRowUsage.DdlApiProperty}
         />
       )}
       {hasEnumValues && (
