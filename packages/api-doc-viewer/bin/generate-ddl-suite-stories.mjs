@@ -31,6 +31,12 @@ const SUITES = [
     title: "DDL API Suite/Escaping Spec Chars",
     storyFileName: "escaping-spec-chars-samples.stories.tsx",
   },
+  {
+    suiteId: "display-mode-simple",
+    title: "DDL API Suite/Display Mode Simple",
+    storyFileName: "display-mode-simple-samples.stories.tsx",
+    displayMode: "simple",
+  },
 ];
 
 const toPascalCase = (caseId) =>
@@ -50,7 +56,7 @@ const collectCaseIds = (suiteId) =>
     )
     .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }));
 
-const printStoryFile = ({ suiteId, title }) => {
+const printStoryFile = ({ suiteId, title, displayMode }) => {
   const metaId = makeMetaId(suiteId);
   const caseIds = collectCaseIds(suiteId);
   const exports = caseIds
@@ -60,8 +66,15 @@ const printStoryFile = ({ suiteId, title }) => {
     )
     .join("\n");
 
+  const displayModeImport = displayMode
+    ? `import { ${displayMode === "simple" ? "SIMPLE" : "DETAILED"}_DISPLAY_MODE } from "@apihub/types/DisplayMode";\n`
+    : "";
+  const factoryOptions = displayMode
+    ? `, { displayMode: ${displayMode === "simple" ? "SIMPLE" : "DETAILED"}_DISPLAY_MODE }`
+    : "";
+
   return `import { DdlTableViewer } from "@apihub/components/DdlTableViewer/DdlTableViewer";
-import type { Meta, StoryObj } from "@storybook/react";
+${displayModeImport}import type { Meta, StoryObj } from "@storybook/react";
 import {
   collectDdlSampleCases,
   createDdlSampleById,
@@ -75,7 +88,7 @@ const sampleFiles = import.meta.glob(
 
 const sampleCases = collectDdlSampleCases(sampleFiles);
 const sampleById = createDdlSampleById(sampleCases);
-const createCaseStory = createCaseStoryFactory(sampleById);
+const createCaseStory = createCaseStoryFactory(sampleById${factoryOptions});
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
