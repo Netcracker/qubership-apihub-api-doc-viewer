@@ -75,12 +75,37 @@ Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts`.
+- DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios-samples.stories.tsx`
+  and `src/it/ddlapi-suite/e2e-scenarios-samples.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under
   `packages/samples/`, export a story, and append a matching `it(...)` with
   the correct story ID.
 
 Run `npm run generate-stories` / `npm run generate-tests` before screenshot
 runs when compatibility-suite or DDL sample fixtures changed.
+
+## DDL API sample fixtures
+
+SQL fixtures for DDL viewer screenshot tests live under
+`packages/samples/ddlapi/`. Each case is a directory containing `sample.sql`.
+
+| Path | Purpose | Stories / tests |
+| --- | --- | --- |
+| `column-constraints/` | Column constraint permutations | Generated suite |
+| `column-types/` | PostgreSQL column types | Generated suite |
+| `indexes/` | Index definitions | Generated suite |
+| `escaping-spec-chars/` | Escaping in defaults and expressions | Generated suite |
+| `e2e-scenarios/` | Multi-table end-to-end viewer scenarios | Hand-written E2E Scenarios suite |
+
+**Generated suites** — one subdirectory per case (e.g.
+`column-types/varchar/sample.sql`). Regenerate stories and IT files after
+adding or renaming cases.
+
+**E2E scenarios** — realistic table layouts used by the E2E Scenarios suite.
+Each case directory name is the sample id (e.g. `e2e-scenarios/users/`).
+`e2e-scenarios-samples.stories.tsx` maps sample ids to `TableKey` values and
+exports one story per case; append the Storybook kebab-case story id to
+`e2e-scenarios-samples.it-test.ts` when adding a scenario.
 
 ## Flaky rendering
 

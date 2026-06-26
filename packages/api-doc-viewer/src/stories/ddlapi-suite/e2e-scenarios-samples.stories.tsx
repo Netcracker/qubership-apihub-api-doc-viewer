@@ -16,7 +16,7 @@ type DdlSample = {
 };
 
 const SAMPLE_FILES = import.meta.glob(
-  "../../../../samples/ddlapi/*/sample.sql",
+  "../../../../samples/ddlapi/e2e-scenarios/*/sample.sql",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
@@ -81,7 +81,8 @@ const navigationCallback: NavigationCallback = (schema, table, column) => {
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "DDL API Suite/Table Samples",
+  id: "ddl-api-suite-e2e-scenarios",
+  title: "DDL API Suite/E2E Scenarios",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;
 
