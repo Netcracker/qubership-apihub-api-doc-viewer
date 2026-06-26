@@ -1,9 +1,9 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { FC, memo } from "react"
-import '../../shared-styles/preceded-by.css'
 import { LevelIndicator } from "../../shared-components/LevelIndicator"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../../shared-components/WithPrecededByProps"
+import '../../shared-styles/preceded-by.css'
 import { AdditionalInfoRowContentProps } from "./types"
 
 export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<AdditionalInfoRowContentProps>((props) => {
@@ -21,7 +21,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       data-testid="additional-info-row-content"
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
-      className={`additional-info-row-content flex items-stretch h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} min-h-[26px] gap-2`}
+      className={`additional-info-row-content flex items-stretch h-full ${X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES} min-h-[26px] gap-2`}
     >
       {level > 0 && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
