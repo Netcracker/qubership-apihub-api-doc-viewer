@@ -75,10 +75,26 @@ export const BuildFromDdlDebug: FC<BuildFromDdlDebugProps> = ({ ddlText }) => {
     return null;
   }
 
+  const schema = realm.schemas[0];
+  if (!schema) {
+    return null;
+  }
+  const table = schema.tables?.[0];
+  if (!table) {
+    return null;
+  }
+
   const tableKey = {
-    schemaName: "public",
-    name: "users",
+    schemaName: schema.name,
+    name: table.name,
   };
 
-  return <DdlTableViewer source={realm} tableKey={tableKey} navigationCallback={navigationCallback} />;
+  return (
+    <DdlTableViewer
+      source={realm}
+      tableKey={tableKey}
+      navigationCallback={navigationCallback}
+      devMode={true}
+    />
+  );
 };
