@@ -1,3 +1,4 @@
+import { isDefined } from '@apihub/utils/common/checkers'
 import { DdlApiColumnRowValue } from '@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value'
 
 export function hasDdlColumnAdditionalInfoRows(
@@ -8,8 +9,8 @@ export function hasDdlColumnAdditionalInfoRows(
   }
 
   return !!(
-    value.defaultValue
-    || value.generatedExpression
+    isDefined(value.defaultValue)
+    || isDefined(value.generatedExpression)
     || (value.enumValues && value.enumValues.length > 0)
   )
 }

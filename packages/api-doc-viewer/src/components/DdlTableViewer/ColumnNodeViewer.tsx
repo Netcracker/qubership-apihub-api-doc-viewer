@@ -1,4 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { isDefined } from "@apihub/utils/common/checkers"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -62,14 +63,15 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   const defaultAdditionalInfoSubheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_layoutSide: LayoutSide) => {
-      if (!value?.defaultValue) {
+      const defaultValue = value?.defaultValue
+      if (!isDefined(defaultValue)) {
         return <></>
       }
 
       return (
         <AdditionalInfoPiece
           isVisible={true}
-          value={value.defaultValue}
+          value={defaultValue}
         />
       )
     },
@@ -79,14 +81,15 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   const generatedAdditionalInfoSubheader = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_layoutSide: LayoutSide) => {
-      if (!value?.generatedExpression) {
+      const generatedExpression = value?.generatedExpression
+      if (!isDefined(generatedExpression)) {
         return <></>
       }
 
       return (
         <AdditionalInfoPiece
           isVisible={true}
-          value={value.generatedExpression}
+          value={generatedExpression}
         />
       )
     },
@@ -115,15 +118,19 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     [value],
   )
 
+  const isAdditionalInfoDisplayed = displayMode === DETAILED_DISPLAY_MODE
+
   const isDescriptionDisplayed = useMemo(
-    () => displayMode === DETAILED_DISPLAY_MODE && !!value?.description,
-    [displayMode, value?.description],
+    () => isAdditionalInfoDisplayed && !!value?.description,
+    [isAdditionalInfoDisplayed, value?.description],
   )
 
   const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
-  const hasDefaultValue = !!value?.defaultValue
-  const hasGeneratedExpression = !!value?.generatedExpression
-  const hasAdditionalInfoRows = hasEnumValues || hasDefaultValue || hasGeneratedExpression
+  const hasDefaultValue = isDefined(value?.defaultValue)
+  const hasGeneratedExpression = isDefined(value?.generatedExpression)
+  const hasAdditionalInfoRows = isAdditionalInfoDisplayed && (
+    hasEnumValues || hasDefaultValue || hasGeneratedExpression
+  )
 
   const isTitleListLastRow = isLastInList && !hasAdditionalInfoRows
   const isEnumAdditionalInfoListLastRow = isLastInList && hasEnumValues && !hasDefaultValue && !hasGeneratedExpression
@@ -156,7 +163,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           usage={TextRowUsage.DdlApiProperty}
         />
       )}
-      {hasEnumValues && (
+      {isAdditionalInfoDisplayed && hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
@@ -164,7 +171,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           subheader={enumValuesAdditionalInfoSubheader}
         />
       )}
-      {value.defaultValue && (
+      {isAdditionalInfoDisplayed && hasDefaultValue && (
         <AdditionalInfoRow
           data-precededby={
             hasEnumValues
@@ -176,7 +183,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           subheader={defaultAdditionalInfoSubheader}
         />
       )}
-      {value.generatedExpression && (
+      {isAdditionalInfoDisplayed && hasGeneratedExpression && (
         <AdditionalInfoRow
           data-precededby={
             hasDefaultValue || hasEnumValues
