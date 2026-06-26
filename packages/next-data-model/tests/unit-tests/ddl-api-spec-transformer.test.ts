@@ -1,4 +1,4 @@
-import { buildFromDdl, literal, rawExpr } from '@netcracker/qubership-apihub-ddlapi'
+import { buildFromDdl, literal, rawExpr, TypeKind } from '@netcracker/qubership-apihub-ddlapi'
 import { DdlApiSpecTransformer } from '../../src/building-service/ddlapi/shared/ddl-api-spec-transformer'
 import { formatDdlExpr } from '../../src/shared/ddlapi/format-ddl-expr'
 import { createBuildingServiceLogger } from '../../src/loggers'
@@ -66,6 +66,26 @@ describe('DdlApiSpecTransformer column row value', () => {
 
     expect(amountColumn?.columnType.label).toBe('numeric (10, 2)')
     expect(codeColumn?.columnType.label).toBe('varchar (30)')
+  })
+
+  it('exposes enumValues on the column row when column type is EnumType', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TYPE mood AS ENUM ('happy', 'sad', 'neutral');
+      CREATE TABLE public.journal (
+        feeling mood NOT NULL
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 'journal',
+    })
+
+    const feelingColumn = spec?.columns.items.find(column => column.columnName === 'feeling')
+    expect(feelingColumn?.columnType.kind).toBe(TypeKind.EnumType)
+    expect(feelingColumn?.enumValues).toEqual(['happy', 'sad', 'neutral'])
+    if (feelingColumn?.columnType.kind === TypeKind.EnumType) {
+      expect(feelingColumn.enumValues).toBe(feelingColumn.columnType.values)
+    }
   })
 
   it('formats unsupported precomposed type labels with a space before parentheses', async () => {

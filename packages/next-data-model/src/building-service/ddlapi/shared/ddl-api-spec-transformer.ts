@@ -186,9 +186,14 @@ export class DdlApiSpecTransformer {
       ? this.buildForeignKeyTarget(realm, foreignKey, column)
       : undefined
 
+    const columnType = this.formatColumnType(column.type)
+    const schemaType = column.type?.type
+    const enumValues = schemaType && isEnumType(schemaType) ? schemaType.values : undefined
+
     return {
       columnName: column.name,
-      columnType: this.formatColumnType(column.type),
+      columnType,
+      ...(enumValues ? { enumValues } : {}),
       isPrimaryKey: this.isPrimaryKeyColumn(table, column),
       isForeignKey,
       ...(foreignKeyTarget ? { foreignKeyTarget } : {}),

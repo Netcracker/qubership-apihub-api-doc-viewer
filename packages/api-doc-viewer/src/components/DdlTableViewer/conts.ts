@@ -6,3 +6,4 @@ export const DDL_API_GENERATED_BADGE_COLOR_SCHEMA = 'ux-badge_ddl-api_generated'
 
 export const ADDITIONAL_INFO_LABEL_DEFAULT = 'Default';
 export const ADDITIONAL_INFO_LABEL_GENERATED = 'As';
+export const ADDITIONAL_INFO_LABEL_VALUES = 'Values';

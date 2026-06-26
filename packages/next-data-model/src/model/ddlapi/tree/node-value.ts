@@ -238,10 +238,13 @@ export interface DdlApiColumnTypeRaw extends DdlApiColumnTypeBase {
  * | `description` | COMMENT ON COLUMN | `findAttr(column.attrs, Comment)?.text` |
  * | `defaultValue` | `Column.default` present | `Column.default` → {@link formatDdlExpr} |
  * | `generatedExpression` | `GeneratedExpr` attr (not IDENTITY) | `findAttr(column.attrs, GeneratedExpr).expr` |
+ * | `enumValues` | `columnType.kind === EnumType` | `Column.type.type.values` (same list as {@link DdlApiColumnTypeEnum.values}) |
  */
 export interface DdlApiColumnRowValue extends DdlApiRowDescription {
   readonly columnName: string
   readonly columnType: DdlApiColumnTypeValue
+  /** Enum literals when {@link columnType} is {@link DdlApiColumnTypeEnum}; omitted for other types. */
+  readonly enumValues?: readonly string[]
   readonly isPrimaryKey: boolean
   readonly isForeignKey: boolean
   readonly foreignKeyTarget?: DdlApiForeignKeyTarget

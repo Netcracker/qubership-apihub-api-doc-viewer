@@ -7,5 +7,9 @@ export function hasDdlColumnAdditionalInfoRows(
     return false
   }
 
-  return !!(value.defaultValue || value.generatedExpression)
+  return !!(
+    value.defaultValue
+    || value.generatedExpression
+    || (value.enumValues && value.enumValues.length > 0)
+  )
 }

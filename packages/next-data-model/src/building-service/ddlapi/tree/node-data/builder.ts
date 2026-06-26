@@ -81,6 +81,7 @@ export class DdlApiNodeDataBuilder extends AbstractNodeDataBuilder<
         return [
           'columnName',
           'columnType',
+          'enumValues',
           'isPrimaryKey',
           'isForeignKey',
           'foreignKeyTarget',

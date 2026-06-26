@@ -10,7 +10,11 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadges } from "./ColumnRowBadges"
-import { ADDITIONAL_INFO_LABEL_DEFAULT, ADDITIONAL_INFO_LABEL_GENERATED } from "./conts"
+import {
+  ADDITIONAL_INFO_LABEL_DEFAULT,
+  ADDITIONAL_INFO_LABEL_GENERATED,
+  ADDITIONAL_INFO_LABEL_VALUES,
+} from "./conts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
@@ -88,15 +92,42 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     [value],
   )
 
+  const enumValuesAdditionalInfoSubheader = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_layoutSide: LayoutSide) => {
+      if (!value?.enumValues?.length) {
+        return <></>
+      }
+
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {value.enumValues.map((enumValue, index) => (
+            <AdditionalInfoPiece
+              key={`${enumValue}-${index}`}
+              isVisible={true}
+              value={enumValue}
+            />
+          ))}
+        </div>
+      )
+    },
+    [value],
+  )
+
   const isDescriptionDisplayed = useMemo(
     () => displayMode === DETAILED_DISPLAY_MODE && !!value?.description,
     [displayMode, value?.description],
   )
 
-  const hasAdditionalInfoRows = !!(value?.defaultValue || value?.generatedExpression)
+  const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
+  const hasDefaultValue = !!value?.defaultValue
+  const hasGeneratedExpression = !!value?.generatedExpression
+  const hasAdditionalInfoRows = hasEnumValues || hasDefaultValue || hasGeneratedExpression
+
   const isTitleListLastRow = isLastInList && !hasAdditionalInfoRows
-  const isDefaultAdditionalInfoListLastRow = isLastInList && !!value?.defaultValue && !value?.generatedExpression
-  const isGeneratedAdditionalInfoListLastRow = isLastInList && !!value?.generatedExpression
+  const isEnumAdditionalInfoListLastRow = isLastInList && hasEnumValues && !hasDefaultValue && !hasGeneratedExpression
+  const isDefaultAdditionalInfoListLastRow = isLastInList && hasDefaultValue && !hasGeneratedExpression
+  const isGeneratedAdditionalInfoListLastRow = isLastInList && hasGeneratedExpression
 
   if (!value) {
     return null
@@ -123,9 +154,21 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           textColor={DEFAULT_LONG_TEXT_COLOR}
         />
       )}
-      {value.defaultValue && (
+      {hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
+          label={ADDITIONAL_INFO_LABEL_VALUES}
+          subheader={enumValuesAdditionalInfoSubheader}
+        />
+      )}
+      {value.defaultValue && (
+        <AdditionalInfoRow
+          data-precededby={
+            hasEnumValues
+              ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
+              : additionalInfoPrecededBy
+          }
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
@@ -134,7 +177,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
       {value.generatedExpression && (
         <AdditionalInfoRow
           data-precededby={
-            value.defaultValue
+            hasDefaultValue || hasEnumValues
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
