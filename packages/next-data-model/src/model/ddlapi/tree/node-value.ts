@@ -52,7 +52,8 @@ export interface DdlApiSectionHeaderRowValue {
  *
  * | Field | ddlapi source |
  * |-------|---------------|
- * | `schemaName` | `Schema.name` of the schema that owns `ForeignKey.refTable` |
+ * | `schemaName` | `Schema.name` of the schema that owns `ForeignKey.refTable`, or the
+ *                owning table's schema when `refTable` is embedded in a partial realm |
  * | `tableName` | `ForeignKey.refTable.name` |
  * | `columnName` | `ForeignKey.refColumns[j].name` where `j` is the index of the column inside `ForeignKey.columns` |
  */

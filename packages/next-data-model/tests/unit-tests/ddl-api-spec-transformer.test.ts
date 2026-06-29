@@ -106,6 +106,133 @@ describe('DdlApiSpecTransformer column row value', () => {
     expect(fixedColumn?.columnType.label).toBe('bit (8)')
     expect(variableColumn?.columnType.label).toBe('bit varying (16)')
   })
+
+  it('resolves foreignKeyTarget when refTable is present in the full realm', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TABLE public.parent (
+        id bigint PRIMARY KEY
+      );
+
+      CREATE TABLE public.t (
+        ref_id bigint REFERENCES public.parent (id)
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
+    expect(refIdColumn?.isForeignKey).toBe(true)
+    expect(refIdColumn?.foreignKeyTarget).toEqual({
+      schemaName: 'public',
+      tableName: 'parent',
+      columnName: 'id',
+    })
+  })
+
+  it('resolves foreignKeyTarget in a single-table partial realm with embedded refTable', async () => {
+    const fullRealm = await buildFromDdl(`
+      CREATE TABLE public.user_data (
+        user_id character varying PRIMARY KEY
+      );
+
+      CREATE TABLE public.ai_chat (
+        user_id character varying NOT NULL REFERENCES public.user_data (user_id)
+      );
+    `)
+    const aiChat = fullRealm.schemas
+      .find(schema => schema.name === 'public')
+      ?.tables?.find(table => table.name === 'ai_chat')
+    expect(aiChat).toBeDefined()
+
+    const partialRealm = {
+      ddlapi: fullRealm.ddlapi,
+      schemas: [{ name: 'public', tables: [aiChat!] }],
+    }
+
+    const spec = transformer.transformSourceToTableOrientedSpec(partialRealm, {
+      schemaName: 'public',
+      name: 'ai_chat',
+    })
+
+    const userIdColumn = spec?.columns.items.find(column => column.columnName === 'user_id')
+    expect(userIdColumn?.isForeignKey).toBe(true)
+    expect(userIdColumn?.foreignKeyTarget).toEqual({
+      schemaName: 'public',
+      tableName: 'user_data',
+      columnName: 'user_id',
+    })
+  })
+
+  it('resolves foreignKeyTarget when FK column objects differ from table.columns by reference', async () => {
+    const fullRealm = await buildFromDdl(`
+      CREATE TABLE public.parent (
+        id bigint PRIMARY KEY
+      );
+
+      CREATE TABLE public.t (
+        ref_id bigint REFERENCES public.parent (id)
+      );
+    `)
+    const tTable = fullRealm.schemas
+      .find(schema => schema.name === 'public')
+      ?.tables?.find(table => table.name === 't')
+    expect(tTable?.foreignKeys?.[0]).toBeDefined()
+
+    const foreignKey = tTable!.foreignKeys![0]!
+    const duplicatedForeignKey = {
+      ...foreignKey,
+      columns: foreignKey.columns?.map(column => ({ ...column })),
+    }
+    const tableWithDuplicatedForeignKeyColumns = {
+      ...tTable!,
+      foreignKeys: [duplicatedForeignKey],
+    }
+
+    const partialRealm = {
+      ddlapi: fullRealm.ddlapi,
+      schemas: [{ name: 'public', tables: [tableWithDuplicatedForeignKeyColumns] }],
+    }
+
+    const spec = transformer.transformSourceToTableOrientedSpec(partialRealm, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
+    expect(refIdColumn?.isForeignKey).toBe(true)
+    expect(refIdColumn?.foreignKeyTarget).toEqual({
+      schemaName: 'public',
+      tableName: 'parent',
+      columnName: 'id',
+    })
+  })
+
+  it('resolves foreignKeyTarget schema via refTable reference across schemas', async () => {
+    const realm = await buildFromDdl(`
+      CREATE SCHEMA custom;
+
+      CREATE TABLE custom.parent (
+        id bigint PRIMARY KEY
+      );
+
+      CREATE TABLE public.t (
+        ref_id bigint REFERENCES custom.parent (id)
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
+    expect(refIdColumn?.foreignKeyTarget).toEqual({
+      schemaName: 'custom',
+      tableName: 'parent',
+      columnName: 'id',
+    })
+  })
 })
 
 describe('DdlApiSpecTransformer index row value', () => {

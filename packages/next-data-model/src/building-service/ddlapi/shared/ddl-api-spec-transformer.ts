@@ -107,7 +107,9 @@ export class DdlApiSpecTransformer {
       ...(tableComment ? { description: tableComment.text } : {}),
       columns: {
         title: DDL_API_COLUMNS_SECTION_TITLE,
-        items: (table.columns ?? []).map(column => this.buildColumnRowValue(realm, table, column)),
+        items: (table.columns ?? []).map(column =>
+          this.buildColumnRowValue(realm, table, column, tableKey.schemaName),
+        ),
       },
       indexes: {
         title: DDL_API_INDEXES_SECTION_TITLE,
@@ -175,7 +177,12 @@ export class DdlApiSpecTransformer {
     }
   }
 
-  private buildColumnRowValue(realm: Realm, table: Table, column: Column): DdlApiColumnRowValue {
+  private buildColumnRowValue(
+    realm: Realm,
+    table: Table,
+    column: Column,
+    owningSchemaName: string,
+  ): DdlApiColumnRowValue {
     const comment = findAttr(column.attrs, AttrKind.Comment)
     const identity = column.attrs?.find(attribute => attribute.kind === PgAttrKind.Identity)
     const generatedExpr = findAttr(column.attrs, AttrKind.GeneratedExpr)
@@ -183,7 +190,7 @@ export class DdlApiSpecTransformer {
     const foreignKey = this.findForeignKeyForColumn(table, column)
     const isForeignKey = foreignKey !== undefined
     const foreignKeyTarget = isForeignKey && foreignKey
-      ? this.buildForeignKeyTarget(realm, foreignKey, column)
+      ? this.buildForeignKeyTarget(realm, foreignKey, column, owningSchemaName)
       : undefined
 
     const columnType = this.formatColumnType(column.type)
@@ -246,9 +253,13 @@ export class DdlApiSpecTransformer {
     )
   }
 
+  private isSameForeignKeyColumn(foreignKeyColumn: Column, column: Column): boolean {
+    return foreignKeyColumn === column || foreignKeyColumn.name === column.name
+  }
+
   private findForeignKeyForColumn(table: Table, column: Column): ForeignKey | undefined {
     return table.foreignKeys?.find(foreignKey =>
-      foreignKey.columns?.some(foreignKeyColumn => foreignKeyColumn === column),
+      foreignKey.columns?.some(foreignKeyColumn => this.isSameForeignKeyColumn(foreignKeyColumn, column)),
     )
   }
 
@@ -256,8 +267,11 @@ export class DdlApiSpecTransformer {
     realm: Realm,
     foreignKey: ForeignKey,
     column: Column,
+    owningSchemaName: string,
   ): DdlApiForeignKeyTarget | undefined {
-    const columnIndex = foreignKey.columns?.findIndex(foreignKeyColumn => foreignKeyColumn === column) ?? -1
+    const columnIndex = foreignKey.columns?.findIndex(foreignKeyColumn =>
+      this.isSameForeignKeyColumn(foreignKeyColumn, column),
+    ) ?? -1
     if (columnIndex < 0) {
       return undefined
     }
@@ -268,7 +282,7 @@ export class DdlApiSpecTransformer {
       return undefined
     }
 
-    const schemaName = this.findSchemaNameForTable(realm, refTable)
+    const schemaName = this.resolveForeignKeyTargetSchemaName(realm, refTable, owningSchemaName)
     if (!schemaName) {
       return undefined
     }
@@ -278,6 +292,42 @@ export class DdlApiSpecTransformer {
       tableName: refTable.name,
       columnName: refColumn.name,
     }
+  }
+
+  /**
+   * Resolves the schema that owns `refTable`. Prefer referential lookup in the realm
+   * (canonical after `buildFromDdl`); fall back to a unique name match, then the
+   * owning table's schema for single-table / partial realms where `refTable` is
+   * embedded but omitted from `schema.tables`.
+   */
+  private resolveForeignKeyTargetSchemaName(
+    realm: Realm,
+    refTable: Table,
+    owningSchemaName: string,
+  ): string | undefined {
+    const schemaByReference = this.findSchemaNameForTable(realm, refTable)
+    if (schemaByReference) {
+      return schemaByReference
+    }
+
+    const schemaByUniqueTableName = this.findUniqueSchemaNameForTableName(realm, refTable.name)
+    if (schemaByUniqueTableName) {
+      return schemaByUniqueTableName
+    }
+
+    return owningSchemaName
+  }
+
+  private findUniqueSchemaNameForTableName(realm: Realm, tableName: string): string | undefined {
+    const matchingSchemaNames = realm.schemas
+      .filter(schema => schema.tables?.some(currentTable => currentTable.name === tableName))
+      .map(schema => schema.name)
+
+    if (matchingSchemaNames.length === 1) {
+      return matchingSchemaNames[0]
+    }
+
+    return undefined
   }
 
   private formatColumnType(columnType: ColumnType | undefined): DdlApiColumnTypeValue {

@@ -272,7 +272,7 @@ statements are skipped (`DdlErrorKind.OutOfScopeStatement`). Absence in the view
 | `View`, `View.def`, `View.columns` | `parser-gap` + `out-of-scope` |
 | `ALTER`, `DROP`, DML, `CREATE VIEW`, sequences, extensions, … | `parser-gap` |
 | `CREATE TABLE … PARTITION OF …` | `parser-gap` |
-| Unresolved FK / LIKE source (partial realm) | `parser-gap` — FK chip omitted when target unresolved |
+| Unresolved FK / LIKE source (partial realm) | `parser-gap` — FK chip omitted when `refTable` / `refColumns` are absent |
 
 ---
 
