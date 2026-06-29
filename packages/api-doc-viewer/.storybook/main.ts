@@ -18,7 +18,6 @@ import type {StorybookConfig} from "@storybook/react-vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
-import { conditionalPgsqlParserPlugin } from "./conditional-pgsql-parser";
 import { libpgQueryWasmInteropPlugin } from "./libpg-query-wasm-interop";
 import { libpgQueryWasmPlugin } from "./libpg-query-wasm-plugin";
 
@@ -52,14 +51,15 @@ const config: StorybookConfig = {
   async viteFinal(config) {
     return mergeConfig(config, {
       plugins: [
-        conditionalPgsqlParserPlugin(storybookDir),
         libpgQueryWasmInteropPlugin(storybookDir),
         libpgQueryWasmPlugin(storybookDir),
       ],
       assetsInclude: ["**/*.wasm"],
       optimizeDeps: {
+        // Keep ddlapi out of esbuild pre-bundling so its '/parser' dynamic import
+        // stays a separate async chunk and the WASM interop plugin (rollup-level)
+        // is not bypassed.
         exclude: [
-          "pgsql-parser",
           "@netcracker/qubership-apihub-ddlapi",
         ],
       },
