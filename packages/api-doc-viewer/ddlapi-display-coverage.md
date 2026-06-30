@@ -218,7 +218,7 @@ Present on the **selected table** in ddlapi, intentionally omitted from
 | `Realm.attrs`, `Realm.objects` | realm-level |
 | `Schema.attrs`, `Schema.objects` | schema-level types, domains as objects, triggers, … |
 | `Schema.tables` list | table picker is external (`TableKey`) |
-| Other tables in the same schema | navigation target only via FK callback |
+| Other tables in the same schema | navigation target only via FK link builder |
 | `View` and `View.*` | views not supported in ddlapi parser (`Schema.views` commented out) |
 | `SchemaObject` members never attached to one table | `Check`, standalone `EnumType` object rows, `NamedDefault` as object, generic `UnknownObject` |
 | `Check` as table/column constraint | not mapped |
