@@ -15,6 +15,7 @@ export type DdlTableDiffsViewerProps = {
   // techincal props
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
   // diffs specific props
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>

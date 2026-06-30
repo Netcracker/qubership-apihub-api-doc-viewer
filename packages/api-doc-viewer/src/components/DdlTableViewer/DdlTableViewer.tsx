@@ -22,6 +22,7 @@ export type DdlTableViewerProps = {
   navigationLinkBuilder: NavigationLinkBuilder
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
 }
 
 export const DdlTableViewer: FC<DdlTableViewerProps> =
@@ -45,6 +46,7 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
       navigationLinkBuilder,
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
+      noHeading = false,
     } = props
 
     const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
@@ -80,7 +82,7 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
           <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
             <LevelContext.Provider value={0}>
               <div data-testid="ddl-table-viewer">
-                <TableNodeViewer node={tableNode} />
+                <TableNodeViewer node={tableNode} noHeading={noHeading} />
               </div>
             </LevelContext.Provider>
           </LayoutModeContext.Provider>

@@ -25,6 +25,7 @@ export type AsyncApiOperationDiffsViewerProps = {
   operationKeys?: OperationKeys
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
   referenceNamePropertyKey: symbol
   // diffs specific
   diffMetaKeys: DiffMetaKeys
@@ -51,6 +52,7 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
       operationKeys,
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
+      noHeading = false,
       referenceNamePropertyKey,
       diffMetaKeys,
       diffTypes,
@@ -87,6 +89,7 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
                 <LevelContext.Provider value={0}>
                   <MessageNodeViewer
                     node={messageNode}
+                    noHeading={noHeading}
                   />
                 </LevelContext.Provider>
               </LayoutModeContext.Provider>
