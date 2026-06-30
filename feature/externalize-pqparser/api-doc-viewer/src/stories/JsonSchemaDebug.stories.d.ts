@@ -7,7 +7,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaViewer").JsonSchemaViewerProps>;
+    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaViewerProps>;
     parameters: {};
     argTypes: {
         schemaText: {
