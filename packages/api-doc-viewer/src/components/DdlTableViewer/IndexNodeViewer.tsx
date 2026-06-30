@@ -74,7 +74,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   }
 
   return (
-    <div data-testid="ddl-index-node-viewer" className="flex flex-col ddl-api-property">
+    <div data-testid="ddl-index-node-viewer" className="flex flex-col ddlapi-property">
       <TitleRow
         data-precededby={precededBy}
         {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}

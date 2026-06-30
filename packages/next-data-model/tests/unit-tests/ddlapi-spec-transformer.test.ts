@@ -1,5 +1,5 @@
 import { buildFromDdl, literal, rawExpr, TypeKind } from '@netcracker/qubership-apihub-ddlapi'
-import { DdlApiSpecTransformer } from '../../src/building-service/ddlapi/shared/ddl-api-spec-transformer'
+import { DdlApiSpecTransformer } from '../../src/building-service/ddlapi/shared/ddlapi-spec-transformer'
 import { formatDdlExpr } from '../../src/shared/ddlapi/format-ddl-expr'
 import { createBuildingServiceLogger } from '../../src/loggers'
 

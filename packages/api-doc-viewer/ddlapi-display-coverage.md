@@ -9,7 +9,7 @@ what is omitted on purpose, and how to classify gaps when planning work or writi
 | Layer | Location |
 | --- | --- |
 | ddlapi schema model | `qubership-apihub-ddlapi/src/schema.ts`, `attrs.ts`, `types.ts`, `exprs.ts`, `postgres.constants.ts` |
-| Realm → view-model | `packages/next-data-model/src/building-service/ddlapi/shared/ddl-api-spec-transformer.ts` |
+| Realm → view-model | `packages/next-data-model/src/building-service/ddlapi/shared/ddlapi-spec-transformer.ts` |
 | View-model types | `packages/next-data-model/src/model/ddlapi/tree/node-value.ts` |
 | Expr formatting | `packages/next-data-model/src/shared/ddlapi/format-ddl-expr.ts` |
 | Viewer | `packages/api-doc-viewer/src/components/DdlTableViewer/` |
@@ -314,7 +314,7 @@ Not displayed — tag **`ndm-future`**.
    tests against § Displayed; do not expect fields listed under § Not displayed unless a ticket
    explicitly expands scope.
 
-2. **Transformer unit tests** — `packages/next-data-model/tests/unit-tests/ddl-api-spec-transformer.test.ts`
+2. **Transformer unit tests** — `packages/next-data-model/tests/unit-tests/ddlapi-spec-transformer.test.ts`
    covers `defaultValue`, `generatedExpression`, index `description`; extend here for new
    **`ndm-future`** mappings before viewer work.
 

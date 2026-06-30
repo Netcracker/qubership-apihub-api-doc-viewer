@@ -5,7 +5,7 @@
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'ddl-api-suite-escaping-spec-chars'
+const META_ID = 'ddlapi-suite-escaping-spec-chars'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [

@@ -6,7 +6,7 @@ import {
   DdlApiTableOrientedSpec,
   DdlApiTableOrientedSpecColumnsSection,
   DdlApiTableOrientedSpecIndexesSection,
-} from "./ddl-api-spec-transformer";
+} from "./ddlapi-spec-transformer";
 
 export interface DdlApiTableOrientedSpecColumnsSectionWithDiffs extends DdlApiTableOrientedSpecColumnsSection {
   [key: symbol]: unknown;

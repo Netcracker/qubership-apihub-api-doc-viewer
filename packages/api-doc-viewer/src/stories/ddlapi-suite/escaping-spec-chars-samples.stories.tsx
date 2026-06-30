@@ -17,7 +17,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  id: "ddl-api-suite-escaping-spec-chars",
+  id: "ddlapi-suite-escaping-spec-chars",
   title: "DDL API Suite/Escaping Spec Chars",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

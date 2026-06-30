@@ -81,7 +81,7 @@ const navigationCallback: NavigationCallback = (schema, table, column) => {
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  id: "ddl-api-suite-e2e-scenarios",
+  id: "ddlapi-suite-e2e-scenarios",
   title: "DDL API Suite/E2E Scenarios",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

@@ -45,7 +45,7 @@ const toPascalCase = (caseId) =>
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join("");
 
-const makeMetaId = (suiteId) => `ddl-api-suite-${suiteId}`;
+const makeMetaId = (suiteId) => `ddlapi-suite-${suiteId}`;
 
 const collectCaseIds = (suiteId) =>
   readdirSync(path.join(samplesRoot, suiteId), { withFileTypes: true })

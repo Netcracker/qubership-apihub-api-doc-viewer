@@ -5,7 +5,7 @@
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'ddl-api-suite-column-constraints'
+const META_ID = 'ddlapi-suite-column-constraints'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [

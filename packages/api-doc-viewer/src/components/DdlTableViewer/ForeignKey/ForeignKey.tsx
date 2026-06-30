@@ -21,9 +21,9 @@ export const ForeignKey: FC<ForeignKeyProps> = memo<ForeignKeyProps>(props => {
   }, [navigationCallback, target])
 
   return (
-    <div className="ddl-api-foreign-key inline-flex flex-row items-center gap-1">
+    <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
       <UxBadge text="FK" colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA} inline />
-      <a href="#" className="ddl-api-foreign-key-link" onClick={onLinkClick}>
+      <a href="#" className="ddlapi-foreign-key-link" onClick={onLinkClick}>
         {formatForeignKeyTarget(target)}
       </a>
     </div>

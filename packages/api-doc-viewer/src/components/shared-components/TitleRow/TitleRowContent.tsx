@@ -142,7 +142,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     >
       {header}
       {isDdlApiPropertyRow ? (
-        <div className="ddl-api-property-row-body flex min-w-0 flex-1 items-center gap-2">
+        <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
           {headerValue}
           {subheader?.(layoutSide)}
         </div>

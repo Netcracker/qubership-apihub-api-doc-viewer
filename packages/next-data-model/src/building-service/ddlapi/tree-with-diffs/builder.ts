@@ -27,7 +27,7 @@ import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/dif
 import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
-import { DdlApiSpecWithDiffsTransformer } from "../shared/ddl-api-spec-with-diffs-transformer";
+import { DdlApiSpecWithDiffsTransformer } from "../shared/ddlapi-spec-with-diffs-transformer";
 import { createDdlApiTreeWithDiffsBuildingHooks } from "./building-hooks";
 import { DdlApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { DdlApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";

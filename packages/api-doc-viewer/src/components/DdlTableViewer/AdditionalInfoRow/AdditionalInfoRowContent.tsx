@@ -29,7 +29,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
           <div className="w-4" aria-hidden="true" />
         </div>
       )}
-      <div className="ddl-api-property-row-body flex min-w-0 flex-1 items-center gap-2">
+      <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
         <span className="additional-info-row-label">{`${label}:`}</span>
         {subheader?.(layoutSide)}
       </div>
