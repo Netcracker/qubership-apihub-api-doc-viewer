@@ -1,7 +1,7 @@
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DdlTableViewer } from "@apihub/components/DdlTableViewer/DdlTableViewer";
-import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback";
+import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
 import { buildFromDdlInBrowser } from "./build-from-ddl-browser";
 
@@ -75,8 +75,9 @@ async function loadRealm(ddl: string): Promise<LoaderData> {
   return { realm: await buildFromDdlInBrowser(ddl) };
 }
 
-const navigationCallback: NavigationCallback = (schema, table, column) => {
+const navigationLinkBuilder: NavigationLinkBuilder = (schema, table, column) => {
   console.log(`Navigating to ${schema}.${table}.${column}`);
+  return `#${schema}.${table}.${column}`;
 };
 
 // eslint-disable-next-line storybook/story-exports
@@ -102,7 +103,7 @@ const createSampleStory = (sampleId: string): Story => {
       <DdlTableViewer
         source={loaded!.realm}
         tableKey={sample.tableKey}
-        navigationCallback={navigationCallback}
+        navigationLinkBuilder={navigationLinkBuilder}
         devMode
       />
     ),
