@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export type { DiffMetaKeys } from '../../api-data-model/src';
-export type { NavigationCallback } from '../../next-data-model/src/shared/ddlapi/types/navigation-callback';
+export type { NavigationLinkBuilder } from '../../next-data-model/src/shared/ddlapi/types/navigation-link-builder';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 export * from './components/DdlTableViewer/DdlTableDiffsViewer';
