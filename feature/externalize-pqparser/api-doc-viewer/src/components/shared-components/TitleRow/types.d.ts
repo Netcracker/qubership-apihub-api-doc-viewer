@@ -7,8 +7,8 @@ export declare enum TitleRowUsage {
     Default = "default",
     AsyncApiJsoSection = "async-api-jso-section",
     JsoProperty = "jso-property",
-    DdlApiSection = "ddl-api-section",
-    DdlApiProperty = "ddl-api-property"
+    DdlApiSection = "ddlapi-section",
+    DdlApiProperty = "ddlapi-property"
 }
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
     value?: string;

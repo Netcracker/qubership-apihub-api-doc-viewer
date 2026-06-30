@@ -1,1 +1,0 @@
-import{_ as e}from"./iframe-5b598a18.js";async function a(r,o){const{buildFromDdl:t}=await e(()=>import("./parser-0cf232a6.js").then(i=>i.c),["./parser-0cf232a6.js","./iframe-5b598a18.js","./UxBadge-5cb62018.js","./index-f46741a2.js","./_commonjs-dynamic-modules-6308e768.js","./UxBadge-cad72582.css"],import.meta.url);return t(r,o)}export{a as b};

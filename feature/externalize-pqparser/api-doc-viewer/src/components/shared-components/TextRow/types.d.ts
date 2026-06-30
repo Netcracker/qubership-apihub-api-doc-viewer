@@ -4,7 +4,7 @@ import { TextValueVariant } from "../TextValue/types";
 import { WithPrecededByProps } from "../WithPrecededByProps";
 export declare enum TextRowUsage {
     Default = "default",
-    DdlApiProperty = "ddl-api-property"
+    DdlApiProperty = "ddlapi-property"
 }
 export type TextRowProps = WithPrecededByProps & {
     value?: string;
