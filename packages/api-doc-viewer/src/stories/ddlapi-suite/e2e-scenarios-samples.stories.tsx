@@ -27,6 +27,7 @@ const SAMPLE_TABLE_KEYS: Record<string, TableKey> = {
   employees_projects: { schemaName: "public", name: "employees_projects" },
   users_plus_idx: { schemaName: "public", name: "users_plus_idx" },
   petstore: { schemaName: "petstore", name: "animals" },
+  sample_table: { schemaName: "public", name: "sample_table" },
 };
 
 const SAMPLE_SUFFIX = "/sample.sql";
@@ -91,20 +92,32 @@ export default meta;
 
 type Story = StoryObj<typeof DdlTableViewer>;
 
-const createSampleStory = (sampleId: string): Story => {
+type CreateSampleStoryOptions = {
+  noHeading?: boolean;
+};
+
+const createSampleStory = (sampleId: string, options: CreateSampleStoryOptions = {}): Story => {
   const sample = sampleById[sampleId];
   if (!sample) {
     throw new Error(`Sample not found: ${sampleId}`);
   }
 
+  const { noHeading = false } = options;
+
   return {
+    args: {
+      noHeading,
+      devMode: true,
+    },
     loaders: [() => loadRealm(sample.ddl)],
-    render: (_args, { loaded }) => (
+    render: (args, { loaded }) => (
       <DdlTableViewer
         source={loaded!.realm}
         tableKey={sample.tableKey}
         navigationLinkBuilder={navigationLinkBuilder}
-        devMode
+        displayMode={args.displayMode}
+        noHeading={args.noHeading}
+        devMode={args.devMode}
       />
     ),
   };
@@ -116,3 +129,4 @@ export const Projects: Story = createSampleStory("projects");
 export const EmployeesProjects: Story = createSampleStory("employees_projects");
 export const UsersPlusIdx: Story = createSampleStory("users_plus_idx");
 export const Petstore: Story = createSampleStory("petstore");
+export const NoHeadingWithTableName: Story = createSampleStory("sample_table", { noHeading: true });

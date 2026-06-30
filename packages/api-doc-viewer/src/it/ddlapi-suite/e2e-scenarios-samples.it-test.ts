@@ -15,6 +15,7 @@ const STORY_IDS: string[] = [
   'employees-projects',
   'users-plus-idx',
   'petstore',
+  'no-heading-with-table-name',
 ]
 
 async function waitForDdlTableViewer() {
