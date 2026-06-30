@@ -8,6 +8,7 @@ export type AsyncApiOperationDiffsViewerProps = {
     operationKeys?: OperationKeys;
     displayMode?: DisplayMode;
     devMode?: boolean;
+    noHeading?: boolean;
     referenceNamePropertyKey: symbol;
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;

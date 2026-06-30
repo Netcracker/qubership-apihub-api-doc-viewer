@@ -8,5 +8,6 @@ export type DdlTableViewerProps = {
     navigationLinkBuilder: NavigationLinkBuilder;
     displayMode?: DisplayMode;
     devMode?: boolean;
+    noHeading?: boolean;
 };
 export declare const DdlTableViewer: FC<DdlTableViewerProps>;

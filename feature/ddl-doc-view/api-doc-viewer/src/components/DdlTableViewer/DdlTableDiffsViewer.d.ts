@@ -10,6 +10,7 @@ export type DdlTableDiffsViewerProps = {
     navigationLinkBuilder: NavigationLinkBuilder;
     displayMode?: DisplayMode;
     devMode?: boolean;
+    noHeading?: boolean;
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
 };

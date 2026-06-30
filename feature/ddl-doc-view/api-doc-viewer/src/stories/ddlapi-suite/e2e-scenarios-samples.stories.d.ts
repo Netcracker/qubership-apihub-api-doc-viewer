@@ -13,3 +13,4 @@ export declare const Projects: Story;
 export declare const EmployeesProjects: Story;
 export declare const UsersPlusIdx: Story;
 export declare const Petstore: Story;
+export declare const NoHeadingWithTableName: Story;
