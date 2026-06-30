@@ -15,13 +15,7 @@
  */
 
 import type {StorybookConfig} from "@storybook/react-vite";
-import path from "path";
-import { fileURLToPath } from "url";
 import { mergeConfig } from "vite";
-import { libpgQueryWasmInteropPlugin } from "./libpg-query-wasm-interop";
-import { libpgQueryWasmPlugin } from "./libpg-query-wasm-plugin";
-
-const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -50,15 +44,11 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [
-        libpgQueryWasmInteropPlugin(storybookDir),
-        libpgQueryWasmPlugin(storybookDir),
-      ],
-      assetsInclude: ["**/*.wasm"],
       optimizeDeps: {
-        // Keep ddlapi out of esbuild pre-bundling so its '/parser' dynamic import
-        // stays a separate async chunk and the WASM interop plugin (rollup-level)
-        // is not bypassed.
+        // ddlapi's '/parser' resolves (browser condition) to a self-contained,
+        // WASM-inlined bundle — no libpg-query WASM plugins needed. Keep it out of
+        // esbuild pre-bundling so the ddl-suite stories' dynamic import stays a
+        // lazily-loaded chunk instead of eagerly pulling the ~1.9 MB parser.
         exclude: [
           "@netcracker/qubership-apihub-ddlapi",
         ],
