@@ -123,6 +123,11 @@ Compatibility-suite stories and tests are **generated** — run
 
 ## DDL viewer notes
 
+**Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in
+`packages/api-doc-viewer/ddlapi-display-coverage.md`. Consult it before adding rows/badges,
+writing Storybook assertions, or treating missing UI as a bug. Current behaviour is the
+intentional baseline.
+
 DDL stories parse SQL through `buildFromDdlInBrowser` (dynamic import with
 `?ddlapi-browser-parser`) so libpg-query stays in an async chunk. When
 touching DDL crawl or navigation, also apply the `ddlapi-using` skill from
