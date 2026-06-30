@@ -16,7 +16,7 @@ import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeCrawlState } from "../json-crawl-entities/state/types";
 import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers";
-import { DdlApiSpecTransformer } from "../shared/ddl-api-spec-transformer";
+import { DdlApiSpecTransformer } from "../shared/ddlapi-spec-transformer";
 import { createDdlApiTreeBuildingHooks } from "./building-hooks";
 import { DdlApiNodeDataBuilder } from "./node-data/builder";
 

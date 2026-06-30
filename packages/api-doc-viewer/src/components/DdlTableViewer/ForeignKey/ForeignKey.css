@@ -1,4 +1,4 @@
-.ddl-api-foreign-key-link {
+.ddlapi-foreign-key-link {
   color: #0068ff;
   font-family: 'Inter Variable', sans-serif;
   font-size: 12px;
@@ -7,7 +7,7 @@
   text-decoration: none;
 }
 
-.ddl-api-foreign-key-link:hover {
+.ddlapi-foreign-key-link:hover {
   color: #747bff;
   text-decoration: underline;
 }

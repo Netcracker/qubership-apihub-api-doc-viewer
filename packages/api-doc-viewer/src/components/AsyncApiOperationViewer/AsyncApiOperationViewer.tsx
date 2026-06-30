@@ -20,6 +20,7 @@ export type AsyncApiOperationViewerProps = {
   operationKeys?: OperationKeys
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
   referenceNamePropertyKey: symbol
 }
 
@@ -43,6 +44,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
       operationKeys,
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
+      noHeading = false,
       referenceNamePropertyKey,
     } = props
 
@@ -74,6 +76,7 @@ const AsyncApiOperationViewerInner: FC<AsyncApiOperationViewerProps> =
             <LevelContext.Provider value={0}>
               <MessageNodeViewer
                 node={messageNode}
+                noHeading={noHeading}
               />
             </LevelContext.Provider>
           </LayoutModeContext.Provider>

@@ -135,6 +135,17 @@ Unit tests for builders and aggregators live in `packages/next-data-model/tests/
 severity propagation — do not rely on screenshot tests alone for data-layer
 regressions.
 
+## DDL API transformer scope
+
+`DdlApiSpecTransformer` maps one `Table` from a ddlapi `Realm` into
+`DdlApiTableOrientedSpec` (see `building-service/ddlapi/shared/ddlapi-spec-transformer.ts`).
+
+**Coverage baseline:** which ddlapi fields are mapped vs intentionally omitted — and which
+view-model fields the viewer does not paint — is documented in
+`packages/api-doc-viewer/ddlapi-display-coverage.md`. Use it to classify **`ndm-future`**
+(add mapping here first) vs **`out-of-scope`** (no support needed) before extending
+`node-value.ts` or the transformer.
+
 ## Cross-package boundary
 
 View components in `packages/api-doc-viewer` import builders and node types

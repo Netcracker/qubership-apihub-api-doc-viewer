@@ -138,7 +138,7 @@ regressions.
 ## DDL API transformer scope
 
 `DdlApiSpecTransformer` maps one `Table` from a ddlapi `Realm` into
-`DdlApiTableOrientedSpec` (see `building-service/ddlapi/shared/ddl-api-spec-transformer.ts`).
+`DdlApiTableOrientedSpec` (see `building-service/ddlapi/shared/ddlapi-spec-transformer.ts`).
 
 **Coverage baseline:** which ddlapi fields are mapped vs intentionally omitted — and which
 view-model fields the viewer does not paint — is documented in

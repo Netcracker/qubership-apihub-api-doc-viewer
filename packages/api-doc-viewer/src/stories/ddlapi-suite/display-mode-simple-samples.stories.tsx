@@ -18,7 +18,7 @@ const createCaseStory = createCaseStoryFactory(sampleById, { displayMode: SIMPLE
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  id: "ddl-api-suite-display-mode-simple",
+  id: "ddlapi-suite-display-mode-simple",
   title: "DDL API Suite/Display Mode Simple",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

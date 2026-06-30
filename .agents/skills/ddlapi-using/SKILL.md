@@ -119,6 +119,21 @@ appears in the schema's `objects` and as the column's `type.type`.
 Do not collapse `undefined` to "nullable" without deciding what an absent
 clause means for your use case.
 
+## Reading values: canonical `type`, optional `raw`, Expr text
+
+- **Compare on `column.type.type` (the `SchemaType`), not `raw`.** `SchemaType.type`
+  is canonicalized (`int`/`integer`/`int4` → `'integer'`; `timetz`/`timestamptz`
+  collapse the timezone), so semantically-equal DDL compares equal. `ColumnType.raw`
+  is the original spelling and is **frequently absent** on a parsed column — never
+  rely on it for equality or classification.
+- **Expr values are raw SQL text strings.** `Literal.value` keeps the verbatim token
+  — a string literal includes its quotes (`"'x'"`), a numeric literal is the digits
+  as a string. `RawExpr.expr` is the expression source (e.g. `'now()'`). `Collation`
+  / `GeneratedExpr` live in `column.attrs[]`; their `value` / `expr` is a scalar leaf.
+- **A normalized realm can be typed as `Realm`.** api-unifier normalization keep the `Realm` structural shape (extra metadata is
+  attached under symbol keys, which do not affect the structural type) — navigate
+  them as `Realm` rather than `any`.
+
 ## Calling `buildFromDdl`
 
 ```typescript
@@ -126,7 +141,7 @@ const issues: DdlNonFatalError[] = []
 const realm = await buildFromDdl(ddl, { onError: e => issues.push(e) })
 ```
 
-- It is `async`; the first call initialises the parser Wasm.
+- It is `async`; the first call initialises the parser WASM.
 - **Only these statements are parsed:** `CREATE TABLE`, `CREATE [UNIQUE] INDEX`,
   `CREATE TYPE` (enum/composite/range), `CREATE DOMAIN`, `CREATE TRIGGER`, and
   `COMMENT ON`. Everything else — `ALTER`, `DROP`, `CREATE VIEW`/`SEQUENCE`/
@@ -144,6 +159,11 @@ const realm = await buildFromDdl(ddl, { onError: e => issues.push(e) })
   returned. `DdlBuildError.realm` exposes that partial Realm; `.issues` the
   list. **Absence of `onError` does not mean the Realm is complete** — use
   `{ strict: true }` for pipelines that require completeness.
+- **Known output gaps to design fixtures around:**
+  - Per-column `CHARACTER SET` is MySQL syntax and is a **hard `DdlParseError`** in
+    the PostgreSQL parser; no `Charset` attr is ever produced from real DDL (even
+    though `Charset` exists as a core `AttrKind`). `COLLATE` and `GENERATED ALWAYS
+    AS (…) STORED` *are* produced (as `Collation` / `GeneratedExpr` column attrs).
 
 ```typescript
 try {
@@ -153,6 +173,60 @@ try {
   else if (err instanceof DdlBuildError) { err.issues; err.realm /* partial */ }
 }
 ```
+
+## Extracting per-table DDL subsets
+
+`prepareDdlExtractor(ddl)` is a separate entry point for slicing a multi-table DDL
+into a verbatim subset per table — distinct from `buildFromDdl`, which builds the
+`Realm` model. Use it when you need the *original SQL text* relevant to one table,
+not a structured model.
+
+```typescript
+import { prepareDdlExtractor } from '@netcracker/qubership-apihub-ddlapi'
+
+const extractor = await prepareDdlExtractor(ddl)   // heavy work once
+for (const ref of extractor.tables()) {            // { schema, name }, source order
+  const slice = extractor.extractTable(ref)!       // cheap, synchronous, repeatable
+  slice.sql        // verbatim subset: the CREATE TABLE + its indexes, triggers,
+                   // comments, the types it uses (transitively), and any LIKE source
+  slice.warnings   // structured notes (see below)
+}
+```
+
+Contract details that the signatures do not make obvious:
+
+- **Two-phase by design.** `prepareDdlExtractor` parses once (async, WASM); each
+  `extractTable` is synchronous and meant to be called once per table.
+- **Pass a `TableRef`, already normalized.** `extractTable({ schema, name })` does a
+  direct key lookup — identifiers must be in model-normalized form (unquoted →
+  lowercase, quoted → preserved, exactly as `tables()` / a `Realm` returns them). It
+  never re-folds or SQL-parses caller strings. Use `'public'` for unqualified tables.
+- **`undefined` is a lookup miss, not a failure.** Only invalid SQL throws
+  (`DdlParseError`, in `prepareDdlExtractor`); every non-fatal note is a `warning`.
+- **Scope matches `buildFromDdl`.** Only statement types `buildFromDdl` supports are
+  ever emitted; `ALTER TABLE`, sequences, functions, etc. are dropped.
+- **FK targets are excluded on purpose.** A foreign key's *clause* is kept (it lives
+  in the table's own `CREATE TABLE`), but the referenced table is not pulled in — you
+  get an `OmittedForeignKeyTarget` warning instead. LIKE sources, by contrast, *are*
+  pulled in (the table is unbuildable without them).
+- **`warnings`** is a discriminated union on `kind`, with the values exported as the
+  `DdlExtractorWarningKind` constant group (switch on those, not bare strings):
+  `OmittedForeignKeyTarget` (`refTable`, `symbol?`), `OutOfScopeStatementDropped`
+  (`statementType`, `range`), `UnresolvedTypeReference` (`typeName`), `DuplicateTable`
+  (`table`).
+
+  ```typescript
+  import { DdlExtractorWarningKind } from '@netcracker/qubership-apihub-ddlapi'
+
+  for (const w of slice.warnings) {
+    if (w.kind === DdlExtractorWarningKind.OmittedForeignKeyTarget) {
+      w.refTable // { schema, name } of the omitted FK target
+    }
+  }
+  ```
+
+  Output preserves source order, so a runnable input yields a runnable subset except
+  for these intentionally-omitted references.
 
 ## Referential equality after a build
 

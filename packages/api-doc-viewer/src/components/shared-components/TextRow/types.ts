@@ -5,7 +5,7 @@ import { WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TextRowUsage {
   Default = 'default',
-  DdlApiProperty = 'ddl-api-property',
+  DdlApiProperty = 'ddlapi-property',
 }
 
 export type TextRowProps = WithPrecededByProps & {

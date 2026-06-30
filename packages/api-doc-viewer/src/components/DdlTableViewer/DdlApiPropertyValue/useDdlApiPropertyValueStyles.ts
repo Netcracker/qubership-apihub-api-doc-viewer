@@ -13,7 +13,7 @@ export function useDdlApiPropertyValueStyles(input: UseDdlApiPropertyValueStyles
 
   return useMemo(() => {
     return [
-      'ddl-api-property-value',
+      'ddlapi-property-value',
       'subheader',
       appearance,
     ].filter(Boolean).join(' ')

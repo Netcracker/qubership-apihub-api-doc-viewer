@@ -17,7 +17,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  id: "ddl-api-suite-column-constraints",
+  id: "ddlapi-suite-column-constraints",
   title: "DDL API Suite/Column Constraints",
   component: DdlTableViewer,
 } satisfies Meta<typeof DdlTableViewer>;

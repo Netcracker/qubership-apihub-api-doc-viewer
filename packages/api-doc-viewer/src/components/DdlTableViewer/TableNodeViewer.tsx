@@ -15,10 +15,11 @@ import { IndexesNodeViewer } from "./IndexesNodeViewer"
 
 type TableNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.TABLE>
+  noHeading?: boolean
 }
 
 export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
-  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy = PrecededBy.ROOT } = props
+  const { node, noHeading = false, [ATTRIBUTE_PRECEDED_BY]: precededBy = PrecededBy.ROOT } = props
 
   const displayMode = useDisplayMode()
   const value = node.value()
@@ -31,18 +32,22 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
   const isDescriptionDisplayed =
     displayMode === DETAILED_DISPLAY_MODE && !!value?.description
 
+  const tableHeaderPrecededBy = noHeading ? PrecededBy.ROOT : PrecededBy.DDL_TABLE_HEADER_ROW
+
   return (
     <div data-testid="ddl-table-node-viewer" className="flex flex-col">
-      <TitleRow
-        data-precededby={precededBy}
-        value={value?.tableName ?? ''}
-        expandable={false}
-        expanded={true}
-        variant={TextValueVariant.h1}
-      />
+      {!noHeading && (
+        <TitleRow
+          data-precededby={precededBy}
+          value={value?.tableName ?? ''}
+          expandable={false}
+          expanded={true}
+          variant={TextValueVariant.h1}
+        />
+      )}
       {isSchemaNameDisplayed && (
         <DdlSchemaNameBlock
-          data-precededby={PrecededBy.DDL_TABLE_HEADER_ROW}
+          data-precededby={tableHeaderPrecededBy}
           schemaName={value?.schemaName ?? ''}
         />
       )}
@@ -51,7 +56,7 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
           data-precededby={
             isSchemaNameDisplayed
               ? PrecededBy.DDL_TABLE_SCHEMA_ROW
-              : PrecededBy.DDL_TABLE_HEADER_ROW
+              : tableHeaderPrecededBy
           }
           value={value?.description ?? ''}
           variant={TextValueVariant.h4}
@@ -66,7 +71,7 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
               ? PrecededBy.DDL_TABLE_DESCRIPTION_ROW
               : isSchemaNameDisplayed
                 ? PrecededBy.DDL_TABLE_SCHEMA_ROW
-                : PrecededBy.DDL_TABLE_HEADER_ROW
+                : tableHeaderPrecededBy
           }
           node={columnsChild}
         />
@@ -80,7 +85,7 @@ export const TableNodeViewer: FC<TableNodeViewerProps> = (props) => {
                 ? PrecededBy.DDL_TABLE_DESCRIPTION_ROW
                 : isSchemaNameDisplayed
                   ? PrecededBy.DDL_TABLE_SCHEMA_ROW
-                  : PrecededBy.DDL_TABLE_HEADER_ROW
+                  : tableHeaderPrecededBy
           }
           node={indexesChild}
         />

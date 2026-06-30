@@ -6,7 +6,7 @@ import { isTableNode } from "@apihub/utils/ddlapi/node-type-checkers"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DdlApiTreeBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
-import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
+import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder"
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
 import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
@@ -19,9 +19,10 @@ import './styles/index.css'
 export type DdlTableViewerProps = {
   source: unknown
   tableKey: TableKey
-  navigationCallback: NavigationCallback
+  navigationLinkBuilder: NavigationLinkBuilder
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
 }
 
 export const DdlTableViewer: FC<DdlTableViewerProps> =
@@ -42,9 +43,10 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
     const {
       source,
       tableKey,
-      navigationCallback,
+      navigationLinkBuilder,
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
+      noHeading = false,
     } = props
 
     const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
@@ -60,13 +62,13 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
     const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
 
     const viewerContext = useMemo(
-      () => ({ navigationCallback }),
-      [navigationCallback],
+      () => ({ navigationLinkBuilder }),
+      [navigationLinkBuilder],
     )
 
     logger.debug('[DDL API] Original Source:', source)
     logger.debug('[DDL API] Table Key:', tableKey)
-    logger.debug('[DDL API] Navigation Callback:', navigationCallback)
+    logger.debug('[DDL API] Navigation Link Builder:', navigationLinkBuilder)
     logger.debug('[DDL API] Tree:', tree)
 
     const tableNode = tree.root
@@ -80,7 +82,7 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
           <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
             <LevelContext.Provider value={0}>
               <div data-testid="ddl-table-viewer">
-                <TableNodeViewer node={tableNode} />
+                <TableNodeViewer node={tableNode} noHeading={noHeading} />
               </div>
             </LevelContext.Provider>
           </LayoutModeContext.Provider>

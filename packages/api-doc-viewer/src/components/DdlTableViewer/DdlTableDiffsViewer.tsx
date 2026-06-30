@@ -2,7 +2,7 @@ import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DiffMetaKeys } from "@apihub/types/DiffMetaKeys"
 import { DdlApiTreeWithDiffsBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
-import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
+import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder"
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
 import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
@@ -11,10 +11,11 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 export type DdlTableDiffsViewerProps = {
   mergedSource: unknown
   tableKey: TableKey
-  navigationCallback: NavigationCallback
+  navigationLinkBuilder: NavigationLinkBuilder
   // techincal props
   displayMode?: DisplayMode
   devMode?: boolean
+  noHeading?: boolean
   // diffs specific props
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
@@ -38,7 +39,7 @@ const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
     const {
       mergedSource: source,
       tableKey,
-      navigationCallback,
+      navigationLinkBuilder,
       devMode = false,
       diffMetaKeys,
     } = props
@@ -58,7 +59,7 @@ const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
 
     logger.debug('[DDL API Diffs] Original Source:', source)
     logger.debug('[DDL API Diffs] Table Key:', tableKey)
-    logger.debug('[DDL API Diffs] Navigation Callback:', navigationCallback)
+    logger.debug('[DDL API Diffs] Navigation Link Builder:', navigationLinkBuilder)
     logger.debug('[DDL API Diffs] Tree:', tree)
 
     return (

@@ -13,8 +13,9 @@ export type BuildFromDdlDebugProps = {
   ddlText: string;
 };
 
-const navigationCallback = (schema: string, table: string, column: string) => {
+const navigationLinkBuilder = (schema: string, table: string, column: string) => {
   console.log(`Navigating to ${schema}.${table}.${column}`);
+  return `#${schema}.${table}.${column}`;
 };
 
 export const BuildFromDdlDebug: FC<BuildFromDdlDebugProps> = ({ ddlText }) => {
@@ -93,7 +94,7 @@ export const BuildFromDdlDebug: FC<BuildFromDdlDebugProps> = ({ ddlText }) => {
     <DdlTableViewer
       source={realm}
       tableKey={tableKey}
-      navigationCallback={navigationCallback}
+      navigationLinkBuilder={navigationLinkBuilder}
       devMode={true}
     />
   );

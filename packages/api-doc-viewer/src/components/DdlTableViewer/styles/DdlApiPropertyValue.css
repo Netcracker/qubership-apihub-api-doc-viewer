@@ -1,13 +1,13 @@
-.ddl-api-property-value {
+.ddlapi-property-value {
   font-size: 12px;
 }
 
-.ddl-api-property-value.text {
+.ddlapi-property-value.text {
   font-size: 12px;
   color: rgb(100 116 139);
 }
 
-.ddl-api-property-value.block {
+.ddlapi-property-value.block {
   padding: 0 8px;
   color: rgb(100 116 139);
   background-color: rgb(243 244 246);

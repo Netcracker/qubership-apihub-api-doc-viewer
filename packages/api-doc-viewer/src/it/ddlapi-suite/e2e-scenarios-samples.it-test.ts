@@ -5,7 +5,7 @@
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'ddl-api-suite-e2e-scenarios'
+const META_ID = 'ddlapi-suite-e2e-scenarios'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const STORY_IDS: string[] = [
@@ -15,6 +15,7 @@ const STORY_IDS: string[] = [
   'employees-projects',
   'users-plus-idx',
   'petstore',
+  'no-heading-with-table-name',
 ]
 
 async function waitForDdlTableViewer() {

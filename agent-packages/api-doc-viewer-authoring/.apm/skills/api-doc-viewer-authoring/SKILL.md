@@ -206,7 +206,7 @@ spacer (same horizontal footprint as the expander column). This is not
 Several viewers render a **flat or nested list of properties** under a section
 header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
 `JsoPropertyNodeViewer`, …) wrapped in a property container class
-(`.ddl-api-property`, `.jso-property`, …).
+(`.ddlapi-property`, `.jso-property`, …).
 
 | Concern | List parent (e.g. `ColumnsNodeViewer`, `IndexesNodeViewer`) | Item node viewer (e.g. `ColumnNodeViewer`) |
 | --- | --- | --- |
@@ -255,30 +255,30 @@ margin on the row wrapper** sits outside that box (or creates empty bands the
 line does not paint). Symptom: short grey segments and visible gaps — even when
 `min-h-[26px]` is set on the row.
 
-**Correct layout for `.ddl-api-property` (DDL — implemented):**
+**Correct layout for `.ddlapi-property` (DDL — implemented):**
 
 ```text
 .title-row-content.flex.items-stretch.min-h-[26px]   ← NO vertical padding
 ├── .level-indicator-column.self-stretch           ← line spans full row height
 │   ├── LevelIndicator
 │   └── Expander (or w-4 spacer on AdditionalInfoRow)
-└── .ddl-api-property-row-body                       ← vertical padding HERE only
+└── .ddlapi-property-row-body                       ← vertical padding HERE only
     ├── TextValue (title)
     └── subheader (type, badges, …)
 ```
 
 - `TitleRowUsage.DdlApiProperty` in `TitleRowContent`: indent column in
-  `header`; **`headerValue` only inside** `.ddl-api-property-row-body` — never
+  `header`; **`headerValue` only inside** `.ddlapi-property-row-body` — never
   in both (duplicates titles and breaks layout).
 - Non-DDL `TitleRow` stays `{header}{subheader}` unchanged.
-- Row wrappers inside `.ddl-api-property` must **explicitly zero** vertical
+- Row wrappers inside `.ddlapi-property` must **explicitly zero** vertical
   padding in CSS — global `[data-precededby="ddl-column-row"]` rules still add
   `padding-top` / `padding-bottom` unless overridden with
-  `.ddl-api-property .title-row-content { padding-top: 0; padding-bottom: 0; }`.
+  `.ddlapi-property .title-row-content { padding-top: 0; padding-bottom: 0; }`.
 
 **Margin vs padding for list spacing:**
 
-- **Padding on `.ddl-api-property-row-body`** — content indents; line stays
+- **Padding on `.ddlapi-property-row-body`** — content indents; line stays
   continuous.
 - **Margin on row wrapper** — only for **list boundaries** (first item
   `margin-top: 8px` from section; last item `margin-bottom: 16px` via
@@ -288,7 +288,7 @@ line does not paint). Symptom: short grey segments and visible gaps — even whe
 **UxBadge height budget (session lesson — do not regress):**
 
 Middle column/index title rows use `min-h-[26px]`, `items-stretch`, and vertical
-padding on `.ddl-api-property-row-body` only (see `preceded-by.css` for
+padding on `.ddlapi-property-row-body` only (see `preceded-by.css` for
 `ddl-column-row`, `ddl-column-after-additional-info-row`, `ddl-index-row`).
 First list items use `DDL_SECTION_HEADER` with **no** row-body padding — badges
 look fine there; middle items looked “wrong” until padding was reduced.
@@ -367,7 +367,7 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Padding on row wrapper for “symmetric indent” | Gaps in vertical line; lines &lt; 26 px | Padding on content wrapper only |
 | `headerValue` in both `header` and row body (`DdlApiProperty`) | Duplicated column/index titles | Indent in `header`; title + subheader only in row body |
 | `{headerValue}{subheader}` replaced by `{rowBody}` for all usages | Section headers duplicated (`Columns Columns`) | Non-DDL: keep `{header}{subheader}`; DDL only uses row body |
-| Global `preceded-by.css` rules assumed scoped | Mystery padding on `.ddl-api-property` rows | Explicit zero padding on property row wrappers |
+| Global `preceded-by.css` rules assumed scoped | Mystery padding on `.ddlapi-property` rows | Explicit zero padding on property row wrappers |
 | `margin-top` on middle list items | Line breaks between siblings | Use content padding; margin only first/last |
 | Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
 | `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |

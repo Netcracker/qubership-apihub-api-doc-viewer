@@ -25,6 +25,7 @@ import {
   type DisplayMode,
   type LayoutMode,
   type DiffMetaKeys,
+  type NavigationLinkBuilder,
   buildOpenApiDiffCause,
 } from '@netcracker/qubership-apihub-api-doc-viewer'
 import '@netcracker/qubership-apihub-api-doc-viewer/dist/style.css'
@@ -104,6 +105,46 @@ passing to `GraphQLOperationViewer`. Select the operation via
 `JsonSchemaViewer` accepts `schema` plus optional `source` when definitions
 live outside the root schema object. The `overridenKind: 'parameters'` flag is
 a legacy workaround for parameter-list layout only.
+
+## DDL table-specific wiring
+
+`DdlTableViewer` and `DdlTableDiffsViewer` require:
+
+- **`source`** (or **`mergedSource`** on the diffs viewer) — a ddlapi **`Realm`**
+  (or compatible tree root) containing the table.
+- **`tableKey`** — `{ schemaName, name }` selecting which table to render.
+- **`navigationLinkBuilder`** — builds href targets for foreign-key links.
+
+```typescript
+import {
+  DdlTableViewer,
+  type NavigationLinkBuilder,
+} from '@netcracker/qubership-apihub-api-doc-viewer'
+
+const navigationLinkBuilder: NavigationLinkBuilder = (schemaName, tableName, columnName) => {
+  const ddlEntityId = calculateDdlEntityId(schemaName, DDL_ENTITY_KIND_TABLE, tableName)
+  const link = getDdlTableLink({ packageKey, versionKey, ddlEntityId })
+  return `${link.pathname}${link.search ?? ''}`
+}
+
+<DdlTableViewer
+  source={normalizedRealm}
+  tableKey={{ schemaName: data.schemaName, name: data.name }}
+  navigationLinkBuilder={navigationLinkBuilder}
+  displayMode="detailed"
+/>
+```
+
+**Contract:**
+
+- Signature: `(schema, table, column) => string`.
+- Must **return a URL string** (absolute or app-relative path). The viewer passes
+  it to `<a href={…}>` on FK rows — it is **not** invoked from `onClick` or other
+  event handlers.
+- Integrators own routing: return a path the host app can navigate to (portal uses
+  `getDdlTableLink` + pathname/search).
+- The **`column`** argument identifies the referenced column; table-level navigation
+  may ignore it when building the link.
 
 ## Layout modes
 

@@ -38,7 +38,7 @@ const SUITES = [
   },
 ];
 
-const makeMetaId = (suiteId) => `ddl-api-suite-${suiteId}`;
+const makeMetaId = (suiteId) => `ddlapi-suite-${suiteId}`;
 
 const collectCaseIds = (suiteId) =>
   readdirSync(path.join(samplesRoot, suiteId), { withFileTypes: true })

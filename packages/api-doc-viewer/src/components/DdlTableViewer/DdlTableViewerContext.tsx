@@ -1,8 +1,8 @@
-import { NavigationCallback } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-callback"
+import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder"
 import { createContext, useContext } from "react"
 
 export type DdlTableViewerContextValue = {
-  navigationCallback: NavigationCallback
+  navigationLinkBuilder: NavigationLinkBuilder
 }
 
 export const DdlTableViewerContext = createContext<DdlTableViewerContextValue | null>(null)
