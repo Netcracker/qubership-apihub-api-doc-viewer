@@ -5,8 +5,8 @@ import { AsyncApiTree } from "../src/model/async-api/tree/tree.impl"
 import { AsyncApiTreeNodeKind, AsyncApiTreeNodeKinds } from "../src/model/async-api/types/node-kind"
 import { TEST_REFERENCE_NAME_PROPERTY_KEY } from "./helpers/create-async-api-tree-for-tests"
 import { SimpleTreeNode } from "../src/model/abstract/tree/simple-node.impl"
-import { AsyncApiNodeMeta } from "../src/model/async-api/types/node-meta"
 import { AsyncApiTreeNodeValue } from "../src/model/async-api/types/node-value"
+import type { AsyncApiTreeNodeMeta } from "../src/model/async-api/types/node-meta"
 
 const COMPONENTS_WITH_MESSAGES = {
   components: {
@@ -339,7 +339,7 @@ describe('AsyncAPI Data Model API', () => {
     const bindingsSectionCandidate = new SimpleTreeNode<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >(
       '#/data/bindings',
       'test-nested-node',
@@ -402,7 +402,7 @@ describe('AsyncAPI Data Model API', () => {
     const newChildNodeCandidate = new SimpleTreeNode<
       AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null,
       AsyncApiTreeNodeKind,
-      AsyncApiNodeMeta
+      AsyncApiTreeNodeMeta
     >(
       '#/new-child-node',
       'test-new-child-node',
