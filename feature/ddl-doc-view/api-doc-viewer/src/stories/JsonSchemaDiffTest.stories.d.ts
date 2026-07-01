@@ -16,7 +16,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaDiffViewer").JsonSchemaDiffViewerProps>;
+    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaDiffViewerProps>;
     parameters: {};
     argTypes: {};
     args: {
