@@ -1,0 +1,48 @@
+/**
+ * Copyright 2024-2025 NetCracker Technology Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { StoryObj } from '@storybook/react';
+declare const meta: {
+    title: string;
+    component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaDiffViewer").JsonSchemaDiffViewerProps>;
+    parameters: {};
+    argTypes: {};
+    args: {
+        schema: {};
+    };
+};
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const Test: Story;
+export declare const RenamedProperty: Story;
+export declare const Flags: Story;
+export declare const Enum: Story;
+export declare const AddMinItemsInArrayProperty: Story;
+export declare const CycledChanged: Story;
+export declare const PrimitiveChanged: Story;
+export declare const ObjectiveHeaderChanged: Story;
+export declare const ObjectToArray: Story;
+export declare const ExtensionsOnPrimitive: Story;
+export declare const ExtensionsOnObject: Story;
+export declare const ExtensionsWhollyAddedOnObject: Story;
+export declare const ExtensionsWhollyRemovedOnObject: Story;
+export declare const AddedPropertyWithExtensions: Story;
+export declare const RemovedPropertyWithExtensions: Story;
+export declare const ExtensionsOnCircularObject: Story;
+export declare const AllConstraintsChanged: Story;
+export declare const AppendCombinerItem: Story;
+export declare const PopCombinerItem: Story;
+export declare const ChangesInsideFirstCombinerItem: Story;
+export declare const ChangesInsideLastCombinerItem: Story;
