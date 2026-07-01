@@ -46,8 +46,8 @@ then walk from `tree.root`:
 | `JsoDiffsViewer` | `JsoTreeWithDiffsBuilder` | `mergedSource` | `supportJsonSchema`, `diffMetaKeys`, optional `diffTypes` |
 
 `referenceNamePropertyKey` must be the same `Symbol` used when the merged
-document was produced (`FIRST_REFERENCE_KEY_PROPERTY` in portal code,
-`TEST_REFERENCE_NAME_PROPERTY` in Storybook).
+document was produced (host normalisation pipeline — e.g.
+`FIRST_REFERENCE_KEY_PROPERTY`; Storybook uses `TEST_REFERENCE_NAME_PROPERTY`).
 
 Guard the root: AsyncAPI viewers expect a message node; JSO viewers iterate
 `root.childrenNodes()`.

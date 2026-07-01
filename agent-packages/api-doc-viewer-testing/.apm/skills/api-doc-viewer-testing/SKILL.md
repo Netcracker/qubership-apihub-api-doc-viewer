@@ -8,6 +8,10 @@ Screenshot integration tests live in `packages/api-doc-viewer/src/it/`. They
 run Jest with `jest-puppeteer` and `jest-image-snapshot` against a static
 Storybook build.
 
+**Documentation scope:** describe tests and fixtures in library terms only. Do
+**not** name or reference consuming applications, their repositories, file
+paths, or UI components in this skill.
+
 ## Commands
 
 From `packages/api-doc-viewer/`:
@@ -106,6 +110,31 @@ Each case directory name is the sample id (e.g. `e2e-scenarios/users/`).
 `e2e-scenarios-samples.stories.tsx` maps sample ids to `TableKey` values and
 exports one story per case; append the Storybook kebab-case story id to
 `e2e-scenarios-samples.it-test.ts` when adding a scenario.
+
+### DDL foreign-key links in screenshot tests
+
+FK navigation uses two public props on `DdlTableViewer` (see
+`api-doc-viewer-authoring` / `api-doc-viewer-using`):
+
+- **`navigationLinkBuilder`** — required in every DDL story; returns href string.
+- **`navigationLinkComponent`** — omitted in Storybook/screenshot suites; default
+  `DefaultNavigationLink` renders `<a href>`.
+
+Story helpers (e.g. `ddl-samples-common.tsx`) typically return hash URLs such as
+`` `#${schema}.${table}.${column}` `` — sufficient for visual regression because
+screenshots capture layout, not navigation behaviour.
+
+| Selector / class | Purpose |
+| --- | --- |
+| `.ddlapi-foreign-key` | FK badge + link row in column subheader |
+| `.ddlapi-foreign-key-link` | Link element (anchor by default) |
+
+**Generated column-constraints suite** includes FK sample cases (`foreign-key`,
+`foreign-key-not-null`, …). Regenerate stories/tests after adding FK fixtures;
+no custom `navigationLinkComponent` unless intentionally testing link styling.
+
+Do **not** assert client-side routing in screenshot ITs — that belongs in host
+application tests. Library ITs only verify rendered markup and visuals.
 
 ## Flaky rendering
 

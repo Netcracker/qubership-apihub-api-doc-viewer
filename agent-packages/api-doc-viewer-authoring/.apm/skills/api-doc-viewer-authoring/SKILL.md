@@ -9,6 +9,11 @@ JSO, DDL tables) as human-readable React trees. The view layer lives under
 `packages/api-doc-viewer/src/`; tree construction and diff aggregation live
 in `packages/next-data-model/` (see the `next-data-model-authoring` skill).
 
+**Documentation scope:** skills and agent docs for this repository describe
+library behaviour only. Do **not** name or reference consuming applications,
+their repositories, file paths, or UI components — use generic terms such as
+*host application*, *integrator*, or *embedder*.
+
 ## Component families
 
 | Family | Plain viewer | Diffs viewer | Status |
@@ -68,6 +73,20 @@ Reuse existing rows and layout primitives under
 New node viewers should follow the established pattern: memoised FC, optional
 `ErrorBoundary`, `LevelContext` / `AsyncLevelContextProvider` for nesting
 depth, `WithPrecededByProps` for indent connectors.
+
+## Component file naming
+
+Name the source file after the **default or primary exported React component**
+(PascalCase), not a kebab-case description of the feature:
+
+| Prefer | Avoid |
+| --- | --- |
+| `DefaultNavigationLink.tsx` | `navigation-link.tsx` |
+| `ForeignKey/ForeignKey.tsx` | `foreign-key.tsx` |
+
+Co-locate types that exist only for that component (e.g. `NavigationLinkProps`
+in `DefaultNavigationLink.tsx`). Shared cross-package types belong in
+`next-data-model` or a dedicated `types/` module.
 
 ## React hooks
 
@@ -132,6 +151,35 @@ DDL stories parse SQL through `buildFromDdlInBrowser` (dynamic import with
 `?ddlapi-browser-parser`) so libpg-query stays in an async chunk. When
 touching DDL crawl or navigation, also apply the `ddlapi-using` skill from
 the ddlapi package.
+
+### Foreign-key navigation (`navigationLinkBuilder` / `navigationLinkComponent`)
+
+FK badges in `ForeignKey/ForeignKey.tsx` link to related tables. URL construction
+and link rendering are **separate concerns**:
+
+| Piece | Location | Role |
+| --- | --- | --- |
+| `NavigationLinkBuilder` | `next-data-model` type; required `DdlTableViewer` prop | `(schema, table, column) => string` — href for the referenced table |
+| `navigationLinkComponent` | optional `DdlTableViewer` prop | React component that renders the FK label as a link |
+| `DefaultNavigationLink` | `DefaultNavigationLink.tsx` | Default implementation — plain `<a href>` |
+| `DdlTableViewerContext` | `DdlTableViewerContext.tsx` | Supplies builder + component to `ForeignKey` |
+
+**Authoring rules:**
+
+- Do **not** add `react-router-dom` (or any host-router dependency) to
+  api-doc-viewer. Hosts inject routing via `navigationLinkComponent`.
+- Default when the prop is omitted: `DefaultNavigationLink`.
+- Export public types from `src/index.ts`: `NavigationLinkProps`,
+  `NavigationLinkComponent` (builder type is re-exported from next-data-model).
+- `ForeignKey` must read both values from `useDdlTableViewerContext()` and
+  render `<NavigationLinkComponent href={…} className="ddlapi-foreign-key-link">`.
+- Storybook and screenshot suites keep the default anchor — no custom link
+  component unless a story explicitly tests link chrome.
+- When implementing `DdlTableDiffsViewer`, forward the same props/context pattern.
+
+**Host integration** (for `api-doc-viewer-using`): pass a wrapper around the
+host router's link primitive; keep `navigationLinkBuilder` returning pathname +
+search the host router accepts.
 
 ### Stacked rows — do not collapse into one custom row
 
