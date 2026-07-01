@@ -162,21 +162,6 @@ export class DdlApiSpecTransformer {
     return true
   }
 
-  protected createEmptyTableOrientedSpec(tableKey: TableKey): DdlApiTableOrientedSpec {
-    return {
-      tableName: tableKey.name,
-      schemaName: tableKey.schemaName,
-      columns: {
-        title: DDL_API_COLUMNS_SECTION_TITLE,
-        items: [],
-      },
-      indexes: {
-        title: DDL_API_INDEXES_SECTION_TITLE,
-        items: [],
-      },
-    }
-  }
-
   private buildColumnRowValue(
     realm: Realm,
     table: Table,

@@ -1,7 +1,7 @@
 import { DdlApiColumnRowValue } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
 import { FC, memo } from "react"
 import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
-import { DDL_API_GENERATED_BADGE_COLOR_SCHEMA, DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA, DDL_API_PRIMARY_KEY_BADGE_COLOR_SCHEMA, DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
+import { DDL_API_GENERATED_BADGE_COLOR_SCHEMA, DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA, DDL_API_PRIMARY_KEY_BADGE_COLOR_SCHEMA, DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./consts"
 import { ForeignKey } from "./ForeignKey/ForeignKey"
 
 type ColumnRowBadgesProps = {

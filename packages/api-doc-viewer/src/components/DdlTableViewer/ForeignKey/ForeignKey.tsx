@@ -2,7 +2,7 @@ import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-m
 import { FC, memo, useMemo } from "react"
 import { UxBadge } from "../../kit/ux/UxBadge/UxBadge"
 import { useDdlTableViewerContext } from "../DdlTableViewerContext"
-import { DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA } from "../conts"
+import { DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA } from "../consts"
 import { formatForeignKeyTarget } from "../formatters"
 import './ForeignKey.css'
 

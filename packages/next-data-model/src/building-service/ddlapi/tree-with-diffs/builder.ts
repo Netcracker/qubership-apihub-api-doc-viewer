@@ -11,7 +11,7 @@ import {
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { DdlApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/complex-node.impl";
 import { DdlApiSimpleTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/simple-node.impl";
-import { JsoTreeWithDiffs as DdlApiTreeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/tree.impl";
+import { DdlApiTreeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/tree.impl";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/types/aliases";
 import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-model/model/ddlapi/types/node-kind";

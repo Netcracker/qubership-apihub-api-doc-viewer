@@ -13,7 +13,7 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
-import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./conts"
+import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./consts"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerProps = WithPrecededByProps & {

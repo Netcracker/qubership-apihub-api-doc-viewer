@@ -1,5 +1,5 @@
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
-import { DEFAULT_SCHEMA_NAME } from "./conts"
+import { DEFAULT_SCHEMA_NAME } from "./consts"
 
 export function formatForeignKeyTarget(target: DdlApiForeignKeyTarget): string {
   const tableAndColumn = `${target.tableName}.${target.columnName}`

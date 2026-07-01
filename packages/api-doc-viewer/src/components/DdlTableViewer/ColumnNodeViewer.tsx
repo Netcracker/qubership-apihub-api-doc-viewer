@@ -16,7 +16,7 @@ import {
   ADDITIONAL_INFO_LABEL_DEFAULT,
   ADDITIONAL_INFO_LABEL_GENERATED,
   ADDITIONAL_INFO_LABEL_VALUES,
-} from "./conts"
+} from "./consts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
