@@ -15,6 +15,7 @@
  */
 export type { DiffMetaKeys } from '../../api-data-model/src';
 export type { NavigationLinkBuilder } from '../../next-data-model/src/shared/ddlapi/types/navigation-link-builder';
+export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 export * from './components/DdlTableViewer/DdlTableDiffsViewer';
