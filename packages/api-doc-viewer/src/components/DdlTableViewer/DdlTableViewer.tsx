@@ -12,6 +12,7 @@ import { FC, memo, useMemo } from "react"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { DdlTableViewerContext } from "./DdlTableViewerContext"
+import { DefaultNavigationLink, type NavigationLinkComponent } from "./DefaultNavigationLink"
 import { TableNodeViewer } from "./TableNodeViewer"
 import '../../index.css'
 import './styles/index.css'
@@ -20,6 +21,7 @@ export type DdlTableViewerProps = {
   source: unknown
   tableKey: TableKey
   navigationLinkBuilder: NavigationLinkBuilder
+  navigationLinkComponent?: NavigationLinkComponent
   displayMode?: DisplayMode
   devMode?: boolean
   noHeading?: boolean
@@ -44,6 +46,7 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
       source,
       tableKey,
       navigationLinkBuilder,
+      navigationLinkComponent = DefaultNavigationLink,
       displayMode = DEFAULT_DISPLAY_MODE,
       devMode = false,
       noHeading = false,
@@ -62,8 +65,8 @@ const DdlTableViewerInner: FC<DdlTableViewerProps> =
     const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
 
     const viewerContext = useMemo(
-      () => ({ navigationLinkBuilder }),
-      [navigationLinkBuilder],
+      () => ({ navigationLinkBuilder, navigationLinkComponent }),
+      [navigationLinkBuilder, navigationLinkComponent],
     )
 
     logger.debug('[DDL API] Original Source:', source)

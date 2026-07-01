@@ -16,6 +16,7 @@
 
 export type { DiffMetaKeys } from '@netcracker/qubership-apihub-api-data-model'
 export type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder'
+export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer'
 export * from './components/DdlTableViewer/DdlTableDiffsViewer'

@@ -12,7 +12,7 @@ type ForeignKeyProps = {
 
 export const ForeignKey: FC<ForeignKeyProps> = memo<ForeignKeyProps>(props => {
   const { target } = props
-  const { navigationLinkBuilder } = useDdlTableViewerContext()
+  const { navigationLinkBuilder, navigationLinkComponent: NavigationLinkComponent } = useDdlTableViewerContext()
 
   const href = useMemo(
     () => navigationLinkBuilder(target.schemaName, target.tableName, target.columnName),
@@ -22,9 +22,9 @@ export const ForeignKey: FC<ForeignKeyProps> = memo<ForeignKeyProps>(props => {
   return (
     <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
       <UxBadge text="FK" colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA} inline />
-      <a href={href} className="ddlapi-foreign-key-link">
+      <NavigationLinkComponent href={href} className="ddlapi-foreign-key-link">
         {formatForeignKeyTarget(target)}
-      </a>
+      </NavigationLinkComponent>
     </div>
   )
 })
