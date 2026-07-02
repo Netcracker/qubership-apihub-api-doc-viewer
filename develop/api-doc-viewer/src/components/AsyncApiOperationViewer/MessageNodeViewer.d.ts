@@ -3,6 +3,7 @@ import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/asy
 import { FC } from '../../../../../node_modules/react';
 type MessageNodeViewerProps = {
     node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>;
+    noHeading?: boolean;
 };
 export declare const MessageNodeViewer: FC<MessageNodeViewerProps>;
 export {};

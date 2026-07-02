@@ -15,7 +15,7 @@
  */
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaViewer").JsonSchemaViewerProps>;
+    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaViewerProps>;
     parameters: {};
     tags: string[];
     argTypes: {};
