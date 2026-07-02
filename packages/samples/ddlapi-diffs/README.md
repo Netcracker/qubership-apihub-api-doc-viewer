@@ -4,6 +4,7 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 
 - Total cases: 147
 - Layout: `ddlapi-diffs/<group>/<case-id>/before.sql` and `.../after.sql`
+- Case ids are numbered from `01` (or `001` in groups with 100+ cases) within each group.
 
 ## Groups
 
