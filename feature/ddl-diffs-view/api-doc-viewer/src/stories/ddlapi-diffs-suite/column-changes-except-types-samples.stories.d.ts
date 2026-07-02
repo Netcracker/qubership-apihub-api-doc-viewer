@@ -1,0 +1,27 @@
+import { DdlTableDiffsViewer } from '../../components/DdlTableViewer/DdlTableDiffsViewer';
+import type { StoryObj } from "@storybook/react";
+declare const meta: {
+    title: string;
+    component: import('../../../../../node_modules/react').FC<import('../../components/DdlTableViewer/DdlTableDiffsViewer').DdlTableDiffsViewerProps>;
+};
+export default meta;
+type Story = StoryObj<typeof DdlTableDiffsViewer>;
+export declare const Case_01_add_one_more_column_no_badges: Story;
+export declare const Case_02_remove_one_more_column_no_badges: Story;
+export declare const Case_03_add_column_primary_key: Story;
+export declare const Case_04_add_column_foreign_key: Story;
+export declare const Case_05_add_column_unique: Story;
+export declare const Case_06_add_column_not_null: Story;
+export declare const Case_07_add_column_generated_identity: Story;
+export declare const Case_08_remove_column_primary_key: Story;
+export declare const Case_09_remove_column_foreign_key: Story;
+export declare const Case_10_remove_column_unique: Story;
+export declare const Case_11_remove_column_not_null: Story;
+export declare const Case_12_remove_column_generated_identity: Story;
+export declare const Case_13_existing_column_became_primary_key: Story;
+export declare const Case_14_existing_column_became_foreign_key: Story;
+export declare const Case_15_existing_column_became_unique: Story;
+export declare const Case_16_existing_column_became_generated_identity: Story;
+export declare const Case_17_existing_column_became_generated_expression: Story;
+export declare const Case_18_existing_column_became_not_null: Story;
+export declare const Case_19_remove_column_primary_key: Story;
