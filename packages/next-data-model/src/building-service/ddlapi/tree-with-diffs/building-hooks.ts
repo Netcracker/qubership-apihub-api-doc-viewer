@@ -7,7 +7,7 @@ import { createTreeBuildingHooks, TreeBuildingHooksFactoryParams } from "../../a
 import { DdlApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 
-type DdlApiTreeWithDiffsBuildingNodeParams = {
+export type DdlApiTreeWithDiffsBuildingNodeParams = {
   value: object | null
   newDataLevel: boolean
   parent: DdlApiTreeNodeWithDiffs | null

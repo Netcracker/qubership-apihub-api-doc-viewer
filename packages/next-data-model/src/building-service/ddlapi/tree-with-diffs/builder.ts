@@ -6,7 +6,6 @@ import {
   NodeDiffsSeverities,
   NodeDiffsSummary,
   SimpleTreeNodeWithDiffsParams,
-  TreeNodeWithDiffsParams,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface";
 import { DdlApiComplexTreeNodeWithDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/complex-node.impl";
@@ -28,7 +27,7 @@ import { getDdlApiCrawlRules } from "../json-crawl-entities/rules/rules";
 import { DdlApiTreeWithDiffsCrawlRule } from "../json-crawl-entities/rules/types";
 import { DdlApiTreeWithDiffsCrawlState } from "../json-crawl-entities/state/types";
 import { DdlApiSpecWithDiffsTransformer } from "../shared/ddlapi-spec-with-diffs-transformer";
-import { createDdlApiTreeWithDiffsBuildingHooks } from "./building-hooks";
+import { createDdlApiTreeWithDiffsBuildingHooks, DdlApiTreeWithDiffsBuildingNodeParams } from "./building-hooks";
 import { DdlApiNodeDataWithDiffsBuilder } from "./node-data/builder";
 import { DdlApiNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory";
 import { DdlApiNodeDescendantDiffsAggregatorFactory } from "./node-diffs-data/node-descendant-diffs/factory";
@@ -72,12 +71,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   }
 
   public build(): DdlApiTreeWithDiffs {
-    const preparedSource = this.specificationTransformer.transformSourceToTableOrientedSpecWithDiffs(
-      this.source,
-      this.tableKey,
-    )
-
-    if (!preparedSource) {
+    if (!isObject(this.source) && !Array.isArray(this.source)) {
       return this.tree
     }
 
@@ -89,14 +83,23 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
     const initialRules: DdlApiTreeWithDiffsCrawlRule = getDdlApiCrawlRules<DdlApiTreeWithDiffsCrawlState>()
 
+    const preparedSource = this.specificationTransformer.transformSourceToTableOrientedSpecWithDiffs(
+      this.source,
+      this.tableKey,
+    )
+
+    if (!preparedSource) {
+      return this.tree
+    }
+
     this.logger.debug('[DDL API][WithDiffs] Prepared Source:', preparedSource)
 
     const hooks = createDdlApiTreeWithDiffsBuildingHooks({
       source: preparedSource,
       tree: this.tree,
       supportedNodeKinds: DdlApiTreeNodeKindsList,
-      // @ts-expect-error - TODO: align TreeBuildingHooksFactoryParams with TreeNodeWithDiffsParams
-      createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
+      createNodeFromRaw: (id, key, kind, complex, params) =>
+        this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
         value: isObject(value) && !Array.isArray(value) ? value : null,
         newDataLevel: true,
@@ -148,12 +151,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     key: NodeKey,
     kind: DdlApiTreeNodeKind,
     complex: boolean,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): DdlApiTreeNodeWithDiffs | undefined {
     const { parent = null, container = null, newDataLevel } = params
 
@@ -200,12 +198,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   protected createNodeMeta(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): DdlApiTreeNodeMeta {
     const { value } = params
     return this.nodeDataBuilder.createNodeMeta(value)
@@ -215,12 +208,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: NodeKey,
     kind: string,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null {
     const { value } = params
 
@@ -235,12 +223,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   protected createNodeDiffs(
     key: NodeKey,
     kind: string,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> | undefined {
     if (!this.isDdlApiTreeNodeKind(kind)) {
       return undefined
@@ -268,12 +251,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
 
   protected createNodeDescendantsDiffs(
     kind: string,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): NodeDescendantDiffs | undefined {
     if (!this.isDdlApiTreeNodeKind(kind)) {
       return undefined
@@ -336,12 +314,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private assignNodeDiffs(
     node: DdlApiTreeNodeWithDiffs,
     kind: DdlApiTreeNodeKind,
-    params: TreeNodeWithDiffsParams<
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null,
-      DdlApiTreeNodeKind,
-      DdlApiTreeNodeMeta,
-      DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
-    >,
+    params: DdlApiTreeWithDiffsBuildingNodeParams,
   ): void {
     const nodeDiffs = this.createNodeDiffs(node.key, kind, params)
     nodeDiffs && Object.assign(node.diffs, nodeDiffs)

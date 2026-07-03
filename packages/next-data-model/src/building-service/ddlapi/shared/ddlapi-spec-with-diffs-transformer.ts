@@ -223,6 +223,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       this.mergeDiffsIntoTarget(columnRow, columnDiffs)
       this.attachColumnTypeDiffs(columnRow.columnType, sourceColumn)
     })
+
+    this.attachSectionArrayDiffs(columnsSection, columnsArrayDiffs, (arrayIndex) =>
+      sourceColumns[arrayIndex]?.name
+      ?? columnsSection.items[arrayIndex]?.columnName,
+    )
   }
 
   private attachIndexesSectionDiffs(
@@ -264,6 +269,50 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
       this.mergeDiffsIntoTarget(indexRow, indexDiffs)
     })
+
+    this.attachSectionArrayDiffs(indexesSection, indexesArrayDiffs, (arrayIndex) => {
+      const sourceIndex = sourceIndexes[arrayIndex]
+      const indexRow = indexesSection.items[arrayIndex]
+      if (sourceIndex?.name) {
+        return sourceIndex.name
+      }
+      if (indexRow?.indexName) {
+        return indexRow.indexName
+      }
+      if (indexRow?.partNames.length) {
+        return indexRow.partNames.join(', ')
+      }
+      return String(arrayIndex)
+    })
+  }
+
+  private attachSectionArrayDiffs(
+    section: object,
+    arrayDiffs: DiffsRecord | undefined,
+    resolveDescendantKey: (arrayIndex: number) => string | undefined,
+  ): void {
+    if (!arrayDiffs) {
+      return
+    }
+
+    const sectionDiffs: DiffsRecord = {}
+    for (const [arrayKey, diff] of Object.entries(arrayDiffs)) {
+      if (!diff) {
+        continue
+      }
+
+      const arrayIndex = Number(arrayKey)
+      if (Number.isNaN(arrayIndex)) {
+        continue
+      }
+
+      const descendantKey = resolveDescendantKey(arrayIndex)
+      if (descendantKey) {
+        sectionDiffs[descendantKey] = diff
+      }
+    }
+
+    this.mergeDiffsIntoTarget(section, sectionDiffs)
   }
 
   private attachColumnTypeDiffs(
