@@ -1,5 +1,5 @@
 import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableDiffsViewer";
-import { apiDiff, DIFF_META_KEY } from "@netcracker/qubership-apihub-api-diff";
+import { apiDiff } from "@netcracker/qubership-apihub-api-diff";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { StoryObj } from "@storybook/react";
 import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
@@ -98,7 +98,7 @@ async function prepareDdlDiffsMergedSource(
   const { merged } = apiDiff(before, after, {
     unify: true,
     validate: true,
-    metaKey: DIFF_META_KEY,
+    metaKey: TEST_DIFF_META_KEYS.diffsMetaKey,
     normalizedResult: false,
   }) as { merged: Realm };
 
