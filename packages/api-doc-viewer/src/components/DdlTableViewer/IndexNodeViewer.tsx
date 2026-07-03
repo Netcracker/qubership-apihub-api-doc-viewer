@@ -1,6 +1,12 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
+import {
+  buildDdlPropertyTitleRowDiffProps,
+  isNodeSubheaderVisible,
+  takeNodeDiffIfPresent,
+} from "@apihub/utils/ddlapi/node-level-diff"
+import { isIndexNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
+import { DdlApiTreeNode, DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
@@ -10,14 +16,16 @@ import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./consts"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerProps = WithPrecededByProps & {
-  node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>
+  node:
+  | DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>
+  | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
   isLastInList?: boolean
 }
 
@@ -26,6 +34,18 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
   const value = node.value()
+
+  const nodeDiff =
+    useMemo(
+      () => isIndexNodeWithDiffs(node) ? takeNodeDiffIfPresent(node) : undefined,
+      [node],
+    )
+
+  const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities" | "highlightingMode"> =
+    useMemo(
+      () => isIndexNodeWithDiffs(node) ? buildDdlPropertyTitleRowDiffProps(node) : {},
+      [node],
+    )
 
   const indexTitle = useMemo(() => {
     if (!value) {
@@ -38,9 +58,12 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   }, [value])
 
   const subheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_layoutSide: LayoutSide) => {
+    (layoutSide: LayoutSide) => {
       if (!value) {
+        return <></>
+      }
+
+      if (!isNodeSubheaderVisible(nodeDiff, layoutSide)) {
         return <></>
       }
 
@@ -59,13 +82,15 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         </div>
       )
     },
-    [value],
+    [nodeDiff, value],
   )
 
   const isDescriptionDisplayed = useMemo(
     () => displayMode === DETAILED_DISPLAY_MODE && !!value?.description,
     [displayMode, value?.description],
   )
+
+  const isWholeNodeChanged = !!nodeDiff
 
   const isTitleListLastRow = isLastInList
 
@@ -84,8 +109,9 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         variant={TextValueVariant.body2}
         subheader={value.indexName || value.isUnique ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
+        {...titleRowDiffProps}
       />
-      {isDescriptionDisplayed && (
+      {isDescriptionDisplayed && !isWholeNodeChanged && (
         <TextRow
           data-precededby={PrecededBy.DDL_INDEX_ROW}
           value={value.description ?? ''}
