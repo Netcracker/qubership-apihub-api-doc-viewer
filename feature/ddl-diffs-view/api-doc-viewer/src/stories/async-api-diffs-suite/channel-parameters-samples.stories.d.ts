@@ -1,9 +1,28 @@
 import type { StoryObj } from "@storybook/react";
+import { type AsyncApiCaseStoryComponentProps } from "./async-api-diffs-utils";
 declare const meta: {
     title: string;
-    component: ({ caseId }: {
-        caseId: string;
-    }) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    argTypes: {
+        beforeYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        afterYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

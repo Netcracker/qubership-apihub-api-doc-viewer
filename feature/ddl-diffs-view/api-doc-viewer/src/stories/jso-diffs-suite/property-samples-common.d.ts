@@ -1,11 +1,29 @@
 import type { Meta, StoryObj } from "@storybook/react";
-declare const sampleCases: import("../utils/diffs-samples-cases").SampleCase[];
-export declare const sampleById: Record<string, (typeof sampleCases)[number]>;
-export type JsoPropertySamplesStoryProps = {
-    caseId: string;
-};
-export declare const JsoPropertySamplesStory: ({ caseId }: JsoPropertySamplesStoryProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+import { type JsoCaseStoryComponentProps } from "./jso-diffs-utils";
+export declare const JsoPropertySamplesStory: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export type JsoPropertySamplesStoryMeta = Meta<typeof JsoPropertySamplesStory>;
 export type JsoPropertySamplesStoryObj = StoryObj<JsoPropertySamplesStoryMeta>;
+export declare const jsoPropertySamplesStoryMetaBase: {
+    component: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    argTypes: {
+        beforeYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        afterYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
+};
 export declare const createCaseStory: (caseId: string) => JsoPropertySamplesStoryObj;
-export {};

@@ -1,12 +1,31 @@
-import type { StoryObj } from "@storybook/react";
-import { DdlTableViewer } from '../../components/DdlTableViewer/DdlTableViewer';
+import { type DdlSamplesStoryObj } from "./ddl-samples-common";
 declare const meta: {
     id: string;
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../../components/DdlTableViewer/DdlTableViewer').DdlTableViewerProps>;
+    component: (_props: import("./ddl-samples-utils").DdlCaseStoryComponentProps) => null;
+    argTypes: {
+        caseId: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        sampleSql: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
 };
 export default meta;
-type Story = StoryObj<typeof DdlTableViewer>;
+type Story = DdlSamplesStoryObj;
 export declare const Users: Story;
 export declare const Employees: Story;
 export declare const Projects: Story;
