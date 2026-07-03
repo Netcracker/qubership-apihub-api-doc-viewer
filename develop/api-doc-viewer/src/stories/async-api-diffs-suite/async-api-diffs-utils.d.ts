@@ -4,12 +4,31 @@ export type AsyncApiDiffSampleCase = {
     beforeYaml: string;
     afterYaml: string;
 };
-type AsyncApiCaseStoryComponentProps = {
-    caseId: string;
+export type AsyncApiCaseStoryComponentProps = Pick<AsyncApiDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml">;
+export declare const asyncApiDiffSampleReadonlyArgTypes: {
+    beforeYaml: {
+        control: {
+            type: "text";
+        };
+        table: {
+            category: string;
+        };
+        description: string;
+    };
+    afterYaml: {
+        control: {
+            type: "text";
+        };
+        table: {
+            category: string;
+        };
+        description: string;
+    };
 };
 type AsyncApiCaseStoryArgs = {
     name: string;
     args: AsyncApiCaseStoryComponentProps;
+    argTypes: typeof asyncApiDiffSampleReadonlyArgTypes;
     render: (args: AsyncApiCaseStoryComponentProps) => JSX.Element;
     play?: (context: {
         canvasElement: HTMLElement;
@@ -21,5 +40,5 @@ export declare const createAsyncApiViewerArgs: (beforeSourceText: string, afterS
     messageKey: string;
 }) => AsyncApiOperationDiffsViewerProps;
 export declare const createAsyncApiSampleById: <TSample extends AsyncApiDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
-export declare const createAsyncApiCaseStoryFactory: (StoryComponent: (props: AsyncApiCaseStoryComponentProps) => JSX.Element, playTestId?: string) => (caseId: string) => AsyncApiCaseStoryArgs;
+export declare const createAsyncApiCaseStoryFactory: (StoryComponent: (props: AsyncApiCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, AsyncApiDiffSampleCase>, playTestId?: string) => (caseId: string) => AsyncApiCaseStoryArgs;
 export {};
