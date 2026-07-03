@@ -1,11 +1,39 @@
-import { DdlTableDiffsViewer } from '../../components/DdlTableViewer/DdlTableDiffsViewer';
-import type { StoryObj } from "@storybook/react";
+import { type DdlDiffsSamplesStoryObj } from "./ddlapi-diffs-utils";
 declare const meta: {
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../../components/DdlTableViewer/DdlTableDiffsViewer').DdlTableDiffsViewerProps>;
+    component: (_props: import("./ddlapi-diffs-utils").DdlDiffCaseStoryComponentProps) => null;
+    argTypes: {
+        caseId: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        beforeSql: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        afterSql: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
 };
 export default meta;
-type Story = StoryObj<typeof DdlTableDiffsViewer>;
+type Story = DdlDiffsSamplesStoryObj;
 export declare const Case_001_type_change_int4_to_bigint: Story;
 export declare const Case_002_type_change_int4_to_boolean: Story;
 export declare const Case_003_type_change_int4_to_uuid: Story;

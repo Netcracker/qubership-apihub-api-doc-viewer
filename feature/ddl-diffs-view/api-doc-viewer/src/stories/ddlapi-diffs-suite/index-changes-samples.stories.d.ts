@@ -1,11 +1,39 @@
-import { DdlTableDiffsViewer } from '../../components/DdlTableViewer/DdlTableDiffsViewer';
-import type { StoryObj } from "@storybook/react";
+import { type DdlDiffsSamplesStoryObj } from "./ddlapi-diffs-utils";
 declare const meta: {
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../../components/DdlTableViewer/DdlTableDiffsViewer').DdlTableDiffsViewerProps>;
+    component: (_props: import("./ddlapi-diffs-utils").DdlDiffCaseStoryComponentProps) => null;
+    argTypes: {
+        caseId: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        beforeSql: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        afterSql: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
 };
 export default meta;
-type Story = StoryObj<typeof DdlTableDiffsViewer>;
+type Story = DdlDiffsSamplesStoryObj;
 export declare const Case_01_add_index_when_none_present: Story;
 export declare const Case_02_add_index_unique_when_none_present: Story;
 export declare const Case_03_remove_index_when_none_present: Story;
