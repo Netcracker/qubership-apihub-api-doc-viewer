@@ -1,9 +1,9 @@
-import { DdlApiTreeNode } from '../../../../next-data-model/src/model/ddlapi/types/aliases';
+import { DdlApiTreeNode, DdlApiTreeNodeWithDiffs } from '../../../../next-data-model/src/model/ddlapi/types/aliases';
 import { DdlApiTreeNodeKinds } from '../../../../next-data-model/src/model/ddlapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
 import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 type IndexNodeViewerProps = WithPrecededByProps & {
-    node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>;
+    node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX> | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>;
     isLastInList?: boolean;
 };
 export declare const IndexNodeViewer: FC<IndexNodeViewerProps>;
