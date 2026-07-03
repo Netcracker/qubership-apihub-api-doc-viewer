@@ -1,7 +1,7 @@
 import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableDiffsViewer";
 import { apiDiff } from "@netcracker/qubership-apihub-api-diff";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
-import type { StoryObj } from "@storybook/react";
+import type { ArgTypes, Meta, StoryObj } from "@storybook/react";
 import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
 import { buildFromDdlInBrowser } from "../ddlapi-suite/build-from-ddl-browser";
@@ -12,6 +12,41 @@ export type DdlDiffSampleCase = {
   beforeSql: string;
   afterSql: string;
 };
+
+export type DdlDiffCaseStoryComponentProps = Pick<
+  DdlDiffSampleCase,
+  "caseId" | "beforeSql" | "afterSql"
+>;
+
+export const ddlDiffSampleReadonlyArgTypes = {
+  caseId: {
+    control: { type: "text" },
+    table: { category: "Sample" },
+    description: "Sample case identifier. The viewer always uses the bundled fixture for this case.",
+  },
+  beforeSql: {
+    control: { type: "text" },
+    table: { category: "Sample" },
+    description:
+      "Before sample SQL for reference. The viewer always uses the bundled fixture for the selected case.",
+  },
+  afterSql: {
+    control: { type: "text" },
+    table: { category: "Sample" },
+    description:
+      "After sample SQL for reference. The viewer always uses the bundled fixture for the selected case.",
+  },
+} satisfies Partial<ArgTypes<DdlDiffCaseStoryComponentProps>>;
+
+export const DdlDiffSampleStory = (_props: DdlDiffCaseStoryComponentProps) => null;
+
+export type DdlDiffsSamplesStoryMeta = Meta<typeof DdlDiffSampleStory>;
+export type DdlDiffsSamplesStoryObj = StoryObj<DdlDiffsSamplesStoryMeta>;
+
+export const ddlDiffsSamplesStoryMetaBase = {
+  component: DdlDiffSampleStory,
+  argTypes: ddlDiffSampleReadonlyArgTypes,
+} satisfies Pick<DdlDiffsSamplesStoryMeta, "component" | "argTypes">;
 
 export type RawSqlSources = Record<string, string>;
 
@@ -110,8 +145,6 @@ type LoaderData = {
   tableKey: TableKey;
 };
 
-export type DdlDiffsSamplesStoryObj = StoryObj<typeof DdlTableDiffsViewer>;
-
 export const createDdlDiffCaseStoryFactory = (
   sampleById: Record<string, DdlDiffSampleCase>,
 ) => (caseId: string): DdlDiffsSamplesStoryObj => {
@@ -122,6 +155,12 @@ export const createDdlDiffCaseStoryFactory = (
 
   return {
     name: caseId,
+    args: {
+      caseId,
+      beforeSql: sample.beforeSql,
+      afterSql: sample.afterSql,
+    },
+    argTypes: ddlDiffSampleReadonlyArgTypes,
     loaders: [
       async () => ({
         mergedSource: await prepareDdlDiffsMergedSource(sample.beforeSql, sample.afterSql),

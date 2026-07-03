@@ -1,9 +1,11 @@
-import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableDiffsViewer";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta } from "@storybook/react";
 import {
+  DdlDiffSampleStory,
   collectDdlDiffSampleCases,
   createDdlDiffCaseStoryFactory,
   createDdlDiffSampleById,
+  ddlDiffsSamplesStoryMetaBase,
+  type DdlDiffsSamplesStoryObj,
 } from "./ddlapi-diffs-utils";
 
 const beforeFiles = import.meta.glob(
@@ -21,13 +23,13 @@ const sampleById = createDdlDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
+  ...ddlDiffsSamplesStoryMetaBase,
   title: "DDL API Diffs Suite/Whole Table Changes Samples",
-  component: DdlTableDiffsViewer,
-} satisfies Meta<typeof DdlTableDiffsViewer>;
+} satisfies Meta<typeof DdlDiffSampleStory>;
 
 export default meta;
 
-type Story = StoryObj<typeof DdlTableDiffsViewer>;
+type Story = DdlDiffsSamplesStoryObj;
 
 const createCaseStory = createDdlDiffCaseStoryFactory(sampleById);
 
