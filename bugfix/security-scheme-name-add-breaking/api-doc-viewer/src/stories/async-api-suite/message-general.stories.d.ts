@@ -23,3 +23,5 @@ export declare const Address: Story;
 export declare const AddressDescription: Story;
 export declare const AddressSummary: Story;
 export declare const AddressDescriptionSummary: Story;
+export declare const NoHeadingWithName: Story;
+export declare const NoHeadingWithoutName: Story;

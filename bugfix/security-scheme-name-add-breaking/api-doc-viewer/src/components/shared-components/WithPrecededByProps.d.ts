@@ -1,4 +1,5 @@
 export declare const ATTRIBUTE_PRECEDED_BY = "data-precededby";
+export declare const ATTRIBUTE_DDL_LIST_LAST_ROW = "data-ddl-list-last-row";
 export declare enum PrecededBy {
     ROOT = "root",
     ADDRESS_ROW = "address-row",
@@ -12,8 +13,19 @@ export declare enum PrecededBy {
     JSO_PROPERTY = "jso-property",
     BINDING_VERSION_ROW = "binding-version-row",
     SERVER_BLOCK = "server-block",
-    SERVER_ADDRESS_ROW = "server-address-row"
+    SERVER_ADDRESS_ROW = "server-address-row",
+    DDL_TABLE_HEADER_ROW = "ddl-table-header-row",
+    DDL_TABLE_SCHEMA_ROW = "ddl-table-schema-row",
+    DDL_TABLE_DESCRIPTION_ROW = "ddl-table-description-row",
+    DDL_SECTION_HEADER = "ddl-section-header",
+    DDL_COLUMN_ROW = "ddl-column-row",
+    /** Follows a sibling column block that ended with an additional-info row. */
+    DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = "ddl-column-after-additional-info-row",
+    DDL_INDEX_ROW = "ddl-index-row"
 }
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;
+};
+export type WithDdlListLastRowProps = {
+    [ATTRIBUTE_DDL_LIST_LAST_ROW]?: boolean;
 };

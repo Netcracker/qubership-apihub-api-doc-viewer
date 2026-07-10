@@ -16,7 +16,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/GraphQLOperationViewer/GraphQLOperationViewer").GraphQLOperationViewerProps>;
+    component: import('../../../../node_modules/react').FC<import("..").GraphQLOperationViewerProps>;
     parameters: {};
     argTypes: {
         source: {

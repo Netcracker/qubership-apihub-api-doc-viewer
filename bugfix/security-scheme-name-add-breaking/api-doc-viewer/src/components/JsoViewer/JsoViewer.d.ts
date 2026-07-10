@@ -7,6 +7,7 @@ type JsoViewerProps = WithPrecededByProps & {
     layoutMode?: LayoutMode;
     initialLevel?: number;
     supportJsonSchema?: boolean;
+    devMode?: boolean;
 };
 export declare const JsoViewer: FC<JsoViewerProps>;
 export {};

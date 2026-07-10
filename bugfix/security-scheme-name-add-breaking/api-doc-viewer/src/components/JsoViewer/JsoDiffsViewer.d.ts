@@ -8,6 +8,7 @@ type JsoDiffsViewerProps = WithPrecededByProps & {
     displayMode?: DisplayMode;
     initialLevel?: number;
     supportJsonSchema?: boolean;
+    devMode?: boolean;
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
 };
