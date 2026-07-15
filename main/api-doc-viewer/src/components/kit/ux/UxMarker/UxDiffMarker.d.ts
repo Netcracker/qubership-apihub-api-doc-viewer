@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { FC } from '../../../../../../../node_modules/react';
 import { DiffType } from '@netcracker/qubership-apihub-api-diff';
+import type { FC } from '../../../../../../../node_modules/react';
 type FloatingVariant = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export type UxDiffMarkerProps = {
     variant: DiffType;

@@ -16,7 +16,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/JsonSchemaViewer/JsonSchemaDiffViewer").JsonSchemaDiffViewerProps>;
+    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaDiffViewerProps>;
     parameters: {};
     argTypes: {};
     args: {
@@ -33,5 +33,16 @@ export declare const AddMinItemsInArrayProperty: Story;
 export declare const CycledChanged: Story;
 export declare const PrimitiveChanged: Story;
 export declare const ObjectiveHeaderChanged: Story;
+export declare const ObjectToArray: Story;
 export declare const ExtensionsOnPrimitive: Story;
 export declare const ExtensionsOnObject: Story;
+export declare const ExtensionsWhollyAddedOnObject: Story;
+export declare const ExtensionsWhollyRemovedOnObject: Story;
+export declare const AddedPropertyWithExtensions: Story;
+export declare const RemovedPropertyWithExtensions: Story;
+export declare const ExtensionsOnCircularObject: Story;
+export declare const AllConstraintsChanged: Story;
+export declare const AppendCombinerItem: Story;
+export declare const PopCombinerItem: Story;
+export declare const ChangesInsideFirstCombinerItem: Story;
+export declare const ChangesInsideLastCombinerItem: Story;

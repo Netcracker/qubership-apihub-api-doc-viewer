@@ -1,4 +1,4 @@
-import { AsyncApiTreeNode } from '../../../../next-data-model/src/model/async-api/types/aliases';
+import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from '../../../../next-data-model/src/model/async-api/types/aliases';
 import { AsyncApiTreeNodeKinds } from '../../../../next-data-model/src/model/async-api/types/node-kind';
 export declare function isMessageNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>;
 export declare function isMessageSectionSelectorNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_SECTION_SELECTOR>;
@@ -9,8 +9,8 @@ export declare function isMessageChannelNode(node: AsyncApiTreeNode): node is As
 export declare function isMessageChannelParametersNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>;
 export declare function isMessageOperationNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>;
 export declare function isExtensionsNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.EXTENSIONS>;
-export declare function isBindingsNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS>;
-export declare function isBindingNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING>;
+export declare function isBindingsNode(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDINGS> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDINGS>;
+export declare function isBindingNode(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.BINDING> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.BINDING>;
 export declare function isMessageSectionNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CONTENT | typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL | typeof AsyncApiTreeNodeKinds.MESSAGE_OPERATION>;
 export declare function isServersNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVERS>;
-export declare function isServerNode(node: AsyncApiTreeNode): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER>;
+export declare function isServerNode(node: AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs): node is AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.SERVER> | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.SERVER>;

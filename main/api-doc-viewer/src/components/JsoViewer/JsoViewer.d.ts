@@ -1,10 +1,13 @@
 import { FC } from '../../../../../node_modules/react';
-import { DisplayMode } from "../..";
-type JsoViewerProps = {
+import { DisplayMode, LayoutMode } from "../..";
+import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
+type JsoViewerProps = WithPrecededByProps & {
     source: object | null;
     displayMode?: DisplayMode;
+    layoutMode?: LayoutMode;
     initialLevel?: number;
     supportJsonSchema?: boolean;
+    devMode?: boolean;
 };
 export declare const JsoViewer: FC<JsoViewerProps>;
 export {};

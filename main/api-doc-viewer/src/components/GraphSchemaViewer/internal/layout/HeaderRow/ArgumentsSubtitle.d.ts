@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { GraphApiDiffTreeNode, GraphApiTreeNode } from '../../../../../../../api-data-model/src';
-import { FC } from '../../../../../../../../node_modules/react';
 import { IModelStatePropNode } from '../../../../../../../api-state-model/src';
+import { FC } from '../../../../../../../../node_modules/react';
 import { LayoutMode } from '../../../../../types/LayoutMode';
 import { LayoutSide } from '../../../../../types/internal/LayoutSide';
 type ArgumentsSubTitleProps = {

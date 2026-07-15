@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './components/JsonSchemaViewer/JsonSchemaViewer';
-export * from './components/JsonSchemaViewer/JsonSchemaDiffViewer';
-export * from './components/GraphQLOperationViewer/GraphQLOperationViewer';
-export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer';
-export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer';
-export * from './types/LayoutMode';
-export * from './types/DisplayMode';
-export { buildOpenApiDiffCause } from './utils/common/changes';
 export type { DiffMetaKeys } from '../../api-data-model/src';
+export type { NavigationLinkBuilder } from '../../next-data-model/src/shared/ddlapi/types/navigation-link-builder';
+export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink';
+export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
+export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer';
+export * from './components/DdlTableViewer/DdlTableDiffsViewer';
+export * from './components/DdlTableViewer/DdlTableViewer';
+export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer';
+export * from './components/GraphQLOperationViewer/GraphQLOperationViewer';
+export * from './components/JsonSchemaViewer/JsonSchemaDiffViewer';
+export * from './components/JsonSchemaViewer/JsonSchemaViewer';
+export * from './types/DisplayMode';
+export * from './types/LayoutMode';
+export { buildOpenApiDiffCause } from './utils/common/changes';
