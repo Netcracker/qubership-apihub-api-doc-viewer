@@ -2,7 +2,7 @@
 
 These fixtures feed screenshot-diff scenarios for DDL table changes.
 
-- Total cases: 147
+- Total cases: 152
 - Layout: `ddlapi-diffs/<group>/<case-id>/before.sql` and `.../after.sql`
 - Case ids are numbered from `01` (or `001` in groups with 100+ cases) within each group.
 
@@ -11,7 +11,7 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | Group | Cases | Description |
 | --- | ---: | --- |
 | `whole-table-changes` | 3 | Wholly added/removed tables and schema moves |
-| `column-changes-except-types` | 19 | Column add/remove and constraint/badge changes |
+| `column-changes-except-types` | 24 | Column add/remove and constraint/badge changes |
 | `index-changes` | 18 | Index add/remove, uniqueness, and column list changes |
 | `column-type-changes` | 107 | Base type matrix, parameter changes, and enum changes |
 
