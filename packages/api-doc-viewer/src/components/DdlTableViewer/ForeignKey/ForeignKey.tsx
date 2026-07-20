@@ -8,10 +8,12 @@ import './ForeignKey.css'
 
 type ForeignKeyProps = {
   target: DdlApiForeignKeyTarget
+  /** When true, only the navigation link is rendered (FK badge supplied by the caller). */
+  hideBadge?: boolean
 }
 
 export const ForeignKey: FC<ForeignKeyProps> = memo<ForeignKeyProps>(props => {
-  const { target } = props
+  const { target, hideBadge = false } = props
   const { navigationLinkBuilder, navigationLinkComponent: NavigationLinkComponent } = useDdlTableViewerContext()
 
   const href = useMemo(
@@ -19,12 +21,20 @@ export const ForeignKey: FC<ForeignKeyProps> = memo<ForeignKeyProps>(props => {
     [navigationLinkBuilder, target],
   )
 
+  const link = (
+    <NavigationLinkComponent href={href} className="ddlapi-foreign-key-link">
+      {formatForeignKeyTarget(target)}
+    </NavigationLinkComponent>
+  )
+
+  if (hideBadge) {
+    return link
+  }
+
   return (
     <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
       <UxBadge text="FK" colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA} inline />
-      <NavigationLinkComponent href={href} className="ddlapi-foreign-key-link">
-        {formatForeignKeyTarget(target)}
-      </NavigationLinkComponent>
+      {link}
     </div>
   )
 })

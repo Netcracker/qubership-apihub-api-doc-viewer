@@ -157,4 +157,53 @@ export class DdlApiNodeDiffsAggregatorKindAny
       highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
     }
   }
+
+  protected aggregateFlagDiff(
+    diff: Diff<DiffType>,
+    key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ) {
+    let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    if (isDiffAdd(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: false,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+    }
+    if (isDiffRemove(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: false,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+    }
+    nodeDiffs[key] = {
+      data: diff,
+      styles: {
+        before: beforeStyles,
+        after: afterStyles,
+      },
+      flags: {
+        before: {
+          increaseLevel: false,
+        },
+        after: {
+          increaseLevel: false,
+        },
+      },
+      highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDefined } from "@apihub/utils/common/checkers"
+import { takeColumnFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
@@ -16,16 +17,15 @@ import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
-import { ColumnRowBadges } from "./ColumnRowBadges"
+import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import {
   ADDITIONAL_INFO_LABEL_DEFAULT,
   ADDITIONAL_INFO_LABEL_GENERATED,
   ADDITIONAL_INFO_LABEL_VALUES,
 } from "./consts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
-import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
@@ -60,6 +60,11 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
       [node],
     )
 
+  const flagDiffs = useMemo(
+    () => isColumnNodeWithDiffs(node) ? takeColumnFlagDiffs(node) : undefined,
+    [node],
+  )
+
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
       if (!value) {
@@ -77,11 +82,15 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
             value={value.columnType.label}
             appearance="text"
           />
-          <ColumnRowBadges value={value} />
+          <ColumnRowBadgesContent
+            layoutSide={layoutSide}
+            value={value}
+            flagDiffs={flagDiffs}
+          />
         </div>
       )
     },
-    [nodeDiff, value],
+    [flagDiffs, nodeDiff, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(
@@ -171,7 +180,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     <div data-testid="ddl-column-node-viewer" className="flex flex-col ddlapi-property">
       <TitleRow
         data-precededby={precededBy}
-        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow }}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}
         value={value.columnName}
         expandable={false}
         expanded={true}
@@ -193,7 +202,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
       {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_VALUES}
           subheader={enumValuesAdditionalInfoSubheader}
         />
@@ -205,7 +214,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
         />
@@ -217,7 +226,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_GENERATED}
           subheader={generatedAdditionalInfoSubheader}
         />

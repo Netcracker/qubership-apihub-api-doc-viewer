@@ -1,5 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { takeIndexFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
   isNodeSubheaderVisible,
@@ -10,7 +11,6 @@ import { DdlApiTreeNode, DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-a
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
-import { UxBadge } from "../kit/ux/UxBadge/UxBadge"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowUsage } from "../shared-components/TextRow/types"
@@ -18,8 +18,8 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
-import { DDL_API_UNIQUE_BADGE_COLOR_SCHEMA } from "./consts"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerProps = WithPrecededByProps & {
@@ -46,6 +46,11 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
       () => isIndexNodeWithDiffs(node) ? buildDdlPropertyTitleRowDiffProps(node) : {},
       [node],
     )
+
+  const flagDiffs = useMemo(
+    () => isIndexNodeWithDiffs(node) ? takeIndexFlagDiffs(node) : undefined,
+    [node],
+  )
 
   const indexTitle = useMemo(() => {
     if (!value) {
@@ -76,13 +81,15 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
               appearance="text"
             />
           )}
-          {value.isUnique && (
-            <UxBadge text="unique" colorSchema={DDL_API_UNIQUE_BADGE_COLOR_SCHEMA} inline />
-          )}
+          <ColumnRowBadgesContent
+            layoutSide={layoutSide}
+            value={value}
+            flagDiffs={flagDiffs}
+          />
         </div>
       )
     },
-    [nodeDiff, value],
+    [flagDiffs, nodeDiff, value],
   )
 
   const isDescriptionDisplayed = useMemo(
@@ -91,7 +98,6 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   )
 
   const isWholeNodeChanged = !!nodeDiff
-
   const isTitleListLastRow = isLastInList
 
   if (!value) {
@@ -107,7 +113,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         expandable={false}
         expanded={true}
         variant={TextValueVariant.body2}
-        subheader={value.indexName || value.isUnique ? subheader : undefined}
+        subheader={value.indexName || value.isUnique || flagDiffs?.isUnique ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
         {...titleRowDiffProps}
       />

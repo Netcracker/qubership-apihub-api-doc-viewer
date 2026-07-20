@@ -8,7 +8,7 @@ import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
-export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
+export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregatorKindAny {
   public aggregate(
     crawlValue: object | null,
     diffsMetaKeys: DiffMetaKeys,
@@ -44,20 +44,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       nodeDiffs = {}
     }
 
-    const isPrimaryKeyDiff = diffs['isPrimaryKey']
-    isPrimaryKeyDiff && this.aggregateFlagDiff(isPrimaryKeyDiff, 'isPrimaryKey', nodeDiffs)
-
-    const isForeignKeyDiff = diffs['isForeignKey']
-    isForeignKeyDiff && this.aggregateFlagDiff(isForeignKeyDiff, 'isForeignKey', nodeDiffs)
-
-    const isGeneratedDiff = diffs['isGenerated']
-    isGeneratedDiff && this.aggregateFlagDiff(isGeneratedDiff, 'isGenerated', nodeDiffs)
-
     const isUniqueDiff = diffs['isUnique']
     isUniqueDiff && this.aggregateFlagDiff(isUniqueDiff, 'isUnique', nodeDiffs)
-
-    const isNotNullDiff = diffs['isNotNull']
-    isNotNullDiff && this.aggregateFlagDiff(isNotNullDiff, 'isNotNull', nodeDiffs)
 
     return nodeDiffs
   }
