@@ -171,7 +171,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     <div data-testid="ddl-column-node-viewer" className="flex flex-col ddlapi-property">
       <TitleRow
         data-precededby={precededBy}
-        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow }}
         value={value.columnName}
         expandable={false}
         expanded={true}
@@ -193,7 +193,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
       {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow }}
           label={ADDITIONAL_INFO_LABEL_VALUES}
           subheader={enumValuesAdditionalInfoSubheader}
         />
@@ -205,7 +205,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
         />
@@ -217,7 +217,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow }}
           label={ADDITIONAL_INFO_LABEL_GENERATED}
           subheader={generatedAdditionalInfoSubheader}
         />

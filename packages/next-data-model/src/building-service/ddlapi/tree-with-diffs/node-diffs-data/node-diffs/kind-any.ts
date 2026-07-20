@@ -15,7 +15,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
     DdlApiTreeNodeMeta,
     DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
   > {
-  private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
+  protected readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
     isHeaderVisible: true,
   }
