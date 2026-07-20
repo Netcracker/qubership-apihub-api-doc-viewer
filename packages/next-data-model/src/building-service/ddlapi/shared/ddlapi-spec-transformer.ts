@@ -182,19 +182,21 @@ export class DdlApiSpecTransformer {
     const schemaType = column.type?.type
     const enumValues = schemaType && isEnumType(schemaType) ? schemaType.values : undefined
 
+    const isPrimaryKey = this.isPrimaryKeyColumn(table, column)
+
     return {
       columnName: column.name,
       columnType,
       ...(enumValues ? { enumValues } : {}),
-      isPrimaryKey: this.isPrimaryKeyColumn(table, column),
-      isForeignKey,
+      isPrimaryKey: isPrimaryKey,
+      isForeignKey: isForeignKey,
       ...(foreignKeyTarget ? { foreignKeyTarget } : {}),
-      isGenerated,
+      isGenerated: isGenerated,
       ...(identity ? { generatedBy: 'identity' as const } : {}),
       ...(generatedExpr && !identity ? { generatedBy: 'expression' as const } : {}),
       ...(generatedExpr ? { generatedExpression: generatedExpr.expr } : {}),
       isUnique: this.isUniqueColumn(table, column),
-      isNotNull: column.type?.null === false,
+      isNotNull: !isPrimaryKey && column.type?.null === false,
       ...(column.default !== undefined ? { defaultValue: formatDdlExpr(column.default) } : {}),
       ...(comment ? { description: comment.text } : {}),
     }
@@ -227,14 +229,14 @@ export class DdlApiSpecTransformer {
   }
 
   private isPrimaryKeyColumn(table: Table, column: Column): boolean {
-    return (table.primaryKey?.parts ?? []).some(part => part.column === column)
+    return (table.primaryKey?.parts ?? []).some(part => part.column?.name === column.name)
   }
 
   private isUniqueColumn(table: Table, column: Column): boolean {
     return (table.indexes ?? []).some(index =>
       index.unique === true
       && index.parts?.length === 1
-      && index.parts[0]?.column === column,
+      && index.parts[0]?.column?.name === column.name,
     )
   }
 
