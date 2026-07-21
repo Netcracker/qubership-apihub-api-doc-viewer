@@ -2,7 +2,7 @@ import { ColumnRowBadgesFlagDiffs } from "@apihub/components/DdlTableViewer/Colu
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 
-const COLUMN_FLAG_DIFF_KEYS = [
+export const COLUMN_FLAG_DIFF_KEYS = [
   'isPrimaryKey',
   'isUnique',
   'isNotNull',
@@ -10,7 +10,7 @@ const COLUMN_FLAG_DIFF_KEYS = [
   'isForeignKey',
 ] as const satisfies ReadonlyArray<keyof ColumnRowBadgesFlagDiffs>
 
-const INDEX_FLAG_DIFF_KEYS = [
+export const INDEX_FLAG_DIFF_KEYS = [
   'isUnique',
 ] as const satisfies ReadonlyArray<keyof ColumnRowBadgesFlagDiffs>
 

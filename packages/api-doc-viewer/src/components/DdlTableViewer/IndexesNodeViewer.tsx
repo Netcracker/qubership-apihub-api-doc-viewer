@@ -1,5 +1,5 @@
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { getIndexChildNodes } from "@apihub/utils/ddlapi/node-type-checkers"
+import { getIndexChildNodes, isIndexNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useMemo } from "react"
@@ -7,6 +7,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { IndexNodeViewer } from "./IndexNodeViewer"
+import { IndexNodeViewerWithDiffs } from "./IndexNodeViewerWithDiffs"
 
 type IndexesNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEXES>
@@ -57,12 +58,21 @@ export const IndexesNodeViewer: FC<IndexesNodeViewerProps> = (props) => {
       />
       <LevelContext.Provider value={level + 1}>
         {indexViewerContexts.map(({ indexNode, titlePrecededBy, isLastInList }) => (
-          <IndexNodeViewer
-            key={indexNode.id}
-            data-precededby={titlePrecededBy}
-            isLastInList={isLastInList}
-            node={indexNode}
-          />
+          isIndexNodeWithDiffs(indexNode) ? (
+            <IndexNodeViewerWithDiffs
+              key={indexNode.id}
+              data-precededby={titlePrecededBy}
+              isLastInList={isLastInList}
+              node={indexNode}
+            />
+          ) : (
+            <IndexNodeViewer
+              key={indexNode.id}
+              data-precededby={titlePrecededBy}
+              isLastInList={isLastInList}
+              node={indexNode}
+            />
+          )
         ))}
       </LevelContext.Provider>
     </div>

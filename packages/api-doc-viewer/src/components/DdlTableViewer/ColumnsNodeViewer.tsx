@@ -1,6 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { getColumnChildNodes } from "@apihub/utils/ddlapi/node-type-checkers"
+import { getColumnChildNodes, isColumnNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
 import { hasDdlColumnAdditionalInfoRows } from "@apihub/utils/ddlapi/column-row-utils"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
@@ -10,6 +10,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnNodeViewer } from "./ColumnNodeViewer"
+import { ColumnNodeViewerWithDiffs } from "./ColumnNodeViewerWithDiffs"
 
 type ColumnsNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMNS>
@@ -84,13 +85,23 @@ export const ColumnsNodeViewer: FC<ColumnsNodeViewerProps> = (props) => {
       />
       <LevelContext.Provider value={level + 1}>
         {columnViewerContexts.map(({ columnNode, titlePrecededBy, additionalInfoPrecededBy, isLastInList }) => (
-          <ColumnNodeViewer
-            key={columnNode.id}
-            data-precededby={titlePrecededBy}
-            additionalInfoPrecededBy={additionalInfoPrecededBy}
-            isLastInList={isLastInList}
-            node={columnNode}
-          />
+          isColumnNodeWithDiffs(columnNode) ? (
+            <ColumnNodeViewerWithDiffs
+              key={columnNode.id}
+              data-precededby={titlePrecededBy}
+              additionalInfoPrecededBy={additionalInfoPrecededBy}
+              isLastInList={isLastInList}
+              node={columnNode}
+            />
+          ) : (
+            <ColumnNodeViewer
+              key={columnNode.id}
+              data-precededby={titlePrecededBy}
+              additionalInfoPrecededBy={additionalInfoPrecededBy}
+              isLastInList={isLastInList}
+              node={columnNode}
+            />
+          )
         ))}
       </LevelContext.Provider>
     </div>

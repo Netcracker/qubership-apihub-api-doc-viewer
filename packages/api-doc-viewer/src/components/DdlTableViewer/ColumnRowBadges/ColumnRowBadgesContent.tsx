@@ -2,7 +2,6 @@ import { DiffBadge } from "@apihub/components/common/diffs/DiffBadge"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
-import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo, ReactNode, useMemo } from "react"
 import {
@@ -27,25 +26,6 @@ function isFlagBadgeVisible(
   return !!flagValue || !!flagDiff
 }
 
-function sideStyles(
-  flagDiff: ChangedPropertyMetaData,
-  layoutSide: LayoutSide,
-) {
-  return layoutSide === ORIGIN_LAYOUT_SIDE
-    ? flagDiff.styles.before
-    : flagDiff.styles.after
-}
-
-function backgroundClassForSide(
-  flagDiff: ChangedPropertyMetaData | undefined,
-  layoutSide: LayoutSide,
-): string | undefined {
-  if (!flagDiff) {
-    return undefined
-  }
-  return DiffsClassesBuilder.background(sideStyles(flagDiff, layoutSide).backgroundColor)
-}
-
 function isContentVisibleOnSide(
   flagDiff: ChangedPropertyMetaData | undefined,
   layoutSide: LayoutSide,
@@ -53,23 +33,9 @@ function isContentVisibleOnSide(
   if (!flagDiff) {
     return true
   }
-  return sideStyles(flagDiff, layoutSide).isContentVisible
-}
-
-function wrapWithDiffBackground(
-  content: ReactNode,
-  flagDiff: ChangedPropertyMetaData | undefined,
-  layoutSide: LayoutSide,
-): ReactNode {
-  const backgroundClass = backgroundClassForSide(flagDiff, layoutSide)
-  if (!backgroundClass) {
-    return content
-  }
-  return (
-    <span className={`inline-flex items-center ${backgroundClass}`}>
-      {content}
-    </span>
-  )
+  return layoutSide === ORIGIN_LAYOUT_SIDE
+    ? flagDiff.styles.before.isContentVisible
+    : flagDiff.styles.after.isContentVisible
 }
 
 function renderFlagBadge(options: {
@@ -87,12 +53,12 @@ function renderFlagBadge(options: {
   }
 
   if (!isContentVisibleOnSide(flagDiff, layoutSide)) {
-    return wrapWithDiffBackground(emptyBadgePlaceholder(), flagDiff, layoutSide)
+    return emptyBadgePlaceholder()
   }
 
   const $changes = flagDiff?.data as Diff | undefined
 
-  return wrapWithDiffBackground(
+  return (
     <DiffBadge
       label={label}
       colorSchema={colorSchema}
@@ -101,9 +67,7 @@ function renderFlagBadge(options: {
       isNodeChanged={false}
       isContentChanged={!!$changes}
       $changes={$changes}
-    />,
-    flagDiff,
-    layoutSide,
+    />
   )
 }
 
@@ -169,7 +133,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
       return null
     }
     if (!isContentVisibleOnSide(flagDiff, layoutSide)) {
-      return wrapWithDiffBackground(emptyBadgePlaceholder(), flagDiff, layoutSide)
+      return emptyBadgePlaceholder()
     }
 
     const $changes = flagDiff?.data as Diff | undefined
@@ -179,7 +143,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
         : null
     }
 
-    return wrapWithDiffBackground(
+    return (
       <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
         <DiffBadge
           label="FK"
@@ -193,9 +157,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
         {value.foreignKeyTarget && (
           <ForeignKey target={value.foreignKeyTarget} hideBadge />
         )}
-      </div>,
-      flagDiff,
-      layoutSide,
+      </div>
     )
   }, [diffs.isForeignKey, layoutMode, layoutSide, value.foreignKeyTarget, value.isForeignKey])
 

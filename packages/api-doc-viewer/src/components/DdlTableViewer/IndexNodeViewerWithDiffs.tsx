@@ -1,5 +1,11 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
+import { takeIndexFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
+import {
+  buildDdlPropertyTitleRowDiffProps,
+  isNodeSubheaderVisible,
+  takeNodeDiffIfPresent,
+} from "@apihub/utils/ddlapi/node-level-diff"
+import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
@@ -9,22 +15,31 @@ import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { formatIndexPartNames } from "./formatters"
 
-export type IndexNodeViewerProps = WithPrecededByProps & {
-  node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>
+type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
   isLastInList?: boolean
 }
 
-export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
+export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (props) => {
   const { node, isLastInList = false, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
   const value = node.value()
+
+  const nodeDiff = useMemo(() => takeNodeDiffIfPresent(node), [node])
+
+  // TitleRow applies styles.before/after.backgroundColor from this `diff` prop
+  // (see TitleRowContent) across the whole title row, including the subheader.
+  const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities" | "highlightingMode"> =
+    useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
+
+  const flagDiffs = useMemo(() => takeIndexFlagDiffs(node), [node])
 
   const indexTitle = useMemo(() => {
     if (!value) {
@@ -42,6 +57,10 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         return <></>
       }
 
+      if (!isNodeSubheaderVisible(nodeDiff, layoutSide)) {
+        return <></>
+      }
+
       return (
         <div className="flex flex-wrap items-center gap-2">
           {value.indexName && (
@@ -54,11 +73,12 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
           <ColumnRowBadgesContent
             layoutSide={layoutSide}
             value={value}
+            flagDiffs={flagDiffs}
           />
         </div>
       )
     },
-    [value],
+    [flagDiffs, nodeDiff, value],
   )
 
   const isDescriptionDisplayed = useMemo(
@@ -66,6 +86,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
     [displayMode, value?.description],
   )
 
+  const isWholeNodeChanged = !!nodeDiff
   const isTitleListLastRow = isLastInList
 
   if (!value) {
@@ -81,10 +102,11 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         expandable={false}
         expanded={true}
         variant={TextValueVariant.body2}
-        subheader={value.indexName || value.isUnique ? subheader : undefined}
+        subheader={value.indexName || value.isUnique || flagDiffs?.isUnique ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
+        {...titleRowDiffProps}
       />
-      {isDescriptionDisplayed && (
+      {isDescriptionDisplayed && !isWholeNodeChanged && (
         <TextRow
           data-precededby={PrecededBy.DDL_INDEX_ROW}
           value={value.description ?? ''}

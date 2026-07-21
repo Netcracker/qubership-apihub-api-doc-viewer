@@ -1,6 +1,12 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDefined } from "@apihub/utils/common/checkers"
-import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
+import { takeColumnFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
+import {
+  buildDdlPropertyTitleRowDiffProps,
+  isNodeSubheaderVisible,
+  takeNodeDiffIfPresent,
+} from "@apihub/utils/ddlapi/node-level-diff"
+import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
@@ -10,7 +16,7 @@ import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowUsage } from "../shared-components/TitleRow/types"
+import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import {
@@ -22,13 +28,13 @@ import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
-export type ColumnNodeViewerProps = WithPrecededByProps & {
-  node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>
+type ColumnNodeViewerWithDiffsProps = WithPrecededByProps & {
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
   additionalInfoPrecededBy?: PrecededBy
   isLastInList?: boolean
 }
 
-export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
+export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (props) => {
   const {
     node,
     additionalInfoPrecededBy = PrecededBy.DDL_COLUMN_ROW,
@@ -39,9 +45,22 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   const displayMode = useDisplayMode()
   const value = node.value()
 
+  const nodeDiff = useMemo(() => takeNodeDiffIfPresent(node), [node])
+
+  // TitleRow applies styles.before/after.backgroundColor from this `diff` prop
+  // (see TitleRowContent) across the whole title row, including the subheader.
+  const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities" | "highlightingMode"> =
+    useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
+
+  const flagDiffs = useMemo(() => takeColumnFlagDiffs(node), [node])
+
   const subheader = useCallback(
-    (_layoutSide: LayoutSide) => {
+    (layoutSide: LayoutSide) => {
       if (!value) {
+        return <></>
+      }
+
+      if (!isNodeSubheaderVisible(nodeDiff, layoutSide)) {
         return <></>
       }
 
@@ -53,13 +72,14 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
             appearance="text"
           />
           <ColumnRowBadgesContent
-            layoutSide={_layoutSide}
+            layoutSide={layoutSide}
             value={value}
+            flagDiffs={flagDiffs}
           />
         </div>
       )
     },
-    [value],
+    [flagDiffs, nodeDiff, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(
@@ -121,6 +141,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
   )
 
   const isAdditionalInfoDisplayed = displayMode === DETAILED_DISPLAY_MODE
+  const isWholeNodeChanged = !!nodeDiff
 
   const isDescriptionDisplayed = useMemo(
     () => isAdditionalInfoDisplayed && !!value?.description,
@@ -154,8 +175,9 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
         variant={TextValueVariant.body2}
         subheader={subheader}
         usage={TitleRowUsage.DdlApiProperty}
+        {...titleRowDiffProps}
       />
-      {isDescriptionDisplayed && (
+      {isDescriptionDisplayed && !isWholeNodeChanged && (
         <TextRow
           data-precededby={PrecededBy.DDL_COLUMN_ROW}
           value={value.description ?? ''}
@@ -165,7 +187,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           usage={TextRowUsage.DdlApiProperty}
         />
       )}
-      {isAdditionalInfoDisplayed && hasEnumValues && (
+      {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
@@ -173,7 +195,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           subheader={enumValuesAdditionalInfoSubheader}
         />
       )}
-      {isAdditionalInfoDisplayed && hasDefaultValue && (
+      {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasDefaultValue && (
         <AdditionalInfoRow
           data-precededby={
             hasEnumValues
@@ -185,7 +207,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           subheader={defaultAdditionalInfoSubheader}
         />
       )}
-      {isAdditionalInfoDisplayed && hasGeneratedExpression && (
+      {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasGeneratedExpression && (
         <AdditionalInfoRow
           data-precededby={
             hasDefaultValue || hasEnumValues
