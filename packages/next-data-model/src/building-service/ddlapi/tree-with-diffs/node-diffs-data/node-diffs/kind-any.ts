@@ -2,7 +2,6 @@ import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
@@ -221,35 +220,6 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
 
     return flagDiff
-  }
-
-  protected aggregatePropertyTitleRowDiff(
-    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
-    namePropertyKey: "columnName" | "indexName",
-    flagPropertyKeys: readonly string[],
-  ): void {
-    const titleRowDiffs = nodeDiffs as NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> &
-      Partial<Record<typeof DDL_PROPERTY_TITLE_ROW_DIFF_KEY, ChangedPropertyMetaData>>
-
-    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
-    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
-      titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
-      return
-    }
-
-    const nameDiff = (nodeDiffs as Record<string, ChangedPropertyMetaData | undefined>)[namePropertyKey]
-    if (nameDiff) {
-      titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nameDiff
-      return
-    }
-
-    for (const flagKey of flagPropertyKeys) {
-      const flagDiff = (nodeDiffs as Record<string, ChangedPropertyMetaData | undefined>)[flagKey]
-      if (flagDiff) {
-        titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
-        return
-      }
-    }
   }
 
   protected aggregateFlagDiff(

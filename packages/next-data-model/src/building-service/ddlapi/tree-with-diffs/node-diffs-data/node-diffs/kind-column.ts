@@ -1,12 +1,18 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ITreeNodeWithDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
+import {
+  DDL_COLUMN_FLAG_DIFF_KEYS,
+  DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
+  DdlApiColumnPropertyRowDiffs,
+} from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
+import { adoptDdlColumnPropertyRowDiffs } from "@apihub/next-data-model/shared/ddlapi/guards/property-row-diffs";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { DDL_COLUMN_FLAG_DIFF_KEYS } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs";
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
@@ -33,17 +39,14 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       return undefined
     }
 
-    let nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> | undefined =
-      super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
+    const superNodeDiffs = super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
 
     const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
     if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
-      return nodeDiffs
+      return superNodeDiffs
     }
 
-    if (!nodeDiffs) {
-      nodeDiffs = {}
-    }
+    const nodeDiffs: DdlApiColumnPropertyRowDiffs = adoptDdlColumnPropertyRowDiffs(superNodeDiffs) ?? {}
 
     const isPrimaryKeyDiff = diffs['isPrimaryKey']
     isPrimaryKeyDiff && this.aggregateFlagDiff(isPrimaryKeyDiff, 'isPrimaryKey', nodeDiffs)
@@ -60,8 +63,32 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     const isNotNullDiff = diffs['isNotNull']
     isNotNullDiff && this.aggregateFlagDiff(isNotNullDiff, 'isNotNull', nodeDiffs)
 
-    this.aggregatePropertyTitleRowDiff(nodeDiffs, 'columnName', DDL_COLUMN_FLAG_DIFF_KEYS)
+    this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
     return nodeDiffs
+  }
+
+  private aggregatePropertyTitleRowDiff(
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
+      return
+    }
+
+    const nameDiff = nodeDiffs.columnName
+    if (nameDiff) {
+      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nameDiff
+      return
+    }
+
+    for (const flagKey of DDL_COLUMN_FLAG_DIFF_KEYS) {
+      const flagDiff = nodeDiffs[flagKey]
+      if (flagDiff) {
+        nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
+        return
+      }
+    }
   }
 }
