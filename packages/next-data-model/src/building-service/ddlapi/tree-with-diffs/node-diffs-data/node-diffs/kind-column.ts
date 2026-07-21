@@ -6,6 +6,7 @@ import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/n
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
+import { DDL_COLUMN_FLAG_DIFF_KEYS } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
@@ -58,6 +59,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     const isNotNullDiff = diffs['isNotNull']
     isNotNullDiff && this.aggregateFlagDiff(isNotNullDiff, 'isNotNull', nodeDiffs)
+
+    this.aggregatePropertyTitleRowDiff(nodeDiffs, 'columnName', DDL_COLUMN_FLAG_DIFF_KEYS)
 
     return nodeDiffs
   }

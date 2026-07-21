@@ -2,9 +2,9 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { takeIndexFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
-  isNodeSubheaderVisible,
   takeNodeDiffIfPresent,
 } from "@apihub/utils/ddlapi/node-level-diff"
+import { isDdlPropertySubheaderVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -57,7 +57,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         return <></>
       }
 
-      if (!isNodeSubheaderVisible(nodeDiff, layoutSide)) {
+      if (!isDdlPropertySubheaderVisible(nodeDiff, layoutSide)) {
         return <></>
       }
 

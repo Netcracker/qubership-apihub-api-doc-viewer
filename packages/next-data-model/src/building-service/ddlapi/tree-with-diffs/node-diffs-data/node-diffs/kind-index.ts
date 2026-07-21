@@ -6,6 +6,7 @@ import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/n
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
+import { DDL_INDEX_FLAG_DIFF_KEYS } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregatorKindAny {
@@ -46,6 +47,8 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
 
     const isUniqueDiff = diffs['isUnique']
     isUniqueDiff && this.aggregateFlagDiff(isUniqueDiff, 'isUnique', nodeDiffs)
+
+    this.aggregatePropertyTitleRowDiff(nodeDiffs, 'indexName', DDL_INDEX_FLAG_DIFF_KEYS)
 
     return nodeDiffs
   }

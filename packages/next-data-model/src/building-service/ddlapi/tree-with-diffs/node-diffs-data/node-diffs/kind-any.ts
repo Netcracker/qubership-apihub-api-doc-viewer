@@ -1,12 +1,13 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyKey, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
-import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 
 export class DdlApiNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
@@ -155,6 +156,99 @@ export class DdlApiNodeDiffsAggregatorKindAny
         },
       },
       highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+    }
+  }
+
+  protected readonly TITLE_ROW_FLAG_AS_REPLACE_STYLES: { before: DiffStyles; after: DiffStyles } = {
+    before: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+      textHighlighterColor: HighlightVariant.Yellow,
+    },
+    after: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+      textHighlighterColor: HighlightVariant.Yellow,
+    },
+  }
+
+  protected asReplaceFlagDiffForTitleRow(
+    flagDiff: ChangedPropertyMetaData,
+  ): ChangedPropertyMetaData {
+    const { data } = flagDiff
+
+    if (isDiffReplace(data)) {
+      return {
+        ...flagDiff,
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    if (isDiffAdd(data)) {
+      return {
+        ...flagDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.replace,
+          beforeValue: false,
+          afterValue: data.afterValue ?? true,
+          beforeDeclarationPaths: [],
+          afterDeclarationPaths: data.afterDeclarationPaths,
+        },
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    if (isDiffRemove(data)) {
+      return {
+        ...flagDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.replace,
+          beforeValue: data.beforeValue ?? true,
+          afterValue: false,
+          beforeDeclarationPaths: data.beforeDeclarationPaths,
+          afterDeclarationPaths: [],
+        },
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    return flagDiff
+  }
+
+  protected aggregatePropertyTitleRowDiff(
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    namePropertyKey: "columnName" | "indexName",
+    flagPropertyKeys: readonly string[],
+  ): void {
+    const titleRowDiffs = nodeDiffs as NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> &
+      Partial<Record<typeof DDL_PROPERTY_TITLE_ROW_DIFF_KEY, ChangedPropertyMetaData>>
+
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
+      return
+    }
+
+    const nameDiff = (nodeDiffs as Record<string, ChangedPropertyMetaData | undefined>)[namePropertyKey]
+    if (nameDiff) {
+      titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nameDiff
+      return
+    }
+
+    for (const flagKey of flagPropertyKeys) {
+      const flagDiff = (nodeDiffs as Record<string, ChangedPropertyMetaData | undefined>)[flagKey]
+      if (flagDiff) {
+        titleRowDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
+        return
+      }
     }
   }
 
