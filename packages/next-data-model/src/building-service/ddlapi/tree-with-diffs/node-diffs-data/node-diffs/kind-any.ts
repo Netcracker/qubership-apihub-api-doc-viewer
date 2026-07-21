@@ -4,6 +4,7 @@ import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DE
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
+import { isChangedPropertyMetaData } from "@apihub/next-data-model/shared/ddlapi/guards/property-row-diffs";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
@@ -220,6 +221,25 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
 
     return flagDiff
+  }
+
+  protected adoptPropertyRowDiffs<K extends string>(
+    source: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> | undefined,
+    allowedKeys: readonly K[],
+  ): Partial<Record<K, ChangedPropertyMetaData>> {
+    if (!source) {
+      return {}
+    }
+
+    const nodeDiffs: Partial<Record<K, ChangedPropertyMetaData>> = {}
+    for (const [key, diff] of Object.entries(source)) {
+      if (!(allowedKeys as readonly string[]).includes(key) || !isChangedPropertyMetaData(diff)) {
+        continue
+      }
+      nodeDiffs[key as K] = diff
+    }
+
+    return nodeDiffs
   }
 
   protected aggregateFlagDiff(

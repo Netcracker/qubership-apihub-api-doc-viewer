@@ -3,13 +3,13 @@ import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-se
 import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import {
+  DDL_COLUMN_CHANGED_PROPERTY_KEYS,
   DDL_COLUMN_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   DdlApiColumnPropertyRowDiffs,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
-import { adoptDdlColumnPropertyRowDiffs } from "@apihub/next-data-model/shared/ddlapi/guards/property-row-diffs";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
@@ -46,7 +46,10 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       return superNodeDiffs
     }
 
-    const nodeDiffs: DdlApiColumnPropertyRowDiffs = adoptDdlColumnPropertyRowDiffs(superNodeDiffs) ?? {}
+    const nodeDiffs: DdlApiColumnPropertyRowDiffs = this.adoptPropertyRowDiffs(
+      superNodeDiffs,
+      DDL_COLUMN_CHANGED_PROPERTY_KEYS,
+    )
 
     const isPrimaryKeyDiff = diffs['isPrimaryKey']
     isPrimaryKeyDiff && this.aggregateFlagDiff(isPrimaryKeyDiff, 'isPrimaryKey', nodeDiffs)
