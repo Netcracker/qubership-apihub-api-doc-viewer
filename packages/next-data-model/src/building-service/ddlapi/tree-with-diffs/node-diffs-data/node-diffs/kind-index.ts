@@ -50,6 +50,13 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
       DDL_INDEX_CHANGED_PROPERTY_KEYS,
     )
 
+    this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
+
+    if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      this.aggregatePropertyTitleRowDiff(nodeDiffs)
+      return nodeDiffs
+    }
+
     const isUniqueDiff = diffs['isUnique']
     isUniqueDiff && this.aggregateFlagDiff(
       isUniqueDiff,

@@ -223,6 +223,27 @@ export class DdlApiNodeDiffsAggregatorKindAny
     return flagDiff
   }
 
+  protected adoptNodeLevelDiffFromCrawlIfAbsent(
+    diffs: Partial<Record<string, Diff<DiffType>>>,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ): void {
+    if (nodeDiffs[NODE_LEVEL_DIFF_KEY]) {
+      return
+    }
+
+    const wholeNodeDiff = diffs[NODE_LEVEL_DIFF_KEY]
+    if (wholeNodeDiff) {
+      this.aggregateTextDiff(wholeNodeDiff, NODE_LEVEL_DIFF_KEY, nodeDiffs)
+    }
+  }
+
+  protected hasWholeNodeAddOrRemoveDiff(
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ): boolean {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    return !!nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))
+  }
+
   protected adoptPropertyRowDiffs<K extends string>(
     source: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> | undefined,
     allowedKeys: readonly K[],

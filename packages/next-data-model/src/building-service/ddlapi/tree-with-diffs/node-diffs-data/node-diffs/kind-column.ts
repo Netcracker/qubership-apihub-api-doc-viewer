@@ -51,6 +51,13 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       DDL_COLUMN_CHANGED_PROPERTY_KEYS,
     )
 
+    this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
+
+    if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      this.aggregatePropertyTitleRowDiff(nodeDiffs)
+      return nodeDiffs
+    }
+
     const isPrimaryKeyDiff = diffs['isPrimaryKey']
     isPrimaryKeyDiff && this.aggregateFlagDiff(
       isPrimaryKeyDiff,

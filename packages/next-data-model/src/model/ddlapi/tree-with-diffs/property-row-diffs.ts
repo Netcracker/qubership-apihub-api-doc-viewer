@@ -7,7 +7,11 @@ import {
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import {
+  DDL_COLUMN_FLAG_DIFF_KEYS,
+  DDL_INDEX_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
+  type DdlApiColumnFlagDiffKey,
+  type DdlApiIndexFlagDiffKey,
 } from "./property-row-diffs.types"
 
 export type {
@@ -63,4 +67,42 @@ export function isDdlPropertySubheaderVisible(
     : nodeLevelDiff.styles.after
 
   return styles.isHeaderVisible
+}
+
+export function takeColumnFlagDiffs(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): Partial<Record<DdlApiColumnFlagDiffKey, ChangedPropertyMetaData>> | undefined {
+  if (takeDdlPropertyNodeDiffIfPresent(node)) {
+    return undefined
+  }
+
+  const flagDiffs: Partial<Record<DdlApiColumnFlagDiffKey, ChangedPropertyMetaData>> = {}
+  let hasDiff = false
+  for (const key of DDL_COLUMN_FLAG_DIFF_KEYS) {
+    const diff = node.diffs[key]
+    if (diff) {
+      flagDiffs[key] = diff
+      hasDiff = true
+    }
+  }
+  return hasDiff ? flagDiffs : undefined
+}
+
+export function takeIndexFlagDiffs(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
+): Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> | undefined {
+  if (takeDdlPropertyNodeDiffIfPresent(node)) {
+    return undefined
+  }
+
+  const flagDiffs: Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> = {}
+  let hasDiff = false
+  for (const key of DDL_INDEX_FLAG_DIFF_KEYS) {
+    const diff = node.diffs[key]
+    if (diff) {
+      flagDiffs[key] = diff
+      hasDiff = true
+    }
+  }
+  return hasDiff ? flagDiffs : undefined
 }

@@ -1,5 +1,6 @@
 import {
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
+  NODE_LEVEL_DIFF_KEY,
   NodeDiffsSeverityPlacemennt,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
@@ -75,6 +76,45 @@ describe("DDL property row diff aggregators", () => {
     expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff?.styles.before.backgroundColor).toBe("yellow")
     expect(titleRowDiff?.styles.after.backgroundColor).toBe("yellow")
+  })
+
+  it("does not aggregate flag diffs when the whole column is added", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "id",
+      isPrimaryKey: true,
+      isNotNull: true,
+      [TEST_DIFFS_META_KEY]: {
+        [NODE_LEVEL_DIFF_KEY]: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: { columnName: "id" },
+          afterDeclarationPaths: [["columns", "id"]],
+        },
+        isPrimaryKey: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: true,
+          afterDeclarationPaths: [["columns", "id", "isPrimaryKey"]],
+        },
+        isNotNull: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: true,
+          afterDeclarationPaths: [["columns", "id", "isNotNull"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "id")
+
+    expect(nodeDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.isPrimaryKey).toBeUndefined()
+    expect(nodeDiffs?.isNotNull).toBeUndefined()
+    expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(nodeDiffs?.[NODE_LEVEL_DIFF_KEY])
   })
 
   it("normalizes a boolean replace diff to an added visible badge", () => {
