@@ -2,7 +2,7 @@ import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree
 import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { aggregateDiffsWithRollup, Diff, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import {
   AttrKind,
   Column,
@@ -449,19 +449,22 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   }
 
   private resolveGeneratedColumnDiff(sourceColumn: Column): GeneratedColumnDiffResult | undefined {
-    const attrGeneratedColumn = this.findGeneratedColumnAttr(sourceColumn.attrs)
-    // case of removed generated column
-    if (!attrGeneratedColumn) {
-      return this.resolveGeneratedColumnDiffFromAttrsArray(sourceColumn.attrs)
+    const attrsArrayDiff = this.resolveGeneratedColumnDiffFromAttrsArray(sourceColumn.attrs)
+    if (attrsArrayDiff?.generatedExpression) {
+      return attrsArrayDiff
     }
 
-    // case of added generated column
+    const attrGeneratedColumn = this.findGeneratedColumnAttr(sourceColumn.attrs)
+    if (!attrGeneratedColumn) {
+      return attrsArrayDiff
+    }
+
     const diffAttr = this.resolveGeneratedColumnAttrDiff(sourceColumn.attrs, attrGeneratedColumn)
     if (diffAttr) {
       return this.buildGeneratedColumnDiffResult(attrGeneratedColumn.kind, diffAttr)
     }
 
-    return undefined
+    return attrsArrayDiff
   }
 
   private findGeneratedColumnAttr(attrs: Column['attrs']): GeneratedColumnAttrRef | undefined {
@@ -496,6 +499,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return undefined
     }
 
+    let result: GeneratedColumnDiffResult | undefined
     for (const diff of Object.values(attrsArrayDiffs)) {
       if (!diff) {
         continue
@@ -506,10 +510,14 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         continue
       }
 
-      return this.buildGeneratedColumnDiffResult(candidate.kind, diff)
+      const currentResult = this.buildGeneratedColumnDiffResult(candidate.kind, diff)
+      result = {
+        isGenerated: result?.isGenerated ?? currentResult.isGenerated,
+        generatedExpression: result?.generatedExpression ?? currentResult.generatedExpression,
+      }
     }
 
-    return undefined
+    return result
   }
 
   private resolveGeneratedColumnAttrDiff(
@@ -562,14 +570,83 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     attrKind: GeneratedColumnAttrKind,
     diff: Diff,
   ): GeneratedColumnDiffResult {
-    if (attrKind === AttrKind.GeneratedExpr) {
-      return {
-        isGenerated: diff,
-        generatedExpression: diff,
+    const generatedExpression = this.resolveGeneratedExpressionDiff(attrKind, diff)
+    return {
+      isGenerated: diff,
+      ...(generatedExpression && { generatedExpression }),
+    }
+  }
+
+  private resolveGeneratedExpressionDiff(
+    attrKind: GeneratedColumnAttrKind,
+    diff: Diff,
+  ): Diff | undefined {
+    if (isDiffReplace(diff)) {
+      const beforeKind = this.takeGeneratedColumnAttrKind(diff.beforeValue)
+      const afterKind = this.takeGeneratedColumnAttrKind(diff.afterValue)
+
+      if (beforeKind === AttrKind.GeneratedExpr && afterKind === PgAttrKind.Identity) {
+        return {
+          type: diff.type,
+          scope: diff.scope,
+          description: diff.description,
+          action: DiffAction.remove,
+          beforeValue: this.takeGeneratedExpressionValue(diff.beforeValue),
+          beforeDeclarationPaths: diff.beforeDeclarationPaths,
+        }
+      }
+
+      if (beforeKind === PgAttrKind.Identity && afterKind === AttrKind.GeneratedExpr) {
+        return {
+          type: diff.type,
+          scope: diff.scope,
+          description: diff.description,
+          action: DiffAction.add,
+          afterValue: this.takeGeneratedExpressionValue(diff.afterValue),
+          afterDeclarationPaths: diff.afterDeclarationPaths,
+        }
       }
     }
 
-    return { isGenerated: diff }
+    return attrKind === AttrKind.GeneratedExpr
+      ? this.normalizeGeneratedExpressionDiffValues(diff)
+      : undefined
+  }
+
+  private normalizeGeneratedExpressionDiffValues(diff: Diff): Diff {
+    if (isDiffAdd(diff)) {
+      return {
+        ...diff,
+        afterValue: this.takeGeneratedExpressionValue(diff.afterValue),
+      }
+    }
+    if (isDiffRemove(diff)) {
+      return {
+        ...diff,
+        beforeValue: this.takeGeneratedExpressionValue(diff.beforeValue),
+      }
+    }
+    if (isDiffReplace(diff)) {
+      return {
+        ...diff,
+        beforeValue: this.takeGeneratedExpressionValue(diff.beforeValue),
+        afterValue: this.takeGeneratedExpressionValue(diff.afterValue),
+      }
+    }
+    return diff
+  }
+
+  private takeGeneratedExpressionValue(value: unknown): unknown {
+    if (!isObject(value) || !this.isGeneratedColumnAttr(value) || value.kind !== AttrKind.GeneratedExpr) {
+      return value
+    }
+    return Reflect.get(value, 'expr')
+  }
+
+  private takeGeneratedColumnAttrKind(value: unknown): GeneratedColumnAttrKind | undefined {
+    return isObject(value) && this.isGeneratedColumnAttr(value)
+      ? value.kind
+      : undefined
   }
 
   private resolveDiffSideValue(diff: Diff): unknown {

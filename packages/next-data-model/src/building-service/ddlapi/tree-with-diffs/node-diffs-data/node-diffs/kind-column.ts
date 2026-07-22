@@ -53,6 +53,13 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
 
+    const generatedExpressionDiff = diffs['generatedExpression']
+    generatedExpressionDiff && this.aggregateTextDiff(
+      generatedExpressionDiff,
+      'generatedExpression',
+      nodeDiffs,
+    )
+
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs

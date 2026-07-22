@@ -117,6 +117,91 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(nodeDiffs?.[NODE_LEVEL_DIFF_KEY])
   })
 
+  it("aggregates a generated-expression row diff when the whole column is added", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "summary",
+      generatedExpression: "a + b",
+      [TEST_DIFFS_META_KEY]: {
+        [NODE_LEVEL_DIFF_KEY]: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: { columnName: "summary" },
+          afterDeclarationPaths: [["columns", "summary"]],
+        },
+        generatedExpression: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: "a + b",
+          afterDeclarationPaths: [["columns", "summary", "generatedExpression"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "summary")
+
+    expect(nodeDiffs?.generatedExpression?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.generatedExpression?.styles.before.backgroundColor).toBe("gray")
+    expect(nodeDiffs?.generatedExpression?.styles.after.backgroundColor).toBe("green")
+  })
+
+  it("styles a removed generated-expression row as removed", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "summary",
+      [TEST_DIFFS_META_KEY]: {
+        generatedExpression: {
+          type: breaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: "a + b",
+          beforeDeclarationPaths: [["columns", "summary", "generatedExpression"]],
+        },
+      },
+    }
+
+    const generatedExpressionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "summary",
+    )?.generatedExpression
+
+    expect(generatedExpressionDiff?.styles.before.backgroundColor).toBe("red")
+    expect(generatedExpressionDiff?.styles.before.isContentVisible).toBe(true)
+    expect(generatedExpressionDiff?.styles.after.backgroundColor).toBe("gray")
+    expect(generatedExpressionDiff?.styles.after.isContentVisible).toBe(false)
+  })
+
+  it("styles only a generated-expression value change as replaced", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "summary",
+      generatedExpression: "b + c",
+      [TEST_DIFFS_META_KEY]: {
+        generatedExpression: {
+          type: breaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: "a + b",
+          afterValue: "b + c",
+          beforeDeclarationPaths: [["columns", "summary", "generatedExpression"]],
+          afterDeclarationPaths: [["columns", "summary", "generatedExpression"]],
+        },
+      },
+    }
+
+    const generatedExpressionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "summary",
+    )?.generatedExpression
+
+    expect(generatedExpressionDiff?.styles.before.backgroundColor).toBe("yellow")
+    expect(generatedExpressionDiff?.styles.after.backgroundColor).toBe("yellow")
+  })
+
   it("normalizes a boolean replace diff to an added visible badge", () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
     const crawlValue = {

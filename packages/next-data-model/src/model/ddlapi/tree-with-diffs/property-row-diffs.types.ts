@@ -44,6 +44,7 @@ export const DDL_COLUMN_CHANGED_PROPERTY_KEYS = [
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   "columnName",
   "description",
+  "generatedExpression",
   ...DDL_COLUMN_FLAG_DIFF_KEYS,
 ] as const satisfies ReadonlyArray<keyof DdlApiColumnPropertyRowDiffs>
 

@@ -5,10 +5,15 @@ import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
 } from "@apihub/utils/ddlapi/node-level-diff"
-import { isDdlPropertySubheaderVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import {
+  isDdlPropertySubheaderVisible,
+  takeColumnGeneratedExpressionDiff,
+} from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { TextRow } from "../shared-components/TextRow/TextRow"
@@ -53,6 +58,10 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
 
   const flagDiffs = useMemo(() => takeColumnFlagDiffs(node), [node])
+  const generatedExpressionDiff = useMemo(
+    () => takeColumnGeneratedExpressionDiff(node),
+    [node],
+  )
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -102,9 +111,21 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   )
 
   const generatedAdditionalInfoSubheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_layoutSide: LayoutSide) => {
-      const generatedExpression = value?.generatedExpression
+    (layoutSide: LayoutSide) => {
+      const generatedExpression = (() => {
+        const diff = generatedExpressionDiff?.data
+        if (!diff) {
+          return value?.generatedExpression
+        }
+        if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+          return isDiffRemove(diff) || isDiffReplace(diff)
+            ? diff.beforeValue
+            : undefined
+        }
+        return isDiffAdd(diff) || isDiffReplace(diff)
+          ? diff.afterValue
+          : undefined
+      })()
       if (!isDefined(generatedExpression)) {
         return <></>
       }
@@ -116,7 +137,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         />
       )
     },
-    [value],
+    [generatedExpressionDiff, value],
   )
 
   const enumValuesAdditionalInfoSubheader = useCallback(
@@ -151,7 +172,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
   const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
   const hasDefaultValue = isDefined(value?.defaultValue)
-  const hasGeneratedExpression = isDefined(value?.generatedExpression)
+  const hasGeneratedExpression = isDefined(value?.generatedExpression) || !!generatedExpressionDiff
   const hasAdditionalInfoRows = isAdditionalInfoDisplayed && (
     hasEnumValues || hasDefaultValue || hasGeneratedExpression
   )
@@ -208,7 +229,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           subheader={defaultAdditionalInfoSubheader}
         />
       )}
-      {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasGeneratedExpression && (
+      {isAdditionalInfoDisplayed && hasGeneratedExpression && (
         <AdditionalInfoRow
           data-precededby={
             hasDefaultValue || hasEnumValues
@@ -218,6 +239,8 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_GENERATED}
           subheader={generatedAdditionalInfoSubheader}
+          diff={generatedExpressionDiff}
+          colorizingDiff={node.diffs[NODE_LEVEL_DIFF_KEY]}
         />
       )}
     </div>

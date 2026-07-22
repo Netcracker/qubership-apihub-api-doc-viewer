@@ -157,6 +157,70 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.generatedExpression).toBeUndefined()
   })
 
+  it('maps a generated-expression removal onto generatedExpression as remove', async () => {
+    const merged = await mergeSql(
+      'create table t(v int generated always as (1) stored);',
+      'create table t(v int);',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const vColumn = spec?.columns.items.find(column => column.columnName === 'v')
+    const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+  })
+
+  it('maps an identity-to-expression change onto generatedExpression as add', async () => {
+    const merged = await mergeSql(
+      'create table t(v int generated always as identity);',
+      'create table t(v int generated always as (1) stored);',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const vColumn = spec?.columns.items.find(column => column.columnName === 'v')
+    const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.add)
+  })
+
+  it('maps an expression-to-identity change onto generatedExpression as remove', async () => {
+    const merged = await mergeSql(
+      'create table t(v int generated always as (1) stored);',
+      'create table t(v int generated always as identity);',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const vColumn = spec?.columns.items.find(column => column.columnName === 'v')
+    const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+  })
+
+  it('keeps a generated-expression value change as replace', async () => {
+    const merged = await mergeSql(
+      'create table t(v text generated always as (\'AAA\') stored);',
+      'create table t(v text generated always as (\'BBB\') stored);',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const vColumn = spec?.columns.items.find(column => column.columnName === 'v')
+    const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.replace)
+  })
+
   it('aggregates rollup metadata on the transformed table document', async () => {
     const merged = await mergeSql(
       'create table t(id int);',

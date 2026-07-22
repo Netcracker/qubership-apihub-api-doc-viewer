@@ -88,6 +88,12 @@ export function takeColumnFlagDiffs(
   return hasDiff ? flagDiffs : undefined
 }
 
+export function takeColumnGeneratedExpressionDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return node.diffs.generatedExpression
+}
+
 export function takeIndexFlagDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
 ): Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> | undefined {
