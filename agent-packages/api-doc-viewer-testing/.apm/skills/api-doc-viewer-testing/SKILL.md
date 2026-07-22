@@ -143,27 +143,47 @@ files under `src/stories/ddlapi-diffs-suite/` and `src/it/ddlapi-diffs-suite/`. 
 `packages/samples/ddlapi-diffs/README.md` for group layout and story id pattern
 (`{meta-id}--case-{case-id}`).
 
-### Adding a case — insert at semantic slot (session lesson)
+### Case ids in `column-changes-except-types` — semantic hundred blocks
+
+This group uses **three-digit case ids** where the hundreds digit encodes the change
+category and the last two digits are the slot within that category:
+
+| Block | Meaning | Current slots |
+| --- | --- | --- |
+| `100` | Plain add/remove column (no constraint badges) | `101`–`102` |
+| `200` | Whole column added with a constraint badge | `201`–`206` |
+| `300` | Whole column removed with a constraint badge | `301`–`306` |
+| `400` | Existing column gained a constraint badge | `401`–`406` |
+| `500` | Existing column lost a constraint badge | `501`–`506` |
+
+Directory names follow `{id}-{kebab-description}` (e.g. `205-add-column-generated-identity`).
+Other diff groups keep sequential `01`, `02`, … numbering.
+
+### Adding a case — insert at semantic slot
 
 When a new case mirrors an existing **identity vs expression** (or add vs remove vs became)
-pair, **insert at the same semantic index** in the group — do **not** append at the end.
+pair, place it in the **same hundred block** at the next free slot (or adjacent to its
+sibling) — do **not** append at the end of the group or renumber other blocks.
 
-Example (`column-changes-except-types`, 26 cases):
+Example pairs in `column-changes-except-types` (26 cases):
 
 | Semantic slot | Identity case | Expression case |
 | --- | --- | --- |
-| Add whole column | `07-add-column-generated-identity` | `08-add-column-generated-expression` |
-| Remove whole column | `13-remove-column-generated-identity` | `19-remove-column-generated-expression` |
-| Existing column became generated | `17-existing-column-became-generated-identity` | `18-existing-column-became-generated-expression` |
-| Existing column lost generated | `24-existing-column-lost-generated-identity` | `25-existing-column-lost-generated-expression` |
+| Add whole column | `205-add-column-generated-identity` | `206-add-column-generated-expression` |
+| Remove whole column | `305-remove-column-generated-identity` | `306-remove-column-generated-expression` |
+| Existing column became generated | `404-existing-column-became-generated-identity` | `405-existing-column-became-generated-expression` |
+| Existing column lost generated | `504-existing-column-lost-generated-identity` | `505-existing-column-lost-generated-expression` |
 
-After insertion, **renumber every downstream case** in that group (+1 or +2), then update:
+After adding a case, update:
 
-1. Sample directory names under `packages/samples/ddlapi-diffs/<group>/`.
-2. Story exports in the group `*.stories.tsx` file.
-3. Matching `it(...)` entries in the group `*.it-test.ts` file.
-4. Group case count in `packages/samples/ddlapi-diffs/README.md`.
+1. Sample directory under `packages/samples/ddlapi-diffs/column-changes-except-types/`.
+2. Story export in `column-changes-except-types-samples.stories.tsx`.
+3. Matching `it(...)` in `column-changes-except-types-samples.it-test.ts`.
+4. Group case count in `packages/samples/ddlapi-diffs/README.md` if the total changed.
 5. Screenshot snapshots via `npm run regenerate-screenshots`.
+
+For other diff groups that still use sequential ids, inserting mid-group requires
+renumbering every downstream case (+1 or +2), then updating stories, IT files, and snapshots.
 
 ### SQL reuse
 
@@ -173,9 +193,9 @@ simplified placeholder expression unless the ticket specifies one.
 
 ### Renumbering directories safely
 
-Rename from **highest case number downward** through a temporary prefix (e.g. `tmp-24-…`) to
-avoid collisions. On bash, avoid arithmetic that treats zero-padded ids `08` / `09` as octal
-— use `10#` prefix or rename by explicit paths.
+Rename from **highest case number downward** through a temporary prefix (e.g. `tmp-306-…`) to
+avoid collisions. On bash, avoid arithmetic that treats zero-padded ids as octal — use
+explicit paths or `10#` prefix.
 
 ## Flaky rendering
 
