@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-07-22T12:35:24.008072+00:00'
+generated_at: '2026-07-22T14:02:02.798876+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -7,17 +7,17 @@ dependencies:
   version: 1.0.0
   package_type: apm_package
   deployed_files:
-  - .agents/skills/api-doc-viewer-authoring
-  - .agents/skills/api-doc-viewer-authoring/SKILL.md
   - .claude/rules/api-doc-viewer-authoring.md
   - .claude/skills/api-doc-viewer-authoring
   - .claude/skills/api-doc-viewer-authoring/SKILL.md
   - .cursor/rules/api-doc-viewer-authoring.mdc
+  - .cursor/skills/api-doc-viewer-authoring
+  - .cursor/skills/api-doc-viewer-authoring/SKILL.md
   deployed_file_hashes:
-    .agents/skills/api-doc-viewer-authoring/SKILL.md: sha256:bb94dc65d76ad9e395fea79dac07d6756a5f80765fe4c7c5054116cc33a893c2
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:bb94dc65d76ad9e395fea79dac07d6756a5f80765fe4c7c5054116cc33a893c2
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:c3d5b74d7338e1319ff7879068defc47ee1f8da38ff6c49d3f2b569e4821bdce
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:c3d5b74d7338e1319ff7879068defc47ee1f8da38ff6c49d3f2b569e4821bdce
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
 - repo_url: _local/api-doc-viewer-testing
@@ -25,17 +25,17 @@ dependencies:
   version: 1.0.0
   package_type: apm_package
   deployed_files:
-  - .agents/skills/api-doc-viewer-testing
-  - .agents/skills/api-doc-viewer-testing/SKILL.md
   - .claude/rules/api-doc-viewer-testing.md
   - .claude/skills/api-doc-viewer-testing
   - .claude/skills/api-doc-viewer-testing/SKILL.md
   - .cursor/rules/api-doc-viewer-testing.mdc
+  - .cursor/skills/api-doc-viewer-testing
+  - .cursor/skills/api-doc-viewer-testing/SKILL.md
   deployed_file_hashes:
-    .agents/skills/api-doc-viewer-testing/SKILL.md: sha256:de6c08c618a85b8dd1b76db5ea24173268f417bc26772b9e3b1d2cd8f6205d2e
     .claude/rules/api-doc-viewer-testing.md: sha256:e8e7ba04f26795deae88177f2bdc71288ee3cdcd5ce23c90e0fc1551934278b4
-    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:de6c08c618a85b8dd1b76db5ea24173268f417bc26772b9e3b1d2cd8f6205d2e
+    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:0fb929ccff1dcd358868533f051f8b0c2cbbd11c8abd9b3f37ddbdd470755886
     .cursor/rules/api-doc-viewer-testing.mdc: sha256:6c7105db89bfb0024ec3f752a23eb4c29c7f30d223868391463cf19a431763c5
+    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:0fb929ccff1dcd358868533f051f8b0c2cbbd11c8abd9b3f37ddbdd470755886
   source: local
   local_path: ./agent-packages/api-doc-viewer-testing
 - repo_url: _local/api-doc-viewer-using
@@ -43,17 +43,17 @@ dependencies:
   version: 1.0.0
   package_type: apm_package
   deployed_files:
-  - .agents/skills/api-doc-viewer-using
-  - .agents/skills/api-doc-viewer-using/SKILL.md
   - .claude/rules/api-doc-viewer-using.md
   - .claude/skills/api-doc-viewer-using
   - .claude/skills/api-doc-viewer-using/SKILL.md
   - .cursor/rules/api-doc-viewer-using.mdc
+  - .cursor/skills/api-doc-viewer-using
+  - .cursor/skills/api-doc-viewer-using/SKILL.md
   deployed_file_hashes:
-    .agents/skills/api-doc-viewer-using/SKILL.md: sha256:f9dfe9b1a9433fb7ae2c8f230865046fbf4bb6a4573400ebcfa3e54792ad1fbe
     .claude/rules/api-doc-viewer-using.md: sha256:ab6db9352f029e64fa74bb2379863fbd8caaade214f00e0be4aa914f043a568c
     .claude/skills/api-doc-viewer-using/SKILL.md: sha256:f9dfe9b1a9433fb7ae2c8f230865046fbf4bb6a4573400ebcfa3e54792ad1fbe
     .cursor/rules/api-doc-viewer-using.mdc: sha256:153d63310476c49f206b955e67503944e542f6c2d7459a7ab9def021e89ee85b
+    .cursor/skills/api-doc-viewer-using/SKILL.md: sha256:f9dfe9b1a9433fb7ae2c8f230865046fbf4bb6a4573400ebcfa3e54792ad1fbe
   source: local
   local_path: ./agent-packages/api-doc-viewer-using
 - repo_url: _local/next-data-model-authoring
@@ -61,17 +61,17 @@ dependencies:
   version: 1.0.0
   package_type: apm_package
   deployed_files:
-  - .agents/skills/next-data-model-authoring
-  - .agents/skills/next-data-model-authoring/SKILL.md
   - .claude/rules/next-data-model-authoring.md
   - .claude/skills/next-data-model-authoring
   - .claude/skills/next-data-model-authoring/SKILL.md
   - .cursor/rules/next-data-model-authoring.mdc
+  - .cursor/skills/next-data-model-authoring
+  - .cursor/skills/next-data-model-authoring/SKILL.md
   deployed_file_hashes:
-    .agents/skills/next-data-model-authoring/SKILL.md: sha256:f4975d22ffa59f520997cc765370d0805469ff5790e92e8e71e80fc961136a7d
     .claude/rules/next-data-model-authoring.md: sha256:695fc3d19f4d07683bae1da4d13a97c30d9d1f4a635b645b9ecfe6475f824f08
-    .claude/skills/next-data-model-authoring/SKILL.md: sha256:f4975d22ffa59f520997cc765370d0805469ff5790e92e8e71e80fc961136a7d
+    .claude/skills/next-data-model-authoring/SKILL.md: sha256:6c50052db563b228273411b24129675a58a2ba5cf288c18b5a35c744f98e1331
     .cursor/rules/next-data-model-authoring.mdc: sha256:7a84b1b9d760c65656c20efef3f32c0aca7b0b94524bd0b246ff9918da103cf9
+    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:6c50052db563b228273411b24129675a58a2ba5cf288c18b5a35c744f98e1331
   source: local
   local_path: ./agent-packages/next-data-model-authoring
 - repo_url: _local/next-data-model-using
@@ -79,17 +79,17 @@ dependencies:
   version: 1.0.0
   package_type: apm_package
   deployed_files:
-  - .agents/skills/next-data-model-using
-  - .agents/skills/next-data-model-using/SKILL.md
   - .claude/rules/next-data-model-using.md
   - .claude/skills/next-data-model-using
   - .claude/skills/next-data-model-using/SKILL.md
   - .cursor/rules/next-data-model-using.mdc
+  - .cursor/skills/next-data-model-using
+  - .cursor/skills/next-data-model-using/SKILL.md
   deployed_file_hashes:
-    .agents/skills/next-data-model-using/SKILL.md: sha256:6ebdb0788d4d2296b7847546199bc6005efdc766a71a40f0cee04a20346001a2
     .claude/rules/next-data-model-using.md: sha256:c1c2a888046fa725cace72dd4d17544c13a06f0cfa002e73d6ccb55890b1091f
     .claude/skills/next-data-model-using/SKILL.md: sha256:6ebdb0788d4d2296b7847546199bc6005efdc766a71a40f0cee04a20346001a2
     .cursor/rules/next-data-model-using.mdc: sha256:ebbd79d667753ced5c75acf1a00e3dd937d32a991e5e5886de8cd53eb19a4044
+    .cursor/skills/next-data-model-using/SKILL.md: sha256:6ebdb0788d4d2296b7847546199bc6005efdc766a71a40f0cee04a20346001a2
   source: local
   local_path: ./agent-packages/next-data-model-using
 - repo_url: netcracker/qubership-apihub-ddlapi
@@ -101,17 +101,17 @@ dependencies:
   is_virtual: true
   package_type: apm_package
   deployed_files:
-  - .agents/skills/ddlapi-using
-  - .agents/skills/ddlapi-using/SKILL.md
   - .claude/rules/ddlapi-using.md
   - .claude/skills/ddlapi-using
   - .claude/skills/ddlapi-using/SKILL.md
   - .cursor/rules/ddlapi-using.mdc
+  - .cursor/skills/ddlapi-using
+  - .cursor/skills/ddlapi-using/SKILL.md
   deployed_file_hashes:
-    .agents/skills/ddlapi-using/SKILL.md: sha256:49ee63e1b58cc1ee7a0671a2a47dc6f42611977152bea9657002d60e6cee5fbd
     .claude/rules/ddlapi-using.md: sha256:9b01b3c3616cf72b19370930f4a306b6e29f7da146b40f35c016c861dcf1b252
     .claude/skills/ddlapi-using/SKILL.md: sha256:49ee63e1b58cc1ee7a0671a2a47dc6f42611977152bea9657002d60e6cee5fbd
     .cursor/rules/ddlapi-using.mdc: sha256:3af0f9e363e4d264c77c3313116a71ee5465b58600946e98615b996e6fc02f5d
+    .cursor/skills/ddlapi-using/SKILL.md: sha256:49ee63e1b58cc1ee7a0671a2a47dc6f42611977152bea9657002d60e6cee5fbd
   content_hash: sha256:fb5fe648b6b241c5e9aff66800a1088fc2ea528e0abd2d10b4c51a6230207645
 - repo_url: netcracker/qubership-apihub-json-crawl
   name: json-crawl-using
@@ -122,17 +122,17 @@ dependencies:
   is_virtual: true
   package_type: apm_package
   deployed_files:
-  - .agents/skills/json-crawl-using
-  - .agents/skills/json-crawl-using/SKILL.md
   - .claude/rules/json-crawl-using.md
   - .claude/skills/json-crawl-using
   - .claude/skills/json-crawl-using/SKILL.md
   - .cursor/rules/json-crawl-using.mdc
+  - .cursor/skills/json-crawl-using
+  - .cursor/skills/json-crawl-using/SKILL.md
   deployed_file_hashes:
-    .agents/skills/json-crawl-using/SKILL.md: sha256:a6adfa4344f157506d304c886398577fe9b860390c4ba94cfb8405a4c547805e
     .claude/rules/json-crawl-using.md: sha256:a8006d87bd66a3e8f883fde7e1633f243ec91320ca357a7a23d73d73946ea7af
     .claude/skills/json-crawl-using/SKILL.md: sha256:a6adfa4344f157506d304c886398577fe9b860390c4ba94cfb8405a4c547805e
     .cursor/rules/json-crawl-using.mdc: sha256:d671cbc5fdef3ee28814237cab31e140e3b36661cae3926e32752e01852f245f
+    .cursor/skills/json-crawl-using/SKILL.md: sha256:a6adfa4344f157506d304c886398577fe9b860390c4ba94cfb8405a4c547805e
   content_hash: sha256:26f877265321714d07a41435817cac085f1d5aaa721b7258af4820ac0f7f0a6e
 deployments:
 - kind: project-relative
@@ -215,7 +215,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:bb94dc65d76ad9e395fea79dac07d6756a5f80765fe4c7c5054116cc33a893c2
+  content_hash: sha256:c3d5b74d7338e1319ff7879068defc47ee1f8da38ff6c49d3f2b569e4821bdce
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-testing
@@ -233,7 +233,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:de6c08c618a85b8dd1b76db5ea24173268f417bc26772b9e3b1d2cd8f6205d2e
+  content_hash: sha256:0fb929ccff1dcd358868533f051f8b0c2cbbd11c8abd9b3f37ddbdd470755886
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-using
@@ -305,7 +305,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:f4975d22ffa59f520997cc765370d0805469ff5790e92e8e71e80fc961136a7d
+  content_hash: sha256:6c50052db563b228273411b24129675a58a2ba5cf288c18b5a35c744f98e1331
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-using
@@ -318,132 +318,6 @@ deployments:
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-using/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/next-data-model-using
-  active_owner: ./agent-packages/next-data-model-using
-  content_hash: sha256:6ebdb0788d4d2296b7847546199bc6005efdc766a71a40f0cee04a20346001a2
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-authoring
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-authoring
-  active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-authoring/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-authoring
-  active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:bb94dc65d76ad9e395fea79dac07d6756a5f80765fe4c7c5054116cc33a893c2
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-testing
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-testing
-  active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-testing/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-testing
-  active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:de6c08c618a85b8dd1b76db5ea24173268f417bc26772b9e3b1d2cd8f6205d2e
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-using
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-using
-  active_owner: ./agent-packages/api-doc-viewer-using
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/api-doc-viewer-using/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/api-doc-viewer-using
-  active_owner: ./agent-packages/api-doc-viewer-using
-  content_hash: sha256:f9dfe9b1a9433fb7ae2c8f230865046fbf4bb6a4573400ebcfa3e54792ad1fbe
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/ddlapi-using
-  runtime: null
-  scope: project
-  owners:
-  - netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
-  active_owner: netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/ddlapi-using/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
-  active_owner: netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
-  content_hash: sha256:49ee63e1b58cc1ee7a0671a2a47dc6f42611977152bea9657002d60e6cee5fbd
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/json-crawl-using
-  runtime: null
-  scope: project
-  owners:
-  - netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
-  active_owner: netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/json-crawl-using/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
-  active_owner: netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
-  content_hash: sha256:a6adfa4344f157506d304c886398577fe9b860390c4ba94cfb8405a4c547805e
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/next-data-model-authoring
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/next-data-model-authoring
-  active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/next-data-model-authoring/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/next-data-model-authoring
-  active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:f4975d22ffa59f520997cc765370d0805469ff5790e92e8e71e80fc961136a7d
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/next-data-model-using
-  runtime: null
-  scope: project
-  owners:
-  - ./agent-packages/next-data-model-using
-  active_owner: ./agent-packages/next-data-model-using
-  content_hash: null
-- kind: project-relative
-  target: cursor
-  value: .agents/skills/next-data-model-using/SKILL.md
   runtime: null
   scope: project
   owners:
@@ -513,3 +387,129 @@ deployments:
   - ./agent-packages/next-data-model-using
   active_owner: ./agent-packages/next-data-model-using
   content_hash: sha256:ebbd79d667753ced5c75acf1a00e3dd937d32a991e5e5886de8cd53eb19a4044
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-authoring
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-authoring
+  active_owner: ./agent-packages/api-doc-viewer-authoring
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-authoring/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-authoring
+  active_owner: ./agent-packages/api-doc-viewer-authoring
+  content_hash: sha256:c3d5b74d7338e1319ff7879068defc47ee1f8da38ff6c49d3f2b569e4821bdce
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-testing
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-testing
+  active_owner: ./agent-packages/api-doc-viewer-testing
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-testing/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-testing
+  active_owner: ./agent-packages/api-doc-viewer-testing
+  content_hash: sha256:0fb929ccff1dcd358868533f051f8b0c2cbbd11c8abd9b3f37ddbdd470755886
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-using
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-using
+  active_owner: ./agent-packages/api-doc-viewer-using
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-using/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-using
+  active_owner: ./agent-packages/api-doc-viewer-using
+  content_hash: sha256:f9dfe9b1a9433fb7ae2c8f230865046fbf4bb6a4573400ebcfa3e54792ad1fbe
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/ddlapi-using
+  runtime: null
+  scope: project
+  owners:
+  - netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
+  active_owner: netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/ddlapi-using/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
+  active_owner: netcracker/qubership-apihub-ddlapi/agent-packages/ddlapi-using
+  content_hash: sha256:49ee63e1b58cc1ee7a0671a2a47dc6f42611977152bea9657002d60e6cee5fbd
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/json-crawl-using
+  runtime: null
+  scope: project
+  owners:
+  - netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
+  active_owner: netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/json-crawl-using/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
+  active_owner: netcracker/qubership-apihub-json-crawl/agent-packages/json-crawl-using
+  content_hash: sha256:a6adfa4344f157506d304c886398577fe9b860390c4ba94cfb8405a4c547805e
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/next-data-model-authoring
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/next-data-model-authoring
+  active_owner: ./agent-packages/next-data-model-authoring
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/next-data-model-authoring/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/next-data-model-authoring
+  active_owner: ./agent-packages/next-data-model-authoring
+  content_hash: sha256:6c50052db563b228273411b24129675a58a2ba5cf288c18b5a35c744f98e1331
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/next-data-model-using
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/next-data-model-using
+  active_owner: ./agent-packages/next-data-model-using
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/next-data-model-using/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/next-data-model-using
+  active_owner: ./agent-packages/next-data-model-using
+  content_hash: sha256:6ebdb0788d4d2296b7847546199bc6005efdc766a71a40f0cee04a20346001a2

@@ -426,6 +426,8 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
 | `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |
 | Row-body padding **4 + 4 px** on middle title rows with `UxBadge` | Badge bottom indent wrong; text ~1 px low/clipped | Keep **3 + 3 px** on title-row row-body, or raise row min-height to **27 px** with 4 px padding, or shrink badge to ≤ 18 px |
+| Re-derive diff logic in `ColumnRowBadgesContent` | Duplicates JSO pattern; misses normalisation | Use `takeColumnFlagDiffs` / title-row accessors from node |
+| Viewer workaround for `DiffReplace` on flags | Badge still null in side-by-side | Normalise in next-data-model `aggregateFlagDiff` |
 
 ### Integration example (column default value row)
 
@@ -443,6 +445,50 @@ Append after existing `TitleRow` / optional `TextRow`:
   />
 )}
 ```
+
+### DDL diffs viewers (`DdlTableDiffsViewer`, `*WithDiffs`)
+
+Follow the JSO / AsyncAPI split: plain and diffs pipelines stay separate.
+
+| Concern | Plain | Diffs |
+| --- | --- | --- |
+| Wrapper | `DdlTableViewer` | `DdlTableDiffsViewer` |
+| Builder | `DdlApiTreeBuilder` | `DdlApiTreeWithDiffsBuilder` |
+| Column item | `ColumnNodeViewer` | `ColumnNodeViewerWithDiffs` |
+| Badges | `ColumnRowBadges` / `ColumnRowBadgesContent` | Same content component; flag diffs from model |
+
+**View / data contract (session lesson):**
+
+- Do **not** re-derive diff priority, boolean normalisation, or title-row vs flag-badge
+  contracts in React — consume precomputed node fields from next-data-model:
+  `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `isDdlPropertySubheaderVisible`,
+  `node.diffsSeverities`.
+- Keep badge orchestration in `ColumnRowBadgesContent`; `DiffBadge` only renders the diff
+  object it receives.
+- Mirror JSO: aggregators own semantics; viewers map severities and diffs to rows and
+  badges only.
+
+When extending DDL diffs UI, change **next-data-model first** if the bug is wrong diff shape
+or missing severity — not `DiffBadge` workarounds in the viewer.
+
+### `DiffBadge` and invisible flag badges (session lesson)
+
+Symptom: parent `useMemo` returns a React element (e.g. `notNullBadge`) but nothing appears
+in side-by-side layout.
+
+**Root cause is often data-layer, not CSS:** `DiffBadge` renders **add** and **remove** on the
+matching layout side only; it returns **`null` for `replace`** in side-by-side mode. ddlapi
+merged diffs expose boolean flags (nullability, unique, generated, …) as **`DiffReplace`**
+on the row field.
+
+| Check | Action |
+| --- | --- |
+| `DiffBadge` receives `replace` for a flag | Fix in `aggregateFlagDiff` (next-data-model) — normalise boolean replace to add/remove using merged row value |
+| Title row needs a synthetic replace | `asReplaceFlagDiffForTitleRow` — separate contract from flag badges |
+| Badge visibility helper passes | Still trace `DiffBadge` action rules and layout side |
+
+Do **not** patch the viewer to coerce `replace` → add/remove unless product explicitly requires
+a view-only exception.
 
 ## Monorepo paths
 

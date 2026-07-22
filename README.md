@@ -151,3 +151,16 @@ const SomeComponent: FC = () => {
     return <JsonSchemaViewer schema={jsonSchema} />
 }
 ```
+
+## AI agent configuration (APM)
+
+Agent instructions and skills for this monorepo:
+
+- **[AGENTS.md](AGENTS.md)** — repository orientation, view/data split, cross-package DDL diffs workflow.
+- **`apm.yml`** — APM dependency list; local packages under `agent-packages/`.
+
+Refresh deployed skills and rules after editing agent packages:
+
+```bash
+apm install --target cursor,claude --legacy-skill-paths
+```

@@ -136,6 +136,47 @@ no custom `navigationLinkComponent` unless intentionally testing link styling.
 Do **not** assert client-side routing in screenshot ITs — that belongs in host
 application tests. Library ITs only verify rendered markup and visuals.
 
+## DDL API diff fixtures (`packages/samples/ddlapi-diffs/`)
+
+Diff screenshot suites are **hand-written** (not generated). Each group has paired story and IT
+files under `src/stories/ddlapi-diffs-suite/` and `src/it/ddlapi-diffs-suite/`. See
+`packages/samples/ddlapi-diffs/README.md` for group layout and story id pattern
+(`{meta-id}--case-{case-id}`).
+
+### Adding a case — insert at semantic slot (session lesson)
+
+When a new case mirrors an existing **identity vs expression** (or add vs remove vs became)
+pair, **insert at the same semantic index** in the group — do **not** append at the end.
+
+Example (`column-changes-except-types`, 26 cases):
+
+| Semantic slot | Identity case | Expression case |
+| --- | --- | --- |
+| Add whole column | `07-add-column-generated-identity` | `08-add-column-generated-expression` |
+| Remove whole column | `13-remove-column-generated-identity` | `19-remove-column-generated-expression` |
+| Existing column became generated | `17-existing-column-became-generated-identity` | `18-existing-column-became-generated-expression` |
+| Existing column lost generated | `24-existing-column-lost-generated-identity` | `25-existing-column-lost-generated-expression` |
+
+After insertion, **renumber every downstream case** in that group (+1 or +2), then update:
+
+1. Sample directory names under `packages/samples/ddlapi-diffs/<group>/`.
+2. Story exports in the group `*.stories.tsx` file.
+3. Matching `it(...)` entries in the group `*.it-test.ts` file.
+4. Group case count in `packages/samples/ddlapi-diffs/README.md`.
+5. Screenshot snapshots via `npm run regenerate-screenshots`.
+
+### SQL reuse
+
+When adding an expression-generated column case, **copy the `GENERATED ALWAYS AS (…)` body**
+from the sibling “became” or “lost” expression case in the same group — do not invent a
+simplified placeholder expression unless the ticket specifies one.
+
+### Renumbering directories safely
+
+Rename from **highest case number downward** through a temporary prefix (e.g. `tmp-24-…`) to
+avoid collisions. On bash, avoid arithmetic that treats zero-padded ids `08` / `09` as octal
+— use `10#` prefix or rename by explicit paths.
+
 ## Flaky rendering
 
 Some AsyncAPI diff stories need a paint settle helper before capture:

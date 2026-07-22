@@ -146,6 +146,60 @@ view-model fields the viewer does not paint — is documented in
 (add mapping here first) vs **`out-of-scope`** (no support needed) before extending
 `node-value.ts` or the transformer.
 
+## DDL API diff aggregators (kind split)
+
+DDL property-row diffs follow the JSO pattern: **aggregators prepare; viewers consume**.
+
+| Layer | Location | Owns |
+| --- | --- | --- |
+| Model accessors | `src/model/ddlapi/tree-with-diffs/property-row-diffs.ts` | `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, changed-property keys |
+| Kind column / index | `node-diffs/kind-column.ts`, `kind-index.ts` | Private `aggregatePropertyTitleRowDiff`; which changed keys win on title row |
+| Kind any | `node-diffs/kind-any.ts` | `aggregateFlagDiff`, `asReplaceFlagDiffForTitleRow`, protected `adoptPropertyRowDiffs` |
+| Severities | `node-diffs-severities/kind-column.ts`, `kind-index.ts`, factory | Title-row severity per changed property |
+| Transformer | `ddlapi-spec-with-diffs-transformer.ts` | Row-level field diffs before crawl (generated columns, …) |
+
+**Encapsulation (session lesson):**
+
+- Do **not** export orchestration such as `adoptPropertyRowDiffs` from
+  `shared/ddlapi/guards/` — keep adoption on `DdlApiNodeDiffsAggregatorKindAny` as a
+  **protected** method; kind subclasses pass their `DDL_*_CHANGED_PROPERTY_KEYS`.
+- Do **not** put column-only title-row priority chains in `kind-any.ts` — they belong in
+  `kind-column.ts` / `kind-index.ts`.
+- `shared/ddlapi/guards/` is for **narrowing and predicates** (`isChangedPropertyMetaData`,
+  `hasDdlPropertyTitleRowDiff`) — not aggregation pipelines.
+
+### Boolean flag diffs and `DiffBadge` contract
+
+ddlapi merged diffs often represent boolean row fields (`isNotNull`, `isUnique`, `isGenerated`,
+…) as **`DiffReplace`**, not add/remove.
+
+| Consumer | Expected diff shape | Normalisation |
+| --- | --- | --- |
+| Flag badges (`DiffBadge` in side-by-side) | **add** or **remove** per side | `aggregateFlagDiff` → `normalizeFlagDiff` using merged boolean via `takeBooleanFlagValue` |
+| Title row (type / name replace) | synthetic **replace** | `asReplaceFlagDiffForTitleRow` when a changed flag should drive title-row chrome |
+
+**Why:** api-doc-viewer `DiffBadge` returns **`null` for `replace`** in side-by-side layout.
+Fixing “invisible not-null badge” in the viewer masks the root cause — normalise in
+`aggregateFlagDiff` and add unit tests in `packages/next-data-model/tests/`.
+
+Title-row replace and flag-badge add/remove are **different contracts** — do not assume one
+normalisation fits both.
+
+### Generated columns in `DdlApiSpecWithDiffsTransformer`
+
+`resolveGeneratedColumnDiff` must handle both ddlapi sources:
+
+| Source | `generatedBy` | Field diffs |
+| --- | --- | --- |
+| `AttrKind.GeneratedExpr` | `'expression'` | `generatedExpression` / expr on row |
+| `PgAttrKind.Identity` | `'identity'` | generation / seqStart / seqIncrement |
+
+- Use diff type guards (`isDiffAdd`, `isDiffRemove`, `isDiffReplace`) in
+  `resolveDiffSideValue` — not raw `'afterValue' in diff` checks.
+- Share a pipeline between identity and expression; branch only on attr kind and field mapping.
+- Viewer still collapses both to a single **generated** badge label — see
+  `api-doc-viewer-authoring` (`ColumnRowBadges`).
+
 ## Cross-package boundary
 
 View components in `packages/api-doc-viewer` import builders and node types
