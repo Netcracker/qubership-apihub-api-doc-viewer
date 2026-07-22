@@ -95,6 +95,7 @@ export type NodeDiffs<V extends object | null = object | null> = Partial<Record<
 export enum NodeDiffsSeverityPlacemennt {
   TitleRow = 'title-row',
   DescriptionRow = 'description-row',
+  AdditionalInfoRow = 'additional-info-row',
   SummaryRow = 'summary-row',
   AddressRow = 'address-row',
   BindingVersionRow = 'binding-version-row',

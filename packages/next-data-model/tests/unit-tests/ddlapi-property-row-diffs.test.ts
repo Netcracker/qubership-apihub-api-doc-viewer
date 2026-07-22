@@ -239,4 +239,28 @@ describe("DDL property row diff aggregators", () => {
 
     expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBe(breaking)
   })
+
+  it("uses the resolved node diff for the additional-info-row severity", () => {
+    const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindColumn()
+    const nodeDiffs = {
+      [NODE_LEVEL_DIFF_KEY]: makeFlagPropertyDiff(annotation, DiffAction.add),
+    }
+
+    const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
+
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBe(annotation)
+  })
+
+  it("picks the highest additional-info-row severity from generated diffs", () => {
+    const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindColumn()
+    const nodeDiffs = {
+      [NODE_LEVEL_DIFF_KEY]: makeFlagPropertyDiff(annotation, DiffAction.add),
+      isGenerated: makeFlagPropertyDiff(nonBreaking, DiffAction.add),
+      generatedExpression: makeFlagPropertyDiff(breaking, DiffAction.add),
+    }
+
+    const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
+
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBe(breaking)
+  })
 })

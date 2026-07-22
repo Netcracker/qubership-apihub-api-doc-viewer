@@ -241,6 +241,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           subheader={generatedAdditionalInfoSubheader}
           diff={generatedExpressionDiff}
           colorizingDiff={node.diffs[NODE_LEVEL_DIFF_KEY]}
+          diffsSeverities={node.diffsSeverities}
         />
       )}
     </div>
