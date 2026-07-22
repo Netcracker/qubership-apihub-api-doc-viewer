@@ -2,17 +2,18 @@ import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree
 import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { aggregateDiffsWithRollup, Diff, DIFF_META_KEY } from "@netcracker/qubership-apihub-api-diff";
+import { aggregateDiffsWithRollup, Diff, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import {
   AttrKind,
   Column,
   findAttr,
   Index,
+  PgAttrKind,
   Schema,
   Table,
 } from "@netcracker/qubership-apihub-ddlapi";
-import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { BuildingServiceLogger } from "../../../loggers";
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import {
   DdlApiSpecTransformer,
   DdlApiTableOrientedSpec,
@@ -21,6 +22,19 @@ import {
 } from "./ddlapi-spec-transformer";
 
 type DiffsRecord = Partial<Record<string, Diff>>;
+
+type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
+
+interface GeneratedColumnAttrRef {
+  kind: GeneratedColumnAttrKind
+  attr: object
+  attrIndex: number
+}
+
+type GeneratedColumnDiffResult = {
+  isGenerated?: Diff
+  generatedExpression?: Diff
+}
 
 export type DdlApiColumnTypeValueWithDiffs = DdlApiColumnTypeValue & {
   [key: symbol]: unknown;
@@ -434,50 +448,149 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return undefined
   }
 
-  private resolveGeneratedColumnDiff(sourceColumn: Column): {
-    isGenerated?: Diff
-    generatedExpression?: Diff
-  } | undefined {
-    const generatedExpr = findAttr(sourceColumn.attrs, AttrKind.GeneratedExpr)
-    if (!generatedExpr) {
-      const attrsArrayDiffs = this.getDiffsRecord(sourceColumn.attrs)
-      if (!attrsArrayDiffs) {
-        return undefined
-      }
-
-      for (const diff of Object.values(attrsArrayDiffs)) {
-        if (!diff) {
-          continue
-        }
-        const afterValue = 'afterValue' in diff ? diff.afterValue : undefined
-        const beforeValue = 'beforeValue' in diff ? diff.beforeValue : undefined
-        const candidate = afterValue ?? beforeValue
-        if (isObject(candidate) && candidate.kind === AttrKind.GeneratedExpr) {
-          return { isGenerated: diff, generatedExpression: diff }
-        }
-      }
-
-      return undefined
+  private resolveGeneratedColumnDiff(sourceColumn: Column): GeneratedColumnDiffResult | undefined {
+    const attrGeneratedColumn = this.findGeneratedColumnAttr(sourceColumn.attrs)
+    // case of removed generated column
+    if (!attrGeneratedColumn) {
+      return this.resolveGeneratedColumnDiffFromAttrsArray(sourceColumn.attrs)
     }
 
-    const generatedExpressionDiff = this.getDiffsRecord(generatedExpr)?.expr
-      ?? this.resolveArrayElementDiff(
-        this.getDiffsRecord(sourceColumn.attrs),
-        this.findGeneratedExprAttrIndex(sourceColumn.attrs),
-      )
-
-    if (!generatedExpressionDiff) {
-      return undefined
+    // case of added generated column
+    const diffAttr = this.resolveGeneratedColumnAttrDiff(sourceColumn.attrs, attrGeneratedColumn)
+    if (diffAttr) {
+      return this.buildGeneratedColumnDiffResult(attrGeneratedColumn.kind, diffAttr)
     }
 
-    return {
-      isGenerated: generatedExpressionDiff,
-      generatedExpression: generatedExpressionDiff,
-    }
+    return undefined
   }
 
-  private findGeneratedExprAttrIndex(attrs: Column['attrs']): number {
-    return (attrs ?? []).findIndex(attr => attr.kind === AttrKind.GeneratedExpr)
+  private findGeneratedColumnAttr(attrs: Column['attrs']): GeneratedColumnAttrRef | undefined {
+    const columnAttrs = attrs ?? []
+
+    const attrIdentity = findAttr(columnAttrs, PgAttrKind.Identity)
+    if (attrIdentity) {
+      return {
+        kind: PgAttrKind.Identity,
+        attr: attrIdentity,
+        attrIndex: columnAttrs.indexOf(attrIdentity),
+      }
+    }
+
+    const attrGeneratedExpr = findAttr(columnAttrs, AttrKind.GeneratedExpr)
+    if (attrGeneratedExpr) {
+      return {
+        kind: AttrKind.GeneratedExpr,
+        attr: attrGeneratedExpr,
+        attrIndex: columnAttrs.indexOf(attrGeneratedExpr),
+      }
+    }
+
+    return undefined
+  }
+
+  private resolveGeneratedColumnDiffFromAttrsArray(
+    attrs: Column['attrs'],
+  ): GeneratedColumnDiffResult | undefined {
+    const attrsArrayDiffs = this.getDiffsRecord(attrs)
+    if (!attrsArrayDiffs) {
+      return undefined
+    }
+
+    for (const diff of Object.values(attrsArrayDiffs)) {
+      if (!diff) {
+        continue
+      }
+
+      const candidate = this.resolveDiffSideValue(diff)
+      if (!isObject(candidate) || !this.isGeneratedColumnAttr(candidate)) {
+        continue
+      }
+
+      return this.buildGeneratedColumnDiffResult(candidate.kind, diff)
+    }
+
+    return undefined
+  }
+
+  private resolveGeneratedColumnAttrDiff(
+    attrs: Column['attrs'],
+    generatedColumnAttr: GeneratedColumnAttrRef,
+  ): Diff | undefined {
+    const attrsArrayDiffs = this.getDiffsRecord(attrs)
+
+
+    let attrFieldDiffKeys = undefined
+    if (generatedColumnAttr.kind === AttrKind.GeneratedExpr) {
+      attrFieldDiffKeys = ['expr'] as const
+    }
+    if (generatedColumnAttr.kind === PgAttrKind.Identity) {
+      attrFieldDiffKeys = ['generation', 'seqStart', 'seqIncrement'] as const
+    }
+
+    if (!attrFieldDiffKeys) {
+      return undefined
+    }
+
+    const attrFieldDiff = this.resolveFirstAttrFieldDiff(generatedColumnAttr.attr, attrFieldDiffKeys)
+    if (attrFieldDiff) {
+      return attrFieldDiff
+    }
+
+    return this.resolveArrayElementDiff(attrsArrayDiffs, generatedColumnAttr.attrIndex)
+  }
+
+  private resolveFirstAttrFieldDiff(
+    attr: object,
+    fieldKeys: readonly string[],
+  ): Diff | undefined {
+    const attrDiffs = this.getDiffsRecord(attr)
+    if (!attrDiffs) {
+      return undefined
+    }
+
+    for (const fieldKey of fieldKeys) {
+      const fieldDiff = attrDiffs[fieldKey]
+      if (fieldDiff) {
+        return fieldDiff
+      }
+    }
+
+    return undefined
+  }
+
+  private buildGeneratedColumnDiffResult(
+    attrKind: GeneratedColumnAttrKind,
+    diff: Diff,
+  ): GeneratedColumnDiffResult {
+    if (attrKind === AttrKind.GeneratedExpr) {
+      return {
+        isGenerated: diff,
+        generatedExpression: diff,
+      }
+    }
+
+    return { isGenerated: diff }
+  }
+
+  private resolveDiffSideValue(diff: Diff): unknown {
+    if (isDiffAdd(diff)) {
+      return diff.afterValue
+    }
+    if (isDiffRemove(diff)) {
+      return diff.beforeValue
+    }
+    if (isDiffReplace(diff)) {
+      return diff.afterValue ?? diff.beforeValue
+    }
+
+    return undefined
+  }
+
+  private isGeneratedColumnAttr(value: object): value is { kind: GeneratedColumnAttrKind } {
+    return 'kind' in value && (
+      value.kind === AttrKind.GeneratedExpr ||
+      value.kind === PgAttrKind.Identity
+    )
   }
 
   private findSourceIndexForRow(
@@ -514,7 +627,6 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
     const { diffsMetaKey } = this.diffMetaKeys
     return takeIfDiffsRecord(Reflect.get(owner, diffsMetaKey))
-      ?? takeIfDiffsRecord(Reflect.get(owner, DIFF_META_KEY))
   }
 
   private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord): void {
