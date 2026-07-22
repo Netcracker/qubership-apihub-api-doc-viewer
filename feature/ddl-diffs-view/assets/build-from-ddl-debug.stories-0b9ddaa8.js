@@ -1,4 +1,4 @@
-import{j as l}from"./_commonjs-dynamic-modules-6308e768.js";import{D as L}from"./DdlTableViewer-7c4bbf4d.js";import{r as n}from"./index-f46741a2.js";import{b as T}from"./build-from-ddl-browser-51bf53a8.js";import"./DiffBadge-20c083b3.js";import"./index-ea5de852.js";import"./iframe-4fe7ff43.js";import"../sb-preview/runtime.js";const h=`CREATE TABLE users (
+import{j as l}from"./_commonjs-dynamic-modules-6308e768.js";import{D as L}from"./DdlTableViewer-7c4bbf4d.js";import{r as n}from"./index-f46741a2.js";import{b as T}from"./build-from-ddl-browser-3b94f241.js";import"./DiffBadge-20c083b3.js";import"./index-ea5de852.js";import"./iframe-c7897fab.js";import"../sb-preview/runtime.js";const h=`CREATE TABLE users (
   id bigint PRIMARY KEY,
   email varchar(255) NOT NULL,
   created_at timestamp DEFAULT now()
