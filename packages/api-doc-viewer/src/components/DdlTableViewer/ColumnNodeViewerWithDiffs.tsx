@@ -72,6 +72,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
             appearance="text"
           />
           <ColumnRowBadgesContent
+            columnId={node.id}
             layoutSide={layoutSide}
             value={value}
             flagDiffs={flagDiffs}
@@ -79,7 +80,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         </div>
       )
     },
-    [flagDiffs, nodeDiff, value],
+    [flagDiffs, node.id, nodeDiff, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(

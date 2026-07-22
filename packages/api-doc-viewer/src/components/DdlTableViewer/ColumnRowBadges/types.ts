@@ -20,6 +20,7 @@ export type ColumnRowBadgesFlagDiffs = {
 }
 
 export type ColumnRowBadgesProps = {
+  columnId: string
   value: ColumnRowBadgesValue
   flagDiffs?: ColumnRowBadgesFlagDiffs
 }

@@ -39,6 +39,7 @@ function isContentVisibleOnSide(
 }
 
 function renderFlagBadge(options: {
+  columnId: string
   label: string
   colorSchema: string
   flagValue: boolean | undefined
@@ -46,7 +47,7 @@ function renderFlagBadge(options: {
   layoutMode: ReturnType<typeof useLayoutMode>
   layoutSide: LayoutSide
 }): ReactNode {
-  const { label, colorSchema, flagValue, flagDiff, layoutMode, layoutSide } = options
+  const { columnId, label, colorSchema, flagValue, flagDiff, layoutMode, layoutSide } = options
 
   if (!isFlagBadgeVisible(flagValue, flagDiff)) {
     return null
@@ -60,6 +61,7 @@ function renderFlagBadge(options: {
 
   return (
     <DiffBadge
+      key={buildBadgeKey(columnId, label)}
       label={label}
       colorSchema={colorSchema}
       layoutMode={layoutMode}
@@ -72,13 +74,14 @@ function renderFlagBadge(options: {
 }
 
 export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<ColumnRowBadgesContentProps>(props => {
-  const { value, flagDiffs, layoutSide } = props
+  const { columnId, value, flagDiffs, layoutSide } = props
   const layoutMode = useLayoutMode()
 
   const diffs: ColumnRowBadgesFlagDiffs = useMemo(() => flagDiffs ?? {}, [flagDiffs])
 
   const primaryKeyBadge = useMemo(
     () => renderFlagBadge({
+      columnId: columnId,
       label: "PK",
       colorSchema: DDL_API_PRIMARY_KEY_BADGE_COLOR_SCHEMA,
       flagValue: value.isPrimaryKey,
@@ -86,11 +89,12 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
       layoutMode,
       layoutSide,
     }),
-    [diffs.isPrimaryKey, layoutMode, layoutSide, value.isPrimaryKey],
+    [columnId, diffs.isPrimaryKey, layoutMode, layoutSide, value.isPrimaryKey],
   )
 
   const uniqueBadge = useMemo(
     () => renderFlagBadge({
+      columnId: columnId,
       label: "unique",
       colorSchema: DDL_API_UNIQUE_BADGE_COLOR_SCHEMA,
       flagValue: value.isUnique,
@@ -98,11 +102,12 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
       layoutMode,
       layoutSide,
     }),
-    [diffs.isUnique, layoutMode, layoutSide, value.isUnique],
+    [columnId, diffs.isUnique, layoutMode, layoutSide, value.isUnique],
   )
 
   const notNullBadge = useMemo(
     () => renderFlagBadge({
+      columnId: columnId,
       label: "not null",
       colorSchema: DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA,
       flagValue: value.isNotNull,
@@ -110,11 +115,12 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
       layoutMode,
       layoutSide,
     }),
-    [diffs.isNotNull, layoutMode, layoutSide, value.isNotNull],
+    [columnId, diffs.isNotNull, layoutMode, layoutSide, value.isNotNull],
   )
 
   const generatedBadge = useMemo(
     () => renderFlagBadge({
+      columnId: columnId,
       // Badge label is always "generated". `generatedBy` ('identity' | 'expression') is
       // preserved on the data model for consumers; the viewer does not distinguish them.
       label: "generated",
@@ -124,7 +130,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
       layoutMode,
       layoutSide,
     }),
-    [diffs.isGenerated, layoutMode, layoutSide, value.isGenerated],
+    [columnId, diffs.isGenerated, layoutMode, layoutSide, value.isGenerated],
   )
 
   const foreignKeyBadge = useMemo(() => {
@@ -146,6 +152,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
     return (
       <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
         <DiffBadge
+          key={buildBadgeKey(columnId, "FK")}
           label="FK"
           colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA}
           layoutMode={layoutMode}
@@ -159,7 +166,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
         )}
       </div>
     )
-  }, [diffs.isForeignKey, layoutMode, layoutSide, value.foreignKeyTarget, value.isForeignKey])
+  }, [columnId, diffs.isForeignKey, layoutMode, layoutSide, value.foreignKeyTarget, value.isForeignKey])
 
   const badges = useMemo(
     () => [primaryKeyBadge, uniqueBadge, notNullBadge, generatedBadge, foreignKeyBadge].filter(Boolean),
@@ -176,3 +183,7 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
     </div>
   )
 })
+
+function buildBadgeKey(columnId: string, label: string): string {
+  return `${columnId}-${label}`
+}

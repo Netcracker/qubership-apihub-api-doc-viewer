@@ -1,17 +1,19 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isDefined } from "@apihub/utils/common/checkers"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
-import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
+import { TextRow } from "../shared-components/TextRow/TextRow"
 import { TextRowUsage } from "../shared-components/TextRow/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
+import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import {
   ADDITIONAL_INFO_LABEL_DEFAULT,
@@ -19,8 +21,6 @@ import {
   ADDITIONAL_INFO_LABEL_VALUES,
 } from "./consts"
 import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
-import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
-import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
 export type ColumnNodeViewerProps = WithPrecededByProps & {
   node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -53,13 +53,14 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
             appearance="text"
           />
           <ColumnRowBadgesContent
+            columnId={node.id}
             layoutSide={_layoutSide}
             value={value}
           />
         </div>
       )
     },
-    [value],
+    [node.id, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(
