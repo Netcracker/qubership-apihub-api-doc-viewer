@@ -116,224 +116,250 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
     });
   });
 
-  it('08-remove-column-primary-key', async () => {
+  it('08-add-column-generated-expression', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-08-remove-column-primary-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-08-add-column-generated-expression',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-08-remove-column-primary-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-08-add-column-generated-expression-${counter}`,
     });
   });
 
-  it('09-remove-column-foreign-key', async () => {
+  it('09-remove-column-primary-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-09-remove-column-foreign-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-09-remove-column-primary-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-09-remove-column-foreign-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-09-remove-column-primary-key-${counter}`,
     });
   });
 
-  it('10-remove-column-unique', async () => {
+  it('10-remove-column-foreign-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-10-remove-column-unique',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-10-remove-column-foreign-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-10-remove-column-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-10-remove-column-foreign-key-${counter}`,
     });
   });
 
-  it('11-remove-column-not-null', async () => {
+  it('11-remove-column-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-11-remove-column-not-null',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-11-remove-column-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-11-remove-column-not-null-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-11-remove-column-unique-${counter}`,
     });
   });
 
-  it('12-remove-column-generated-identity', async () => {
+  it('12-remove-column-not-null', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-12-remove-column-generated-identity',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-12-remove-column-not-null',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-12-remove-column-generated-identity-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-12-remove-column-not-null-${counter}`,
     });
   });
 
-  it('13-existing-column-became-primary-key', async () => {
+  it('13-remove-column-generated-identity', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-13-existing-column-became-primary-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-13-remove-column-generated-identity',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-13-existing-column-became-primary-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-13-remove-column-generated-identity-${counter}`,
     });
   });
 
-  it('14-existing-column-became-foreign-key', async () => {
+  it('14-existing-column-became-primary-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-14-existing-column-became-foreign-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-14-existing-column-became-primary-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-14-existing-column-became-foreign-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-14-existing-column-became-primary-key-${counter}`,
     });
   });
 
-  it('15-existing-column-became-unique', async () => {
+  it('15-existing-column-became-foreign-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-15-existing-column-became-unique',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-15-existing-column-became-foreign-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-15-existing-column-became-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-15-existing-column-became-foreign-key-${counter}`,
     });
   });
 
-  it('16-existing-column-became-generated-identity', async () => {
+  it('16-existing-column-became-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-16-existing-column-became-generated-identity',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-16-existing-column-became-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-16-existing-column-became-generated-identity-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-16-existing-column-became-unique-${counter}`,
     });
   });
 
-  it('17-existing-column-became-generated-expression', async () => {
+  it('17-existing-column-became-generated-identity', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-17-existing-column-became-generated-expression',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-17-existing-column-became-generated-identity',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-17-existing-column-became-generated-expression-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-17-existing-column-became-generated-identity-${counter}`,
     });
   });
 
-  it('18-existing-column-became-not-null', async () => {
+  it('18-existing-column-became-generated-expression', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-18-existing-column-became-not-null',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-18-existing-column-became-generated-expression',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-18-existing-column-became-not-null-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-18-existing-column-became-generated-expression-${counter}`,
     });
   });
 
-  it('19-existing-column-lost-primary-key', async () => {
+  it('19-remove-column-generated-expression', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-19-existing-column-lost-primary-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-19-remove-column-generated-expression',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-19-existing-column-lost-primary-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-19-remove-column-generated-expression-${counter}`,
     });
   });
 
-  it('20-existing-column-lost-foreign-key', async () => {
+  it('20-existing-column-became-not-null', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-20-existing-column-lost-foreign-key',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-20-existing-column-became-not-null',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-20-existing-column-lost-foreign-key-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-20-existing-column-became-not-null-${counter}`,
     });
   });
 
-  it('21-existing-column-lost-unique', async () => {
+  it('21-existing-column-lost-primary-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-21-existing-column-lost-unique',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-21-existing-column-lost-primary-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-21-existing-column-lost-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-21-existing-column-lost-primary-key-${counter}`,
     });
   });
 
-  it('22-existing-column-lost-generated-identity', async () => {
+  it('22-existing-column-lost-foreign-key', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-22-existing-column-lost-generated-identity',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-22-existing-column-lost-foreign-key',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-22-existing-column-lost-generated-identity-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-22-existing-column-lost-foreign-key-${counter}`,
     });
   });
 
-  it('23-existing-column-lost-generated-expression', async () => {
+  it('23-existing-column-lost-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-23-existing-column-lost-generated-expression',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-23-existing-column-lost-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-23-existing-column-lost-generated-expression-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-23-existing-column-lost-unique-${counter}`,
     });
   });
 
-  it('24-existing-column-lost-not-null', async () => {
+  it('24-existing-column-lost-generated-identity', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-column-changes-except-types-samples--case-24-existing-column-lost-not-null',
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-24-existing-column-lost-generated-identity',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-24-existing-column-lost-not-null-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-24-existing-column-lost-generated-identity-${counter}`,
+    });
+  });
+
+  it('25-existing-column-lost-generated-expression', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-25-existing-column-lost-generated-expression',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-25-existing-column-lost-generated-expression-${counter}`,
+    });
+  });
+
+  it('26-existing-column-lost-not-null', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-26-existing-column-lost-not-null',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-26-existing-column-lost-not-null-${counter}`,
     });
   });
 });
