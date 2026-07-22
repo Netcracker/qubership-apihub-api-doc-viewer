@@ -17,6 +17,7 @@ export type ColumnRowBadgesFlagDiffs = {
     isForeignKey?: ChangedPropertyMetaData;
 };
 export type ColumnRowBadgesProps = {
+    columnId: string;
     value: ColumnRowBadgesValue;
     flagDiffs?: ColumnRowBadgesFlagDiffs;
 };
