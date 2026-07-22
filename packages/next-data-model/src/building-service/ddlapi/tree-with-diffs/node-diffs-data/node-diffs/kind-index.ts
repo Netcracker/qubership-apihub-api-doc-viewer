@@ -51,7 +51,12 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
     )
 
     const isUniqueDiff = diffs['isUnique']
-    isUniqueDiff && this.aggregateFlagDiff(isUniqueDiff, 'isUnique', nodeDiffs)
+    isUniqueDiff && this.aggregateFlagDiff(
+      isUniqueDiff,
+      'isUnique',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isUnique'),
+    )
 
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 

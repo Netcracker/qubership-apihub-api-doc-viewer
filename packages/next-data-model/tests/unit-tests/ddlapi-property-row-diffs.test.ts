@@ -77,6 +77,32 @@ describe("DDL property row diff aggregators", () => {
     expect(titleRowDiff?.styles.after.backgroundColor).toBe("yellow")
   })
 
+  it("normalizes a boolean replace diff to an added visible badge", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "id",
+      isNotNull: true,
+      [TEST_DIFFS_META_KEY]: {
+        isNotNull: {
+          type: nonBreaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: false,
+          afterValue: true,
+          beforeDeclarationPaths: [["columns", "id", "isNotNull"]],
+          afterDeclarationPaths: [["columns", "id", "isNotNull"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "id")
+    const notNullDiff = nodeDiffs?.isNotNull
+
+    expect(notNullDiff?.data.action).toBe(DiffAction.add)
+    expect(notNullDiff?.styles.before.isContentVisible).toBe(false)
+    expect(notNullDiff?.styles.after.isContentVisible).toBe(true)
+  })
+
   it("picks the highest title-row severity from column flag diffs", () => {
     const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindColumn()
     const nodeDiffs = {

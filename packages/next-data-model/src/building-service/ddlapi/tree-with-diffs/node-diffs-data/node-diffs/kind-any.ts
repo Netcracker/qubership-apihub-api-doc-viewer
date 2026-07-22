@@ -246,10 +246,12 @@ export class DdlApiNodeDiffsAggregatorKindAny
     diff: Diff<DiffType>,
     key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
     nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    currentValue?: boolean,
   ) {
+    const normalizedDiff = this.normalizeFlagDiffReplace(diff, currentValue)
     let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
-    if (isDiffAdd(diff)) {
+    if (isDiffAdd(normalizedDiff)) {
       beforeStyles = {
         ...beforeStyles,
         isContentVisible: false,
@@ -261,7 +263,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
         backgroundColor: HighlightVariant.Yellow,
       }
     }
-    if (isDiffRemove(diff)) {
+    if (isDiffRemove(normalizedDiff)) {
       beforeStyles = {
         ...beforeStyles,
         isContentVisible: true,
@@ -274,7 +276,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
       }
     }
     nodeDiffs[key] = {
-      data: diff,
+      data: normalizedDiff,
       styles: {
         before: beforeStyles,
         after: afterStyles,
@@ -288,6 +290,40 @@ export class DdlApiNodeDiffsAggregatorKindAny
         },
       },
       highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+    }
+  }
+
+  protected takeBooleanFlagValue(owner: object, key: PropertyKey): boolean | undefined {
+    const value = Reflect.get(owner, key)
+    return typeof value === "boolean" ? value : undefined
+  }
+
+  private normalizeFlagDiffReplace(
+    diff: Diff<DiffType>,
+    currentValue: boolean | undefined,
+  ): Diff<DiffType> {
+    if (!isDiffReplace(diff) || currentValue === undefined) {
+      return diff
+    }
+
+    if (currentValue) {
+      return {
+        type: diff.type,
+        scope: diff.scope,
+        description: diff.description,
+        action: DiffAction.add,
+        afterValue: true,
+        afterDeclarationPaths: diff.afterDeclarationPaths,
+      }
+    }
+
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      description: diff.description,
+      action: DiffAction.remove,
+      beforeValue: true,
+      beforeDeclarationPaths: diff.beforeDeclarationPaths,
     }
   }
 }

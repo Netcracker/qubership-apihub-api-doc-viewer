@@ -52,19 +52,44 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     )
 
     const isPrimaryKeyDiff = diffs['isPrimaryKey']
-    isPrimaryKeyDiff && this.aggregateFlagDiff(isPrimaryKeyDiff, 'isPrimaryKey', nodeDiffs)
+    isPrimaryKeyDiff && this.aggregateFlagDiff(
+      isPrimaryKeyDiff,
+      'isPrimaryKey',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isPrimaryKey'),
+    )
 
     const isForeignKeyDiff = diffs['isForeignKey']
-    isForeignKeyDiff && this.aggregateFlagDiff(isForeignKeyDiff, 'isForeignKey', nodeDiffs)
+    isForeignKeyDiff && this.aggregateFlagDiff(
+      isForeignKeyDiff,
+      'isForeignKey',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isForeignKey'),
+    )
 
     const isGeneratedDiff = diffs['isGenerated']
-    isGeneratedDiff && this.aggregateFlagDiff(isGeneratedDiff, 'isGenerated', nodeDiffs)
+    isGeneratedDiff && this.aggregateFlagDiff(
+      isGeneratedDiff,
+      'isGenerated',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isGenerated'),
+    )
 
     const isUniqueDiff = diffs['isUnique']
-    isUniqueDiff && this.aggregateFlagDiff(isUniqueDiff, 'isUnique', nodeDiffs)
+    isUniqueDiff && this.aggregateFlagDiff(
+      isUniqueDiff,
+      'isUnique',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isUnique'),
+    )
 
     const isNotNullDiff = diffs['isNotNull']
-    isNotNullDiff && this.aggregateFlagDiff(isNotNullDiff, 'isNotNull', nodeDiffs)
+    isNotNullDiff && this.aggregateFlagDiff(
+      isNotNullDiff,
+      'isNotNull',
+      nodeDiffs,
+      this.takeBooleanFlagValue(crawlValue, 'isNotNull'),
+    )
 
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
