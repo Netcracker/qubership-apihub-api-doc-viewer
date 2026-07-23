@@ -2,7 +2,7 @@ import { DiffBadge } from "@apihub/components/common/diffs/DiffBadge"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
-import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
 import { formatForeignKeyTargetKey } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { FC, memo, ReactNode, useMemo } from "react"
@@ -84,6 +84,21 @@ function renderFlagBadge(options: {
   )
 }
 
+function takeForeignKeyTargetTextHighlighterColor(
+  targetDiff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): Exclude<HighlightVariant, HighlightVariant.Gray> | undefined {
+  if (!targetDiff) {
+    return undefined
+  }
+
+  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
+    ? targetDiff.styles.before
+    : targetDiff.styles.after
+
+  return styles.textHighlighterColor
+}
+
 function renderForeignKeyTargetBadge(options: {
   columnId: string
   target: DdlApiForeignKeyTarget
@@ -93,6 +108,7 @@ function renderForeignKeyTargetBadge(options: {
 }): ReactNode {
   const { columnId, target, targetDiff, layoutMode, layoutSide } = options
   const badgeKey = buildForeignKeyBadgeKey(columnId, target)
+  const textHighlighterColor = takeForeignKeyTargetTextHighlighterColor(targetDiff, layoutSide)
 
   if (targetDiff && !isContentVisibleOnSide(targetDiff, layoutSide)) {
     return <span key={badgeKey} className="inline-block min-h-[19px]" aria-hidden="true" />
@@ -115,7 +131,7 @@ function renderForeignKeyTargetBadge(options: {
         isContentChanged={true}
         $changes={$changes}
       />
-      <ForeignKey target={target} hideBadge />
+      <ForeignKey target={target} hideBadge textHighlighterColor={textHighlighterColor} />
     </div>
   )
 }

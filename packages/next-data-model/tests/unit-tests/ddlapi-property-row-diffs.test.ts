@@ -1,5 +1,6 @@
 import {
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
+  HighlightVariant,
   NODE_LEVEL_DIFF_KEY,
   NodeDiffsSeverityPlacemennt,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -262,6 +263,10 @@ describe("DDL property row diff aggregators", () => {
 
     expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0id"]?.data.action).toBe(DiffAction.remove)
     expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0code"]?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0id"]?.styles.before.textHighlighterColor)
+      .toBe(HighlightVariant.Red)
+    expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0code"]?.styles.after.textHighlighterColor)
+      .toBe(HighlightVariant.Green)
     expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]?.data.action).toBe(DiffAction.replace)
   })
 
