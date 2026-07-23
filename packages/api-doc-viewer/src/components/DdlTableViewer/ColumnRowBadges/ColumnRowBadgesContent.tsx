@@ -38,6 +38,14 @@ function isContentVisibleOnSide(
     : flagDiff.styles.after.isContentVisible
 }
 
+function isFlagBadgeContentVisible(
+  flagValue: boolean | undefined,
+  flagDiff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): boolean {
+  return isFlagBadgeVisible(flagValue, flagDiff) && isContentVisibleOnSide(flagDiff, layoutSide)
+}
+
 function renderFlagBadge(options: {
   columnId: string
   label: string
@@ -91,6 +99,10 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
     }),
     [columnId, diffs.isPrimaryKey, layoutMode, layoutSide, value.isPrimaryKey],
   )
+  const isPrimaryKeyBadgeContentVisible = useMemo(
+    () => isFlagBadgeContentVisible(value.isPrimaryKey, diffs.isPrimaryKey, layoutSide),
+    [diffs.isPrimaryKey, layoutSide, value.isPrimaryKey],
+  )
 
   const uniqueBadge = useMemo(
     () => renderFlagBadge({
@@ -106,16 +118,25 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
   )
 
   const notNullBadge = useMemo(
-    () => renderFlagBadge({
-      columnId: columnId,
-      label: "not null",
-      colorSchema: DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA,
-      flagValue: value.isNotNull,
-      flagDiff: diffs.isNotNull,
+    () => isPrimaryKeyBadgeContentVisible
+      ? null
+      : renderFlagBadge({
+        columnId: columnId,
+        label: "not null",
+        colorSchema: DDL_API_NOT_NULL_BADGE_COLOR_SCHEMA,
+        flagValue: value.isNotNull,
+        flagDiff: diffs.isNotNull,
+        layoutMode,
+        layoutSide,
+      }),
+    [
+      columnId,
+      diffs.isNotNull,
+      isPrimaryKeyBadgeContentVisible,
       layoutMode,
       layoutSide,
-    }),
-    [columnId, diffs.isNotNull, layoutMode, layoutSide, value.isNotNull],
+      value.isNotNull,
+    ],
   )
 
   const generatedBadge = useMemo(
