@@ -323,11 +323,18 @@ export class DdlApiNodeDiffsAggregatorKindAny
     diff: Diff<DiffType>,
     currentValue: boolean | undefined,
   ): Diff<DiffType> {
-    if (!isDiffReplace(diff) || currentValue === undefined) {
+    if (!isDiffReplace(diff)) {
       return diff
     }
 
-    if (currentValue) {
+    const resolvedCurrentValue = typeof diff.afterValue === "boolean"
+      ? diff.afterValue
+      : currentValue
+    if (resolvedCurrentValue === undefined) {
+      return diff
+    }
+
+    if (resolvedCurrentValue) {
       return {
         type: diff.type,
         scope: diff.scope,

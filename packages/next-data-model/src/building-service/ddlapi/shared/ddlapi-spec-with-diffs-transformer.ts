@@ -209,7 +209,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
       const nullabilityDiff = this.getDiffsRecord(sourceColumn.type)?.null
       if (nullabilityDiff) {
-        columnDiffs.isNotNull = nullabilityDiff
+        columnDiffs.isNotNull = this.invertBooleanDiffValues(nullabilityDiff)
       }
 
       if (primaryKeyDiff && this.isColumnInPrimaryKey(sourceTable, sourceColumn.name)) {
@@ -347,6 +347,33 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     if (labelDiff) {
       this.mergeDiffsIntoTarget(columnType, { label: labelDiff })
     }
+  }
+
+  private invertBooleanDiffValues(diff: Diff): Diff {
+    if (isDiffAdd(diff) && typeof diff.afterValue === 'boolean') {
+      return {
+        ...diff,
+        afterValue: !diff.afterValue,
+      }
+    }
+    if (isDiffRemove(diff) && typeof diff.beforeValue === 'boolean') {
+      return {
+        ...diff,
+        beforeValue: !diff.beforeValue,
+      }
+    }
+    if (
+      isDiffReplace(diff) &&
+      typeof diff.beforeValue === 'boolean' &&
+      typeof diff.afterValue === 'boolean'
+    ) {
+      return {
+        ...diff,
+        beforeValue: !diff.beforeValue,
+        afterValue: !diff.afterValue,
+      }
+    }
+    return diff
   }
 
   private resolveWholeTableDiff(schema: Schema | undefined, sourceTable: Table): Diff | undefined {

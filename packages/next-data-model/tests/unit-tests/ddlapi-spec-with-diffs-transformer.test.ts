@@ -3,6 +3,8 @@ import { buildFromDdl } from '@netcracker/qubership-apihub-ddlapi/parser'
 import { apiDiff, DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import { createBuildingServiceLogger } from '../../src/loggers'
 import { DdlApiSpecWithDiffsTransformer } from '../../src/building-service/ddlapi/shared/ddlapi-spec-with-diffs-transformer'
+import { DdlApiTreeWithDiffsBuilder } from '../../src/building-service/ddlapi/tree-with-diffs/builder'
+import { DdlApiTreeNodeKinds } from '../../src/model/ddlapi/types/node-kind'
 
 const TEST_DIFFS_META_KEY = Symbol('test-ddl-diffs-meta-key')
 const TEST_AGGREGATED_DIFFS_META_KEY = Symbol('test-ddl-aggregated-diffs-meta-key')
@@ -69,9 +71,35 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     })
 
     const idColumn = spec?.columns.items.find(column => column.columnName === 'id')
-    const columnDiffs = idColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+    const columnDiffs = idColumn?.[TEST_DIFFS_META_KEY] as Record<
+      string,
+      { action?: string; beforeValue?: unknown; afterValue?: unknown }
+    > | undefined
 
     expect(columnDiffs?.isNotNull?.action).toBe(DiffAction.replace)
+    expect(columnDiffs?.isNotNull?.beforeValue).toBe(false)
+    expect(columnDiffs?.isNotNull?.afterValue).toBe(true)
+  })
+
+  it('normalizes the implicit not-null change of a new primary key as add', async () => {
+    const merged = await mergeSql(
+      'create table t(id int, code int);',
+      'create table t(id int, code int primary key);',
+    )
+    const tree = new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: 'public',
+        name: 't',
+      },
+      diffsMetaKeys: TEST_DIFF_META_KEYS,
+    }).build()
+
+    const codeColumn = Array.from(tree.nodes.values()).find(
+      node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === 'code',
+    )
+
+    expect(codeColumn?.diffs.isNotNull?.data.action).toBe(DiffAction.add)
   })
 
   it('maps default add diffs onto defaultValue', async () => {
