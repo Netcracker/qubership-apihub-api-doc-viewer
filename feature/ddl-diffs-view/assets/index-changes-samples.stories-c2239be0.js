@@ -1,4 +1,4 @@
-import{c as xe,a as Ae,d as be,b as Se}from"./ddlapi-diffs-utils-5ade2878.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-45321229.js";import"./DiffBadge-a8af3c87.js";import"./index-6638dd2d.js";/* empty css              */import"./build-from-ddl-browser-f562cbbf.js";import"./iframe-b78e3ccf.js";import"../sb-preview/runtime.js";const fe=`CREATE SCHEMA IF NOT EXISTS public;
+import{c as xe,a as Ae,d as be,b as Se}from"./ddlapi-diffs-utils-3f56d705.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-45321229.js";import"./DiffBadge-a8af3c87.js";import"./index-6638dd2d.js";/* empty css              */import"./build-from-ddl-browser-f25c5ba8.js";import"./iframe-cb7097e4.js";import"../sb-preview/runtime.js";const fe=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
   id integer,

@@ -1,4 +1,4 @@
-import{c as U,a as B,d as X,b as P}from"./ddl-samples-common-96658284.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-be76727d.js";import"./DiffBadge-a8af3c87.js";import"./index-6638dd2d.js";import"./build-from-ddl-browser-f562cbbf.js";import"./iframe-b78e3ccf.js";import"../sb-preview/runtime.js";const Q=`CREATE TABLE t (
+import{c as U,a as B,d as X,b as P}from"./ddl-samples-common-ccb52a1a.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-be76727d.js";import"./DiffBadge-a8af3c87.js";import"./index-6638dd2d.js";import"./build-from-ddl-browser-f25c5ba8.js";import"./iframe-cb7097e4.js";import"../sb-preview/runtime.js";const Q=`CREATE TABLE t (
   order_id integer,
   customer_id integer
 );
