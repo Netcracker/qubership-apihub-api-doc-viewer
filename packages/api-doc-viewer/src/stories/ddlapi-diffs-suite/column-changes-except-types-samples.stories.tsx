@@ -59,3 +59,6 @@ export const Case_503_existing_column_lost_unique: Story = createCaseStory("503-
 export const Case_504_existing_column_lost_generated_identity: Story = createCaseStory("504-existing-column-lost-generated-identity");
 export const Case_505_existing_column_lost_generated_expression: Story = createCaseStory("505-existing-column-lost-generated-expression");
 export const Case_506_existing_column_lost_not_null: Story = createCaseStory("506-existing-column-lost-not-null");
+export const Case_601_existing_column_replaced_generated_expression: Story = createCaseStory("601-existing-column-replaced-generated-expression");
+export const Case_602_existing_column_generated_expression_became_identity: Story = createCaseStory("602-existing-column-generated-expression-became-identity");
+export const Case_603_existing_column_generated_identity_became_expression: Story = createCaseStory("603-existing-column-generated-identity-became-expression");

@@ -362,4 +362,43 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-506-existing-column-lost-not-null-${counter}`,
     });
   });
+
+  it('601-existing-column-replaced-generated-expression', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-601-existing-column-replaced-generated-expression',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-601-existing-column-replaced-generated-expression-${counter}`,
+    });
+  });
+
+  it('602-existing-column-generated-expression-became-identity', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-602-existing-column-generated-expression-became-identity',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-602-existing-column-generated-expression-became-identity-${counter}`,
+    });
+  });
+
+  it('603-existing-column-generated-identity-became-expression', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-changes-except-types-samples--case-603-existing-column-generated-identity-became-expression',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-changes-except-types-samples-603-existing-column-generated-identity-became-expression-${counter}`,
+    });
+  });
 });
