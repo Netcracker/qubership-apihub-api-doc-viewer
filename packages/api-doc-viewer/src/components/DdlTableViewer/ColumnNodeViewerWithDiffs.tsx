@@ -1,6 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDefined } from "@apihub/utils/common/checkers"
-import { takeColumnFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
+import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
@@ -58,6 +58,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
 
   const flagDiffs = useMemo(() => takeColumnFlagDiffs(node), [node])
+  const foreignKeyTargetDiffs = useMemo(() => takeColumnForeignKeyTargetDiffs(node), [node])
   const generatedExpressionDiff = useMemo(
     () => takeColumnGeneratedExpressionDiff(node),
     [node],
@@ -85,11 +86,12 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
             layoutSide={layoutSide}
             value={value}
             flagDiffs={flagDiffs}
+            foreignKeyTargetDiffs={foreignKeyTargetDiffs}
           />
         </div>
       )
     },
-    [flagDiffs, node.id, nodeDiff, value],
+    [flagDiffs, foreignKeyTargetDiffs, node.id, nodeDiff, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(

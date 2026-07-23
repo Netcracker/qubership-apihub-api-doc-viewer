@@ -4,12 +4,14 @@ import { DdlApiColumnRowValue, DdlApiIndexRowValue } from "../tree/node-value"
 /** Synthetic diff slot: resolved title-row background diff for column/index property rows. */
 export const DDL_PROPERTY_TITLE_ROW_DIFF_KEY = "titleRow" as const
 
+/** Per-target diffs for {@link DdlApiColumnRowValue.foreignKeyTargets}; keys from {@link formatForeignKeyTargetKey}. */
+export type DdlApiForeignKeyTargetDiffs = Partial<Record<string, ChangedPropertyMetaData>>
+
 export const DDL_COLUMN_FLAG_DIFF_KEYS = [
   "isPrimaryKey",
   "isUnique",
   "isNotNull",
   "isGenerated",
-  "isForeignKey",
 ] as const satisfies ReadonlyArray<keyof DdlApiColumnRowValue>
 
 export const DDL_INDEX_FLAG_DIFF_KEYS = [
@@ -28,7 +30,9 @@ export type DdlApiColumnPropertyRowDiffs = Partial<
     | keyof DdlApiColumnRowValue,
     ChangedPropertyMetaData
   >
->
+> & {
+  foreignKeyTargetDiffs?: DdlApiForeignKeyTargetDiffs
+}
 
 export type DdlApiIndexPropertyRowDiffs = Partial<
   Record<
@@ -46,7 +50,7 @@ export const DDL_COLUMN_CHANGED_PROPERTY_KEYS = [
   "description",
   "generatedExpression",
   ...DDL_COLUMN_FLAG_DIFF_KEYS,
-] as const satisfies ReadonlyArray<keyof DdlApiColumnPropertyRowDiffs>
+] as const
 
 export const DDL_INDEX_CHANGED_PROPERTY_KEYS = [
   NODE_LEVEL_DIFF_KEY,

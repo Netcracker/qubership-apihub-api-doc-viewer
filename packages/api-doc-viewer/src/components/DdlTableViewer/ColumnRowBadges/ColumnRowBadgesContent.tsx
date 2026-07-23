@@ -3,6 +3,8 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
+import { formatForeignKeyTargetKey } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { FC, memo, ReactNode, useMemo } from "react"
 import {
   DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA,
@@ -12,6 +14,7 @@ import {
   DDL_API_UNIQUE_BADGE_COLOR_SCHEMA,
 } from "../consts"
 import { ForeignKey } from "../ForeignKey/ForeignKey"
+import { formatForeignKeyTarget } from "../formatters"
 import { ColumnRowBadgesContentProps, ColumnRowBadgesFlagDiffs } from "./types"
 
 /** Keeps side-by-side columns aligned when a flag badge is hidden on one side. */
@@ -81,11 +84,48 @@ function renderFlagBadge(options: {
   )
 }
 
+function renderForeignKeyTargetBadge(options: {
+  columnId: string
+  target: DdlApiForeignKeyTarget
+  targetDiff: ChangedPropertyMetaData | undefined
+  layoutMode: ReturnType<typeof useLayoutMode>
+  layoutSide: LayoutSide
+}): ReactNode {
+  const { columnId, target, targetDiff, layoutMode, layoutSide } = options
+  const badgeKey = buildForeignKeyBadgeKey(columnId, target)
+
+  if (targetDiff && !isContentVisibleOnSide(targetDiff, layoutSide)) {
+    return <span key={badgeKey} className="inline-block min-h-[19px]" aria-hidden="true" />
+  }
+
+  if (!targetDiff) {
+    return <ForeignKey key={badgeKey} target={target} />
+  }
+
+  const $changes = targetDiff.data as Diff
+
+  return (
+    <div key={badgeKey} className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
+      <DiffBadge
+        label="FK"
+        colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA}
+        layoutMode={layoutMode}
+        layoutSide={layoutSide}
+        isNodeChanged={false}
+        isContentChanged={true}
+        $changes={$changes}
+      />
+      <ForeignKey target={target} hideBadge />
+    </div>
+  )
+}
+
 export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<ColumnRowBadgesContentProps>(props => {
-  const { columnId, value, flagDiffs, layoutSide } = props
+  const { columnId, value, flagDiffs, foreignKeyTargetDiffs, layoutSide } = props
   const layoutMode = useLayoutMode()
 
   const diffs: ColumnRowBadgesFlagDiffs = useMemo(() => flagDiffs ?? {}, [flagDiffs])
+  const targetDiffs = useMemo(() => foreignKeyTargetDiffs ?? {}, [foreignKeyTargetDiffs])
 
   const primaryKeyBadge = useMemo(
     () => renderFlagBadge({
@@ -154,44 +194,24 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
     [columnId, diffs.isGenerated, layoutMode, layoutSide, value.isGenerated],
   )
 
-  const foreignKeyBadge = useMemo(() => {
-    const flagDiff = diffs.isForeignKey
-    if (!isFlagBadgeVisible(value.isForeignKey, flagDiff)) {
-      return null
-    }
-    if (!isContentVisibleOnSide(flagDiff, layoutSide)) {
-      return emptyBadgePlaceholder()
+  const foreignKeyBadges = useMemo(() => {
+    const targets = value.foreignKeyTargets ?? []
+    if (targets.length === 0) {
+      return []
     }
 
-    const $changes = flagDiff?.data as Diff | undefined
-    if (!$changes) {
-      return value.foreignKeyTarget
-        ? <ForeignKey target={value.foreignKeyTarget} />
-        : null
-    }
-
-    return (
-      <div className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
-        <DiffBadge
-          key={buildBadgeKey(columnId, "FK")}
-          label="FK"
-          colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA}
-          layoutMode={layoutMode}
-          layoutSide={layoutSide}
-          isNodeChanged={false}
-          isContentChanged={true}
-          $changes={$changes}
-        />
-        {value.foreignKeyTarget && (
-          <ForeignKey target={value.foreignKeyTarget} hideBadge />
-        )}
-      </div>
-    )
-  }, [columnId, diffs.isForeignKey, layoutMode, layoutSide, value.foreignKeyTarget, value.isForeignKey])
+    return targets.map(target => renderForeignKeyTargetBadge({
+      columnId,
+      target,
+      targetDiff: targetDiffs[formatForeignKeyTargetKey(target)],
+      layoutMode,
+      layoutSide,
+    }))
+  }, [columnId, layoutMode, layoutSide, targetDiffs, value.foreignKeyTargets])
 
   const badges = useMemo(
-    () => [primaryKeyBadge, uniqueBadge, notNullBadge, generatedBadge, foreignKeyBadge].filter(Boolean),
-    [foreignKeyBadge, generatedBadge, notNullBadge, primaryKeyBadge, uniqueBadge],
+    () => [primaryKeyBadge, uniqueBadge, notNullBadge, generatedBadge, ...foreignKeyBadges].filter(Boolean),
+    [foreignKeyBadges, generatedBadge, notNullBadge, primaryKeyBadge, uniqueBadge],
   )
 
   if (badges.length === 0) {
@@ -207,4 +227,8 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
 
 function buildBadgeKey(columnId: string, label: string): string {
   return `${columnId}-${label}`
+}
+
+function buildForeignKeyBadgeKey(columnId: string, target: DdlApiForeignKeyTarget): string {
+  return `${columnId}-FK-${formatForeignKeyTarget(target)}`
 }

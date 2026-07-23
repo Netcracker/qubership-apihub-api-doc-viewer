@@ -125,11 +125,11 @@ describe('DdlApiSpecTransformer column row value', () => {
 
     const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
     expect(refIdColumn?.isForeignKey).toBe(true)
-    expect(refIdColumn?.foreignKeyTarget).toEqual({
+    expect(refIdColumn?.foreignKeyTargets).toEqual([{
       schemaName: 'public',
       tableName: 'parent',
       columnName: 'id',
-    })
+    }])
   })
 
   it('resolves foreignKeyTarget in a single-table partial realm with embedded refTable', async () => {
@@ -159,11 +159,11 @@ describe('DdlApiSpecTransformer column row value', () => {
 
     const userIdColumn = spec?.columns.items.find(column => column.columnName === 'user_id')
     expect(userIdColumn?.isForeignKey).toBe(true)
-    expect(userIdColumn?.foreignKeyTarget).toEqual({
+    expect(userIdColumn?.foreignKeyTargets).toEqual([{
       schemaName: 'public',
       tableName: 'user_data',
       columnName: 'user_id',
-    })
+    }])
   })
 
   it('resolves foreignKeyTarget when FK column objects differ from table.columns by reference', async () => {
@@ -203,11 +203,11 @@ describe('DdlApiSpecTransformer column row value', () => {
 
     const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
     expect(refIdColumn?.isForeignKey).toBe(true)
-    expect(refIdColumn?.foreignKeyTarget).toEqual({
+    expect(refIdColumn?.foreignKeyTargets).toEqual([{
       schemaName: 'public',
       tableName: 'parent',
       columnName: 'id',
-    })
+    }])
   })
 
   it('resolves foreignKeyTarget schema via refTable reference across schemas', async () => {
@@ -228,11 +228,11 @@ describe('DdlApiSpecTransformer column row value', () => {
     })
 
     const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
-    expect(refIdColumn?.foreignKeyTarget).toEqual({
+    expect(refIdColumn?.foreignKeyTargets).toEqual([{
       schemaName: 'custom',
       tableName: 'parent',
       columnName: 'id',
-    })
+    }])
   })
 })
 

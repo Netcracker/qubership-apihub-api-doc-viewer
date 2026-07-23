@@ -9,9 +9,11 @@ import {
   findAttr,
   Index,
   PgAttrKind,
+  Realm,
   Schema,
   Table,
 } from "@netcracker/qubership-apihub-ddlapi";
+import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
 import { BuildingServiceLogger } from "../../../loggers";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import {
@@ -102,20 +104,22 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     }
 
     const schema = realm.schemas.find(currentSchema => currentSchema.name === tableKey.schemaName)
-    return this.attachDiffMetadataToTableOrientedSpec(transformed, schema, table, tableKey)
+    return this.attachDiffMetadataToTableOrientedSpec(transformed, realm, schema, table, tableKey)
   }
 
   protected attachDiffMetadataToTableOrientedSpec(
     spec: DdlApiTableOrientedSpec,
+    realm: Realm,
     schema: Schema | undefined,
     sourceTable: Table,
     tableKey: TableKey,
   ): DdlApiTableOrientedSpecWithDiffs {
     const transformedWithDiffs = this.createTableOrientedSpecWithDiffs(spec)
     const { diffsMetaKey, aggregatedDiffsMetaKey } = this.diffMetaKeys
+    const owningSchemaName = tableKey.schemaName ?? schema?.name ?? 'public'
 
     this.attachTableLevelDiffs(transformedWithDiffs, schema, sourceTable, tableKey)
-    this.attachColumnsSectionDiffs(transformedWithDiffs.columns, sourceTable)
+    this.attachColumnsSectionDiffs(transformedWithDiffs.columns, realm, sourceTable, owningSchemaName)
     this.attachIndexesSectionDiffs(transformedWithDiffs.indexes, sourceTable)
 
     aggregateDiffsWithRollup(transformedWithDiffs, diffsMetaKey, aggregatedDiffsMetaKey)
@@ -172,7 +176,9 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
   private attachColumnsSectionDiffs(
     columnsSection: DdlApiTableOrientedSpecColumnsSectionWithDiffs,
+    realm: Realm,
     sourceTable: Table,
+    owningSchemaName: string,
   ): void {
     const sourceColumns = sourceTable.columns ?? []
     const columnsArrayDiffs = this.getDiffsRecord(sourceColumns)
@@ -216,9 +222,14 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.isPrimaryKey = primaryKeyDiff
       }
 
-      const foreignKeyDiff = this.resolveForeignKeyDiffForColumn(sourceTable, sourceColumn.name)
-      if (foreignKeyDiff) {
-        columnDiffs.isForeignKey = foreignKeyDiff
+      const foreignKeyTargetDiffs = this.resolveForeignKeyTargetDiffsForColumn(
+        realm,
+        sourceTable,
+        sourceColumn,
+        owningSchemaName,
+      )
+      if (Object.keys(foreignKeyTargetDiffs).length > 0) {
+        columnDiffs.foreignKeyTargets = foreignKeyTargetDiffs
       }
 
       const uniqueDiff = this.resolveUniqueIndexDiffForColumn(sourceTable, sourceColumn.name)
@@ -429,24 +440,39 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return (attrs ?? []).findIndex(attr => attr.kind === AttrKind.Comment)
   }
 
-  private resolveForeignKeyDiffForColumn(sourceTable: Table, columnName: string): Diff | undefined {
+  private resolveForeignKeyTargetDiffsForColumn(
+    realm: Realm,
+    sourceTable: Table,
+    sourceColumn: Column,
+    owningSchemaName: string,
+  ): DiffsRecord {
     const foreignKeys = sourceTable.foreignKeys ?? []
     const foreignKeysArrayDiffs = this.getDiffsRecord(foreignKeys)
+    const targetDiffs: DiffsRecord = {}
 
     for (let index = 0; index < foreignKeys.length; index += 1) {
       const foreignKey = foreignKeys[index]
-      const referencesColumn = foreignKey.columns?.some(column => column.name === columnName) ?? false
+      const referencesColumn = foreignKey.columns?.some(foreignKeyColumn =>
+        this.isSameForeignKeyColumn(foreignKeyColumn, sourceColumn),
+      ) ?? false
       if (!referencesColumn) {
         continue
       }
 
       const wholeForeignKeyDiff = this.resolveArrayElementDiff(foreignKeysArrayDiffs, index)
-      if (wholeForeignKeyDiff) {
-        return wholeForeignKeyDiff
+      if (!wholeForeignKeyDiff) {
+        continue
       }
+
+      const target = this.buildForeignKeyTarget(realm, foreignKey, sourceColumn, owningSchemaName)
+      if (!target) {
+        continue
+      }
+
+      targetDiffs[formatForeignKeyTargetKey(target)] = wholeForeignKeyDiff
     }
 
-    return undefined
+    return targetDiffs
   }
 
   private resolveUniqueIndexDiffForColumn(sourceTable: Table, columnName: string): Diff | undefined {

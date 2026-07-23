@@ -1,5 +1,6 @@
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
+import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import {
   ChangedPropertyMetaData,
   NODE_LEVEL_DIFF_KEY,
@@ -11,12 +12,15 @@ import {
   DDL_INDEX_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   type DdlApiColumnFlagDiffKey,
+  type DdlApiColumnPropertyRowDiffs,
+  type DdlApiForeignKeyTargetDiffs,
   type DdlApiIndexFlagDiffKey,
 } from "./property-row-diffs.types"
 
 export type {
   DdlApiColumnFlagDiffKey,
   DdlApiColumnPropertyRowDiffs,
+  DdlApiForeignKeyTargetDiffs,
   DdlApiIndexFlagDiffKey,
   DdlApiIndexPropertyRowDiffs,
   DdlApiPropertyRowValue
@@ -27,6 +31,8 @@ export {
   DDL_INDEX_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY
 } from "./property-row-diffs.types"
+
+export { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 
 export type DdlApiPropertyNodeWithDiffs =
   | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -67,6 +73,24 @@ export function isDdlPropertySubheaderVisible(
     : nodeLevelDiff.styles.after
 
   return styles.isHeaderVisible
+}
+
+export function takeColumnForeignKeyTargetDiffs(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): DdlApiForeignKeyTargetDiffs | undefined {
+  const columnDiffs = node.diffs as DdlApiColumnPropertyRowDiffs
+  const targetDiffs = columnDiffs.foreignKeyTargetDiffs
+  if (!targetDiffs || Object.keys(targetDiffs).length === 0) {
+    return undefined
+  }
+  return targetDiffs
+}
+
+export function takeColumnForeignKeyTargetDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+  target: { readonly schemaName: string; readonly tableName: string; readonly columnName: string },
+): ChangedPropertyMetaData | undefined {
+  return takeColumnForeignKeyTargetDiffs(node)?.[formatForeignKeyTargetKey(target)]
 }
 
 export function takeColumnFlagDiffs(

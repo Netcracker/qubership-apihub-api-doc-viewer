@@ -172,11 +172,11 @@ export class DdlApiSpecTransformer {
     const identity = column.attrs?.find(attribute => attribute.kind === PgAttrKind.Identity)
     const generatedExpr = findAttr(column.attrs, AttrKind.GeneratedExpr)
     const isGenerated = identity !== undefined || generatedExpr !== undefined
-    const foreignKey = this.findForeignKeyForColumn(table, column)
-    const isForeignKey = foreignKey !== undefined
-    const foreignKeyTarget = isForeignKey && foreignKey
-      ? this.buildForeignKeyTarget(realm, foreignKey, column, owningSchemaName)
-      : undefined
+    const foreignKeys = this.findForeignKeysForColumn(table, column)
+    const foreignKeyTargets = foreignKeys
+      .map(foreignKey => this.buildForeignKeyTarget(realm, foreignKey, column, owningSchemaName))
+      .filter((target): target is DdlApiForeignKeyTarget => target !== undefined)
+    const isForeignKey = foreignKeyTargets.length > 0
 
     const columnType = this.formatColumnType(column.type)
     const schemaType = column.type?.type
@@ -190,7 +190,7 @@ export class DdlApiSpecTransformer {
       ...(enumValues ? { enumValues } : {}),
       isPrimaryKey: isPrimaryKey,
       isForeignKey: isForeignKey,
-      ...(foreignKeyTarget ? { foreignKeyTarget } : {}),
+      ...(foreignKeyTargets.length > 0 ? { foreignKeyTargets } : {}),
       isGenerated: isGenerated,
       ...(identity ? { generatedBy: 'identity' as const } : {}),
       ...(generatedExpr && !identity ? { generatedBy: 'expression' as const } : {}),
@@ -240,17 +240,17 @@ export class DdlApiSpecTransformer {
     )
   }
 
-  private isSameForeignKeyColumn(foreignKeyColumn: Column, column: Column): boolean {
+  protected isSameForeignKeyColumn(foreignKeyColumn: Column, column: Column): boolean {
     return foreignKeyColumn === column || foreignKeyColumn.name === column.name
   }
 
-  private findForeignKeyForColumn(table: Table, column: Column): ForeignKey | undefined {
-    return table.foreignKeys?.find(foreignKey =>
+  protected findForeignKeysForColumn(table: Table, column: Column): ForeignKey[] {
+    return (table.foreignKeys ?? []).filter(foreignKey =>
       foreignKey.columns?.some(foreignKeyColumn => this.isSameForeignKeyColumn(foreignKeyColumn, column)),
     )
   }
 
-  private buildForeignKeyTarget(
+  protected buildForeignKeyTarget(
     realm: Realm,
     foreignKey: ForeignKey,
     column: Column,

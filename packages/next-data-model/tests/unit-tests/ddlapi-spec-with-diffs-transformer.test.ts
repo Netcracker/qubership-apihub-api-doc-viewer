@@ -249,6 +249,47 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.replace)
   })
 
+  it('maps foreign-key reference changes onto foreignKeyTargets diffs', async () => {
+    const merged = await mergeSql(
+      `CREATE TABLE public.target (id integer PRIMARY KEY);
+       CREATE TABLE public.t (ref_id integer REFERENCES public.target(id));`,
+      `CREATE TABLE public.target (code integer PRIMARY KEY);
+       CREATE TABLE public.t (ref_id integer REFERENCES public.target(code));`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const refIdColumn = spec?.columns.items.find(column => column.columnName === 'ref_id')
+    const columnDiffs = refIdColumn?.[TEST_DIFFS_META_KEY] as Record<
+      string,
+      Record<string, { action?: string }> | { action?: string }
+    > | undefined
+    const targetDiffs = columnDiffs?.foreignKeyTargets as Record<string, { action?: string }> | undefined
+
+    expect(refIdColumn?.foreignKeyTargets).toHaveLength(2)
+    expect(Object.values(targetDiffs ?? {}).map(diff => diff.action).sort()).toEqual(['add', 'remove'])
+  })
+
+  it('builds a diffs tree for foreign-key reference changes without throwing', async () => {
+    const merged = await mergeSql(
+      `CREATE TABLE public.target (id integer PRIMARY KEY);
+       CREATE TABLE public.t (ref_id integer REFERENCES public.target(id));`,
+      `CREATE TABLE public.target (code integer PRIMARY KEY);
+       CREATE TABLE public.t (ref_id integer REFERENCES public.target(code));`,
+    )
+
+    expect(() => new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: 'public',
+        name: 't',
+      },
+      diffsMetaKeys: TEST_DIFF_META_KEYS,
+    }).build()).not.toThrow()
+  })
+
   it('aggregates rollup metadata on the transformed table document', async () => {
     const merged = await mergeSql(
       'create table t(id int);',

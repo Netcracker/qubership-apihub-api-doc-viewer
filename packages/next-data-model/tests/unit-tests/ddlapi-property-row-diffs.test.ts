@@ -6,6 +6,7 @@ import {
 import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-column"
+import { DdlApiNodeDiffsSummaryKindAny } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-summary/kind-any"
 import {
   annotation,
   breaking,
@@ -226,6 +227,57 @@ describe("DDL property row diff aggregators", () => {
     expect(notNullDiff?.data.action).toBe(DiffAction.add)
     expect(notNullDiff?.styles.before.isContentVisible).toBe(false)
     expect(notNullDiff?.styles.after.isContentVisible).toBe(true)
+  })
+
+  it("aggregates foreign-key target diffs keyed by target identity", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "ref_id",
+      isForeignKey: true,
+      foreignKeyTargets: [
+        { schemaName: "public", tableName: "target", columnName: "id" },
+        { schemaName: "public", tableName: "target", columnName: "code" },
+      ],
+      [TEST_DIFFS_META_KEY]: {
+        foreignKeyTargets: {
+          "public\0target\0id": {
+            type: nonBreaking,
+            action: DiffAction.remove,
+            scope: "root",
+            beforeValue: {},
+            beforeDeclarationPaths: [["foreignKeys", 0]],
+          },
+          "public\0target\0code": {
+            type: nonBreaking,
+            action: DiffAction.add,
+            scope: "root",
+            afterValue: {},
+            afterDeclarationPaths: [["foreignKeys", 1]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "ref_id")
+
+    expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0id"]?.data.action).toBe(DiffAction.remove)
+    expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0code"]?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]?.data.action).toBe(DiffAction.replace)
+  })
+
+  it("summarises nested foreign-key target diffs without throwing", () => {
+    const summaryAggregator = new DdlApiNodeDiffsSummaryKindAny()
+    const nodeDiffs = {
+      foreignKeyTargetDiffs: {
+        "public\0target\0id": makeFlagPropertyDiff(nonBreaking, DiffAction.remove),
+        "public\0target\0code": makeFlagPropertyDiff(nonBreaking, DiffAction.add),
+      },
+    }
+
+    const summary = summaryAggregator.aggregate(nodeDiffs)
+
+    expect(summary?.has(nonBreaking)).toBe(true)
+    expect(summary?.size).toBe(1)
   })
 
   it("picks the highest title-row severity from column flag diffs", () => {

@@ -7,12 +7,13 @@ import {
   DDL_COLUMN_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   DdlApiColumnPropertyRowDiffs,
+  DdlApiForeignKeyTargetDiffs,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
+import { isDiffAdd, isDiffRemove, Diff } from "@netcracker/qubership-apihub-api-diff";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
@@ -42,7 +43,15 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     const superNodeDiffs = super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
 
     const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
+    if (!isObject(diffs)) {
+      return superNodeDiffs
+    }
+
+    const hasForeignKeyTargetDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['foreignKeyTargets'])
+    const hasFlatDiffs = Object.entries(diffs).some(([key, value]) =>
+      key !== 'foreignKeyTargets' && AbstractNodeDiffsAggregator.isDiff(value),
+    )
+    if (!hasFlatDiffs && !hasForeignKeyTargetDiffs) {
       return superNodeDiffs
     }
 
@@ -51,14 +60,19 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       DDL_COLUMN_CHANGED_PROPERTY_KEYS,
     )
 
-    this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
-
-    const generatedExpressionDiff = diffs['generatedExpression']
-    generatedExpressionDiff && this.aggregateTextDiff(
-      generatedExpressionDiff,
-      'generatedExpression',
+    this.adoptNodeLevelDiffFromCrawlIfAbsent(
+      diffs as Partial<Record<string, Diff>>,
       nodeDiffs,
     )
+
+    const generatedExpressionDiff = diffs['generatedExpression']
+    if (AbstractNodeDiffsAggregator.isDiff(generatedExpressionDiff)) {
+      this.aggregateTextDiff(
+        generatedExpressionDiff,
+        'generatedExpression',
+        nodeDiffs,
+      )
+    }
 
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
@@ -66,44 +80,46 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     const isPrimaryKeyDiff = diffs['isPrimaryKey']
-    isPrimaryKeyDiff && this.aggregateFlagDiff(
-      isPrimaryKeyDiff,
-      'isPrimaryKey',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isPrimaryKey'),
-    )
-
-    const isForeignKeyDiff = diffs['isForeignKey']
-    isForeignKeyDiff && this.aggregateFlagDiff(
-      isForeignKeyDiff,
-      'isForeignKey',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isForeignKey'),
-    )
+    if (AbstractNodeDiffsAggregator.isDiff(isPrimaryKeyDiff)) {
+      this.aggregateFlagDiff(
+        isPrimaryKeyDiff,
+        'isPrimaryKey',
+        nodeDiffs,
+        this.takeBooleanFlagValue(crawlValue, 'isPrimaryKey'),
+      )
+    }
 
     const isGeneratedDiff = diffs['isGenerated']
-    isGeneratedDiff && this.aggregateFlagDiff(
-      isGeneratedDiff,
-      'isGenerated',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isGenerated'),
-    )
+    if (AbstractNodeDiffsAggregator.isDiff(isGeneratedDiff)) {
+      this.aggregateFlagDiff(
+        isGeneratedDiff,
+        'isGenerated',
+        nodeDiffs,
+        this.takeBooleanFlagValue(crawlValue, 'isGenerated'),
+      )
+    }
 
     const isUniqueDiff = diffs['isUnique']
-    isUniqueDiff && this.aggregateFlagDiff(
-      isUniqueDiff,
-      'isUnique',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isUnique'),
-    )
+    if (AbstractNodeDiffsAggregator.isDiff(isUniqueDiff)) {
+      this.aggregateFlagDiff(
+        isUniqueDiff,
+        'isUnique',
+        nodeDiffs,
+        this.takeBooleanFlagValue(crawlValue, 'isUnique'),
+      )
+    }
 
     const isNotNullDiff = diffs['isNotNull']
-    isNotNullDiff && this.aggregateFlagDiff(
-      isNotNullDiff,
-      'isNotNull',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isNotNull'),
-    )
+    if (AbstractNodeDiffsAggregator.isDiff(isNotNullDiff)) {
+      this.aggregateFlagDiff(
+        isNotNullDiff,
+        'isNotNull',
+        nodeDiffs,
+        this.takeBooleanFlagValue(crawlValue, 'isNotNull'),
+      )
+    }
+
+    this.aggregateForeignKeyTargetDiffs(diffs, nodeDiffs)
 
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
@@ -131,6 +147,36 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
         nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
         return
       }
+    }
+
+    const foreignKeyTargetDiffs = nodeDiffs.foreignKeyTargetDiffs
+    if (foreignKeyTargetDiffs) {
+      const firstTargetDiff = Object.values(foreignKeyTargetDiffs).find(Boolean)
+      if (firstTargetDiff) {
+        nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(firstTargetDiff)
+      }
+    }
+  }
+
+  private aggregateForeignKeyTargetDiffs(
+    diffs: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const foreignKeyTargetsDiffRecord = (diffs as Record<string, unknown>)['foreignKeyTargets']
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(foreignKeyTargetsDiffRecord)) {
+      return
+    }
+
+    const foreignKeyTargetDiffs: DdlApiForeignKeyTargetDiffs = {}
+    for (const [targetKey, diff] of Object.entries(foreignKeyTargetsDiffRecord)) {
+      if (!diff) {
+        continue
+      }
+      foreignKeyTargetDiffs[targetKey] = this.buildChangedPropertyMetaDataFromDiff(diff)
+    }
+
+    if (Object.keys(foreignKeyTargetDiffs).length > 0) {
+      nodeDiffs.foreignKeyTargetDiffs = foreignKeyTargetDiffs
     }
   }
 }

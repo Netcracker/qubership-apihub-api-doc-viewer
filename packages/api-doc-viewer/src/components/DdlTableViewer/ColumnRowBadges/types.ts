@@ -1,6 +1,7 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
+import { DdlApiForeignKeyTargetDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 
 export type ColumnRowBadgesValue = {
   isPrimaryKey?: boolean
@@ -8,7 +9,7 @@ export type ColumnRowBadgesValue = {
   isNotNull?: boolean
   isGenerated?: boolean
   isForeignKey?: boolean
-  foreignKeyTarget?: DdlApiForeignKeyTarget
+  foreignKeyTargets?: readonly DdlApiForeignKeyTarget[]
 }
 
 export type ColumnRowBadgesFlagDiffs = {
@@ -16,13 +17,13 @@ export type ColumnRowBadgesFlagDiffs = {
   isUnique?: ChangedPropertyMetaData
   isNotNull?: ChangedPropertyMetaData
   isGenerated?: ChangedPropertyMetaData
-  isForeignKey?: ChangedPropertyMetaData
 }
 
 export type ColumnRowBadgesProps = {
   columnId: string
   value: ColumnRowBadgesValue
   flagDiffs?: ColumnRowBadgesFlagDiffs
+  foreignKeyTargetDiffs?: DdlApiForeignKeyTargetDiffs
 }
 
 export type ColumnRowBadgesContentProps = ColumnRowBadgesProps & {

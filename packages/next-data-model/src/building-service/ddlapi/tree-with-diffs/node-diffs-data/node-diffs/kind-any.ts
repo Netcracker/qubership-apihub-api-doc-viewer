@@ -101,6 +101,10 @@ export class DdlApiNodeDiffsAggregatorKindAny
     key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
     nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
   ) {
+    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected buildChangedPropertyMetaDataFromDiff(diff: Diff<DiffType>): ChangedPropertyMetaData {
     let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     if (isDiffAdd(diff)) {
@@ -141,7 +145,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
         textHighlighterColor: HighlightVariant.Yellow,
       }
     }
-    nodeDiffs[key] = {
+    return {
       data: diff,
       styles: {
         before: beforeStyles,
