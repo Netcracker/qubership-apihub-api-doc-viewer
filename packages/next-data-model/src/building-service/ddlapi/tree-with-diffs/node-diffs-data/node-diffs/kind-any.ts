@@ -101,7 +101,9 @@ export class DdlApiNodeDiffsAggregatorKindAny
     key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
     nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
   ) {
-    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+    nodeDiffs[key] = key === 'columnName' || key === 'indexName'
+      ? this.buildDdlPropertyNameChangedPropertyMetaDataFromDiff(diff)
+      : this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   protected buildChangedPropertyMetaDataFromDiff(diff: Diff<DiffType>): ChangedPropertyMetaData {
@@ -145,6 +147,58 @@ export class DdlApiNodeDiffsAggregatorKindAny
         textHighlighterColor: HighlightVariant.Yellow,
       }
     }
+    return this.createChangedPropertyMetaData(diff, beforeStyles, afterStyles)
+  }
+
+  protected buildDdlPropertyNameChangedPropertyMetaDataFromDiff(
+    diff: Diff<DiffType>,
+  ): ChangedPropertyMetaData {
+    let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    if (isDiffAdd(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: false,
+        backgroundColor: HighlightVariant.Gray,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Green,
+      }
+    }
+    if (isDiffRemove(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Red,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: false,
+        backgroundColor: HighlightVariant.Gray,
+      }
+    }
+    if (isDiffRename(diff) || isDiffReplace(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: true,
+        backgroundColor: HighlightVariant.Yellow,
+      }
+    }
+    return this.createChangedPropertyMetaData(diff, beforeStyles, afterStyles)
+  }
+
+  private createChangedPropertyMetaData(
+    diff: Diff<DiffType>,
+    beforeStyles: DiffStyles,
+    afterStyles: DiffStyles,
+  ): ChangedPropertyMetaData {
     return {
       data: diff,
       styles: {
@@ -168,13 +222,11 @@ export class DdlApiNodeDiffsAggregatorKindAny
       isContentVisible: true,
       isHeaderVisible: true,
       backgroundColor: HighlightVariant.Yellow,
-      textHighlighterColor: HighlightVariant.Yellow,
     },
     after: {
       isContentVisible: true,
       isHeaderVisible: true,
       backgroundColor: HighlightVariant.Yellow,
-      textHighlighterColor: HighlightVariant.Yellow,
     },
   }
 

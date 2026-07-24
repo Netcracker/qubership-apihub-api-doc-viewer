@@ -78,6 +78,8 @@ describe("DDL property row diff aggregators", () => {
     expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff?.styles.before.backgroundColor).toBe("yellow")
     expect(titleRowDiff?.styles.after.backgroundColor).toBe("yellow")
+    expect(titleRowDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
   it("does not aggregate flag diffs when the whole column is added", () => {
@@ -274,6 +276,8 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.foreignKeyTargetDiffs?.["public\0target\0code"]?.styles.after.textHighlighterColor)
       .toBe(HighlightVariant.Green)
     expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
   it("summarises nested foreign-key target diffs without throwing", () => {
