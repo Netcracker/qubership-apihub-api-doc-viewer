@@ -200,6 +200,48 @@ normalisation fits both.
 - Viewer still collapses both to a single **generated** badge label — see
   `api-doc-viewer-authoring` (`ColumnRowBadges`).
 
+**Omit `isGenerated` crawl diff when the column stays generated (FK parallel):**
+
+When only the generated *mechanism* changes (expression ↔ identity, cases 602/603),
+`isGenerated` remains `true` on both sides — same idea as FK target replacement
+where `isForeignKey` stays `true` and only `foreignKeyTargets` diffs appear.
+Emit **`generatedExpression`** add/remove only; strip `isGenerated` in
+`finalizeGeneratedColumnDiff` / `shouldOmitIsGeneratedFlagDiff`.
+
+| Case | Keep `isGenerated` diff? | Keep `generatedExpression` diff? |
+| --- | --- | --- |
+| Kind switch (expr ↔ identity) | **No** | Yes (add or remove) |
+| Expression body replace only (601) | **No** | Yes (replace) |
+| Column loses generated entirely (505) | **Yes** (remove) | Yes (remove) |
+| New generated column / attr add | Yes (add) | Yes (add) |
+
+**Trap (505 regression):** on merged ddlapi documents the removed `GeneratedExpr`
+attr often **still exists** on the column object with a remove diff attached.
+`findGeneratedColumnAttr(attrs) !== undefined` therefore does **not** mean “still
+generated after merge”. To detect kind switch vs de-generation, check for an
+**incoming** generated attr (`hasIncomingGeneratedColumnAttrDiff`: add of
+Identity/GeneratedExpr, or replace whose before/after kinds differ) — not merely
+presence of a generated attr on the merged column.
+
+### `textHighlighterColor` in DDL aggregators
+
+`TextValue` (column/index title) and `AdditionalInfoPiece` (expression chip) read
+`styles.before/after.textHighlighterColor` from precomputed node diffs. Set it in
+**next-data-model only** — do not patch highlight in the viewer.
+
+| Field / consumer | add/remove | replace/rename |
+| --- | --- | --- |
+| `generatedExpression` → `AdditionalInfoPiece` | **No** text highlighter (row background only) | Yellow text highlighter |
+| `foreignKeyTargetDiffs` → FK link text | Red/green text highlighter (kind-column only) | — |
+| `columnName` / `indexName` → title `TextValue` | **No** text highlighter | **No** text highlighter (yellow row background only) |
+| Synthetic title-row replace (`TITLE_ROW_FLAG_AS_REPLACE_STYLES`) | — | **No** text highlighter (badges carry their own diff chrome) |
+
+Do **not** restore add/remove text highlighter globally in
+`buildChangedPropertyMetaDataFromDiff` — FK and generated-expression contracts
+differ. FK link highlighting belongs in `kind-column.buildForeignKeyTargetDiffMetadata`;
+property names use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` via
+`aggregateTextDiff`.
+
 ## Cross-package boundary
 
 View components in `packages/api-doc-viewer` import builders and node types

@@ -255,6 +255,35 @@ spacer (same horizontal footprint as the expander column). This is not
 **Label styling:** `#626D82`, `font-size: 12px`, `font-weight: 400`
 (`.additional-info-row-label`).
 
+**Diff highlighting (session lesson):**
+
+- **`AdditionalInfoRow`** applies side **background** from the row diff prop (same
+  pattern as other diff rows).
+- **`AdditionalInfoPiece`** renders the expression in a **two-layer** DOM (JsoValue
+  `.block` pattern): outer span keeps the grey block chip; inner span receives
+  `textHighlighterColor` via `takeDiffSideTextHighlighterColor` so yellow highlight
+  hugs text only — do not compound `.block.diffs-highlighter_*` on one element.
+- Orchestration stays in `ColumnNodeViewerWithDiffs`: pass
+  `textHighlighterColor={takeDiffSideTextHighlighterColor(generatedExpressionDiff, layoutSide)}`.
+  Add/remove of an expression uses row background only; **replace** may set yellow
+  text highlighter in the data layer.
+
+### DDL property title row — no column-name text highlight
+
+`TitleRow` → `TextValue` reads `diff.styles.*.textHighlighterColor` from
+`takeDdlPropertyTitleRowDiff` (via `buildDdlPropertyTitleRowDiffProps`). For DDL
+**property lists**, product rule: **do not** yellow-highlight column or index
+**names** — only the title-row **background** (including synthetic replace when
+badges change).
+
+| Symptom | Likely cause | Fix (data layer) |
+| --- | --- | --- |
+| Column name yellow on PK/FK/generated badge change | `TITLE_ROW_FLAG_AS_REPLACE_STYLES` had `textHighlighterColor` | Remove from synthetic title-row styles in `kind-any.ts` |
+| Column name yellow on rename | `buildChangedPropertyMetaDataFromDiff` on `columnName` | Use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` in `aggregateTextDiff` |
+
+Do **not** strip highlighter in `TextValue` for DDL only — fix diff metadata in
+next-data-model so badges and expression chips keep their own contracts.
+
 ### Property list viewers (DDL columns/indexes, JSO, future specs)
 
 Several viewers render a **flat or nested list of properties** under a section
@@ -428,6 +457,8 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Row-body padding **4 + 4 px** on middle title rows with `UxBadge` | Badge bottom indent wrong; text ~1 px low/clipped | Keep **3 + 3 px** on title-row row-body, or raise row min-height to **27 px** with 4 px padding, or shrink badge to ≤ 18 px |
 | Re-derive diff logic in `ColumnRowBadgesContent` | Duplicates JSO pattern; misses normalisation | Use `takeColumnFlagDiffs` / title-row accessors from node |
 | Viewer workaround for `DiffReplace` on flags | Badge still null in side-by-side | Normalise in next-data-model `aggregateFlagDiff` |
+| Yellow highlight on column **name** when only badges changed | Title-row diff carried `textHighlighterColor` | Fix in next-data-model (`TITLE_ROW_FLAG_AS_REPLACE_STYLES`, name diff builder) — not in `TextValue` |
+| Global add/remove `textHighlighterColor` in `kind-any` | Wrong for generated expression; needed for FK links | FK exception in `kind-column`; expression add/remove omit text highlighter |
 
 ### Integration example (column default value row)
 
