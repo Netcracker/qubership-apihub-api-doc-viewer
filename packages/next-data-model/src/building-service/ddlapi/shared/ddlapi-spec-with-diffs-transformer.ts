@@ -512,20 +512,79 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   private resolveGeneratedColumnDiff(sourceColumn: Column): GeneratedColumnDiffResult | undefined {
     const attrsArrayDiff = this.resolveGeneratedColumnDiffFromAttrsArray(sourceColumn.attrs)
     if (attrsArrayDiff?.generatedExpression) {
-      return attrsArrayDiff
+      return this.finalizeGeneratedColumnDiff(sourceColumn, attrsArrayDiff)
     }
 
     const attrGeneratedColumn = this.findGeneratedColumnAttr(sourceColumn.attrs)
     if (!attrGeneratedColumn) {
-      return attrsArrayDiff
+      return this.finalizeGeneratedColumnDiff(sourceColumn, attrsArrayDiff)
     }
 
     const attrDiff = this.resolveGeneratedColumnAttrDiff(sourceColumn.attrs, attrGeneratedColumn)
     if (attrDiff) {
-      return attrDiff
+      return this.finalizeGeneratedColumnDiff(sourceColumn, attrDiff)
     }
 
-    return attrsArrayDiff
+    return this.finalizeGeneratedColumnDiff(sourceColumn, attrsArrayDiff)
+  }
+
+  private finalizeGeneratedColumnDiff(
+    sourceColumn: Column,
+    result: GeneratedColumnDiffResult | undefined,
+  ): GeneratedColumnDiffResult | undefined {
+    if (!result?.isGenerated || !this.shouldOmitIsGeneratedFlagDiff(sourceColumn, result)) {
+      return result
+    }
+
+    const { isGenerated: _isGenerated, ...rest } = result
+    return Object.keys(rest).length > 0 ? rest : undefined
+  }
+
+  private shouldOmitIsGeneratedFlagDiff(
+    sourceColumn: Column,
+    result: GeneratedColumnDiffResult,
+  ): boolean {
+    if (!result.generatedExpression || !result.isGenerated) {
+      return false
+    }
+
+    if (this.isGeneratedAttrKindSwitch(result.isGenerated)) {
+      return true
+    }
+
+    if (!isDiffRemove(result.isGenerated)) {
+      return false
+    }
+
+    return this.hasIncomingGeneratedColumnAttrDiff(sourceColumn.attrs)
+  }
+
+  private hasIncomingGeneratedColumnAttrDiff(attrs: Column['attrs']): boolean {
+    const attrsArrayDiffs = this.getDiffsRecord(attrs)
+    if (!attrsArrayDiffs) {
+      return false
+    }
+
+    for (const diff of Object.values(attrsArrayDiffs)) {
+      if (!diff) {
+        continue
+      }
+
+      if (isDiffReplace(diff) && this.isGeneratedAttrKindSwitch(diff)) {
+        return true
+      }
+
+      if (!isDiffAdd(diff)) {
+        continue
+      }
+
+      const afterValue = this.resolveDiffSideValue(diff)
+      if (isObject(afterValue) && this.isGeneratedColumnAttr(afterValue)) {
+        return true
+      }
+    }
+
+    return false
   }
 
   private findGeneratedColumnAttr(attrs: Column['attrs']): GeneratedColumnAttrRef | undefined {
@@ -642,8 +701,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     diff: Diff,
   ): GeneratedColumnDiffResult {
     const generatedExpression = this.resolveGeneratedExpressionDiff(attrKind, diff)
+    const omitIsGenerated = this.isGeneratedAttrKindSwitch(diff)
+
     return {
-      isGenerated: diff,
+      ...(!omitIsGenerated && { isGenerated: diff }),
       ...(generatedExpression && { generatedExpression }),
     }
   }
@@ -718,6 +779,20 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return isObject(value) && this.isGeneratedColumnAttr(value)
       ? value.kind
       : undefined
+  }
+
+  private isGeneratedAttrKindSwitch(diff: Diff): boolean {
+    if (!isDiffReplace(diff)) {
+      return false
+    }
+
+    const beforeKind = this.takeGeneratedColumnAttrKind(diff.beforeValue)
+    const afterKind = this.takeGeneratedColumnAttrKind(diff.afterValue)
+
+    return (
+      (beforeKind === AttrKind.GeneratedExpr && afterKind === PgAttrKind.Identity) ||
+      (beforeKind === PgAttrKind.Identity && afterKind === AttrKind.GeneratedExpr)
+    )
   }
 
   private resolveDiffSideValue(diff: Diff): unknown {

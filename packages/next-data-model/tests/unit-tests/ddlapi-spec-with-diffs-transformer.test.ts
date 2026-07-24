@@ -199,6 +199,52 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
 
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.isGenerated?.action).toBe(DiffAction.remove)
+  })
+
+  it('maps sample 505 lost generated expression onto isGenerated and generatedExpression removes', async () => {
+    const merged = await mergeSql(
+      `CREATE TABLE public.t (
+        id integer,
+        a integer,
+        b integer,
+        summary text GENERATED ALWAYS AS (
+          'A=' || a::text || ', B=' || b::text || ', TOTAL=' || (a + b)::text || ', NOTE=' || repeat('x', 10)
+        ) STORED
+      );`,
+      `CREATE TABLE public.t (
+        id integer,
+        a integer,
+        b integer,
+        summary text
+      );`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const summaryColumn = spec?.columns.items.find(column => column.columnName === 'summary')
+    const columnDiffs = summaryColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(summaryColumn?.isGenerated).toBe(true)
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.isGenerated?.action).toBe(DiffAction.remove)
+
+    const tree = new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: 'public',
+        name: 't',
+      },
+      diffsMetaKeys: TEST_DIFF_META_KEYS,
+    }).build()
+    const summaryNode = Array.from(tree.nodes.values()).find(
+      node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === 'summary',
+    )
+
+    expect(summaryNode?.diffs.isGenerated?.data.action).toBe(DiffAction.remove)
+    expect(summaryNode?.diffs.generatedExpression?.data.action).toBe(DiffAction.remove)
   })
 
   it('maps an identity-to-expression change onto generatedExpression as add', async () => {
@@ -215,6 +261,7 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
 
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.add)
+    expect(columnDiffs?.isGenerated).toBeUndefined()
   })
 
   it('maps an expression-to-identity change onto generatedExpression as remove', async () => {
@@ -231,6 +278,7 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
 
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.isGenerated).toBeUndefined()
   })
 
   it('keeps a generated-expression value change as replace', async () => {
@@ -248,6 +296,45 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
 
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.replace)
     expect(columnDiffs?.isGenerated).toBeUndefined()
+  })
+
+  it('builds a diffs tree for generated kind switches without isGenerated flag diffs', async () => {
+    const merged = await mergeSql(
+      `CREATE TABLE public.t (
+        id integer,
+        a integer,
+        b integer,
+        code integer GENERATED ALWAYS AS (
+          (a + b) * 10 + abs(a - b) + greatest(coalesce(a, 0), coalesce(b, 0)) * 2
+        ) STORED
+      );`,
+      'CREATE TABLE public.t (id integer, a integer, b integer, code integer GENERATED ALWAYS AS IDENTITY);',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const codeColumn = spec?.columns.items.find(column => column.columnName === 'code')
+    const columnDiffs = codeColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.isGenerated).toBeUndefined()
+
+    const tree = new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: 'public',
+        name: 't',
+      },
+      diffsMetaKeys: TEST_DIFF_META_KEYS,
+    }).build()
+    const codeColumnNode = Array.from(tree.nodes.values()).find(
+      node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === 'code',
+    )
+
+    expect(codeColumnNode?.diffs.isGenerated).toBeUndefined()
+    expect(codeColumnNode?.diffs.generatedExpression).toBeDefined()
   })
 
   it('omits isGenerated when only a generated-expression body changes', async () => {
