@@ -455,7 +455,9 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
 | `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |
 | Row-body padding **4 + 4 px** on middle title rows with `UxBadge` | Badge bottom indent wrong; text ~1 px low/clipped | Keep **3 + 3 px** on title-row row-body, or raise row min-height to **27 px** with 4 px padding, or shrink badge to ≤ 18 px |
-| Re-derive diff logic in `ColumnRowBadgesContent` | Duplicates JSO pattern; misses normalisation | Use `takeColumnFlagDiffs` / title-row accessors from node |
+| Re-derive diff logic in `ColumnRowBadgesContent` | Duplicates JSO pattern; misses normalisation | Use `takeColumnFlagDiffs` / `takeIndexFlagDiffs` / title-row accessors from node |
+| Viewer `nodeLevelDiff` for badge side visibility | Hides badges on both sides (203/303) or wrong highlight | Fix in next-data-model `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove` |
+| Whole-node flag badge diff-highlighted | Misleading — row add/remove drives the change | Data layer: `DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY`; viewer: `isDdlFlagBadgeDiffHighlighted` |
 | Viewer workaround for `DiffReplace` on flags | Badge still null in side-by-side | Normalise in next-data-model `aggregateFlagDiff` |
 | Yellow highlight on column **name** when only badges changed | Title-row diff carried `textHighlighterColor` | Fix in next-data-model (`TITLE_ROW_FLAG_AS_REPLACE_STYLES`, name diff builder) — not in `TextValue` |
 | Global add/remove `textHighlighterColor` in `kind-any` | Wrong for generated expression; needed for FK links | FK exception in `kind-column`; expression add/remove omit text highlighter |
@@ -492,10 +494,10 @@ Follow the JSO / AsyncAPI split: plain and diffs pipelines stay separate.
 
 - Do **not** re-derive diff priority, boolean normalisation, or title-row vs flag-badge
   contracts in React — consume precomputed node fields from next-data-model:
-  `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `isDdlPropertySubheaderVisible`,
-  `node.diffsSeverities`.
+  `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`,
+  `isDdlPropertySubheaderVisible`, `isDdlFlagBadgeDiffHighlighted`, `node.diffsSeverities`.
 - Keep badge orchestration in `ColumnRowBadgesContent`; `DiffBadge` only renders the diff
-  object it receives.
+  object it receives. Pass `$changes` only when `isDdlFlagBadgeDiffHighlighted(flagDiff)`.
 - Mirror JSO: aggregators own semantics; viewers map severities and diffs to rows and
   badges only.
 
@@ -520,6 +522,23 @@ on the row field.
 
 Do **not** patch the viewer to coerce `replace` → add/remove unless product explicitly requires
 a view-only exception.
+
+### Whole-node flag badges — side visibility without diff chrome (session lesson)
+
+Symptom: on whole column/index add/remove (samples 203/303 column; 403/503 **index** rows),
+`unique` (and sibling flags) appear on **both** sides, or disappear on both, or show diff
+colours although only the row transitioned.
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| Badge on both sides | `flagDiff` absent; `value.isUnique` true on merged row | next-data-model: `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove` |
+| Badge on neither side | Viewer reused `nodeLevelDiff.styles.isContentVisible` | Same aggregator fix — descendant diffs keep `isContentVisible: false` on both sides |
+| Badge diff-coloured on row add/remove | Whole-node flags used `aggregateFlagDiff` | Use `aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove` + `Invisible` highlighting mode |
+| Column 403/503 lost highlight | Over-broad viewer guard | Column rows keep normal `aggregateFlagDiff`; gate `$changes` with `isDdlFlagBadgeDiffHighlighted` only |
+
+`ColumnRowBadgesContent` already reads side visibility from flag diff `styles.before/after`.
+Do **not** thread `nodeLevelDiff` into badge renderers for this — the data layer owns the
+contract.
 
 ## Monorepo paths
 

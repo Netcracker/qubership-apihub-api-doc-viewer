@@ -152,9 +152,9 @@ DDL property-row diffs follow the JSO pattern: **aggregators prepare; viewers co
 
 | Layer | Location | Owns |
 | --- | --- | --- |
-| Model accessors | `src/model/ddlapi/tree-with-diffs/property-row-diffs.ts` | `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, changed-property keys |
+| Model accessors | `src/model/ddlapi/tree-with-diffs/property-row-diffs.ts` | `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`, `isDdlFlagBadgeDiffHighlighted`, changed-property keys |
 | Kind column / index | `node-diffs/kind-column.ts`, `kind-index.ts` | Private `aggregatePropertyTitleRowDiff`; which changed keys win on title row |
-| Kind any | `node-diffs/kind-any.ts` | `aggregateFlagDiff`, `asReplaceFlagDiffForTitleRow`, protected `adoptPropertyRowDiffs` |
+| Kind any | `node-diffs/kind-any.ts` | `aggregateFlagDiff`, `aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove`, `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove`, `asReplaceFlagDiffForTitleRow`, protected `adoptPropertyRowDiffs` |
 | Severities | `node-diffs-severities/kind-column.ts`, `kind-index.ts`, factory | Title-row severity per changed property |
 | Transformer | `ddlapi-spec-with-diffs-transformer.ts` | Row-level field diffs before crawl (generated columns, …) |
 
@@ -184,6 +184,42 @@ Fixing “invisible not-null badge” in the viewer masks the root cause — nor
 
 Title-row replace and flag-badge add/remove are **different contracts** — do not assume one
 normalisation fits both.
+
+### Whole-node add/remove flag badges (session lesson)
+
+When a **column or index row** is wholly added or removed, boolean flags on that row (`isUnique`,
+`isPrimaryKey`, `isNotNull`, `isGenerated`, …) ride along with the row transition — they are not
+independent field changes.
+
+| Transition | Product rule for flag badges (e.g. `unique`) |
+| --- | --- |
+| Whole row **add** | Visible on **changed** side only; **plain** badge (no diff chrome) |
+| Whole row **remove** | Visible on **origin** side only; **plain** badge (no diff chrome) |
+| Flag-only change on an existing row (403/503 **column** rows) | Side-aware **and** diff-highlighted via `aggregateFlagDiff` |
+
+**Aggregation (`kind-column.ts` / `kind-index.ts`):** before the whole-node early return, call
+`aggregatePresentFlagDiffsFromWholeNodeAddOrRemove()` (in `kind-any.ts`) for each present flag
+on the merged crawl value. That helper delegates to
+`aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove()` — side visibility only, no yellow
+row/badge background on the flag metadata.
+
+**Highlighting contract:** whole-node-derived flag metadata uses
+`DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY` (`Default` → `Invisible`). The
+viewer passes `$changes` to `DiffBadge` only when `isDdlFlagBadgeDiffHighlighted(flagDiff)` is
+true.
+
+**Accessors:** `takeColumnFlagDiffs` / `takeIndexFlagDiffs` still return flag diffs when a
+whole-node add/remove is present — do **not** suppress them.
+
+**Descendant-diff trap:** array-element add/remove inherits `NODE_LEVEL_DIFF_KEY` from
+`node-descendant-diffs/kind-any.ts` where `styles.*.isContentVisible` is **false on both
+sides** (title row uses `isHeaderVisible` instead). Do **not** reuse node-level diff styles for
+badge side visibility in the viewer — fix in aggregators above.
+
+**Regression samples:** `203-add-column-unique`, `303-remove-column-unique` (column);
+`403-existing-column-became-unique` / `503-existing-column-lost-unique` **index** rows (plain
+badge); same cases on **column** rows keep diff-highlighted `unique` badges. Unit tests:
+`packages/next-data-model/tests/unit-tests/ddlapi-whole-node-flag-diffs.test.ts`.
 
 ### Generated columns in `DdlApiSpecWithDiffsTransformer`
 
