@@ -25,6 +25,12 @@ import {
 
 type DiffsRecord = Partial<Record<string, Diff>>;
 
+type ForeignKeyTargetCrawlDiffs = Partial<Record<string, Diff>>
+
+type ColumnCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'foreignKeyTargets'> & {
+  foreignKeyTargets?: ForeignKeyTargetCrawlDiffs
+}
+
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
 
 interface GeneratedColumnAttrRef {
@@ -194,7 +200,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const sourceColumnIndex = sourceColumns.indexOf(sourceColumn)
-      const columnDiffs: DiffsRecord = {}
+      const columnDiffs: ColumnCrawlDiffsRecord = {}
 
       const wholeColumnDiff = this.resolveArrayElementDiff(columnsArrayDiffs, sourceColumnIndex)
       if (wholeColumnDiff) {
@@ -447,10 +453,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     sourceTable: Table,
     sourceColumn: Column,
     owningSchemaName: string,
-  ): DiffsRecord {
+  ): ForeignKeyTargetCrawlDiffs {
     const foreignKeys = sourceTable.foreignKeys ?? []
     const foreignKeysArrayDiffs = this.getDiffsRecord(foreignKeys)
-    const targetDiffs: DiffsRecord = {}
+    const targetDiffs: ForeignKeyTargetCrawlDiffs = {}
 
     for (let index = 0; index < foreignKeys.length; index += 1) {
       const foreignKey = foreignKeys[index]
@@ -771,8 +777,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return takeIfDiffsRecord(Reflect.get(owner, diffsMetaKey))
   }
 
-  private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord): void {
-    const entries = Object.entries(diffs).filter((entry): entry is [string, Diff] => entry[1] !== undefined)
+  private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord | ColumnCrawlDiffsRecord): void {
+    const entries = Object.entries(diffs).filter(
+      (entry): entry is [string, Diff | ForeignKeyTargetCrawlDiffs] => entry[1] !== undefined,
+    )
     if (entries.length === 0) {
       return
     }
