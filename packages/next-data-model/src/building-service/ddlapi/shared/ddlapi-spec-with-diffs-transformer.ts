@@ -536,7 +536,8 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return result
     }
 
-    const { isGenerated: _isGenerated, ...rest } = result
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { isGenerated, ...rest } = result
     return Object.keys(rest).length > 0 ? rest : undefined
   }
 
