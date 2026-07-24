@@ -247,6 +247,38 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     const columnDiffs = vColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
 
     expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.replace)
+    expect(columnDiffs?.isGenerated).toBeUndefined()
+  })
+
+  it('omits isGenerated when only a generated-expression body changes', async () => {
+    const merged = await mergeSql(
+      `CREATE TABLE public.t (
+        id integer,
+        a integer,
+        b integer,
+        summary text GENERATED ALWAYS AS (
+          'A=' || a::text || ', B=' || b::text || ', TOTAL=' || (a + b)::text || ', NOTE=' || repeat('x', 10)
+        ) STORED
+      );`,
+      `CREATE TABLE public.t (
+        id integer,
+        a integer,
+        b integer,
+        summary text GENERATED ALWAYS AS (
+          'A=' || a::text || ', B=' || b::text || ', PRODUCT=' || (a * b)::text || ', PADDING=' || repeat('y', 12)
+        ) STORED
+      );`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const summaryColumn = spec?.columns.items.find(column => column.columnName === 'summary')
+    const columnDiffs = summaryColumn?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnDiffs?.generatedExpression?.action).toBe(DiffAction.replace)
+    expect(columnDiffs?.isGenerated).toBeUndefined()
   })
 
   it('maps foreign-key reference changes onto foreignKeyTargets diffs', async () => {

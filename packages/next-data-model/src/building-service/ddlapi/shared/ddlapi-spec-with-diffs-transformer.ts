@@ -239,7 +239,9 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
       const generatedDiff = this.resolveGeneratedColumnDiff(sourceColumn)
       if (generatedDiff) {
-        columnDiffs.isGenerated = generatedDiff.isGenerated
+        if (generatedDiff.isGenerated) {
+          columnDiffs.isGenerated = generatedDiff.isGenerated
+        }
         if (generatedDiff.generatedExpression) {
           columnDiffs.generatedExpression = generatedDiff.generatedExpression
         }
@@ -512,9 +514,9 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return attrsArrayDiff
     }
 
-    const diffAttr = this.resolveGeneratedColumnAttrDiff(sourceColumn.attrs, attrGeneratedColumn)
-    if (diffAttr) {
-      return this.buildGeneratedColumnDiffResult(attrGeneratedColumn.kind, diffAttr)
+    const attrDiff = this.resolveGeneratedColumnAttrDiff(sourceColumn.attrs, attrGeneratedColumn)
+    if (attrDiff) {
+      return attrDiff
     }
 
     return attrsArrayDiff
@@ -576,7 +578,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   private resolveGeneratedColumnAttrDiff(
     attrs: Column['attrs'],
     generatedColumnAttr: GeneratedColumnAttrRef,
-  ): Diff | undefined {
+  ): GeneratedColumnDiffResult | undefined {
     const attrsArrayDiffs = this.getDiffsRecord(attrs)
 
 
@@ -594,10 +596,20 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
     const attrFieldDiff = this.resolveFirstAttrFieldDiff(generatedColumnAttr.attr, attrFieldDiffKeys)
     if (attrFieldDiff) {
-      return attrFieldDiff
+      if (generatedColumnAttr.kind === AttrKind.GeneratedExpr) {
+        return {
+          generatedExpression: this.normalizeGeneratedExpressionDiffValues(attrFieldDiff),
+        }
+      }
+      return this.buildGeneratedColumnDiffResult(generatedColumnAttr.kind, attrFieldDiff)
     }
 
-    return this.resolveArrayElementDiff(attrsArrayDiffs, generatedColumnAttr.attrIndex)
+    const arrayElementDiff = this.resolveArrayElementDiff(attrsArrayDiffs, generatedColumnAttr.attrIndex)
+    if (arrayElementDiff) {
+      return this.buildGeneratedColumnDiffResult(generatedColumnAttr.kind, arrayElementDiff)
+    }
+
+    return undefined
   }
 
   private resolveFirstAttrFieldDiff(

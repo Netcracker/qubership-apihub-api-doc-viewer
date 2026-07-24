@@ -1,5 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDefined } from "@apihub/utils/common/checkers"
+import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
@@ -136,6 +137,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         <AdditionalInfoPiece
           isVisible={true}
           value={generatedExpression}
+          textHighlighterColor={takeDiffSideTextHighlighterColor(generatedExpressionDiff, layoutSide)}
         />
       )
     },
