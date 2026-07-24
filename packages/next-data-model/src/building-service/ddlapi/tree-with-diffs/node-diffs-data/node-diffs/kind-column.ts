@@ -1,6 +1,6 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ITreeNodeWithDiffs, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffs, ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import {
   DDL_COLUMN_CHANGED_PROPERTY_KEYS,
@@ -172,11 +172,43 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       if (!diff) {
         continue
       }
-      foreignKeyTargetDiffs[targetKey] = this.buildChangedPropertyMetaDataFromDiff(diff)
+      foreignKeyTargetDiffs[targetKey] = this.buildForeignKeyTargetDiffMetadata(diff)
     }
 
     if (Object.keys(foreignKeyTargetDiffs).length > 0) {
       nodeDiffs.foreignKeyTargetDiffs = foreignKeyTargetDiffs
     }
+  }
+
+  private buildForeignKeyTargetDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+    const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+
+    if (isDiffAdd(diff)) {
+      return {
+        ...metadata,
+        styles: {
+          ...metadata.styles,
+          after: {
+            ...metadata.styles.after,
+            textHighlighterColor: HighlightVariant.Green,
+          },
+        },
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        ...metadata,
+        styles: {
+          ...metadata.styles,
+          before: {
+            ...metadata.styles.before,
+            textHighlighterColor: HighlightVariant.Red,
+          },
+        },
+      }
+    }
+
+    return metadata
   }
 }

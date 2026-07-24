@@ -16,13 +16,14 @@ export const AdditionalInfoPiece: FC<AdditionalInfoPieceProps> = memo<Additional
     value,
     textHighlighterColor,
   } = props
-  const className = useAdditionalInfoPieceStyles(textHighlighterColor)
+  const { blockClassName, valueClassName } = useAdditionalInfoPieceStyles(textHighlighterColor)
 
   return (
     <AdditionalInfoPieceBase
       isVisible={isVisible}
       value={value}
-      className={className}
+      blockClassName={blockClassName}
+      valueClassName={valueClassName}
     />
   )
 })

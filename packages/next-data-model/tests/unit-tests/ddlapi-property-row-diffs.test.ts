@@ -147,6 +147,8 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.generatedExpression?.data.action).toBe(DiffAction.add)
     expect(nodeDiffs?.generatedExpression?.styles.before.backgroundColor).toBe("gray")
     expect(nodeDiffs?.generatedExpression?.styles.after.backgroundColor).toBe("green")
+    expect(nodeDiffs?.generatedExpression?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.generatedExpression?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
   it("styles a removed generated-expression row as removed", () => {
@@ -174,6 +176,8 @@ describe("DDL property row diff aggregators", () => {
     expect(generatedExpressionDiff?.styles.before.isContentVisible).toBe(true)
     expect(generatedExpressionDiff?.styles.after.backgroundColor).toBe("gray")
     expect(generatedExpressionDiff?.styles.after.isContentVisible).toBe(false)
+    expect(generatedExpressionDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(generatedExpressionDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
   it("styles only a generated-expression value change as replaced", () => {
@@ -202,6 +206,8 @@ describe("DDL property row diff aggregators", () => {
 
     expect(generatedExpressionDiff?.styles.before.backgroundColor).toBe("yellow")
     expect(generatedExpressionDiff?.styles.after.backgroundColor).toBe("yellow")
+    expect(generatedExpressionDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(generatedExpressionDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
   })
 
   it("normalizes a boolean replace diff to an added visible badge", () => {

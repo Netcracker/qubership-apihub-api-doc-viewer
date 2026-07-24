@@ -117,7 +117,6 @@ export class DdlApiNodeDiffsAggregatorKindAny
         ...afterStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Green,
-        textHighlighterColor: HighlightVariant.Green,
       }
     }
     if (isDiffRemove(diff)) {
@@ -125,7 +124,6 @@ export class DdlApiNodeDiffsAggregatorKindAny
         ...beforeStyles,
         isContentVisible: true,
         backgroundColor: HighlightVariant.Red,
-        textHighlighterColor: HighlightVariant.Red,
       }
       afterStyles = {
         ...afterStyles,
