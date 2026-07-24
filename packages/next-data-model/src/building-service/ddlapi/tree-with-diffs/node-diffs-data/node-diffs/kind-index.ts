@@ -53,6 +53,11 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
     this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
 
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      this.aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
+        crawlValue,
+        nodeDiffs,
+        DDL_INDEX_FLAG_DIFF_KEYS,
+      )
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs
     }

@@ -1,6 +1,6 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
@@ -317,6 +317,79 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
 
     return nodeDiffs
+  }
+
+  protected aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
+    crawlValue: object,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    flagKeys: readonly string[],
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff) {
+      return
+    }
+
+    const diff = nodeLevelDiff.data
+    if (!isDiffAdd(diff) && !isDiffRemove(diff)) {
+      return
+    }
+
+    for (const flagKey of flagKeys) {
+      if (!this.takeBooleanFlagValue(crawlValue, flagKey)) {
+        continue
+      }
+
+      this.aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove(
+        diff,
+        flagKey as ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+        nodeDiffs,
+      )
+    }
+  }
+
+  protected aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove(
+    diff: Diff<DiffType>,
+    key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ): void {
+    let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
+    if (isDiffAdd(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: false,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: true,
+      }
+    }
+    if (isDiffRemove(diff)) {
+      beforeStyles = {
+        ...beforeStyles,
+        isContentVisible: true,
+      }
+      afterStyles = {
+        ...afterStyles,
+        isContentVisible: false,
+      }
+    }
+    nodeDiffs[key] = {
+      data: diff,
+      styles: {
+        before: beforeStyles,
+        after: afterStyles,
+      },
+      flags: {
+        before: {
+          increaseLevel: false,
+        },
+        after: {
+          increaseLevel: false,
+        },
+      },
+      highlightingMode: DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY,
+    }
   }
 
   protected aggregateFlagDiff(

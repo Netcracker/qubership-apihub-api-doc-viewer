@@ -71,6 +71,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
             />
           )}
           <ColumnRowBadgesContent
+            columnId={node.id}
             layoutSide={layoutSide}
             value={value}
             flagDiffs={flagDiffs}

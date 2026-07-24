@@ -3,6 +3,8 @@ import {
   HighlightVariant,
   NODE_LEVEL_DIFF_KEY,
   NodeDiffsSeverityPlacemennt,
+  DiffHighlightingApplicationMode,
+  DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
@@ -82,7 +84,7 @@ describe("DDL property row diff aggregators", () => {
     expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
-  it("does not aggregate flag diffs when the whole column is added", () => {
+  it("derives side-aware flag diffs from whole-column add for badge rendering", () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
     const crawlValue = {
       columnName: "id",
@@ -116,8 +118,14 @@ describe("DDL property row diff aggregators", () => {
     const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "id")
 
     expect(nodeDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(nodeDiffs?.isPrimaryKey).toBeUndefined()
-    expect(nodeDiffs?.isNotNull).toBeUndefined()
+    expect(nodeDiffs?.isPrimaryKey?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.isPrimaryKey?.styles.before.isContentVisible).toBe(false)
+    expect(nodeDiffs?.isPrimaryKey?.styles.after.isContentVisible).toBe(true)
+    expect(nodeDiffs?.isPrimaryKey?.highlightingMode.get(DiffHiglightingApplicationArea.Default))
+      .toBe(DiffHighlightingApplicationMode.Invisible)
+    expect(nodeDiffs?.isNotNull?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.isNotNull?.styles.before.isContentVisible).toBe(false)
+    expect(nodeDiffs?.isNotNull?.styles.after.isContentVisible).toBe(true)
     expect(nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(nodeDiffs?.[NODE_LEVEL_DIFF_KEY])
   })
 

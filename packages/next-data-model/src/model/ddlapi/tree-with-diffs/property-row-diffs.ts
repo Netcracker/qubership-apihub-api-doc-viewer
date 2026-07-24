@@ -3,6 +3,8 @@ import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/proper
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import {
   ChangedPropertyMetaData,
+  DiffHighlightingApplicationMode,
+  DiffHiglightingApplicationArea,
   NODE_LEVEL_DIFF_KEY,
 } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
@@ -96,10 +98,6 @@ export function takeColumnForeignKeyTargetDiff(
 export function takeColumnFlagDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
 ): Partial<Record<DdlApiColumnFlagDiffKey, ChangedPropertyMetaData>> | undefined {
-  if (takeDdlPropertyNodeDiffIfPresent(node)) {
-    return undefined
-  }
-
   const flagDiffs: Partial<Record<DdlApiColumnFlagDiffKey, ChangedPropertyMetaData>> = {}
   let hasDiff = false
   for (const key of DDL_COLUMN_FLAG_DIFF_KEYS) {
@@ -121,10 +119,6 @@ export function takeColumnGeneratedExpressionDiff(
 export function takeIndexFlagDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
 ): Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> | undefined {
-  if (takeDdlPropertyNodeDiffIfPresent(node)) {
-    return undefined
-  }
-
   const flagDiffs: Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> = {}
   let hasDiff = false
   for (const key of DDL_INDEX_FLAG_DIFF_KEYS) {
@@ -135,4 +129,15 @@ export function takeIndexFlagDiffs(
     }
   }
   return hasDiff ? flagDiffs : undefined
+}
+
+export function isDdlFlagBadgeDiffHighlighted(
+  flagDiff: ChangedPropertyMetaData | undefined,
+): boolean {
+  if (!flagDiff) {
+    return false
+  }
+
+  return flagDiff.highlightingMode.get(DiffHiglightingApplicationArea.Default)
+    !== DiffHighlightingApplicationMode.Invisible
 }

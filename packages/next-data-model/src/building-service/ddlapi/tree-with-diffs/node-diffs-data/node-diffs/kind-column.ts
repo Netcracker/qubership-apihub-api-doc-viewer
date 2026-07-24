@@ -75,6 +75,11 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      this.aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
+        crawlValue,
+        nodeDiffs,
+        DDL_COLUMN_FLAG_DIFF_KEYS,
+      )
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs
     }

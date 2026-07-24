@@ -71,6 +71,10 @@ export const DIFF_HIGHLIGHTING_MODES_JSO_PROPERTY_CHANGED_INDIRECTLY: DiffHighli
   [DiffHiglightingApplicationArea.JsoPropertyKey, DiffHighlightingApplicationMode.Immutable],
   [DiffHiglightingApplicationArea.JsoPropertyValue, DiffHighlightingApplicationMode.Default],
 ])
+/** Whole-node add/remove flags: side visibility only; badge chrome stays plain. */
+export const DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY: DiffHighlightingModesByArea = new Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>([
+  [DiffHiglightingApplicationArea.Default, DiffHighlightingApplicationMode.Invisible],
+])
 
 export const NODE_LEVEL_DIFF_KEY = "" as const
 
