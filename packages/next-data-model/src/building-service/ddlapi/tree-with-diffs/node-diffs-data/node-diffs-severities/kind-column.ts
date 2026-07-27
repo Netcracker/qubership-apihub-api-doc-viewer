@@ -55,6 +55,7 @@ export class DdlApiNodeDiffsSeveritiesAggregatorKindColumn
       columnDiffs.columnName,
       ...DDL_COLUMN_FLAG_DIFF_KEYS.map(flagKey => columnDiffs[flagKey]),
       ...Object.values(columnDiffs.foreignKeyTargetDiffs ?? {}),
+      ...Object.values(columnDiffs.columnTypeFieldDiffs ?? {}),
     ]
 
     const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(

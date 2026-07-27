@@ -181,8 +181,33 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       const firstTargetDiff = Object.values(foreignKeyTargetDiffs).find(Boolean)
       if (firstTargetDiff) {
         nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(firstTargetDiff)
+        return
       }
     }
+
+    if (nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]) {
+      return
+    }
+
+    this.aggregateColumnTypeTitleRowDiff(nodeDiffs)
+  }
+
+  private aggregateColumnTypeTitleRowDiff(
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const columnTypeFieldDiffs = nodeDiffs.columnTypeFieldDiffs
+    if (!columnTypeFieldDiffs || Object.keys(columnTypeFieldDiffs).length === 0) {
+      return
+    }
+
+    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(columnTypeFieldDiffs),
+    )
+    if (!representativeDiff) {
+      return
+    }
+
+    nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(representativeDiff)
   }
 
   private aggregateForeignKeyTargetDiffs(

@@ -6,7 +6,7 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
 import { buildFromDdl } from "@netcracker/qubership-apihub-ddlapi/parser"
@@ -647,6 +647,111 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.columnTypeFieldDiffs?.size?.styles.before.backgroundColor).toBeUndefined()
   })
 
+  it("stores synthetic title-row replace when only column type field diffs are present", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      columnType: {
+        kind: "IntegerType",
+        typeName: "bigint",
+        label: "bigint",
+        [TEST_DIFFS_META_KEY]: {
+          typeName: {
+            type: breaking,
+            action: DiffAction.replace,
+            scope: "root",
+            beforeValue: "int4",
+            afterValue: "bigint",
+            beforeDeclarationPaths: [["columns", "sample_col", "type", "type"]],
+            afterDeclarationPaths: [["columns", "sample_col", "type", "type"]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+    const titleRowDiff = nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY as keyof typeof nodeDiffs]
+
+    expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("prefers flag diffs over column type diffs for the title row", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "id",
+      isUnique: true,
+      [TEST_DIFFS_META_KEY]: {
+        isUnique: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: true,
+          afterDeclarationPaths: [["columns", "id", "isUnique"]],
+        },
+      },
+      columnType: {
+        kind: "IntegerType",
+        typeName: "bigint",
+        label: "bigint",
+        [TEST_DIFFS_META_KEY]: {
+          typeName: {
+            type: breaking,
+            action: DiffAction.replace,
+            scope: "root",
+            beforeValue: "int4",
+            afterValue: "bigint",
+            beforeDeclarationPaths: [["columns", "id", "type", "type"]],
+            afterDeclarationPaths: [["columns", "id", "type", "type"]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "id")
+    const titleRowDiff = nodeDiffs?.[DDL_PROPERTY_TITLE_ROW_DIFF_KEY as keyof typeof nodeDiffs]
+
+    expect(nodeDiffs?.isUnique?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.columnTypeFieldDiffs?.typeName).toBeDefined()
+    expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(titleRowDiff?.data.type).toBe(nonBreaking)
+  })
+
+  it("includes column type field diffs in title-row severity", () => {
+    const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindColumn()
+    const nodeDiffs = {
+      columnTypeFieldDiffs: {
+        typeName: {
+          data: {
+            type: breaking,
+            action: DiffAction.replace,
+            scope: "root",
+            beforeValue: "int4",
+            afterValue: "bigint",
+            beforeDeclarationPaths: [["columns", "id", "type", "type"]],
+            afterDeclarationPaths: [["columns", "id", "type", "type"]],
+          },
+          styles: {
+            before: { isContentVisible: true, isHeaderVisible: true },
+            after: { isContentVisible: true, isHeaderVisible: true },
+          },
+          flags: {
+            before: { increaseLevel: false },
+            after: { increaseLevel: false },
+          },
+          highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+        },
+      },
+    }
+
+    const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
+
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBe(breaking)
+  })
+
   it("resolves monolithic column type label display when only the type name changes", () => {
     const node = {
       kind: DdlApiTreeNodeKinds.COLUMN,
@@ -928,6 +1033,13 @@ describe("DDL property row diff aggregators", () => {
 
     expect(joinSegments(originDisplay)).toBe("integer")
     expect(joinSegments(changedDisplay)).toBe("varchar (100)")
+
+    const titleRowDiff = takeDdlPropertyTitleRowDiff(sampleColumn as never)
+    expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
   it("uses monolithic text highlighter for integer-to-bigint sample 001", async () => {
@@ -973,5 +1085,12 @@ describe("DDL property row diff aggregators", () => {
       expect(changedDisplay.diff.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
       expect(changedDisplay.diff.styles.after.backgroundColor).toBeUndefined()
     }
+
+    const titleRowDiff = takeDdlPropertyTitleRowDiff(sampleColumn as never)
+    expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(titleRowDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 })
