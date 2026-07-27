@@ -160,6 +160,37 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.defaultValue?.action).toBe(DiffAction.add)
   })
 
+  it('maps nested default.expr replace diffs onto defaultValue for bit columns', async () => {
+    const fs = await import('fs')
+    const path = await import('path')
+    const loadCase = async (caseId: string) => {
+      const base = path.join(__dirname, '../../../samples/ddlapi-diffs/column-default-changes', caseId)
+      return mergeSql(
+        fs.readFileSync(path.join(base, 'before.sql'), 'utf8'),
+        fs.readFileSync(path.join(base, 'after.sql'), 'utf8'),
+      )
+    }
+
+    for (const caseId of ['302-replace-default-bit', '303-replace-default-bit-varying']) {
+      const merged = await loadCase(caseId)
+      const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+        schemaName: 'public',
+        name: 't',
+      })
+
+      const sampleColumn = spec?.columns.items.find(column => column.columnName === 'sample_col')
+      const columnDiffs = sampleColumn?.[TEST_DIFFS_META_KEY] as Record<string, {
+        action?: string
+        beforeValue?: string
+        afterValue?: string
+      }> | undefined
+
+      expect(columnDiffs?.defaultValue?.action).toBe(DiffAction.replace)
+      expect(typeof columnDiffs?.defaultValue?.beforeValue).toBe('string')
+      expect(typeof columnDiffs?.defaultValue?.afterValue).toBe('string')
+    }
+  })
+
   it('maps whole-index add diffs onto the transformed index row', async () => {
     const merged = await mergeSql(
       'create table t(id int);',

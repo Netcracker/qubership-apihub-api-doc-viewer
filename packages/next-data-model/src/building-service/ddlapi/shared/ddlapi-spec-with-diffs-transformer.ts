@@ -6,6 +6,7 @@ import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, is
 import {
   AttrKind,
   Column,
+  Expr,
   findAttr,
   Index,
   PgAttrKind,
@@ -15,6 +16,7 @@ import {
   TypeKind,
 } from "@netcracker/qubership-apihub-ddlapi";
 import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
+import { formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
 import { isDdlScalarColumnTypeName } from "@apihub/next-data-model/shared/ddlapi/guards/column-type-name";
 import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-type";
 import { BuildingServiceLogger } from "../../../loggers";
@@ -49,6 +51,8 @@ type GeneratedColumnDiffResult = {
   isGenerated?: Diff
   generatedExpression?: Diff
 }
+
+const DEFAULT_VALUE_NESTED_DIFF_KEYS = ['value', 'expr'] as const
 
 export type DdlApiColumnTypeValueWithDiffs = DdlApiColumnTypeValue & {
   [key: symbol]: unknown;
@@ -218,9 +222,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.description = descriptionDiff
       }
 
-      const columnFieldDiffs = this.getDiffsRecord(sourceColumn)
-      const defaultDiff = columnFieldDiffs?.default
-        ?? this.getDiffsRecord(sourceColumn.default)?.value
+      const defaultDiff = this.resolveDefaultValueDiff(sourceColumn)
       if (defaultDiff) {
         columnDiffs.defaultValue = defaultDiff
       }
@@ -870,6 +872,63 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     }
 
     return undefined
+  }
+
+  private resolveDefaultValueDiff(sourceColumn: Column): Diff | undefined {
+    const columnFieldDiffs = this.getDiffsRecord(sourceColumn)
+    const wholeDefaultDiff = columnFieldDiffs?.default
+    if (wholeDefaultDiff) {
+      return this.normalizeDefaultValueDiff(wholeDefaultDiff)
+    }
+
+    const defaultFieldDiffs = this.getDiffsRecord(sourceColumn.default)
+    if (!defaultFieldDiffs) {
+      return undefined
+    }
+
+    for (const fieldKey of DEFAULT_VALUE_NESTED_DIFF_KEYS) {
+      const nestedDiff = defaultFieldDiffs[fieldKey]
+      if (nestedDiff) {
+        return this.normalizeDefaultValueDiff(nestedDiff)
+      }
+    }
+
+    return undefined
+  }
+
+  private normalizeDefaultValueDiff(diff: Diff): Diff {
+    if (isDiffAdd(diff)) {
+      return {
+        ...diff,
+        afterValue: this.takeDefaultValueDisplay(diff.afterValue),
+      }
+    }
+    if (isDiffRemove(diff)) {
+      return {
+        ...diff,
+        beforeValue: this.takeDefaultValueDisplay(diff.beforeValue),
+      }
+    }
+    if (isDiffReplace(diff)) {
+      return {
+        ...diff,
+        beforeValue: this.takeDefaultValueDisplay(diff.beforeValue),
+        afterValue: this.takeDefaultValueDisplay(diff.afterValue),
+      }
+    }
+
+    return diff
+  }
+
+  private takeDefaultValueDisplay(value: unknown): unknown {
+    if (typeof value === 'string') {
+      return value
+    }
+    if (isObject(value) && 'kind' in value) {
+      return formatDdlExpr(value as unknown as Expr)
+    }
+
+    return value
   }
 
   private resolveFirstAttrFieldDiff(

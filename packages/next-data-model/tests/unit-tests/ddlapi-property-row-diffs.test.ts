@@ -1321,5 +1321,19 @@ describe("DDL property row diff aggregators", () => {
     expect(replaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
     expect(replaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(replaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+
+    const bitReplaceNode = await loadCase("302-replace-default-bit")
+    const bitReplaceDiffs = bitReplaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(bitReplaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(bitReplaceDiffs?.defaultValue?.data.beforeValue).toBe("b'101'")
+    expect(bitReplaceDiffs?.defaultValue?.data.afterValue).toBe("b'010'")
+    expect(bitReplaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+
+    const bitVaryingReplaceNode = await loadCase("303-replace-default-bit-varying")
+    const bitVaryingReplaceDiffs = bitVaryingReplaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(bitVaryingReplaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(bitVaryingReplaceDiffs?.defaultValue?.data.beforeValue).toBe("b'1010'")
+    expect(bitVaryingReplaceDiffs?.defaultValue?.data.afterValue).toBe("b'0101'")
+    expect(bitVaryingReplaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 })
