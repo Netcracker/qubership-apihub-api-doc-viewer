@@ -16,7 +16,10 @@ import {
   takeColumnDescriptionDiff,
   takeColumnEnumValueDiffs,
   takeColumnEnumValuesRowColorizingDiff,
+  takeColumnDefaultValueDiff,
+  takeColumnDefaultValueRowColorizingDiff,
   takeColumnGeneratedExpressionDiff,
+  resolveColumnDefaultValueSideDisplay,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
@@ -82,6 +85,14 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     () => takeColumnEnumValuesRowColorizingDiff(node),
     [node],
   )
+  const defaultValueDiff = useMemo(
+    () => takeColumnDefaultValueDiff(node),
+    [node],
+  )
+  const defaultValueRowColorizingDiff = useMemo(
+    () => takeColumnDefaultValueRowColorizingDiff(node),
+    [node],
+  )
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -113,9 +124,8 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   )
 
   const defaultAdditionalInfoSubheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_layoutSide: LayoutSide) => {
-      const defaultValue = value?.defaultValue
+    (layoutSide: LayoutSide) => {
+      const defaultValue = resolveColumnDefaultValueSideDisplay(node, layoutSide)
       if (!isDefined(defaultValue)) {
         return <></>
       }
@@ -124,10 +134,11 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         <AdditionalInfoPiece
           isVisible={true}
           value={defaultValue}
+          textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
         />
       )
     },
-    [value],
+    [defaultValueDiff, node],
   )
 
   const generatedAdditionalInfoSubheader = useCallback(
@@ -197,7 +208,11 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     (value?.enumValues && value.enumValues.length > 0)
     || enumValueDiffs
   )
-  const hasDefaultValue = isDefined(value?.defaultValue)
+  const hasDefaultValue = !!(
+    isDefined(value?.defaultValue)
+    || defaultValueDiff
+    || defaultValueRowColorizingDiff
+  )
   const hasGeneratedExpression = isDefined(value?.generatedExpression) || !!generatedExpressionDiff
   const hasAdditionalInfoRows = isAdditionalInfoDisplayed && (
     hasEnumValues || hasDefaultValue || hasGeneratedExpression
@@ -259,6 +274,8 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
+          colorizingDiff={defaultValueRowColorizingDiff}
+          diffsSeverities={defaultValueDiff || defaultValueRowColorizingDiff ? node.diffsSeverities : undefined}
         />
       )}
       {isAdditionalInfoDisplayed && hasGeneratedExpression && (

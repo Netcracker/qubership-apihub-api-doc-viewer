@@ -1,6 +1,9 @@
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
+import { formatDdlExpr } from "../../../shared/ddlapi/format-ddl-expr"
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
+import { isObject } from "../../../utilities"
+import { Expr } from "@netcracker/qubership-apihub-ddlapi"
 import {
   LayoutSide,
   ORIGIN_LAYOUT_SIDE,
@@ -155,6 +158,59 @@ export function takeColumnEnumValuesRowColorizingDiff(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
 ): ChangedPropertyMetaData | undefined {
   return (node.diffs as DdlApiColumnPropertyRowDiffs).enumValuesRowColorizingDiff
+}
+
+export function takeColumnDefaultValueDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return (node.diffs as DdlApiColumnPropertyRowDiffs).defaultValue
+}
+
+export function takeColumnDefaultValueRowColorizingDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return (node.diffs as DdlApiColumnPropertyRowDiffs).defaultValueRowColorizingDiff
+}
+
+export function resolveColumnDefaultValueSideDisplay(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+  layoutSide: LayoutSide,
+): string | undefined {
+  const mergedDefault = node.value()?.defaultValue
+  const defaultValueDiff = takeColumnDefaultValueDiff(node)
+  if (!defaultValueDiff) {
+    return mergedDefault
+  }
+
+  const diff = defaultValueDiff.data
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+
+  if (isDiffAdd(diff)) {
+    return isOrigin ? undefined : mergedDefault
+  }
+  if (isDiffRemove(diff)) {
+    return isOrigin
+      ? formatDefaultValueDiffSide(diff.beforeValue) ?? mergedDefault
+      : undefined
+  }
+  if (isDiffReplace(diff)) {
+    if (isOrigin) {
+      return formatDefaultValueDiffSide(diff.beforeValue) ?? mergedDefault
+    }
+    return formatDefaultValueDiffSide(diff.afterValue) ?? mergedDefault
+  }
+
+  return mergedDefault
+}
+
+function formatDefaultValueDiffSide(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    return value
+  }
+  if (isObject(value) && "kind" in value) {
+    return formatDdlExpr(value as unknown as Expr)
+  }
+  return undefined
 }
 
 export type DdlColumnEnumValueSideItem = {

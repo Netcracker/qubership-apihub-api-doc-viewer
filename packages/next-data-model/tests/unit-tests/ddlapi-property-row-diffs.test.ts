@@ -1172,4 +1172,154 @@ describe("DDL property row diff aggregators", () => {
     expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.isContentVisible).toBe(false)
     expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.before.isContentVisible).toBe(true)
   })
+
+  it("aggregates default value add diff with green row background and plain chip", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      defaultValue: "0",
+      [TEST_DIFFS_META_KEY]: {
+        defaultValue: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: "0",
+          afterDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+
+    expect(nodeDiffs?.defaultValue?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.defaultValue?.styles.after.borderShadowColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.isContentVisible).toBe(false)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.isContentVisible).toBe(true)
+  })
+
+  it("aggregates default value remove diff with red row background and plain chip", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      [TEST_DIFFS_META_KEY]: {
+        defaultValue: {
+          type: breaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: "0",
+          beforeDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+
+    expect(nodeDiffs?.defaultValue?.data.action).toBe(DiffAction.remove)
+    expect(nodeDiffs?.defaultValue?.styles.before.borderShadowColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.before.isFontMuted).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.isContentVisible).toBe(false)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.isContentVisible).toBe(true)
+  })
+
+  it("aggregates default value replace diff with yellow row and chip text highlighter", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      defaultValue: "42",
+      [TEST_DIFFS_META_KEY]: {
+        defaultValue: {
+          type: nonBreaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: "0",
+          afterValue: "42",
+          beforeDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+          afterDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+
+    expect(nodeDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.defaultValue?.styles.before.backgroundColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.after.backgroundColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValue?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("aggregates default value row as removed when column becomes generated", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      isGenerated: true,
+      generatedExpression: "GENERATED ALWAYS AS IDENTITY",
+      [TEST_DIFFS_META_KEY]: {
+        isGenerated: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: true,
+          afterDeclarationPaths: [["columns", "code", "isGenerated"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "code")
+
+    expect(nodeDiffs?.defaultValue).toBeUndefined()
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
+
+  it("loads default add/remove/replace from column-default-changes samples", async () => {
+    const fs = await import("fs")
+    const path = await import("path")
+    const loadCase = async (caseId: string) => {
+      const base = path.join(__dirname, "../../../samples/ddlapi-diffs/column-default-changes", caseId)
+      const before = fs.readFileSync(path.join(base, "before.sql"), "utf8")
+      const after = fs.readFileSync(path.join(base, "after.sql"), "utf8")
+      const merged = apiDiff(
+        await buildFromDdl(before),
+        await buildFromDdl(after),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+      )
+    }
+
+    const addNode = await loadCase("101-add-default-bigint")
+    const addDiffs = addNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(addDiffs?.defaultValue?.data.action).toBe(DiffAction.add)
+    expect(addDiffs?.defaultValueRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const removeNode = await loadCase("201-remove-default-bigint")
+    const removeDiffs = removeNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(removeDiffs?.defaultValue?.data.action).toBe(DiffAction.remove)
+    expect(removeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+
+    const replaceNode = await loadCase("301-replace-default-bigint")
+    const replaceDiffs = replaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(replaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(replaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(replaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+  })
 })

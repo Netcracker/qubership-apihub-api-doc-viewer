@@ -14,6 +14,8 @@ import {
   DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
   DDL_ENUM_COLUMN_TYPE_TRANSITION,
   DdlEnumColumnTypeTransition,
+  DDL_DEFAULT_VALUE_COLUMN_TRANSITION,
+  DdlDefaultValueColumnTransition,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
@@ -95,6 +97,11 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       )
     }
 
+    const defaultValueDiff = diffs['defaultValue']
+    if (AbstractNodeDiffsAggregator.isDiff(defaultValueDiff)) {
+      this.aggregateDefaultValueDiff(defaultValueDiff, nodeDiffs)
+    }
+
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       this.aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
         crawlValue,
@@ -153,6 +160,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     this.aggregateColumnTypeFieldDiffs(crawlValue, diffsMetaKey, nodeDiffs)
 
     this.aggregateEnumValuesRowColorizingDiff(crawlValue, nodeDiffs)
+
+    this.aggregateDefaultValueRowColorizingDiff(crawlValue, nodeDiffs)
 
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
@@ -316,6 +325,112 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     nodeDiffs.enumValuesRowColorizingDiff = this.asReplaceFlagDiffForTitleRow(representativeDiff)
+  }
+
+  private aggregateDefaultValueDiff(
+    diff: Diff,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    nodeDiffs.defaultValue = this.buildDefaultValueDiffMetadata(diff)
+  }
+
+  private aggregateDefaultValueRowColorizingDiff(
+    crawlValue: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const defaultValueDiff = nodeDiffs.defaultValue
+    const disallowedTransition = this.resolveDefaultValueDisallowedTransition(crawlValue, nodeDiffs)
+
+    if (disallowedTransition === DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Lost && !defaultValueDiff) {
+      const representativeDiff = nodeDiffs.isGenerated
+        ?? this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
+      if (representativeDiff) {
+        nodeDiffs.defaultValueRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
+          DiffAction.remove,
+          representativeDiff.data,
+        )
+      }
+      return
+    }
+
+    if (disallowedTransition === DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Gained && !defaultValueDiff) {
+      const representativeDiff = nodeDiffs.isGenerated
+        ?? this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
+      if (representativeDiff) {
+        nodeDiffs.defaultValueRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
+          DiffAction.add,
+          representativeDiff.data,
+        )
+      }
+      return
+    }
+
+    if (!defaultValueDiff) {
+      return
+    }
+
+    const diff = defaultValueDiff.data
+    if (isDiffAdd(diff) || isDiffRemove(diff)) {
+      nodeDiffs.defaultValueRowColorizingDiff = this.buildChangedPropertyMetaDataFromDiff(diff)
+      return
+    }
+
+    if (isDiffReplace(diff)) {
+      nodeDiffs.defaultValueRowColorizingDiff = this.asReplaceFlagDiffForTitleRow(defaultValueDiff)
+    }
+  }
+
+  private resolveDefaultValueDisallowedTransition(
+    crawlValue: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): DdlDefaultValueColumnTransition | undefined {
+    const mergedDefaultValue = Reflect.get(crawlValue, "defaultValue")
+    const mergedIsGenerated = Reflect.get(crawlValue, "isGenerated") === true
+    const isGeneratedDiff = nodeDiffs.isGenerated?.data
+
+    if (
+      mergedIsGenerated &&
+      isGeneratedDiff &&
+      isDiffAdd(isGeneratedDiff) &&
+      mergedDefaultValue === undefined
+    ) {
+      return DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Lost
+    }
+
+    if (
+      !mergedIsGenerated &&
+      isGeneratedDiff &&
+      isDiffRemove(isGeneratedDiff) &&
+      mergedDefaultValue !== undefined &&
+      !nodeDiffs.defaultValue
+    ) {
+      return DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Gained
+    }
+
+    return undefined
+  }
+
+  private buildDefaultValueDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+      return {
+        ...metadata,
+        styles: {
+          before: {
+            ...metadata.styles.before,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+          after: {
+            ...metadata.styles.after,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+        },
+      }
+    }
+
+    return this.buildEnumValueDiffMetadataSideVisibilityOnly(diff)
   }
 
   private resolveEnumColumnTypeTransitionDirection(

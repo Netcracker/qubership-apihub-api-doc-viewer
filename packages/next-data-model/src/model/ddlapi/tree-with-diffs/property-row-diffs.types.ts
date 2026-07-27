@@ -31,6 +31,14 @@ export const DDL_ENUM_COLUMN_TYPE_TRANSITION = {
 export type DdlEnumColumnTypeTransition =
   (typeof DDL_ENUM_COLUMN_TYPE_TRANSITION)[keyof typeof DDL_ENUM_COLUMN_TYPE_TRANSITION]
 
+export const DDL_DEFAULT_VALUE_COLUMN_TRANSITION = {
+  Lost: "lost",
+  Gained: "gained",
+} as const
+
+export type DdlDefaultValueColumnTransition =
+  (typeof DDL_DEFAULT_VALUE_COLUMN_TRANSITION)[keyof typeof DDL_DEFAULT_VALUE_COLUMN_TRANSITION]
+
 export const DDL_COLUMN_FLAG_DIFF_KEYS = [
   "isPrimaryKey",
   "isUnique",
@@ -59,6 +67,8 @@ export type DdlApiColumnPropertyRowDiffs = Partial<
   enumValueDiffs?: DdlApiEnumValueDiffs
   /** Synthetic replace row background when {@link enumValueDiffs} is present. */
   enumValuesRowColorizingDiff?: ChangedPropertyMetaData
+  /** Synthetic row background for {@link defaultValue} add/remove/replace. */
+  defaultValueRowColorizingDiff?: ChangedPropertyMetaData
   columnTypeFieldDiffs?: DdlApiColumnTypeFieldDiffs
 }
 
