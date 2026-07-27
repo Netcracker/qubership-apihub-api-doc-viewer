@@ -7,15 +7,29 @@ export type AdditionalInfoPieceStyles = {
   valueClassName: string
 }
 
-export function useAdditionalInfoPieceStyles(
-  textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>,
-): AdditionalInfoPieceStyles {
+export type UseAdditionalInfoPieceStylesInput = {
+  textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
+  borderShadowColor?: HighlightVariant
+  isFontMuted?: boolean
+}
+
+export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStylesInput = {}): AdditionalInfoPieceStyles {
+  const {
+    textHighlighterColor,
+    borderShadowColor,
+    isFontMuted,
+  } = input
+
   return useMemo(() => ({
     blockClassName: [
       'additional-info-piece',
       'subheader',
       'block',
-    ].join(' '),
-    valueClassName: DiffsClassesBuilder.highlighter(textHighlighterColor),
-  }), [textHighlighterColor])
+      DiffsClassesBuilder.borderShadow(borderShadowColor),
+    ].filter(Boolean).join(' '),
+    valueClassName: [
+      DiffsClassesBuilder.highlighter(textHighlighterColor),
+      isFontMuted ? DiffsClassesBuilder.fontMuted() : '',
+    ].filter(Boolean).join(' '),
+  }), [borderShadowColor, isFontMuted, textHighlighterColor])
 }

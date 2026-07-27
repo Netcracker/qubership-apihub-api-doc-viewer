@@ -23,14 +23,27 @@ export class DdlApiNodeDiffsSeveritiesAggregatorKindColumn
       this.applyRowSeverity(nodeDiffs, 'description', NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
     }
 
-    this.applyMaxRowSeverityFromPropertyDiffs(
-      nodeDiffs,
-      [NODE_LEVEL_DIFF_KEY, 'isGenerated', 'generatedExpression'],
-      NodeDiffsSeverityPlacemennt.AdditionalInfoRow,
-      diffsSeverities,
-    )
+    this.applyMaxAdditionalInfoRowSeverity(nodeDiffs, diffsSeverities)
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
+  }
+
+  private applyMaxAdditionalInfoRowSeverity(
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const columnDiffs = nodeDiffs as DdlApiColumnPropertyRowDiffs
+    const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      columnDiffs[NODE_LEVEL_DIFF_KEY],
+      columnDiffs.isGenerated,
+      columnDiffs.generatedExpression,
+      ...Object.values(columnDiffs.enumValueDiffs ?? {}),
+    )
+    if (!maxPropertyDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.AdditionalInfoRow] = this.buildNodeDiffsSeverity(maxPropertyDiff)
   }
 
   private applyMaxRowSeverityFromColumnTitleRowDiffs(

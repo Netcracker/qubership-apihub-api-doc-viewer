@@ -6,7 +6,8 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-column"
 import { DdlApiNodeDiffsSummaryKindAny } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-summary/kind-any"
@@ -468,5 +469,147 @@ describe("DDL property row diff aggregators", () => {
     const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
 
     expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBe(breaking)
+  })
+
+  it("aggregates enum value add diff with green border shadow on changed side", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "status",
+      enumValues: ["new", "active", "suspended"],
+      [TEST_DIFFS_META_KEY]: {
+        enumValues: {
+          suspended: {
+            type: nonBreaking,
+            action: DiffAction.add,
+            scope: "root",
+            afterValue: "suspended",
+            afterDeclarationPaths: [["types", "user_status", "values", 2]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "status")
+    const suspendedDiff = nodeDiffs?.enumValueDiffs?.suspended
+
+    expect(suspendedDiff?.data.action).toBe(DiffAction.add)
+    expect(suspendedDiff?.styles.before.borderShadowColor).toBeUndefined()
+    expect(suspendedDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Green)
+    expect(suspendedDiff?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.enumValuesRowColorizingDiff?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.enumValuesRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.enumValuesRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("aggregates enum value remove diff with red border and muted font on origin side", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "status",
+      enumValues: ["new", "active"],
+      [TEST_DIFFS_META_KEY]: {
+        enumValues: {
+          suspended: {
+            type: nonBreaking,
+            action: DiffAction.remove,
+            scope: "root",
+            beforeValue: "suspended",
+            beforeDeclarationPaths: [["types", "user_status", "values", 2]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "status")
+    const suspendedDiff = nodeDiffs?.enumValueDiffs?.suspended
+
+    expect(suspendedDiff?.data.action).toBe(DiffAction.remove)
+    expect(suspendedDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Red)
+    expect(suspendedDiff?.styles.before.isFontMuted).toBe(true)
+    expect(suspendedDiff?.styles.after.borderShadowColor).toBeUndefined()
+  })
+
+  it("aggregates enum value replace diff with yellow text highlighter only", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "status",
+      enumValues: ["new", "enabled"],
+      [TEST_DIFFS_META_KEY]: {
+        enumValues: {
+          active: {
+            type: nonBreaking,
+            action: DiffAction.replace,
+            scope: "root",
+            beforeValue: "active",
+            afterValue: "enabled",
+            beforeDeclarationPaths: [["types", "user_status", "values", 1]],
+            afterDeclarationPaths: [["types", "user_status", "values", 1]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "status")
+    const activeDiff = nodeDiffs?.enumValueDiffs?.active
+
+    expect(activeDiff?.data.action).toBe(DiffAction.replace)
+    expect(activeDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(activeDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(activeDiff?.styles.before.backgroundColor).toBeUndefined()
+    expect(activeDiff?.styles.after.backgroundColor).toBeUndefined()
+    expect(activeDiff?.styles.before.borderShadowColor).toBeUndefined()
+  })
+
+  it("summarises nested enum value diffs without throwing", () => {
+    const summaryAggregator = new DdlApiNodeDiffsSummaryKindAny()
+    const nodeDiffs = {
+      enumValueDiffs: {
+        suspended: makeFlagPropertyDiff(nonBreaking, DiffAction.add),
+      },
+    }
+
+    const summary = summaryAggregator.aggregate(nodeDiffs)
+
+    expect(summary?.has(nonBreaking)).toBe(true)
+  })
+
+  it("resolves side-specific enum value chip lists", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.COLUMN,
+      value: () => ({
+        columnName: "status",
+        enumValues: ["new", "active", "suspended"],
+      }),
+      diffs: {
+        enumValueDiffs: {
+          suspended: {
+            data: {
+              type: nonBreaking,
+              action: DiffAction.add,
+              scope: "root",
+              afterValue: "suspended",
+              afterDeclarationPaths: [["types", "user_status", "values", 2]],
+            },
+            styles: {
+              before: { isContentVisible: false, isHeaderVisible: true },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                borderShadowColor: HighlightVariant.Green,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    expect(resolveColumnEnumValueSideItems(node as never, "origin").map(item => item.literal))
+      .toEqual(["new", "active"])
+    expect(resolveColumnEnumValueSideItems(node as never, "changed").map(item => item.literal))
+      .toEqual(["new", "active", "suspended"])
   })
 })

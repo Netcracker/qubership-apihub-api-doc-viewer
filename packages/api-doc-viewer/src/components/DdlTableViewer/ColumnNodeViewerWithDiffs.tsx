@@ -1,5 +1,7 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDefined } from "@apihub/utils/common/checkers"
+import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
+import { takeDiffSideIsFontMuted } from "@apihub/utils/diffs/take-diff-side-is-font-muted"
 import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
@@ -10,7 +12,10 @@ import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSid
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   isDdlPropertySubheaderVisible,
+  resolveColumnEnumValueSideItems,
   takeColumnDescriptionDiff,
+  takeColumnEnumValueDiffs,
+  takeColumnEnumValuesRowColorizingDiff,
   takeColumnGeneratedExpressionDiff,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
@@ -67,6 +72,14 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   )
   const generatedExpressionDiff = useMemo(
     () => takeColumnGeneratedExpressionDiff(node),
+    [node],
+  )
+  const enumValueDiffs = useMemo(
+    () => takeColumnEnumValueDiffs(node),
+    [node],
+  )
+  const enumValuesRowColorizingDiff = useMemo(
+    () => takeColumnEnumValuesRowColorizingDiff(node),
     [node],
   )
 
@@ -150,25 +163,28 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   )
 
   const enumValuesAdditionalInfoSubheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_layoutSide: LayoutSide) => {
-      if (!value?.enumValues?.length) {
+    (layoutSide: LayoutSide) => {
+      const sideItems = resolveColumnEnumValueSideItems(node, layoutSide)
+      if (sideItems.length === 0) {
         return <></>
       }
 
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {value.enumValues.map((enumValue, index) => (
+          {sideItems.map((sideItem, index) => (
             <AdditionalInfoPiece
-              key={`${enumValue}-${index}`}
+              key={`${sideItem.literal}-${index}`}
               isVisible={true}
-              value={enumValue}
+              value={sideItem.literal}
+              textHighlighterColor={takeDiffSideTextHighlighterColor(sideItem.diff, layoutSide)}
+              borderShadowColor={takeDiffSideBorderShadowColor(sideItem.diff, layoutSide)}
+              isFontMuted={takeDiffSideIsFontMuted(sideItem.diff, layoutSide)}
             />
           ))}
         </div>
       )
     },
-    [value],
+    [node],
   )
 
   const isAdditionalInfoDisplayed = displayMode === DETAILED_DISPLAY_MODE
@@ -178,7 +194,10 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     !!value?.description || !!descriptionDiff
   )
 
-  const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
+  const hasEnumValues = !!(
+    (value?.enumValues && value.enumValues.length > 0)
+    || enumValueDiffs
+  )
   const hasDefaultValue = isDefined(value?.defaultValue)
   const hasGeneratedExpression = isDefined(value?.generatedExpression) || !!generatedExpressionDiff
   const hasAdditionalInfoRows = isAdditionalInfoDisplayed && (
@@ -221,12 +240,14 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           diffsSeverities={node.diffsSeverities}
         />
       )}
-      {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasEnumValues && (
+      {isAdditionalInfoDisplayed && hasEnumValues && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_VALUES}
           subheader={enumValuesAdditionalInfoSubheader}
+          colorizingDiff={enumValuesRowColorizingDiff}
+          diffsSeverities={enumValueDiffs ? node.diffsSeverities : undefined}
         />
       )}
       {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasDefaultValue && (

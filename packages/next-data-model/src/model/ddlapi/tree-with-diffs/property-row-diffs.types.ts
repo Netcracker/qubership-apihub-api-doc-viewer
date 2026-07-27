@@ -7,6 +7,9 @@ export const DDL_PROPERTY_TITLE_ROW_DIFF_KEY = "titleRow" as const
 /** Per-target diffs for {@link DdlApiColumnRowValue.foreignKeyTargets}; keys from {@link formatForeignKeyTargetKey}. */
 export type DdlApiForeignKeyTargetDiffs = Partial<Record<string, ChangedPropertyMetaData>>
 
+/** Per-literal diffs for {@link DdlApiColumnRowValue.enumValues}; keys are enum member strings. */
+export type DdlApiEnumValueDiffs = Partial<Record<string, ChangedPropertyMetaData>>
+
 export const DDL_COLUMN_FLAG_DIFF_KEYS = [
   "isPrimaryKey",
   "isUnique",
@@ -32,6 +35,9 @@ export type DdlApiColumnPropertyRowDiffs = Partial<
   >
 > & {
   foreignKeyTargetDiffs?: DdlApiForeignKeyTargetDiffs
+  enumValueDiffs?: DdlApiEnumValueDiffs
+  /** Synthetic replace row background when {@link enumValueDiffs} is present. */
+  enumValuesRowColorizingDiff?: ChangedPropertyMetaData
 }
 
 export type DdlApiIndexPropertyRowDiffs = Partial<

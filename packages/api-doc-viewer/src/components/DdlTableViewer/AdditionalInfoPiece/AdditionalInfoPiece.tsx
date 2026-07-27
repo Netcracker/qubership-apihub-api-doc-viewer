@@ -8,6 +8,8 @@ export type AdditionalInfoPieceProps = {
   isVisible: boolean
   value: unknown
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
+  borderShadowColor?: HighlightVariant
+  isFontMuted?: boolean
 }
 
 export const AdditionalInfoPiece: FC<AdditionalInfoPieceProps> = memo<AdditionalInfoPieceProps>((props) => {
@@ -15,8 +17,14 @@ export const AdditionalInfoPiece: FC<AdditionalInfoPieceProps> = memo<Additional
     isVisible,
     value,
     textHighlighterColor,
+    borderShadowColor,
+    isFontMuted,
   } = props
-  const { blockClassName, valueClassName } = useAdditionalInfoPieceStyles(textHighlighterColor)
+  const { blockClassName, valueClassName } = useAdditionalInfoPieceStyles({
+    textHighlighterColor,
+    borderShadowColor,
+    isFontMuted,
+  })
 
   return (
     <AdditionalInfoPieceBase

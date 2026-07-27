@@ -368,6 +368,57 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.isGenerated).toBeUndefined()
   })
 
+  it('maps enum member append onto enumValues diffs keyed by literal', async () => {
+    const merged = await mergeSql(
+      `CREATE TYPE public.user_status AS ENUM ('new', 'active');
+       CREATE TABLE public.t (id integer, status public.user_status);`,
+      `CREATE TYPE public.user_status AS ENUM ('new', 'active', 'suspended');
+       CREATE TABLE public.t (id integer, status public.user_status);`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const statusColumn = spec?.columns.items.find(column => column.columnName === 'status')
+    const columnDiffs = statusColumn?.[TEST_DIFFS_META_KEY] as Record<
+      string,
+      Record<string, { action?: string }> | { action?: string }
+    > | undefined
+    const enumValueDiffs = columnDiffs?.enumValues as Record<string, { action?: string }> | undefined
+
+    expect(statusColumn?.enumValues).toContain('suspended')
+    expect(enumValueDiffs?.suspended?.action).toBe(DiffAction.add)
+  })
+
+  it('pairs enum member remove+add into a replace diff keyed by before value', async () => {
+    const merged = await mergeSql(
+      `CREATE TYPE public.user_status AS ENUM ('new', 'active');
+       CREATE TABLE public.t (id integer, status public.user_status);`,
+      `CREATE TYPE public.user_status AS ENUM ('new', 'enabled');
+       CREATE TABLE public.t (id integer, status public.user_status);`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const statusColumn = spec?.columns.items.find(column => column.columnName === 'status')
+    const columnDiffs = statusColumn?.[TEST_DIFFS_META_KEY] as Record<
+      string,
+      Record<string, { action?: string; beforeValue?: string; afterValue?: string }> | { action?: string }
+    > | undefined
+    const enumValueDiffs = columnDiffs?.enumValues as Record<
+      string,
+      { action?: string; beforeValue?: string; afterValue?: string }
+    > | undefined
+
+    expect(statusColumn?.enumValues).toContain('enabled')
+    expect(enumValueDiffs?.active?.action).toBe(DiffAction.replace)
+    expect(enumValueDiffs?.active?.beforeValue).toBe('active')
+    expect(enumValueDiffs?.active?.afterValue).toBe('enabled')
+  })
+
   it('maps foreign-key reference changes onto foreignKeyTargets diffs', async () => {
     const merged = await mergeSql(
       `CREATE TABLE public.target (id integer PRIMARY KEY);

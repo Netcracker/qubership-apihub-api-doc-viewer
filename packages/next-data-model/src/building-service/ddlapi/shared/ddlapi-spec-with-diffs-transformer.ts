@@ -14,6 +14,7 @@ import {
   Table,
 } from "@netcracker/qubership-apihub-ddlapi";
 import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
+import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-type";
 import { BuildingServiceLogger } from "../../../loggers";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import {
@@ -27,8 +28,11 @@ type DiffsRecord = Partial<Record<string, Diff>>;
 
 type ForeignKeyTargetCrawlDiffs = Partial<Record<string, Diff>>
 
-type ColumnCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'foreignKeyTargets'> & {
+type EnumValueCrawlDiffs = Partial<Record<string, Diff>>
+
+type ColumnCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'foreignKeyTargets' | 'enumValues'> & {
   foreignKeyTargets?: ForeignKeyTargetCrawlDiffs
+  enumValues?: EnumValueCrawlDiffs
 }
 
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
@@ -236,6 +240,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       )
       if (Object.keys(foreignKeyTargetDiffs).length > 0) {
         columnDiffs.foreignKeyTargets = foreignKeyTargetDiffs
+      }
+
+      const enumValueDiffs = this.resolveEnumValueDiffsForColumn(sourceColumn)
+      if (Object.keys(enumValueDiffs).length > 0) {
+        columnDiffs.enumValues = enumValueDiffs
       }
 
       const uniqueDiff = this.resolveUniqueIndexDiffForColumn(sourceTable, sourceColumn.name)
@@ -446,6 +455,63 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
   private findCommentAttrIndex(attrs: Column['attrs'] | Table['attrs'] | Index['attrs']): number {
     return (attrs ?? []).findIndex(attr => attr.kind === AttrKind.Comment)
+  }
+
+  private resolveEnumValueDiffsForColumn(sourceColumn: Column): EnumValueCrawlDiffs {
+    const schemaType = sourceColumn.type?.type
+    if (!schemaType || !isEnumType(schemaType)) {
+      return {}
+    }
+
+    const valuesArrayDiffs = this.getDiffsRecord(schemaType.values)
+    if (!valuesArrayDiffs) {
+      return {}
+    }
+
+    const rawDiffs = Object.values(valuesArrayDiffs).filter((diff): diff is Diff => !!diff)
+    if (rawDiffs.length === 0) {
+      return {}
+    }
+
+    const keyedDiffs: EnumValueCrawlDiffs = {}
+    const removes = rawDiffs.filter(isDiffRemove)
+    const adds = rawDiffs.filter(isDiffAdd)
+    const others = rawDiffs.filter(diff => !isDiffAdd(diff) && !isDiffRemove(diff))
+
+    if (removes.length === 1 && adds.length === 1 && others.length === 0) {
+      const removeDiff = removes[0]
+      const addDiff = adds[0]
+      const beforeValue = removeDiff.beforeValue
+      const afterValue = addDiff.afterValue
+      if (typeof beforeValue === 'string' && typeof afterValue === 'string') {
+        keyedDiffs[beforeValue] = {
+          type: removeDiff.type,
+          scope: removeDiff.scope,
+          description: addDiff.description ?? removeDiff.description,
+          action: DiffAction.replace,
+          beforeValue,
+          afterValue,
+          beforeDeclarationPaths: removeDiff.beforeDeclarationPaths,
+          afterDeclarationPaths: addDiff.afterDeclarationPaths,
+        }
+        return keyedDiffs
+      }
+    }
+
+    for (const diff of rawDiffs) {
+      if (isDiffAdd(diff) && typeof diff.afterValue === 'string') {
+        keyedDiffs[diff.afterValue] = diff
+      } else if (isDiffRemove(diff) && typeof diff.beforeValue === 'string') {
+        keyedDiffs[diff.beforeValue] = diff
+      } else if (isDiffReplace(diff)) {
+        const beforeValue = diff.beforeValue
+        if (typeof beforeValue === 'string') {
+          keyedDiffs[beforeValue] = diff
+        }
+      }
+    }
+
+    return keyedDiffs
   }
 
   private resolveForeignKeyTargetDiffsForColumn(
@@ -855,7 +921,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
   private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord | ColumnCrawlDiffsRecord): void {
     const entries = Object.entries(diffs).filter(
-      (entry): entry is [string, Diff | ForeignKeyTargetCrawlDiffs] => entry[1] !== undefined,
+      (entry): entry is [string, Diff | ForeignKeyTargetCrawlDiffs | EnumValueCrawlDiffs] => entry[1] !== undefined,
     )
     if (entries.length === 0) {
       return

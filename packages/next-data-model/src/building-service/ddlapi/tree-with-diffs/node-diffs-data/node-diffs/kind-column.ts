@@ -1,19 +1,21 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ITreeNodeWithDiffs, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffs, ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
-import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
+import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
+import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import {
   DDL_COLUMN_CHANGED_PROPERTY_KEYS,
   DDL_COLUMN_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   DdlApiColumnPropertyRowDiffs,
+  DdlApiEnumValueDiffs,
   DdlApiForeignKeyTargetDiffs,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
+import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { isDiffAdd, isDiffRemove, Diff } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
@@ -48,10 +50,13 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     const hasForeignKeyTargetDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['foreignKeyTargets'])
-    const hasFlatDiffs = Object.entries(diffs).some(([key, value]) =>
-      key !== 'foreignKeyTargets' && AbstractNodeDiffsAggregator.isDiff(value),
-    )
-    if (!hasFlatDiffs && !hasForeignKeyTargetDiffs) {
+    const hasEnumValueDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['enumValues'])
+    const hasFlatDiffs = Object.entries(diffs).some(([key, value]) => (
+      key !== 'foreignKeyTargets' &&
+      key !== 'enumValues' &&
+      AbstractNodeDiffsAggregator.isDiff(value)
+    ))
+    if (!hasFlatDiffs && !hasForeignKeyTargetDiffs && !hasEnumValueDiffs) {
       return superNodeDiffs
     }
 
@@ -132,6 +137,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     this.aggregateForeignKeyTargetDiffs(diffs, nodeDiffs)
 
+    this.aggregateEnumValueDiffs(diffs, nodeDiffs)
+
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
     return nodeDiffs
@@ -189,6 +196,115 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     if (Object.keys(foreignKeyTargetDiffs).length > 0) {
       nodeDiffs.foreignKeyTargetDiffs = foreignKeyTargetDiffs
     }
+  }
+
+  private aggregateEnumValueDiffs(
+    diffs: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const enumValuesDiffRecord = (diffs as Record<string, unknown>)['enumValues']
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(enumValuesDiffRecord)) {
+      return
+    }
+
+    const enumValueDiffs: DdlApiEnumValueDiffs = {}
+    for (const [literalKey, diff] of Object.entries(enumValuesDiffRecord)) {
+      if (!diff) {
+        continue
+      }
+      enumValueDiffs[literalKey] = this.buildEnumValueDiffMetadata(diff)
+    }
+
+    if (Object.keys(enumValueDiffs).length > 0) {
+      nodeDiffs.enumValueDiffs = enumValueDiffs
+      this.aggregateEnumValuesRowColorizingDiff(nodeDiffs)
+    }
+  }
+
+  private aggregateEnumValuesRowColorizingDiff(
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const enumValueDiffs = nodeDiffs.enumValueDiffs
+    if (!enumValueDiffs) {
+      return
+    }
+
+    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(enumValueDiffs),
+    )
+    if (!representativeDiff) {
+      return
+    }
+
+    nodeDiffs.enumValuesRowColorizingDiff = this.asReplaceFlagDiffForTitleRow(representativeDiff)
+  }
+
+  private buildEnumValueDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+      return {
+        ...metadata,
+        styles: {
+          before: {
+            ...metadata.styles.before,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+          after: {
+            ...metadata.styles.after,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+        },
+      }
+    }
+
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            borderShadowColor: HighlightVariant.Green,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            borderShadowColor: HighlightVariant.Red,
+            isFontMuted: true,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   private buildForeignKeyTargetDiffMetadata(diff: Diff): ChangedPropertyMetaData {

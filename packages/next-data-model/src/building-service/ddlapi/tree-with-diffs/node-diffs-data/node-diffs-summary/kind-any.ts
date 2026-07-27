@@ -31,6 +31,15 @@ export class DdlApiNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryAggre
         continue
       }
 
+      if (key === 'enumValueDiffs') {
+        for (const enumValueDiff of Object.values((nodeDiffs as DdlApiColumnPropertyRowDiffs).enumValueDiffs ?? {})) {
+          if (isChangedPropertyMetaData(enumValueDiff)) {
+            summary.add(enumValueDiff.data.type)
+          }
+        }
+        continue
+      }
+
       if (isChangedPropertyMetaData(diff)) {
         summary.add(diff.data.type)
       }

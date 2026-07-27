@@ -1,4 +1,4 @@
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import {
@@ -15,6 +15,7 @@ import {
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   type DdlApiColumnFlagDiffKey,
   type DdlApiColumnPropertyRowDiffs,
+  type DdlApiEnumValueDiffs,
   type DdlApiForeignKeyTargetDiffs,
   type DdlApiIndexFlagDiffKey,
 } from "./property-row-diffs.types"
@@ -22,6 +23,7 @@ import {
 export type {
   DdlApiColumnFlagDiffKey,
   DdlApiColumnPropertyRowDiffs,
+  DdlApiEnumValueDiffs,
   DdlApiForeignKeyTargetDiffs,
   DdlApiIndexFlagDiffKey,
   DdlApiIndexPropertyRowDiffs,
@@ -120,6 +122,101 @@ export function takeColumnDescriptionDiff(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
 ): ChangedPropertyMetaData | undefined {
   return node.diffs.description
+}
+
+export function takeColumnEnumValueDiffs(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): DdlApiEnumValueDiffs | undefined {
+  const columnDiffs = node.diffs as DdlApiColumnPropertyRowDiffs
+  const enumValueDiffs = columnDiffs.enumValueDiffs
+  if (!enumValueDiffs || Object.keys(enumValueDiffs).length === 0) {
+    return undefined
+  }
+  return enumValueDiffs
+}
+
+export function takeColumnEnumValuesRowColorizingDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return (node.diffs as DdlApiColumnPropertyRowDiffs).enumValuesRowColorizingDiff
+}
+
+export type DdlColumnEnumValueSideItem = {
+  readonly literal: string
+  readonly diff?: ChangedPropertyMetaData
+}
+
+export function resolveColumnEnumValueSideItems(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+  layoutSide: "origin" | "changed",
+): readonly DdlColumnEnumValueSideItem[] {
+  const mergedOrder = node.value()?.enumValues ?? []
+  const enumValueDiffs = takeColumnEnumValueDiffs(node)
+  const isOrigin = layoutSide === "origin"
+  const processedDiffs = new Set<ChangedPropertyMetaData>()
+  const items: DdlColumnEnumValueSideItem[] = []
+
+  const findDiffForMergedLiteral = (literal: string): ChangedPropertyMetaData | undefined => {
+    const directDiff = enumValueDiffs?.[literal]
+    if (directDiff) {
+      return directDiff
+    }
+    for (const diff of Object.values(enumValueDiffs ?? {})) {
+      if (diff && isDiffReplace(diff.data) && diff.data.afterValue === literal) {
+        return diff
+      }
+    }
+    return undefined
+  }
+
+  for (const literal of mergedOrder) {
+    const diff = findDiffForMergedLiteral(literal)
+    if (!diff) {
+      items.push({ literal })
+      continue
+    }
+    if (processedDiffs.has(diff)) {
+      continue
+    }
+    processedDiffs.add(diff)
+
+    const { data } = diff
+    if (isDiffAdd(data)) {
+      if (!isOrigin && typeof data.afterValue === "string") {
+        items.push({ literal: data.afterValue, diff })
+      }
+      continue
+    }
+    if (isDiffRemove(data)) {
+      if (isOrigin && typeof data.beforeValue === "string") {
+        items.push({ literal: data.beforeValue, diff })
+      }
+      continue
+    }
+    if (isDiffReplace(data)) {
+      const displayLiteral = isOrigin
+        ? (typeof data.beforeValue === "string" ? data.beforeValue : literal)
+        : (typeof data.afterValue === "string" ? data.afterValue : literal)
+      items.push({ literal: displayLiteral, diff })
+    }
+  }
+
+  for (const [literalKey, diff] of Object.entries(enumValueDiffs ?? {})) {
+    if (!diff || processedDiffs.has(diff)) {
+      continue
+    }
+    if (isDiffRemove(diff.data) && isOrigin) {
+      items.push({ literal: literalKey, diff })
+      processedDiffs.add(diff)
+    }
+  }
+
+  const indexOf = (literal: string): number => {
+    const index = mergedOrder.indexOf(literal)
+    return index >= 0 ? index : mergedOrder.length
+  }
+
+  return items.sort((left, right) => indexOf(left.literal) - indexOf(right.literal))
 }
 
 export function takeIndexFlagDiffs(
