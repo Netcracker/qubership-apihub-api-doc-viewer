@@ -2,6 +2,10 @@ import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-ap
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import {
+  LayoutSide,
+  ORIGIN_LAYOUT_SIDE,
+} from "../../abstract/layout-side"
+import {
   ChangedPropertyMetaData,
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
@@ -66,13 +70,13 @@ export function takeDdlPropertyNodeDiffIfPresent(
 
 export function isDdlPropertySubheaderVisible(
   nodeLevelDiff: ChangedPropertyMetaData | undefined,
-  layoutSide: "origin" | "changed",
+  layoutSide: LayoutSide,
 ): boolean {
   if (!nodeLevelDiff) {
     return true
   }
 
-  const styles = layoutSide === "origin"
+  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
     ? nodeLevelDiff.styles.before
     : nodeLevelDiff.styles.after
 
@@ -148,11 +152,11 @@ export type DdlColumnEnumValueSideItem = {
 
 export function resolveColumnEnumValueSideItems(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
-  layoutSide: "origin" | "changed",
+  layoutSide: LayoutSide,
 ): readonly DdlColumnEnumValueSideItem[] {
   const mergedOrder = node.value()?.enumValues ?? []
   const enumValueDiffs = takeColumnEnumValueDiffs(node)
-  const isOrigin = layoutSide === "origin"
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
   const processedDiffs = new Set<ChangedPropertyMetaData>()
   const items: DdlColumnEnumValueSideItem[] = []
 
