@@ -13,6 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export declare const ORIGIN_LAYOUT_SIDE = "origin";
-export declare const CHANGED_LAYOUT_SIDE = "changed";
-export type LayoutSide = typeof ORIGIN_LAYOUT_SIDE | typeof CHANGED_LAYOUT_SIDE;
+export { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE, type LayoutSide, } from '../../../../next-data-model/src/model/abstract/layout-side';

@@ -4,5 +4,7 @@ export type AdditionalInfoPieceProps = {
     isVisible: boolean;
     value: unknown;
     textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
+    borderShadowColor?: HighlightVariant;
+    isFontMuted?: boolean;
 };
 export declare const AdditionalInfoPiece: FC<AdditionalInfoPieceProps>;
