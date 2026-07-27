@@ -1,4 +1,3 @@
-import { takeDiffSideBackgroundColor } from "@apihub/utils/diffs/take-diff-side-background-color"
 import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import {
@@ -10,6 +9,7 @@ import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mode
 import { FC, memo } from "react"
 import { DdlApiPropertyValue } from "../DdlApiPropertyValue/DdlApiPropertyValue"
 import { DdlApiPropertyValueWithDiffs } from "../DdlApiPropertyValue/DdlApiPropertyValueWithDiffs"
+import { DdlCommaSeparatedListWithDiffs } from "../DdlCommaSeparatedListWithDiffs/DdlCommaSeparatedListWithDiffs"
 
 type ColumnTypeLabelWithDiffsProps = {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -69,24 +69,11 @@ export const ColumnTypeLabelWithDiffs: FC<ColumnTypeLabelWithDiffsProps> = memo<
   const { node, layoutSide } = props
   const display = resolveColumnTypeLabelSideDisplay(node, layoutSide)
 
-  if (display.kind === "plain") {
+  if (display.kind === "plain" || display.kind === "monolithic") {
     return (
-      <DdlApiPropertyValue
-        isVisible={true}
-        value={display.text}
-        appearance="text"
-      />
-    )
-  }
-
-  if (display.kind === "monolithic") {
-    return (
-      <DdlApiPropertyValueWithDiffs
-        isVisible={true}
-        value={display.text}
-        appearance="text"
-        textHighlighterColor={takeDiffSideTextHighlighterColor(display.diff, layoutSide)}
-        backgroundColor={takeDiffSideBackgroundColor(display.diff, layoutSide)}
+      <DdlCommaSeparatedListWithDiffs
+        layoutSide={layoutSide}
+        display={display}
       />
     )
   }
@@ -97,9 +84,13 @@ export const ColumnTypeLabelWithDiffs: FC<ColumnTypeLabelWithDiffsProps> = memo<
     <span className="inline-flex items-center gap-1">
       {typeNameSegments.map((segment, index) => renderColumnTypeLabelSegment(segment, index, layoutSide))}
       {parameterSegments.length > 0 && (
-        <span className="inline-flex items-center">
-          {parameterSegments.map((segment, index) => renderColumnTypeLabelSegment(segment, index, layoutSide))}
-        </span>
+        <DdlCommaSeparatedListWithDiffs
+          layoutSide={layoutSide}
+          display={{
+            kind: "segmented",
+            segments: parameterSegments,
+          }}
+        />
       )}
     </span>
   )

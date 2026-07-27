@@ -10,6 +10,9 @@ export type DdlApiForeignKeyTargetDiffs = Partial<Record<string, ChangedProperty
 /** Per-literal diffs for {@link DdlApiColumnRowValue.enumValues}; keys are enum member strings. */
 export type DdlApiEnumValueDiffs = Partial<Record<string, ChangedPropertyMetaData>>
 
+/** Per-part diffs for {@link DdlApiIndexRowValue.partNames}; keys are index part display strings. */
+export type DdlApiIndexPartNameDiffs = Partial<Record<string, ChangedPropertyMetaData>>
+
 export const DDL_COLUMN_TYPE_FIELD_DIFF_KEYS = [
   "typeName",
   "size",
@@ -79,7 +82,9 @@ export type DdlApiIndexPropertyRowDiffs = Partial<
     | keyof DdlApiIndexRowValue,
     ChangedPropertyMetaData
   >
->
+> & {
+  partNameDiffs?: DdlApiIndexPartNameDiffs
+}
 
 export const DDL_COLUMN_CHANGED_PROPERTY_KEYS = [
   NODE_LEVEL_DIFF_KEY,

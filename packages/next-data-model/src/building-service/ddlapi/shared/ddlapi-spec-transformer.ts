@@ -470,7 +470,7 @@ export class DdlApiSpecTransformer {
     return `${typeName} (${definedParameters.join(', ')})`
   }
 
-  private formatIndexPartName(part: { column?: { name: string }; expr?: Expr }): string {
+  protected formatIndexPartName(part: { column?: { name: string }; expr?: Expr }): string {
     if (part.column?.name) {
       return part.column.name
     }

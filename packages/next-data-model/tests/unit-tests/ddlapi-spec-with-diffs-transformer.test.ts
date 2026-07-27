@@ -207,6 +207,52 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(indexDiffs?.[NODE_LEVEL_DIFF_KEY]?.action).toBe(DiffAction.add)
   })
 
+  it('maps index part add diffs onto partNameDiffs', async () => {
+    const fs = await import('fs')
+    const path = await import('path')
+    const base = path.join(__dirname, '../../../samples/ddlapi-diffs/index-changes/09-append-new-column-in-index')
+    const merged = await mergeSql(
+      fs.readFileSync(path.join(base, 'before.sql'), 'utf8'),
+      fs.readFileSync(path.join(base, 'after.sql'), 'utf8'),
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const indexRow = spec?.indexes.items.find(index => index.indexName === 'idx_t_c1_c2')
+    const indexDiffs = indexRow?.[TEST_DIFFS_META_KEY] as Record<string, unknown> | undefined
+    const partNameDiffs = indexDiffs?.partNameDiffs as Record<string, { action?: string, afterValue?: string }> | undefined
+
+    expect(partNameDiffs?.c3?.action).toBe(DiffAction.add)
+    expect(partNameDiffs?.c3?.afterValue).toBe('c3')
+  })
+
+  it('maps paired index part remove/add diffs onto partNameDiffs replace', async () => {
+    const merged = await mergeSql(
+      `create table t(c1 int, c2 int, c3 int);
+       create index idx on t(c1, c2);`,
+      `create table t(c1 int, c2 int, c3 int);
+       create index idx on t(c1, c3);`,
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const indexRow = spec?.indexes.items.find(index => index.indexName === 'idx')
+    const indexDiffs = indexRow?.[TEST_DIFFS_META_KEY] as Record<string, unknown> | undefined
+    const partNameDiffs = indexDiffs?.partNameDiffs as Record<string, {
+      action?: string
+      beforeValue?: string
+      afterValue?: string
+    }> | undefined
+
+    expect(partNameDiffs?.c2?.action).toBe(DiffAction.replace)
+    expect(partNameDiffs?.c2?.beforeValue).toBe('c2')
+    expect(partNameDiffs?.c2?.afterValue).toBe('c3')
+  })
+
   it('maps identity add diffs onto isGenerated', async () => {
     const merged = await mergeSql(
       'create table t(id int);',

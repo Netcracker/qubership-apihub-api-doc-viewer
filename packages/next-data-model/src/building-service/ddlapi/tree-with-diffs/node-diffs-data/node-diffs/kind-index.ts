@@ -1,19 +1,29 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
+import {
+  ChangedPropertyMetaData,
+  DIFF_HIGHLIGHTING_MODES_DEFAULT,
+  HighlightVariant,
+  ITreeNodeWithDiffs,
+  NODE_LEVEL_DIFF_KEY,
+  NodeDiffs,
+} from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import {
   DDL_INDEX_CHANGED_PROPERTY_KEYS,
   DDL_INDEX_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
+  DdlApiIndexPartNameDiffs,
   DdlApiIndexPropertyRowDiffs,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
+
 export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregatorKindAny {
   public aggregate(
     crawlValue: object | null,
@@ -40,8 +50,18 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
 
     const superNodeDiffs = super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
 
-    const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
+    const crawlDiffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
+    if (!isObject(crawlDiffs)) {
+      return superNodeDiffs
+    }
+
+    const diffs = crawlDiffs
+    const hasPartNameDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['partNameDiffs'])
+    const hasFlatDiffs = Object.entries(diffs).some(([key, value]) => (
+      key !== 'partNameDiffs' &&
+      AbstractNodeDiffsAggregator.isDiff(value)
+    ))
+    if (!hasFlatDiffs && !hasPartNameDiffs) {
       return superNodeDiffs
     }
 
@@ -50,7 +70,10 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
       DDL_INDEX_CHANGED_PROPERTY_KEYS,
     )
 
-    this.adoptNodeLevelDiffFromCrawlIfAbsent(diffs, nodeDiffs)
+    this.adoptNodeLevelDiffFromCrawlIfAbsent(
+      diffs as Partial<Record<string, Diff>>,
+      nodeDiffs,
+    )
 
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       this.aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
@@ -63,16 +86,41 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
     }
 
     const isUniqueDiff = diffs['isUnique']
-    isUniqueDiff && this.aggregateFlagDiff(
-      isUniqueDiff,
-      'isUnique',
-      nodeDiffs,
-      this.takeBooleanFlagValue(crawlValue, 'isUnique'),
-    )
+    if (AbstractNodeDiffsAggregator.isDiff(isUniqueDiff)) {
+      this.aggregateFlagDiff(
+        isUniqueDiff,
+        'isUnique',
+        nodeDiffs,
+        this.takeBooleanFlagValue(crawlValue, 'isUnique'),
+      )
+    }
 
+    this.aggregateIndexPartNameDiffs(diffs, nodeDiffs)
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
     return nodeDiffs
+  }
+
+  private aggregateIndexPartNameDiffs(
+    diffs: object,
+    nodeDiffs: DdlApiIndexPropertyRowDiffs,
+  ): void {
+    const partNameDiffsRecord = (diffs as Record<string, unknown>)['partNameDiffs']
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(partNameDiffsRecord)) {
+      return
+    }
+
+    const partNameDiffs: DdlApiIndexPartNameDiffs = {}
+    for (const [partNameKey, diff] of Object.entries(partNameDiffsRecord)) {
+      if (!diff) {
+        continue
+      }
+      partNameDiffs[partNameKey] = this.buildIndexPartNameDiffMetadata(diff)
+    }
+
+    if (Object.keys(partNameDiffs).length > 0) {
+      nodeDiffs.partNameDiffs = partNameDiffs
+    }
   }
 
   private aggregatePropertyTitleRowDiff(
@@ -97,5 +145,84 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
         return
       }
     }
+
+    const partNameDiffs = nodeDiffs.partNameDiffs
+    if (!partNameDiffs || Object.keys(partNameDiffs).length === 0) {
+      return
+    }
+
+    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(partNameDiffs),
+    )
+    if (representativeDiff) {
+      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(representativeDiff)
+    }
+  }
+
+  private buildIndexPartNameDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+      return {
+        ...metadata,
+        styles: {
+          before: {
+            ...metadata.styles.before,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+          after: {
+            ...metadata.styles.after,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+        },
+      }
+    }
+
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Green,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Red,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 }

@@ -1,7 +1,6 @@
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import {
   LayoutSide,
-  ORIGIN_LAYOUT_SIDE,
 } from "../../abstract/layout-side"
 import {
   ChangedPropertyMetaData,
@@ -11,16 +10,19 @@ import { DdlApiColumnTypeValue } from "../tree/node-value"
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import {
+  buildCommaSeparatedListSideSegments,
+  DdlListSideSegment,
+  isListItemVisibleOnSide,
+  resolveFieldSideText,
+} from "./list-side-display"
+import {
   DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
   DdlApiColumnPropertyRowDiffs,
   DdlApiColumnTypeFieldDiffKey,
   DdlApiColumnTypeFieldDiffs,
 } from "./property-row-diffs.types"
 
-export type DdlColumnTypeLabelSideSegment = {
-  readonly text: string
-  readonly diff?: ChangedPropertyMetaData
-}
+export type DdlColumnTypeLabelSideSegment = DdlListSideSegment
 
 export type DdlColumnTypeLabelSideDisplay =
   | {
@@ -170,25 +172,22 @@ function buildParameterSideSegments(
     return []
   }
 
-  const segments: DdlColumnTypeLabelSideSegment[] = [{ text: " (" }]
-  parameterKeys.forEach((parameterKey, index) => {
-    if (index > 0) {
-      segments.push({ text: ", " })
-    }
+  const sideItems = parameterKeys.flatMap((parameterKey) => {
     const parameterText = resolveFieldSideText(
       takeColumnTypeParameterValue(columnType, parameterKey),
       fieldDiffs[parameterKey],
       layoutSide,
     )
-    if (parameterText !== undefined) {
-      segments.push({
-        text: parameterText,
-        diff: fieldDiffs[parameterKey],
-      })
+    if (parameterText === undefined) {
+      return []
     }
+    return [{
+      text: parameterText,
+      diff: fieldDiffs[parameterKey],
+    }]
   })
-  segments.push({ text: ")" })
-  return segments
+
+  return [...buildCommaSeparatedListSideSegments(sideItems, "spaced")]
 }
 
 function collectVisibleParameterKeys(
@@ -199,7 +198,7 @@ function collectVisibleParameterKeys(
   return PARAMETER_FIELD_KEYS.filter((parameterKey) => {
     const diff = fieldDiffs[parameterKey]
     if (diff) {
-      return isFieldVisibleOnSide(diff, layoutSide)
+      return isListItemVisibleOnSide(diff, layoutSide)
     }
     return takeColumnTypeParameterValue(columnType, parameterKey) !== undefined
   })
@@ -224,43 +223,6 @@ function takeColumnTypeParameterValue(
   }
   const value = Reflect.get(columnType, parameterKey)
   return typeof value === "number" ? value : undefined
-}
-
-function resolveFieldSideText(
-  mergedValue: string | number | undefined,
-  diff: ChangedPropertyMetaData | undefined,
-  layoutSide: LayoutSide,
-): string | undefined {
-  if (!diff) {
-    return mergedValue !== undefined ? String(mergedValue) : undefined
-  }
-
-  const { data } = diff
-  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
-
-  if (isDiffAdd(data)) {
-    return isOrigin ? undefined : String(data.afterValue ?? mergedValue ?? "")
-  }
-  if (isDiffRemove(data)) {
-    return isOrigin ? String(data.beforeValue ?? mergedValue ?? "") : undefined
-  }
-  if (isDiffReplace(data)) {
-    return isOrigin
-      ? String(data.beforeValue ?? mergedValue ?? "")
-      : String(data.afterValue ?? mergedValue ?? "")
-  }
-
-  return mergedValue !== undefined ? String(mergedValue) : undefined
-}
-
-function isFieldVisibleOnSide(
-  diff: ChangedPropertyMetaData,
-  layoutSide: LayoutSide,
-): boolean {
-  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
-    ? diff.styles.before
-    : diff.styles.after
-  return styles.isContentVisible
 }
 
 function buildMonolithicColumnTypeDiffMetadata(

@@ -35,6 +35,7 @@ export type {
   DdlApiEnumValueDiffs,
   DdlApiForeignKeyTargetDiffs,
   DdlApiIndexFlagDiffKey,
+  DdlApiIndexPartNameDiffs,
   DdlApiIndexPropertyRowDiffs,
   DdlApiPropertyRowValue
 } from "./property-row-diffs.types"
@@ -54,6 +55,20 @@ export type {
   DdlColumnTypeLabelSideDisplay,
   DdlColumnTypeLabelSideSegment,
 } from "./column-type-label-diffs"
+
+export {
+  takeIndexPartNameDiffs,
+  resolveIndexPartNamesSideDisplay,
+} from "./index-part-name-diffs"
+export type {
+  DdlIndexPartNamesSideDisplay,
+} from "./index-part-name-diffs"
+
+export type {
+  DdlCommaSeparatedListParenthesesStyle,
+  DdlListSideItem,
+  DdlListSideSegment,
+} from "./list-side-display"
 
 export { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 

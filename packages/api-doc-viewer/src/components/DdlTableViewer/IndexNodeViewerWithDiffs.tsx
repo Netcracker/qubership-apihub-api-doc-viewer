@@ -4,7 +4,11 @@ import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
 } from "@apihub/utils/ddlapi/node-level-diff"
-import { isDdlPropertySubheaderVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import {
+  isDdlPropertySubheaderVisible,
+  resolveIndexPartNamesSideDisplay,
+  takeIndexPartNameDiffs,
+} from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -18,7 +22,7 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
-import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
+import { DdlCommaSeparatedListWithDiffs } from "./DdlCommaSeparatedListWithDiffs/DdlCommaSeparatedListWithDiffs"
 import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
@@ -34,12 +38,14 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
 
   const nodeDiff = useMemo(() => takeNodeDiffIfPresent(node), [node])
 
-  // TitleRow applies styles.before/after.backgroundColor from this `diff` prop
-  // (see TitleRowContent) across the whole title row, including the subheader.
   const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities" | "highlightingMode"> =
     useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
 
   const flagDiffs = useMemo(() => takeIndexFlagDiffs(node), [node])
+  const partNameDiffs = useMemo(() => takeIndexPartNameDiffs(node), [node])
+
+  const hasNamedIndex = !!value?.indexName
+  const hasPartNameDiffs = !!partNameDiffs
 
   const indexTitle = useMemo(() => {
     if (!value) {
@@ -48,8 +54,25 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
     if (value.indexName) {
       return value.indexName
     }
+    if (hasPartNameDiffs) {
+      return ''
+    }
     return formatIndexPartNames(value.partNames)
-  }, [value])
+  }, [hasPartNameDiffs, value])
+
+  const renderPartNames = useCallback(
+    (layoutSide: LayoutSide) => {
+      const parenthesesStyle = hasNamedIndex ? "tight" as const : "none" as const
+      const display = resolveIndexPartNamesSideDisplay(node, layoutSide, parenthesesStyle)
+      return (
+        <DdlCommaSeparatedListWithDiffs
+          layoutSide={layoutSide}
+          display={display}
+        />
+      )
+    },
+    [hasNamedIndex, node],
+  )
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -61,15 +84,11 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         return <></>
       }
 
+      const shouldRenderPartNames = value.partNames.length > 0 && (hasNamedIndex || hasPartNameDiffs)
+
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {value.indexName && (
-            <DdlApiPropertyValue
-              isVisible={true}
-              value={`(${formatIndexPartNames(value.partNames)})`}
-              appearance="text"
-            />
-          )}
+          {shouldRenderPartNames && renderPartNames(layoutSide)}
           <ColumnRowBadgesContent
             columnId={node.id}
             layoutSide={layoutSide}
@@ -79,7 +98,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         </div>
       )
     },
-    [flagDiffs, nodeDiff, value],
+    [flagDiffs, hasNamedIndex, hasPartNameDiffs, node.id, nodeDiff, renderPartNames, value],
   )
 
   const isDescriptionDisplayed = useMemo(
@@ -89,6 +108,13 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
 
   const isWholeNodeChanged = !!nodeDiff
   const isTitleListLastRow = isLastInList
+
+  const hasSubheaderContent = !!value && (
+    (hasNamedIndex && value.partNames.length > 0)
+    || value.isUnique
+    || !!flagDiffs?.isUnique
+    || (!hasNamedIndex && hasPartNameDiffs)
+  )
 
   if (!value) {
     return null
@@ -103,7 +129,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         expandable={false}
         expanded={true}
         variant={TextValueVariant.body2}
-        subheader={value.indexName || value.isUnique || flagDiffs?.isUnique ? subheader : undefined}
+        subheader={hasSubheaderContent ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
         {...titleRowDiffProps}
       />

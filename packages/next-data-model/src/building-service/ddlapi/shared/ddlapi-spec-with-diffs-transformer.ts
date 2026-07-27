@@ -34,9 +34,15 @@ type ForeignKeyTargetCrawlDiffs = Partial<Record<string, Diff>>
 
 type EnumValueCrawlDiffs = Partial<Record<string, Diff>>
 
+type IndexPartNameCrawlDiffs = Partial<Record<string, Diff>>
+
 type ColumnCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'foreignKeyTargets' | 'enumValues'> & {
   foreignKeyTargets?: ForeignKeyTargetCrawlDiffs
   enumValues?: EnumValueCrawlDiffs
+}
+
+type IndexCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'partNameDiffs'> & {
+  partNameDiffs?: IndexPartNameCrawlDiffs
 }
 
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
@@ -299,7 +305,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const sourceIndexIndex = sourceIndexes.indexOf(sourceIndex)
-      const indexDiffs: DiffsRecord = {}
+      const indexDiffs: IndexCrawlDiffsRecord = {}
 
       const wholeIndexDiff = this.resolveArrayElementDiff(indexesArrayDiffs, sourceIndexIndex)
       if (wholeIndexDiff) {
@@ -320,6 +326,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       const descriptionDiff = this.resolveCommentDescriptionDiff(sourceIndex.attrs)
       if (descriptionDiff) {
         indexDiffs.description = descriptionDiff
+      }
+
+      const partNameDiffs = this.resolveIndexPartNameDiffsForIndex(sourceIndex)
+      if (Object.keys(partNameDiffs).length > 0) {
+        indexDiffs.partNameDiffs = partNameDiffs
       }
 
       this.mergeDiffsIntoTarget(indexRow, indexDiffs)
@@ -550,6 +561,119 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     }
 
     return keyedDiffs
+  }
+
+  private resolveIndexPartNameDiffsForIndex(sourceIndex: Index): IndexPartNameCrawlDiffs {
+    const partsArrayDiffs = this.getDiffsRecord(sourceIndex.parts)
+    if (!partsArrayDiffs) {
+      return {}
+    }
+
+    const rawDiffs = Object.values(partsArrayDiffs).filter((diff): diff is Diff => !!diff)
+    if (rawDiffs.length === 0) {
+      return {}
+    }
+
+    const keyedDiffs: IndexPartNameCrawlDiffs = {}
+    const consumed = new Set<Diff>()
+    const removes = rawDiffs.filter(isDiffRemove)
+    const adds = rawDiffs.filter(isDiffAdd)
+
+    for (const removeDiff of removes) {
+      if (consumed.has(removeDiff)) {
+        continue
+      }
+
+      const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(removeDiff.beforeValue)
+      if (!beforePartName) {
+        continue
+      }
+
+      const removeSeqNo = this.takeIndexPartSeqNoFromDiffValue(removeDiff.beforeValue)
+      const matchingAdd = adds.find((addDiff) => {
+        if (consumed.has(addDiff)) {
+          return false
+        }
+        const addSeqNo = this.takeIndexPartSeqNoFromDiffValue(addDiff.afterValue)
+        return removeSeqNo !== undefined && addSeqNo === removeSeqNo
+      })
+
+      if (matchingAdd) {
+        const afterPartName = this.takeIndexPartDisplayNameFromDiffValue(matchingAdd.afterValue)
+        if (afterPartName) {
+          keyedDiffs[beforePartName] = {
+            type: matchingAdd.type,
+            scope: matchingAdd.scope,
+            description: matchingAdd.description ?? removeDiff.description,
+            action: DiffAction.replace,
+            beforeValue: beforePartName,
+            afterValue: afterPartName,
+            beforeDeclarationPaths: removeDiff.beforeDeclarationPaths,
+            afterDeclarationPaths: matchingAdd.afterDeclarationPaths,
+          }
+          consumed.add(removeDiff)
+          consumed.add(matchingAdd)
+        }
+      }
+    }
+
+    for (const diff of rawDiffs) {
+      if (consumed.has(diff)) {
+        continue
+      }
+
+      if (isDiffAdd(diff)) {
+        const afterPartName = this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue)
+        if (afterPartName) {
+          keyedDiffs[afterPartName] = {
+            ...diff,
+            afterValue: afterPartName,
+          }
+        }
+        continue
+      }
+
+      if (isDiffRemove(diff)) {
+        const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
+        if (beforePartName) {
+          keyedDiffs[beforePartName] = {
+            ...diff,
+            beforeValue: beforePartName,
+          }
+        }
+        continue
+      }
+
+      if (isDiffReplace(diff)) {
+        const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
+        if (beforePartName) {
+          keyedDiffs[beforePartName] = {
+            ...diff,
+            beforeValue: beforePartName,
+            afterValue: this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue) ?? diff.afterValue,
+          }
+        }
+      }
+    }
+
+    return keyedDiffs
+  }
+
+  private takeIndexPartDisplayNameFromDiffValue(value: unknown): string | undefined {
+    if (!isObject(value)) {
+      return undefined
+    }
+
+    return this.formatIndexPartName(value as { column?: { name: string }; expr?: Expr })
+  }
+
+  private takeIndexPartSeqNoFromDiffValue(value: unknown): number | undefined {
+    if (!isObject(value) || !("seqNo" in value)) {
+      return undefined
+    }
+
+    const seqNo = Reflect.get(value, "seqNo")
+    return typeof seqNo === "number" ? seqNo : undefined
   }
 
   private resolveEnumValuesRemovedByColumnTypeChange(

@@ -6,7 +6,7 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, resolveIndexPartNamesSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
 import { buildFromDdl } from "@netcracker/qubership-apihub-ddlapi/parser"
@@ -885,6 +885,128 @@ describe("DDL property row diff aggregators", () => {
         { text: "varchar" },
         { text: " (" },
         { text: "1000", diff: node.diffs.columnTypeFieldDiffs.size },
+        { text: ")" },
+      ],
+    })
+  })
+
+  it("resolves segmented index part names display for append and replace", () => {
+    const appendNode = {
+      kind: DdlApiTreeNodeKinds.INDEX,
+      value: () => ({
+        indexName: "idx_t_c1_c2",
+        partNames: ["c1", "c2", "c3"],
+        isUnique: false,
+      }),
+      diffs: {
+        partNameDiffs: {
+          c3: {
+            data: {
+              type: nonBreaking,
+              action: DiffAction.add,
+              scope: "root",
+              afterValue: "c3",
+              afterDeclarationPaths: [["indexes", "idx_t_c1_c2", "parts", "2"]],
+            },
+            styles: {
+              before: { isContentVisible: false, isHeaderVisible: true },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Green,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    expect(resolveIndexPartNamesSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE, "tight")).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "c1" },
+        { text: ", " },
+        { text: "c2" },
+        { text: ")" },
+      ],
+    })
+    expect(resolveIndexPartNamesSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE, "tight")).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "c1" },
+        { text: ", " },
+        { text: "c2" },
+        { text: ", " },
+        { text: "c3", diff: appendNode.diffs.partNameDiffs.c3 },
+        { text: ")" },
+      ],
+    })
+
+    const replaceNode = {
+      kind: DdlApiTreeNodeKinds.INDEX,
+      value: () => ({
+        indexName: "idx",
+        partNames: ["c1", "c3"],
+        isUnique: false,
+      }),
+      diffs: {
+        partNameDiffs: {
+          c2: {
+            data: {
+              type: nonBreaking,
+              action: DiffAction.replace,
+              scope: "root",
+              beforeValue: "c2",
+              afterValue: "c3",
+              beforeDeclarationPaths: [["indexes", "idx", "parts", "1"]],
+              afterDeclarationPaths: [["indexes", "idx", "parts", "1"]],
+            },
+            styles: {
+              before: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE, "tight")).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "c1" },
+        { text: ", " },
+        { text: "c2", diff: replaceNode.diffs.partNameDiffs.c2 },
+        { text: ")" },
+      ],
+    })
+    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE, "tight")).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "c1" },
+        { text: ", " },
+        { text: "c3", diff: replaceNode.diffs.partNameDiffs.c2 },
         { text: ")" },
       ],
     })
