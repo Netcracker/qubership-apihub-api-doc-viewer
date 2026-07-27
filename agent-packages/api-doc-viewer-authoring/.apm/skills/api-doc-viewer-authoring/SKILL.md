@@ -257,16 +257,56 @@ spacer (same horizontal footprint as the expander column). This is not
 
 **Diff highlighting (session lesson):**
 
-- **`AdditionalInfoRow`** applies side **background** from the row diff prop (same
-  pattern as other diff rows).
-- **`AdditionalInfoPiece`** renders the expression in a **two-layer** DOM (JsoValue
-  `.block` pattern): outer span keeps the grey block chip; inner span receives
-  `textHighlighterColor` via `takeDiffSideTextHighlighterColor` so yellow highlight
-  hugs text only — do not compound `.block.diffs-highlighter_*` on one element.
-- Orchestration stays in `ColumnNodeViewerWithDiffs`: pass
-  `textHighlighterColor={takeDiffSideTextHighlighterColor(generatedExpressionDiff, layoutSide)}`.
-  Add/remove of an expression uses row background only; **replace** may set yellow
-  text highlighter in the data layer.
+- **`AdditionalInfoRow`** applies side **background** from the **row colorizing** diff prop
+  (`colorizingDiff`), not from the chip-level diff — same pattern as enum **Values** row.
+- **`AdditionalInfoPiece`** renders values in a **two-layer** DOM (JsoValue `.block` pattern):
+  outer span keeps the grey block chip; inner span receives `textHighlighterColor` via
+  `takeDiffSideTextHighlighterColor`; outer span may receive `borderShadowColor` via
+  `takeDiffSideBorderShadowColor` — do not compound `.block.diffs-highlighter_*` on one element.
+- **Generated expression** (`As` row): pass `textHighlighterColor` only; add/remove uses row
+  background; replace sets yellow text highlighter in the data layer.
+- **Default value** (`Default` row): pass **both** `textHighlighterColor` and
+  `borderShadowColor` from `takeColumnDefaultValueDiff` — boolean replace uses yellow border
+  shadow only (JSO predefined-value parity); scalar replace uses yellow text highlighter only.
+- **Enum literals** (`Values` row): pass `textHighlighterColor`, `borderShadowColor`, and
+  `isFontMuted` per side item — mirror `resolveColumnEnumValueSideItems` orchestration.
+
+### Column default value diffs (`ColumnNodeViewerWithDiffs`)
+
+Follow the **enum Values row** split: row background vs chip chrome are separate diffs.
+
+| Diff field | Role | Viewer wiring |
+| --- | --- | --- |
+| `defaultValueRowColorizingDiff` | Row green/red/yellow background | `AdditionalInfoRow colorizingDiff={…}` via `takeColumnDefaultValueRowColorizingDiff` |
+| `defaultValue` | Chip side visibility (add/remove) or replace highlight | `AdditionalInfoPiece` style props via `takeColumnDefaultValueDiff` |
+| Side display value | Text shown per layout side | `resolveColumnDefaultValueSideDisplay(node, layoutSide)` — show diff side even when merged row has no `defaultValue` |
+
+**Visibility:** `hasDefaultValue` must be true when either merged `value.defaultValue` or either
+default diff accessor is present — otherwise replace/remove rows disappear on one side.
+
+**Stack order:** `TitleRow` → optional description `TextRow` → optional enum **Values** row →
+**Default** row → **As** (generated) row. Reuse `buildColumnViewerContexts` for
+`additionalInfoPrecededBy` and `data-ddl-list-last-row` on the terminal additional-info row.
+
+**JSO parity (boolean replace):** when `columnType.kind === BoolType`, replace highlight is
+yellow **`borderShadowColor`** on the chip, not `textHighlighterColor` — match JSO predefined
+boolean values (`JsoPropertyNodeViewerWithDiffs` / `borderShadowColor` on block values).
+
+Orchestration example (default row subheader):
+
+```tsx
+subheader={(layoutSide) => (
+  <AdditionalInfoPiece
+    isVisible={true}
+    value={resolveColumnDefaultValueSideDisplay(node, layoutSide)}
+    textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
+    borderShadowColor={takeDiffSideBorderShadowColor(defaultValueDiff, layoutSide)}
+  />
+)}
+```
+
+Fix wrong chip/row colours in **next-data-model** (`kind-column.ts` aggregators,
+`ddlapi-spec-with-diffs-transformer.ts` nested default resolution) — not in `AdditionalInfoPiece`.
 
 ### DDL property title row — no column-name text highlight
 
@@ -461,8 +501,11 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Viewer workaround for `DiffReplace` on flags | Badge still null in side-by-side | Normalise in next-data-model `aggregateFlagDiff` |
 | Yellow highlight on column **name** when only badges changed | Title-row diff carried `textHighlighterColor` | Fix in next-data-model (`TITLE_ROW_FLAG_AS_REPLACE_STYLES`, name diff builder) — not in `TextValue` |
 | Global add/remove `textHighlighterColor` in `kind-any` | Wrong for generated expression; needed for FK links | FK exception in `kind-column`; expression add/remove omit text highlighter |
+| Default row missing on remove/replace side | `hasDefaultValue` only checks merged `value.defaultValue` | Also OR in `defaultValueDiff` / `defaultValueRowColorizingDiff` |
+| Boolean default replace shows yellow text fill | Chip metadata used `textHighlighterColor` | Data layer: `BoolType` replace → `borderShadowColor` only; viewer passes both accessors |
+| Bit default replace not highlighted | ddlapi diff on `default.expr`, not column `defaultValue` | Fix transformer `resolveDefaultValueDiff` nested resolution — not aggregator |
 
-### Integration example (column default value row)
+### Integration example (column default value row — plain)
 
 Append after existing `TitleRow` / optional `TextRow`:
 
@@ -495,6 +538,8 @@ Follow the JSO / AsyncAPI split: plain and diffs pipelines stay separate.
 - Do **not** re-derive diff priority, boolean normalisation, or title-row vs flag-badge
   contracts in React — consume precomputed node fields from next-data-model:
   `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`,
+  `takeColumnDefaultValueDiff`, `takeColumnDefaultValueRowColorizingDiff`,
+  `resolveColumnDefaultValueSideDisplay`, `resolveColumnEnumValueSideItems`,
   `isDdlPropertySubheaderVisible`, `isDdlFlagBadgeDiffHighlighted`, `node.diffsSeverities`.
 - Keep badge orchestration in `ColumnRowBadgesContent`; `DiffBadge` only renders the diff
   object it receives. Pass `$changes` only when `isDdlFlagBadgeDiffHighlighted(flagDiff)`.

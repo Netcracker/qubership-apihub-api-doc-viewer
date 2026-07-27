@@ -152,11 +152,12 @@ DDL property-row diffs follow the JSO pattern: **aggregators prepare; viewers co
 
 | Layer | Location | Owns |
 | --- | --- | --- |
-| Model accessors | `src/model/ddlapi/tree-with-diffs/property-row-diffs.ts` | `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`, `isDdlFlagBadgeDiffHighlighted`, changed-property keys |
-| Kind column / index | `node-diffs/kind-column.ts`, `kind-index.ts` | Private `aggregatePropertyTitleRowDiff`; which changed keys win on title row |
+| Model accessors | `src/model/ddlapi/tree-with-diffs/property-row-diffs.ts` | `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`, `takeColumnDefaultValueDiff`, `takeColumnDefaultValueRowColorizingDiff`, `resolveColumnDefaultValueSideDisplay`, `isDdlFlagBadgeDiffHighlighted`, changed-property keys |
+| Kind column / index | `node-diffs/kind-column.ts`, `kind-index.ts` | Private `aggregatePropertyTitleRowDiff`; default/enum value diff metadata; which changed keys win on title row |
 | Kind any | `node-diffs/kind-any.ts` | `aggregateFlagDiff`, `aggregateFlagDiffSideVisibilityFromWholeNodeAddOrRemove`, `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove`, `asReplaceFlagDiffForTitleRow`, protected `adoptPropertyRowDiffs` |
-| Severities | `node-diffs-severities/kind-column.ts`, `kind-index.ts`, factory | Title-row severity per changed property |
-| Transformer | `ddlapi-spec-with-diffs-transformer.ts` | Row-level field diffs before crawl (generated columns, …) |
+| Severities | `node-diffs-severities/kind-column.ts`, `kind-index.ts`, factory | Title-row and additional-info-row severity per changed property |
+| Transformer | `ddlapi-spec-with-diffs-transformer.ts` | Row-level field diffs before crawl (generated columns, nested default values, …) |
+| Display formatting | `shared/ddlapi/format-ddl-expr.ts` | `formatDefaultValueForDisplay`, `formatDefaultValueDisplayString` (strip SQL string quotes) |
 
 **Encapsulation (session lesson):**
 
@@ -184,6 +185,60 @@ Fixing “invisible not-null badge” in the viewer masks the root cause — nor
 
 Title-row replace and flag-badge add/remove are **different contracts** — do not assume one
 normalisation fits both.
+
+### Column default value diffs (kind-column + transformer)
+
+Column **Default** additional-info rows mirror the enum **Values** row contract: **two**
+aggregated diff fields plus a side-display resolver in `property-row-diffs.ts`.
+
+| Field | Aggregator | Contract |
+| --- | --- | --- |
+| `defaultValue` | `aggregateDefaultValueDiff` → `buildDefaultValueDiffMetadata` | Chip: side visibility only on add/remove; replace chip highlight |
+| `defaultValueRowColorizingDiff` | `aggregateDefaultValueRowColorizingDiff` | Row background green/red/yellow |
+| Side text | `resolveColumnDefaultValueSideDisplay` | Pick before/after value from `defaultValue` diff when merged row lacks `defaultValue` |
+
+**Replace chip highlight (`buildDefaultValueDiffMetadata`):**
+
+| Column type | Replace chip styles | Row replace |
+| --- | --- | --- |
+| `BoolType` | Yellow `borderShadowColor`; **no** `textHighlighterColor` | Yellow row via `asReplaceFlagDiffForTitleRow` on row colorizing diff |
+| Other scalars (bigint, text, bit, …) | Yellow `textHighlighterColor`; **no** chip `backgroundColor` | Yellow row (same) |
+
+Pass **`crawlValue`** into `buildDefaultValueDiffMetadata` — detect boolean via
+`columnType.kind === TypeKind.BoolType`, not from diff literal values `'true'`/`'false'`.
+
+**Add/remove:** reuse `buildEnumValueDiffMetadataSideVisibilityOnly` — plain chip (no border,
+no text highlighter, no muted font); row colorizing diff carries green/red background only.
+
+**Type-transition synthetic rows (`DDL_DEFAULT_VALUE_COLUMN_TRANSITION`):**
+
+| Transition | When | Row colorizing |
+| --- | --- | --- |
+| `Lost` | Column becomes generated; merged row has no `defaultValue` | Synthetic **remove** (red row) when no real `defaultValue` diff |
+| `Gained` | Column loses generated; merged row regains `defaultValue` | Synthetic **add** (green row) when no real `defaultValue` diff |
+
+Parallel to `DDL_ENUM_COLUMN_TYPE_TRANSITION` — extract pseudo-enums as named constants, not
+inline `'lost' | 'gained'` strings.
+
+**Transformer — nested default diffs (non-obvious):**
+
+ddlapi often attaches default changes under nested paths, not as a flat column `defaultValue`
+crawl diff. `resolveDefaultValueDiff` in `ddlapi-spec-with-diffs-transformer.ts` resolves in
+order:
+
+1. `column.default` — whole default add/remove
+2. `default.value` — `Literal` replace (e.g. bigint `301`)
+3. `default.expr` — `RawExpr` replace (e.g. bit `302`/`303`)
+
+Normalize sides with `normalizeDefaultValueDiff` / `takeDefaultValueDisplay` before crawl.
+Without step 2/3, bit default replaces produce no `defaultValue` diff and the UI stays unhighlighted.
+
+**Display formatting:** `formatDefaultValueDisplayString` unwraps SQL single-quoted string
+literals (`'draft'` → `draft`) but leaves bit literals (`b'101'`) and unquoted numerics unchanged.
+Apply in plain transformer, with-diffs transformer, and `formatDefaultValueDiffSide` accessor.
+
+Regression samples: `packages/samples/ddlapi-diffs/column-default-changes/` (101–304);
+unit tests in `ddlapi-property-row-diffs.test.ts` and `ddlapi-spec-with-diffs-transformer.test.ts`.
 
 ### Whole-node add/remove flag badges (session lesson)
 
@@ -259,24 +314,32 @@ generated after merge”. To detect kind switch vs de-generation, check for an
 Identity/GeneratedExpr, or replace whose before/after kinds differ) — not merely
 presence of a generated attr on the merged column.
 
-### `textHighlighterColor` in DDL aggregators
+### Chip highlight styles in DDL aggregators (`textHighlighterColor` / `borderShadowColor`)
 
-`TextValue` (column/index title) and `AdditionalInfoPiece` (expression chip) read
-`styles.before/after.textHighlighterColor` from precomputed node diffs. Set it in
+`TextValue`, `AdditionalInfoPiece`, and FK link text read precomputed
+`styles.before/after.textHighlighterColor` and/or `borderShadowColor`. Set both in
 **next-data-model only** — do not patch highlight in the viewer.
 
 | Field / consumer | add/remove | replace/rename |
 | --- | --- | --- |
+| `defaultValue` → `AdditionalInfoPiece` (non-boolean) | **No** chip highlight (row background only) | Yellow **`textHighlighterColor`** |
+| `defaultValue` → `AdditionalInfoPiece` (`BoolType`) | **No** chip highlight (row background only) | Yellow **`borderShadowColor`** only (JSO predefined parity) |
 | `generatedExpression` → `AdditionalInfoPiece` | **No** text highlighter (row background only) | Yellow text highlighter |
 | `foreignKeyTargetDiffs` → FK link text | Red/green text highlighter (kind-column only) | — |
 | `columnName` / `indexName` → title `TextValue` | **No** text highlighter | **No** text highlighter (yellow row background only) |
 | Synthetic title-row replace (`TITLE_ROW_FLAG_AS_REPLACE_STYLES`) | — | **No** text highlighter (badges carry their own diff chrome) |
 
+**Split row vs chip:** for default and enum additional-info rows, chip metadata (`defaultValue`,
+`enumValueDiffs[*]`) must **clear** `backgroundColor` on replace — yellow fill belongs on
+`defaultValueRowColorizingDiff` / `enumValuesRowColorizingDiff` only. Reusing
+`buildChangedPropertyMetaDataFromDiff` for the chip diff without clearing background duplicates
+the row highlight on the chip.
+
 Do **not** restore add/remove text highlighter globally in
-`buildChangedPropertyMetaDataFromDiff` — FK and generated-expression contracts
+`buildChangedPropertyMetaDataFromDiff` — FK, generated-expression, and default-value contracts
 differ. FK link highlighting belongs in `kind-column.buildForeignKeyTargetDiffMetadata`;
 property names use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` via
-`aggregateTextDiff`.
+`aggregateTextDiff`; boolean default replace belongs in `buildDefaultValueDiffMetadata`.
 
 ## Cross-package boundary
 
