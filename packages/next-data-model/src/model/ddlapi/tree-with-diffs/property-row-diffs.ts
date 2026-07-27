@@ -1,6 +1,6 @@
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
-import { formatDdlExpr } from "../../../shared/ddlapi/format-ddl-expr"
+import { formatDefaultValueDisplayString, formatDefaultValueForDisplay } from "../../../shared/ddlapi/format-ddl-expr"
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import { isObject } from "../../../utilities"
 import { Expr } from "@netcracker/qubership-apihub-ddlapi"
@@ -205,10 +205,10 @@ export function resolveColumnDefaultValueSideDisplay(
 
 function formatDefaultValueDiffSide(value: unknown): string | undefined {
   if (typeof value === "string") {
-    return value
+    return formatDefaultValueDisplayString(value)
   }
   if (isObject(value) && "kind" in value) {
-    return formatDdlExpr(value as unknown as Expr)
+    return formatDefaultValueForDisplay(value as unknown as Expr)
   }
   return undefined
 }

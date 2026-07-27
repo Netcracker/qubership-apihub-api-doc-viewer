@@ -16,7 +16,7 @@ import {
   TypeKind,
 } from "@netcracker/qubership-apihub-ddlapi";
 import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
-import { formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
+import { formatDefaultValueDisplayString, formatDefaultValueForDisplay } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
 import { isDdlScalarColumnTypeName } from "@apihub/next-data-model/shared/ddlapi/guards/column-type-name";
 import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-type";
 import { BuildingServiceLogger } from "../../../loggers";
@@ -922,10 +922,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
   private takeDefaultValueDisplay(value: unknown): unknown {
     if (typeof value === 'string') {
-      return value
+      return formatDefaultValueDisplayString(value)
     }
     if (isObject(value) && 'kind' in value) {
-      return formatDdlExpr(value as unknown as Expr)
+      return formatDefaultValueForDisplay(value as unknown as Expr)
     }
 
     return value

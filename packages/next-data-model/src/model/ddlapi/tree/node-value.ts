@@ -237,7 +237,7 @@ export interface DdlApiColumnTypeRaw extends DdlApiColumnTypeBase {
  * | `isUnique` | single-column unique index/constraint | `Table.indexes[*].unique && parts.length === 1 && parts[0].column === column` |
  * | `isNotNull` | explicit NOT NULL | `ColumnType.null === false` (`undefined` → false; explicit `NULL` → false) |
  * | `description` | COMMENT ON COLUMN | `findAttr(column.attrs, Comment)?.text` |
- * | `defaultValue` | `Column.default` present | `Column.default` → {@link formatDdlExpr} |
+ * | `defaultValue` | `Column.default` present | `Column.default` → {@link formatDefaultValueForDisplay} |
  * | `generatedExpression` | `GeneratedExpr` attr (not IDENTITY) | `findAttr(column.attrs, GeneratedExpr).expr` |
  * | `enumValues` | `columnType.kind === EnumType` | `Column.type.type.values` (same list as {@link DdlApiColumnTypeEnum.values}) |
  */

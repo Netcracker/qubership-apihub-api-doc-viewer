@@ -1,7 +1,7 @@
 import { literal, rawExpr, TypeKind } from '@netcracker/qubership-apihub-ddlapi'
 import { buildFromDdl } from '@netcracker/qubership-apihub-ddlapi/parser'
 import { DdlApiSpecTransformer } from '../../src/building-service/ddlapi/shared/ddlapi-spec-transformer'
-import { formatDdlExpr } from '../../src/shared/ddlapi/format-ddl-expr'
+import { formatDefaultValueDisplayString, formatDefaultValueForDisplay, formatDdlExpr } from '../../src/shared/ddlapi/format-ddl-expr'
 import { createBuildingServiceLogger } from '../../src/loggers'
 
 describe('formatDdlExpr', () => {
@@ -11,6 +11,20 @@ describe('formatDdlExpr', () => {
 
   it('formats raw expressions', () => {
     expect(formatDdlExpr(rawExpr('gen_random_uuid()'))).toBe('gen_random_uuid()')
+  })
+
+  it('unwraps SQL string literals for default value display', () => {
+    expect(formatDefaultValueDisplayString("'draft'")).toBe('draft')
+    expect(formatDefaultValueDisplayString("'1 day'")).toBe('1 day')
+    expect(formatDefaultValueDisplayString("'\\x0102'")).toBe('\\x0102')
+    expect(formatDefaultValueDisplayString("b'101'")).toBe("b'101'")
+    expect(formatDefaultValueDisplayString('0')).toBe('0')
+    expect(formatDefaultValueDisplayString("it''s fine")).toBe("it''s fine")
+    expect(formatDefaultValueDisplayString("'it''s'")).toBe("it's")
+  })
+
+  it('formats default expr literals without surrounding quotes', () => {
+    expect(formatDefaultValueForDisplay(literal("'pending'"))).toBe('pending')
   })
 })
 
@@ -29,6 +43,20 @@ describe('DdlApiSpecTransformer column row value', () => {
     })
 
     expect(spec?.columns.items[0]?.defaultValue).toBe('true')
+  })
+
+  it('unwraps single quotes from text column defaults', async () => {
+    const realm = await buildFromDdl(`
+      CREATE TABLE public.t (
+        sample_col text DEFAULT 'draft'
+      );
+    `)
+    const spec = transformer.transformSourceToTableOrientedSpec(realm, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    expect(spec?.columns.items[0]?.defaultValue).toBe('draft')
   })
 
   it('extracts generatedExpression from GENERATED ALWAYS AS columns', async () => {

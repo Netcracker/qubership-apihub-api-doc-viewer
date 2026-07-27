@@ -24,7 +24,7 @@ import {
   isUUIDType,
   PgDomainSchemaType,
 } from "@apihub/next-data-model/shared/ddlapi/guards";
-import { formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
+import { formatDefaultValueForDisplay, formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
 import {
   AttrKind,
   Column,
@@ -197,7 +197,7 @@ export class DdlApiSpecTransformer {
       ...(generatedExpr ? { generatedExpression: generatedExpr.expr } : {}),
       isUnique: this.isUniqueColumn(table, column),
       isNotNull: !isPrimaryKey && column.type?.null === false,
-      ...(column.default !== undefined ? { defaultValue: formatDdlExpr(column.default) } : {}),
+      ...(column.default !== undefined ? { defaultValue: formatDefaultValueForDisplay(column.default) } : {}),
       ...(comment ? { description: comment.text } : {}),
     }
   }
