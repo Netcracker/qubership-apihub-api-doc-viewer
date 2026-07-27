@@ -76,7 +76,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
 
     const descriptionDiff = diffs['description']
-    descriptionDiff && this.aggregateTextDiff(descriptionDiff, 'description', nodeDiffs)
+    descriptionDiff && this.aggregateDescriptionTextDiff(descriptionDiff, nodeDiffs)
 
     const tableNameDiff = diffs['tableName']
     tableNameDiff && this.aggregateTextDiff(tableNameDiff, 'tableName', nodeDiffs)
@@ -148,6 +148,39 @@ export class DdlApiNodeDiffsAggregatorKindAny
       }
     }
     return this.createChangedPropertyMetaData(diff, beforeStyles, afterStyles)
+  }
+
+  protected aggregateDescriptionTextDiff(
+    diff: Diff<DiffType>,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ): void {
+    nodeDiffs.description = this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected aggregatePresentDescriptionFromWholeNodeAddOrRemove(
+    crawlValue: object,
+    nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
+  ): void {
+    if (nodeDiffs.description) {
+      return
+    }
+
+    const description = Reflect.get(crawlValue, 'description')
+    if (typeof description !== 'string' || description.length === 0) {
+      return
+    }
+
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff) {
+      return
+    }
+
+    const diff = nodeLevelDiff.data
+    if (!isDiffAdd(diff) && !isDiffRemove(diff)) {
+      return
+    }
+
+    nodeDiffs.description = this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   protected buildDdlPropertyNameChangedPropertyMetaDataFromDiff(

@@ -65,6 +65,11 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       nodeDiffs,
     )
 
+    const descriptionDiff = diffs['description']
+    if (AbstractNodeDiffsAggregator.isDiff(descriptionDiff)) {
+      this.aggregateDescriptionTextDiff(descriptionDiff, nodeDiffs)
+    }
+
     const generatedExpressionDiff = diffs['generatedExpression']
     if (AbstractNodeDiffsAggregator.isDiff(generatedExpressionDiff)) {
       this.aggregateTextDiff(
@@ -80,6 +85,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
         nodeDiffs,
         DDL_COLUMN_FLAG_DIFF_KEYS,
       )
+      this.aggregatePresentDescriptionFromWholeNodeAddOrRemove(crawlValue, nodeDiffs)
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs
     }

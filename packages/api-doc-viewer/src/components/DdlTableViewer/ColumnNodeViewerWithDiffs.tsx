@@ -10,6 +10,7 @@ import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSid
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   isDdlPropertySubheaderVisible,
+  takeColumnDescriptionDiff,
   takeColumnGeneratedExpressionDiff,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
@@ -60,6 +61,10 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
   const flagDiffs = useMemo(() => takeColumnFlagDiffs(node), [node])
   const foreignKeyTargetDiffs = useMemo(() => takeColumnForeignKeyTargetDiffs(node), [node])
+  const descriptionDiff = useMemo(
+    () => takeColumnDescriptionDiff(node),
+    [node],
+  )
   const generatedExpressionDiff = useMemo(
     () => takeColumnGeneratedExpressionDiff(node),
     [node],
@@ -169,9 +174,8 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   const isAdditionalInfoDisplayed = displayMode === DETAILED_DISPLAY_MODE
   const isWholeNodeChanged = !!nodeDiff
 
-  const isDescriptionDisplayed = useMemo(
-    () => isAdditionalInfoDisplayed && !!value?.description,
-    [isAdditionalInfoDisplayed, value?.description],
+  const hasDescription = isAdditionalInfoDisplayed && (
+    !!value?.description || !!descriptionDiff
   )
 
   const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
@@ -181,7 +185,8 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     hasEnumValues || hasDefaultValue || hasGeneratedExpression
   )
 
-  const isTitleListLastRow = isLastInList && !hasAdditionalInfoRows
+  const isTitleListLastRow = isLastInList && !hasDescription && !hasAdditionalInfoRows
+  const isDescriptionListLastRow = isLastInList && hasDescription && !hasAdditionalInfoRows
   const isEnumAdditionalInfoListLastRow = isLastInList && hasEnumValues && !hasDefaultValue && !hasGeneratedExpression
   const isDefaultAdditionalInfoListLastRow = isLastInList && hasDefaultValue && !hasGeneratedExpression
   const isGeneratedAdditionalInfoListLastRow = isLastInList && hasGeneratedExpression
@@ -203,14 +208,17 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         usage={TitleRowUsage.DdlApiProperty}
         {...titleRowDiffProps}
       />
-      {isDescriptionDisplayed && !isWholeNodeChanged && (
+      {hasDescription && (
         <TextRow
           data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDescriptionListLastRow || undefined }}
           value={value.description ?? ''}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
           usage={TextRowUsage.DdlApiProperty}
+          diff={descriptionDiff}
+          diffsSeverities={node.diffsSeverities}
         />
       )}
       {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasEnumValues && (

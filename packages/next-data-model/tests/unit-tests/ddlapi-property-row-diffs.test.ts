@@ -220,6 +220,137 @@ describe("DDL property row diff aggregators", () => {
     expect(generatedExpressionDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
   })
 
+  it("aggregates a description row diff when the whole column is added", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      description: "column description text",
+      [TEST_DIFFS_META_KEY]: {
+        [NODE_LEVEL_DIFF_KEY]: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: { columnName: "code" },
+          afterDeclarationPaths: [["columns", "code"]],
+        },
+        description: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: "column description text",
+          afterDeclarationPaths: [["columns", "code", "description"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "code")
+
+    expect(nodeDiffs?.description?.data.action).toBe(DiffAction.add)
+    expect(nodeDiffs?.description?.styles.before.backgroundColor).toBe("gray")
+    expect(nodeDiffs?.description?.styles.after.backgroundColor).toBe("green")
+    expect(nodeDiffs?.description?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.description?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("derives description side visibility from whole-column remove when no field diff is present", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      description: "column description text",
+      [TEST_DIFFS_META_KEY]: {
+        [NODE_LEVEL_DIFF_KEY]: {
+          type: nonBreaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: { columnName: "code" },
+          beforeDeclarationPaths: [["columns", "code"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(crawlValue, diffsMetaKeys, "code")?.description
+
+    expect(descriptionDiff?.data.action).toBe(DiffAction.remove)
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("red")
+    expect(descriptionDiff?.styles.before.isContentVisible).toBe(true)
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("gray")
+    expect(descriptionDiff?.styles.after.isContentVisible).toBe(false)
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("styles a removed description row as removed", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      [TEST_DIFFS_META_KEY]: {
+        description: {
+          type: breaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: "column description text",
+          beforeDeclarationPaths: [["columns", "code", "description"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "code",
+    )?.description
+
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("red")
+    expect(descriptionDiff?.styles.before.isContentVisible).toBe(true)
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("gray")
+    expect(descriptionDiff?.styles.after.isContentVisible).toBe(false)
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("styles only a description value change as replaced", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      description: "CHANGED column description text",
+      [TEST_DIFFS_META_KEY]: {
+        description: {
+          type: breaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: "column description text",
+          afterValue: "CHANGED column description text",
+          beforeDeclarationPaths: [["columns", "code", "description"]],
+          afterDeclarationPaths: [["columns", "code", "description"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "code",
+    )?.description
+
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("yellow")
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("yellow")
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("applies description-row severity when the whole column is added with a description", () => {
+    const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindColumn()
+    const nodeDiffs = {
+      [NODE_LEVEL_DIFF_KEY]: makeFlagPropertyDiff(nonBreaking, DiffAction.add),
+      description: makeFlagPropertyDiff(breaking, DiffAction.add),
+    }
+
+    const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
+
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBe(nonBreaking)
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type).toBe(breaking)
+  })
+
   it("normalizes a boolean replace diff to an added visible badge", () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
     const crawlValue = {

@@ -116,6 +116,12 @@ export function takeColumnGeneratedExpressionDiff(
   return node.diffs.generatedExpression
 }
 
+export function takeColumnDescriptionDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return node.diffs.description
+}
+
 export function takeIndexFlagDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
 ): Partial<Record<DdlApiIndexFlagDiffKey, ChangedPropertyMetaData>> | undefined {

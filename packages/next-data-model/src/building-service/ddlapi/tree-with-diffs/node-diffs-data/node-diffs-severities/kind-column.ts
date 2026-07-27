@@ -17,6 +17,7 @@ export class DdlApiNodeDiffsSeveritiesAggregatorKindColumn
 
     if (wholeNodeDiff) {
       diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] = this.buildNodeDiffsSeverity(wholeNodeDiff)
+      this.applyRowSeverity(nodeDiffs, 'description', NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
     } else {
       this.applyMaxRowSeverityFromColumnTitleRowDiffs(nodeDiffs, diffsSeverities)
       this.applyRowSeverity(nodeDiffs, 'description', NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
