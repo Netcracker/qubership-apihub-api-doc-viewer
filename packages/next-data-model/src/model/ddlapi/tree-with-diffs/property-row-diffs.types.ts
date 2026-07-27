@@ -23,6 +23,14 @@ export type DdlApiColumnTypeFieldDiffKey = (typeof DDL_COLUMN_TYPE_FIELD_DIFF_KE
 /** Per-field diffs for {@link DdlApiColumnRowValue.columnType} sub-fields shown in the type label. */
 export type DdlApiColumnTypeFieldDiffs = Partial<Record<DdlApiColumnTypeFieldDiffKey, ChangedPropertyMetaData>>
 
+export const DDL_ENUM_COLUMN_TYPE_TRANSITION = {
+  ToEnum: "to-enum",
+  FromEnum: "from-enum",
+} as const
+
+export type DdlEnumColumnTypeTransition =
+  (typeof DDL_ENUM_COLUMN_TYPE_TRANSITION)[keyof typeof DDL_ENUM_COLUMN_TYPE_TRANSITION]
+
 export const DDL_COLUMN_FLAG_DIFF_KEYS = [
   "isPrimaryKey",
   "isUnique",

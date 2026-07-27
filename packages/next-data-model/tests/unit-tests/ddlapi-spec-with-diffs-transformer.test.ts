@@ -44,6 +44,31 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.[NODE_LEVEL_DIFF_KEY]?.action).toBe(DiffAction.add)
   })
 
+  it('maps enum-to-int4 transition crawl shape', async () => {
+    const fs = await import('fs')
+    const path = await import('path')
+    const base = path.join(__dirname, '../../../samples/ddlapi-diffs/column-type-changes/118-type-change-enum-to-int4')
+    const merged = await mergeSql(
+      fs.readFileSync(path.join(base, 'before.sql'), 'utf8'),
+      fs.readFileSync(path.join(base, 'after.sql'), 'utf8'),
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+    const sampleColumn = spec?.columns.items.find(column => column.columnName === 'sample_col')
+    const columnDiffs = sampleColumn?.[TEST_DIFFS_META_KEY] as Record<string, unknown> | undefined
+    const columnTypeDiffs = sampleColumn?.columnType[TEST_DIFFS_META_KEY] as Record<string, { beforeValue?: unknown, afterValue?: unknown, action?: string }> | undefined
+
+    expect(columnTypeDiffs?.typeName?.action).toBe(DiffAction.replace)
+    expect(columnTypeDiffs?.typeName?.beforeValue).toBe('sample_status')
+    expect(columnTypeDiffs?.typeName?.afterValue).toBe('integer')
+    const enumValuesDiffs = columnDiffs?.enumValues as Record<string, { action?: string, beforeValue?: string }> | undefined
+    expect(Object.keys(enumValuesDiffs ?? {})).toEqual(['pending', 'done'])
+    expect(enumValuesDiffs?.pending?.action).toBe(DiffAction.remove)
+    expect(enumValuesDiffs?.pending?.beforeValue).toBe('pending')
+  })
+
   it('maps type-name replace diffs onto columnType.typeName', async () => {
     const merged = await mergeSql(
       'create table t(id int);',

@@ -12,8 +12,10 @@ import {
   Realm,
   Schema,
   Table,
+  TypeKind,
 } from "@netcracker/qubership-apihub-ddlapi";
 import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
+import { isDdlScalarColumnTypeName } from "@apihub/next-data-model/shared/ddlapi/guards/column-type-name";
 import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-type";
 import { BuildingServiceLogger } from "../../../loggers";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
@@ -243,8 +245,17 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const enumValueDiffs = this.resolveEnumValueDiffsForColumn(sourceColumn)
-      if (Object.keys(enumValueDiffs).length > 0) {
-        columnDiffs.enumValues = enumValueDiffs
+      const enumValuesRemovedByTypeChange = this.resolveEnumValuesRemovedByColumnTypeChange(
+        realm,
+        sourceColumn,
+        owningSchemaName,
+      )
+      const mergedEnumValueDiffs = {
+        ...enumValueDiffs,
+        ...enumValuesRemovedByTypeChange,
+      }
+      if (Object.keys(mergedEnumValueDiffs).length > 0) {
+        columnDiffs.enumValues = mergedEnumValueDiffs
       }
 
       const uniqueDiff = this.resolveUniqueIndexDiffForColumn(sourceTable, sourceColumn.name)
@@ -537,6 +548,98 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     }
 
     return keyedDiffs
+  }
+
+  private resolveEnumValuesRemovedByColumnTypeChange(
+    realm: Realm,
+    sourceColumn: Column,
+    schemaName: string,
+  ): EnumValueCrawlDiffs {
+    const columnTypeSource = sourceColumn.type
+    const schemaType = columnTypeSource?.type
+    if (!schemaType || !isObject(schemaType) || isEnumType(schemaType)) {
+      return {}
+    }
+
+    const typeDiff = this.getDiffsRecord(schemaType)?.type
+    if (!typeDiff || !isDiffReplace(typeDiff)) {
+      return {}
+    }
+
+    const beforeTypeName = typeof typeDiff.beforeValue === 'string' ? typeDiff.beforeValue : undefined
+    const afterTypeName = typeof typeDiff.afterValue === 'string' ? typeDiff.afterValue : undefined
+    if (
+      !beforeTypeName ||
+      !afterTypeName ||
+      isDdlScalarColumnTypeName(beforeTypeName) ||
+      !isDdlScalarColumnTypeName(afterTypeName)
+    ) {
+      return {}
+    }
+
+    const enumLiterals = this.resolveEnumLiteralsBeforeColumnTypeChange(
+      realm,
+      schemaName,
+      beforeTypeName,
+      typeDiff.beforeValue,
+    )
+    if (enumLiterals.length === 0) {
+      return {}
+    }
+
+    const keyedDiffs: EnumValueCrawlDiffs = {}
+    for (const literal of enumLiterals) {
+      keyedDiffs[literal] = {
+        type: typeDiff.type,
+        scope: typeDiff.scope,
+        action: DiffAction.remove,
+        beforeValue: literal,
+        beforeDeclarationPaths: typeDiff.beforeDeclarationPaths,
+      }
+    }
+
+    return keyedDiffs
+  }
+
+  private resolveEnumLiteralsBeforeColumnTypeChange(
+    realm: Realm,
+    schemaName: string,
+    beforeTypeName: string,
+    beforeTypeValue: unknown,
+  ): string[] {
+    if (
+      isObject(beforeTypeValue) &&
+      beforeTypeValue.kind === TypeKind.EnumType &&
+      Array.isArray(beforeTypeValue.values)
+    ) {
+      return beforeTypeValue.values.filter((value): value is string => typeof value === 'string')
+    }
+
+    return this.findEnumTypeLiteralsInRealm(realm, schemaName, beforeTypeName)
+  }
+
+  private findEnumTypeLiteralsInRealm(
+    realm: Realm,
+    schemaName: string,
+    enumTypeName: string,
+  ): string[] {
+    const schema = realm.schemas?.find(entry => entry.name === schemaName)
+    if (!schema) {
+      return []
+    }
+
+    for (const obj of schema.objects ?? []) {
+      if (
+        isObject(obj) &&
+        obj.kind === TypeKind.EnumType &&
+        obj.type === enumTypeName &&
+        Array.isArray(obj.values)
+      ) {
+        return obj.values.filter((value): value is string => typeof value === 'string')
+      }
+    }
+
+    return []
   }
 
   private resolveForeignKeyTargetDiffsForColumn(

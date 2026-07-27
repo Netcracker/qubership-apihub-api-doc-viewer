@@ -12,13 +12,17 @@ import {
   DdlApiColumnTypeFieldDiffKey,
   DdlApiColumnTypeFieldDiffs,
   DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
+  DDL_ENUM_COLUMN_TYPE_TRANSITION,
+  DdlEnumColumnTypeTransition,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
-import { Diff, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { TypeKind } from "@netcracker/qubership-apihub-ddlapi";
+import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { isDdlScalarColumnTypeName } from "@apihub/next-data-model/shared/ddlapi/guards/column-type-name";
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 
 export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregatorKindAny {
@@ -148,6 +152,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     this.aggregateColumnTypeFieldDiffs(crawlValue, diffsMetaKey, nodeDiffs)
 
+    this.aggregateEnumValuesRowColorizingDiff(crawlValue, nodeDiffs)
+
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
     return nodeDiffs
@@ -251,15 +257,54 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     if (Object.keys(enumValueDiffs).length > 0) {
       nodeDiffs.enumValueDiffs = enumValueDiffs
-      this.aggregateEnumValuesRowColorizingDiff(nodeDiffs)
     }
   }
 
   private aggregateEnumValuesRowColorizingDiff(
+    crawlValue: object,
     nodeDiffs: DdlApiColumnPropertyRowDiffs,
   ): void {
+    const transitionDirection = this.resolveEnumColumnTypeTransitionDirection(crawlValue, nodeDiffs)
+
+    if (transitionDirection === DDL_ENUM_COLUMN_TYPE_TRANSITION.ToEnum) {
+      const representativeDiff = this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
+      if (representativeDiff) {
+        nodeDiffs.enumValuesRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
+          DiffAction.add,
+          representativeDiff.data,
+        )
+      }
+      return
+    }
+
     const enumValueDiffs = nodeDiffs.enumValueDiffs
-    if (!enumValueDiffs) {
+    if (!enumValueDiffs || Object.keys(enumValueDiffs).length === 0) {
+      if (transitionDirection === DDL_ENUM_COLUMN_TYPE_TRANSITION.FromEnum) {
+        const representativeDiff = this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
+        if (representativeDiff) {
+          nodeDiffs.enumValuesRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
+            DiffAction.remove,
+            representativeDiff.data,
+          )
+        }
+      }
+      return
+    }
+
+    if (
+      transitionDirection === DDL_ENUM_COLUMN_TYPE_TRANSITION.FromEnum &&
+      Object.values(enumValueDiffs).every(diff => diff && isDiffRemove(diff.data))
+    ) {
+      const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        ...Object.values(enumValueDiffs),
+      )
+      if (representativeDiff) {
+        nodeDiffs.enumValuesRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
+          DiffAction.remove,
+          representativeDiff.data,
+        )
+      }
+      this.stripEnumValueChipHighlightForColumnTypeTransition(nodeDiffs)
       return
     }
 
@@ -271,6 +316,143 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     nodeDiffs.enumValuesRowColorizingDiff = this.asReplaceFlagDiffForTitleRow(representativeDiff)
+  }
+
+  private resolveEnumColumnTypeTransitionDirection(
+    crawlValue: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): DdlEnumColumnTypeTransition | undefined {
+    const representativeDiff = this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
+    if (!representativeDiff || !isDiffReplace(representativeDiff.data)) {
+      return undefined
+    }
+
+    const beforeName = typeof representativeDiff.data.beforeValue === 'string'
+      ? representativeDiff.data.beforeValue
+      : undefined
+    const afterName = typeof representativeDiff.data.afterValue === 'string'
+      ? representativeDiff.data.afterValue
+      : undefined
+    if (!beforeName || !afterName) {
+      return undefined
+    }
+
+    const columnType = Reflect.get(crawlValue, 'columnType')
+    const mergedIsEnum = isObject(columnType) && columnType.kind === TypeKind.EnumType
+
+    if (mergedIsEnum && isDdlScalarColumnTypeName(beforeName) && !isDdlScalarColumnTypeName(afterName)) {
+      return DDL_ENUM_COLUMN_TYPE_TRANSITION.ToEnum
+    }
+
+    if (!mergedIsEnum && !isDdlScalarColumnTypeName(beforeName) && isDdlScalarColumnTypeName(afterName)) {
+      return DDL_ENUM_COLUMN_TYPE_TRANSITION.FromEnum
+    }
+
+    return undefined
+  }
+
+  private takeRepresentativeColumnTypeFieldDiff(
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): ChangedPropertyMetaData | undefined {
+    const columnTypeFieldDiffs = nodeDiffs.columnTypeFieldDiffs
+    if (!columnTypeFieldDiffs) {
+      return undefined
+    }
+
+    return columnTypeFieldDiffs.typeName
+      ?? columnTypeFieldDiffs.label
+      ?? AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        ...Object.values(columnTypeFieldDiffs),
+      )
+  }
+
+  private buildSyntheticEnumValuesRowColorizingDiff(
+    action: typeof DiffAction.add | typeof DiffAction.remove,
+    sourceDiff: Diff,
+  ): ChangedPropertyMetaData {
+    const syntheticDiff: Diff = action === DiffAction.add
+      ? {
+        type: sourceDiff.type,
+        scope: sourceDiff.scope,
+        action: DiffAction.add,
+        afterValue: true,
+        afterDeclarationPaths: ('afterDeclarationPaths' in sourceDiff
+          ? sourceDiff.afterDeclarationPaths
+          : undefined) ?? [],
+      }
+      : {
+        type: sourceDiff.type,
+        scope: sourceDiff.scope,
+        action: DiffAction.remove,
+        beforeValue: true,
+        beforeDeclarationPaths: ('beforeDeclarationPaths' in sourceDiff
+          ? sourceDiff.beforeDeclarationPaths
+          : undefined) ?? [],
+      }
+
+    return this.buildChangedPropertyMetaDataFromDiff(syntheticDiff)
+  }
+
+  private stripEnumValueChipHighlightForColumnTypeTransition(
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const enumValueDiffs = nodeDiffs.enumValueDiffs
+    if (!enumValueDiffs) {
+      return
+    }
+
+    for (const [literalKey, metadata] of Object.entries(enumValueDiffs)) {
+      if (!metadata || !isDiffRemove(metadata.data)) {
+        continue
+      }
+      enumValueDiffs[literalKey] = this.buildEnumValueDiffMetadataSideVisibilityOnly(metadata.data)
+    }
+  }
+
+  private buildEnumValueDiffMetadataSideVisibilityOnly(diff: Diff): ChangedPropertyMetaData {
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   private buildEnumValueDiffMetadata(diff: Diff): ChangedPropertyMetaData {

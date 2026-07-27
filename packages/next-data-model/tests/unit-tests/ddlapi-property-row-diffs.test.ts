@@ -1093,4 +1093,83 @@ describe("DDL property row diff aggregators", () => {
     expect(titleRowDiff?.styles.before.textHighlighterColor).toBeUndefined()
     expect(titleRowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
+
+  it("aggregates enum values row as added when scalar column type changes to enum", async () => {
+    const fs = await import("fs")
+    const path = await import("path")
+    const loadCase = async (caseId: string) => {
+      const base = path.join(__dirname, "../../../samples/ddlapi-diffs/column-type-changes", caseId)
+      const before = fs.readFileSync(path.join(base, "before.sql"), "utf8")
+      const after = fs.readFileSync(path.join(base, "after.sql"), "utf8")
+      const merged = apiDiff(
+        await buildFromDdl(before),
+        await buildFromDdl(after),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+      )
+    }
+
+    const columnNode = await loadCase("108-type-change-int4-to-enum")
+    const columnDiffs = columnNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+
+    expect(columnNode?.value()?.enumValues).toEqual(["pending", "done"])
+    expect(columnDiffs?.columnTypeFieldDiffs?.typeName?.data.action).toBe(DiffAction.replace)
+    expect(columnDiffs?.enumValueDiffs).toBeUndefined()
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.before.isContentVisible).toBe(false)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.isContentVisible).toBe(true)
+  })
+
+  it("aggregates enum values row as removed when enum column type changes to scalar", async () => {
+    const fs = await import("fs")
+    const path = await import("path")
+    const loadCase = async (caseId: string) => {
+      const base = path.join(__dirname, "../../../samples/ddlapi-diffs/column-type-changes", caseId)
+      const before = fs.readFileSync(path.join(base, "before.sql"), "utf8")
+      const after = fs.readFileSync(path.join(base, "after.sql"), "utf8")
+      const merged = apiDiff(
+        await buildFromDdl(before),
+        await buildFromDdl(after),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+      )
+    }
+
+    const columnNode = await loadCase("118-type-change-enum-to-int4")
+    const columnDiffs = columnNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+
+    expect(columnNode?.value()?.enumValues).toBeUndefined()
+    expect(columnDiffs?.columnTypeFieldDiffs?.typeName?.data.action).toBe(DiffAction.replace)
+    expect(columnDiffs?.columnTypeFieldDiffs?.typeName?.data.beforeValue).toBe("sample_status")
+    expect(columnDiffs?.columnTypeFieldDiffs?.typeName?.data.afterValue).toBe("integer")
+    expect(Object.keys(columnDiffs?.enumValueDiffs ?? {})).toEqual(["pending", "done"])
+    expect(columnDiffs?.enumValueDiffs?.pending?.data.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.enumValueDiffs?.pending?.styles.before.borderShadowColor).toBeUndefined()
+    expect(columnDiffs?.enumValueDiffs?.pending?.styles.before.isFontMuted).toBeUndefined()
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.isContentVisible).toBe(false)
+    expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.before.isContentVisible).toBe(true)
+  })
 })
