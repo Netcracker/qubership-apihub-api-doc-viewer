@@ -36,7 +36,7 @@ import {
   ADDITIONAL_INFO_LABEL_GENERATED,
   ADDITIONAL_INFO_LABEL_VALUES,
 } from "./consts"
-import { DdlApiPropertyValue } from "./DdlApiPropertyValue/DdlApiPropertyValue"
+import { ColumnTypeLabelWithDiffs } from "./ColumnTypeLabelWithDiffs/ColumnTypeLabelWithDiffs"
 import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
 
@@ -95,10 +95,9 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
       return (
         <div className="flex flex-wrap items-center gap-2">
-          <DdlApiPropertyValue
-            isVisible={true}
-            value={value.columnType.label}
-            appearance="text"
+          <ColumnTypeLabelWithDiffs
+            node={node}
+            layoutSide={layoutSide}
           />
           <ColumnRowBadgesContent
             columnId={node.id}
@@ -110,7 +109,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         </div>
       )
     },
-    [flagDiffs, foreignKeyTargetDiffs, node.id, nodeDiff, value],
+    [flagDiffs, foreignKeyTargetDiffs, node, nodeDiff, value],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(

@@ -6,7 +6,8 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-column"
@@ -611,5 +612,261 @@ describe("DDL property row diff aggregators", () => {
       .toEqual(["new", "active"])
     expect(resolveColumnEnumValueSideItems(node as never, "changed").map(item => item.literal))
       .toEqual(["new", "active", "suspended"])
+  })
+
+  it("aggregates column type field diffs from nested columnType crawl metadata", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      columnType: {
+        kind: "StringType",
+        typeName: "varchar",
+        size: 1000,
+        label: "varchar (1000)",
+        [TEST_DIFFS_META_KEY]: {
+          size: {
+            type: nonBreaking,
+            action: DiffAction.replace,
+            scope: "root",
+            beforeValue: 100,
+            afterValue: 1000,
+            beforeDeclarationPaths: [["columns", "sample_col", "type", "size"]],
+            afterDeclarationPaths: [["columns", "sample_col", "type", "size"]],
+          },
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+
+    expect(nodeDiffs?.columnTypeFieldDiffs?.size?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.columnTypeFieldDiffs?.size?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.columnTypeFieldDiffs?.size?.styles.before.backgroundColor).toBeUndefined()
+  })
+
+  it("resolves monolithic column type label display when only the type name changes", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.COLUMN,
+      value: () => ({
+        columnName: "id",
+        columnType: {
+          kind: "IntegerType",
+          typeName: "bigint",
+          label: "bigint",
+        },
+      }),
+      diffs: {
+        columnTypeFieldDiffs: {
+          typeName: {
+            data: {
+              type: breaking,
+              action: DiffAction.replace,
+              scope: "root",
+              beforeValue: "int4",
+              afterValue: "bigint",
+              beforeDeclarationPaths: [["columns", "id", "type", "type"]],
+              afterDeclarationPaths: [["columns", "id", "type", "type"]],
+            },
+            styles: {
+              before: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    expect(resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+      kind: "monolithic",
+      text: "int4",
+      diff: expect.objectContaining({
+        styles: expect.objectContaining({
+          before: expect.objectContaining({ backgroundColor: HighlightVariant.Yellow }),
+        }),
+      }),
+    })
+    expect(resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)).toEqual({
+      kind: "monolithic",
+      text: "bigint",
+      diff: expect.objectContaining({
+        styles: expect.objectContaining({
+          after: expect.objectContaining({ backgroundColor: HighlightVariant.Yellow }),
+        }),
+      }),
+    })
+  })
+
+  it("resolves segmented column type label display when only a parameter changes", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.COLUMN,
+      value: () => ({
+        columnName: "sample_col",
+        columnType: {
+          kind: "StringType",
+          typeName: "varchar",
+          size: 1000,
+          label: "varchar (1000)",
+        },
+      }),
+      diffs: {
+        columnTypeFieldDiffs: {
+          size: {
+            data: {
+              type: nonBreaking,
+              action: DiffAction.replace,
+              scope: "root",
+              beforeValue: 100,
+              afterValue: 1000,
+              beforeDeclarationPaths: [["columns", "sample_col", "type", "size"]],
+              afterDeclarationPaths: [["columns", "sample_col", "type", "size"]],
+            },
+            styles: {
+              before: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    const originDisplay = resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
+
+    expect(originDisplay).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "varchar" },
+        { text: " (" },
+        { text: "100", diff: node.diffs.columnTypeFieldDiffs.size },
+        { text: ")" },
+      ],
+    })
+    expect(changedDisplay).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "varchar" },
+        { text: " (" },
+        { text: "1000", diff: node.diffs.columnTypeFieldDiffs.size },
+        { text: ")" },
+      ],
+    })
+  })
+
+  it("resolves segmented column type label display when type and parameter change differently", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.COLUMN,
+      value: () => ({
+        columnName: "sample_col",
+        columnType: {
+          kind: "StringType",
+          typeName: "text",
+          label: "text",
+        },
+      }),
+      diffs: {
+        columnTypeFieldDiffs: {
+          typeName: {
+            data: {
+              type: breaking,
+              action: DiffAction.replace,
+              scope: "root",
+              beforeValue: "varchar",
+              afterValue: "text",
+              beforeDeclarationPaths: [["columns", "sample_col", "type", "type"]],
+              afterDeclarationPaths: [["columns", "sample_col", "type", "type"]],
+            },
+            styles: {
+              before: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+              after: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Yellow,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+          size: {
+            data: {
+              type: breaking,
+              action: DiffAction.remove,
+              scope: "root",
+              beforeValue: 100,
+              beforeDeclarationPaths: [["columns", "sample_col", "type", "size"]],
+            },
+            styles: {
+              before: {
+                isContentVisible: true,
+                isHeaderVisible: true,
+                textHighlighterColor: HighlightVariant.Red,
+              },
+              after: {
+                isContentVisible: false,
+                isHeaderVisible: true,
+              },
+            },
+            flags: {
+              before: { increaseLevel: false },
+              after: { increaseLevel: false },
+            },
+            highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+          },
+        },
+      },
+    }
+
+    const originDisplay = resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
+
+    expect(originDisplay.kind).toBe("segmented")
+    if (originDisplay.kind === "segmented") {
+      expect(originDisplay.segments.map(segment => segment.text)).toEqual([
+        "varchar",
+        " (",
+        "100",
+        ")",
+      ])
+      expect(originDisplay.segments[0]?.diff).toBe(node.diffs.columnTypeFieldDiffs.typeName)
+      expect(originDisplay.segments[2]?.diff).toBe(node.diffs.columnTypeFieldDiffs.size)
+    }
+
+    expect(changedDisplay.kind).toBe("segmented")
+    if (changedDisplay.kind === "segmented") {
+      expect(changedDisplay.segments.map(segment => segment.text)).toEqual(["text"])
+      expect(changedDisplay.segments[0]?.diff).toBe(node.diffs.columnTypeFieldDiffs.typeName)
+    }
   })
 })

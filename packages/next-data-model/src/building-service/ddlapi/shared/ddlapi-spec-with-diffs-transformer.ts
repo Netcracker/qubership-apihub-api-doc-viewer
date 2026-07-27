@@ -361,19 +361,44 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     columnType: DdlApiColumnTypeValueWithDiffs,
     sourceColumn: Column,
   ): void {
-    const schemaType = sourceColumn.type?.type
+    const columnTypeSource = sourceColumn.type
+    if (!columnTypeSource || !isObject(columnTypeSource)) {
+      return
+    }
+
+    const rawDiff = this.getDiffsRecord(columnTypeSource)?.raw
+    if (rawDiff) {
+      this.mergeDiffsIntoTarget(columnType, { label: rawDiff })
+      return
+    }
+
+    const schemaType = columnTypeSource.type
     if (!schemaType || !isObject(schemaType)) {
       return
     }
 
     const schemaTypeDiffs = this.getDiffsRecord(schemaType)
-    const labelDiff = schemaTypeDiffs?.type
-      ?? schemaTypeDiffs?.size
-      ?? schemaTypeDiffs?.precision
-      ?? schemaTypeDiffs?.scale
+    if (!schemaTypeDiffs) {
+      return
+    }
 
-    if (labelDiff) {
-      this.mergeDiffsIntoTarget(columnType, { label: labelDiff })
+    const columnTypeDiffs: DiffsRecord = {}
+
+    if (schemaTypeDiffs.type) {
+      columnTypeDiffs.typeName = schemaTypeDiffs.type
+    }
+    if (schemaTypeDiffs.size) {
+      columnTypeDiffs.size = schemaTypeDiffs.size
+    }
+    if (schemaTypeDiffs.precision) {
+      columnTypeDiffs.precision = schemaTypeDiffs.precision
+    }
+    if (schemaTypeDiffs.scale) {
+      columnTypeDiffs.scale = schemaTypeDiffs.scale
+    }
+
+    if (Object.keys(columnTypeDiffs).length > 0) {
+      this.mergeDiffsIntoTarget(columnType, columnTypeDiffs)
     }
   }
 

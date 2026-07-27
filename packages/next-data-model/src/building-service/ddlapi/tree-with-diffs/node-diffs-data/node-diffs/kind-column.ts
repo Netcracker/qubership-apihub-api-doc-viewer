@@ -9,6 +9,9 @@ import {
   DdlApiColumnPropertyRowDiffs,
   DdlApiEnumValueDiffs,
   DdlApiForeignKeyTargetDiffs,
+  DdlApiColumnTypeFieldDiffKey,
+  DdlApiColumnTypeFieldDiffs,
+  DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
 } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
@@ -44,11 +47,15 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     const superNodeDiffs = super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
 
-    const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
-    if (!isObject(diffs)) {
-      return superNodeDiffs
+    const hasColumnTypeFieldDiffs = this.hasColumnTypeFieldDiffs(crawlValue, diffsMetaKey)
+    const crawlDiffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
+    if (!isObject(crawlDiffs)) {
+      if (!hasColumnTypeFieldDiffs) {
+        return superNodeDiffs
+      }
     }
 
+    const diffs = isObject(crawlDiffs) ? crawlDiffs : {}
     const hasForeignKeyTargetDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['foreignKeyTargets'])
     const hasEnumValueDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs['enumValues'])
     const hasFlatDiffs = Object.entries(diffs).some(([key, value]) => (
@@ -56,7 +63,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       key !== 'enumValues' &&
       AbstractNodeDiffsAggregator.isDiff(value)
     ))
-    if (!hasFlatDiffs && !hasForeignKeyTargetDiffs && !hasEnumValueDiffs) {
+    if (!hasFlatDiffs && !hasForeignKeyTargetDiffs && !hasEnumValueDiffs && !hasColumnTypeFieldDiffs) {
       return superNodeDiffs
     }
 
@@ -138,6 +145,8 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     this.aggregateForeignKeyTargetDiffs(diffs, nodeDiffs)
 
     this.aggregateEnumValueDiffs(diffs, nodeDiffs)
+
+    this.aggregateColumnTypeFieldDiffs(crawlValue, diffsMetaKey, nodeDiffs)
 
     this.aggregatePropertyTitleRowDiff(nodeDiffs)
 
@@ -337,5 +346,144 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     }
 
     return metadata
+  }
+
+  private hasColumnTypeFieldDiffs(
+    crawlValue: object,
+    diffsMetaKey: PropertyKey,
+  ): boolean {
+    const columnType = Reflect.get(crawlValue, "columnType")
+    if (!isObject(columnType)) {
+      return false
+    }
+
+    const columnTypeCrawlDiffs = columnType[diffsMetaKey]
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(columnTypeCrawlDiffs)) {
+      return false
+    }
+
+    return Object.values(columnTypeCrawlDiffs).some(AbstractNodeDiffsAggregator.isDiff)
+  }
+
+  private readColumnTypeFieldDiffs(
+    crawlValue: object,
+    diffsMetaKey: PropertyKey,
+  ): DdlApiColumnTypeFieldDiffs {
+    const columnTypeFieldDiffs: DdlApiColumnTypeFieldDiffs = {}
+    const columnType = Reflect.get(crawlValue, "columnType")
+    if (!isObject(columnType)) {
+      return columnTypeFieldDiffs
+    }
+
+    const columnTypeCrawlDiffs = columnType[diffsMetaKey]
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(columnTypeCrawlDiffs)) {
+      return columnTypeFieldDiffs
+    }
+
+    for (const [crawlKey, diff] of Object.entries(columnTypeCrawlDiffs)) {
+      if (!diff) {
+        continue
+      }
+
+      const fieldKey = this.normalizeColumnTypeFieldDiffKey(crawlKey)
+      if (!fieldKey) {
+        continue
+      }
+
+      columnTypeFieldDiffs[fieldKey] = this.buildColumnTypeFieldDiffMetadata(diff)
+    }
+
+    return columnTypeFieldDiffs
+  }
+
+  private aggregateColumnTypeFieldDiffs(
+    crawlValue: object,
+    diffsMetaKey: PropertyKey,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const columnTypeFieldDiffs = this.readColumnTypeFieldDiffs(crawlValue, diffsMetaKey)
+
+    if (Object.keys(columnTypeFieldDiffs).length > 0) {
+      nodeDiffs.columnTypeFieldDiffs = columnTypeFieldDiffs
+    }
+  }
+
+  private normalizeColumnTypeFieldDiffKey(
+    crawlKey: string,
+  ): DdlApiColumnTypeFieldDiffKey | undefined {
+    if (crawlKey === "type") {
+      return "typeName"
+    }
+    if ((DDL_COLUMN_TYPE_FIELD_DIFF_KEYS as readonly string[]).includes(crawlKey)) {
+      return crawlKey as DdlApiColumnTypeFieldDiffKey
+    }
+    return undefined
+  }
+
+  private buildColumnTypeFieldDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+      return {
+        ...metadata,
+        styles: {
+          before: {
+            ...metadata.styles.before,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+          after: {
+            ...metadata.styles.after,
+            backgroundColor: undefined,
+            textHighlighterColor: HighlightVariant.Yellow,
+          },
+        },
+      }
+    }
+
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Green,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Red,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 }

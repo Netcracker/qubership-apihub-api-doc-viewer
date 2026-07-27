@@ -44,7 +44,7 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(columnDiffs?.[NODE_LEVEL_DIFF_KEY]?.action).toBe(DiffAction.add)
   })
 
-  it('maps type-name replace diffs onto columnType.label', async () => {
+  it('maps type-name replace diffs onto columnType.typeName', async () => {
     const merged = await mergeSql(
       'create table t(id int);',
       'create table t(id bigint);',
@@ -57,7 +57,24 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     const idColumn = spec?.columns.items.find(column => column.columnName === 'id')
     const columnTypeDiffs = idColumn?.columnType[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
 
-    expect(columnTypeDiffs?.label?.action).toBe(DiffAction.replace)
+    expect(columnTypeDiffs?.typeName?.action).toBe(DiffAction.replace)
+  })
+
+  it('maps varchar length replace diffs onto columnType.size', async () => {
+    const merged = await mergeSql(
+      'create table t(sample_col varchar(100));',
+      'create table t(sample_col varchar(1000));',
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const sampleColumn = spec?.columns.items.find(column => column.columnName === 'sample_col')
+    const columnTypeDiffs = sampleColumn?.columnType[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(columnTypeDiffs?.size?.action).toBe(DiffAction.replace)
+    expect(columnTypeDiffs?.typeName).toBeUndefined()
   })
 
   it('maps nullability diffs onto isNotNull', async () => {

@@ -10,6 +10,19 @@ export type DdlApiForeignKeyTargetDiffs = Partial<Record<string, ChangedProperty
 /** Per-literal diffs for {@link DdlApiColumnRowValue.enumValues}; keys are enum member strings. */
 export type DdlApiEnumValueDiffs = Partial<Record<string, ChangedPropertyMetaData>>
 
+export const DDL_COLUMN_TYPE_FIELD_DIFF_KEYS = [
+  "typeName",
+  "size",
+  "precision",
+  "scale",
+  "label",
+] as const
+
+export type DdlApiColumnTypeFieldDiffKey = (typeof DDL_COLUMN_TYPE_FIELD_DIFF_KEYS)[number]
+
+/** Per-field diffs for {@link DdlApiColumnRowValue.columnType} sub-fields shown in the type label. */
+export type DdlApiColumnTypeFieldDiffs = Partial<Record<DdlApiColumnTypeFieldDiffKey, ChangedPropertyMetaData>>
+
 export const DDL_COLUMN_FLAG_DIFF_KEYS = [
   "isPrimaryKey",
   "isUnique",
@@ -38,6 +51,7 @@ export type DdlApiColumnPropertyRowDiffs = Partial<
   enumValueDiffs?: DdlApiEnumValueDiffs
   /** Synthetic replace row background when {@link enumValueDiffs} is present. */
   enumValuesRowColorizingDiff?: ChangedPropertyMetaData
+  columnTypeFieldDiffs?: DdlApiColumnTypeFieldDiffs
 }
 
 export type DdlApiIndexPropertyRowDiffs = Partial<

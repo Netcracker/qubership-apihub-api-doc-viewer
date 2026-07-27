@@ -27,6 +27,8 @@ import {
 export type {
   DdlApiColumnFlagDiffKey,
   DdlApiColumnPropertyRowDiffs,
+  DdlApiColumnTypeFieldDiffKey,
+  DdlApiColumnTypeFieldDiffs,
   DdlApiEnumValueDiffs,
   DdlApiForeignKeyTargetDiffs,
   DdlApiIndexFlagDiffKey,
@@ -36,9 +38,19 @@ export type {
 
 export {
   DDL_COLUMN_FLAG_DIFF_KEYS,
+  DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
   DDL_INDEX_FLAG_DIFF_KEYS,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY
 } from "./property-row-diffs.types"
+
+export {
+  takeColumnTypeFieldDiffs,
+  resolveColumnTypeLabelSideDisplay,
+} from "./column-type-label-diffs"
+export type {
+  DdlColumnTypeLabelSideDisplay,
+  DdlColumnTypeLabelSideSegment,
+} from "./column-type-label-diffs"
 
 export { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 
