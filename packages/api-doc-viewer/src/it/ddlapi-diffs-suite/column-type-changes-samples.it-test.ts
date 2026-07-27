@@ -1415,4 +1415,134 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-107-enum-enum-change-type-title-${counter}`,
     });
   });
+
+  it('108-type-change-int4-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-108-type-change-int4-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-108-type-change-int4-to-enum-${counter}`,
+    });
+  });
+
+  it('109-type-change-bigint-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-109-type-change-bigint-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-109-type-change-bigint-to-enum-${counter}`,
+    });
+  });
+
+  it('110-type-change-boolean-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-110-type-change-boolean-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-110-type-change-boolean-to-enum-${counter}`,
+    });
+  });
+
+  it('111-type-change-uuid-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-111-type-change-uuid-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-111-type-change-uuid-to-enum-${counter}`,
+    });
+  });
+
+  it('112-type-change-varchar-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-112-type-change-varchar-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-112-type-change-varchar-to-enum-${counter}`,
+    });
+  });
+
+  it('113-type-change-text-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-113-type-change-text-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-113-type-change-text-to-enum-${counter}`,
+    });
+  });
+
+  it('114-type-change-numeric-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-114-type-change-numeric-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-114-type-change-numeric-to-enum-${counter}`,
+    });
+  });
+
+  it('115-type-change-timestamp-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-115-type-change-timestamp-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-115-type-change-timestamp-to-enum-${counter}`,
+    });
+  });
+
+  it('116-type-change-bytea-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-116-type-change-bytea-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-116-type-change-bytea-to-enum-${counter}`,
+    });
+  });
+
+  it('117-type-change-jsonb-to-enum', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-type-changes-samples--case-117-type-change-jsonb-to-enum',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-type-changes-samples-117-type-change-jsonb-to-enum-${counter}`,
+    });
+  });
 });
