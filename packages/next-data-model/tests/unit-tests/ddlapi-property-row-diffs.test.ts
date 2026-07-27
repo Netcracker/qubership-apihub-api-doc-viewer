@@ -1252,9 +1252,44 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.defaultValue?.styles.after.backgroundColor).toBeUndefined()
     expect(nodeDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     expect(nodeDiffs?.defaultValue?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValue?.styles.before.borderShadowColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.after.borderShadowColor).toBeUndefined()
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.replace)
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("aggregates boolean default value replace diff with yellow row and chip border shadow", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "sample_col",
+      defaultValue: "false",
+      columnType: {
+        kind: "BoolType",
+        typeName: "boolean",
+        label: "boolean",
+      },
+      [TEST_DIFFS_META_KEY]: {
+        defaultValue: {
+          type: nonBreaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: "true",
+          afterValue: "false",
+          beforeDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+          afterDeclarationPaths: [["columns", "sample_col", "defaultValue"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "sample_col")
+
+    expect(nodeDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(nodeDiffs?.defaultValue?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValue?.styles.after.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(nodeDiffs?.defaultValue?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValue?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 
   it("aggregates default value row as removed when column becomes generated", () => {
@@ -1335,5 +1370,30 @@ describe("DDL property row diff aggregators", () => {
     expect(bitVaryingReplaceDiffs?.defaultValue?.data.beforeValue).toBe("b'1010'")
     expect(bitVaryingReplaceDiffs?.defaultValue?.data.afterValue).toBe("b'0101'")
     expect(bitVaryingReplaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+
+    const booleanAddNode = await loadCase("104-add-default-boolean")
+    const booleanAddDiffs = booleanAddNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(booleanAddDiffs?.defaultValue?.data.action).toBe(DiffAction.add)
+    expect(booleanAddDiffs?.defaultValue?.styles.after.borderShadowColor).toBeUndefined()
+    expect(booleanAddDiffs?.defaultValue?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(booleanAddDiffs?.defaultValueRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const booleanRemoveNode = await loadCase("204-remove-default-boolean")
+    const booleanRemoveDiffs = booleanRemoveNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(booleanRemoveDiffs?.defaultValue?.data.action).toBe(DiffAction.remove)
+    expect(booleanRemoveDiffs?.defaultValue?.styles.before.borderShadowColor).toBeUndefined()
+    expect(booleanRemoveDiffs?.defaultValue?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(booleanRemoveDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+
+    const booleanReplaceNode = await loadCase("304-replace-default-boolean")
+    const booleanReplaceDiffs = booleanReplaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(booleanReplaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(booleanReplaceDiffs?.defaultValue?.data.beforeValue).toBe("true")
+    expect(booleanReplaceDiffs?.defaultValue?.data.afterValue).toBe("false")
+    expect(booleanReplaceDiffs?.defaultValue?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(booleanReplaceDiffs?.defaultValue?.styles.after.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(booleanReplaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(booleanReplaceDiffs?.defaultValue?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(booleanReplaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 })

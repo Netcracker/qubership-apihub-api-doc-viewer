@@ -135,6 +135,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           isVisible={true}
           value={defaultValue}
           textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
+          borderShadowColor={takeDiffSideBorderShadowColor(defaultValueDiff, layoutSide)}
         />
       )
     },

@@ -99,7 +99,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
     const defaultValueDiff = diffs['defaultValue']
     if (AbstractNodeDiffsAggregator.isDiff(defaultValueDiff)) {
-      this.aggregateDefaultValueDiff(defaultValueDiff, nodeDiffs)
+      this.aggregateDefaultValueDiff(defaultValueDiff, crawlValue, nodeDiffs)
     }
 
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
@@ -329,9 +329,10 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
   private aggregateDefaultValueDiff(
     diff: Diff,
+    crawlValue: object,
     nodeDiffs: DdlApiColumnPropertyRowDiffs,
   ): void {
-    nodeDiffs.defaultValue = this.buildDefaultValueDiffMetadata(diff)
+    nodeDiffs.defaultValue = this.buildDefaultValueDiffMetadata(diff, crawlValue)
   }
 
   private aggregateDefaultValueRowColorizingDiff(
@@ -410,27 +411,38 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     return undefined
   }
 
-  private buildDefaultValueDiffMetadata(diff: Diff): ChangedPropertyMetaData {
+  private buildDefaultValueDiffMetadata(
+    diff: Diff,
+    crawlValue: object,
+  ): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
       const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+      const isBooleanDefault = this.isBooleanColumnCrawlValue(crawlValue)
       return {
         ...metadata,
         styles: {
           before: {
             ...metadata.styles.before,
             backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
+            borderShadowColor: isBooleanDefault ? HighlightVariant.Yellow : undefined,
+            textHighlighterColor: isBooleanDefault ? undefined : HighlightVariant.Yellow,
           },
           after: {
             ...metadata.styles.after,
             backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
+            borderShadowColor: isBooleanDefault ? HighlightVariant.Yellow : undefined,
+            textHighlighterColor: isBooleanDefault ? undefined : HighlightVariant.Yellow,
           },
         },
       }
     }
 
     return this.buildEnumValueDiffMetadataSideVisibilityOnly(diff)
+  }
+
+  private isBooleanColumnCrawlValue(crawlValue: object): boolean {
+    const columnType = Reflect.get(crawlValue, 'columnType')
+    return isObject(columnType) && columnType.kind === TypeKind.BoolType
   }
 
   private resolveEnumColumnTypeTransitionDirection(
