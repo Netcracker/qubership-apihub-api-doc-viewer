@@ -9,6 +9,9 @@ import {
 import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
+import { buildFromDdl } from "@netcracker/qubership-apihub-ddlapi/parser"
+import { apiDiff } from "@netcracker/qubership-apihub-api-diff"
+import { DdlApiTreeWithDiffsBuilder } from "../../src/building-service/ddlapi/tree-with-diffs/builder"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-column"
 import { DdlApiNodeDiffsSummaryKindAny } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-summary/kind-any"
@@ -694,7 +697,9 @@ describe("DDL property row diff aggregators", () => {
       text: "int4",
       diff: expect.objectContaining({
         styles: expect.objectContaining({
-          before: expect.objectContaining({ backgroundColor: HighlightVariant.Yellow }),
+          before: expect.objectContaining({
+            textHighlighterColor: HighlightVariant.Yellow,
+          }),
         }),
       }),
     })
@@ -703,7 +708,9 @@ describe("DDL property row diff aggregators", () => {
       text: "bigint",
       diff: expect.objectContaining({
         styles: expect.objectContaining({
-          after: expect.objectContaining({ backgroundColor: HighlightVariant.Yellow }),
+          after: expect.objectContaining({
+            textHighlighterColor: HighlightVariant.Yellow,
+          }),
         }),
       }),
     })
@@ -867,6 +874,104 @@ describe("DDL property row diff aggregators", () => {
     if (changedDisplay.kind === "segmented") {
       expect(changedDisplay.segments.map(segment => segment.text)).toEqual(["text"])
       expect(changedDisplay.segments[0]?.diff).toBe(node.diffs.columnTypeFieldDiffs.typeName)
+    }
+  })
+
+  it("formats integer-to-varchar sample 004 label with a space before parameters", async () => {
+    const beforeSql = `CREATE TABLE public.t (
+      id integer,
+      sample_col integer
+    );`
+    const afterSql = `CREATE TABLE public.t (
+      id integer,
+      sample_col varchar(100)
+    );`
+
+    const merged = apiDiff(
+      await buildFromDdl(beforeSql),
+      await buildFromDdl(afterSql),
+      {
+        metaKey: TEST_DIFFS_META_KEY,
+        normalizedResult: false,
+      },
+    ).merged
+
+    const tree = new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: "public",
+        name: "t",
+      },
+      diffsMetaKeys: {
+        diffsMetaKey: TEST_DIFFS_META_KEY,
+        aggregatedDiffsMetaKey: Symbol("aggregated"),
+      },
+    }).build()
+
+    const sampleColumn = [...tree.nodes.values()].find(
+      node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+    )
+
+    expect(sampleColumn).toBeDefined()
+
+    const changedDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
+    const originDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, ORIGIN_LAYOUT_SIDE)
+
+    const joinSegments = (
+      display: ReturnType<typeof resolveColumnTypeLabelSideDisplay>,
+    ): string | undefined => {
+      if (display.kind === "plain" || display.kind === "monolithic") {
+        return display.text
+      }
+      return display.segments.map(segment => segment.text).join("")
+    }
+
+    expect(joinSegments(originDisplay)).toBe("integer")
+    expect(joinSegments(changedDisplay)).toBe("varchar (100)")
+  })
+
+  it("uses monolithic text highlighter for integer-to-bigint sample 001", async () => {
+    const beforeSql = `CREATE TABLE public.t (
+      id integer,
+      sample_col integer
+    );`
+    const afterSql = `CREATE TABLE public.t (
+      id integer,
+      sample_col bigint
+    );`
+
+    const merged = apiDiff(
+      await buildFromDdl(beforeSql),
+      await buildFromDdl(afterSql),
+      {
+        metaKey: TEST_DIFFS_META_KEY,
+        normalizedResult: false,
+      },
+    ).merged
+
+    const tree = new DdlApiTreeWithDiffsBuilder({
+      source: merged,
+      tableKey: {
+        schemaName: "public",
+        name: "t",
+      },
+      diffsMetaKeys: {
+        diffsMetaKey: TEST_DIFFS_META_KEY,
+        aggregatedDiffsMetaKey: Symbol("aggregated"),
+      },
+    }).build()
+
+    const sampleColumn = [...tree.nodes.values()].find(
+      node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+    )
+
+    const changedDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
+
+    expect(changedDisplay.kind).toBe("monolithic")
+    if (changedDisplay.kind === "monolithic") {
+      expect(changedDisplay.text).toBe("bigint")
+      expect(changedDisplay.diff.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+      expect(changedDisplay.diff.styles.after.backgroundColor).toBeUndefined()
     }
   })
 })

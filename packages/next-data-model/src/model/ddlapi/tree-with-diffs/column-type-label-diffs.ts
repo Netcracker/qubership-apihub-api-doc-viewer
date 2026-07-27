@@ -275,12 +275,12 @@ function buildMonolithicColumnTypeDiffMetadata(
         before: {
           isContentVisible: true,
           isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Yellow,
+          textHighlighterColor: HighlightVariant.Yellow,
         },
         after: {
           isContentVisible: true,
           isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Yellow,
+          textHighlighterColor: HighlightVariant.Yellow,
         },
       },
     }
@@ -297,7 +297,7 @@ function buildMonolithicColumnTypeDiffMetadata(
         after: {
           isContentVisible: true,
           isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Green,
+          textHighlighterColor: HighlightVariant.Green,
         },
       },
     }
@@ -310,7 +310,7 @@ function buildMonolithicColumnTypeDiffMetadata(
         before: {
           isContentVisible: true,
           isHeaderVisible: true,
-          backgroundColor: HighlightVariant.Red,
+          textHighlighterColor: HighlightVariant.Red,
         },
         after: {
           isContentVisible: false,
