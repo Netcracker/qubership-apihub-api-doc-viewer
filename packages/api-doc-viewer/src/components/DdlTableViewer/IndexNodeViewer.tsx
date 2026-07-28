@@ -52,13 +52,14 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
             />
           )}
           <ColumnRowBadgesContent
+            columnId={node.id}
             layoutSide={layoutSide}
             value={value}
           />
         </div>
       )
     },
-    [value],
+    [node.id, value],
   )
 
   const isDescriptionDisplayed = useMemo(
