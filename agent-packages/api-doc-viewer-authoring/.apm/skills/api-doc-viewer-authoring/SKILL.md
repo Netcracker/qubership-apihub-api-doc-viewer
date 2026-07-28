@@ -337,7 +337,7 @@ header. Each list item is a node viewer (`ColumnNodeViewer`, `IndexNodeViewer`,
 | `LevelContext` | `Provider value={level + 1}` around children | Consumes level for `LevelIndicator` |
 | Cross-sibling `data-precededby` | **Precompute in one pass** (`buildColumnViewerContexts`, `buildIndexViewerContexts`) | Receive as props; do not inspect previous sibling |
 | List position (first / middle / last) | Set `isLastInList`; pass to children | Apply terminal-row marker on **last structural row** |
-| Vertical spacing between items | — | CSS via `preceded-by.css` + list markers |
+| Vertical spacing between items | Section header `margin-bottom` (`TitleRowUsage.DdlApiSection`) | Uniform row-body padding in CSS — see **DDL API property-list indentations** |
 
 **Reference implementations:**
 
@@ -353,93 +353,127 @@ When adding OpenAPI / JSON Schema / GraphQL property lists, mirror the **list
 parent precomputes context, item viewer renders stack** split — do not embed
 “what came before in the list” logic inside each child.
 
-### `LevelIndicator` continuity and row height (non-obvious)
+### DDL API property-list indentations (`ddlapi-indentations-update`)
 
-Product expectation for property lists:
+Authoritative **numeric** spacing lives in source — do not copy pixel values
+into agent docs. When changing spacing, edit CSS/TSX and verify in Storybook or
+screenshot ITs.
 
-1. **Continuous vertical grey line** through all items in a section (no 1 px
-   white gaps between row segments).
-2. **Minimum row height 26 px** — the vertical line segment must span the full
-   row, not a shorter inner band.
-3. **Symmetric vertical indents** between items in the **content** area (6 px
-   between middle title rows today: 3 px + 3 px row-body padding; 4 px per side
-   only where content fits — see **UxBadge height budget** below).
-4. **First item** — keep top margin from section header (8 px on
-   `DDL_SECTION_HEADER`).
-5. **Last item** — 16 px bottom margin on the **terminal row** (`TitleRow` or
-   last `AdditionalInfoRow`, not description `TextRow` unless product says
-   otherwise).
+| Source | Role |
+| --- | --- |
+| `packages/api-doc-viewer/src/components/shared-styles/preceded-by.css` | `.ddlapi-property` row rules; section-header `margin-bottom` |
+| `packages/api-doc-viewer/src/components/DdlTableViewer/ColumnsNodeViewer.tsx` | `Columns` section `TitleRow` with `TitleRowUsage.DdlApiSection` |
+| `packages/api-doc-viewer/src/components/DdlTableViewer/IndexesNodeViewer.tsx` | `Indexes` section `TitleRow` with `TitleRowUsage.DdlApiSection` |
+| `packages/api-doc-viewer/src/components/DdlTableViewer/TableNodeViewer.tsx` | `data-precededby` chain between table sections (e.g. Columns → Indexes) |
+| `packages/api-doc-viewer/src/components/shared-components/TitleRow/TitleRowContent.tsx` | `DdlApiProperty` row layout, `data-usage`, `min-h-*` on property rows |
+| `packages/api-doc-viewer/src/components/DdlTableViewer/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome |
+| `packages/api-doc-viewer/src/components/shared-components/TextRow/TextRowContent.tsx` | Description property row chrome |
+| `packages/api-doc-viewer/src/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper.tsx` | Side-by-side diff badge wrapper (must not be offset by row margins) |
+| `packages/api-doc-viewer/src/components/shared-components/Layout/SideBySideLayout.tsx` | Stretch behaviour for diff columns |
+| `packages/api-doc-viewer/src/components/shared-components/WithPrecededByProps.ts` | `PrecededBy` / `data-ddl-list-last-row` enum values |
 
-**Why this is easy to break (session lesson):**
+#### Spacing hierarchy (three layers — do not collapse)
 
-Row components (`.title-row-content`, `.additional-info-row-content`) are flex
-rows. `LevelIndicator` lives in the **flex content box**. **Vertical padding or
-margin on the row wrapper** sits outside that box (or creates empty bands the
-line does not paint). Symptom: short grey segments and visible gaps — even when
-`min-h-[26px]` is set on the row.
+1. **Property row band** — every `TitleRow`, `TextRow`, and `AdditionalInfoRow`
+   inside `.ddlapi-property` (`ColumnNodeViewer*`, `IndexNodeViewer*`) uses the
+   **same** min-height and symmetric vertical padding on `.ddlapi-property-row-body`
+   only. Inter-row gap = bottom padding of one row plus top padding of the next.
+2. **Section header → first property** — gap from the `Columns` / `Indexes`
+   section title down to the first column/index item is controlled only by
+   **`margin-bottom`** on that section `TitleRow` (`TitleRowUsage.DdlApiSection`,
+   targeted via `data-usage="ddlapi-section"` in CSS). Same rule for Columns
+   and Indexes. This gap must be **larger** than a single row’s vertical padding
+   and **smaller** than the gap between major table sections.
+3. **Major section gap** (e.g. Columns block → Indexes block) — still driven by
+   existing global `data-precededby` rules on the Indexes section header
+   (`TableNodeViewer` wiring), not by per-item markers inside property lists.
 
-**Correct layout for `.ddlapi-property` (DDL — implemented):**
+#### Layout pattern (continuous `LevelIndicator`)
 
 ```text
-.title-row-content.flex.items-stretch.min-h-[26px]   ← NO vertical padding
-├── .level-indicator-column.self-stretch           ← line spans full row height
+.title-row-content.flex.items-stretch.min-h-[…]   ← NO vertical padding/margin
+├── .level-indicator-column.self-stretch         ← line spans full row height
 │   ├── LevelIndicator
 │   └── Expander (or w-4 spacer on AdditionalInfoRow)
-└── .ddlapi-property-row-body                       ← vertical padding HERE only
-    ├── TextValue (title)
+└── .ddlapi-property-row-body                     ← symmetric padding HERE only
+    ├── TextValue (title)                         ← items-center with subheader
     └── subheader (type, badges, …)
 ```
 
-- `TitleRowUsage.DdlApiProperty` in `TitleRowContent`: indent column in
-  `header`; **`headerValue` only inside** `.ddlapi-property-row-body` — never
-  in both (duplicates titles and breaks layout).
-- Non-DDL `TitleRow` stays `{header}{subheader}` unchanged.
-- Row wrappers inside `.ddlapi-property` must **explicitly zero** vertical
-  padding in CSS — global `[data-precededby="ddl-column-row"]` rules still add
-  `padding-top` / `padding-bottom` unless overridden with
-  `.ddlapi-property .title-row-content { padding-top: 0; padding-bottom: 0; }`.
+- `TitleRowUsage.DdlApiProperty`: indent in `header`; **title + subheader only**
+  in `.ddlapi-property-row-body` — never duplicate `headerValue` in both places.
+- Inside `.ddlapi-property`, **zero** vertical padding and margin on
+  `.title-row-content`, `.additional-info-row-content`, and `.text-row-content`
+  wrappers — override global `[data-precededby="ddl-column-row"]` rules.
+- **Never** put list spacing on property row wrappers (`margin-top` between
+  middle items breaks the vertical line; wrapper `padding-top` misaligns diff
+  badges — see bad patterns below).
 
-**Margin vs padding for list spacing:**
+#### React wiring
 
-- **Padding on `.ddlapi-property-row-body`** — content indents; line stays
-  continuous.
-- **Margin on row wrapper** — only for **list boundaries** (first item
-  `margin-top: 8px` from section; last item `margin-bottom: 16px` via
-  `data-ddl-list-last-row="true"`).
-- **Never** use `margin-top` between middle list items — it creates line gaps.
+- **Section headers:** `ColumnsNodeViewer` / `IndexesNodeViewer` pass
+  `usage={TitleRowUsage.DdlApiSection}` on the section `TitleRow`.
+  `TitleRowContent` exposes `data-usage` for CSS selectors.
+- **Property items:** all column/index title rows use the same list markers for
+  spacing (`DDL_COLUMN_ROW` / `DDL_INDEX_ROW`) — **not** `DDL_SECTION_HEADER`
+  for first-item gap (section margin replaces that role).
+- **`buildColumnViewerContexts` / `buildIndexViewerContexts`:** still precompute
+  `data-precededby` for line continuity and “previous column had additional-info
+  rows” (`DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW`); do not use those markers to
+  encode section-to-first-item or first-vs-middle padding differences.
+- **`data-ddl-list-last-row`:** terminal row marker unchanged; list tail spacing
+  is defined in CSS — see `preceded-by.css`.
 
-**UxBadge height budget (session lesson — do not regress):**
+#### UxBadge height budget
 
-Middle column/index title rows use `min-h-[26px]`, `items-stretch`, and vertical
-padding on `.ddlapi-property-row-body` only (see `preceded-by.css` for
-`ddl-column-row`, `ddl-column-after-additional-info-row`, `ddl-index-row`).
-First list items use `DDL_SECTION_HEADER` with **no** row-body padding — badges
-look fine there; middle items looked “wrong” until padding was reduced.
+Title rows host `UxBadge` in the subheader band. Row min-height and row-body
+padding must leave enough inner height for the badge — see comments in
+`preceded-by.css` and verify in DevTools when touching badge CSS or row
+min-height. Do not raise row-body padding without re-checking.
 
-**Math (border-box row-body inside a 26 px row):**
+#### Reference viewer (JSO)
 
-| Component | Height |
+JSO property lists (`.jso-property`) use a related but separate model: no
+row-body split, minimal wrapper padding. Align DDL with JSO **conceptually**
+(full row height includes indent band; no wrapper margins that offset diff
+chrome) but implement via the DDL `.ddlapi-property` rules above.
+
+#### Bad patterns (rejected during `ddlapi-indentations-update`)
+
+| Bad pattern | Why it fails |
 | --- | --- |
-| `UxBadge` (`.ux-badge` + `<pre>`) | ~**19 px** (1 px top pad + 12 px × 1.5 line-height) |
-| Symmetric row-body padding **4 + 4** | 8 px → **18 px** inner area → badge squeezed (~1 px); pill text looks shifted/clipped at the bottom |
-| Symmetric row-body padding **3 + 3** | 6 px → **20 px** inner area → badge fits |
+| `padding-top` on `.title-row-content` for section or first-item gap | Creates a band above flex children; `DiffFloatingBadgeWrapper` / absolute diff badge extends above visible row; `LevelIndicator` does not span the padded band correctly |
+| `margin-top` on first property `TitleRow` inside diffs layout | Margin collapse / wrapper height mismatch; diff badge no longer aligns with row |
+| Different row-body padding for first vs middle items via `DDL_SECTION_HEADER` | Asymmetric bands; content sticks to diff background bottom; hard to match Columns and Indexes |
+| `align-items: flex-start` on title-row `.ddlapi-property-row-body` | Title `TextValue` sits higher than subheader badges (badges are taller flex items) |
+| Splitting “section gap” and “internal padding” across row wrapper and row-body without a single hierarchy | Repeated regressions; final model uses one row band + section `margin-bottom` + global section `precededby` |
 
-Confirmed in browser DevTools: equal `padding-top` / `padding-bottom` **≥ 4 px**
-reproduces the defect; **≤ 3 px** per side does not. Asymmetric padding “fixes”
-it only because total vertical padding drops below 8 px.
+#### Lessons learnt
 
-**Implemented rule** (`preceded-by.css`): **3 px** top/bottom on title-row
-row-body for middle list markers (not 4 px). `AdditionalInfoRow` / description
-`TextRow` may keep 4 px where they do not host `UxBadge` in the title band.
+- **One row type, one band:** TitleRow, TextRow, and AdditionalInfoRow inside a
+  column/index share the same vertical contract.
+- **Section spacing is not row spacing:** tune gap under `Columns` / `Indexes`
+  headers with section `margin-bottom`, not special first-item row rules.
+- **Diffs layout is a constraint:** any vertical offset must increase the
+  **content box** that `DiffFloatingBadgeWrapper` wraps, not margin outside it.
+- **Title + subheader stay centred together:** keep `items-center` on title-row
+  row-body; fix bottom inset with symmetric row-body padding, not flex-start.
+- **Source of truth is CSS + Storybook**, not duplicated numbers in agent docs.
 
-**If you change badge typography or row min-height**, re-check this budget before
-raising padding back to 4 px. Alternatives: `min-h-[27px]` only on rows that
-contain `UxBadge` (19 + 8 = 27), or shrink badge CSS to ≤ 18 px — do not combine
-26 px row + 8 px padding + ~19 px badge.
+### `LevelIndicator` continuity and row height
 
-**Not the root cause:** extra wrapper in `ColumnRowBadges`, different
-`data-precededby` alone, or `UxBadge` props — same badge markup; middle rows
-differ by row-body padding + fixed 26 px cross-size.
+Product expectation: continuous vertical grey line through all items in a
+section; each row’s line segment spans the **full** row height (see min-height
+on property rows in `TitleRowContent` / `AdditionalInfoRowContent` /
+`TextRowContent`).
+
+Follow the **DDL API property-list indentations** section above for where
+padding and margins may live. Quick rules:
+
+- Padding on `.ddlapi-property-row-body` only — line stays continuous.
+- No `margin-top` between middle list items.
+- Section and list-boundary margins are explicit exceptions documented in
+  `preceded-by.css`.
 
 ### `data-precededby`, list markers, and CSS
 
@@ -449,15 +483,14 @@ Row components set `data-precededby={PrecededBy…}`. Enum values in
 
 **Separate attribute for list terminal row:**
 
-- `data-ddl-list-last-row="true"` (`ATTRIBUTE_DDL_LIST_LAST_ROW`) — 16 px
-  bottom margin on the row content element; does not replace `data-precededby`
-  (chain context for top spacing is still needed).
+- `data-ddl-list-last-row="true"` (`ATTRIBUTE_DDL_LIST_LAST_ROW`) — list tail
+  spacing on the terminal row; does not replace `data-precededby`.
 
 **Columns list — parent precomputes (`buildColumnViewerContexts`):**
 
 | Prop / attribute | Set on | When |
 | --- | --- | --- |
-| `data-precededby` | `ColumnNodeViewer` → `TitleRow` | First: `DDL_SECTION_HEADER`; later: `DDL_COLUMN_ROW`, or `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when **previous** column had ≥1 `AdditionalInfoRow` |
+| `data-precededby` | `ColumnNodeViewer` → `TitleRow` | `DDL_COLUMN_ROW`, or `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when **previous** column had ≥1 `AdditionalInfoRow` |
 | `additionalInfoPrecededBy` | each `AdditionalInfoRow` | `DDL_COLUMN_ROW` default; `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when previous column had additional-info rows |
 | (within column) generated row | second `AdditionalInfoRow` | `DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW` when default row exists above |
 | `isLastInList` | `ColumnNodeViewer` | From parent index; drives `data-ddl-list-last-row` on terminal row |
@@ -470,8 +503,7 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 
 | Prop | When |
 | --- | --- |
-| `DDL_SECTION_HEADER` | First index title |
-| `DDL_INDEX_ROW` | Later index titles |
+| `DDL_INDEX_ROW` | All index title rows (uniform spacing; section gap is on section header) |
 | `data-ddl-list-last-row` | Last index `TitleRow` only (no `AdditionalInfoRow` yet) |
 
 **CSS checklist** when adding a new property-list family:
@@ -487,14 +519,17 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 
 | Mistake | Symptom | Fix |
 | --- | --- | --- |
-| Padding on row wrapper for “symmetric indent” | Gaps in vertical line; lines &lt; 26 px | Padding on content wrapper only |
+| Padding on row wrapper for “symmetric indent” | Gaps in vertical line; short line segments | Padding on `.ddlapi-property-row-body` only — see **ddlapi-indentations-update** |
 | `headerValue` in both `header` and row body (`DdlApiProperty`) | Duplicated column/index titles | Indent in `header`; title + subheader only in row body |
 | `{headerValue}{subheader}` replaced by `{rowBody}` for all usages | Section headers duplicated (`Columns Columns`) | Non-DDL: keep `{header}{subheader}`; DDL only uses row body |
 | Global `preceded-by.css` rules assumed scoped | Mystery padding on `.ddlapi-property` rows | Explicit zero padding on property row wrappers |
-| `margin-top` on middle list items | Line breaks between siblings | Use content padding; margin only first/last |
+| `margin-top` on middle list items | Line breaks between siblings | Uniform row-body padding; section gaps on section headers only |
+| First-item spacing via `DDL_SECTION_HEADER` row rules | Asymmetric diff bands; badge/title misalignment | Section `margin-bottom` + uniform property rows |
+| Wrapper `padding-top` for section gap under diffs | Diff badge protrudes above row | Section `margin-bottom` on `DdlApiSection` header; no wrapper padding |
+| `align-items: flex-start` on title row-body | Title above subheader/badges | `items-center` on title-row row-body |
 | Deriving “previous sibling had X” in child viewer | Fragile, hard to test | One-pass `build*ViewerContexts` in list parent |
 | `data-ddl-list-last-row` on description `TextRow` | Wrong bottom spacing | Terminal row = last `TitleRow` or `AdditionalInfoRow` per product rule |
-| Row-body padding **4 + 4 px** on middle title rows with `UxBadge` | Badge bottom indent wrong; text ~1 px low/clipped | Keep **3 + 3 px** on title-row row-body, or raise row min-height to **27 px** with 4 px padding, or shrink badge to ≤ 18 px |
+| Row-body padding too large with `UxBadge` in title band | Badge clipped or shifted | Re-check UxBadge height budget in `preceded-by.css` comments |
 | Re-derive diff logic in `ColumnRowBadgesContent` | Duplicates JSO pattern; misses normalisation | Use `takeColumnFlagDiffs` / `takeIndexFlagDiffs` / title-row accessors from node |
 | Viewer `nodeLevelDiff` for badge side visibility | Hides badges on both sides (203/303) or wrong highlight | Fix in next-data-model `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove` |
 | Whole-node flag badge diff-highlighted | Misleading — row add/remove drives the change | Data layer: `DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY`; viewer: `isDdlFlagBadgeDiffHighlighted` |
