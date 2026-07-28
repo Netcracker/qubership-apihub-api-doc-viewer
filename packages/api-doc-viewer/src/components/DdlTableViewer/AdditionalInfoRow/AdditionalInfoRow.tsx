@@ -7,6 +7,7 @@ import { FC, memo, useMemo } from "react"
 import { DiffFloatingBadgeWrapper } from "../../shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { OneSideLayout } from "../../shared-components/Layout/OneSideLayout"
 import { SideBySideLayout } from "../../shared-components/Layout/SideBySideLayout"
+import "../../shared-styles/preceded-by.css"
 import { AdditionalInfoRowContent } from "./AdditionalInfoRowContent"
 import { AdditionalInfoRowProps } from "./types"
 

@@ -78,7 +78,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
-      className={`text-row-content flex h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {showsLevelIndent && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">

@@ -8,6 +8,7 @@ import { FC, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnNodeViewer } from "./ColumnNodeViewer"
 import { ColumnNodeViewerWithDiffs } from "./ColumnNodeViewerWithDiffs"
@@ -32,11 +33,9 @@ function buildColumnViewerContexts(
   return columnNodes.map((columnNode, index) => {
     const isLastInList = index === columnNodes.length - 1
 
-    const titlePrecededBy = index === 0
-      ? PrecededBy.DDL_SECTION_HEADER
-      : previousHadAdditionalInfo
-        ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
-        : PrecededBy.DDL_COLUMN_ROW
+    const titlePrecededBy = previousHadAdditionalInfo
+      ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
+      : PrecededBy.DDL_COLUMN_ROW
 
     const additionalInfoPrecededBy = previousHadAdditionalInfo
       ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
@@ -82,6 +81,7 @@ export const ColumnsNodeViewer: FC<ColumnsNodeViewerProps> = (props) => {
         expandable={false}
         expanded={true}
         variant={TextValueVariant.h2}
+        usage={TitleRowUsage.DdlApiSection}
       />
       <LevelContext.Provider value={level + 1}>
         {columnViewerContexts.map(({ columnNode, titlePrecededBy, additionalInfoPrecededBy, isLastInList }) => (

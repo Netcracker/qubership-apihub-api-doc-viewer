@@ -5,6 +5,7 @@ import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mode
 import { FC, useMemo } from "react"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
+import { TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { IndexNodeViewer } from "./IndexNodeViewer"
 import { IndexNodeViewerWithDiffs } from "./IndexNodeViewerWithDiffs"
@@ -24,9 +25,7 @@ function buildIndexViewerContexts(
 ): IndexViewerContext[] {
   return indexNodes.map((indexNode, index) => ({
     indexNode,
-    titlePrecededBy: index === 0
-      ? PrecededBy.DDL_SECTION_HEADER
-      : PrecededBy.DDL_INDEX_ROW,
+    titlePrecededBy: PrecededBy.DDL_INDEX_ROW,
     isLastInList: index === indexNodes.length - 1,
   }))
 }
@@ -55,6 +54,7 @@ export const IndexesNodeViewer: FC<IndexesNodeViewerProps> = (props) => {
         expandable={false}
         expanded={true}
         variant={TextValueVariant.h2}
+        usage={TitleRowUsage.DdlApiSection}
       />
       <LevelContext.Provider value={level + 1}>
         {indexViewerContexts.map(({ indexNode, titlePrecededBy, isLastInList }) => (

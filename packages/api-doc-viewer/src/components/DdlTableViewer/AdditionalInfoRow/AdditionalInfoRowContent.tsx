@@ -51,7 +51,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       data-testid="additional-info-row-content"
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
-      className={`additional-info-row-content flex items-stretch h-full ${X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES} min-h-[26px] gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`additional-info-row-content flex w-full items-stretch h-full ${X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES} min-h-[26px] gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {level > 0 && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">

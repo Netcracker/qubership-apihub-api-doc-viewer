@@ -138,7 +138,8 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     <div
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
-      className={`title-row-content flex ${isDdlApiPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      data-usage={usage !== TitleRowUsage.Default ? usage : undefined}
+      className={`title-row-content flex w-full ${isDdlApiPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}
       {isDdlApiPropertyRow ? (
