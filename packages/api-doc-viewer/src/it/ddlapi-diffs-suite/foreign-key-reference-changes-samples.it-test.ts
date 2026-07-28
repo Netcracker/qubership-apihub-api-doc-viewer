@@ -49,8 +49,8 @@ describe("DDL API Diffs Suite - Foreign Key Reference Changes Samples", () => {
     await expectCaseScreenshot("03-replaced-foreign-key-schema-public-to-custom");
   });
 
-  it("04-replaced-foreign-key-schema-custom1-to-custom2", async () => {
-    await expectCaseScreenshot("04-replaced-foreign-key-schema-custom1-to-custom2");
+  it("04-replaced-foreign-key-schema-custom-1-to-custom-2", async () => {
+    await expectCaseScreenshot("04-replaced-foreign-key-schema-custom-1-to-custom-2");
   });
 
   it("05-replaced-foreign-key-schema-custom-to-public", async () => {
@@ -69,8 +69,8 @@ describe("DDL API Diffs Suite - Foreign Key Reference Changes Samples", () => {
     await expectCaseScreenshot("08-replaced-foreign-key-schema-custom-to-public-and-table");
   });
 
-  it("09-replaced-foreign-key-schema-custom1-to-custom2-and-table", async () => {
-    await expectCaseScreenshot("09-replaced-foreign-key-schema-custom1-to-custom2-and-table");
+  it("09-replaced-foreign-key-schema-custom-1-to-custom-2-and-table", async () => {
+    await expectCaseScreenshot("09-replaced-foreign-key-schema-custom-1-to-custom-2-and-table");
   });
 
   it("10-replaced-foreign-key-schema-public-to-custom-table-and-column", async () => {
@@ -81,7 +81,7 @@ describe("DDL API Diffs Suite - Foreign Key Reference Changes Samples", () => {
     await expectCaseScreenshot("11-replaced-foreign-key-schema-custom-to-public-table-and-column");
   });
 
-  it("12-replaced-foreign-key-schema-custom1-to-custom2-table-and-column", async () => {
-    await expectCaseScreenshot("12-replaced-foreign-key-schema-custom1-to-custom2-table-and-column");
+  it("12-replaced-foreign-key-schema-custom-1-to-custom-2-table-and-column", async () => {
+    await expectCaseScreenshot("12-replaced-foreign-key-schema-custom-1-to-custom-2-table-and-column");
   });
 });
