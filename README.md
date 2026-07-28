@@ -156,7 +156,7 @@ const SomeComponent: FC = () => {
 
 Agent instructions and skills for this monorepo:
 
-- **[AGENTS.md](AGENTS.md)** — repository orientation, view/data split, cross-package DDL diffs workflow.
+- **`AGENTS.md`** — generated at the repository root by `apm install`; repository orientation, view/data split, cross-package DDL diffs workflow (not committed; see `.gitignore`).
 - **`apm.yml`** — APM dependency list; local packages under `agent-packages/`.
 
 Refresh deployed skills and rules after editing agent packages:
