@@ -890,6 +890,27 @@ describe("DDL property row diff aggregators", () => {
     })
   })
 
+  it("wraps unchanged index part names in tight parentheses when there are no part diffs", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.INDEX,
+      value: () => ({
+        indexName: "idx_t_code",
+        partNames: ["code"],
+        isUnique: false,
+      }),
+      diffs: {},
+    }
+
+    expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "code" },
+        { text: ")" },
+      ],
+    })
+  })
+
   it("resolves segmented index part names display for append and replace", () => {
     const appendNode = {
       kind: DdlApiTreeNodeKinds.INDEX,
@@ -926,7 +947,7 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveIndexPartNamesSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE, "tight")).toEqual({
+    expect(resolveIndexPartNamesSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: "segmented",
       segments: [
         { text: "(" },
@@ -936,7 +957,7 @@ describe("DDL property row diff aggregators", () => {
         { text: ")" },
       ],
     })
-    expect(resolveIndexPartNamesSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE, "tight")).toEqual({
+    expect(resolveIndexPartNamesSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
       kind: "segmented",
       segments: [
         { text: "(" },
@@ -990,7 +1011,7 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE, "tight")).toEqual({
+    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: "segmented",
       segments: [
         { text: "(" },
@@ -1000,7 +1021,7 @@ describe("DDL property row diff aggregators", () => {
         { text: ")" },
       ],
     })
-    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE, "tight")).toEqual({
+    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
       kind: "segmented",
       segments: [
         { text: "(" },

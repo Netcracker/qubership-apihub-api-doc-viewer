@@ -62,8 +62,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
 
   const renderPartNames = useCallback(
     (layoutSide: LayoutSide) => {
-      const parenthesesStyle = hasNamedIndex ? "tight" as const : "none" as const
-      const display = resolveIndexPartNamesSideDisplay(node, layoutSide, parenthesesStyle)
+      const display = resolveIndexPartNamesSideDisplay(node, layoutSide)
       return (
         <DdlCommaSeparatedListWithDiffs
           layoutSide={layoutSide}
@@ -71,7 +70,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         />
       )
     },
-    [hasNamedIndex, node],
+    [node],
   )
 
   const subheader = useCallback(

@@ -5,7 +5,6 @@ import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import {
   buildCommaSeparatedListSideSegments,
-  DdlCommaSeparatedListParenthesesStyle,
   DdlListSideSegment,
   resolveListSideItems,
 } from "./list-side-display"
@@ -37,25 +36,20 @@ export function takeIndexPartNameDiffs(
 export function resolveIndexPartNamesSideDisplay(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
   layoutSide: LayoutSide,
-  parenthesesStyle: DdlCommaSeparatedListParenthesesStyle,
 ): DdlIndexPartNamesSideDisplay {
   const mergedPartNames = node.value()?.partNames ?? []
   const partNameDiffs = takeIndexPartNameDiffs(node)
 
-  if (!partNameDiffs) {
-    return {
-      kind: "plain",
-      text: mergedPartNames.join(", "),
-    }
-  }
+  const sideItems = partNameDiffs
+    ? resolveListSideItems(mergedPartNames, partNameDiffs, layoutSide)
+    : mergedPartNames.map((text) => ({ text }))
 
-  const sideItems = resolveListSideItems(mergedPartNames, partNameDiffs, layoutSide)
-  const segments = buildCommaSeparatedListSideSegments(sideItems, parenthesesStyle)
+  const segments = buildCommaSeparatedListSideSegments(sideItems, "tight")
 
   if (segments.length === 0) {
     return {
       kind: "plain",
-      text: mergedPartNames.join(", "),
+      text: "",
     }
   }
 
