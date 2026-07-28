@@ -539,6 +539,7 @@ Use `hasDdlColumnAdditionalInfoRows()` from `utils/ddlapi/column-row-utils.ts`
 | Default row missing on remove/replace side | `hasDefaultValue` only checks merged `value.defaultValue` | Also OR in `defaultValueDiff` / `defaultValueRowColorizingDiff` |
 | Boolean default replace shows yellow text fill | Chip metadata used `textHighlighterColor` | Data layer: `BoolType` replace → `borderShadowColor` only; viewer passes both accessors |
 | Bit default replace not highlighted | ddlapi diff on `default.expr`, not column `defaultValue` | Fix transformer `resolveDefaultValueDiff` nested resolution — not aggregator |
+| Index subheader part names missing `(…)` | Resolver returned `kind: "plain"` when `partNameDiffs` absent | Fix `resolveIndexPartNamesSideDisplay` — always segmented + `"tight"`; not viewer `hasNamedIndex` branch |
 
 ### Integration example (column default value row — plain)
 
@@ -575,7 +576,8 @@ Follow the JSO / AsyncAPI split: plain and diffs pipelines stay separate.
   `takeDdlPropertyTitleRowDiff`, `takeColumnFlagDiffs`, `takeIndexFlagDiffs`,
   `takeColumnDefaultValueDiff`, `takeColumnDefaultValueRowColorizingDiff`,
   `resolveColumnDefaultValueSideDisplay`, `resolveColumnEnumValueSideItems`,
-  `isDdlPropertySubheaderVisible`, `isDdlFlagBadgeDiffHighlighted`, `node.diffsSeverities`.
+  `resolveIndexPartNamesSideDisplay`, `isDdlPropertySubheaderVisible`,
+  `isDdlFlagBadgeDiffHighlighted`, `node.diffsSeverities`.
 - Keep badge orchestration in `ColumnRowBadgesContent`; `DiffBadge` only renders the diff
   object it receives. Pass `$changes` only when `isDdlFlagBadgeDiffHighlighted(flagDiff)`.
 - Mirror JSO: aggregators own semantics; viewers map severities and diffs to rows and
@@ -583,6 +585,38 @@ Follow the JSO / AsyncAPI split: plain and diffs pipelines stay separate.
 
 When extending DDL diffs UI, change **next-data-model first** if the bug is wrong diff shape
 or missing severity — not `DiffBadge` workarounds in the viewer.
+
+### Index part names in subheader (diffs)
+
+Plain `IndexNodeViewer` wraps named-index part lists in `(…)` in the title-row subheader.
+`IndexNodeViewerWithDiffs` must match that shape in side-by-side layout.
+
+| Concern | Plain | Diffs |
+| --- | --- | --- |
+| Named index title | `value.indexName` | Same |
+| Part list location | Subheader when `indexName` set | Subheader via `renderPartNames` |
+| Part list formatting | `` `(${formatIndexPartNames(...)})` `` | `resolveIndexPartNamesSideDisplay` → `DdlCommaSeparatedListWithDiffs` |
+| Unnamed index title | `formatIndexPartNames` (no parens) | Empty title when `partNameDiffs` present; else same as plain |
+
+**View / data contract:**
+
+- **Do not** branch on `hasNamedIndex` (or similar) in the viewer to choose parentheses —
+  tight `(…)` wrapping is fixed in **next-data-model** (`index-part-name-diffs.ts`).
+- `IndexNodeViewerWithDiffs` only orchestrates: call `resolveIndexPartNamesSideDisplay(node,
+  layoutSide)` and pass the result to `DdlCommaSeparatedListWithDiffs`.
+- Subheader visibility for part names still follows existing rules (`hasNamedIndex ||
+  hasPartNameDiffs`, `isDdlPropertySubheaderVisible`).
+
+**Trap (index-changes samples 01–08, 11–15, 17–18):** whole-index add/remove and unique-only
+changes have **no** `partNameDiffs`. An early `resolveIndexPartNamesSideDisplay` implementation
+returned `kind: "plain"` (`c1, c2`) in that case — only append/replace part diffs (e.g. samples
+09, 10, 16) hit the segmented `(…)` path. Fix: always build side items (merged list when no
+part diffs, `resolveListSideItems` when diffs exist) and always call
+`buildCommaSeparatedListSideSegments(..., "tight")`. Do not expose a `parenthesesStyle` parameter
+on the index resolver — column type labels use `"spaced"` parens via a separate resolver.
+
+Regression: unit test in `ddlapi-property-row-diffs.test.ts` (no part diffs); visual check
+`packages/samples/ddlapi-diffs/index-changes/`.
 
 ### `DiffBadge` and invisible flag badges (session lesson)
 

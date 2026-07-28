@@ -276,6 +276,37 @@ badge side visibility in the viewer — fix in aggregators above.
 badge); same cases on **column** rows keep diff-highlighted `unique` badges. Unit tests:
 `packages/next-data-model/tests/unit-tests/ddlapi-whole-node-flag-diffs.test.ts`.
 
+### Index part names side display (`resolveIndexPartNamesSideDisplay`)
+
+Location: `packages/next-data-model/src/model/ddlapi/tree-with-diffs/index-part-name-diffs.ts`.
+Shared list helpers: `list-side-display.ts` (`resolveListSideItems`,
+`buildCommaSeparatedListSideSegments`).
+
+**Product rule:** subheader part names for a **named** index always render as tight parentheses
+around a comma-separated list — `(c1, c2)` — matching plain `IndexNodeViewer`, including when
+there are no per-part diffs (whole-index add/remove, unique-flag-only changes).
+
+**Resolver contract:**
+
+```typescript
+resolveIndexPartNamesSideDisplay(node, layoutSide)
+```
+
+- No `parenthesesStyle` argument — index lists always use `"tight"`. Column type labels use
+  `"spaced"` via `resolveColumnTypeLabelSideDisplay` instead.
+- When `partNameDiffs` is absent, map merged `partNames` to plain side items (no diff metadata).
+- When `partNameDiffs` is present, use `resolveListSideItems(mergedPartNames, partNameDiffs,
+  layoutSide)`.
+- Always call `buildCommaSeparatedListSideSegments(sideItems, "tight")` and return
+  `kind: "segmented"` when segments are non-empty; empty side → `kind: "plain", text: ""`.
+
+**Trap:** returning `kind: "plain"` with `mergedPartNames.join(", ")` when `!partNameDiffs`
+skips parentheses and breaks visual parity for `index-changes` samples 01–08, 11–15, 17–18.
+Append/remove column cases (09, 10, 16) still had `partNameDiffs` and looked correct — do not
+use those alone as regression signal.
+
+Unit tests: `ddlapi-property-row-diffs.test.ts` — unchanged list (no part diffs), append, replace.
+
 ### Generated columns in `DdlApiSpecWithDiffsTransformer`
 
 `resolveGeneratedColumnDiff` must handle both ddlapi sources:
