@@ -2,7 +2,7 @@
 
 These fixtures feed screenshot-diff scenarios for DDL table changes.
 
-- Total cases: 266
+- Total cases: 273
 - Layout: `ddlapi-diffs/<group>/<case-id>/before.sql` and `.../after.sql`
 - Case ids are numbered from `01` (or `001` in groups with 100+ cases) within each group.
 - **`column-changes-except-types`** uses semantic hundred blocks (`101`–`102`, `201`–`206`, …)
@@ -18,7 +18,7 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | `whole-table-changes` | 3 | Wholly added/removed tables and schema moves |
 | `column-changes-except-types` | 34 | Column add/remove, constraint/badge, and description changes |
 | `foreign-key-reference-changes` | 12 | Referenced schema, table, and column changes |
-| `index-changes` | 18 | Index add/remove, uniqueness, and column list changes |
+| `index-changes` | 25 | Index add/remove, uniqueness, column list, and unnamed index changes |
 | `column-type-changes` | 127 | Base type matrix (`001`–`090`), parameter changes (`091`–`103`), enum-to-enum (`104`–`107`), scalar-to-enum (`108`–`117`), enum-to-scalar (`118`–`127`) |
 | `column-default-changes` | 72 | Column `DEFAULT` add/remove/replace per PostgreSQL scalar storage type |
 

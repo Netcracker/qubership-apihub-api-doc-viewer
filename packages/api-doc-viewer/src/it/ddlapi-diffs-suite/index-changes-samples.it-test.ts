@@ -258,4 +258,95 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-18-index-not-unique-${counter}`,
     });
   });
+
+  it('19-unnamed-index-became-titled', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-19-unnamed-index-became-titled',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-19-unnamed-index-became-titled-${counter}`,
+    });
+  });
+
+  it('20-titled-index-became-unnamed', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-20-titled-index-became-unnamed',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-20-titled-index-became-unnamed-${counter}`,
+    });
+  });
+
+  it('21-unnamed-index-append-column', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-21-unnamed-index-append-column',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-21-unnamed-index-append-column-${counter}`,
+    });
+  });
+
+  it('22-unnamed-index-pop-column', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-22-unnamed-index-pop-column',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-22-unnamed-index-pop-column-${counter}`,
+    });
+  });
+
+  it('23-unnamed-index-replaced-column', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-23-unnamed-index-replaced-column',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-23-unnamed-index-replaced-column-${counter}`,
+    });
+  });
+
+  it('24-unnamed-index-became-unique', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-24-unnamed-index-became-unique',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-24-unnamed-index-became-unique-${counter}`,
+    });
+  });
+
+  it('25-unnamed-index-lost-unique', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-index-changes-samples--case-25-unnamed-index-lost-unique',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-25-unnamed-index-lost-unique-${counter}`,
+    });
+  });
 });
