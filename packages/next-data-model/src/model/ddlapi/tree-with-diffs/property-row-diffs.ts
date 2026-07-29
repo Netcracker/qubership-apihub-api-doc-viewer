@@ -1,8 +1,8 @@
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { hasDdlPropertyTitleRowDiff } from "../../../shared/ddlapi/guards/property-row-diffs"
 import { formatDefaultValueDisplayString, formatDefaultValueForDisplay } from "../../../shared/ddlapi/format-ddl-expr"
 import { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 import { isObject } from "../../../utilities"
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { Expr } from "@netcracker/qubership-apihub-ddlapi"
 import {
   LayoutSide,
@@ -63,6 +63,8 @@ export {
 export type {
   DdlIndexPartNamesSideDisplay,
 } from "./index-part-name-diffs"
+
+export { isNamedIndexTitle, DDL_UNNAMED_INDEX_TITLE } from "../../../shared/ddlapi/index-title"
 
 export type {
   DdlCommaSeparatedListParenthesesStyle,

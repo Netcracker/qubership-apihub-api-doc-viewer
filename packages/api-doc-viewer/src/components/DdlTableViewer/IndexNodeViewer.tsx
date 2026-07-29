@@ -26,15 +26,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   const displayMode = useDisplayMode()
   const value = node.value()
 
-  const indexTitle = useMemo(() => {
-    if (!value) {
-      return ''
-    }
-    if (value.indexName) {
-      return value.indexName
-    }
-    return formatIndexPartNames(value.partNames)
-  }, [value])
+  const indexTitle = value?.indexName ?? ''
 
   const subheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -42,12 +34,14 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         return <></>
       }
 
+      const partNamesText = formatIndexPartNames(value.partNames)
+
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {value.indexName && (
+          {value.partNames.length > 0 && (
             <DdlApiPropertyValue
               isVisible={true}
-              value={`(${formatIndexPartNames(value.partNames)})`}
+              value={`(${partNamesText})`}
               appearance="text"
             />
           )}
@@ -68,6 +62,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
   )
 
   const isTitleListLastRow = isLastInList
+  const hasSubheaderContent = !!value && (value.partNames.length > 0 || value.isUnique)
 
   if (!value) {
     return null
@@ -82,7 +77,7 @@ export const IndexNodeViewer: FC<IndexNodeViewerProps> = (props) => {
         expandable={false}
         expanded={true}
         variant={TextValueVariant.body2}
-        subheader={value.indexName || value.isUnique ? subheader : undefined}
+        subheader={hasSubheaderContent ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
       />
       {isDescriptionDisplayed && (

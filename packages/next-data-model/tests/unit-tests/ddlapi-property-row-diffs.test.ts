@@ -911,6 +911,29 @@ describe("DDL property row diff aggregators", () => {
     })
   })
 
+  it("wraps unnamed index part names in tight parentheses when there are no part diffs", () => {
+    const node = {
+      kind: DdlApiTreeNodeKinds.INDEX,
+      value: () => ({
+        indexName: "<unnamed>",
+        partNames: ["c1", "c2"],
+        isUnique: false,
+      }),
+      diffs: {},
+    }
+
+    expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+      kind: "segmented",
+      segments: [
+        { text: "(" },
+        { text: "c1" },
+        { text: ", " },
+        { text: "c2" },
+        { text: ")" },
+      ],
+    })
+  })
+
   it("resolves segmented index part names display for append and replace", () => {
     const appendNode = {
       kind: DdlApiTreeNodeKinds.INDEX,

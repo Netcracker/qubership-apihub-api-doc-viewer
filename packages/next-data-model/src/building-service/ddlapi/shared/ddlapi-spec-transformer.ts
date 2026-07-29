@@ -25,6 +25,7 @@ import {
   PgDomainSchemaType,
 } from "@apihub/next-data-model/shared/ddlapi/guards";
 import { formatDefaultValueForDisplay, formatDdlExpr } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
+import { resolveIndexTitle } from "@apihub/next-data-model/shared/ddlapi/index-title";
 import {
   AttrKind,
   Column,
@@ -212,7 +213,7 @@ export class DdlApiSpecTransformer {
     const comment = findAttr(index.attrs, AttrKind.Comment)
 
     return {
-      ...(index.name ? { indexName: index.name } : {}),
+      indexName: resolveIndexTitle(index.name),
       partNames,
       isUnique: index.unique === true,
       ...(comment ? { description: comment.text } : {}),

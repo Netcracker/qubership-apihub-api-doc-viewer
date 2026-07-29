@@ -17,6 +17,7 @@ import {
 } from "@netcracker/qubership-apihub-ddlapi";
 import { formatForeignKeyTargetKey } from "@apihub/next-data-model/shared/ddlapi/foreign-key-target-key";
 import { formatDefaultValueDisplayString, formatDefaultValueForDisplay } from "@apihub/next-data-model/shared/ddlapi/format-ddl-expr";
+import { isNamedIndexTitle, resolveDdlApiIndexDescendantDiffKey } from "@apihub/next-data-model/shared/ddlapi/index-title";
 import { isDdlScalarColumnTypeName } from "@apihub/next-data-model/shared/ddlapi/guards/column-type-name";
 import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-type";
 import { BuildingServiceLogger } from "../../../loggers";
@@ -339,16 +340,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     this.attachSectionArrayDiffs(indexesSection, indexesArrayDiffs, (arrayIndex) => {
       const sourceIndex = sourceIndexes[arrayIndex]
       const indexRow = indexesSection.items[arrayIndex]
-      if (sourceIndex?.name) {
-        return sourceIndex.name
-      }
-      if (indexRow?.indexName) {
-        return indexRow.indexName
-      }
-      if (indexRow?.partNames.length) {
-        return indexRow.partNames.join(', ')
-      }
-      return String(arrayIndex)
+      return resolveDdlApiIndexDescendantDiffKey(arrayIndex, indexRow, sourceIndex?.name)
     })
   }
 
@@ -1199,7 +1191,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     indexRow: DdlApiIndexRowValueWithDiffs,
     rowIndex: number,
   ): Index | undefined {
-    if (indexRow.indexName) {
+    if (indexRow.indexName && isNamedIndexTitle(indexRow.indexName)) {
       const namedIndex = sourceIndexes.find(index => index.name === indexRow.indexName)
       if (namedIndex) {
         return namedIndex

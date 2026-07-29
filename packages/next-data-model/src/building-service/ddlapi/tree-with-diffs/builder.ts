@@ -17,6 +17,7 @@ import { DdlApiTreeNodeKind, DdlApiTreeNodeKindsList } from "@apihub/next-data-m
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { DdlApiTreeWithDiffsBuilderParams } from "@apihub/next-data-model/shared/ddlapi/types/tree-builder-params";
+import { resolveDdlApiIndexNodeKey } from "@apihub/next-data-model/shared/ddlapi/index-title";
 import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types";
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl";
@@ -141,7 +142,7 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       return value.columnName
     }
     if ('indexName' in value && typeof value.indexName === 'string') {
-      return value.indexName
+      return resolveDdlApiIndexNodeKey(key, value)
     }
     return key
   }

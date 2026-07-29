@@ -7,7 +7,6 @@ import {
 import {
   isDdlPropertySubheaderVisible,
   resolveIndexPartNamesSideDisplay,
-  takeIndexPartNameDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
@@ -23,7 +22,6 @@ import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/type
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
 import { DdlCommaSeparatedListWithDiffs } from "./DdlCommaSeparatedListWithDiffs/DdlCommaSeparatedListWithDiffs"
-import { formatIndexPartNames } from "./formatters"
 
 type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
@@ -42,23 +40,8 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
     useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
 
   const flagDiffs = useMemo(() => takeIndexFlagDiffs(node), [node])
-  const partNameDiffs = useMemo(() => takeIndexPartNameDiffs(node), [node])
 
-  const hasNamedIndex = !!value?.indexName
-  const hasPartNameDiffs = !!partNameDiffs
-
-  const indexTitle = useMemo(() => {
-    if (!value) {
-      return ''
-    }
-    if (value.indexName) {
-      return value.indexName
-    }
-    if (hasPartNameDiffs) {
-      return ''
-    }
-    return formatIndexPartNames(value.partNames)
-  }, [hasPartNameDiffs, value])
+  const indexTitle = value?.indexName ?? ''
 
   const renderPartNames = useCallback(
     (layoutSide: LayoutSide) => {
@@ -83,7 +66,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         return <></>
       }
 
-      const shouldRenderPartNames = value.partNames.length > 0 && (hasNamedIndex || hasPartNameDiffs)
+      const shouldRenderPartNames = value.partNames.length > 0
 
       return (
         <div className="flex flex-wrap items-center gap-2">
@@ -97,7 +80,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         </div>
       )
     },
-    [flagDiffs, hasNamedIndex, hasPartNameDiffs, node.id, nodeDiff, renderPartNames, value],
+    [flagDiffs, node.id, nodeDiff, renderPartNames, value],
   )
 
   const isDescriptionDisplayed = useMemo(
@@ -109,10 +92,9 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
   const isTitleListLastRow = isLastInList
 
   const hasSubheaderContent = !!value && (
-    (hasNamedIndex && value.partNames.length > 0)
+    value.partNames.length > 0
     || value.isUnique
     || !!flagDiffs?.isUnique
-    || (!hasNamedIndex && hasPartNameDiffs)
   )
 
   if (!value) {
