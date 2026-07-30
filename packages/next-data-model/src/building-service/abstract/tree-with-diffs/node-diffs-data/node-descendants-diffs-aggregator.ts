@@ -26,13 +26,11 @@ export abstract class AbstractNodeDescendantsDiffsAggregator {
       beforeStyles = {
         ...beforeStyles,
         isContentVisible: false,
-        isHeaderVisible: false,
         backgroundColor: HighlightVariant.Gray,
       }
       afterStyles = {
         ...afterStyles,
         isContentVisible: true,
-        isHeaderVisible: true,
         backgroundColor: HighlightVariant.Green,
       }
     }
@@ -40,13 +38,11 @@ export abstract class AbstractNodeDescendantsDiffsAggregator {
       beforeStyles = {
         ...beforeStyles,
         isContentVisible: true,
-        isHeaderVisible: true,
         backgroundColor: HighlightVariant.Red,
       }
       afterStyles = {
         ...afterStyles,
         isContentVisible: false,
-        isHeaderVisible: false,
         backgroundColor: HighlightVariant.Gray,
       }
     }
