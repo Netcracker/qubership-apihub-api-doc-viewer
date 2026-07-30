@@ -4,7 +4,7 @@ import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { ArgTypes, Meta, StoryObj } from "@storybook/react";
 import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
-import { buildFromDdlInBrowser } from "../ddlapi-suite/build-from-ddl-browser";
+import { buildFromDdlInBrowser, resolveDdlDiffComparePair } from "../ddlapi-suite/build-from-ddl-browser";
 import { TEST_DIFF_META_KEYS } from "./shared-test-data";
 
 export type DdlDiffSampleCase = {
@@ -113,22 +113,15 @@ export const createDdlDiffSampleById = <TSample extends DdlDiffSampleCase>(
 export const resolveTableKey = (caseId: string): TableKey =>
   TABLE_KEYS_BY_CASE_ID[caseId] ?? DEFAULT_TABLE_KEY;
 
-function emptyRealmLike(present: Realm): Realm {
-  return {
-    ddlapi: present.ddlapi,
-    schemas: (present.schemas ?? []).map((schema) => ({ name: schema.name, tables: [] })),
-  };
-}
-
 async function prepareDdlDiffsMergedSource(
   beforeSql: string,
   afterSql: string,
 ): Promise<Realm> {
-  const beforeRealm = await buildFromDdlInBrowser(beforeSql);
-  const afterRealm = await buildFromDdlInBrowser(afterSql);
-  const present = afterRealm ?? beforeRealm;
-  const before = beforeRealm ?? emptyRealmLike(present);
-  const after = afterRealm ?? emptyRealmLike(present);
+  const [beforeRealm, afterRealm] = await Promise.all([
+    buildFromDdlInBrowser(beforeSql),
+    buildFromDdlInBrowser(afterSql),
+  ]);
+  const { before, after } = resolveDdlDiffComparePair(beforeRealm, afterRealm);
 
   const { merged } = apiDiff(before, after, {
     unify: true,
