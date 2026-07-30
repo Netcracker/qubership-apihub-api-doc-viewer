@@ -58,9 +58,7 @@ const DEFAULT_TABLE_KEY: TableKey = {
   name: "t",
 };
 
-const TABLE_KEYS_BY_CASE_ID: Record<string, TableKey> = {
-  "03-changed-schema-of-table": { schemaName: "audit", name: "t" },
-};
+const TABLE_KEYS_BY_CASE_ID: Record<string, TableKey> = {};
 
 const navigationLinkBuilder: NavigationLinkBuilder = (schema, table, column) =>
   `#${schema}.${table}.${column}`;

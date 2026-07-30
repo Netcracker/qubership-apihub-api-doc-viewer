@@ -35,4 +35,5 @@ const createCaseStory = createDdlDiffCaseStoryFactory(sampleById);
 
 export const Case_01_wholly_added_table: Story = createCaseStory("01-wholly-added-table");
 export const Case_02_wholly_removed_table: Story = createCaseStory("02-wholly-removed-table");
-export const Case_03_changed_schema_of_table: Story = createCaseStory("03-changed-schema-of-table");
+export const Case_03_wholly_added_table_with_index: Story = createCaseStory("03-wholly-added-table-with-index");
+export const Case_04_wholly_removed_table_with_index: Story = createCaseStory("04-wholly-removed-table-with-index");

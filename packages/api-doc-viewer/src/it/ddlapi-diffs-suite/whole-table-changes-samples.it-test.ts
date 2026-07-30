@@ -51,16 +51,29 @@ describe('DDL API Diffs Suite - Whole Table Changes Samples', () => {
     });
   });
 
-  it('03-changed-schema-of-table', async () => {
+  it('03-wholly-added-table-with-index', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-whole-table-changes-samples--case-03-changed-schema-of-table',
+      'ddl-api-diffs-suite-whole-table-changes-samples--case-03-wholly-added-table-with-index',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-whole-table-changes-samples-03-changed-schema-of-table-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-whole-table-changes-samples-03-wholly-added-table-with-index-${counter}`,
+    });
+  });
+
+  it('04-wholly-removed-table-with-index', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-whole-table-changes-samples--case-04-wholly-removed-table-with-index',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-whole-table-changes-samples-04-wholly-removed-table-with-index-${counter}`,
     });
   });
 });

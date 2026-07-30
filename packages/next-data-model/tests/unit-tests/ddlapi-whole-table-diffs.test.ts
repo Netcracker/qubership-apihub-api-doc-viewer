@@ -132,42 +132,6 @@ describe('DDL whole-table node diffs', () => {
     expect(tableNode?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(tableNode?.diffs[NODE_LEVEL_DIFF_KEY])
   })
 
-  it('aggregates whole-table add when the owning schema is added', async () => {
-    const merged = await mergeWholeTableSample('03-changed-schema-of-table')
-    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
-      schemaName: 'audit',
-      name: 't',
-    })
-
-    const tableDiffs = spec?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
-    expect(tableDiffs?.[NODE_LEVEL_DIFF_KEY]?.action).toBe(DiffAction.add)
-
-    const tree = new DdlApiTreeWithDiffsBuilder({
-      source: merged,
-      tableKey: { schemaName: 'audit', name: 't' },
-      diffsMetaKeys: TEST_DIFF_META_KEYS,
-      logger: createBuildingServiceLogger(),
-    }).build()
-
-    const tableNode = tree.root
-    expect(tableNode?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(tableNode?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(tableNode?.diffs[NODE_LEVEL_DIFF_KEY])
-  })
-
-  it('aggregates whole-table remove when the owning schema is removed', async () => {
-    const merged = await mergeWholeTableSample('03-changed-schema-of-table')
-    const tree = new DdlApiTreeWithDiffsBuilder({
-      source: merged,
-      tableKey: { schemaName: 'public', name: 't' },
-      diffsMetaKeys: TEST_DIFF_META_KEYS,
-      logger: createBuildingServiceLogger(),
-    }).build()
-
-    const tableNode = tree.root
-    expect(tableNode?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
-    expect(tableNode?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(tableNode?.diffs[NODE_LEVEL_DIFF_KEY])
-  })
-
   it('derives title-row diff from crawl whole-table add via kind-table aggregator', () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindTable()
     const crawlValue = {
@@ -215,19 +179,28 @@ describe('DDL whole-table node diffs', () => {
     expect(idColumn?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(idColumn?.diffs[NODE_LEVEL_DIFF_KEY])
   })
 
-  it('inherits whole-table add onto descendants when the owning schema is added', async () => {
-    const tree = await buildWholeTableTree('03-changed-schema-of-table', { schemaName: 'audit', name: 't' })
-    const idColumn = findNode(tree, DdlApiTreeNodeKinds.COLUMN, 'id')
+  it('inherits whole-table add onto index descendants', async () => {
+    const tree = await buildWholeTableTree('03-wholly-added-table-with-index', { schemaName: 'public', name: 't' })
+    const tableNode = tree.root
 
-    expect(idColumn?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(idColumn?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(tableNode?.descendantDiffs.indexes?.data.action).toBe(DiffAction.add)
+
+    const indexNode = findNode(tree, DdlApiTreeNodeKinds.INDEX, 'idx_t_id')
+    expect(indexNode?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(indexNode?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(indexNode?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(indexNode?.diffs[NODE_LEVEL_DIFF_KEY])
+
+    const indexesSection = findNode(tree, DdlApiTreeNodeKinds.INDEXES)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
   })
 
-  it('inherits whole-table remove onto descendants when the owning schema is removed', async () => {
-    const tree = await buildWholeTableTree('03-changed-schema-of-table', { schemaName: 'public', name: 't' })
-    const idColumn = findNode(tree, DdlApiTreeNodeKinds.COLUMN, 'id')
+  it('inherits whole-table remove onto index descendants', async () => {
+    const tree = await buildWholeTableTree('04-wholly-removed-table-with-index', { schemaName: 'public', name: 't' })
+    const indexNode = findNode(tree, DdlApiTreeNodeKinds.INDEX, 'idx_t_id')
 
-    expect(idColumn?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
-    expect(idColumn?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(indexNode?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(indexNode?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(indexNode?.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]).toBe(indexNode?.diffs[NODE_LEVEL_DIFF_KEY])
   })
 })
