@@ -5,6 +5,7 @@ import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/n
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { DdlApiNodeDiffsAggregatorKindColumn } from "./kind-column";
 import { DdlApiNodeDiffsAggregatorKindIndex } from "./kind-index";
+import { DdlApiNodeDiffsAggregatorKindTable } from "./kind-table";
 
 export class DdlApiNodeDiffsAggregatorFactory {
   private static readonly instances = new Map<
@@ -33,6 +34,9 @@ export class DdlApiNodeDiffsAggregatorFactory {
           break;
         case DdlApiTreeNodeKinds.INDEX:
           this.instances.set(kind, new DdlApiNodeDiffsAggregatorKindIndex());
+          break;
+        case DdlApiTreeNodeKinds.TABLE:
+          this.instances.set(kind, new DdlApiNodeDiffsAggregatorKindTable());
           break;
         default:
           this.instances.set(null, new DdlApiNodeDiffsAggregatorKindAny());

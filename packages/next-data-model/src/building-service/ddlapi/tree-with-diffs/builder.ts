@@ -229,8 +229,10 @@ export class DdlApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     if (!this.isDdlApiTreeNodeKind(kind)) {
       return undefined
     }
-    const parentNode = params.parent && this.isDdlApiSimpleTreeNodeWithDiffs(params.parent) ? params.parent : undefined
-    const containerNode = params.container && this.isDdlApiComplexTreeNodeWithDiffs(params.container) ? params.container : undefined
+    const parentNode = params.parent ?? undefined
+    const containerNode = params.container && this.isDdlApiComplexTreeNodeWithDiffs(params.container)
+      ? params.container
+      : undefined
     return DdlApiNodeDiffsAggregatorFactory
       .instance(kind)
       .aggregate(params.value, this.diffsMetaKeys, key, parentNode, containerNode)

@@ -4,6 +4,7 @@ import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/n
 import { DdlApiNodeDiffsSeveritiesAggregatorKindAny } from "./kind-any";
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "./kind-column";
 import { DdlApiNodeDiffsSeveritiesAggregatorKindIndex } from "./kind-index";
+import { DdlApiNodeDiffsSeveritiesAggregatorKindTable } from "./kind-table";
 
 export class DdlApiNodeDiffsSeveritiesAggregatorFactory {
   private static readonly instances = new Map<
@@ -21,6 +22,9 @@ export class DdlApiNodeDiffsSeveritiesAggregatorFactory {
           break;
         case DdlApiTreeNodeKinds.INDEX:
           this.instances.set(kind, new DdlApiNodeDiffsSeveritiesAggregatorKindIndex());
+          break;
+        case DdlApiTreeNodeKinds.TABLE:
+          this.instances.set(kind, new DdlApiNodeDiffsSeveritiesAggregatorKindTable());
           break;
         default:
           this.instances.set(null, new DdlApiNodeDiffsSeveritiesAggregatorKindAny());

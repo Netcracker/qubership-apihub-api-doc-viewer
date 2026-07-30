@@ -3,8 +3,11 @@ import { TitleRowProps } from "@apihub/components/shared-components/TitleRow/typ
 import {
   DdlApiPropertyNodeWithDiffs,
   DdlApiPropertyRowValue,
+  DdlApiTableHeaderNodeWithDiffs,
   takeDdlPropertyNodeDiffIfPresent,
   takeDdlPropertyTitleRowDiff,
+  takeDdlTableNodeDiffIfPresent,
+  takeDdlTableTitleRowDiff,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 
 export type {
@@ -35,3 +38,22 @@ export function buildDdlPropertyTitleRowDiffProps(
     highlightingMode: rowDiffProps.diff.highlightingMode,
   }
 }
+
+export function buildDdlTableTitleRowDiffProps(
+  node: DdlApiTableHeaderNodeWithDiffs,
+): Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities" | "highlightingMode"> {
+  const rowDiffProps = buildRowDiffProps(toNodeDiffState(node), {
+    resolveDiff: () => takeDdlTableTitleRowDiff(node),
+  })
+
+  if (!rowDiffProps.diff) {
+    return {}
+  }
+
+  return {
+    ...rowDiffProps,
+    highlightingMode: rowDiffProps.diff.highlightingMode,
+  }
+}
+
+export const takeTableNodeDiffIfPresent = takeDdlTableNodeDiffIfPresent

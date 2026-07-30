@@ -1,5 +1,5 @@
 import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "../../abstract/tree-with-diffs/tree-node.interface"
-import { DdlApiColumnRowValue, DdlApiIndexRowValue } from "../tree/node-value"
+import { DdlApiColumnRowValue, DdlApiIndexRowValue, DdlApiTableRowValue } from "../tree/node-value"
 
 /** Synthetic diff slot: resolved title-row background diff for column/index property rows. */
 export const DDL_PROPERTY_TITLE_ROW_DIFF_KEY = "titleRow" as const
@@ -57,6 +57,23 @@ export type DdlApiColumnFlagDiffKey = (typeof DDL_COLUMN_FLAG_DIFF_KEYS)[number]
 export type DdlApiIndexFlagDiffKey = (typeof DDL_INDEX_FLAG_DIFF_KEYS)[number]
 
 export type DdlApiPropertyRowValue = DdlApiColumnRowValue | DdlApiIndexRowValue
+
+export type DdlApiTablePropertyRowDiffs = Partial<
+  Record<
+    | typeof NODE_LEVEL_DIFF_KEY
+    | typeof DDL_PROPERTY_TITLE_ROW_DIFF_KEY
+    | keyof DdlApiTableRowValue,
+    ChangedPropertyMetaData
+  >
+>
+
+export const DDL_TABLE_CHANGED_PROPERTY_KEYS = [
+  NODE_LEVEL_DIFF_KEY,
+  DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
+  "tableName",
+  "schemaName",
+  "description",
+] as const satisfies ReadonlyArray<keyof DdlApiTablePropertyRowDiffs>
 
 export type DdlApiColumnPropertyRowDiffs = Partial<
   Record<

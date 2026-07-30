@@ -22,6 +22,12 @@ export function isTableNode(
   return node.kind === DdlApiTreeNodeKinds.TABLE
 }
 
+export function isTableNodeWithDiffs(
+  node: ITreeNode,
+): node is DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.TABLE> {
+  return isTableNode(node) && node instanceof SimpleTreeNodeWithDiffs
+}
+
 export function isColumnsNode(
   node: ITreeNode,
 ): node is DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMNS> {

@@ -140,10 +140,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     const transformedWithDiffs = this.createTableOrientedSpecWithDiffs(spec)
     const { diffsMetaKey, aggregatedDiffsMetaKey } = this.diffMetaKeys
     const owningSchemaName = tableKey.schemaName ?? schema?.name ?? 'public'
+    const wholeTableDiff = this.resolveWholeTableDiff(realm, schema, sourceTable)
 
-    this.attachTableLevelDiffs(transformedWithDiffs, schema, sourceTable, tableKey)
-    this.attachColumnsSectionDiffs(transformedWithDiffs.columns, realm, sourceTable, owningSchemaName)
-    this.attachIndexesSectionDiffs(transformedWithDiffs.indexes, sourceTable)
+    this.attachTableLevelDiffs(transformedWithDiffs, schema, sourceTable, tableKey, wholeTableDiff)
+    this.attachColumnsSectionDiffs(transformedWithDiffs.columns, realm, sourceTable, owningSchemaName, wholeTableDiff)
+    this.attachIndexesSectionDiffs(transformedWithDiffs.indexes, sourceTable, wholeTableDiff)
 
     aggregateDiffsWithRollup(transformedWithDiffs, diffsMetaKey, aggregatedDiffsMetaKey)
 
@@ -174,10 +175,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     schema: Schema | undefined,
     sourceTable: Table,
     tableKey: TableKey,
+    wholeTableDiff: Diff | undefined,
   ): void {
     const tableDiffs: DiffsRecord = {}
 
-    const wholeTableDiff = this.resolveWholeTableDiff(schema, sourceTable)
     if (wholeTableDiff) {
       tableDiffs[NODE_LEVEL_DIFF_KEY] = wholeTableDiff
     }
@@ -202,6 +203,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     realm: Realm,
     sourceTable: Table,
     owningSchemaName: string,
+    wholeTableDiff: Diff | undefined,
   ): void {
     const sourceColumns = sourceTable.columns ?? []
     const columnsArrayDiffs = this.getDiffsRecord(sourceColumns)
@@ -222,6 +224,8 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       const wholeColumnDiff = this.resolveArrayElementDiff(columnsArrayDiffs, sourceColumnIndex)
       if (wholeColumnDiff) {
         columnDiffs[NODE_LEVEL_DIFF_KEY] = wholeColumnDiff
+      } else {
+        this.attachInheritedWholeTableDiff(columnDiffs, wholeTableDiff)
       }
 
       const descriptionDiff = this.resolveCommentDescriptionDiff(sourceColumn.attrs)
@@ -286,6 +290,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       this.attachColumnTypeDiffs(columnRow.columnType, sourceColumn)
     })
 
+    this.attachInheritedWholeTableDiffToSection(columnsSection, wholeTableDiff)
     this.attachSectionArrayDiffs(columnsSection, columnsArrayDiffs, (arrayIndex) =>
       sourceColumns[arrayIndex]?.name
       ?? columnsSection.items[arrayIndex]?.columnName,
@@ -295,6 +300,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   private attachIndexesSectionDiffs(
     indexesSection: DdlApiTableOrientedSpecIndexesSectionWithDiffs,
     sourceTable: Table,
+    wholeTableDiff: Diff | undefined,
   ): void {
     const sourceIndexes = sourceTable.indexes ?? []
     const indexesArrayDiffs = this.getDiffsRecord(sourceIndexes)
@@ -311,6 +317,8 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       const wholeIndexDiff = this.resolveArrayElementDiff(indexesArrayDiffs, sourceIndexIndex)
       if (wholeIndexDiff) {
         indexDiffs[NODE_LEVEL_DIFF_KEY] = wholeIndexDiff
+      } else {
+        this.attachInheritedWholeTableDiff(indexDiffs, wholeTableDiff)
       }
 
       const indexFieldDiffs = this.getDiffsRecord(sourceIndex)
@@ -337,6 +345,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       this.mergeDiffsIntoTarget(indexRow, indexDiffs)
     })
 
+    this.attachInheritedWholeTableDiffToSection(indexesSection, wholeTableDiff)
     this.attachSectionArrayDiffs(indexesSection, indexesArrayDiffs, (arrayIndex) => {
       const sourceIndex = sourceIndexes[arrayIndex]
       const indexRow = indexesSection.items[arrayIndex]
@@ -445,18 +454,33 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return diff
   }
 
-  private resolveWholeTableDiff(schema: Schema | undefined, sourceTable: Table): Diff | undefined {
-    if (!schema?.tables) {
-      return undefined
+  private resolveWholeTableDiff(
+    realm: Realm,
+    schema: Schema | undefined,
+    sourceTable: Table,
+  ): Diff | undefined {
+    if (schema?.tables) {
+      const tablesArrayDiffs = this.getDiffsRecord(schema.tables)
+      const tableIndex = schema.tables.findIndex(table => table === sourceTable || table.name === sourceTable.name)
+      if (tableIndex >= 0) {
+        const tableDiff = this.resolveArrayElementDiff(tablesArrayDiffs, tableIndex)
+        if (tableDiff) {
+          return tableDiff
+        }
+      }
     }
 
-    const tablesArrayDiffs = this.getDiffsRecord(schema.tables)
-    const tableIndex = schema.tables.findIndex(table => table === sourceTable || table.name === sourceTable.name)
-    if (tableIndex < 0) {
-      return undefined
+    if (schema && realm.schemas) {
+      const schemasArrayDiffs = this.getDiffsRecord(realm.schemas)
+      const schemaIndex = realm.schemas.findIndex(
+        currentSchema => currentSchema === schema || currentSchema.name === schema.name,
+      )
+      if (schemaIndex >= 0) {
+        return this.resolveArrayElementDiff(schemasArrayDiffs, schemaIndex)
+      }
     }
 
-    return this.resolveArrayElementDiff(tablesArrayDiffs, tableIndex)
+    return undefined
   }
 
   private resolveSchemaNameDiff(schema: Schema | undefined): Diff | undefined {
@@ -1220,6 +1244,26 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
     const { diffsMetaKey } = this.diffMetaKeys
     return takeIfDiffsRecord(Reflect.get(owner, diffsMetaKey))
+  }
+
+  private attachInheritedWholeTableDiff(
+    rowDiffs: ColumnCrawlDiffsRecord | IndexCrawlDiffsRecord,
+    wholeTableDiff: Diff | undefined,
+  ): void {
+    if (wholeTableDiff && !rowDiffs[NODE_LEVEL_DIFF_KEY]) {
+      rowDiffs[NODE_LEVEL_DIFF_KEY] = wholeTableDiff
+    }
+  }
+
+  private attachInheritedWholeTableDiffToSection(
+    section: DdlApiTableOrientedSpecColumnsSectionWithDiffs | DdlApiTableOrientedSpecIndexesSectionWithDiffs,
+    wholeTableDiff: Diff | undefined,
+  ): void {
+    if (!wholeTableDiff) {
+      return
+    }
+
+    this.mergeDiffsIntoTarget(section, { [NODE_LEVEL_DIFF_KEY]: wholeTableDiff })
   }
 
   private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord | ColumnCrawlDiffsRecord): void {

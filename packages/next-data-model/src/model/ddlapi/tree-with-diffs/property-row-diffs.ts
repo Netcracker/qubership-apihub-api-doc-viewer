@@ -37,7 +37,8 @@ export type {
   DdlApiIndexFlagDiffKey,
   DdlApiIndexPartNameDiffs,
   DdlApiIndexPropertyRowDiffs,
-  DdlApiPropertyRowValue
+  DdlApiPropertyRowValue,
+  DdlApiTablePropertyRowDiffs,
 } from "./property-row-diffs.types"
 
 export {
@@ -77,6 +78,72 @@ export { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-ta
 export type DdlApiPropertyNodeWithDiffs =
   | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
   | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
+
+export type DdlApiTableHeaderNodeWithDiffs =
+  DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.TABLE>
+
+export function takeDdlTableTitleRowDiff(
+  node: DdlApiTableHeaderNodeWithDiffs,
+) {
+  if (!hasDdlPropertyTitleRowDiff(node.diffs)) {
+    return undefined
+  }
+  return node.diffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY]
+}
+
+export function takeDdlTableNodeDiffIfPresent(
+  node: DdlApiTableHeaderNodeWithDiffs,
+) {
+  const diff = node.diffs[NODE_LEVEL_DIFF_KEY]
+  if (!diff) {
+    return undefined
+  }
+  if (isDiffAdd(diff.data) || isDiffRemove(diff.data)) {
+    return diff
+  }
+  return undefined
+}
+
+export function takeTableSchemaNameDiff(
+  node: DdlApiTableHeaderNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return node.diffs.schemaName
+}
+
+export function takeTableDescriptionDiff(
+  node: DdlApiTableHeaderNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return node.diffs.description
+}
+
+export function resolveTableSchemaNameSideDisplay(
+  node: DdlApiTableHeaderNodeWithDiffs,
+  layoutSide: LayoutSide,
+): string {
+  const mergedSchemaName = node.value()?.schemaName ?? ''
+  const schemaNameDiff = takeTableSchemaNameDiff(node)
+  if (!schemaNameDiff) {
+    return mergedSchemaName
+  }
+
+  const diff = schemaNameDiff.data
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+
+  if (isDiffAdd(diff)) {
+    return isOrigin ? '' : mergedSchemaName
+  }
+  if (isDiffRemove(diff)) {
+    return isOrigin ? mergedSchemaName : ''
+  }
+  if (isDiffReplace(diff)) {
+    if (isOrigin) {
+      return typeof diff.beforeValue === 'string' ? diff.beforeValue : mergedSchemaName
+    }
+    return typeof diff.afterValue === 'string' ? diff.afterValue : mergedSchemaName
+  }
+
+  return mergedSchemaName
+}
 
 export function takeDdlPropertyTitleRowDiff(
   node: DdlApiPropertyNodeWithDiffs,

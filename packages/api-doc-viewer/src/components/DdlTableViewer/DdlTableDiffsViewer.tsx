@@ -4,7 +4,7 @@ import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext } from "@apihub/contexts/LevelContext"
-import { isTableNode } from "@apihub/utils/ddlapi/node-type-checkers"
+import { isTableNode, isTableNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DiffMetaKeys } from "@apihub/types/DiffMetaKeys"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -17,7 +17,7 @@ import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { DdlTableViewerContext } from "./DdlTableViewerContext"
 import { DefaultNavigationLink, type NavigationLinkComponent } from "./DefaultNavigationLink"
-import { TableNodeViewer } from "./TableNodeViewer"
+import { TableNodeViewerWithDiffs } from "./TableNodeViewerWithDiffs"
 import '../../index.css'
 import './styles/index.css'
 import '../shared-styles/diffs/index.css'
@@ -85,7 +85,7 @@ const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
     logger.debug('[DDL API Diffs] Tree:', tree)
 
     const tableNode = tree.root
-    if (!tableNode || !isTableNode(tableNode)) {
+    if (!tableNode || !isTableNodeWithDiffs(tableNode)) {
       return null
     }
 
@@ -97,8 +97,8 @@ const DdlTableDiffsViewerInner: FC<DdlTableDiffsViewerProps> =
               <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                 <LevelContext.Provider value={0}>
                   <div data-testid="ddl-table-diffs-viewer">
-                    <TableNodeViewer
-                      node={tableNode as Parameters<typeof TableNodeViewer>[0]["node"]}
+                    <TableNodeViewerWithDiffs
+                      node={tableNode}
                       noHeading={noHeading}
                     />
                   </div>
