@@ -112,4 +112,44 @@ describe('DDL property-list section pseudo-diffs', () => {
     expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.before.isHeaderVisible).toBe(false)
     expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.isHeaderVisible).toBe(true)
   })
+
+  it('whole-columns 01: COLUMNS gets pseudo-diff when two columns are added to an empty table', async () => {
+    const tree = await buildTreeFromSample('whole-columns-changes', '01-add-two-columns-to-empty-table')
+    const columnsSection = findNode(tree, DdlApiTreeNodeKinds.COLUMNS)
+
+    expect(columnsSection?.descendantDiffs.c1?.data.action).toBe(DiffAction.add)
+    expect(columnsSection?.descendantDiffs.c2?.data.action).toBe(DiffAction.add)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+  })
+
+  it('whole-columns 02: COLUMNS gets pseudo-diff when two columns are removed from a two-column table', async () => {
+    const tree = await buildTreeFromSample('whole-columns-changes', '02-remove-two-columns-from-table-with-two-columns')
+    const columnsSection = findNode(tree, DdlApiTreeNodeKinds.COLUMNS)
+
+    expect(columnsSection?.descendantDiffs.c1?.data.action).toBe(DiffAction.remove)
+    expect(columnsSection?.descendantDiffs.c2?.data.action).toBe(DiffAction.remove)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
+
+  it('whole-indexes 01: INDEXES gets pseudo-diff when two indexes are added uniformly', async () => {
+    const tree = await buildTreeFromSample('whole-indexes-changes', '01-add-two-indexes-when-none-present')
+    const indexesSection = findNode(tree, DdlApiTreeNodeKinds.INDEXES)
+
+    expect(indexesSection?.descendantDiffs.idx_t_c1?.data.action).toBe(DiffAction.add)
+    expect(indexesSection?.descendantDiffs.idx_t_c2?.data.action).toBe(DiffAction.add)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+  })
+
+  it('whole-indexes 02: INDEXES gets pseudo-diff when two indexes are removed uniformly', async () => {
+    const tree = await buildTreeFromSample('whole-indexes-changes', '02-remove-two-indexes-when-two-present')
+    const indexesSection = findNode(tree, DdlApiTreeNodeKinds.INDEXES)
+
+    expect(indexesSection?.descendantDiffs.idx_t_c1?.data.action).toBe(DiffAction.remove)
+    expect(indexesSection?.descendantDiffs.idx_t_c2?.data.action).toBe(DiffAction.remove)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
 })

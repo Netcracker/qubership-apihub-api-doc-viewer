@@ -2,7 +2,7 @@
 
 These fixtures feed screenshot-diff scenarios for DDL table changes.
 
-- Total cases: 274
+- Total cases: 278
 - Layout: `ddlapi-diffs/<group>/<case-id>/before.sql` and `.../after.sql`
 - Case ids are numbered from `01` (or `001` in groups with 100+ cases) within each group.
 - **`column-changes-except-types`** uses semantic hundred blocks (`101`–`102`, `201`–`206`, …)
@@ -16,6 +16,8 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | Group | Cases | Description |
 | --- | ---: | --- |
 | `whole-table-changes` | 4 | Wholly added/removed tables, including tables with indexes |
+| `whole-columns-changes` | 2 | All columns added to an empty table or removed from a two-column table |
+| `whole-indexes-changes` | 2 | All indexes added when none present or removed when two were present |
 | `column-changes-except-types` | 34 | Column add/remove, constraint/badge, and description changes |
 | `foreign-key-reference-changes` | 12 | Referenced schema, table, and column changes |
 | `index-changes` | 25 | Index add/remove, uniqueness, column list, and unnamed index changes |
@@ -41,6 +43,8 @@ Hand-written suites live under `packages/api-doc-viewer/src/stories/ddlapi-diffs
 | Group | Story title | Story / IT files |
 | --- | --- | --- |
 | `whole-table-changes` | `DDL API Diffs Suite/Whole Table Changes Samples` | `whole-table-changes-samples.*` |
+| `whole-columns-changes` | `DDL API Diffs Suite/Whole Columns Changes Samples` | `whole-columns-changes-samples.*` |
+| `whole-indexes-changes` | `DDL API Diffs Suite/Whole Indexes Changes Samples` | `whole-indexes-changes-samples.*` |
 | `column-changes-except-types` | `DDL API Diffs Suite/Column Changes Except Types Samples` | `column-changes-except-types-samples.*` |
 | `foreign-key-reference-changes` | `DDL API Diffs Suite/Foreign Key Reference Changes Samples` | `foreign-key-reference-changes-samples.*` |
 | `index-changes` | `DDL API Diffs Suite/Index Changes Samples` | `index-changes-samples.*` |
