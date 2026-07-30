@@ -34,6 +34,18 @@ export function isColumnsNode(
   return node.kind === DdlApiTreeNodeKinds.COLUMNS
 }
 
+export function isColumnsNodeWithDiffs(
+  node: ITreeNode,
+): node is DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMNS> {
+  return isColumnsNode(node) && node instanceof SimpleTreeNodeWithDiffs
+}
+
+export function isIndexesNodeWithDiffs(
+  node: ITreeNode,
+): node is DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEXES> {
+  return isIndexesNode(node) && node instanceof SimpleTreeNodeWithDiffs
+}
+
 export function isColumnNode(
   node: ITreeNode,
 ): node is DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN> {

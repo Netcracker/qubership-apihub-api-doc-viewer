@@ -5,6 +5,7 @@ import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/n
 import { DdlApiNodeDiffsAggregatorKindAny } from "./kind-any";
 import { DdlApiNodeDiffsAggregatorKindColumn } from "./kind-column";
 import { DdlApiNodeDiffsAggregatorKindIndex } from "./kind-index";
+import { DdlApiNodeDiffsAggregatorKindPropertyListSection } from "./kind-property-list-section";
 import { DdlApiNodeDiffsAggregatorKindTable } from "./kind-table";
 
 export class DdlApiNodeDiffsAggregatorFactory {
@@ -38,8 +39,14 @@ export class DdlApiNodeDiffsAggregatorFactory {
         case DdlApiTreeNodeKinds.TABLE:
           this.instances.set(kind, new DdlApiNodeDiffsAggregatorKindTable());
           break;
+        case DdlApiTreeNodeKinds.COLUMNS:
+        case DdlApiTreeNodeKinds.INDEXES:
+          this.instances.set(kind, new DdlApiNodeDiffsAggregatorKindPropertyListSection());
+          break;
         default:
-          this.instances.set(null, new DdlApiNodeDiffsAggregatorKindAny());
+          if (!this.instances.has(null)) {
+            this.instances.set(null, new DdlApiNodeDiffsAggregatorKindAny());
+          }
           return this.instances.get(null)!;
       }
     }

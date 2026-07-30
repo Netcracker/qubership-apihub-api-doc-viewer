@@ -172,7 +172,9 @@ describe('DDL whole-table node diffs', () => {
 
     const columnsSection = findNode(tree, DdlApiTreeNodeKinds.COLUMNS)
     expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(columnsSection?.descendantDiffs.id?.data.action).toBe(DiffAction.add)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.isHeaderVisible).toBe(true)
+    expect(columnsSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.before.isHeaderVisible).toBe(false)
   })
 
   it('inherits whole-table remove onto column descendants', async () => {
@@ -201,7 +203,9 @@ describe('DDL whole-table node diffs', () => {
 
     const indexesSection = findNode(tree, DdlApiTreeNodeKinds.INDEXES)
     expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+    expect(indexesSection?.descendantDiffs.idx_t_id?.data.action).toBe(DiffAction.add)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.isHeaderVisible).toBe(true)
+    expect(indexesSection?.diffs[NODE_LEVEL_DIFF_KEY]?.styles.before.isHeaderVisible).toBe(false)
   })
 
   it('inherits whole-table remove onto index descendants', async () => {
