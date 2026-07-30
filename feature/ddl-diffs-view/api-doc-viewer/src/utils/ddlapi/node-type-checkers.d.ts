@@ -6,6 +6,7 @@ export declare function getDdlApiChildNodes(parent: {
     childrenNodes(): ITreeNode[];
 }): DdlApiTreeNode[];
 export declare function isTableNode(node: ITreeNode): node is DdlApiTreeNode<typeof DdlApiTreeNodeKinds.TABLE>;
+export declare function isTableNodeWithDiffs(node: ITreeNode): node is DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.TABLE>;
 export declare function isColumnsNode(node: ITreeNode): node is DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMNS>;
 export declare function isColumnNode(node: ITreeNode): node is DdlApiTreeNode<typeof DdlApiTreeNodeKinds.COLUMN>;
 export declare function isColumnNodeWithDiffs(node: ITreeNode): node is DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>;

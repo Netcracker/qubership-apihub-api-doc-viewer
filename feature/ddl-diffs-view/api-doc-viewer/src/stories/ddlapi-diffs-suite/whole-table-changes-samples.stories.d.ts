@@ -36,4 +36,5 @@ export default meta;
 type Story = DdlDiffsSamplesStoryObj;
 export declare const Case_01_wholly_added_table: Story;
 export declare const Case_02_wholly_removed_table: Story;
-export declare const Case_03_changed_schema_of_table: Story;
+export declare const Case_03_wholly_added_table_with_index: Story;
+export declare const Case_04_wholly_removed_table_with_index: Story;
