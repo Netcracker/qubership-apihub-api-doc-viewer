@@ -5,6 +5,7 @@ import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
     node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>;
     isLastInList?: boolean;
+    hideLevelIndicatorWhenSideEmpty?: boolean;
 };
 export declare const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps>;
 export {};

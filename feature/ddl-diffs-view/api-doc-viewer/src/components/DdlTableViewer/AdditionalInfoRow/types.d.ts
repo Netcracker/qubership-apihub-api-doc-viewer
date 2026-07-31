@@ -8,6 +8,7 @@ export type AdditionalInfoRowProps = WithPrecededByProps & WithDdlListLastRowPro
     diff?: ChangedPropertyMetaData;
     colorizingDiff?: ChangedPropertyMetaData;
     diffsSeverities?: NodeDiffsSeverities;
+    hideLevelIndicatorWhenSideEmpty?: boolean;
 };
 export type AdditionalInfoRowContentProps = AdditionalInfoRowProps & {
     layoutSide: LayoutSide;

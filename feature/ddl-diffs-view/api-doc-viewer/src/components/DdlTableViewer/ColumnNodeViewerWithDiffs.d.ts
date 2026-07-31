@@ -6,6 +6,7 @@ type ColumnNodeViewerWithDiffsProps = WithPrecededByProps & {
     node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>;
     additionalInfoPrecededBy?: PrecededBy;
     isLastInList?: boolean;
+    hideLevelIndicatorWhenSideEmpty?: boolean;
 };
 export declare const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps>;
 export {};
