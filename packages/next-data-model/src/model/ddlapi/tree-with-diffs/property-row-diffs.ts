@@ -182,6 +182,35 @@ export function isDdlPropertySubheaderVisible(
   return styles.isHeaderVisible
 }
 
+export function isDdlPropertyRowContentVisible(
+  nodeLevelDiff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): boolean {
+  if (!nodeLevelDiff) {
+    return true
+  }
+
+  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
+    ? nodeLevelDiff.styles.before
+    : nodeLevelDiff.styles.after
+
+  return styles.isContentVisible
+}
+
+export type DdlApiPropertyListSectionNodeWithDiffs =
+  | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMNS>
+  | DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEXES>
+
+export function isDdlPropertyListSectionUniformWholeNodeChange(
+  node: DdlApiPropertyListSectionNodeWithDiffs,
+): boolean {
+  const diff = node.diffs[NODE_LEVEL_DIFF_KEY]
+  if (!diff) {
+    return false
+  }
+  return isDiffAdd(diff.data) || isDiffRemove(diff.data)
+}
+
 export function takeColumnForeignKeyTargetDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
 ): DdlApiForeignKeyTargetDiffs | undefined {
@@ -223,6 +252,12 @@ export function takeColumnGeneratedExpressionDiff(
 
 export function takeColumnDescriptionDiff(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
+): ChangedPropertyMetaData | undefined {
+  return node.diffs.description
+}
+
+export function takeIndexDescriptionDiff(
+  node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
 ): ChangedPropertyMetaData | undefined {
   return node.diffs.description
 }

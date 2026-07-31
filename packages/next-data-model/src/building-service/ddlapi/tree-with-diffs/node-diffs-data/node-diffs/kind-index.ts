@@ -81,6 +81,7 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
         nodeDiffs,
         DDL_INDEX_FLAG_DIFF_KEYS,
       )
+      this.aggregatePresentDescriptionFromWholeNodeAddOrRemove(crawlValue, nodeDiffs)
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs
     }

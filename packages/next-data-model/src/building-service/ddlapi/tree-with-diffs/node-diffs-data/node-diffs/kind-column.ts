@@ -109,6 +109,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
         DDL_COLUMN_FLAG_DIFF_KEYS,
       )
       this.aggregatePresentDescriptionFromWholeNodeAddOrRemove(crawlValue, nodeDiffs)
+      this.aggregateEnumValuesRowColorizingDiffFromWholeNode(crawlValue, nodeDiffs)
       this.aggregatePropertyTitleRowDiff(nodeDiffs)
       return nodeDiffs
     }
@@ -267,6 +268,23 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     if (Object.keys(enumValueDiffs).length > 0) {
       nodeDiffs.enumValueDiffs = enumValueDiffs
     }
+  }
+
+  private aggregateEnumValuesRowColorizingDiffFromWholeNode(
+    crawlValue: object,
+    nodeDiffs: DdlApiColumnPropertyRowDiffs,
+  ): void {
+    const enumValues = Reflect.get(crawlValue, 'enumValues')
+    if (!Array.isArray(enumValues) || enumValues.length === 0) {
+      return
+    }
+
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff) {
+      return
+    }
+
+    nodeDiffs.enumValuesRowColorizingDiff = nodeLevelDiff
   }
 
   private aggregateEnumValuesRowColorizingDiff(

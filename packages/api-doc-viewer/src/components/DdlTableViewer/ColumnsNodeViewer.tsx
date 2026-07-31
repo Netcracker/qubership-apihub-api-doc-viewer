@@ -4,6 +4,7 @@ import { buildRowDiffProps, toNodeDiffState } from "@apihub/components/shared-co
 import { getColumnChildNodes, isColumnNodeWithDiffs, isColumnsNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
 import { hasDdlColumnAdditionalInfoRows } from "@apihub/utils/ddlapi/column-row-utils"
 import { DdlApiSectionHeaderRowValue } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
+import { isDdlPropertyListSectionUniformWholeNodeChange } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNode, DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useMemo } from "react"
@@ -149,6 +150,11 @@ const ColumnsNodeWithDiffsViewer: FC<ColumnsNodeWithDiffsViewerProps> = (props) 
     [columnNodes, isAdditionalInfoDisplayed],
   )
 
+  const hideLevelIndicatorWhenSideEmpty = useMemo(
+    () => isDdlPropertyListSectionUniformWholeNodeChange(node),
+    [node],
+  )
+
   if (columnNodes.length === 0) {
     return null
   }
@@ -172,6 +178,7 @@ const ColumnsNodeWithDiffsViewer: FC<ColumnsNodeWithDiffsViewerProps> = (props) 
               data-precededby={titlePrecededBy}
               additionalInfoPrecededBy={additionalInfoPrecededBy}
               isLastInList={isLastInList}
+              hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
               node={columnNode}
             />
           ) : (

@@ -132,6 +132,24 @@ export function buildPropertyListSectionWholeNodeChangedPropertyMetaData(
   }
 }
 
+export function applyDdlPropertyListItemWholeNodeHeaderVisibility(
+  descendantDiff: ChangedPropertyMetaData,
+): ChangedPropertyMetaData {
+  return {
+    ...descendantDiff,
+    styles: {
+      before: {
+        ...descendantDiff.styles.before,
+        isHeaderVisible: descendantDiff.styles.before.isContentVisible,
+      },
+      after: {
+        ...descendantDiff.styles.after,
+        isHeaderVisible: descendantDiff.styles.after.isContentVisible,
+      },
+    },
+  }
+}
+
 export function takeWholeNodeDiffFromItemRow(
   itemRow: object,
   diffsMetaKey: symbol,

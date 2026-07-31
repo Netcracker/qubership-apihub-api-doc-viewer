@@ -7,6 +7,7 @@ import {
 import {
   isDdlPropertySubheaderVisible,
   resolveIndexPartNamesSideDisplay,
+  takeIndexDescriptionDiff,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
@@ -26,10 +27,16 @@ import { DdlCommaSeparatedListWithDiffs } from "./DdlCommaSeparatedListWithDiffs
 type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
   isLastInList?: boolean
+  hideLevelIndicatorWhenSideEmpty?: boolean
 }
 
 export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (props) => {
-  const { node, isLastInList = false, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const {
+    node,
+    isLastInList = false,
+    hideLevelIndicatorWhenSideEmpty = false,
+    [ATTRIBUTE_PRECEDED_BY]: precededBy,
+  } = props
 
   const displayMode = useDisplayMode()
   const value = node.value()
@@ -40,6 +47,10 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
     useMemo(() => buildDdlPropertyTitleRowDiffProps(node), [node])
 
   const flagDiffs = useMemo(() => takeIndexFlagDiffs(node), [node])
+  const descriptionDiff = useMemo(
+    () => takeIndexDescriptionDiff(node),
+    [node],
+  )
 
   const indexTitle = value?.indexName ?? ''
 
@@ -84,12 +95,13 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
   )
 
   const isDescriptionDisplayed = useMemo(
-    () => displayMode === DETAILED_DISPLAY_MODE && !!value?.description,
-    [displayMode, value?.description],
+    () => displayMode === DETAILED_DISPLAY_MODE && (
+      !!value?.description || !!descriptionDiff
+    ),
+    [descriptionDiff, displayMode, value?.description],
   )
 
-  const isWholeNodeChanged = !!nodeDiff
-  const isTitleListLastRow = isLastInList
+  const isTitleListLastRow = isLastInList && !isDescriptionDisplayed
 
   const hasSubheaderContent = !!value && (
     value.partNames.length > 0
@@ -112,16 +124,21 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         variant={TextValueVariant.body2}
         subheader={hasSubheaderContent ? subheader : undefined}
         usage={TitleRowUsage.DdlApiProperty}
+        hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         {...titleRowDiffProps}
       />
-      {isDescriptionDisplayed && !isWholeNodeChanged && (
+      {isDescriptionDisplayed && (
         <TextRow
           data-precededby={PrecededBy.DDL_INDEX_ROW}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isLastInList || undefined }}
           value={value.description ?? ''}
           variant={TextValueVariant.body1}
           textFontWeight="normal"
           textColor={DEFAULT_LONG_TEXT_COLOR}
           usage={TextRowUsage.DdlApiProperty}
+          diff={descriptionDiff}
+          diffsSeverities={node.diffsSeverities}
+          hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}
     </div>

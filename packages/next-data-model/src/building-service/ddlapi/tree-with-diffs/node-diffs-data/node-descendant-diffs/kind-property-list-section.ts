@@ -8,6 +8,7 @@ import {
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { isObject } from "@apihub/next-data-model/utilities";
 import {
+  applyDdlPropertyListItemWholeNodeHeaderVisibility,
   DdlApiPropertyListSectionItemRow,
   takeDdlPropertyListSectionItems,
   takeWholeNodeDiffFromItemRow,
@@ -57,7 +58,7 @@ export class DdlApiNodeDescendantDiffsAggregatorKindPropertyListSection
       this.aggregateWholeNodeDiff(wholeNodeDiff, nodeDiffs)
       const descendantDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
       if (descendantDiff) {
-        nodeDescendantDiffs[itemKey] = descendantDiff
+        nodeDescendantDiffs[itemKey] = applyDdlPropertyListItemWholeNodeHeaderVisibility(descendantDiff)
       }
     })
 

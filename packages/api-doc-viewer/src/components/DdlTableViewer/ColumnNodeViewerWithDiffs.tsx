@@ -47,6 +47,7 @@ type ColumnNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
   additionalInfoPrecededBy?: PrecededBy
   isLastInList?: boolean
+  hideLevelIndicatorWhenSideEmpty?: boolean
 }
 
 export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (props) => {
@@ -54,6 +55,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
     node,
     additionalInfoPrecededBy = PrecededBy.DDL_COLUMN_ROW,
     isLastInList = false,
+    hideLevelIndicatorWhenSideEmpty = false,
     [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
@@ -240,6 +242,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         variant={TextValueVariant.body2}
         subheader={subheader}
         usage={TitleRowUsage.DdlApiProperty}
+        hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         {...titleRowDiffProps}
       />
       {hasDescription && (
@@ -253,6 +256,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           usage={TextRowUsage.DdlApiProperty}
           diff={descriptionDiff}
           diffsSeverities={node.diffsSeverities}
+          hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}
       {isAdditionalInfoDisplayed && hasEnumValues && (
@@ -263,6 +267,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           subheader={enumValuesAdditionalInfoSubheader}
           colorizingDiff={enumValuesRowColorizingDiff}
           diffsSeverities={enumValueDiffs ? node.diffsSeverities : undefined}
+          hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}
       {isAdditionalInfoDisplayed && !isWholeNodeChanged && hasDefaultValue && (
@@ -277,6 +282,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           subheader={defaultAdditionalInfoSubheader}
           colorizingDiff={defaultValueRowColorizingDiff}
           diffsSeverities={defaultValueDiff || defaultValueRowColorizingDiff ? node.diffsSeverities : undefined}
+          hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}
       {isAdditionalInfoDisplayed && hasGeneratedExpression && (
@@ -292,6 +298,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           diff={generatedExpressionDiff}
           colorizingDiff={node.diffs[NODE_LEVEL_DIFF_KEY]}
           diffsSeverities={node.diffsSeverities}
+          hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}
     </div>

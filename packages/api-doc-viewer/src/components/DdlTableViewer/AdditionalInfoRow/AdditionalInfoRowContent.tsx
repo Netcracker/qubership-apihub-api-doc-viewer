@@ -16,6 +16,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
     layoutSide,
     diff,
     colorizingDiff,
+    hideLevelIndicatorWhenSideEmpty = false,
   } = props
 
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: ddlListLastRow } = props
@@ -46,6 +47,8 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
     return diffStyles?.isContentVisible ?? true
   }, [colorizingDiff, diffStyles?.isContentVisible, layoutSide])
 
+  const showsLevelIndicator = level > 0 && (!hideLevelIndicatorWhenSideEmpty || isContentVisible)
+
   return (
     <div
       data-testid="additional-info-row-content"
@@ -53,7 +56,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
       className={`additional-info-row-content flex w-full items-stretch h-full ${X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES} min-h-[26px] gap-2 ${diffsStyleClasses.join(' ')}`}
     >
-      {level > 0 && (
+      {showsLevelIndicator && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
           <LevelIndicator level={level} />
           <div className="w-4" aria-hidden="true" />

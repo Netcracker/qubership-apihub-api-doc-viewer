@@ -2,6 +2,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES }
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import { isDdlPropertyRowContentVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { FC, memo, useMemo } from "react"
 import '../../shared-styles/preceded-by.css'
 import { LevelIndicator } from "../LevelIndicator"
@@ -24,7 +25,7 @@ function getTextRowClassesByUsage(usage: TextRowUsage): string {
 }
 
 export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>((props) => {
-  const { value, variant, layoutSide, usage = TextRowUsage.Default } = props
+  const { value, variant, layoutSide, usage = TextRowUsage.Default, hideLevelIndicatorWhenSideEmpty = false } = props
 
   // value/font specific
   const { label, labelFontWeight, textFontWeight, labelColor, textColor } = props
@@ -37,7 +38,11 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
 
   const level = useLevelContext()
   const isDdlApiPropertyRow = usage === TextRowUsage.DdlApiProperty
-  const showsLevelIndent = isDdlApiPropertyRow && level > 0
+  const isSideContentVisible = useMemo(
+    () => !hideLevelIndicatorWhenSideEmpty || isDdlPropertyRowContentVisible(diff, layoutSide),
+    [diff, hideLevelIndicatorWhenSideEmpty, layoutSide],
+  )
+  const showsLevelIndent = isDdlApiPropertyRow && level > 0 && isSideContentVisible
 
   const diffsStyleClasses = useMemo(() => {
     if (!diff) {
