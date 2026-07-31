@@ -88,8 +88,7 @@
 }
 
 .title-row-content[data-precededby="ddl-column-row"] {
-  margin-top: 8px;
-  padding-top: 8px;
+  padding-top: 16px;
   padding-bottom: 8px;
 }
 
