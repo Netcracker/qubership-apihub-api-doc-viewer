@@ -1458,7 +1458,7 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 
-  it("aggregates default value row as removed when column becomes generated", () => {
+  it("does not synthesize default value row when column without default becomes generated", () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
     const crawlValue = {
       columnName: "code",
@@ -1478,8 +1478,80 @@ describe("DDL property row diff aggregators", () => {
     const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "code")
 
     expect(nodeDiffs?.defaultValue).toBeUndefined()
+    expect(nodeDiffs?.defaultValueRowColorizingDiff).toBeUndefined()
+  })
+
+  it("aggregates default value row as removed when column with default becomes generated", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
+    const crawlValue = {
+      columnName: "code",
+      isGenerated: true,
+      defaultValue: "0",
+      [TEST_DIFFS_META_KEY]: {
+        defaultValue: {
+          type: nonBreaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: "0",
+          beforeDeclarationPaths: [["columns", "code", "defaultValue"]],
+        },
+        isGenerated: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: true,
+          afterDeclarationPaths: [["columns", "code", "isGenerated"]],
+        },
+      },
+    }
+
+    const nodeDiffs = aggregator.aggregate(crawlValue, diffsMetaKeys, "code")
+
+    expect(nodeDiffs?.defaultValue?.data.action).toBe(DiffAction.remove)
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
+
+  it("404/405 do not synthesize default value row when column without default becomes generated", async () => {
+    const loadCase = async (caseId: string, columnKey: string) => {
+      const fs = await import("fs")
+      const path = await import("path")
+      const base = path.join(
+        __dirname,
+        "../../../samples/ddlapi-diffs/column-changes-except-types",
+        caseId,
+      )
+      const before = fs.readFileSync(path.join(base, "before.sql"), "utf8")
+      const after = fs.readFileSync(path.join(base, "after.sql"), "utf8")
+      const merged = apiDiff(
+        await buildFromDdl(before),
+        await buildFromDdl(after),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === columnKey,
+      )
+    }
+
+    const node404 = await loadCase("404-existing-column-became-generated-identity", "code")
+    const diffs404 = node404?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(node404?.value()?.defaultValue).toBeUndefined()
+    expect(diffs404?.defaultValue).toBeUndefined()
+    expect(diffs404?.defaultValueRowColorizingDiff).toBeUndefined()
+
+    const node405 = await loadCase("405-existing-column-became-generated-expression", "summary")
+    const diffs405 = node405?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+    expect(node405?.value()?.defaultValue).toBeUndefined()
+    expect(diffs405?.defaultValue).toBeUndefined()
+    expect(diffs405?.defaultValueRowColorizingDiff).toBeUndefined()
   })
 
   it("loads default add/remove/replace from column-default-changes samples", async () => {

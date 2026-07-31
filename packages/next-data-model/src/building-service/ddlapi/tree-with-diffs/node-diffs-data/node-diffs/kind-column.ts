@@ -360,18 +360,6 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     const defaultValueDiff = nodeDiffs.defaultValue
     const disallowedTransition = this.resolveDefaultValueDisallowedTransition(crawlValue, nodeDiffs)
 
-    if (disallowedTransition === DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Lost && !defaultValueDiff) {
-      const representativeDiff = nodeDiffs.isGenerated
-        ?? this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
-      if (representativeDiff) {
-        nodeDiffs.defaultValueRowColorizingDiff = this.buildSyntheticEnumValuesRowColorizingDiff(
-          DiffAction.remove,
-          representativeDiff.data,
-        )
-      }
-      return
-    }
-
     if (disallowedTransition === DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Gained && !defaultValueDiff) {
       const representativeDiff = nodeDiffs.isGenerated
         ?? this.takeRepresentativeColumnTypeFieldDiff(nodeDiffs)
@@ -406,15 +394,6 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     const mergedDefaultValue = Reflect.get(crawlValue, "defaultValue")
     const mergedIsGenerated = Reflect.get(crawlValue, "isGenerated") === true
     const isGeneratedDiff = nodeDiffs.isGenerated?.data
-
-    if (
-      mergedIsGenerated &&
-      isGeneratedDiff &&
-      isDiffAdd(isGeneratedDiff) &&
-      mergedDefaultValue === undefined
-    ) {
-      return DDL_DEFAULT_VALUE_COLUMN_TRANSITION.Lost
-    }
 
     if (
       !mergedIsGenerated &&
