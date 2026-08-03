@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-07-28T13:35:50.805888+00:00'
+generated_at: '2026-08-03T11:40:56.269810+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -68,10 +68,10 @@ dependencies:
   - .cursor/skills/next-data-model-authoring
   - .cursor/skills/next-data-model-authoring/SKILL.md
   deployed_file_hashes:
-    .claude/rules/next-data-model-authoring.md: sha256:695fc3d19f4d07683bae1da4d13a97c30d9d1f4a635b645b9ecfe6475f824f08
-    .claude/skills/next-data-model-authoring/SKILL.md: sha256:38d25bc0bd22f58868d7081934eef348d03032a5db48749ee1c9a8766819379a
-    .cursor/rules/next-data-model-authoring.mdc: sha256:7a84b1b9d760c65656c20efef3f32c0aca7b0b94524bd0b246ff9918da103cf9
-    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:38d25bc0bd22f58868d7081934eef348d03032a5db48749ee1c9a8766819379a
+    .claude/rules/next-data-model-authoring.md: sha256:f8f9b400241993c2015d9206da960c33180d6ed0752782adb3c509186e01df67
+    .claude/skills/next-data-model-authoring/SKILL.md: sha256:e3060d2dee0321095b40bcd9e4ceff154f31e4fb7c3a68e15827a035dcc9e57f
+    .cursor/rules/next-data-model-authoring.mdc: sha256:2d49ed8e3cefe1477e47d14e5b1e3a4f1200ebefa19524a9f42d7be6b4e9f6e6
+    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:e3060d2dee0321095b40bcd9e4ceff154f31e4fb7c3a68e15827a035dcc9e57f
   source: local
   local_path: ./agent-packages/next-data-model-authoring
 - repo_url: _local/next-data-model-using
@@ -188,7 +188,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:695fc3d19f4d07683bae1da4d13a97c30d9d1f4a635b645b9ecfe6475f824f08
+  content_hash: sha256:f8f9b400241993c2015d9206da960c33180d6ed0752782adb3c509186e01df67
 - kind: project-relative
   target: claude
   value: .claude/rules/next-data-model-using.md
@@ -305,7 +305,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:38d25bc0bd22f58868d7081934eef348d03032a5db48749ee1c9a8766819379a
+  content_hash: sha256:e3060d2dee0321095b40bcd9e4ceff154f31e4fb7c3a68e15827a035dcc9e57f
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-using
@@ -377,7 +377,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:7a84b1b9d760c65656c20efef3f32c0aca7b0b94524bd0b246ff9918da103cf9
+  content_hash: sha256:2d49ed8e3cefe1477e47d14e5b1e3a4f1200ebefa19524a9f42d7be6b4e9f6e6
 - kind: project-relative
   target: cursor
   value: .cursor/rules/next-data-model-using.mdc
@@ -494,7 +494,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:38d25bc0bd22f58868d7081934eef348d03032a5db48749ee1c9a8766819379a
+  content_hash: sha256:e3060d2dee0321095b40bcd9e4ceff154f31e4fb7c3a68e15827a035dcc9e57f
 - kind: project-relative
   target: cursor
   value: .cursor/skills/next-data-model-using

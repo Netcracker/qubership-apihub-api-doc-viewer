@@ -1,5 +1,5 @@
 ---
-description: Extend next-data-model tree builders, diff aggregators, and json-crawl rules for viewer data layers.
+description: Extend next-data-model tree builders (plain → with-diffs inheritance), diff aggregators, and json-crawl rules for viewer data layers.
 ---
 
 # Authoring next-data-model
@@ -32,7 +32,7 @@ Do **not** mix a class hierarchy with exported free functions in sibling files.
 | Avoid | Prefer |
 | --- | --- |
 | `shared/foo-helper.ts` exporting `buildX()` / `formatY()` imported by transformers | `protected` / `private` methods on the transformer (or builder) class |
-| Shared plain functions between plain and with-diffs paths | **Inheritance**: base transformer + subclass override/hook |
+| Shared plain functions between plain and with-diffs paths | **Inheritance**: plain builder/transformer + with-diffs subclass |
 | Exporting internal preparation steps | Export only public entry types: transformer/builder classes, crawl-rule getters, shared **types** |
 
 Rationale:
@@ -40,10 +40,14 @@ Rationale:
 1. Free helpers break encapsulation — they look like a public utility API.
 2. They hide that the logic belongs to one cohesive preparation pipeline.
 
-**Pattern:** `DdlApiSpecTransformer` owns Realm → crawl-document mapping as
-private methods; `DdlApiSpecWithDiffsTransformer` extends it and overrides
-`attachDiffMetadataToTableOrientedSpec()` (or an equivalent hook), reusing
-`transformSourceToTableOrientedSpec()` from the base class.
+**Patterns (non-JSO):**
+
+- Transformers: `DdlApiSpecTransformer` owns Realm → crawl-document mapping as
+  private methods; `DdlApiSpecWithDiffsTransformer` extends it and overrides a
+  diff-attachment hook, reusing the base transform.
+- Tree builders: `<Spec>TreeWithDiffsBuilder` extends `<Spec>TreeBuilder` and
+  overrides factory hooks (`createTree`, `prepareSource`, …); see **Spec tree
+  builders** below. JSO keeps a separate parallel stack — see **JSO exception**.
 
 If a module grows very large, split by **class** (e.g. a non-exported nested
 class in the same file), not by exported functions. Exception: `json-crawl`
@@ -73,20 +77,105 @@ reduce accumulators typed via a generic parameter instead of `as`.
 `shared/ddlapi/guards/`; `DdlApiSpecWithDiffsTransformer` builds the with-diffs
 spec via `createTableOrientedSpecWithDiffs()` instead of casting.
 
-## Tree without diffs
+## Spec tree builders: plain and with-diffs
 
-`TreeBuilder` subclasses (e.g. `JsoTreeBuilder`) crawl the source document
-via `json-crawl` rules, create nodes through `node-data/builder.ts`, and
-assemble a spec tree (`JsoTree`, `AsyncApiTree`, …).
+Default for API types under `building-service/<spec>/` (for example `ddlapi`,
+`async-api`): **one crawl/build pipeline** shared by plain and with-diffs trees.
+Do not duplicate `build()`, building hooks, `createNodeFromRaw`, key resolution,
+or crawl wiring.
+
+**Exception — JSO:** keep JSO on its own patterns (see **JSO exception** below).
+Do not reshape JSO builders to this inheritance model unless the task explicitly
+requires that change.
+
+### Preferred inheritance (non-JSO)
+
+| Role | Class | Extends |
+| --- | --- | --- |
+| Plain | `<Spec>TreeBuilder` | abstract `TreeBuilder` |
+| With diffs | `<Spec>TreeWithDiffsBuilder` | **`<Spec>TreeBuilder`** (not abstract `TreeWithDiffsBuilder`) |
+
+TypeScript allows only one superclass. Concrete with-diffs builders need the
+spec plain builder's crawl and node-creation logic, so they extend that class
+and keep the diffs contract by convention (diff methods + with-diffs tree
+types). Abstract `TreeWithDiffsBuilder` remains a reference shape for the diffs
+method surface; non-JSO specs do not inherit from it as well as from the
+concrete plain builder.
+
+### JSO exception
+
+JSO uses a **parallel plain / with-diffs stack**, not plain → with-diffs
+inheritance:
+
+| Role | Class | Extends |
+| --- | --- | --- |
+| Plain | `JsoTreeBuilder` | abstract `TreeBuilder` |
+| With diffs | `JsoTreeWithDiffsBuilder` | abstract `TreeWithDiffsBuilder` |
+
+Each flavour has its own `build()`, building hooks, crawl rules/state, and
+node-data builder. With-diffs also uses JSO-specific value/diff source types
+(`JsoTreeNodeValueWithDiffs`, `JsoTreeNodeDiffsSource`) that differ from the
+plain tree value type.
+
+Canonical locations:
+
+- Building service: `packages/next-data-model/src/building-service/jso/`
+- Tree model: `packages/next-data-model/src/model/jso/`
+
+When editing JSO, follow existing JSO files and
+`packages/api-doc-viewer/jso-diffs-implementation-actions.md`; do not assume
+the ddlapi / async-api builder layout applies.
+
+### What the plain builder owns
+
+`<Spec>TreeBuilder` crawls the prepared source via `json-crawl` rules, creates
+nodes through `node-data/builder.ts`, and assembles `<Spec>Tree`.
 
 Node values hold document fragments picked by typed allow-lists; meta holds
 structural facts (kind, complexity, keys).
 
-## Tree with diffs
+Expose **protected extension points** so a with-diffs subclass can specialise
+without copying `build()`:
 
-`TreeWithDiffsBuilder` subclasses (e.g. `JsoTreeWithDiffsBuilder`) extend the
-plain builder. After each node is created, **aggregator factories** under
-`node-diffs-data/` populate diff-related fields:
+| Hook | Purpose |
+| --- | --- |
+| `createTree()` | Return `<Spec>Tree` or `<Spec>TreeWithDiffs` |
+| `createNodeDataBuilder()` | Plain vs with-diffs node-data builder |
+| `prepareSource()` | Plain vs with-diffs spec transformer (construct locally; do not keep a fixed transformer field that blocks overrides) |
+| `logPrefix` | Log tag (`[Spec]` vs `[Spec][WithDiffs]`) |
+| Optional value hooks | e.g. `takeCrawlValue()` when plain and with-diffs normalise crawl values differently |
+
+Keep constructor-injected inputs that both flavours need (`source`, keys,
+`logger`, …) as `protected`. Call `this.createTree()` / `this.createNodeDataBuilder()`
+from the constructor so subclass factories run before `build()`.
+
+Share one building-hooks module (`tree/building-hooks.ts`) and the plain crawl
+state / rule types. Export node-params types the subclass needs
+(`<Spec>TreeBuildingNodeParams`). When the with-diffs builder reuses that
+module, do not keep a redundant `tree-with-diffs/building-hooks.ts` or unused
+`*WithDiffsCrawlState` / `*WithDiffsCrawlRule` aliases (JSO may still need
+separate hooks and crawl types).
+
+### What the with-diffs builder owns
+
+On the default (non-JSO) pattern, `<Spec>TreeWithDiffsBuilder` extends the
+plain builder and adds only diffs work:
+
+1. `public declare readonly tree: <Spec>TreeWithDiffs` — retype the inherited
+   `tree` without re-initialising it.
+2. Override the extension points above; `build()` calls `super.build()` and
+   returns the with-diffs tree.
+3. Override `createNodeFromRaw`: call `super.createNodeFromRaw(...)`, narrow with
+   `is<Spec>TreeNodeWithDiffs` from `src/shared/<spec>/guards/`, then
+   `assignNodeDiffs(...)`.
+4. Keep `createNodeDiffs`, summaries, descendant diffs, severities, and
+   `assignNodeDiffs` only on this class.
+
+**Never use type assertions** to bridge plain ↔ with-diffs node types. Place
+reusable guards under `src/shared/<spec>/guards/` (see Type narrowing above).
+
+After each node is created, **aggregator factories** under `node-diffs-data/`
+populate diff-related fields:
 
 | Field | Meaning |
 | --- | --- |
@@ -96,8 +185,17 @@ plain builder. After each node is created, **aggregator factories** under
 | `nodeDiffsSeverities` | Severity per UI placement (`title-row`, `description-row`, …) |
 
 Aggregators are spec-specific factories returning kind-aware implementations
-(`JsoNodeDiffsAggregatorFactory`, etc.). Register new aggregation steps in
-the builder's `createNodeDiffs()` flow, not in the view layer.
+(`DdlApiNodeDiffsAggregatorFactory`, `AsyncApiNodeDiffsAggregatorFactory`,
+`JsoNodeDiffsAggregatorFactory`, …). Register new aggregation steps in the
+builder's `createNodeDiffs()` flow, not in the view layer.
+
+### Spec transformers (same inheritance idea)
+
+For non-JSO specs, match builders: `<Spec>SpecTransformer` owns document
+preparation; `<Spec>SpecWithDiffsTransformer` extends it and attaches diff
+metadata via overrides/hooks. Prefer constructing the transformer inside
+`prepareSource()` so the subclass can swap the with-diffs type without
+constructor juggling.
 
 ## Diff inheritance contract
 
@@ -126,7 +224,7 @@ Document traversal rules live in
 `src/building-service/<spec>/json-crawl-entities/rules/`. Builders pass
 initial rules to `syncCrawl` and state through typed crawl-state objects.
 Extend rules trees (`CrawlRules`) with path segments; keep transformers in
-`transformers/` and building hooks colocateed with the builder.
+`transformers/` and building hooks colocated with the plain builder.
 
 ## Tests
 
