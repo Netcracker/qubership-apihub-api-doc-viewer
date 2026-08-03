@@ -1,7 +1,7 @@
 import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
-import { isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
+import { DiffsRecord, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import {
   AttrKind,
@@ -29,21 +29,13 @@ import {
   DdlApiTableOrientedSpecIndexesSection,
 } from "./ddlapi-spec-transformer";
 
-type DiffsRecord = Partial<Record<string, Diff>>;
-
-type ForeignKeyTargetCrawlDiffs = Partial<Record<string, Diff>>
-
-type EnumValueCrawlDiffs = Partial<Record<string, Diff>>
-
-type IndexPartNameCrawlDiffs = Partial<Record<string, Diff>>
-
-type ColumnCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'foreignKeyTargets' | 'enumValues'> & {
-  foreignKeyTargets?: ForeignKeyTargetCrawlDiffs
-  enumValues?: EnumValueCrawlDiffs
+type ColumnCrawlDiffsRecord = Omit<DiffsRecord, 'foreignKeyTargets' | 'enumValues'> & {
+  foreignKeyTargets?: DiffsRecord
+  enumValues?: DiffsRecord
 }
 
-type IndexCrawlDiffsRecord = Omit<Partial<Record<string, Diff>>, 'partNameDiffs'> & {
-  partNameDiffs?: IndexPartNameCrawlDiffs
+type IndexCrawlDiffsRecord = Omit<DiffsRecord, 'partNameDiffs'> & {
+  partNameDiffs?: DiffsRecord
 }
 
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
@@ -522,7 +514,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return (attrs ?? []).findIndex(attr => attr.kind === AttrKind.Comment)
   }
 
-  private resolveEnumValueDiffsForColumn(sourceColumn: Column): EnumValueCrawlDiffs {
+  private resolveEnumValueDiffsForColumn(sourceColumn: Column): DiffsRecord {
     const schemaType = sourceColumn.type?.type
     if (!schemaType || !isEnumType(schemaType)) {
       return {}
@@ -538,7 +530,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return {}
     }
 
-    const keyedDiffs: EnumValueCrawlDiffs = {}
+    const keyedDiffs: DiffsRecord = {}
     const removes = rawDiffs.filter(isDiffRemove)
     const adds = rawDiffs.filter(isDiffAdd)
     const others = rawDiffs.filter(diff => !isDiffAdd(diff) && !isDiffRemove(diff))
@@ -579,7 +571,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return keyedDiffs
   }
 
-  private resolveIndexPartNameDiffsForIndex(sourceIndex: Index): IndexPartNameCrawlDiffs {
+  private resolveIndexPartNameDiffsForIndex(sourceIndex: Index): DiffsRecord {
     const partsArrayDiffs = this.getDiffsRecord(sourceIndex.parts)
     if (!partsArrayDiffs) {
       return {}
@@ -590,7 +582,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return {}
     }
 
-    const keyedDiffs: IndexPartNameCrawlDiffs = {}
+    const keyedDiffs: DiffsRecord = {}
     const consumed = new Set<Diff>()
     const removes = rawDiffs.filter(isDiffRemove)
     const adds = rawDiffs.filter(isDiffAdd)
@@ -696,7 +688,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     realm: Realm,
     sourceColumn: Column,
     schemaName: string,
-  ): EnumValueCrawlDiffs {
+  ): DiffsRecord {
     const columnTypeSource = sourceColumn.type
     const schemaType = columnTypeSource?.type
     if (!schemaType || !isObject(schemaType) || isEnumType(schemaType)) {
@@ -729,7 +721,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return {}
     }
 
-    const keyedDiffs: EnumValueCrawlDiffs = {}
+    const keyedDiffs: DiffsRecord = {}
     for (const literal of enumLiterals) {
       keyedDiffs[literal] = {
         type: typeDiff.type,
@@ -789,10 +781,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     sourceTable: Table,
     sourceColumn: Column,
     owningSchemaName: string,
-  ): ForeignKeyTargetCrawlDiffs {
+  ): DiffsRecord {
     const foreignKeys = sourceTable.foreignKeys ?? []
     const foreignKeysArrayDiffs = this.getDiffsRecord(foreignKeys)
-    const targetDiffs: ForeignKeyTargetCrawlDiffs = {}
+    const targetDiffs: DiffsRecord = {}
 
     for (let index = 0; index < foreignKeys.length; index += 1) {
       const foreignKey = foreignKeys[index]
@@ -1267,9 +1259,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   }
 
   private mergeDiffsIntoTarget(target: object, diffs: DiffsRecord | ColumnCrawlDiffsRecord): void {
-    const entries = Object.entries(diffs).filter(
-      (entry): entry is [string, Diff | ForeignKeyTargetCrawlDiffs | EnumValueCrawlDiffs] => entry[1] !== undefined,
-    )
+    const entries = Object
+      .entries(diffs)
+      .filter(
+        (entry): entry is [string, Diff | DiffsRecord] => entry[1] !== undefined,
+      )
     if (entries.length === 0) {
       return
     }
