@@ -1,6 +1,7 @@
 import { literal, rawExpr, TypeKind } from '@netcracker/qubership-apihub-ddlapi'
 import { buildFromDdl } from '@netcracker/qubership-apihub-ddlapi/parser'
 import { DdlApiSpecTransformer } from '../../src/building-service/ddlapi/shared/ddlapi-spec-transformer'
+import { DDL_COLUMN_GENERATED_BY } from '../../src/model/ddlapi/tree/node-value'
 import { formatDefaultValueDisplayString, formatDefaultValueForDisplay, formatDdlExpr } from '../../src/shared/ddlapi/format-ddl-expr'
 import { createBuildingServiceLogger } from '../../src/loggers'
 
@@ -73,7 +74,7 @@ describe('DdlApiSpecTransformer column row value', () => {
     })
 
     const fullNameColumn = spec?.columns.items.find(column => column.columnName === 'full_name')
-    expect(fullNameColumn?.generatedBy).toBe('expression')
+    expect(fullNameColumn?.generatedBy).toBe(DDL_COLUMN_GENERATED_BY.Expression)
     expect(fullNameColumn?.generatedExpression).toBe("(first_name || ' ') || last_name")
     expect(fullNameColumn?.defaultValue).toBeUndefined()
   })

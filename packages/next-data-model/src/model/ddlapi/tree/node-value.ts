@@ -221,6 +221,15 @@ export interface DdlApiColumnTypeRaw extends DdlApiColumnTypeBase {
   readonly raw: string
 }
 
+/** ddlapi generated-column mechanism on {@link DdlApiColumnRowValue.generatedBy}. */
+export const DDL_COLUMN_GENERATED_BY = {
+  Identity: 'identity',
+  Expression: 'expression',
+} as const
+
+export type DdlApiColumnGeneratedBy =
+  (typeof DDL_COLUMN_GENERATED_BY)[keyof typeof DDL_COLUMN_GENERATED_BY]
+
 /**
  * One column line:
  * `columnName columnType.label [PK] [FK (schema.table.column)] [generated] [unique] [not null]`
@@ -233,7 +242,7 @@ export interface DdlApiColumnTypeRaw extends DdlApiColumnTypeBase {
  * | `isForeignKey` | column ∈ FK | `Table.foreignKeys[*].columns` contains column |
  * | `foreignKeyTargets` | `isForeignKey` | one entry per matching `ForeignKey` |
  * | `isGenerated` | IDENTITY or GENERATED AS | `column.attrs`: `Identity` or `GeneratedExpr` |
- * | `generatedBy` | `isGenerated` | `'identity'` → `PgAttrKind.Identity`; `'expression'` → `AttrKind.GeneratedExpr`. Stored for API consumers; api-doc-viewer always shows badge **generated** and does not surface identity vs expression in the UI. |
+ * | `generatedBy` | `isGenerated` | {@link DDL_COLUMN_GENERATED_BY.Identity} → `PgAttrKind.Identity`; {@link DDL_COLUMN_GENERATED_BY.Expression} → `AttrKind.GeneratedExpr`. Stored for API consumers; api-doc-viewer always shows badge **generated** and does not surface identity vs expression in the UI. |
  * | `isUnique` | single-column unique index/constraint | `Table.indexes[*].unique && parts.length === 1 && parts[0].column === column` |
  * | `isNotNull` | explicit NOT NULL | `ColumnType.null === false` (`undefined` → false; explicit `NULL` → false) |
  * | `description` | COMMENT ON COLUMN | `findAttr(column.attrs, Comment)?.text` |
@@ -251,7 +260,7 @@ export interface DdlApiColumnRowValue extends DdlApiRowDescription {
   readonly foreignKeyTargets?: readonly DdlApiForeignKeyTarget[]
   readonly isGenerated: boolean
   /** ddlapi source kind when {@link isGenerated}; not reflected in column badge text (viewer uses **generated** for both). */
-  readonly generatedBy?: 'identity' | 'expression'
+  readonly generatedBy?: DdlApiColumnGeneratedBy
   readonly isUnique: boolean
   readonly isNotNull: boolean
   readonly defaultValue?: string

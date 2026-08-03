@@ -1,4 +1,5 @@
 import {
+  DDL_COLUMN_GENERATED_BY,
   DdlApiColumnRowValue,
   DdlApiColumnTypeValue,
   DdlApiForeignKeyTarget,
@@ -193,8 +194,8 @@ export class DdlApiSpecTransformer {
       isForeignKey: isForeignKey,
       ...(foreignKeyTargets.length > 0 ? { foreignKeyTargets } : {}),
       isGenerated: isGenerated,
-      ...(identity ? { generatedBy: 'identity' as const } : {}),
-      ...(generatedExpr && !identity ? { generatedBy: 'expression' as const } : {}),
+      ...(identity ? { generatedBy: DDL_COLUMN_GENERATED_BY.Identity } : {}),
+      ...(generatedExpr && !identity ? { generatedBy: DDL_COLUMN_GENERATED_BY.Expression } : {}),
       ...(generatedExpr ? { generatedExpression: generatedExpr.expr } : {}),
       isUnique: this.isUniqueColumn(table, column),
       isNotNull: !isPrimaryKey && column.type?.null === false,
