@@ -206,7 +206,7 @@ export class DdlApiSpecTransformer {
 
   private buildIndexRowValue(index: Index): DdlApiIndexRowValue {
     const partNames = (index.parts ?? [])
-      .slice()
+      .slice() // just shallow copy to avoid mutation
       .sort((left, right) => left.seqNo - right.seqNo)
       .map(part => this.formatIndexPartName(part))
       .filter(partName => partName.length > 0)
@@ -231,7 +231,8 @@ export class DdlApiSpecTransformer {
   }
 
   private isPrimaryKeyColumn(table: Table, column: Column): boolean {
-    return (table.primaryKey?.parts ?? []).some(part => part.column?.name === column.name)
+    return (table.primaryKey?.parts ?? [])
+      .some(part => part.column?.name === column.name)
   }
 
   private isUniqueColumn(table: Table, column: Column): boolean {

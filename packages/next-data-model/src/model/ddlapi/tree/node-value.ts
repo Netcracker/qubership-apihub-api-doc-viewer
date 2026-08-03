@@ -67,7 +67,7 @@ export interface DdlApiForeignKeyTarget {
  * Pre-rendered column type token for the row (`column_name` **type** …).
  *
  * Mirrors every member of ddlapi `SchemaType` from `types.d.ts`, plus fallbacks.
- * Always includes {@link DdlApiColumnTypeValue.label} — the exact string the viewer
+ * Always includes {@link DdlApiColumnTypeValue["label"]} — the exact string the viewer
  * prints between column name and chips (e.g. `character varying (30)`, `numeric (10, 2)`).
  *
  * Builder formatting rules (one variant per `SchemaType.kind`):
