@@ -485,6 +485,128 @@ export class DdlApiNodeDiffsAggregatorKindAny
     return typeof value === "boolean" ? value : undefined
   }
 
+  protected buildChipReplaceDiffMetadata(
+    diff: Diff<DiffType>,
+    chipHighlight: Pick<DiffStyles, 'textHighlighterColor' | 'borderShadowColor'>,
+  ): ChangedPropertyMetaData {
+    const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+    return {
+      ...metadata,
+      styles: {
+        before: {
+          ...metadata.styles.before,
+          backgroundColor: undefined,
+          textHighlighterColor: chipHighlight.textHighlighterColor,
+          borderShadowColor: chipHighlight.borderShadowColor,
+        },
+        after: {
+          ...metadata.styles.after,
+          backgroundColor: undefined,
+          textHighlighterColor: chipHighlight.textHighlighterColor,
+          borderShadowColor: chipHighlight.borderShadowColor,
+        },
+      },
+    }
+  }
+
+  protected buildChipAddRemoveDiffMetadataWithTextHighlight(
+    diff: Diff<DiffType>,
+  ): ChangedPropertyMetaData {
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Green,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            textHighlighterColor: HighlightVariant.Red,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected buildChipAddRemoveDiffMetadataSideVisibilityOnly(
+    diff: Diff<DiffType>,
+  ): ChangedPropertyMetaData {
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
   private normalizeFlagDiffReplace(
     diff: Diff<DiffType>,
     currentValue: boolean | undefined,

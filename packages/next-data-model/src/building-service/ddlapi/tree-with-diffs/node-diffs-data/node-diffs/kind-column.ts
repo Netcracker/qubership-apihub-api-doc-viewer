@@ -413,28 +413,14 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     crawlValue: object,
   ): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
       const isBooleanDefault = this.isBooleanColumnCrawlValue(crawlValue)
-      return {
-        ...metadata,
-        styles: {
-          before: {
-            ...metadata.styles.before,
-            backgroundColor: undefined,
-            borderShadowColor: isBooleanDefault ? HighlightVariant.Yellow : undefined,
-            textHighlighterColor: isBooleanDefault ? undefined : HighlightVariant.Yellow,
-          },
-          after: {
-            ...metadata.styles.after,
-            backgroundColor: undefined,
-            borderShadowColor: isBooleanDefault ? HighlightVariant.Yellow : undefined,
-            textHighlighterColor: isBooleanDefault ? undefined : HighlightVariant.Yellow,
-          },
-        },
-      }
+      return this.buildChipReplaceDiffMetadata(diff, {
+        borderShadowColor: isBooleanDefault ? HighlightVariant.Yellow : undefined,
+        textHighlighterColor: isBooleanDefault ? undefined : HighlightVariant.Yellow,
+      })
     }
 
-    return this.buildEnumValueDiffMetadataSideVisibilityOnly(diff)
+    return this.buildChipAddRemoveDiffMetadataSideVisibilityOnly(diff)
   }
 
   private isBooleanColumnCrawlValue(crawlValue: object): boolean {
@@ -529,74 +515,15 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       if (!metadata || !isDiffRemove(metadata.data)) {
         continue
       }
-      enumValueDiffs[literalKey] = this.buildEnumValueDiffMetadataSideVisibilityOnly(metadata.data)
+      enumValueDiffs[literalKey] = this.buildChipAddRemoveDiffMetadataSideVisibilityOnly(metadata.data)
     }
-  }
-
-  private buildEnumValueDiffMetadataSideVisibilityOnly(diff: Diff): ChangedPropertyMetaData {
-    if (isDiffRemove(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    if (isDiffAdd(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   private buildEnumValueDiffMetadata(diff: Diff): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
-      return {
-        ...metadata,
-        styles: {
-          before: {
-            ...metadata.styles.before,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-          after: {
-            ...metadata.styles.after,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-        },
-      }
+      return this.buildChipReplaceDiffMetadata(diff, {
+        textHighlighterColor: HighlightVariant.Yellow,
+      })
     }
 
     if (isDiffAdd(diff)) {
@@ -753,68 +680,11 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
 
   private buildColumnTypeFieldDiffMetadata(diff: Diff): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
-      return {
-        ...metadata,
-        styles: {
-          before: {
-            ...metadata.styles.before,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-          after: {
-            ...metadata.styles.after,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-        },
-      }
+      return this.buildChipReplaceDiffMetadata(diff, {
+        textHighlighterColor: HighlightVariant.Yellow,
+      })
     }
 
-    if (isDiffAdd(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Green,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    if (isDiffRemove(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Red,
-          },
-          after: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    return this.buildChangedPropertyMetaDataFromDiff(diff)
+    return this.buildChipAddRemoveDiffMetadataWithTextHighlight(diff)
   }
 }

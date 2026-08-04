@@ -3,7 +3,6 @@ import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-se
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
 import {
   ChangedPropertyMetaData,
-  DIFF_HIGHLIGHTING_MODES_DEFAULT,
   HighlightVariant,
   ITreeNodeWithDiffs,
   NODE_LEVEL_DIFF_KEY,
@@ -162,68 +161,11 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
 
   private buildIndexPartNameDiffMetadata(diff: Diff): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
-      return {
-        ...metadata,
-        styles: {
-          before: {
-            ...metadata.styles.before,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-          after: {
-            ...metadata.styles.after,
-            backgroundColor: undefined,
-            textHighlighterColor: HighlightVariant.Yellow,
-          },
-        },
-      }
+      return this.buildChipReplaceDiffMetadata(diff, {
+        textHighlighterColor: HighlightVariant.Yellow,
+      })
     }
 
-    if (isDiffAdd(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Green,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    if (isDiffRemove(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Red,
-          },
-          after: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    return this.buildChangedPropertyMetaDataFromDiff(diff)
+    return this.buildChipAddRemoveDiffMetadataWithTextHighlight(diff)
   }
 }
