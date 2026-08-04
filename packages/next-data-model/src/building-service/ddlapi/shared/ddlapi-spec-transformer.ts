@@ -230,7 +230,7 @@ export class DdlApiSpecTransformer {
     return undefined
   }
 
-  private isPrimaryKeyColumn(table: Table, column: Column): boolean {
+  protected isPrimaryKeyColumn(table: Table, column: Column): boolean {
     return (table.primaryKey?.parts ?? [])
       .some(part => part.column?.name === column.name)
   }

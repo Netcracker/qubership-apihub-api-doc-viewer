@@ -235,7 +235,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.isNotNull = this.invertBooleanDiffValues(nullabilityDiff)
       }
 
-      if (primaryKeyDiff && this.isColumnInPrimaryKey(sourceTable, sourceColumn.name)) {
+      if (primaryKeyDiff && this.isPrimaryKeyColumn(sourceTable, sourceColumn)) {
         columnDiffs.isPrimaryKey = primaryKeyDiff
       }
 
@@ -1274,10 +1274,6 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       ...existingDiffs,
       ...Object.fromEntries(entries),
     })
-  }
-
-  private isColumnInPrimaryKey(sourceTable: Table, columnName: string): boolean {
-    return (sourceTable.primaryKey?.parts ?? []).some(part => part.column?.name === columnName)
   }
 
   private isDdlApiTableOrientedSpecWithDiffs(value: unknown): value is DdlApiTableOrientedSpecWithDiffs {
