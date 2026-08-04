@@ -2,7 +2,7 @@ import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree
 import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { DiffsRecord, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
-import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
+import { aggregateDiffsWithRollup, Diff, DiffAction, DiffAdd, DiffRemove, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import {
   AttrKind,
   Column,
@@ -49,6 +49,26 @@ interface GeneratedColumnAttrRef {
 type GeneratedColumnDiffResult = {
   isGenerated?: Diff
   generatedExpression?: Diff
+}
+
+type KeyedArrayElementDiffPairingContext = {
+  readonly rawDiffs: readonly Diff[]
+  readonly diffsRemove: readonly DiffRemove[]
+  readonly diffsAdd: readonly DiffAdd[]
+}
+
+type KeyedArrayElementDiffOptions = {
+  takeRemoveKey: (diff: Diff) => string | undefined
+  takeAddKey: (diff: Diff) => string | undefined
+  takeReplaceBeforeKey: (diff: Diff) => string | undefined
+  takeReplaceAfterKey: (diff: Diff) => string | undefined
+  findMatchingDiffAdd: (
+    diffRemove: DiffRemove,
+    diffsAdd: readonly DiffAdd[],
+    consumedDiffs: ReadonlySet<Diff>,
+    context: KeyedArrayElementDiffPairingContext,
+  ) => DiffAdd | undefined
+  normalizeDiffValues: boolean
 }
 
 const DEFAULT_VALUE_NESTED_DIFF_KEYS = ['value', 'expr'] as const
@@ -514,56 +534,94 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return (attrs ?? []).findIndex(attr => attr.kind === AttrKind.Comment)
   }
 
-  private resolveEnumValueDiffsForColumn(sourceColumn: Column): DiffsRecord {
-    const schemaType = sourceColumn.type?.type
-    if (!schemaType || !isEnumType(schemaType)) {
+  private buildKeyedArrayElementDiffs(
+    arrayDiffs: DiffsRecord | undefined,
+    options: KeyedArrayElementDiffOptions,
+  ): DiffsRecord {
+    if (!arrayDiffs) {
       return {}
     }
 
-    const valuesArrayDiffs = this.getDiffsRecord(schemaType.values)
-    if (!valuesArrayDiffs) {
-      return {}
-    }
-
-    const rawDiffs = Object.values(valuesArrayDiffs).filter((diff): diff is Diff => !!diff)
+    const rawDiffs = Object.values(arrayDiffs).filter((diff): diff is Diff => !!diff)
     if (rawDiffs.length === 0) {
       return {}
     }
 
     const keyedDiffs: DiffsRecord = {}
-    const removes = rawDiffs.filter(isDiffRemove)
-    const adds = rawDiffs.filter(isDiffAdd)
-    const others = rawDiffs.filter(diff => !isDiffAdd(diff) && !isDiffRemove(diff))
+    const consumedDiffs = new Set<Diff>()
+    const diffsRemove = rawDiffs.filter(isDiffRemove)
+    const diffsAdd = rawDiffs.filter(isDiffAdd)
+    const context: KeyedArrayElementDiffPairingContext = { rawDiffs, diffsRemove, diffsAdd }
 
-    if (removes.length === 1 && adds.length === 1 && others.length === 0) {
-      const removeDiff = removes[0]
-      const addDiff = adds[0]
-      const beforeValue = removeDiff.beforeValue
-      const afterValue = addDiff.afterValue
-      if (typeof beforeValue === 'string' && typeof afterValue === 'string') {
-        keyedDiffs[beforeValue] = {
-          type: removeDiff.type,
-          scope: removeDiff.scope,
-          description: addDiff.description ?? removeDiff.description,
-          action: DiffAction.replace,
-          beforeValue,
-          afterValue,
-          beforeDeclarationPaths: removeDiff.beforeDeclarationPaths,
-          afterDeclarationPaths: addDiff.afterDeclarationPaths,
-        }
-        return keyedDiffs
+    for (const removeDiff of diffsRemove) {
+      if (consumedDiffs.has(removeDiff)) {
+        continue
       }
+
+      const beforeKey = options.takeRemoveKey(removeDiff)
+      if (!beforeKey) {
+        continue
+      }
+
+      const matchedDiffAdd = options.findMatchingDiffAdd(removeDiff, diffsAdd, consumedDiffs, context)
+      if (!matchedDiffAdd) {
+        continue
+      }
+
+      const afterKey = options.takeAddKey(matchedDiffAdd)
+      if (!afterKey) {
+        continue
+      }
+
+      keyedDiffs[beforeKey] = {
+        type: matchedDiffAdd.type,
+        scope: matchedDiffAdd.scope,
+        description: matchedDiffAdd.description ?? removeDiff.description,
+        action: DiffAction.replace,
+        beforeValue: beforeKey,
+        afterValue: afterKey,
+        beforeDeclarationPaths: removeDiff.beforeDeclarationPaths,
+        afterDeclarationPaths: matchedDiffAdd.afterDeclarationPaths,
+      }
+      consumedDiffs.add(removeDiff)
+      consumedDiffs.add(matchedDiffAdd)
     }
 
     for (const diff of rawDiffs) {
-      if (isDiffAdd(diff) && typeof diff.afterValue === 'string') {
-        keyedDiffs[diff.afterValue] = diff
-      } else if (isDiffRemove(diff) && typeof diff.beforeValue === 'string') {
-        keyedDiffs[diff.beforeValue] = diff
-      } else if (isDiffReplace(diff)) {
-        const beforeValue = diff.beforeValue
-        if (typeof beforeValue === 'string') {
-          keyedDiffs[beforeValue] = diff
+      if (consumedDiffs.has(diff)) {
+        continue
+      }
+
+      if (isDiffAdd(diff)) {
+        const key = options.takeAddKey(diff)
+        if (key) {
+          keyedDiffs[key] = options.normalizeDiffValues
+            ? { ...diff, afterValue: key }
+            : diff
+        }
+        continue
+      }
+
+      if (isDiffRemove(diff)) {
+        const key = options.takeRemoveKey(diff)
+        if (key) {
+          keyedDiffs[key] = options.normalizeDiffValues
+            ? { ...diff, beforeValue: key }
+            : diff
+        }
+        continue
+      }
+
+      if (isDiffReplace(diff)) {
+        const beforeKey = options.takeReplaceBeforeKey(diff)
+        if (beforeKey) {
+          keyedDiffs[beforeKey] = options.normalizeDiffValues
+            ? {
+                ...diff,
+                beforeValue: beforeKey,
+                afterValue: options.takeReplaceAfterKey(diff) ?? diff.afterValue,
+              }
+            : diff
         }
       }
     }
@@ -571,100 +629,77 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return keyedDiffs
   }
 
+  private resolveEnumValueDiffsForColumn(sourceColumn: Column): DiffsRecord {
+    const schemaType = sourceColumn.type?.type
+    if (!schemaType || !isEnumType(schemaType)) {
+      return {}
+    }
+
+    return this.buildKeyedArrayElementDiffs(this.getDiffsRecord(schemaType.values), {
+      takeRemoveKey: (diff) => (
+        isDiffRemove(diff) && typeof diff.beforeValue === 'string'
+          ? diff.beforeValue
+          : undefined
+      ),
+      takeAddKey: (diff) => (
+        isDiffAdd(diff) && typeof diff.afterValue === 'string'
+          ? diff.afterValue
+          : undefined
+      ),
+      takeReplaceBeforeKey: (diff) => (
+        isDiffReplace(diff) && typeof diff.beforeValue === 'string'
+          ? diff.beforeValue
+          : undefined
+      ),
+      takeReplaceAfterKey: () => undefined,
+      normalizeDiffValues: false,
+      findMatchingDiffAdd: (_removeDiff, addCandidates, consumed, pairingContext) => {
+        const others = pairingContext.rawDiffs.filter(
+          diff => !isDiffAdd(diff) && !isDiffRemove(diff),
+        )
+        if (pairingContext.diffsRemove.length !== 1 || pairingContext.diffsAdd.length !== 1 || others.length > 0) {
+          return undefined
+        }
+        return addCandidates.find(addDiff => !consumed.has(addDiff))
+      },
+    })
+  }
+
   private resolveIndexPartNameDiffsForIndex(sourceIndex: Index): DiffsRecord {
-    const partsArrayDiffs = this.getDiffsRecord(sourceIndex.parts)
-    if (!partsArrayDiffs) {
-      return {}
-    }
-
-    const rawDiffs = Object.values(partsArrayDiffs).filter((diff): diff is Diff => !!diff)
-    if (rawDiffs.length === 0) {
-      return {}
-    }
-
-    const keyedDiffs: DiffsRecord = {}
-    const consumed = new Set<Diff>()
-    const removes = rawDiffs.filter(isDiffRemove)
-    const adds = rawDiffs.filter(isDiffAdd)
-
-    for (const removeDiff of removes) {
-      if (consumed.has(removeDiff)) {
-        continue
-      }
-
-      const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(removeDiff.beforeValue)
-      if (!beforePartName) {
-        continue
-      }
-
-      const removeSeqNo = this.takeIndexPartSeqNoFromDiffValue(removeDiff.beforeValue)
-      const matchingAdd = adds.find((addDiff) => {
-        if (consumed.has(addDiff)) {
-          return false
-        }
-        const addSeqNo = this.takeIndexPartSeqNoFromDiffValue(addDiff.afterValue)
-        return removeSeqNo !== undefined && addSeqNo === removeSeqNo
-      })
-
-      if (matchingAdd) {
-        const afterPartName = this.takeIndexPartDisplayNameFromDiffValue(matchingAdd.afterValue)
-        if (afterPartName) {
-          keyedDiffs[beforePartName] = {
-            type: matchingAdd.type,
-            scope: matchingAdd.scope,
-            description: matchingAdd.description ?? removeDiff.description,
-            action: DiffAction.replace,
-            beforeValue: beforePartName,
-            afterValue: afterPartName,
-            beforeDeclarationPaths: removeDiff.beforeDeclarationPaths,
-            afterDeclarationPaths: matchingAdd.afterDeclarationPaths,
+    return this.buildKeyedArrayElementDiffs(this.getDiffsRecord(sourceIndex.parts), {
+      takeRemoveKey: (diff) => (
+        isDiffRemove(diff)
+          ? this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
+          : undefined
+      ),
+      takeAddKey: (diff) => (
+        isDiffAdd(diff)
+          ? this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue)
+          : undefined
+      ),
+      takeReplaceBeforeKey: (diff) => (
+        isDiffReplace(diff)
+          ? this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
+          : undefined
+      ),
+      takeReplaceAfterKey: (diff) => (
+        isDiffReplace(diff)
+          ? this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue)
+          : undefined
+      ),
+      normalizeDiffValues: true,
+      findMatchingDiffAdd: (removeDiff, addCandidates, consumed) => {
+        const removeSeqNo = this.takeIndexPartSeqNoFromDiffValue(removeDiff.beforeValue)
+        return addCandidates.find((addDiff) => {
+          if (consumed.has(addDiff)) {
+            return false
           }
-          consumed.add(removeDiff)
-          consumed.add(matchingAdd)
-        }
-      }
-    }
 
-    for (const diff of rawDiffs) {
-      if (consumed.has(diff)) {
-        continue
-      }
-
-      if (isDiffAdd(diff)) {
-        const afterPartName = this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue)
-        if (afterPartName) {
-          keyedDiffs[afterPartName] = {
-            ...diff,
-            afterValue: afterPartName,
-          }
-        }
-        continue
-      }
-
-      if (isDiffRemove(diff)) {
-        const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
-        if (beforePartName) {
-          keyedDiffs[beforePartName] = {
-            ...diff,
-            beforeValue: beforePartName,
-          }
-        }
-        continue
-      }
-
-      if (isDiffReplace(diff)) {
-        const beforePartName = this.takeIndexPartDisplayNameFromDiffValue(diff.beforeValue)
-        if (beforePartName) {
-          keyedDiffs[beforePartName] = {
-            ...diff,
-            beforeValue: beforePartName,
-            afterValue: this.takeIndexPartDisplayNameFromDiffValue(diff.afterValue) ?? diff.afterValue,
-          }
-        }
-      }
-    }
-
-    return keyedDiffs
+          const addSeqNo = this.takeIndexPartSeqNoFromDiffValue(addDiff.afterValue)
+          return removeSeqNo !== undefined && addSeqNo === removeSeqNo
+        })
+      },
+    })
   }
 
   private takeIndexPartDisplayNameFromDiffValue(value: unknown): string | undefined {
