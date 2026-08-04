@@ -235,11 +235,15 @@ export class DdlApiSpecTransformer {
       .some(part => part.column?.name === column.name)
   }
 
+  protected isSingleColumnUniqueIndexForColumn(index: Index, columnName: string): boolean {
+    return index.unique === true
+      && (index.parts ?? []).length === 1
+      && (index.parts ?? [])[0]?.column?.name === columnName
+  }
+
   private isUniqueColumn(table: Table, column: Column): boolean {
     return (table.indexes ?? []).some(index =>
-      index.unique === true
-      && index.parts?.length === 1
-      && index.parts[0]?.column?.name === column.name,
+      this.isSingleColumnUniqueIndexForColumn(index, column.name),
     )
   }
 

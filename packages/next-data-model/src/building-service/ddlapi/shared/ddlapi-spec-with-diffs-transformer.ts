@@ -817,12 +817,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
     for (let index = 0; index < indexes.length; index += 1) {
       const sourceIndex = indexes[index]
-      if (sourceIndex.unique !== true) {
-        continue
-      }
-
-      const parts = sourceIndex.parts ?? []
-      if (parts.length !== 1 || parts[0]?.column?.name !== columnName) {
+      if (!this.isSingleColumnUniqueIndexForColumn(sourceIndex, columnName)) {
         continue
       }
 
