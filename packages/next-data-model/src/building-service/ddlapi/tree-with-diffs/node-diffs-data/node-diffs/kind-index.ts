@@ -166,6 +166,9 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
       })
     }
 
-    return this.buildChipAddRemoveDiffMetadataWithTextHighlight(diff)
+    return this.buildChipAddRemoveDiffMetadata(diff, {
+      addAfter: { textHighlighterColor: HighlightVariant.Green },
+      removeBefore: { textHighlighterColor: HighlightVariant.Red },
+    })
   }
 }

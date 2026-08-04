@@ -509,8 +509,12 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
   }
 
-  protected buildChipAddRemoveDiffMetadataWithTextHighlight(
+  protected buildChipAddRemoveDiffMetadata(
     diff: Diff<DiffType>,
+    chipHighlight?: {
+      addAfter?: Pick<DiffStyles, 'textHighlighterColor' | 'borderShadowColor' | 'isFontMuted'>
+      removeBefore?: Pick<DiffStyles, 'textHighlighterColor' | 'borderShadowColor' | 'isFontMuted'>
+    },
   ): ChangedPropertyMetaData {
     if (isDiffAdd(diff)) {
       return {
@@ -523,7 +527,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
           after: {
             isContentVisible: true,
             isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Green,
+            ...chipHighlight?.addAfter,
           },
         },
         flags: {
@@ -541,58 +545,10 @@ export class DdlApiNodeDiffsAggregatorKindAny
           before: {
             isContentVisible: true,
             isHeaderVisible: true,
-            textHighlighterColor: HighlightVariant.Red,
+            ...chipHighlight?.removeBefore,
           },
           after: {
             isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    return this.buildChangedPropertyMetaDataFromDiff(diff)
-  }
-
-  protected buildChipAddRemoveDiffMetadataSideVisibilityOnly(
-    diff: Diff<DiffType>,
-  ): ChangedPropertyMetaData {
-    if (isDiffRemove(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    if (isDiffAdd(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: true,
             isHeaderVisible: true,
           },
         },

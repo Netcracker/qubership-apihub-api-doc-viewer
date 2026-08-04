@@ -1,7 +1,7 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator";
-import { ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyMetaData, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import {
   DDL_COLUMN_CHANGED_PROPERTY_KEYS,
   DDL_COLUMN_FLAG_DIFF_KEYS,
@@ -420,7 +420,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       })
     }
 
-    return this.buildChipAddRemoveDiffMetadataSideVisibilityOnly(diff)
+    return this.buildChipAddRemoveDiffMetadata(diff)
   }
 
   private isBooleanColumnCrawlValue(crawlValue: object): boolean {
@@ -515,7 +515,7 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       if (!metadata || !isDiffRemove(metadata.data)) {
         continue
       }
-      enumValueDiffs[literalKey] = this.buildChipAddRemoveDiffMetadataSideVisibilityOnly(metadata.data)
+      enumValueDiffs[literalKey] = this.buildChipAddRemoveDiffMetadata(metadata.data)
     }
   }
 
@@ -526,52 +526,10 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       })
     }
 
-    if (isDiffAdd(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-          after: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            borderShadowColor: HighlightVariant.Green,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    if (isDiffRemove(diff)) {
-      return {
-        data: diff,
-        styles: {
-          before: {
-            isContentVisible: true,
-            isHeaderVisible: true,
-            borderShadowColor: HighlightVariant.Red,
-            isFontMuted: true,
-          },
-          after: {
-            isContentVisible: false,
-            isHeaderVisible: true,
-          },
-        },
-        flags: {
-          before: { increaseLevel: false },
-          after: { increaseLevel: false },
-        },
-        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
-      }
-    }
-
-    return this.buildChangedPropertyMetaDataFromDiff(diff)
+    return this.buildChipAddRemoveDiffMetadata(diff, {
+      addAfter: { borderShadowColor: HighlightVariant.Green },
+      removeBefore: { borderShadowColor: HighlightVariant.Red, isFontMuted: true },
+    })
   }
 
   private buildForeignKeyTargetDiffMetadata(diff: Diff): ChangedPropertyMetaData {
@@ -685,6 +643,9 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       })
     }
 
-    return this.buildChipAddRemoveDiffMetadataWithTextHighlight(diff)
+    return this.buildChipAddRemoveDiffMetadata(diff, {
+      addAfter: { textHighlighterColor: HighlightVariant.Green },
+      removeBefore: { textHighlighterColor: HighlightVariant.Red },
+    })
   }
 }
