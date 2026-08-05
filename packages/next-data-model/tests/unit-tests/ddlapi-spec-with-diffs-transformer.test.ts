@@ -228,6 +228,25 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
     expect(partNameDiffs?.c3?.afterValue).toBe('c3')
   })
 
+  it('maps index description add diffs onto the transformed index row', async () => {
+    const fs = await import('fs')
+    const path = await import('path')
+    const base = path.join(__dirname, '../../../samples/ddlapi-diffs/index-changes/26-add-index-description')
+    const merged = await mergeSql(
+      fs.readFileSync(path.join(base, 'before.sql'), 'utf8'),
+      fs.readFileSync(path.join(base, 'after.sql'), 'utf8'),
+    )
+    const spec = transformer.transformSourceToTableOrientedSpecWithDiffs(merged, {
+      schemaName: 'public',
+      name: 't',
+    })
+
+    const indexRow = spec?.indexes.items.find(index => index.indexName === 'idx_t_code')
+    const indexDiffs = indexRow?.[TEST_DIFFS_META_KEY] as Record<string, { action?: string }> | undefined
+
+    expect(indexDiffs?.description?.action).toBe(DiffAction.add)
+  })
+
   it('maps paired index part remove/add diffs onto partNameDiffs replace', async () => {
     const merged = await mergeSql(
       `create table t(c1 int, c2 int, c3 int);

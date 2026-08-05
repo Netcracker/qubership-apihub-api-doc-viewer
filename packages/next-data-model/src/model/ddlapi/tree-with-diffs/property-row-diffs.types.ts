@@ -116,5 +116,6 @@ export const DDL_INDEX_CHANGED_PROPERTY_KEYS = [
   NODE_LEVEL_DIFF_KEY,
   DDL_PROPERTY_TITLE_ROW_DIFF_KEY,
   "indexName",
+  "description",
   ...DDL_INDEX_FLAG_DIFF_KEYS,
 ] as const satisfies ReadonlyArray<keyof DdlApiIndexPropertyRowDiffs>

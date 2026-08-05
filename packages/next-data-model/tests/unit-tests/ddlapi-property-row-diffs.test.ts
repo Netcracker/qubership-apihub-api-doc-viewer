@@ -13,7 +13,9 @@ import { buildFromDdl } from "@netcracker/qubership-apihub-ddlapi/parser"
 import { apiDiff } from "@netcracker/qubership-apihub-api-diff"
 import { DdlApiTreeWithDiffsBuilder } from "../../src/building-service/ddlapi/tree-with-diffs/builder"
 import { DdlApiNodeDiffsAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-column"
+import { DdlApiNodeDiffsAggregatorKindIndex } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs/kind-index"
 import { DdlApiNodeDiffsSeveritiesAggregatorKindColumn } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-column"
+import { DdlApiNodeDiffsSeveritiesAggregatorKindIndex } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-severities/kind-index"
 import { DdlApiNodeDiffsSummaryKindAny } from "../../src/building-service/ddlapi/tree-with-diffs/node-diffs-data/node-diffs-summary/kind-any"
 import {
   annotation,
@@ -353,6 +355,108 @@ describe("DDL property row diff aggregators", () => {
     const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
 
     expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBe(nonBreaking)
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type).toBe(breaking)
+  })
+
+  it("aggregates an index description add diff onto the description row", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindIndex()
+    const crawlValue = {
+      indexName: "idx_t_code",
+      description: "index description text",
+      partNames: ["code"],
+      isUnique: false,
+      [TEST_DIFFS_META_KEY]: {
+        description: {
+          type: nonBreaking,
+          action: DiffAction.add,
+          scope: "root",
+          afterValue: "index description text",
+          afterDeclarationPaths: [["indexes", "idx_t_code", "description"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(crawlValue, diffsMetaKeys, "idx_t_code")?.description
+
+    expect(descriptionDiff?.data.action).toBe(DiffAction.add)
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("gray")
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("green")
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("styles a removed index description row as removed", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindIndex()
+    const crawlValue = {
+      indexName: "idx_t_code",
+      partNames: ["code"],
+      isUnique: false,
+      [TEST_DIFFS_META_KEY]: {
+        description: {
+          type: breaking,
+          action: DiffAction.remove,
+          scope: "root",
+          beforeValue: "index description text",
+          beforeDeclarationPaths: [["indexes", "idx_t_code", "description"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "idx_t_code",
+    )?.description
+
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("red")
+    expect(descriptionDiff?.styles.before.isContentVisible).toBe(true)
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("gray")
+    expect(descriptionDiff?.styles.after.isContentVisible).toBe(false)
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("styles only an index description value change as replaced", () => {
+    const aggregator = new DdlApiNodeDiffsAggregatorKindIndex()
+    const crawlValue = {
+      indexName: "idx_t_code",
+      description: "CHANGED index description text",
+      partNames: ["code"],
+      isUnique: false,
+      [TEST_DIFFS_META_KEY]: {
+        description: {
+          type: breaking,
+          action: DiffAction.replace,
+          scope: "root",
+          beforeValue: "index description text",
+          afterValue: "CHANGED index description text",
+          beforeDeclarationPaths: [["indexes", "idx_t_code", "description"]],
+          afterDeclarationPaths: [["indexes", "idx_t_code", "description"]],
+        },
+      },
+    }
+
+    const descriptionDiff = aggregator.aggregate(
+      crawlValue,
+      diffsMetaKeys,
+      "idx_t_code",
+    )?.description
+
+    expect(descriptionDiff?.styles.before.backgroundColor).toBe("yellow")
+    expect(descriptionDiff?.styles.after.backgroundColor).toBe("yellow")
+    expect(descriptionDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(descriptionDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("applies description-row severity for an index description-only change", () => {
+    const severitiesAggregator = new DdlApiNodeDiffsSeveritiesAggregatorKindIndex()
+    const nodeDiffs = {
+      description: makeFlagPropertyDiff(breaking, DiffAction.replace),
+    }
+
+    const diffsSeverities = severitiesAggregator.aggregate(nodeDiffs)
+
+    expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]).toBeUndefined()
     expect(diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type).toBe(breaking)
   })
 

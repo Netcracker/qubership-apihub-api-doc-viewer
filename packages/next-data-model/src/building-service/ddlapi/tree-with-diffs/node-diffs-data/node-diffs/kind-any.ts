@@ -78,21 +78,6 @@ export class DdlApiNodeDiffsAggregatorKindAny
     const descriptionDiff = diffs['description']
     descriptionDiff && this.aggregateDescriptionTextDiff(descriptionDiff, nodeDiffs)
 
-    const tableNameDiff = diffs['tableName']
-    tableNameDiff && this.aggregateTextDiff(tableNameDiff, 'tableName', nodeDiffs)
-
-    const schemaNameDiff = diffs['schemaName']
-    schemaNameDiff && this.aggregateTextDiff(schemaNameDiff, 'schemaName', nodeDiffs)
-
-    const titleDiff = diffs['title']
-    titleDiff && this.aggregateTextDiff(titleDiff, 'title', nodeDiffs)
-
-    const columnNameDiff = diffs['columnName']
-    columnNameDiff && this.aggregateTextDiff(columnNameDiff, 'columnName', nodeDiffs)
-
-    const indexNameDiff = diffs['indexName']
-    indexNameDiff && this.aggregateTextDiff(indexNameDiff, 'indexName', nodeDiffs)
-
     return nodeDiffs
   }
 

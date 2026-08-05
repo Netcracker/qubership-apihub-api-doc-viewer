@@ -13,15 +13,16 @@ export class DdlApiNodeDiffsSeveritiesAggregatorKindIndex
     nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
   ): NodeDiffsSeverities | undefined {
     const wholeNodeDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
-    if (wholeNodeDiff) {
-      return {
-        [NodeDiffsSeverityPlacemennt.TitleRow]: this.buildNodeDiffsSeverity(wholeNodeDiff),
-      }
-    }
-
     const diffsSeverities: NodeDiffsSeverities = {}
 
+    if (wholeNodeDiff) {
+      diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] = this.buildNodeDiffsSeverity(wholeNodeDiff)
+      this.applyRowSeverity(nodeDiffs, 'description', NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
+      return diffsSeverities
+    }
+
     this.applyMaxRowSeverityFromIndexTitleRowDiffs(nodeDiffs, diffsSeverities)
+    this.applyRowSeverity(nodeDiffs, 'description', NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
   }

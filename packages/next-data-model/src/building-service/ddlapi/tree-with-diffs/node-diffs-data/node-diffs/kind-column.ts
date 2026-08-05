@@ -83,9 +83,9 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       nodeDiffs,
     )
 
-    const descriptionDiff = diffs['description']
-    if (AbstractNodeDiffsAggregator.isDiff(descriptionDiff)) {
-      this.aggregateDescriptionTextDiff(descriptionDiff, nodeDiffs)
+    const columnNameDiff = diffs['columnName']
+    if (AbstractNodeDiffsAggregator.isDiff(columnNameDiff)) {
+      this.aggregateTextDiff(columnNameDiff, 'columnName', nodeDiffs)
     }
 
     const generatedExpressionDiff = diffs['generatedExpression']

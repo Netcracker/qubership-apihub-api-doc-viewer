@@ -65,11 +65,6 @@ export class DdlApiNodeDiffsAggregatorKindTable extends DdlApiNodeDiffsAggregato
       nodeDiffs,
     )
 
-    const descriptionDiff = diffs['description']
-    if (AbstractNodeDiffsAggregator.isDiff(descriptionDiff)) {
-      this.aggregateDescriptionTextDiff(descriptionDiff, nodeDiffs)
-    }
-
     const tableNameDiff = diffs['tableName']
     if (AbstractNodeDiffsAggregator.isDiff(tableNameDiff)) {
       this.aggregateTextDiff(

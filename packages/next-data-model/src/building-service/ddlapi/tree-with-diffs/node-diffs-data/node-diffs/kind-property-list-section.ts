@@ -1,8 +1,14 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
-import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffs, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
+import {
+  ITreeNodeWithDiffs,
+  NodeDescendantDiffs,
+  NodeDiffs,
+} from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
+import { isObject } from "@apihub/next-data-model/utilities";
 import { NodeKey } from "@apihub/next-data-model/utility-types";
 import {
   aggregateUniformWholeNodeDescendantDiff,
@@ -29,7 +35,30 @@ export class DdlApiNodeDiffsAggregatorKindPropertyListSection extends DdlApiNode
       DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null
     >,
   ): NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> | undefined {
-    return super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
+    const { diffsMetaKey } = diffsMetaKeys
+
+    if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
+      return undefined
+    }
+
+    const superNodeDiffs = super.aggregate(crawlValue, diffsMetaKeys, nodeKey, parentNode, containerNode)
+
+    const crawlDiffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
+    if (!isObject(crawlDiffs)) {
+      return superNodeDiffs
+    }
+
+    const titleDiff = crawlDiffs['title']
+    if (!AbstractNodeDiffsAggregator.isDiff(titleDiff)) {
+      return superNodeDiffs
+    }
+
+    const nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null> = {
+      ...(superNodeDiffs ?? {}),
+    }
+    this.aggregateTextDiff(titleDiff, 'title', nodeDiffs)
+
+    return nodeDiffs
   }
 
   public aggregateByDescendantDiffs(
