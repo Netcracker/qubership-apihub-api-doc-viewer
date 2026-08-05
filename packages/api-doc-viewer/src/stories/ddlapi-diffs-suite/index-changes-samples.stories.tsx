@@ -58,3 +58,6 @@ export const Case_22_unnamed_index_pop_column: Story = createCaseStory("22-unnam
 export const Case_23_unnamed_index_replaced_column: Story = createCaseStory("23-unnamed-index-replaced-column");
 export const Case_24_unnamed_index_became_unique: Story = createCaseStory("24-unnamed-index-became-unique");
 export const Case_25_unnamed_index_lost_unique: Story = createCaseStory("25-unnamed-index-lost-unique");
+export const Case_26_add_index_description: Story = createCaseStory("26-add-index-description");
+export const Case_27_remove_index_description: Story = createCaseStory("27-remove-index-description");
+export const Case_28_replace_index_description: Story = createCaseStory("28-replace-index-description");
