@@ -4,23 +4,23 @@ import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext } from "@apihub/contexts/LevelContext"
-import { isTableNode, isTableNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
-import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DiffMetaKeys } from "@apihub/types/DiffMetaKeys"
+import { DisplayMode } from "@apihub/types/DisplayMode"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { DdlApiTreeWithDiffsBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
+import { isTableNodeWithDiffs } from "@apihub/utils/ddlapi/node-type-checkers"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
+import { DdlApiTreeWithDiffsBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
 import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder"
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key"
 import { FC, memo, useMemo } from "react"
+import '../../index.css'
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
+import '../shared-styles/diffs/index.css'
 import { DdlTableViewerContext } from "./DdlTableViewerContext"
 import { DefaultNavigationLink, type NavigationLinkComponent } from "./DefaultNavigationLink"
-import { TableNodeViewerWithDiffs } from "./TableNodeViewerWithDiffs"
-import '../../index.css'
 import './styles/index.css'
-import '../shared-styles/diffs/index.css'
+import { TableNodeViewerWithDiffs } from "./TableNodeViewerWithDiffs"
 
 export type DdlTableDiffsViewerProps = {
   mergedSource: unknown
