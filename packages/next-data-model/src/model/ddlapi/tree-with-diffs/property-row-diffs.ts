@@ -16,6 +16,7 @@ import {
 } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
+import { resolveListSideItems } from "./list-side-display"
 import {
   DDL_COLUMN_FLAG_DIFF_KEYS,
   DDL_INDEX_FLAG_DIFF_KEYS,
@@ -341,73 +342,11 @@ export function resolveColumnEnumValueSideItems(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
   layoutSide: LayoutSide,
 ): readonly DdlColumnEnumValueSideItem[] {
-  const mergedOrder = node.value()?.enumValues ?? []
-  const enumValueDiffs = takeColumnEnumValueDiffs(node)
-  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
-  const processedDiffs = new Set<ChangedPropertyMetaData>()
-  const items: DdlColumnEnumValueSideItem[] = []
-
-  const findDiffForMergedLiteral = (literal: string): ChangedPropertyMetaData | undefined => {
-    const directDiff = enumValueDiffs?.[literal]
-    if (directDiff) {
-      return directDiff
-    }
-    for (const diff of Object.values(enumValueDiffs ?? {})) {
-      if (diff && isDiffReplace(diff.data) && diff.data.afterValue === literal) {
-        return diff
-      }
-    }
-    return undefined
-  }
-
-  for (const literal of mergedOrder) {
-    const diff = findDiffForMergedLiteral(literal)
-    if (!diff) {
-      items.push({ literal })
-      continue
-    }
-    if (processedDiffs.has(diff)) {
-      continue
-    }
-    processedDiffs.add(diff)
-
-    const { data } = diff
-    if (isDiffAdd(data)) {
-      if (!isOrigin && typeof data.afterValue === "string") {
-        items.push({ literal: data.afterValue, diff })
-      }
-      continue
-    }
-    if (isDiffRemove(data)) {
-      if (isOrigin && typeof data.beforeValue === "string") {
-        items.push({ literal: data.beforeValue, diff })
-      }
-      continue
-    }
-    if (isDiffReplace(data)) {
-      const displayLiteral = isOrigin
-        ? (typeof data.beforeValue === "string" ? data.beforeValue : literal)
-        : (typeof data.afterValue === "string" ? data.afterValue : literal)
-      items.push({ literal: displayLiteral, diff })
-    }
-  }
-
-  for (const [literalKey, diff] of Object.entries(enumValueDiffs ?? {})) {
-    if (!diff || processedDiffs.has(diff)) {
-      continue
-    }
-    if (isDiffRemove(diff.data) && isOrigin) {
-      items.push({ literal: literalKey, diff })
-      processedDiffs.add(diff)
-    }
-  }
-
-  const indexOf = (literal: string): number => {
-    const index = mergedOrder.indexOf(literal)
-    return index >= 0 ? index : mergedOrder.length
-  }
-
-  return items.sort((left, right) => indexOf(left.literal) - indexOf(right.literal))
+  return resolveListSideItems(
+    node.value()?.enumValues ?? [],
+    takeColumnEnumValueDiffs(node),
+    layoutSide,
+  ).map(({ text, diff }) => ({ literal: text, diff }))
 }
 
 export function takeIndexFlagDiffs(
