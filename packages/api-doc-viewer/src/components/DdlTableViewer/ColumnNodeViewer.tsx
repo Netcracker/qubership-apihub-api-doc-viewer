@@ -1,10 +1,14 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { isDefined } from "@apihub/utils/common/checkers"
+import {
+  resolvePlainColumnAdditionalInfoRowUsesAfterRowPrecededBy,
+  resolvePlainColumnListLastRowFlags,
+  resolvePlainColumnNodeVisibility,
+} from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-visibility/kind-column"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC, useCallback, useMemo } from "react"
-import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { TextRowUsage } from "../shared-components/TextRow/types"
@@ -38,6 +42,15 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
   const value = node.value()
+
+  const visibility = useMemo(
+    () => resolvePlainColumnNodeVisibility(node, displayMode),
+    [node, displayMode],
+  )
+  const listLastRowFlags = useMemo(
+    () => resolvePlainColumnListLastRowFlags(isLastInList, visibility),
+    [isLastInList, visibility],
+  )
 
   const subheader = useCallback(
     (_layoutSide: LayoutSide) => {
@@ -121,25 +134,6 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     [value],
   )
 
-  const isAdditionalInfoDisplayed = displayMode === DETAILED_DISPLAY_MODE
-
-  const isDescriptionDisplayed = useMemo(
-    () => isAdditionalInfoDisplayed && !!value?.description,
-    [isAdditionalInfoDisplayed, value?.description],
-  )
-
-  const hasEnumValues = !!(value?.enumValues && value.enumValues.length > 0)
-  const hasDefaultValue = isDefined(value?.defaultValue)
-  const hasGeneratedExpression = isDefined(value?.generatedExpression)
-  const hasAdditionalInfoRows = isAdditionalInfoDisplayed && (
-    hasEnumValues || hasDefaultValue || hasGeneratedExpression
-  )
-
-  const isTitleListLastRow = isLastInList && !hasAdditionalInfoRows
-  const isEnumAdditionalInfoListLastRow = isLastInList && hasEnumValues && !hasDefaultValue && !hasGeneratedExpression
-  const isDefaultAdditionalInfoListLastRow = isLastInList && hasDefaultValue && !hasGeneratedExpression
-  const isGeneratedAdditionalInfoListLastRow = isLastInList && hasGeneratedExpression
-
   if (!value) {
     return null
   }
@@ -148,7 +142,7 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
     <div data-testid="ddl-column-node-viewer" className="flex flex-col ddlapi-property">
       <TitleRow
         data-precededby={precededBy}
-        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isTitleListLastRow || undefined }}
+        {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isTitleListLastRow || undefined }}
         value={value.columnName}
         expandable={false}
         expanded={true}
@@ -156,9 +150,10 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
         subheader={subheader}
         usage={TitleRowUsage.DdlApiProperty}
       />
-      {isDescriptionDisplayed && (
+      {visibility.showDescription && (
         <TextRow
           data-precededby={PrecededBy.DDL_COLUMN_ROW}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isDescriptionListLastRow || undefined }}
           value={value.description ?? ''}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
@@ -166,34 +161,34 @@ export const ColumnNodeViewer: FC<ColumnNodeViewerProps> = (props) => {
           usage={TextRowUsage.DdlApiProperty}
         />
       )}
-      {isAdditionalInfoDisplayed && hasEnumValues && (
+      {visibility.showEnumValuesRow && (
         <AdditionalInfoRow
           data-precededby={additionalInfoPrecededBy}
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isEnumAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isEnumAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_VALUES}
           subheader={enumValuesAdditionalInfoSubheader}
         />
       )}
-      {isAdditionalInfoDisplayed && hasDefaultValue && (
+      {visibility.showDefaultRow && (
         <AdditionalInfoRow
           data-precededby={
-            hasEnumValues
+            resolvePlainColumnAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isDefaultAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isDefaultAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_DEFAULT}
           subheader={defaultAdditionalInfoSubheader}
         />
       )}
-      {isAdditionalInfoDisplayed && hasGeneratedExpression && (
+      {visibility.showGeneratedRow && (
         <AdditionalInfoRow
           data-precededby={
-            hasDefaultValue || hasEnumValues
+            resolvePlainColumnAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "generated")
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
               : additionalInfoPrecededBy
           }
-          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: isGeneratedAdditionalInfoListLastRow || undefined }}
+          {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isGeneratedAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_GENERATED}
           subheader={generatedAdditionalInfoSubheader}
         />
