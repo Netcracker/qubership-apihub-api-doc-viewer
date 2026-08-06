@@ -45,25 +45,30 @@ export class AsyncApiSpecWithDiffsTransformer extends AsyncApiSpecTransformer {
     referenceNamePropertyKey: symbol,
     logger: BuildingServiceLogger,
     private readonly diffMetaKeys: DiffMetaKeys,
+    beforeKeyProperty?: symbol,
   ) {
-    super(referenceNamePropertyKey, logger)
+    super(referenceNamePropertyKey, logger, beforeKeyProperty)
   }
 
   public override transformOperationOrientedSpecToMessageOrientedSpec(
     source: unknown,
     operationKeys?: OperationKeys,
+    previousOperationKeys?: OperationKeys,
   ): AsyncApiMessageOrientedSpecWithDiffs | null {
     if (!this.isAsyncApiSpecification(source)) {
       return null
     }
 
-    const resolvedOperationKeys = this.operationKeysOrDefaults(source, operationKeys)
-    if (!resolvedOperationKeys) {
+    const resolution = this.resolveOperationKeys(source, operationKeys, previousOperationKeys)
+    if (resolution.kind === "notFound") {
       return null
     }
+    const resolvedOperationKeys = resolution.keys
     const { operationKey, messageKey } = resolvedOperationKeys
     const { diffsMetaKey, aggregatedDiffsMetaKey } = this.diffMetaKeys
 
+    // Pass the resolved keys down as the current side: they are the merged document's own keys by
+    // construction, whichever side the caller asked with.
     const transformed = super.transformOperationOrientedSpecToMessageOrientedSpec(source, resolvedOperationKeys)
 
     if (!transformed) {

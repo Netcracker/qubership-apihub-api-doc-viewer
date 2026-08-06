@@ -16,6 +16,8 @@
 
 export type { DiffMetaKeys } from '@netcracker/qubership-apihub-api-data-model'
 export type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder'
+// Which entity an AsyncAPI viewer should show; a consumer needs it to pass both versions' keys.
+export type { OperationKeys } from '@netcracker/qubership-apihub-next-data-model/shared/async-api/types/operation-keys'
 export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer'

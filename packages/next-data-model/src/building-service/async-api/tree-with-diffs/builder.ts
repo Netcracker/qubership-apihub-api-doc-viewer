@@ -39,6 +39,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
   private readonly referenceNamePropertyKey: symbol;
   private readonly diffsMetaKeys: DiffMetaKeys;
   private readonly operationKeys?: OperationKeys;
+  private readonly previousOperationKeys?: OperationKeys;
   private readonly logger: BuildingServiceLogger;
   private readonly specificationTransformer: AsyncApiSpecWithDiffsTransformer;
   private readonly nodeDataBuilder: AsyncApiNodeDataWithDiffsBuilder;
@@ -49,6 +50,8 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
       referenceNamePropertyKey,
       diffsMetaKeys,
       operationKeys,
+      previousOperationKeys,
+      beforeKeyProperty,
       logger = createBuildingServiceLogger(),
     } = params
 
@@ -57,12 +60,14 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     this.referenceNamePropertyKey = referenceNamePropertyKey
     this.diffsMetaKeys = diffsMetaKeys
     this.operationKeys = operationKeys
+    this.previousOperationKeys = previousOperationKeys
     this.logger = logger
     this.tree = new AsyncApiTreeWithDiffs()
     this.specificationTransformer = new AsyncApiSpecWithDiffsTransformer(
       this.referenceNamePropertyKey,
       this.logger,
       this.diffsMetaKeys,
+      beforeKeyProperty,
     )
     this.nodeDataBuilder = new AsyncApiNodeDataWithDiffsBuilder()
   }
@@ -83,6 +88,7 @@ export class AsyncApiTreeWithDiffsBuilder extends TreeWithDiffsBuilder<
     const preparedSource = this.specificationTransformer.transformOperationOrientedSpecToMessageOrientedSpec(
       this.source,
       this.operationKeys,
+      this.previousOperationKeys,
     )
     this.logger.debug("[AsyncAPI][WithDiffs] Prepared Source:", preparedSource)
 

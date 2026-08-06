@@ -12,6 +12,7 @@ export type {
   BuildingServiceLogger,
   DdlApiLogger,
 } from "./loggers"
+export type { OperationKeys } from "./shared/async-api/types/operation-keys"
 export type {
   AsyncApiTreeBuilderParams,
   AsyncApiTreeWithDiffsBuilderParams,

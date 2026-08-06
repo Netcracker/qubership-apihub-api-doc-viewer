@@ -1,6 +1,7 @@
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
 import type { v3 } from "@asyncapi/parser/esm/spec-types";
 import { isObject } from "../../../utilities";
+import { KeyCandidates, KeyResolution, resolveOperationKeys } from "./async-api-key-resolution";
 import { UNKNOWN_ADDRESS } from "../json-crawl-entities/transformers/constants/constants";
 import { BuildingServiceLogger } from "../../../loggers";
 
@@ -52,53 +53,73 @@ export interface AsyncApiMessageOrientedSpec {
 }
 
 export class AsyncApiSpecTransformer {
+  /**
+   * `beforeKeyProperty` is the symbol api-diff records its mapping decision under. Optional:
+   * without it only own-key matching is possible, which is the behaviour a non-merged document
+   * gets anyway.
+   */
   constructor(
     protected readonly referenceNamePropertyKey: symbol,
     protected readonly logger: BuildingServiceLogger,
+    protected readonly beforeKeyProperty?: symbol,
   ) { }
 
-  protected operationKeysOrDefaults(source: v3.AsyncAPIObject, operationKeys?: OperationKeys): OperationKeys | null {
-    let operationKey: string
-    let messageKey: string
-
-    const operations: v3.OperationsObject = source.operations ?? {}
-
-    let firstOperationKey: string | undefined
-    let firstOperationMessageKey: string | undefined
-    if (!operationKeys) {
-      this.logger.error("Operation key or message key is not provided. Looking for first operation, channel and message in source...")
-      firstOperationKey = Object.keys(operations).at(0)
-      if (firstOperationKey) {
-        const firstOperationCandidate = operations[firstOperationKey]
-        const firstOperation = !this.isReferenceObject(firstOperationCandidate) ? firstOperationCandidate : null
-        if (firstOperation) {
-          const firstOperationMessagesCandidate = firstOperation.messages?.[0]
-          const firstOperationMessage = !this.isReferenceObject(firstOperationMessagesCandidate) ? firstOperationMessagesCandidate : null
-          if (firstOperationMessage) {
-            const key = (firstOperationMessage as Record<PropertyKey, unknown>)[this.referenceNamePropertyKey]
-            firstOperationMessageKey = typeof key === "string" ? key : undefined
-          }
-        }
-      }
-      if (!firstOperationKey || !firstOperationMessageKey) {
-        !firstOperationKey && this.logger.error("Cannot find first operation in source.")
-        !firstOperationMessageKey && this.logger.error("Cannot find first operation message key in source.")
-        return null
-      }
-      this.logger.debug("[AsyncAPI] Found first operation, channel and message in source:", firstOperationKey, firstOperationMessageKey)
-      operationKey = firstOperationKey
-      messageKey = firstOperationMessageKey
-    } else {
-      operationKey = operationKeys.operationKey
-      messageKey = operationKeys.messageKey
+  private readBeforeKey(value: unknown): string | undefined {
+    if (!this.beforeKeyProperty || !isObject(value)) {
+      return undefined
     }
+    const beforeKey = (value as Record<PropertyKey, unknown>)[this.beforeKeyProperty]
+    return typeof beforeKey === "string" ? beforeKey : undefined
+  }
 
-    return { operationKey, messageKey }
+  private operationCandidates(source: v3.AsyncAPIObject): KeyCandidates {
+    const operations: v3.OperationsObject = source.operations ?? {}
+    return {
+      keys: Object.keys(operations),
+      beforeKeyOf: (key) => this.readBeforeKey(operations[key]),
+    }
+  }
+
+  /**
+   * A message is reachable both from `operation.messages[]` and from `channel.messages`, and only
+   * the latter is a map - array elements carry a numeric before-key, which cannot name a message.
+   * So own keys come from the operation's own reference-name properties, and before-keys from the
+   * channel's messages map.
+   */
+  private messageCandidates(source: v3.AsyncAPIObject, operationKey: string): KeyCandidates {
+    const operationCandidate = (source.operations ?? {})[operationKey]
+    const operation = !this.isReferenceObject(operationCandidate) ? operationCandidate : undefined
+    const channel = operation && !this.isReferenceObject(operation.channel) ? operation.channel : undefined
+    const channelMessages = channel?.messages ?? {}
+
+    const keysFromOperation = (operation?.messages ?? [])
+      .map((message) => isObject(message) ? message[this.referenceNamePropertyKey] : undefined)
+      .filter((key): key is string => typeof key === "string")
+
+    return {
+      // The channel map fills in messages the operation array does not name.
+      keys: [...new Set([...keysFromOperation, ...Object.keys(channelMessages)])],
+      beforeKeyOf: (key) => this.readBeforeKey(channelMessages[key]),
+    }
+  }
+
+  protected resolveOperationKeys(
+    source: v3.AsyncAPIObject,
+    operationKeys?: OperationKeys,
+    previousOperationKeys?: OperationKeys,
+  ): KeyResolution {
+    return resolveOperationKeys(
+      this.operationCandidates(source),
+      (operationKey) => this.messageCandidates(source, operationKey),
+      { operationKeys, previousOperationKeys },
+      this.logger,
+    )
   }
 
   public transformOperationOrientedSpecToMessageOrientedSpec(
     source: unknown,
     operationKeys?: OperationKeys,
+    previousOperationKeys?: OperationKeys,
   ): AsyncApiMessageOrientedSpec | null {
     if (!this.isAsyncApiSpecification(source)) {
       return null
@@ -106,11 +127,11 @@ export class AsyncApiSpecTransformer {
 
     const operations: v3.OperationsObject = source.operations ?? {}
 
-    const resolvedOperationKeys = this.operationKeysOrDefaults(source, operationKeys)
-    if (!resolvedOperationKeys) {
+    const resolution = this.resolveOperationKeys(source, operationKeys, previousOperationKeys)
+    if (resolution.kind === "notFound") {
       return null
     }
-    const { operationKey, messageKey } = resolvedOperationKeys
+    const { operationKey, messageKey } = resolution.keys
 
     const operation: v3.OperationObject | undefined = Object.entries(operations)
       .filter((currentOperationEntry): currentOperationEntry is [string, v3.OperationObject] => {
