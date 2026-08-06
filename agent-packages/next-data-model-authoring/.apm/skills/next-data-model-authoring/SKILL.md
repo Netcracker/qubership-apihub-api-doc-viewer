@@ -475,3 +475,20 @@ property names use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` via
 View components in `packages/api-doc-viewer` import builders and node types
 by subpath. Keep diff meta key configuration (`DiffMetaKeys`) supplied by the
 caller; the data layer reads keys from crawl state, not from React context.
+
+## Node visibility sub-layer
+
+When implementing or refactoring **which property-row parts are visible** (Phase 1
+data-layer work) or when the user asks to refactor a plain / with-diffs
+**`*NodeViewer` component pair**, read the node-visibility docs **first**:
+
+| Doc | Path |
+| --- | --- |
+| Entry (Phase 1 vs 2, session lessons) | [node-visibility/authoring.md](./node-visibility/authoring.md) |
+| Cross–API-type structure | [node-visibility/general-approach.md](./node-visibility/general-approach.md) |
+| DDL API reference (`1f1e561`) | [node-visibility/ddlapi.md](./node-visibility/ddlapi.md) |
+
+Do not extract viewer JSX layout (Phase 2) before visibility rules live in
+next-data-model. Do not add `node-visibility-data/shared/` or per-kind utility
+files — kind managers in `tree/node-visibility-data/kind-*.ts` own protected
+visibility algorithms; with-diffs delegates diff-free rules to plain tree managers.
