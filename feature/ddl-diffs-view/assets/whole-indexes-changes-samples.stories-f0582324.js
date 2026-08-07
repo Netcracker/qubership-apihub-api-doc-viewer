@@ -1,4 +1,4 @@
-import{c as d,a as p,d as _,b as l}from"./ddlapi-diffs-utils-c9608060.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-f4ed8cdd.js";import"./DiffBadge-6c81c7f3.js";import"./IndexesNodeViewer-f26e042f.js";/* empty css              */import"./build-from-ddl-browser-a1a0a869.js";import"./iframe-450a54cf.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const E=`CREATE SCHEMA IF NOT EXISTS public;
+import{c as d,a as p,d as _,b as l}from"./ddlapi-diffs-utils-a582e156.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-f4ed8cdd.js";import"./DiffBadge-6c81c7f3.js";import"./IndexesNodeViewer-f26e042f.js";/* empty css              */import"./build-from-ddl-browser-81fe70f7.js";import"./iframe-3b2be90a.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const E=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
   c1 integer,
