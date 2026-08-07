@@ -1773,7 +1773,7 @@ describe("DDL property row diff aggregators", () => {
   it("resolves default value side display for add/remove including RawExpr cast defaults", async () => {
     const fs = await import("fs")
     const path = await import("path")
-    const loadCase = async (beforeSql: string, afterSql: string) => {
+    const loadCase = async (beforeSql: string, afterSql: string, columnKey = "sample_col") => {
       const merged = apiDiff(
         await buildFromDdl(beforeSql),
         await buildFromDdl(afterSql),
@@ -1788,7 +1788,7 @@ describe("DDL property row diff aggregators", () => {
         },
       }).build()
       return [...tree.nodes.values()].find(
-        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === columnKey,
       )
     }
 
@@ -1811,6 +1811,7 @@ describe("DDL property row diff aggregators", () => {
     const rawExprAddNode = await loadCase(
       "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
       "CREATE TABLE public.t (shareability_status varchar NOT NULL DEFAULT 'unknown'::varchar);",
+      "shareability_status",
     )
     expect(rawExprAddNode?.value()?.defaultValue).toBe("'unknown'::varchar")
     expect(resolveColumnDefaultValueSideDisplay(rawExprAddNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
@@ -1819,6 +1820,7 @@ describe("DDL property row diff aggregators", () => {
     const rawExprRemoveNode = await loadCase(
       "CREATE TABLE public.t (shareability_status varchar NOT NULL DEFAULT 'unknown'::varchar);",
       "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
+      "shareability_status",
     )
     expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
     expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()

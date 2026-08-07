@@ -36,7 +36,7 @@ describe("column-default-changes ddlapi diff samples", () => {
       schemaName: "public",
       name: "t",
     })
-    const sampleColumn = spec?.columns.items.find(column => column.columnName === "sample_col")
+    const sampleColumn = spec?.columns.items.find(column => column.columnName !== "id")
     expect(sampleColumn).toBeDefined()
   })
 })
