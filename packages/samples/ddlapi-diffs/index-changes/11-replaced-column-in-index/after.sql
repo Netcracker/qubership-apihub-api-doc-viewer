@@ -7,4 +7,4 @@ CREATE TABLE public.t (
   c3 integer
 );
 
-CREATE INDEX idx_t_c1_c3 ON public.t (c1, c3);
+CREATE INDEX idx_t_replaced_column ON public.t (c1, c3);
