@@ -35,10 +35,10 @@ function findIndexNodes(tree: ReturnType<DdlApiTreeWithDiffsBuilder['build']>) {
 
 describe('unnamed index node keys and whole-node diffs', () => {
   it.each([
-    '21-unnamed-index-append-column',
-    '22-unnamed-index-pop-column',
-    '24-unnamed-index-became-unique',
-    '25-unnamed-index-lost-unique',
+    '19-unnamed-index-append-column',
+    '20-unnamed-index-pop-column',
+    '22-unnamed-index-became-unique',
+    '23-unnamed-index-lost-unique',
   ])('maps remove/add onto distinct unnamed index nodes (%s)', async (caseId) => {
     const tree = await buildTree(caseId)
     const indexNodes = findIndexNodes(tree)

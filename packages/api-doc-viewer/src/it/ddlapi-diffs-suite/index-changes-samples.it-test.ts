@@ -233,146 +233,133 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
     });
   });
 
-  it('17-index-not-unique', async () => {
+  it('17-unnamed-index-became-titled', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-17-index-not-unique',
+      'ddl-api-diffs-suite-index-changes-samples--case-17-unnamed-index-became-titled',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-17-index-not-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-17-unnamed-index-became-titled-${counter}`,
     });
   });
 
-  it('18-unnamed-index-became-titled', async () => {
+  it('18-titled-index-became-unnamed', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-18-unnamed-index-became-titled',
+      'ddl-api-diffs-suite-index-changes-samples--case-18-titled-index-became-unnamed',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-18-unnamed-index-became-titled-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-18-titled-index-became-unnamed-${counter}`,
     });
   });
 
-  it('19-titled-index-became-unnamed', async () => {
+  it('19-unnamed-index-append-column', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-19-titled-index-became-unnamed',
+      'ddl-api-diffs-suite-index-changes-samples--case-19-unnamed-index-append-column',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-19-titled-index-became-unnamed-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-19-unnamed-index-append-column-${counter}`,
     });
   });
 
-  it('20-unnamed-index-append-column', async () => {
+  it('20-unnamed-index-pop-column', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-20-unnamed-index-append-column',
+      'ddl-api-diffs-suite-index-changes-samples--case-20-unnamed-index-pop-column',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-20-unnamed-index-append-column-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-20-unnamed-index-pop-column-${counter}`,
     });
   });
 
-  it('21-unnamed-index-pop-column', async () => {
+  it('21-unnamed-index-replaced-column', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-21-unnamed-index-pop-column',
+      'ddl-api-diffs-suite-index-changes-samples--case-21-unnamed-index-replaced-column',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-21-unnamed-index-pop-column-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-21-unnamed-index-replaced-column-${counter}`,
     });
   });
 
-  it('22-unnamed-index-replaced-column', async () => {
+  it('22-unnamed-index-became-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-22-unnamed-index-replaced-column',
+      'ddl-api-diffs-suite-index-changes-samples--case-22-unnamed-index-became-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-22-unnamed-index-replaced-column-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-22-unnamed-index-became-unique-${counter}`,
     });
   });
 
-  it('23-unnamed-index-became-unique', async () => {
+  it('23-unnamed-index-lost-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-23-unnamed-index-became-unique',
+      'ddl-api-diffs-suite-index-changes-samples--case-23-unnamed-index-lost-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-23-unnamed-index-became-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-23-unnamed-index-lost-unique-${counter}`,
     });
   });
 
-  it('24-unnamed-index-lost-unique', async () => {
+  it('24-add-index-description', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-24-unnamed-index-lost-unique',
+      'ddl-api-diffs-suite-index-changes-samples--case-24-add-index-description',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-24-unnamed-index-lost-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-24-add-index-description-${counter}`,
     });
   });
 
-  it('25-add-index-description', async () => {
+  it('25-remove-index-description', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-25-add-index-description',
+      'ddl-api-diffs-suite-index-changes-samples--case-25-remove-index-description',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-25-add-index-description-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-25-remove-index-description-${counter}`,
     });
   });
 
-  it('26-remove-index-description', async () => {
+  it('26-replace-index-description', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-26-remove-index-description',
+      'ddl-api-diffs-suite-index-changes-samples--case-26-replace-index-description',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-26-remove-index-description-${counter}`,
-    });
-  });
-
-  it('27-replace-index-description', async () => {
-    story = await storyPage(
-      page,
-      'ddl-api-diffs-suite-index-changes-samples--case-27-replace-index-description',
-    );
-    await waitForDdlTableDiffsViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot({
-      customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-27-replace-index-description-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-26-replace-index-description-${counter}`,
     });
   });
 });

@@ -231,7 +231,7 @@ describe('DdlApiSpecWithDiffsTransformer', () => {
   it('maps index description add diffs onto the transformed index row', async () => {
     const fs = await import('fs')
     const path = await import('path')
-    const base = path.join(__dirname, '../../../samples/ddlapi-diffs/index-changes/25-add-index-description')
+    const base = path.join(__dirname, '../../../samples/ddlapi-diffs/index-changes/24-add-index-description')
     const merged = await mergeSql(
       fs.readFileSync(path.join(base, 'before.sql'), 'utf8'),
       fs.readFileSync(path.join(base, 'after.sql'), 'utf8'),
