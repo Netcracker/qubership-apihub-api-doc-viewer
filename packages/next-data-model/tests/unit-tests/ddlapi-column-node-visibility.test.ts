@@ -93,7 +93,7 @@ describe("column node visibility with diffs", () => {
     expect(resolveColumnNodeVisibility(node as never, DETAILED_DISPLAY_MODE).showDescription).toBe(true)
   })
 
-  it("suppresses the default row when the whole column is added", () => {
+  it("shows the default row when the whole column is added with a default", () => {
     const node = makeColumnNodeWithDiffs(
       {
         columnName: "code",
@@ -124,7 +124,7 @@ describe("column node visibility with diffs", () => {
 
     const visibility = resolveColumnNodeVisibility(node as never, DETAILED_DISPLAY_MODE)
 
-    expect(visibility.showDefaultRow).toBe(false)
+    expect(visibility.showDefaultRow).toBe(true)
     expect(visibility.showGeneratedRow).toBe(false)
   })
 

@@ -298,15 +298,28 @@ export function resolveColumnDefaultValueSideDisplay(
 ): string | undefined {
   const mergedDefault = node.value()?.defaultValue
   const defaultValueDiff = takeColumnDefaultValueDiff(node)
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+
   if (!defaultValueDiff) {
+    const nodeLevelDiff = (node.diffs as DdlApiColumnPropertyRowDiffs)[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff) {
+      const nodeDiff = nodeLevelDiff.data
+      if (isDiffAdd(nodeDiff)) {
+        return isOrigin ? undefined : mergedDefault
+      }
+      if (isDiffRemove(nodeDiff)) {
+        return isOrigin ? mergedDefault : undefined
+      }
+    }
     return mergedDefault
   }
 
   const diff = defaultValueDiff.data
-  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
 
   if (isDiffAdd(diff)) {
-    return isOrigin ? undefined : mergedDefault
+    return isOrigin
+      ? undefined
+      : mergedDefault ?? formatDefaultValueDiffSide(diff.afterValue)
   }
   if (isDiffRemove(diff)) {
     return isOrigin

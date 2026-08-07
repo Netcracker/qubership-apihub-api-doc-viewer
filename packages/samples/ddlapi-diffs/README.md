@@ -2,13 +2,13 @@
 
 These fixtures feed screenshot-diff scenarios for DDL table changes.
 
-- Total cases: 281
+- Total cases: 284
 - Layout: `ddlapi-diffs/<group>/<case-id>/before.sql` and `.../after.sql`
 - Case ids are numbered from `01` (or `001` in groups with 100+ cases) within each group.
 - **`column-changes-except-types`** uses semantic hundred blocks (`101`–`102`, `201`–`206`, …)
   — see the `api-doc-viewer-testing` skill.
-- **`column-default-changes`** uses semantic hundred blocks (`101`–`124` add, `201`–`224` remove,
-  `301`–`324` replace) — regenerate fixtures, stories, and IT files with
+- **`column-default-changes`** uses semantic hundred blocks (`101`–`125` add, `201`–`225` remove,
+  `301`–`325` replace) — regenerate fixtures, stories, and IT files with
   `packages/api-doc-viewer/bin/generate-column-default-changes-samples.mjs`.
 
 ## Groups
@@ -22,16 +22,17 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | `foreign-key-reference-changes` | 12 | Referenced schema, table, and column changes |
 | `index-changes` | 28 | Index add/remove, uniqueness, column list, unnamed index, and description changes |
 | `column-type-changes` | 127 | Base type matrix (`001`–`090`), parameter changes (`091`–`103`), enum-to-enum (`104`–`107`), scalar-to-enum (`108`–`117`), enum-to-scalar (`118`–`127`) |
-| `column-default-changes` | 72 | Column `DEFAULT` add/remove/replace per PostgreSQL scalar storage type |
+| `column-default-changes` | 75 | Column `DEFAULT` add/remove/replace per PostgreSQL scalar storage type |
 
 ### `column-default-changes` — type coverage
 
 Cases use one canonical name per PostgreSQL storage family from the ddlapi scalar guard list. Each
-type has three cases: **add** (`101`–`124`), **remove** (`201`–`224`), **replace** (`301`–`324`).
+type has three cases: **add** (`101`–`125`), **remove** (`201`–`225`), **replace** (`301`–`325`).
 
 | Slot | Type | Notes |
 | ---: | --- | --- |
 | 101–124 | `bigint`, `bit(3)`, `bit varying(4)`, `boolean`, `bytea`, `char(3)`, `date`, `double precision`, `integer`, `interval`, `json`, `jsonb`, `money`, `numeric(10,2)`, `real`, `smallint`, `text`, `time`, `time with time zone`, `timestamp`, `timestamp with time zone`, `uuid`, `character varying(50)`, `public.sample_status` enum | Constant `DEFAULT` literals valid in PostgreSQL |
+| 125 / 225 / 325 | `varchar` raw cast default on `shareability_status` | `125` whole-column add; `225` whole-column remove; `325` replace `'unknown_1'::character varying` → `'unknown_2'::character varying` |
 | — | *(excluded)* | `serial` / `bigserial` / `smallserial` and name aliases (`int4`, `bool`, `varchar`, …) — serial shorthand attaches a sequence default; identity/generation is covered in `column-changes-except-types` |
 
 ## Storybook and screenshot tests

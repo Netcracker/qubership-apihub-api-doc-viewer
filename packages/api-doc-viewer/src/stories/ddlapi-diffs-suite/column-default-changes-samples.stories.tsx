@@ -105,3 +105,6 @@ export const Case_323_replace_default_varchar: Story = createCaseStory("323-repl
 export const Case_124_add_default_enum: Story = createCaseStory("124-add-default-enum");
 export const Case_224_remove_default_enum: Story = createCaseStory("224-remove-default-enum");
 export const Case_324_replace_default_enum: Story = createCaseStory("324-replace-default-enum");
+export const Case_125_add_default_varchar_raw_expr: Story = createCaseStory("125-add-default-varchar-raw-expr");
+export const Case_225_remove_default_varchar_raw_expr: Story = createCaseStory("225-remove-default-varchar-raw-expr");
+export const Case_325_replace_default_varchar_raw_expr: Story = createCaseStory("325-replace-default-varchar-raw-expr");

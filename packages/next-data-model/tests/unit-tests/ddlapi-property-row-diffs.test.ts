@@ -6,7 +6,9 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, resolveIndexPartNamesSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnDefaultValueSideDisplay, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, resolveIndexPartNamesSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { resolveColumnNodeVisibility } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/node-visibility/kind-column"
+import { DETAILED_DISPLAY_MODE } from "@apihub/next-data-model/model/ddlapi/tree/node-visibility/kind-column"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { DdlApiTreeNodeKinds } from "@apihub/next-data-model/model/ddlapi/types/node-kind"
 import { buildFromDdl } from "@netcracker/qubership-apihub-ddlapi/parser"
@@ -1473,6 +1475,32 @@ describe("DDL property row diff aggregators", () => {
     expect(nodeDiffs?.defaultValueRowColorizingDiff?.styles.after.isContentVisible).toBe(true)
   })
 
+  it("resolves default add side text from diff when merged row defaultValue is absent", () => {
+    const node = {
+      value: () => ({ columnName: "shareability_status" }),
+      diffs: {
+        defaultValue: {
+          data: {
+            type: nonBreaking,
+            action: DiffAction.add,
+            scope: "root",
+            afterValue: "'unknown'::varchar",
+            afterDeclarationPaths: [["columns", "shareability_status", "defaultValue"]],
+          },
+          styles: {
+            before: { isContentVisible: false },
+            after: { isContentVisible: true },
+          },
+        },
+      },
+    } as unknown as import("@apihub/next-data-model/model/ddlapi/types/aliases").DdlApiTreeNodeWithDiffs<
+      typeof DdlApiTreeNodeKinds.COLUMN
+    >
+
+    expect(resolveColumnDefaultValueSideDisplay(node, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(resolveColumnDefaultValueSideDisplay(node, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+  })
+
   it("aggregates default value remove diff with red row background and plain chip", () => {
     const aggregator = new DdlApiNodeDiffsAggregatorKindColumn()
     const crawlValue = {
@@ -1740,5 +1768,117 @@ describe("DDL property row diff aggregators", () => {
     expect(booleanReplaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBeUndefined()
     expect(booleanReplaceDiffs?.defaultValue?.styles.after.textHighlighterColor).toBeUndefined()
     expect(booleanReplaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("resolves default value side display for add/remove including RawExpr cast defaults", async () => {
+    const fs = await import("fs")
+    const path = await import("path")
+    const loadCase = async (beforeSql: string, afterSql: string) => {
+      const merged = apiDiff(
+        await buildFromDdl(beforeSql),
+        await buildFromDdl(afterSql),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
+      )
+    }
+
+    const addNode = await loadCase(
+      "CREATE TABLE public.t (sample_col bigint);",
+      "CREATE TABLE public.t (sample_col bigint DEFAULT 0);",
+    )
+    expect(addNode?.value()?.defaultValue).toBe("0")
+    expect(resolveColumnDefaultValueSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(resolveColumnDefaultValueSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("0")
+
+    const removeNode = await loadCase(
+      "CREATE TABLE public.t (sample_col bigint DEFAULT 0);",
+      "CREATE TABLE public.t (sample_col bigint);",
+    )
+    expect(removeNode?.value()?.defaultValue).toBe("0")
+    expect(resolveColumnDefaultValueSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("0")
+    expect(resolveColumnDefaultValueSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+
+    const rawExprAddNode = await loadCase(
+      "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
+      "CREATE TABLE public.t (shareability_status varchar NOT NULL DEFAULT 'unknown'::varchar);",
+    )
+    expect(rawExprAddNode?.value()?.defaultValue).toBe("'unknown'::varchar")
+    expect(resolveColumnDefaultValueSideDisplay(rawExprAddNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(resolveColumnDefaultValueSideDisplay(rawExprAddNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+
+    const rawExprRemoveNode = await loadCase(
+      "CREATE TABLE public.t (shareability_status varchar NOT NULL DEFAULT 'unknown'::varchar);",
+      "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
+    )
+    expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+  })
+
+  it("loads raw-expression default on whole-column add/remove samples", async () => {
+    const fs = await import("fs")
+    const path = await import("path")
+    const loadCase = async (caseId: string) => {
+      const base = path.join(__dirname, "../../../samples/ddlapi-diffs/column-default-changes", caseId)
+      const before = fs.readFileSync(path.join(base, "before.sql"), "utf8")
+      const after = fs.readFileSync(path.join(base, "after.sql"), "utf8")
+      const merged = apiDiff(
+        await buildFromDdl(before),
+        await buildFromDdl(after),
+        { metaKey: TEST_DIFFS_META_KEY, normalizedResult: false },
+      ).merged
+      const tree = new DdlApiTreeWithDiffsBuilder({
+        source: merged,
+        tableKey: { schemaName: "public", name: "t" },
+        diffsMetaKeys: {
+          diffsMetaKey: TEST_DIFFS_META_KEY,
+          aggregatedDiffsMetaKey: Symbol("aggregated"),
+        },
+      }).build()
+      return [...tree.nodes.values()].find(
+        node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "shareability_status",
+      )
+    }
+
+    const addNode = await loadCase("125-add-default-varchar-raw-expr")
+    const addDiffs = addNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+
+    expect(addNode?.value()?.defaultValue).toBe("'unknown'::varchar")
+    expect(addDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(addDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(resolveColumnNodeVisibility(addNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
+    expect(resolveColumnDefaultValueSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(resolveColumnDefaultValueSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+
+    const removeNode = await loadCase("225-remove-default-varchar-raw-expr")
+    const removeDiffs = removeNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+
+    expect(removeDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(removeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(resolveColumnNodeVisibility(removeNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
+    expect(resolveColumnDefaultValueSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(resolveColumnDefaultValueSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+
+    const replaceNode = await loadCase("325-replace-default-varchar-raw-expr")
+    const replaceDiffs = replaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
+
+    expect(replaceNode?.value()?.defaultValue).toBe("'unknown_2'::varchar")
+    expect(replaceDiffs?.defaultValue?.data.action).toBe(DiffAction.replace)
+    expect(replaceDiffs?.defaultValue?.data.beforeValue).toBe("'unknown_1'::varchar")
+    expect(replaceDiffs?.defaultValue?.data.afterValue).toBe("'unknown_2'::varchar")
+    expect(replaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(replaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(resolveColumnNodeVisibility(replaceNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
+    expect(resolveColumnDefaultValueSideDisplay(replaceNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown_1'::varchar")
+    expect(resolveColumnDefaultValueSideDisplay(replaceNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown_2'::varchar")
   })
 })

@@ -120,7 +120,7 @@ export class DdlApiNodeVisibilityManagerKindColumn {
     value: DdlApiColumnRowValue | null | undefined,
     defaultValueDiff: ChangedPropertyMetaData | undefined,
     defaultValueRowColorizingDiff: ChangedPropertyMetaData | undefined,
-    isWholeNodeChanged: boolean,
+    _isWholeNodeChanged: boolean,
     displayMode: DisplayMode,
   ): boolean {
     const hasDefaultValueContent = hasDefinedValue(value?.defaultValue)
@@ -128,7 +128,6 @@ export class DdlApiNodeVisibilityManagerKindColumn {
       || !!defaultValueRowColorizingDiff
 
     return isDetailedDisplayMode(displayMode)
-      && !isWholeNodeChanged
       && hasDefaultValueContent
   }
 

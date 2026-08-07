@@ -961,4 +961,43 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-default-changes-samples-324-replace-default-enum-${counter}`,
     });
   });
+
+  it('125-add-default-varchar-raw-expr', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-default-changes-samples--case-125-add-default-varchar-raw-expr',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-default-changes-samples-125-add-default-varchar-raw-expr-${counter}`,
+    });
+  });
+
+  it('225-remove-default-varchar-raw-expr', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-default-changes-samples--case-225-remove-default-varchar-raw-expr',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-default-changes-samples-225-remove-default-varchar-raw-expr-${counter}`,
+    });
+  });
+
+  it('325-replace-default-varchar-raw-expr', async () => {
+    story = await storyPage(
+      page,
+      'ddl-api-diffs-suite-column-default-changes-samples--case-325-replace-default-varchar-raw-expr',
+    );
+    await waitForDdlTableDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot({
+      customSnapshotsDir: SNAPSHOTS_DIR,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-column-default-changes-samples-325-replace-default-varchar-raw-expr-${counter}`,
+    });
+  });
 });
