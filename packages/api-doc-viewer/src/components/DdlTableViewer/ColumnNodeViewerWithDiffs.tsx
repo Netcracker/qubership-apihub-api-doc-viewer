@@ -236,7 +236,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
           label={ADDITIONAL_INFO_LABEL_VALUES}
           subheader={enumValuesAdditionalInfoSubheader}
           colorizingDiff={enumValuesRowColorizingDiff}
-          diffsSeverities={enumValueDiffs ? node.diffsSeverities : undefined}
+          diffsSeverities={enumValueDiffs || enumValuesRowColorizingDiff ? node.diffsSeverities : undefined}
           hideLevelIndicatorWhenSideEmpty={hideLevelIndicatorWhenSideEmpty}
         />
       )}

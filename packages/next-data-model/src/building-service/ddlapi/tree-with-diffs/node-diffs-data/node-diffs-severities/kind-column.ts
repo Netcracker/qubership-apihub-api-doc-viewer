@@ -39,6 +39,7 @@ export class DdlApiNodeDiffsSeveritiesAggregatorKindColumn
       columnDiffs.generatedExpression,
       columnDiffs.defaultValue,
       columnDiffs.defaultValueRowColorizingDiff,
+      columnDiffs.enumValuesRowColorizingDiff,
       ...Object.values(columnDiffs.enumValueDiffs ?? {}),
     )
     if (!maxPropertyDiff) {

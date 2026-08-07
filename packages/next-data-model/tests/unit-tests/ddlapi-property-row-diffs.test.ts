@@ -1399,6 +1399,9 @@ describe("DDL property row diff aggregators", () => {
     expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.before.isContentVisible).toBe(false)
     expect(columnDiffs?.enumValuesRowColorizingDiff?.styles.after.isContentVisible).toBe(true)
+    expect(columnNode?.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBe(
+      columnDiffs?.enumValuesRowColorizingDiff?.data.type,
+    )
   })
 
   it("aggregates enum values row as removed when enum column type changes to scalar", async () => {
