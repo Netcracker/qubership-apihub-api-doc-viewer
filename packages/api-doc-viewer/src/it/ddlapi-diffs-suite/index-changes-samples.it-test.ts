@@ -181,16 +181,16 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
     });
   });
 
-  it('13-index-not-unique', async () => {
+  it('13-index-lost-unique', async () => {
     story = await storyPage(
       page,
-      'ddl-api-diffs-suite-index-changes-samples--case-13-index-not-unique',
+      'ddl-api-diffs-suite-index-changes-samples--case-13-index-lost-unique',
     );
     await waitForDdlTableDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-13-index-not-unique-${counter}`,
+      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-13-index-lost-unique-${counter}`,
     });
   });
 
