@@ -848,8 +848,20 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
   private resolveUniqueIndexDiffForColumn(sourceTable: Table, columnName: string): Diff | undefined {
     const indexes = sourceTable.indexes ?? []
-    const indexesArrayDiffs = this.getDiffsRecord(indexes)
 
+    for (let index = 0; index < indexes.length; index += 1) {
+      const sourceIndex = indexes[index]
+      if (!this.isSingleColumnIndexForColumn(sourceIndex, columnName)) {
+        continue
+      }
+
+      const uniqueDiff = this.getDiffsRecord(sourceIndex)?.unique
+      if (uniqueDiff) {
+        return uniqueDiff
+      }
+    }
+
+    const indexesArrayDiffs = this.getDiffsRecord(indexes)
     for (let index = 0; index < indexes.length; index += 1) {
       const sourceIndex = indexes[index]
       if (!this.isSingleColumnUniqueIndexForColumn(sourceIndex, columnName)) {
@@ -860,8 +872,6 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       if (wholeIndexDiff) {
         return wholeIndexDiff
       }
-
-      return this.getDiffsRecord(sourceIndex)?.unique
     }
 
     return undefined
