@@ -1,4 +1,4 @@
-import{c as nn,a as cn,d as tn,b as dn}from"./ddlapi-diffs-utils-7d9d86d1.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-a17beac5.js";import"./DiffBadge-6c81c7f3.js";import"./IndexesNodeViewer-9bc65cb7.js";/* empty css              */import"./build-from-ddl-browser-59eab3a7.js";import"./iframe-f8263289.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const rn=`CREATE SCHEMA IF NOT EXISTS public;
+import{c as nn,a as cn,d as tn,b as dn}from"./ddlapi-diffs-utils-3990b792.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-a17beac5.js";import"./DiffBadge-6c81c7f3.js";import"./IndexesNodeViewer-9bc65cb7.js";/* empty css              */import"./build-from-ddl-browser-523ccaae.js";import"./iframe-2d4432ae.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const rn=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
   id integer,
@@ -97,7 +97,7 @@ CREATE TABLE public.t (
   c3 integer
 );
 
-CREATE INDEX idx_t_c1_c2 ON public.t (c1, c2);
+CREATE INDEX idx_t_replaced_column ON public.t (c1, c2);
 `,Cn=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
@@ -340,7 +340,7 @@ CREATE TABLE public.t (
   c3 integer
 );
 
-CREATE INDEX idx_t_c1_c3 ON public.t (c1, c3);
+CREATE INDEX idx_t_replaced_column ON public.t (c1, c3);
 `,Pn=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
