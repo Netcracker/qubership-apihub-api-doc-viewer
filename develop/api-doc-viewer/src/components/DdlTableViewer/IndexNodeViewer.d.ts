@@ -2,9 +2,8 @@ import { DdlApiTreeNode } from '../../../../next-data-model/src/model/ddlapi/typ
 import { DdlApiTreeNodeKinds } from '../../../../next-data-model/src/model/ddlapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
 import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
-type IndexNodeViewerProps = WithPrecededByProps & {
+export type IndexNodeViewerProps = WithPrecededByProps & {
     node: DdlApiTreeNode<typeof DdlApiTreeNodeKinds.INDEX>;
     isLastInList?: boolean;
 };
 export declare const IndexNodeViewer: FC<IndexNodeViewerProps>;
-export {};

@@ -34,3 +34,5 @@ export declare const OneColumnUnique: Story;
 export declare const Partial: Story;
 export declare const TwoColumns: Story;
 export declare const TwoColumnsUnique: Story;
+export declare const UnnamedIndex: Story;
+export declare const UnnamedIndexUnique: Story;
