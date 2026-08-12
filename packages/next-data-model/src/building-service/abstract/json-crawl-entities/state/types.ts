@@ -1,5 +1,6 @@
 import { ITreeNode } from "../../../../model/abstract/tree/tree-node.interface"
-import { CrawlerIterationValue } from "../../../../utility-types"
+import { JsonPath } from "@netcracker/qubership-apihub-json-crawl"
+import { AncestorsRegistry } from "./ancestors-registry"
 
 export interface CommonState<
   V extends object | null,
@@ -9,5 +10,11 @@ export interface CommonState<
 > {
   parent: N | null
   container: N | null
-  alreadyConvertedValuesCache: Map<CrawlerIterationValue, N>
+  ancestors: AncestorsRegistry<N>
+  /** Current data depth (increments on newDataLevel). Used for lazy materialization. */
+  depth?: number
+  /** Stop descending into simple nodes at this depth when set. */
+  materializeDepth?: number
+  /** Absolute document path prefix for rematerialization crawls. */
+  pathPrefix?: JsonPath
 }

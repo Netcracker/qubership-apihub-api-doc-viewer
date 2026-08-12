@@ -15,8 +15,8 @@ export class SimpleTreeNode<
   protected readonly _value: V | null
   protected readonly _meta: M
 
-  protected readonly _childrenNodes: ITreeNode<V, K, M>[] = []
-  protected readonly _nestedNodes: ITreeNode<V, K, M>[] = []
+  protected _childrenNodes: ITreeNode<V, K, M>[] = []
+  protected _nestedNodes: ITreeNode<V, K, M>[] = []
 
   constructor(
     public readonly id: NodeId = '#',
@@ -56,8 +56,9 @@ export class SimpleTreeNode<
       value: this._value !== null ? { ...this._value } : null,
       meta: { ...this._meta },
     });
-    clonedNode.setChildrenNodes(this._childrenNodes);
-    clonedNode.setNestedNodes(this._nestedNodes);
+    // Share the same children/nested arrays so later additions to the source are visible on the clone.
+    clonedNode._childrenNodes = this._childrenNodes;
+    clonedNode._nestedNodes = this._nestedNodes;
     return clonedNode;
   }
 

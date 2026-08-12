@@ -1,19 +1,15 @@
-import { ITreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
-import { buildPointer } from "@netcracker/qubership-apihub-api-unifier";
 import { isArray, SyncCrawlHook } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode } from "../../../../model/abstract/tree/tree-node.interface";
 import { isObject } from "../../../../utilities";
 import { NodeId, NodeKey } from "../../../../utility-types";
 import { SchemaCrawlRule } from "../../../jso/json-crawl-entities/rules/types";
+import {
+  buildNodeId,
+  LazyMaterializationState,
+} from "../../tree/lazy-materialization";
 import { CommonState } from "../state/types";
-
-type NodeCache<
-  V extends object | null,
-  K extends string,
-  M extends object,
-  N extends ITreeNode<V, K, M>
-> = Map<unknown, N>;
+import { ITreeNodeWithDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 
 function defaultIsDisallowedValue(value: unknown): boolean {
   return (
@@ -49,6 +45,7 @@ export interface TreeBuildingHooksFactoryParams<
     parent: N | null
     container: N | null
   },
+  R extends SchemaCrawlRule<K, S> = SchemaCrawlRule<K, S>,
 > {
   source: unknown
   tree: CycleCloneFactory<V, K, M, N>
@@ -68,18 +65,21 @@ export interface TreeBuildingHooksFactoryParams<
   createStateForSimpleNode: (
     state: S,
     node: N,
-    cache: NodeCache<V, K, M, N>,
   ) => S
   createStateForComplexNode: (
     state: S,
     node: N,
-    cache: NodeCache<V, K, M, N>,
   ) => S
   isSimpleNode: (node: N) => boolean
   isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
   isDisallowedValue?: (value: unknown) => boolean
   shouldStopAfterNodeCreation?: (node: N, value: unknown) => boolean
+  /** Opt-in lazy materialization. */
+  lazy?: {
+    state: LazyMaterializationState<R>
+    resolveHasOwnChildren: (value: unknown, rules: R | undefined) => boolean
+  }
 }
 
 export function createTreeBuildingHooks<
@@ -96,7 +96,7 @@ export function createTreeBuildingHooks<
     container: N | null
   },
 >(
-  params: TreeBuildingHooksFactoryParams<V, K, M, N, S, P>
+  params: TreeBuildingHooksFactoryParams<V, K, M, N, S, P, R>
 ): [
     SyncCrawlHook<S, R>,
     SyncCrawlHook<S, R>,
@@ -115,6 +115,7 @@ export function createTreeBuildingHooks<
     resolveNodeKey,
     isDisallowedValue = defaultIsDisallowedValue,
     shouldStopAfterNodeCreation,
+    lazy,
   } = params;
 
   const preventInfiniteLoopHook: SyncCrawlHook<S, R> = ({ value, state, key, path }) => {
@@ -125,8 +126,8 @@ export function createTreeBuildingHooks<
       return { value };
     }
 
-    const { alreadyConvertedValuesCache, parent, container } = state;
-    const alreadyExisted = alreadyConvertedValuesCache.get(value);
+    const { ancestors, parent, container, pathPrefix = [] } = state;
+    const alreadyExisted = ancestors.get(value);
 
     if (
       !alreadyExisted || (
@@ -141,7 +142,7 @@ export function createTreeBuildingHooks<
       return { value };
     }
 
-    const nodeId = "#" + buildPointer(path);
+    const nodeId = buildNodeId(pathPrefix, path);
     const nodeKey = resolveNodeKey(key, value);
     const cycledClone = tree.createCycledClone(alreadyExisted, nodeId, nodeKey, parent);
     if (container) {
@@ -180,8 +181,8 @@ export function createTreeBuildingHooks<
       return;
     }
 
-    const { parent, container } = state;
-    const nodeId = "#" + buildPointer(path);
+    const { parent, container, ancestors, pathPrefix = [], depth = 0, materializeDepth } = state;
+    const nodeId = buildNodeId(pathPrefix, path);
     const nodeKey = resolveNodeKey(key, value);
     const { kind, complex = false } = rules;
 
@@ -195,6 +196,10 @@ export function createTreeBuildingHooks<
       container.addNestedNode(treeNode);
     } else if (parent) {
       parent.addChildNode(treeNode);
+    }
+
+    if (lazy && (isObject(value) || isArray(value))) {
+      lazy.state.rememberFragment(nodeId, value as object);
     }
 
     // TODO 22.05.2026 // This is NOT shared logic! It's only diffs-related logic!
@@ -219,19 +224,60 @@ export function createTreeBuildingHooks<
     }
     // ---------------------------------------
 
-    const newCache = new Map(state.alreadyConvertedValuesCache) as S["alreadyConvertedValuesCache"];
-    if (isObject(value) || isArray(value)) {
-      newCache.set(value, treeNode);
+    const nextDepth = depth + (nodeParams.newDataLevel ? 1 : 0);
+    const shouldDeferChildren = Boolean(
+      lazy &&
+      isSimpleNode(treeNode) &&
+      materializeDepth !== undefined &&
+      nextDepth >= materializeDepth &&
+      (isObject(value) || isArray(value)) &&
+      lazy.resolveHasOwnChildren(value, rules),
+    );
+
+    if (shouldDeferChildren) {
+      lazy!.state.defer({
+        nodeId,
+        fragment: value as object,
+        path: [...pathPrefix, ...path],
+        rules,
+      });
+    }
+
+    const shouldTrackAncestor = isObject(value) || isArray(value);
+    if (shouldTrackAncestor) {
+      ancestors.enter(value, treeNode);
     }
 
     let newState: S;
     if (isSimpleNode(treeNode)) {
-      newState = createStateForSimpleNode(state, treeNode, newCache);
+      newState = createStateForSimpleNode(state, treeNode);
     } else {
-      newState = createStateForComplexNode(state, treeNode, newCache);
+      newState = createStateForComplexNode(state, treeNode);
+    }
+    // Keep depth / materializeDepth / pathPrefix on the crawl state for descendants.
+    newState = {
+      ...newState,
+      depth: nextDepth,
+      materializeDepth: state.materializeDepth,
+      pathPrefix: state.pathPrefix,
+    };
+
+    if (shouldDeferChildren) {
+      return {
+        done: true,
+        exitHook: shouldTrackAncestor
+          ? () => { ancestors.leave(value) }
+          : undefined,
+      };
     }
 
-    return { value: nextCrawlValue, state: newState };
+    return {
+      value: nextCrawlValue,
+      state: newState,
+      exitHook: shouldTrackAncestor
+        ? () => { ancestors.leave(value) }
+        : undefined,
+    };
   };
 
   return [
@@ -240,3 +286,4 @@ export function createTreeBuildingHooks<
     createNodesHook,
   ];
 }
+

@@ -36,8 +36,10 @@ export class ComplexTreeNodeWithDiffs<
       value: this._value !== null ? { ...this._value } : null,
       meta: { ...this._meta },
     });
-    result.setChildrenNodes(this._childrenNodes);
-    result.setNestedNodes(this._nestedNodes);
+    // Share the same children/nested arrays so later additions to the source are visible on the clone.
+    result._childrenNodes = this._childrenNodes;
+    result._nestedNodes = this._nestedNodes;
+    result.copyDiffsFrom(this);
     return result;
   }
 
