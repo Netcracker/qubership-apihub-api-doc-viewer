@@ -1,0 +1,9 @@
+type: object
+title: Sample Object
+readOnly: true
+writeOnly: true
+deprecated: true
+description: Sample object description
+additionalProperties:
+  type: string
+

@@ -1,0 +1,13 @@
+type: object
+title: Sample Object
+readOnly: true
+writeOnly: true
+deprecated: true
+properties:
+  name:
+    type: string
+  id:
+    type: integer
+additionalProperties:
+  type: string
+

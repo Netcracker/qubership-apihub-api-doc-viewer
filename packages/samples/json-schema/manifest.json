@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-08-12T09:36:33.645Z",
+  "jsonSchemaDraft": "draft-07",
+  "caseStrategy": "rendering-groups",
+  "sampleFormat": "yaml",
+  "counts": {
+    "boolean": 8,
+    "string": 8,
+    "number": 8,
+    "integer": 8,
+    "object": 32,
+    "array": 32
+  }
+}
