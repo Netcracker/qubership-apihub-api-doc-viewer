@@ -1,13 +1,13 @@
-.ddlapi-property-value {
+.title-row-subheader-value {
   font-size: 12px;
 }
 
-.ddlapi-property-value.text {
+.title-row-subheader-value.text {
   font-size: 12px;
   color: rgb(100 116 139);
 }
 
-.ddlapi-property-value.block {
+.title-row-subheader-value.block {
   padding: 0 8px;
   color: rgb(100 116 139);
   background-color: rgb(243 244 246);

@@ -11,10 +11,12 @@ import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import {
   buildCommaSeparatedListSideSegments,
-  DdlListSideSegment,
   isListItemVisibleOnSide,
+  ListSideSegment,
   resolveFieldSideText,
-} from "./list-side-display"
+  SideListDisplay,
+  SideListDisplayKinds,
+} from "../../abstract/tree-with-diffs/list-side-display"
 import {
   DDL_COLUMN_TYPE_FIELD_DIFF_KEYS,
   DdlApiColumnPropertyRowDiffs,
@@ -22,22 +24,10 @@ import {
   DdlApiColumnTypeFieldDiffs,
 } from "./property-row-diffs.types"
 
-export type DdlColumnTypeLabelSideSegment = DdlListSideSegment
+export type DdlColumnTypeLabelSideSegment = ListSideSegment
 
-export type DdlColumnTypeLabelSideDisplay =
-  | {
-    readonly kind: "plain"
-    readonly text: string
-  }
-  | {
-    readonly kind: "monolithic"
-    readonly text: string
-    readonly diff: ChangedPropertyMetaData
-  }
-  | {
-    readonly kind: "segmented"
-    readonly segments: readonly DdlColumnTypeLabelSideSegment[]
-  }
+/** @deprecated Use {@link SideListDisplay} */
+export type DdlColumnTypeLabelSideDisplay = SideListDisplay
 
 const PARAMETER_FIELD_KEYS = ["size", "precision", "scale"] as const satisfies ReadonlyArray<DdlApiColumnTypeFieldDiffKey>
 
@@ -56,15 +46,15 @@ export function takeColumnTypeFieldDiffs(
 export function resolveColumnTypeLabelSideDisplay(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>,
   layoutSide: LayoutSide,
-): DdlColumnTypeLabelSideDisplay {
+): SideListDisplay {
   const columnType = node.value()?.columnType
   if (!columnType) {
-    return { kind: "plain", text: "" }
+    return { kind: SideListDisplayKinds.NO_DIFFS, text: "" }
   }
 
   const fieldDiffs = takeColumnTypeFieldDiffs(node)
   if (!fieldDiffs) {
-    return { kind: "plain", text: columnType.label }
+    return { kind: SideListDisplayKinds.NO_DIFFS, text: columnType.label }
   }
 
   const typeNameDiff = fieldDiffs.typeName ?? fieldDiffs.label
@@ -75,11 +65,11 @@ export function resolveColumnTypeLabelSideDisplay(
   if (shouldUseMonolithicColumnTypeHighlight(fieldDiffs)) {
     const representativeDiff = Object.values(fieldDiffs).find(Boolean)
     if (!representativeDiff) {
-      return { kind: "plain", text: columnType.label }
+      return { kind: SideListDisplayKinds.NO_DIFFS, text: columnType.label }
     }
 
     return {
-      kind: "monolithic",
+      kind: SideListDisplayKinds.WHOLE_DIFFS,
       text: buildMonolithicSideLabel(columnType, fieldDiffs, typeNameKey, layoutSide),
       diff: buildMonolithicColumnTypeDiffMetadata(representativeDiff),
     }
@@ -102,11 +92,11 @@ export function resolveColumnTypeLabelSideDisplay(
   segments.push(...parameterSegments)
 
   if (segments.length === 0) {
-    return { kind: "plain", text: columnType.label }
+    return { kind: SideListDisplayKinds.NO_DIFFS, text: columnType.label }
   }
 
   return {
-    kind: "segmented",
+    kind: SideListDisplayKinds.PARTIAL_DIFFS,
     segments,
   }
 }

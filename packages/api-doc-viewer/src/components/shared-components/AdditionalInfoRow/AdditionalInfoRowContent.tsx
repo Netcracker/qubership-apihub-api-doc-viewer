@@ -1,13 +1,13 @@
-import { X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { FC, memo, useMemo } from "react"
-import { LevelIndicator } from "../../shared-components/LevelIndicator"
-import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../../shared-components/WithPrecededByProps"
+import { LevelIndicator } from "../LevelIndicator"
+import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import '../../shared-styles/preceded-by.css'
-import { AdditionalInfoRowContentProps } from "./types"
+import { resolveAdditionalInfoRowLayout } from "./layout-classes"
+import { AdditionalInfoRowContentProps, AdditionalInfoRowUsage } from "./types"
 
 export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<AdditionalInfoRowContentProps>((props) => {
   const {
@@ -17,10 +17,19 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
     diff,
     colorizingDiff,
     hideLevelIndicatorWhenSideEmpty = false,
+    usage = AdditionalInfoRowUsage.Default,
+    xPaddingClass,
+    bodyClass,
+    minHeightClass,
   } = props
 
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: ddlListLastRow } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRow } = props
   const level = useLevelContext()
+  const layout = useMemo(
+    () => resolveAdditionalInfoRowLayout(usage, { xPaddingClass, bodyClass, minHeightClass }),
+    [usage, xPaddingClass, bodyClass, minHeightClass],
+  )
+
   const diffStyles = layoutSide === ORIGIN_LAYOUT_SIDE
     ? diff?.styles.before
     : diff?.styles.after
@@ -53,8 +62,14 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
     <div
       data-testid="additional-info-row-content"
       data-precededby={precededBy}
-      data-ddl-list-last-row={ddlListLastRow ? true : undefined}
-      className={`additional-info-row-content flex w-full items-stretch h-full ${X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES} min-h-[26px] gap-2 ${diffsStyleClasses.join(' ')}`}
+      data-ddl-list-last-row={listLastRow ? true : undefined}
+      className={[
+        'additional-info-row-content flex w-full items-stretch h-full gap-2',
+        layout.xPaddingClass,
+        layout.minHeightClass,
+        layout.stretchLevelIndicator ? 'items-stretch' : '',
+        diffsStyleClasses.join(' '),
+      ].filter(Boolean).join(' ')}
     >
       {showsLevelIndicator && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
@@ -63,7 +78,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
         </div>
       )}
       {isContentVisible && (
-        <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
+        <div className={`${layout.bodyClass} flex min-w-0 flex-1 items-center gap-2`}>
           <span className="additional-info-row-label">{`${label}:`}</span>
           {subheader?.(layoutSide)}
         </div>

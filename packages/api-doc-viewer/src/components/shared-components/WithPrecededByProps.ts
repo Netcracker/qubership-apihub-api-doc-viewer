@@ -33,6 +33,9 @@ export type WithPrecededByProps = {
   [ATTRIBUTE_PRECEDED_BY]?: PrecededBy
 }
 
-export type WithDdlListLastRowProps = {
+export type WithListLastRowProps = {
   [ATTRIBUTE_DDL_LIST_LAST_ROW]?: boolean
 }
+
+/** @deprecated Use {@link WithListLastRowProps} */
+export type WithDdlListLastRowProps = WithListLastRowProps

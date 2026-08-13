@@ -2,29 +2,56 @@ import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-ap
 import {
   LayoutSide,
   ORIGIN_LAYOUT_SIDE,
-} from "../../abstract/layout-side"
-import { ChangedPropertyMetaData } from "../../abstract/tree-with-diffs/tree-node.interface"
+} from "../layout-side"
+import { ChangedPropertyMetaData } from "./tree-node.interface"
 
-export type DdlListSideSegment = {
+export type ListSideSegment = {
   readonly text: string
   readonly diff?: ChangedPropertyMetaData
 }
 
-export type DdlListSideItem = {
+export type ListSideItem = {
   readonly text: string
   readonly diff?: ChangedPropertyMetaData
 }
 
-export type DdlCommaSeparatedListParenthesesStyle = "none" | "tight" | "spaced"
+/** How a side-aware comma-separated value is rendered in the viewer. */
+export const SideListDisplayKinds = {
+  /** Merged text with no diff styling. */
+  NO_DIFFS: "no-diffs",
+  /** Single string with one diff applied to the whole value. */
+  WHOLE_DIFFS: "whole-diffs",
+  /** Text split into segments; each may carry its own diff. */
+  PARTIAL_DIFFS: "partial-diffs",
+} as const
+
+export type SideListDisplayKind = (typeof SideListDisplayKinds)[keyof typeof SideListDisplayKinds]
+
+export type SideListDisplay =
+  | {
+    readonly kind: typeof SideListDisplayKinds.NO_DIFFS
+    readonly text: string
+  }
+  | {
+    readonly kind: typeof SideListDisplayKinds.WHOLE_DIFFS
+    readonly text: string
+    readonly diff: ChangedPropertyMetaData
+  }
+  | {
+    readonly kind: typeof SideListDisplayKinds.PARTIAL_DIFFS
+    readonly segments: readonly ListSideSegment[]
+  }
+
+export type CommaSeparatedListParenthesesStyle = "none" | "tight" | "spaced"
 
 export function resolveListSideItems(
   mergedOrder: readonly string[],
   itemDiffs: Partial<Record<string, ChangedPropertyMetaData>> | undefined,
   layoutSide: LayoutSide,
-): readonly DdlListSideItem[] {
+): readonly ListSideItem[] {
   const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
   const processedDiffs = new Set<ChangedPropertyMetaData>()
-  const items: DdlListSideItem[] = []
+  const items: ListSideItem[] = []
 
   const findDiffForMergedItem = (text: string): ChangedPropertyMetaData | undefined => {
     const directDiff = itemDiffs?.[text]
@@ -90,14 +117,14 @@ export function resolveListSideItems(
 }
 
 export function buildCommaSeparatedListSideSegments(
-  sideItems: readonly DdlListSideItem[],
-  parenthesesStyle: DdlCommaSeparatedListParenthesesStyle = "none",
-): readonly DdlListSideSegment[] {
+  sideItems: readonly ListSideItem[],
+  parenthesesStyle: CommaSeparatedListParenthesesStyle = "none",
+): readonly ListSideSegment[] {
   if (sideItems.length === 0) {
     return []
   }
 
-  const segments: DdlListSideSegment[] = []
+  const segments: ListSideSegment[] = []
   if (parenthesesStyle === "tight") {
     segments.push({ text: "(" })
   } else if (parenthesesStyle === "spaced") {

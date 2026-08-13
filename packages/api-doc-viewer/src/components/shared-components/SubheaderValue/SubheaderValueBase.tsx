@@ -1,12 +1,12 @@
 import { FC, memo } from "react"
 
-export type DdlApiPropertyValueBaseProps = {
+export type SubheaderValueBaseProps = {
   isVisible: boolean
   value: unknown
   className?: string
 }
 
-export const DdlApiPropertyValueBase: FC<DdlApiPropertyValueBaseProps> = memo<DdlApiPropertyValueBaseProps>((props) => {
+export const SubheaderValueBase: FC<SubheaderValueBaseProps> = memo<SubheaderValueBaseProps>((props) => {
   const { isVisible, value, className } = props
 
   if (!isVisible) {

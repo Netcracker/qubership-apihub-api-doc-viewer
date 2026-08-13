@@ -1,16 +1,17 @@
-import { HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { useMemo } from "react"
-import { DdlApiPropertyValueAppearance, useDdlApiPropertyValueStyles } from "./useDdlApiPropertyValueStyles"
+import { SubheaderValueAppearance } from "./types"
+import { useSubheaderValueStyles } from "./useSubheaderValueStyles"
 
-export type UseDdlApiPropertyValueWithDiffsStylesInput = {
-  appearance: DdlApiPropertyValueAppearance
+export type UseSubheaderValueWithDiffsStylesInput = {
+  appearance: SubheaderValueAppearance
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   backgroundColor?: HighlightVariant
 }
 
-export function useDdlApiPropertyValueWithDiffsStyles(
-  input: UseDdlApiPropertyValueWithDiffsStylesInput,
+export function useSubheaderValueWithDiffsStyles(
+  input: UseSubheaderValueWithDiffsStylesInput,
 ): string {
   const {
     appearance,
@@ -18,7 +19,7 @@ export function useDdlApiPropertyValueWithDiffsStyles(
     backgroundColor,
   } = input
 
-  const inheritedStyles = useDdlApiPropertyValueStyles({ appearance })
+  const inheritedStyles = useSubheaderValueStyles({ appearance })
 
   return useMemo(() => {
     return [

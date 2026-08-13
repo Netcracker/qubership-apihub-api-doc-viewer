@@ -1,0 +1,11 @@
+.markdown-text-row .markdown > * {
+  all: revert;
+}
+
+.markdown-text-row .markdown > p:first-of-type {
+  margin-top: 0;
+}
+
+.markdown-text-row .markdown > p:last-of-type {
+  margin-bottom: 0;
+}

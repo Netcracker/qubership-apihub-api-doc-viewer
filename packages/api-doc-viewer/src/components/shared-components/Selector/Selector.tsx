@@ -2,33 +2,40 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
-import { FC } from "react"
-import { SizeVariant } from "../types/SizeVariant"
+import { SelectorVariant } from "./types"
 import "./Selector.css"
 
 const EMPTY_DIFFS_SUMMARY = new Set<DiffType>()
 
-export type SelectorOption<V extends object | null = object | null> = {
+export type SelectorOption<
+  N extends ITreeNode,
+  V extends object | null = object | null,
+> = {
   title: string
-  node: AsyncApiTreeNode
+  node: N
   testId?: string
-  // diifs
   diffs?: NodeDiffs<V>
   diffsSummary?: NodeDiffsSummary
   descendantDiffsSummary?: NodeDescendantDiffsSummary
 }
 
-type SelectorProps<V extends object | null = object | null> = {
-  options: SelectorOption<V>[]
-  selectedOption: SelectorOption<V> | null
-  onSelectOption: (option: SelectorOption<V>) => void
-  variant: SizeVariant
+type SelectorProps<
+  N extends ITreeNode,
+  V extends object | null = object | null,
+> = {
+  options: SelectorOption<N, V>[]
+  selectedOption: SelectorOption<N, V> | null
+  onSelectOption: (option: SelectorOption<N, V>) => void
+  variant: SelectorVariant
   layoutSide?: LayoutSide
 }
 
-export const Selector: FC<SelectorProps> = (props) => {
+export function Selector<
+  N extends ITreeNode,
+  V extends object | null = object | null,
+>(props: SelectorProps<N, V>): JSX.Element | null {
   const { options, selectedOption, onSelectOption, variant, layoutSide = CHANGED_LAYOUT_SIDE } = props
 
   if (options.length === 0) {
