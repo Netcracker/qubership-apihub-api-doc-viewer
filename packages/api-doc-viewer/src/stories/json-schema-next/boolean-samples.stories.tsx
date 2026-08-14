@@ -11,7 +11,7 @@ import {
 } from "./json-schema-next-samples-common";
 
 const sampleFiles = import.meta.glob(
-  "../../../../samples/json-schema/string/*/sample.yaml",
+  "../../../../samples/json-schema/boolean/*/sample.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
@@ -22,8 +22,8 @@ const createCaseStory = createNextCaseStoryFactory(sampleById);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   ...jsonSchemaNextSamplesStoryMetaBase,
-  id: "json-schema-next-string",
-  title: "JSON Schema Next/String",
+  id: "json-schema-next-boolean",
+  title: "JSON Schema Next/Boolean",
 } satisfies Meta<typeof JsonSchemaNextSampleStory>;
 
 export default meta;

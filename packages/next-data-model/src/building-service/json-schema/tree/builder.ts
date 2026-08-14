@@ -20,9 +20,9 @@ import { TreeBuilder } from "../../abstract/tree/builder"
 import { AncestorsRegistry } from "../../abstract/json-crawl-entities/state/ancestors-registry"
 import {
   collectAncestorsFromTree,
-  defaultObjectTreeHasOwnChildren,
   LazyMaterializationState,
 } from "../../abstract/tree/lazy-materialization"
+import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
 import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers"
 import { getJsonSchemaCrawlRules } from "../json-crawl-entities/rules/rules"
 import { JsonSchemaCrawlRule } from "../json-crawl-entities/rules/types"
@@ -121,7 +121,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
         ? undefined
         : {
           state: this.lazyState,
-          resolveHasOwnChildren: defaultObjectTreeHasOwnChildren,
+          resolveHasOwnChildren: jsonSchemaHasOwnChildren,
         },
     })
 

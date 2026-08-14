@@ -326,3 +326,9 @@ export const JSON_SCHEMA_SUITES = [
     testFileName: "array-samples.it-test.ts",
   },
 ];
+
+export const JSON_SCHEMA_NEXT_SUITES = JSON_SCHEMA_SUITES.map((suite) => ({
+  ...suite,
+  title: suite.title.replace("JSON Schema Suite/", "JSON Schema Next/"),
+  metaId: suite.metaId.replace("json-schema-suite-", "json-schema-next-"),
+}));

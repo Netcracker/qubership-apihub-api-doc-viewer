@@ -18,6 +18,13 @@ function hasExtensions(value: JsonSchemaTreeNodeValue | null | undefined): boole
   return !!value?.extensions && Object.keys(value.extensions).length > 0
 }
 
+const DEPRECATION_REASON_EXTENSION_KEY = "x-deprecated-reason"
+
+function resolveDeprecationReason(value: JsonSchemaTreeNodeValue | null | undefined): string | undefined {
+  const reason = value?.extensions?.[DEPRECATION_REASON_EXTENSION_KEY]
+  return typeof reason === "string" && reason.length > 0 ? reason : undefined
+}
+
 export class PlainPropertyNodeVisibilityManager {
   public resolveNodeVisibility(
     node: JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>,
@@ -26,7 +33,9 @@ export class PlainPropertyNodeVisibilityManager {
     const value = node.value()
     const detailed = isDetailedDisplayMode(displayMode)
 
+    const deprecationReason = resolveDeprecationReason(value)
     const showDescription = detailed && !!value?.description
+    const showDeprecationReasonRow = detailed && !!deprecationReason
     const showDefaultRow = detailed && hasDefinedValue(value?.default)
     const showExamplesRow = detailed && Array.isArray(value?.examples) && value.examples.length > 0
     const showEnumValuesRow = detailed && Array.isArray(value?.enum) && value.enum.length > 0
@@ -34,10 +43,12 @@ export class PlainPropertyNodeVisibilityManager {
     const showExtensionsRow = detailed && hasExtensions(value)
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
       || showValidationsSection || showExtensionsRow
-    const showContentSection = showDescription || showAnyAdditionalInfoRow
+    const showContentSection = showDescription || showDeprecationReasonRow || showAnyAdditionalInfoRow
 
     return {
       showDescription,
+      showDeprecationReasonRow,
+      deprecationReason,
       showDefaultRow,
       showExamplesRow,
       showEnumValuesRow,

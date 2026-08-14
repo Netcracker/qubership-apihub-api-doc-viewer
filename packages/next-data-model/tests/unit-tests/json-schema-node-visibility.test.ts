@@ -45,6 +45,7 @@ describe("plain JSON Schema property node visibility", () => {
 
     expect(resolvePlainPropertyNodeVisibility(node as never, SIMPLE_DISPLAY_MODE)).toEqual({
       showDescription: false,
+      showDeprecationReasonRow: false,
       showDefaultRow: false,
       showExamplesRow: false,
       showEnumValuesRow: false,
@@ -66,6 +67,7 @@ describe("plain JSON Schema property node visibility", () => {
 
     expect(resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)).toEqual({
       showDescription: true,
+      showDeprecationReasonRow: false,
       showDefaultRow: true,
       showExamplesRow: false,
       showEnumValuesRow: true,
@@ -74,6 +76,31 @@ describe("plain JSON Schema property node visibility", () => {
       showContentSection: true,
       showAnyAdditionalInfoRow: true,
     })
+  })
+
+  it("does not show validations section for enum-only schemas", () => {
+    const node = makePropertyNode({
+      type: "string",
+      enum: ["a", "b"],
+    })
+
+    const visibility = resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)
+    expect(visibility.showEnumValuesRow).toBe(true)
+    expect(visibility.showValidationsSection).toBe(false)
+  })
+
+  it("shows deprecation reason from x-deprecated-reason extension", () => {
+    const node = makePropertyNode({
+      type: "string",
+      deprecated: true,
+      extensions: {
+        "x-deprecated-reason": "Use otherField instead",
+      },
+    })
+
+    const visibility = resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)
+    expect(visibility.showDeprecationReasonRow).toBe(true)
+    expect(visibility.deprecationReason).toBe("Use otherField instead")
   })
 
   it("marks empty leaf nodes as initially expanded and non-expandable", () => {

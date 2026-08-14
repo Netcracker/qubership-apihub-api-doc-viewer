@@ -1,11 +1,11 @@
 /**
- * Auto-generated screenshot tests for JSON Schema Next/String stories.
+ * Auto-generated screenshot tests for JSON Schema Next/Boolean stories.
  * Regenerate: node bin/generate-json-schema-next-suite-tests.mjs (from packages/api-doc-viewer).
  */
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'json-schema-next-string'
+const META_ID = 'json-schema-next-boolean'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [

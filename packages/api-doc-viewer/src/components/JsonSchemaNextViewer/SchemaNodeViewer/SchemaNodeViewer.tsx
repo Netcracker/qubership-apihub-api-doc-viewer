@@ -1,24 +1,19 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { CHANGED_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
-import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import {
   resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
-  resolvePlainPropertyIsExpandable,
-  resolvePlainPropertyInitiallyExpanded,
   resolvePlainPropertyListLastRowFlags,
   resolvePlainPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
-import { FC, useCallback, useMemo, useState } from "react"
+import { FC, useCallback, useMemo } from "react"
 import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
 import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
-import { SubheaderValue } from "@apihub/components/shared-components/SubheaderValue/SubheaderValue"
-import { SubheaderValueAppearance } from "@apihub/components/shared-components/SubheaderValue/types"
 import { TextValueVariant } from "@apihub/components/shared-components/TextValue/types"
 import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "@apihub/components/shared-components/TitleRow/types"
@@ -30,6 +25,8 @@ import {
 import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
 import { resolveListValidationValue, resolveValidationRows } from "../utils/validation-rows"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
+import { JsonSchemaExtensionsSection } from "./JsonSchemaExtensionsSection"
+import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode
@@ -59,13 +56,6 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   )
 
   const children = node.childrenNodes()
-  const expandable = useMemo(() => resolvePlainPropertyIsExpandable(node), [node])
-  const [expanded, setExpanded] = useState(() => (
-    isRoot ? children.length > 0 : resolvePlainPropertyInitiallyExpanded(node)
-  ))
-  const onClickExpander = useCallback(() => {
-    setExpanded((prev) => !prev)
-  }, [])
 
   const titleValue = useMemo(() => {
     if (isRoot) {
@@ -76,20 +66,18 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   }, [isRoot, meta.required, node.key, value?.title])
 
   const subheader = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_layoutSide: LayoutSide) => (
-      <SubheaderValue
-        isVisible={true}
-        value={resolveJsonSchemaTypeLabel(value, meta)}
-        appearance={SubheaderValueAppearance.Text}
+    () => (
+      <JsonSchemaTitleSubheader
+        value={value}
+        meta={meta}
+        isCycle={node.isCycle}
+        layoutSide={CHANGED_LAYOUT_SIDE}
       />
     ),
-    [meta, value],
+    [meta, node.isCycle, value],
   )
 
   const validationRows = useMemo(() => resolveValidationRows(value), [value])
-
-  const showContent = isRoot || expanded
 
   return (
     <div data-testid="json-schema-node-viewer" data-name="JsonNode" className="flex flex-col">
@@ -98,93 +86,103 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           data-precededby={precededBy}
           {...listLastRowFlags}
           value={titleValue}
-          expandable={expandable}
-          expanded={expanded}
-          onClickExpander={onClickExpander}
+          expandable={false}
+          expanded={false}
           variant={TextValueVariant.body2}
           subheader={subheader}
           usage={TitleRowUsage.JsonSchemaProperty}
         />
       )}
 
-      {(showContent) && (
-        <>
-          {visibility.showDescription && value?.description && (
-            <MarkdownTextRow
-              data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
-              value={value.description}
-            />
-          )}
+      <>
+        {visibility.showDeprecationReasonRow && visibility.deprecationReason && (
+          <MarkdownTextRow
+            data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            value={`**Deprecation reason:** ${visibility.deprecationReason}`}
+          />
+        )}
 
-          {visibility.showEnumValuesRow && Array.isArray(value?.enum) && (
-            <AdditionalInfoRow
-              data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
-              label="Allowed values"
-              usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-              subheader={() => (
-                <AdditionalInfoPiece
-                  isVisible={true}
-                  value={resolveListValidationValue(value.enum!)}
-                  usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-                />
-              )}
-              {...resolvePlainPropertyListLastRowFlags(
-                isLastInList,
-                { ...visibility, showDefaultRow: false, showExamplesRow: false },
-              )}
-            />
-          )}
+        {visibility.showDescription && value?.description && (
+          <MarkdownTextRow
+            data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            value={value.description}
+          />
+        )}
 
-          {visibility.showDefaultRow && value && "default" in value && (
-            <AdditionalInfoRow
-              data-precededby={
-                resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
-                  ? PrecededBy.JSON_SCHEMA_VIEWER
-                  : PrecededBy.JSON_SCHEMA_VIEWER
-              }
-              label="Default"
-              usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-              subheader={() => (
-                <AdditionalInfoPiece
-                  isVisible={true}
-                  value={String(value.default)}
-                  usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-                />
-              )}
-            />
-          )}
+        {visibility.showEnumValuesRow && Array.isArray(value?.enum) && (
+          <AdditionalInfoRow
+            data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            label="Allowed values"
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={() => (
+              <AdditionalInfoPiece
+                isVisible={true}
+                value={resolveListValidationValue(value.enum!)}
+                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+              />
+            )}
+            {...resolvePlainPropertyListLastRowFlags(
+              isLastInList,
+              { ...visibility, showDefaultRow: false, showExamplesRow: false },
+            )}
+          />
+        )}
 
-          {visibility.showExamplesRow && Array.isArray(value?.examples) && (
-            <AdditionalInfoRow
-              data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
-              label="Examples"
-              usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-              subheader={() => (
-                <AdditionalInfoPiece
-                  isVisible={true}
-                  value={resolveListValidationValue(value.examples!)}
-                  usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-                />
-              )}
-            />
-          )}
+        {visibility.showDefaultRow && value && "default" in value && (
+          <AdditionalInfoRow
+            data-precededby={
+              resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
+                ? PrecededBy.JSON_SCHEMA_VIEWER
+                : PrecededBy.JSON_SCHEMA_VIEWER
+            }
+            label="Default"
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={() => (
+              <AdditionalInfoPiece
+                isVisible={true}
+                value={String(value.default)}
+                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+              />
+            )}
+          />
+        )}
 
-          {visibility.showValidationsSection && validationRows.map((row) => (
-            <AdditionalInfoRow
-              key={row.key}
-              data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
-              label={row.label}
-              usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-              subheader={() => (
-                <AdditionalInfoPiece
-                  isVisible={true}
-                  value={row.value}
-                  usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-                />
-              )}
-            />
-          ))}
+        {visibility.showExamplesRow && Array.isArray(value?.examples) && (
+          <AdditionalInfoRow
+            data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            label="Examples"
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={() => (
+              <AdditionalInfoPiece
+                isVisible={true}
+                value={resolveListValidationValue(value.examples!)}
+                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+              />
+            )}
+          />
+        )}
 
+        {visibility.showValidationsSection && validationRows.map((row) => (
+          <AdditionalInfoRow
+            key={row.key}
+            data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            label={row.label}
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={() => (
+              <AdditionalInfoPiece
+                isVisible={true}
+                value={row.value}
+                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+              />
+            )}
+          />
+        ))}
+
+        {visibility.showExtensionsRow && value?.extensions && (
+          <JsonSchemaExtensionsSection extensions={value.extensions} />
+        )}
+
+        {!node.isCycle && (
           <LevelContext.Provider value={level + 1}>
             {children.map((child, index) => (
               <JsonSchemaNodeViewer
@@ -195,8 +193,8 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
               />
             ))}
           </LevelContext.Provider>
-        </>
-      )}
+        )}
+      </>
     </div>
   )
 }

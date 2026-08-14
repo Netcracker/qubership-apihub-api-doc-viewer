@@ -1,5 +1,7 @@
 export type JsonSchemaPropertyRowVisibility = {
   readonly showDescription: boolean
+  readonly showDeprecationReasonRow: boolean
+  readonly deprecationReason?: string
   readonly showDefaultRow: boolean
   readonly showExamplesRow: boolean
   readonly showEnumValuesRow: boolean

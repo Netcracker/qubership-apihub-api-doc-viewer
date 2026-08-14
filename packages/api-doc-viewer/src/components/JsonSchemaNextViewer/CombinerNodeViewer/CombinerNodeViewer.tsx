@@ -7,8 +7,8 @@ import { CHANGED_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { resolvePlainCombinerNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-combiner"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
+import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 
 export type CombinerNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode
@@ -43,19 +43,29 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     />
   ), [options, selectedOption])
 
-  if (!visibility.showSelector || !selectedOption) {
+  if (node.isCycle || nestedNodes.length === 0) {
+    return null
+  }
+
+  const activeNode = visibility.showSelector
+    ? selectedOption?.node
+    : nestedNodes[0]
+
+  if (!activeNode) {
     return null
   }
 
   return (
     <div data-testid="json-schema-combiner-node-viewer" className="flex flex-col">
-      <div className="px-4 py-1">
-        {renderSelector(CHANGED_LAYOUT_SIDE)}
-      </div>
+      {visibility.showSelector && (
+        <div className="px-4 py-1">
+          {renderSelector(CHANGED_LAYOUT_SIDE)}
+        </div>
+      )}
       <LevelContext.Provider value={level + 1}>
         <JsonSchemaNodeViewer
           data-precededby={precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER}
-          node={selectedOption.node}
+          node={activeNode}
         />
       </LevelContext.Provider>
     </div>

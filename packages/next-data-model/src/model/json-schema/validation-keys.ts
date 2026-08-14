@@ -1,5 +1,4 @@
 import {
-  JsonSchemaTreeNodeValueBase,
   JsonSchemaTreeNodeValueTypeArray,
   JsonSchemaTreeNodeValueTypeNumber,
   JsonSchemaTreeNodeValueTypeObject,
@@ -23,11 +22,6 @@ export function resolveValidationKeysForType(
   }
 
   const keys: JsonSchemaValidationKey[] = []
-  const baseValue = value as JsonSchemaTreeNodeValueBase
-
-  if (Array.isArray(baseValue.enum) && baseValue.enum.length > 0) {
-    keys.push(JsonSchemaValidationKeys.ENUM)
-  }
 
   const stringValue = value as JsonSchemaTreeNodeValueTypeString
   if (stringValue.minLength !== undefined) {

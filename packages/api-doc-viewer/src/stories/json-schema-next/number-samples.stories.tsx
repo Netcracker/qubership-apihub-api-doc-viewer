@@ -1,4 +1,4 @@
-import type { Meta } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import {
   collectJsonSchemaSampleCases,
   createJsonSchemaSampleById,
@@ -11,7 +11,7 @@ import {
 } from "./json-schema-next-samples-common";
 
 const sampleFiles = import.meta.glob(
-  "../../../../samples/json-schema/string/*/sample.yaml",
+  "../../../../samples/json-schema/number/*/sample.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
@@ -22,8 +22,8 @@ const createCaseStory = createNextCaseStoryFactory(sampleById);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   ...jsonSchemaNextSamplesStoryMetaBase,
-  id: "json-schema-next-string",
-  title: "JSON Schema Next/String",
+  id: "json-schema-next-number",
+  title: "JSON Schema Next/Number",
 } satisfies Meta<typeof JsonSchemaNextSampleStory>;
 
 export default meta;
