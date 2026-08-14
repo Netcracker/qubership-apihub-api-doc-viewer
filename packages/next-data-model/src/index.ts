@@ -2,6 +2,7 @@ export { AsyncApiTreeBuilder } from "./building-service/async-api/tree/builder"
 export { AsyncApiTreeWithDiffsBuilder } from "./building-service/async-api/tree-with-diffs/builder"
 export { DdlApiTreeBuilder } from "./building-service/ddlapi/tree/builder"
 export { DdlApiTreeWithDiffsBuilder } from "./building-service/ddlapi/tree-with-diffs/builder"
+export { JsonSchemaTreeBuilder } from "./building-service/json-schema/tree/builder"
 export {
   createAsyncApiLogger,
   createBuildingServiceLogger,
@@ -24,3 +25,6 @@ export type {
   JsoTreeBuilderParams,
   JsoTreeWithDiffsBuilderParams,
 } from "./shared/jso/types/tree-builder-params"
+export type {
+  JsonSchemaTreeBuilderParams,
+} from "./shared/json-schema/types/tree-builder-params"

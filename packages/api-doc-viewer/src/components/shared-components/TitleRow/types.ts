@@ -15,6 +15,7 @@ export enum TitleRowUsage {
   JsoProperty = 'jso-property',
   DdlApiSection = 'ddlapi-section',
   DdlApiProperty = 'ddlapi-property',
+  JsonSchemaProperty = 'json-schema-property',
 }
 
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {

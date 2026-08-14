@@ -1,6 +1,7 @@
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { useMemo } from "react"
+import { AdditionalInfoPieceUsage } from "./types"
 
 export type AdditionalInfoPieceStyles = {
   blockClassName: string
@@ -8,6 +9,7 @@ export type AdditionalInfoPieceStyles = {
 }
 
 export type UseAdditionalInfoPieceStylesInput = {
+  usage?: AdditionalInfoPieceUsage
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
@@ -15,6 +17,7 @@ export type UseAdditionalInfoPieceStylesInput = {
 
 export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStylesInput = {}): AdditionalInfoPieceStyles {
   const {
+    usage = AdditionalInfoPieceUsage.Default,
     textHighlighterColor,
     borderShadowColor,
     isFontMuted,
@@ -31,5 +34,5 @@ export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStyles
       DiffsClassesBuilder.highlighter(textHighlighterColor),
       isFontMuted ? DiffsClassesBuilder.fontMuted() : '',
     ].filter(Boolean).join(' '),
-  }), [borderShadowColor, isFontMuted, textHighlighterColor])
+  }), [borderShadowColor, isFontMuted, textHighlighterColor, usage])
 }

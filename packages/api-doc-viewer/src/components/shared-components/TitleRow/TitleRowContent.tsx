@@ -16,11 +16,13 @@ const TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TitleRowUsage, string>> 
   [TitleRowUsage.JsoProperty]: X_AXIS_PADDING_ROWS_JSO,
   [TitleRowUsage.DdlApiSection]: X_AXIS_PADDING_ROWS_DDL_API,
   [TitleRowUsage.DdlApiProperty]: X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES,
+  [TitleRowUsage.JsonSchemaProperty]: X_AXIS_PADDING_ROWS_JSO,
 }
 
 const TITLE_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TitleRowUsage, string[]>> = {
   [TitleRowUsage.JsoProperty]: ['min-h-[26px]'],
   [TitleRowUsage.DdlApiProperty]: ['min-h-[26px]'],
+  [TitleRowUsage.JsonSchemaProperty]: ['min-h-[26px]'],
 }
 
 function getTitleRowClassesByUsage(usage: TitleRowUsage): string {

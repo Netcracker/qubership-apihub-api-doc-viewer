@@ -45,7 +45,8 @@ import {
 import { ColumnTypeLabelWithDiffs } from "./ColumnTypeLabelWithDiffs/ColumnTypeLabelWithDiffs"
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
-import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
+import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
+import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 
 type ColumnNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
