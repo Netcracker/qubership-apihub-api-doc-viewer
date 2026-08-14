@@ -24,6 +24,7 @@ export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer';
 export * from './components/GraphQLOperationViewer/GraphQLOperationViewer';
 export * from './components/JsonSchemaViewer/JsonSchemaDiffViewer';
 export * from './components/JsonSchemaViewer/JsonSchemaViewer';
+export * from './components/JsonSchemaNextViewer/JsonSchemaNextViewer';
 export * from './types/DisplayMode';
 export * from './types/LayoutMode';
 export { buildOpenApiDiffCause } from './utils/common/changes';
