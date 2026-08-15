@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-module.exports = {
+// This package is "type": "module". jest 29 always compiled a .ts config as CommonJS;
+// jest 30 honours the package type and loads it as ESM, where `module` is not defined.
+export default {
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
         module: 'CommonJS',
         moduleResolution: 'node',
         jsx: 'react-jsx',
+        // TypeScript 6: 'moduleResolution: node' is deprecated (TS5107) but still
+        // functional through 6.x, and rootDir must be explicit next to the outDir
+        // inherited from the base config (TS5011).
+        ignoreDeprecations: '6.0',
+        rootDir: './',
       },
     }],
   },

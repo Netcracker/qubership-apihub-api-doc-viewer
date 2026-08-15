@@ -46,5 +46,9 @@
   },
   "eslintConfig": {
     "extends": ".eslintrc.json"
+  },
+  "overrides": {
+    "jest-environment-node": "30.4.1",
+    "jest-mock": "30.4.1"
   }
 }
