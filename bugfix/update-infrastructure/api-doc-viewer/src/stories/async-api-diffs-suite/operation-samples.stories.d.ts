@@ -1,0 +1,64 @@
+import type { StoryObj } from "@storybook/react";
+import { type AsyncApiCaseStoryComponentProps } from "./async-api-diffs-utils";
+declare const meta: {
+    title: string;
+    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    argTypes: {
+        beforeYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        afterYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+    };
+};
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const Case_1_1_operation_title_changed: Story;
+export declare const Case_1_2_operation_title_removed: Story;
+export declare const Case_1_3_operation_title_added: Story;
+export declare const Case_2_1_operation_description_changed: Story;
+export declare const Case_2_2_operation_description_removed: Story;
+export declare const Case_2_3_operation_description_added: Story;
+export declare const Case_2_4_operation_long_description_changed: Story;
+export declare const Case_2_5_operation_long_description_removed: Story;
+export declare const Case_2_6_operation_long_description_added: Story;
+export declare const Case_2_7_operation_summary_changed: Story;
+export declare const Case_2_8_operation_summary_removed: Story;
+export declare const Case_2_9_operation_summary_added: Story;
+export declare const Case_2_10_operation_long_summary_changed: Story;
+export declare const Case_2_11_operation_long_summary_removed: Story;
+export declare const Case_2_12_operation_long_summary_added: Story;
+export declare const Case_2_13_operation_description_moved_to_summary: Story;
+export declare const Case_2_14_operation_long_description_moved_to_summary: Story;
+export declare const Case_2_15_operation_long_description_moved_to_long_summary: Story;
+export declare const Case_2_16_operation_description_moved_to_long_summary: Story;
+export declare const Case_2_17_operation_summary_moved_to_description: Story;
+export declare const Case_2_18_operation_long_summary_moved_to_description: Story;
+export declare const Case_2_19_operation_long_summary_moved_to_long_description: Story;
+export declare const Case_2_20_operation_summary_moved_to_long_description: Story;
+export declare const Case_3_1_operation_bindings_add_one_more_binding: Story;
+export declare const Case_3_2_operation_bindings_remove_one_of_several_bindings: Story;
+export declare const Case_3_3_operation_bindings_add_bindings: Story;
+export declare const Case_3_4_operation_bindings_remove_bindings: Story;
+export declare const Case_4_1_operation_bindings_kafka_bindingVersion_changed: Story;
+export declare const Case_4_2_operation_bindings_kafka_bindingVersion_removed: Story;
+export declare const Case_4_3_operation_bindings_kafka_bindingVersion_added: Story;
+export declare const Case_5_1_operation_bindings_kafka_internal_jso_changes: Story;
+export declare const Case_6_1_operation_x_second_added: Story;
+export declare const Case_6_2_operation_x_second_removed: Story;
+export declare const Case_6_3_operation_x_second_changed: Story;
+export declare const Case_6_4_operation_x_first_and_x_second_added: Story;
+export declare const Case_6_5_operation_x_first_and_x_second_removed: Story;
