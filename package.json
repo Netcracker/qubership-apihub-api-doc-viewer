@@ -22,15 +22,15 @@
     "update-lock-file": "update-lock-file @netcracker"
   },
   "dependencies": {
-    "@netcracker/qubership-apihub-api-diff": "dev",
-    "@netcracker/qubership-apihub-api-unifier": "dev",
-    "@netcracker/qubership-apihub-ddlapi": "1.0.0",
-    "@netcracker/qubership-apihub-graphapi": "dev",
-    "@netcracker/qubership-apihub-json-crawl": "1.2.2"
+    "@netcracker/qubership-apihub-api-diff": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-api-unifier": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-ddlapi": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-graphapi": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-json-crawl": "bugfix-update-infrastructure"
   },
   "devDependencies": {
-    "@netcracker/qubership-apihub-compatibility-suites": "2.6.1",
-    "@netcracker/qubership-apihub-jest-chrome-in-docker-environment": "2.0.1",
+    "@netcracker/qubership-apihub-compatibility-suites": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-jest-chrome-in-docker-environment": "bugfix-update-infrastructure",
     "@netcracker/qubership-apihub-npm-gitflow": "3.1.1",
     "@types/lodash-es": "4.17.12",
     "@typescript-eslint/eslint-plugin": "6.0.0",
