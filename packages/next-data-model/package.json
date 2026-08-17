@@ -14,5 +14,12 @@
     "@types/node": "^24.0.0",
     "jest": "30.4.2",
     "ts-jest": "29.4.12"
+  },
+  "dependencies": {
+    "@asyncapi/parser": "3.6.0",
+    "@netcracker/qubership-apihub-api-diff": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-api-unifier": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-ddlapi": "bugfix-update-infrastructure",
+    "@netcracker/qubership-apihub-json-crawl": "bugfix-update-infrastructure"
   }
 }
