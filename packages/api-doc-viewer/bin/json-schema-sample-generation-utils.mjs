@@ -252,9 +252,21 @@ export const buildSchema = (schemaType, activeGroups) => {
   return schema;
 };
 
+const isRedundantRenderingGroupSubset = (schemaType, activeGroups) => {
+  const active = new Set(activeGroups);
+  // Tuple `items` + `additionalItems` uses the same schema fragment as `additionalItems`
+  // alone — see buildSchema() branch order (additionalItems wins over items).
+  if (schemaType === "array" && active.has("items") && active.has("additionalItems")) {
+    return true;
+  }
+  return false;
+};
+
 export const collectCasesForType = (schemaType) => {
   const groupOrder = TYPE_RENDERING_GROUPS[schemaType];
-  const subsets = powerSet(groupOrder);
+  const subsets = powerSet(groupOrder).filter(
+    (activeGroups) => !isRedundantRenderingGroupSubset(schemaType, activeGroups),
+  );
   const totalCount = subsets.length;
 
   return subsets.map((activeGroups, subsetIndex) => {
