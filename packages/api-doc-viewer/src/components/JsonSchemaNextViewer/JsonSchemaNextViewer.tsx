@@ -1,4 +1,5 @@
 import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from "@apihub/constants/configuration"
+import { CustomizationOptions, CustomizationOptionsContext } from "@apihub/contexts/CustomizationOptionsContext"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LevelContext } from "@apihub/contexts/LevelContext"
@@ -17,6 +18,7 @@ export type JsonSchemaNextViewerProps = {
   displayMode?: DisplayMode
   devMode?: boolean
   initialLevel?: number
+  customizationOptions?: CustomizationOptions
 }
 
 export const JsonSchemaNextViewer: FC<JsonSchemaNextViewerProps> = memo((props) => {
@@ -38,6 +40,7 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
     displayMode = DEFAULT_DISPLAY_MODE,
     devMode = false,
     initialLevel = 0,
+    customizationOptions,
   } = props
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
@@ -60,14 +63,16 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
   }
 
   return (
-    <DisplayModeContext.Provider value={displayMode}>
-      <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
-        <LevelContext.Provider value={initialLevel}>
-          <div data-testid="json-schema-next-viewer">
-            <JsonSchemaNodeViewer node={root} />
-          </div>
-        </LevelContext.Provider>
-      </LayoutModeContext.Provider>
-    </DisplayModeContext.Provider>
+    <CustomizationOptionsContext.Provider value={customizationOptions}>
+      <DisplayModeContext.Provider value={displayMode}>
+        <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
+          <LevelContext.Provider value={initialLevel}>
+            <div data-testid="json-schema-next-viewer">
+              <JsonSchemaNodeViewer node={root} />
+            </div>
+          </LevelContext.Provider>
+        </LayoutModeContext.Provider>
+      </DisplayModeContext.Provider>
+    </CustomizationOptionsContext.Provider>
   )
 }

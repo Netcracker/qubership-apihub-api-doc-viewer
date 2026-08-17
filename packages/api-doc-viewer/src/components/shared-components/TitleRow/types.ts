@@ -20,6 +20,7 @@ export enum TitleRowUsage {
 
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
   value?: string // Document Mode
+  titleContent?: ReactElement
   expandable: boolean
   expanded?: boolean
   onClickExpander?: () => void

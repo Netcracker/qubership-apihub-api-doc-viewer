@@ -140,4 +140,42 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(outer.childrenNodes()).toHaveLength(1)
     expect(outer.childrenNodes()[0].key).toBe("inner")
   })
+
+  it("creates an items node when items is a schema object", () => {
+    const schema = {
+      type: "array",
+      items: { type: "string" },
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
+    const rootChildren = tree.root!.childrenNodes()
+
+    expect(rootChildren).toHaveLength(1)
+    expect(rootChildren[0].kind).toBe(JsonSchemaTreeNodeKinds.ITEMS)
+    expect(rootChildren[0].value()?.type).toBe("string")
+  })
+
+  it("creates indexed item nodes directly when items is a tuple array", () => {
+    const schema = {
+      type: "array",
+      items: [
+        { type: "string" },
+      ],
+      additionalItems: { type: "integer" },
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
+    const rootChildren = tree.root!.childrenNodes()
+
+    expect(rootChildren.some((node) => node.kind === JsonSchemaTreeNodeKinds.ITEMS)).toBe(false)
+
+    const itemNode = rootChildren.find((node) => node.kind === JsonSchemaTreeNodeKinds.ITEM)
+    expect(itemNode).toBeDefined()
+    expect(itemNode!.key).toBe(0)
+    expect(itemNode!.value()?.type).toBe("string")
+
+    const additionalItemsNode = rootChildren.find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_ITEMS)
+    expect(additionalItemsNode).toBeDefined()
+    expect(additionalItemsNode!.value()?.type).toBe("integer")
+  })
 })

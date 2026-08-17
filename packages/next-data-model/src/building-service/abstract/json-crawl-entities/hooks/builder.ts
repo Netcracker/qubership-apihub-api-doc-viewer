@@ -74,6 +74,8 @@ export interface TreeBuildingHooksFactoryParams<
   isComplexNode: (node: N) => boolean
   resolveNodeKey: (key: NodeKey, value: unknown) => NodeKey
   isDisallowedValue?: (value: unknown) => boolean
+  /** When true, descend into value without creating a tree node (legacy JSON Schema tuple `items`). */
+  shouldSkipNodeCreation?: (value: unknown, rules: R) => boolean
   shouldStopAfterNodeCreation?: (node: N, value: unknown) => boolean
   /** Opt-in lazy materialization. */
   lazy?: {
@@ -114,6 +116,7 @@ export function createTreeBuildingHooks<
     isComplexNode,
     resolveNodeKey,
     isDisallowedValue = defaultIsDisallowedValue,
+    shouldSkipNodeCreation,
     shouldStopAfterNodeCreation,
     lazy,
   } = params;
@@ -176,6 +179,9 @@ export function createTreeBuildingHooks<
     }
     if (isDisallowedValue(value)) {
       return { done: true };
+    }
+    if (shouldSkipNodeCreation?.(value, rules)) {
+      return;
     }
     if (!rules.kind || !supportedNodeKinds.includes(rules.kind)) {
       return;

@@ -24,28 +24,28 @@ import {
 export type JsonSchemaValidationRow = {
   key: JsonSchemaValidationRowKey
   label: string
-  value: string
+  values: string[]
 }
 
-function formatBoundRangeLabel(
+function formatBoundRangeChips(
   min: number | undefined,
   max: number | undefined,
   exclusiveMin?: number | boolean,
   exclusiveMax?: number | boolean,
-): string | undefined {
+): string[] {
   const range = resolveBoundRangeLabel({ min, max, exclusiveMin, exclusiveMax })
   if (!range.visible) {
-    return undefined
+    return []
   }
-  return [range.data.lower, range.data.upper].filter(Boolean).join(", ")
+  return [range.data.lower, range.data.upper].filter((chip): chip is string => Boolean(chip))
 }
 
-function formatValueRangeLabel(value: JsonSchemaTreeNodeValueTypeNumber): string | undefined {
+function formatValueRangeChips(value: JsonSchemaTreeNodeValueTypeNumber): string[] {
   const range = resolveValueRangeLabel(value)
   if (!range.visible) {
-    return undefined
+    return []
   }
-  return [range.data.lower, range.data.upper].filter(Boolean).join(", ")
+  return [range.data.lower, range.data.upper].filter((chip): chip is string => Boolean(chip))
 }
 
 function formatScalar(value: unknown): string {
@@ -66,49 +66,57 @@ export function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | un
   const objectValue = value as JsonSchemaTreeNodeValueTypeObject
   const arrayValue = value as JsonSchemaTreeNodeValueTypeArray
 
-  const valueLength = formatBoundRangeLabel(stringValue.minLength, stringValue.maxLength)
-  if (valueLength) {
-    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_LENGTH, label: VALUE_LENGTH_LABEL, value: valueLength })
+  const valueLength = formatBoundRangeChips(stringValue.minLength, stringValue.maxLength)
+  if (valueLength.length) {
+    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_LENGTH, label: VALUE_LENGTH_LABEL, values: valueLength })
   }
 
   if (stringValue.pattern !== undefined) {
-    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_PATTERN, label: VALUE_PATTERN_LABEL, value: String(stringValue.pattern) })
+    rows.push({
+      key: JsonSchemaValidationRowKeys.VALUE_PATTERN,
+      label: VALUE_PATTERN_LABEL,
+      values: [String(stringValue.pattern)],
+    })
   }
 
-  const propertiesCount = formatBoundRangeLabel(objectValue.minProperties, objectValue.maxProperties)
-  if (propertiesCount) {
-    rows.push({ key: JsonSchemaValidationRowKeys.PROPERTIES_COUNT, label: PROPERTIES_COUNT_LABEL, value: propertiesCount })
+  const propertiesCount = formatBoundRangeChips(objectValue.minProperties, objectValue.maxProperties)
+  if (propertiesCount.length) {
+    rows.push({
+      key: JsonSchemaValidationRowKeys.PROPERTIES_COUNT,
+      label: PROPERTIES_COUNT_LABEL,
+      values: propertiesCount,
+    })
   }
 
   if (arrayValue.uniqueItems !== undefined) {
     rows.push({
       key: JsonSchemaValidationRowKeys.UNIQUE_ITEMS,
       label: UNIQUE_ITEMS_LABEL,
-      value: String(arrayValue.uniqueItems),
+      values: [String(arrayValue.uniqueItems)],
     })
   }
 
-  const itemsCount = formatBoundRangeLabel(arrayValue.minItems, arrayValue.maxItems)
-  if (itemsCount) {
-    rows.push({ key: JsonSchemaValidationRowKeys.ITEMS_COUNT, label: ITEMS_COUNT_LABEL, value: itemsCount })
+  const itemsCount = formatBoundRangeChips(arrayValue.minItems, arrayValue.maxItems)
+  if (itemsCount.length) {
+    rows.push({ key: JsonSchemaValidationRowKeys.ITEMS_COUNT, label: ITEMS_COUNT_LABEL, values: itemsCount })
   }
 
   if (numberValue.multipleOf !== undefined) {
     rows.push({
       key: JsonSchemaValidationRowKeys.VALUE_MULTIPLE_OF,
       label: VALUE_MULTIPLE_OF_LABEL,
-      value: String(numberValue.multipleOf),
+      values: [String(numberValue.multipleOf)],
     })
   }
 
-  const valueRange = formatValueRangeLabel(numberValue)
-  if (valueRange) {
-    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_RANGE, label: VALUE_RANGE_LABEL, value: valueRange })
+  const valueRange = formatValueRangeChips(numberValue)
+  if (valueRange.length) {
+    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_RANGE, label: VALUE_RANGE_LABEL, values: valueRange })
   }
 
   return rows
 }
 
-export function resolveListValidationValue(values: unknown[]): string {
-  return values.map(formatScalar).join(", ")
+export function resolveListValidationValues(values: unknown[]): string[] {
+  return values.map(formatScalar)
 }

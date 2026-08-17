@@ -1,3 +1,4 @@
+import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -14,6 +15,7 @@ import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/A
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
+import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types"
 import { TextValueVariant } from "@apihub/components/shared-components/TextValue/types"
 import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "@apihub/components/shared-components/TitleRow/types"
@@ -22,11 +24,16 @@ import {
   PrecededBy,
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
-import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
-import { resolveListValidationValue, resolveValidationRows } from "../utils/validation-rows"
+import {
+  isJsonSchemaBooleanAdditionalPropertiesNode,
+  resolveJsonSchemaNodeTitleDisplay,
+} from "../utils/resolve-json-schema-node-title"
+import { resolveListValidationValues, resolveValidationRows } from "../utils/validation-rows"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaExtensionsSection } from "./JsonSchemaExtensionsSection"
+import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
 import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
+import { JsonSchemaValidationChips } from "./JsonSchemaValidationChips"
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode
@@ -42,9 +49,9 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
+  const customizationOptions = useCustomizationOptions()
   const value = node.value()
   const meta = node.meta()
-  const isRoot = isJsonSchemaRootNode(node)
 
   const visibility = useMemo(
     () => resolvePlainPropertyNodeVisibility(node as JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>, displayMode),
@@ -57,13 +64,24 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
   const children = node.childrenNodes()
 
-  const titleValue = useMemo(() => {
-    if (isRoot) {
-      return value?.title ?? ""
-    }
-    const requiredSuffix = meta.required ? " *" : ""
-    return `${node.key}${requiredSuffix}`
-  }, [isRoot, meta.required, node.key, value?.title])
+  const titleDisplay = useMemo(
+    () => resolveJsonSchemaNodeTitleDisplay({
+      node,
+      meta,
+      headerRowTitle: customizationOptions?.headerRowTitle,
+    }),
+    [customizationOptions?.headerRowTitle, meta, node],
+  )
+
+  const titleContent = useMemo(
+    () => <JsonSchemaNodeTitle display={titleDisplay} />,
+    [titleDisplay],
+  )
+
+  const showTypeSubheader = useMemo(
+    () => !isJsonSchemaBooleanAdditionalPropertiesNode(node, meta),
+    [meta, node],
+  )
 
   const subheader = useCallback(
     () => (
@@ -72,32 +90,32 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
         meta={meta}
         isCycle={node.isCycle}
         layoutSide={CHANGED_LAYOUT_SIDE}
+        showTypeLabel={showTypeSubheader}
       />
     ),
-    [meta, node.isCycle, value],
+    [meta, node.isCycle, showTypeSubheader, value],
   )
 
   const validationRows = useMemo(() => resolveValidationRows(value), [value])
 
   return (
     <div data-testid="json-schema-node-viewer" data-name="JsonNode" className="flex flex-col">
-      {!isRoot && (
-        <TitleRow
-          data-precededby={precededBy}
-          {...listLastRowFlags}
-          value={titleValue}
-          expandable={false}
-          expanded={false}
-          variant={TextValueVariant.body2}
-          subheader={subheader}
-          usage={TitleRowUsage.JsonSchemaProperty}
-        />
-      )}
+      <TitleRow
+        data-precededby={precededBy}
+        {...listLastRowFlags}
+        titleContent={titleContent}
+        expandable={false}
+        expanded={false}
+        variant={TextValueVariant.body2}
+        subheader={subheader}
+        usage={TitleRowUsage.JsonSchemaProperty}
+      />
 
       <>
         {visibility.showDeprecationReasonRow && visibility.deprecationReason && (
           <MarkdownTextRow
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            usage={TextRowUsage.JsonSchemaDescription}
             value={`**Deprecation reason:** ${visibility.deprecationReason}`}
           />
         )}
@@ -105,6 +123,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
         {visibility.showDescription && value?.description && (
           <MarkdownTextRow
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+            usage={TextRowUsage.JsonSchemaDescription}
             value={value.description}
           />
         )}
@@ -115,11 +134,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
             label="Allowed values"
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
             subheader={() => (
-              <AdditionalInfoPiece
-                isVisible={true}
-                value={resolveListValidationValue(value.enum!)}
-                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-              />
+              <JsonSchemaValidationChips values={resolveListValidationValues(value.enum!)} />
             )}
             {...resolvePlainPropertyListLastRowFlags(
               isLastInList,
@@ -153,11 +168,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
             label="Examples"
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
             subheader={() => (
-              <AdditionalInfoPiece
-                isVisible={true}
-                value={resolveListValidationValue(value.examples!)}
-                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-              />
+              <JsonSchemaValidationChips values={resolveListValidationValues(value.examples!)} />
             )}
           />
         )}
@@ -169,11 +180,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
             label={row.label}
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
             subheader={() => (
-              <AdditionalInfoPiece
-                isVisible={true}
-                value={row.value}
-                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-              />
+              <JsonSchemaValidationChips values={row.values} />
             )}
           />
         ))}

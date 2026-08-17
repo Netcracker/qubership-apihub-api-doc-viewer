@@ -14,7 +14,7 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   TreeNodeParams,
 } from "../../../model/abstract/tree/tree-node.interface"
-import { isObject } from "../../../utilities"
+import { isObject, isArray } from "../../../utilities"
 import { NodeId, NodeKey } from "../../../utility-types"
 import { TreeBuilder } from "../../abstract/tree/builder"
 import { AncestorsRegistry } from "../../abstract/json-crawl-entities/state/ancestors-registry"
@@ -117,6 +117,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
       isComplexNode: (node) => this.isComplexTreeNode(node),
       resolveNodeKey: (key, value) => this.resolveNodeKey(key, value),
       isDisallowedValue: (value) => value === undefined || value === null,
+      shouldSkipNodeCreation: (value) => isArray(value),
       lazy: this.materializeDepth === undefined
         ? undefined
         : {

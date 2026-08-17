@@ -6,13 +6,18 @@ import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-
 import { FC, memo, useCallback, useMemo, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
 import { isMarkdownExpandable, shortenMarkdownValue } from "./shorten-markdown-value"
 import "./MarkdownTextRow.css"
 
+const JSON_SCHEMA_DESCRIPTION_MARKDOWN_CLASS = "markdown-text-row__json-schema-description"
+const JSON_SCHEMA_DESCRIPTION_EXPANDER_CLASS = "markdown-text-row__json-schema-expander"
+
 type MarkdownTextValueProps = {
   value: string
   variant?: TextValueVariant
+  usage?: TextRowUsage
   layoutSide: LayoutSide
   diff?: ChangedPropertyMetaData
 }
@@ -21,11 +26,11 @@ type MarkdownExpanderProps = {
   isExpandable: boolean
   expanded: boolean
   onToggle: () => void
-  variant?: TextValueVariant
+  expanderClassName: string
 }
 
 const MarkdownExpander: FC<MarkdownExpanderProps> = (props) => {
-  const { isExpandable, expanded, onToggle, variant = TextValueVariant.body2 } = props
+  const { isExpandable, expanded, onToggle, expanderClassName } = props
 
   if (!isExpandable) {
     return null
@@ -34,7 +39,7 @@ const MarkdownExpander: FC<MarkdownExpanderProps> = (props) => {
   return (
     <div className="mt-1">
       <a
-        className={`text-value-expander ${getExpanderFontSizeClass(variant)} text-blue-600 hover:text-blue-500 hover:cursor-pointer`.trim()}
+        className={`${expanderClassName} text-blue-600 hover:text-blue-500 hover:cursor-pointer`.trim()}
         onClick={onToggle}
       >
         {!expanded ? "Show more" : "Show less"}
@@ -124,8 +129,25 @@ function getExpanderFontSizeClass(variant: TextValueVariant): string {
   }
 }
 
+function resolveMarkdownTypography(
+  usage: TextRowUsage | undefined,
+  variant: TextValueVariant,
+): { markdownClassName: string; expanderClassName: string } {
+  if (usage === TextRowUsage.JsonSchemaDescription) {
+    return {
+      markdownClassName: JSON_SCHEMA_DESCRIPTION_MARKDOWN_CLASS,
+      expanderClassName: JSON_SCHEMA_DESCRIPTION_EXPANDER_CLASS,
+    }
+  }
+
+  return {
+    markdownClassName: ["text-slate-700", getMarkdownFontSizeClass(variant)].join(" "),
+    expanderClassName: `text-value-expander ${getExpanderFontSizeClass(variant)}`.trim(),
+  }
+}
+
 export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextValueProps>((props) => {
-  const { value, variant = TextValueVariant.body2, layoutSide, diff } = props
+  const { value, variant = TextValueVariant.body2, usage, layoutSide, diff } = props
   const [expanded, setExpanded] = useState(false)
 
   const { resolvedValue, isInvisible } = useMemo(
@@ -143,15 +165,19 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
     [resolvedValue],
   )
 
+  const typography = useMemo(
+    () => resolveMarkdownTypography(usage, variant),
+    [usage, variant],
+  )
+
   const markdownClassName = useMemo(() => {
     const backgroundColor = takeDiffSideBackgroundColor(diff, layoutSide)
     return [
       "markdown",
-      "text-slate-700",
-      getMarkdownFontSizeClass(variant),
+      typography.markdownClassName,
       DiffsClassesBuilder.background(backgroundColor),
     ].filter(Boolean).join(" ")
-  }, [diff, layoutSide, variant])
+  }, [diff, layoutSide, typography.markdownClassName])
 
   const onToggleExpanded = useCallback(() => {
     setExpanded(prev => !prev)
@@ -170,7 +196,7 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
         isExpandable={isExpandable}
         expanded={expanded}
         onToggle={onToggleExpanded}
-        variant={variant}
+        expanderClassName={typography.expanderClassName}
       />
     </div>
   )

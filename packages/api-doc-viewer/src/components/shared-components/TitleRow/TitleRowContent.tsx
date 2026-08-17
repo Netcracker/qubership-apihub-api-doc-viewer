@@ -37,6 +37,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     expanded,
     onClickExpander,
     value,
+    titleContent,
     variant,
     layoutSide,
     enableHeader = true,
@@ -92,6 +93,9 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   }, [diff, layoutSide])
 
   const headerValue = useMemo(() => {
+    if (titleContent) {
+      return titleContent
+    }
     if (!enableHeaderValue) {
       return null
     }
@@ -108,7 +112,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         onClick={onClickExpander}
       />
     )
-  }, [enableHeaderValue, precededBy, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
+  }, [titleContent, enableHeaderValue, precededBy, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
   const isDdlApiPropertyRow = usage === TitleRowUsage.DdlApiProperty
 
   const header = useMemo(() => {

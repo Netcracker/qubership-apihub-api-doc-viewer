@@ -15,18 +15,21 @@ export type JsonSchemaTitleSubheaderProps = {
   meta: JsonSchemaTreeNodeMeta | null | undefined
   isCycle: boolean
   layoutSide: LayoutSide
+  showTypeLabel?: boolean
 }
 
 export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (props) => {
-  const { value, meta, isCycle, layoutSide } = props
+  const { value, meta, isCycle, layoutSide, showTypeLabel = true } = props
 
   return (
     <div className="flex flex-row items-center gap-2">
-      <SubheaderValue
-        isVisible={true}
-        value={resolveJsonSchemaTypeLabel(value, meta)}
-        appearance={SubheaderValueAppearance.Text}
-      />
+      {showTypeLabel && (
+        <SubheaderValue
+          isVisible={true}
+          value={resolveJsonSchemaTypeLabel(value, meta)}
+          appearance={SubheaderValueAppearance.Text}
+        />
+      )}
       {isCycle && (
         <UxTooltip text={CIRCULAR_REF_TOOLTIP}>
           <CircularRefIcon />

@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { FC, memo, useMemo } from "react"
 import "../../shared-styles/preceded-by.css"
 import { TextRowUsage } from "../TextRow/types"
@@ -9,6 +9,7 @@ import type { MarkdownTextRowContentProps } from "./types"
 
 const MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TextRowUsage, string>> = {
   [TextRowUsage.DdlApiProperty]: X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES,
+  [TextRowUsage.JsonSchemaDescription]: X_AXIS_PADDING_ROWS_JSO,
 }
 
 function getMarkdownTextRowClassesByUsage(usage: TextRowUsage): string {
@@ -36,6 +37,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
       <MarkdownTextValue
         value={value}
         variant={variant}
+        usage={usage}
         layoutSide={layoutSide}
         diff={diff}
       />
