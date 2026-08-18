@@ -1,6 +1,19 @@
 import { AbstractNodeDiffsSummaryAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-summary-aggregator"
-import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
+import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { JsonSchemaPropertyRowDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
+import { isChangedPropertyMetaData } from "@apihub/next-data-model/shared/ddlapi/guards/property-row-diffs"
+
+function addNestedDiffTypes(
+  summary: NodeDescendantDiffsSummary,
+  nestedDiffs: Partial<Record<string, unknown>> | undefined,
+): void {
+  for (const nestedDiff of Object.values(nestedDiffs ?? {})) {
+    if (isChangedPropertyMetaData(nestedDiff)) {
+      summary.add(nestedDiff.data.type)
+    }
+  }
+}
 
 export class JsonSchemaNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryAggregator {
   public aggregate(
@@ -14,12 +27,28 @@ export class JsonSchemaNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryA
     if (!nodeDiffs) {
       return summary
     }
-    for (const diff of Object.values(nodeDiffs)) {
+
+    const propertyDiffs = nodeDiffs as JsonSchemaPropertyRowDiffs
+    for (const [key, diff] of Object.entries(nodeDiffs)) {
       if (!diff) {
         continue
       }
-      summary.add(diff.data.type)
+
+      if (key === "enumValueDiffs" || key === "examplesValueDiffs") {
+        addNestedDiffTypes(summary, propertyDiffs[key])
+        continue
+      }
+
+      if (key === "validationRowDiffs" || key === "validationRowColorizingDiffs") {
+        addNestedDiffTypes(summary, propertyDiffs[key])
+        continue
+      }
+
+      if (isChangedPropertyMetaData(diff)) {
+        summary.add(diff.data.type)
+      }
     }
+
     return summary
   }
 }

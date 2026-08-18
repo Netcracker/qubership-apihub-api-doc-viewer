@@ -2,6 +2,7 @@ import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 import {
   ChangedPropertyKey,
+  ChangedPropertyMetaData,
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
   DiffStyles,
   HighlightVariant,
@@ -99,6 +100,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     key: ChangedPropertyKey<JsonSchemaTreeNodeValue | null>,
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
   ): void {
+    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected buildChangedPropertyMetaDataFromDiff(diff: Diff<DiffType>): ChangedPropertyMetaData {
     let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
     if (isDiffAdd(diff)) {
@@ -143,7 +148,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         textHighlighterColor: HighlightVariant.Yellow,
       }
     }
-    nodeDiffs[key] = {
+    return {
       data: diff,
       styles: {
         before: beforeStyles,
@@ -159,5 +164,152 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       },
       highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
     }
+  }
+
+  protected readonly ROW_PARTIAL_CHANGE_STYLES: { before: DiffStyles; after: DiffStyles } = {
+    before: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+    },
+    after: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+    },
+  }
+
+  protected asReplaceRowColorizingDiff(
+    sourceDiff: ChangedPropertyMetaData,
+  ): ChangedPropertyMetaData {
+    const { data } = sourceDiff
+
+    if (isDiffReplace(data)) {
+      return {
+        ...sourceDiff,
+        styles: this.ROW_PARTIAL_CHANGE_STYLES,
+      }
+    }
+
+    if (isDiffAdd(data)) {
+      return {
+        ...sourceDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: "replace" as const,
+          beforeValue: false,
+          afterValue: data.afterValue ?? true,
+          beforeDeclarationPaths: [],
+          afterDeclarationPaths: data.afterDeclarationPaths,
+        },
+        styles: this.ROW_PARTIAL_CHANGE_STYLES,
+      }
+    }
+
+    if (isDiffRemove(data)) {
+      return {
+        ...sourceDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: "replace" as const,
+          beforeValue: data.beforeValue ?? true,
+          afterValue: false,
+          beforeDeclarationPaths: data.beforeDeclarationPaths,
+          afterDeclarationPaths: [],
+        },
+        styles: this.ROW_PARTIAL_CHANGE_STYLES,
+      }
+    }
+
+    return sourceDiff
+  }
+
+  protected buildChipAddRemoveDiffMetadata(
+    diff: Diff<DiffType>,
+    chipHighlight?: {
+      addAfter?: Pick<DiffStyles, "textHighlighterColor" | "borderShadowColor" | "isFontMuted">
+      removeBefore?: Pick<DiffStyles, "textHighlighterColor" | "borderShadowColor" | "isFontMuted">
+    },
+  ): ChangedPropertyMetaData {
+    if (isDiffAdd(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+          after: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            ...chipHighlight?.addAfter,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    if (isDiffRemove(diff)) {
+      return {
+        data: diff,
+        styles: {
+          before: {
+            isContentVisible: true,
+            isHeaderVisible: true,
+            ...chipHighlight?.removeBefore,
+          },
+          after: {
+            isContentVisible: false,
+            isHeaderVisible: true,
+          },
+        },
+        flags: {
+          before: { increaseLevel: false },
+          after: { increaseLevel: false },
+        },
+        highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
+      }
+    }
+
+    return this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected buildChipReplaceDiffMetadata(
+    diff: Diff<DiffType>,
+    chipHighlight: Pick<DiffStyles, "textHighlighterColor" | "borderShadowColor">,
+  ): ChangedPropertyMetaData {
+    const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+    return {
+      ...metadata,
+      styles: {
+        before: {
+          ...metadata.styles.before,
+          backgroundColor: undefined,
+          textHighlighterColor: chipHighlight.textHighlighterColor,
+          borderShadowColor: chipHighlight.borderShadowColor,
+        },
+        after: {
+          ...metadata.styles.after,
+          backgroundColor: undefined,
+          textHighlighterColor: chipHighlight.textHighlighterColor,
+          borderShadowColor: chipHighlight.borderShadowColor,
+        },
+      },
+    }
+  }
+
+  protected hasWholeNodeAddOrRemoveDiff(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+  ): boolean {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    return !!nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))
   }
 }

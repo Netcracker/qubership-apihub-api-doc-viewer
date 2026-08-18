@@ -2,6 +2,8 @@ import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsCo
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
+import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
@@ -12,6 +14,24 @@ import {
   resolvePlainPropertyListLastRowFlags,
   resolvePlainPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
+import {
+  resolveJsonSchemaPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
+  resolveJsonSchemaPropertyListLastRowFlags,
+  resolveJsonSchemaPropertyNodeVisibility,
+} from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
+import {
+  resolveJsonSchemaDefaultSideDisplay,
+  resolveJsonSchemaListValueSideItems,
+  takeJsonSchemaDefaultDiff,
+  takeJsonSchemaDefaultRowColorizingDiff,
+  takeJsonSchemaEnumRowColorizingDiff,
+  takeJsonSchemaEnumValueDiffs,
+  takeJsonSchemaExamplesRowColorizingDiff,
+  takeJsonSchemaExamplesValueDiffs,
+  takeJsonSchemaValidationRowColorizingDiff,
+  takeJsonSchemaValidationRowDiff,
+} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaValidationRowKey } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { FC, useCallback, useMemo, useState } from "react"
 import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
 import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
@@ -33,7 +53,17 @@ import {
   isJsonSchemaBooleanAdditionalPropertiesNode,
   resolveJsonSchemaNodeTitleDisplay,
 } from "../utils/resolve-json-schema-node-title"
-import { resolveListValidationValues, resolveValidationRows } from "../utils/validation-rows"
+import { resolveValidationRows } from "../utils/validation-rows"
+import { JsonSchemaValidationRowKey as ViewerValidationRowKey } from "../utils/validation-row-keys"
+import {
+  ITEMS_COUNT_LABEL,
+  PROPERTIES_COUNT_LABEL,
+  UNIQUE_ITEMS_LABEL,
+  VALUE_LENGTH_LABEL,
+  VALUE_MULTIPLE_OF_LABEL,
+  VALUE_PATTERN_LABEL,
+  VALUE_RANGE_LABEL,
+} from "../../../consts/validations"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaExtensionsSection } from "./JsonSchemaExtensionsSection"
 import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
@@ -50,6 +80,22 @@ import {
 
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 import { resolveJsonSchemaPropertyNestingIndicatorTitle } from "../utils/resolve-json-schema-nesting-indicator-title"
+
+const VALIDATION_ROW_LABELS: Record<ViewerValidationRowKey, string> = {
+  valueLength: VALUE_LENGTH_LABEL,
+  valuePattern: VALUE_PATTERN_LABEL,
+  valueRange: VALUE_RANGE_LABEL,
+  valueMultipleOf: VALUE_MULTIPLE_OF_LABEL,
+  propertiesCount: PROPERTIES_COUNT_LABEL,
+  itemsCount: ITEMS_COUNT_LABEL,
+  uniqueItems: UNIQUE_ITEMS_LABEL,
+}
+
+function isJsonSchemaPropertyNodeWithDiffs(
+  node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
+): node is JsonSchemaTreeNodeWithDiffs<typeof JsonSchemaTreeNodeKinds.PROPERTY> {
+  return isJsonSchemaTreeNodeWithDiffs(node) && node.kind === JsonSchemaTreeNodeKinds.PROPERTY
+}
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
@@ -70,13 +116,44 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   const value = node.value()
   const meta = node.meta()
 
+  const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
+
   const visibility = useMemo(
-    () => resolvePlainPropertyNodeVisibility(node as JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>, displayMode),
-    [node, displayMode],
+    () => propertyNodeWithDiffs
+      ? resolveJsonSchemaPropertyNodeVisibility(propertyNodeWithDiffs, displayMode)
+      : resolvePlainPropertyNodeVisibility(node as JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>, displayMode),
+    [displayMode, node, propertyNodeWithDiffs],
   )
   const listLastRowFlags = useMemo(
-    () => resolvePlainPropertyListLastRowFlags(isLastInList, visibility),
-    [isLastInList, visibility],
+    () => propertyNodeWithDiffs
+      ? resolveJsonSchemaPropertyListLastRowFlags(isLastInList, visibility)
+      : resolvePlainPropertyListLastRowFlags(isLastInList, visibility),
+    [isLastInList, propertyNodeWithDiffs, visibility],
+  )
+
+  const enumValueDiffs = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaEnumValueDiffs(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
+  )
+  const enumRowColorizingDiff = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaEnumRowColorizingDiff(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
+  )
+  const examplesValueDiffs = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaExamplesValueDiffs(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
+  )
+  const examplesRowColorizingDiff = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaExamplesRowColorizingDiff(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
+  )
+  const defaultValueDiff = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaDefaultDiff(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
+  )
+  const defaultValueRowColorizingDiff = useMemo(
+    () => (propertyNodeWithDiffs ? takeJsonSchemaDefaultRowColorizingDiff(propertyNodeWithDiffs) : undefined),
+    [propertyNodeWithDiffs],
   )
 
   const children = useMemo(
@@ -156,7 +233,109 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [meta, node.isCycle, showTypeSubheader, titleRowDiffProps.diff, value],
   )
 
-  const validationRows = useMemo(() => resolveValidationRows(value), [value])
+  const validationRows = useMemo(() => {
+    const baseRows = resolveValidationRows(value)
+    if (!propertyNodeWithDiffs) {
+      return baseRows
+    }
+
+    const presentKeys = new Set(baseRows.map((row) => row.key))
+    const diffOnlyRows = (Object.keys(VALIDATION_ROW_LABELS) as ViewerValidationRowKey[])
+      .filter((rowKey) => !presentKeys.has(rowKey))
+      .filter((rowKey) => (
+        !!takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, rowKey as JsonSchemaValidationRowKey)
+        || !!takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, rowKey as JsonSchemaValidationRowKey)
+      ))
+      .map((rowKey) => ({
+        key: rowKey,
+        label: VALIDATION_ROW_LABELS[rowKey],
+        values: [] as string[],
+      }))
+
+    return [...baseRows, ...diffOnlyRows]
+  }, [propertyNodeWithDiffs, value])
+
+  const resolveAdditionalInfoRowUsesAfterRowPrecededBy = propertyNodeWithDiffs
+    ? resolveJsonSchemaPropertyAdditionalInfoRowUsesAfterRowPrecededBy
+    : resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy
+
+  const enumValuesAdditionalInfoSubheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      const sideItems = resolveJsonSchemaListValueSideItems(
+        value?.enum ?? [],
+        enumValueDiffs,
+        layoutSide,
+      )
+      if (sideItems.length === 0) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaValidationChips layoutSide={layoutSide} sideItems={sideItems} />
+      )
+    },
+    [enumValueDiffs, value?.enum],
+  )
+
+  const examplesAdditionalInfoSubheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      const sideItems = resolveJsonSchemaListValueSideItems(
+        value?.examples ?? [],
+        examplesValueDiffs,
+        layoutSide,
+      )
+      if (sideItems.length === 0) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaValidationChips layoutSide={layoutSide} sideItems={sideItems} />
+      )
+    },
+    [examplesValueDiffs, value?.examples],
+  )
+
+  const defaultAdditionalInfoSubheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      const defaultValue = propertyNodeWithDiffs
+        ? resolveJsonSchemaDefaultSideDisplay(propertyNodeWithDiffs, layoutSide)
+        : (value && "default" in value ? String(value.default) : undefined)
+      if (defaultValue === undefined) {
+        return <></>
+      }
+
+      return (
+        <AdditionalInfoPiece
+          isVisible={true}
+          value={defaultValue}
+          usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+          textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
+          borderShadowColor={takeDiffSideBorderShadowColor(defaultValueDiff, layoutSide)}
+        />
+      )
+    },
+    [defaultValueDiff, propertyNodeWithDiffs, value],
+  )
+
+  const buildValidationRowSubheader = useCallback(
+    (_rowKey: ViewerValidationRowKey, rowValues: string[]) => (
+      layoutSide: LayoutSide,
+    ) => {
+      const sideItems = resolveJsonSchemaListValueSideItems(
+        rowValues,
+        undefined,
+        layoutSide,
+      )
+      if (sideItems.length === 0) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaValidationChips layoutSide={layoutSide} sideItems={sideItems} />
+      )
+    },
+    [],
+  )
   const propertyNestingIndicatorTitle = useMemo(
     () => resolveJsonSchemaPropertyNestingIndicatorTitle(node),
     [node],
@@ -204,14 +383,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           />
         )}
 
-        {visibility.showEnumValuesRow && Array.isArray(value?.enum) && (
+        {visibility.showEnumValuesRow && (
           <AdditionalInfoRow
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
             label="Allowed values"
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-            subheader={() => (
-              <JsonSchemaValidationChips values={resolveListValidationValues(value.enum!)} />
-            )}
+            subheader={enumValuesAdditionalInfoSubheader}
+            colorizingDiff={enumRowColorizingDiff}
+            diffsSeverities={enumValueDiffs || enumRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
             {...resolvePlainPropertyListLastRowFlags(
               isLastInList,
               { ...visibility, showDefaultRow: false, showExamplesRow: false },
@@ -219,33 +398,29 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           />
         )}
 
-        {visibility.showDefaultRow && value && "default" in value && (
+        {visibility.showDefaultRow && (
           <AdditionalInfoRow
             data-precededby={
-              resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
+              resolveAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
                 ? PrecededBy.JSON_SCHEMA_VIEWER
                 : PrecededBy.JSON_SCHEMA_VIEWER
             }
             label="Default"
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-            subheader={() => (
-              <AdditionalInfoPiece
-                isVisible={true}
-                value={String(value.default)}
-                usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-              />
-            )}
+            subheader={defaultAdditionalInfoSubheader}
+            colorizingDiff={defaultValueRowColorizingDiff}
+            diffsSeverities={defaultValueDiff || defaultValueRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
           />
         )}
 
-        {visibility.showExamplesRow && Array.isArray(value?.examples) && (
+        {visibility.showExamplesRow && (
           <AdditionalInfoRow
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
             label="Examples"
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-            subheader={() => (
-              <JsonSchemaValidationChips values={resolveListValidationValues(value.examples!)} />
-            )}
+            subheader={examplesAdditionalInfoSubheader}
+            colorizingDiff={examplesRowColorizingDiff}
+            diffsSeverities={examplesValueDiffs || examplesRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
           />
         )}
 
@@ -255,9 +430,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
             label={row.label}
             usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-            subheader={() => (
-              <JsonSchemaValidationChips values={row.values} />
-            )}
+            subheader={buildValidationRowSubheader(row.key, row.values)}
+            colorizingDiff={propertyNodeWithDiffs
+              ? takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, row.key as JsonSchemaValidationRowKey)
+              : undefined}
+            diffsSeverities={propertyNodeWithDiffs && (
+              takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, row.key as JsonSchemaValidationRowKey)
+              || takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, row.key as JsonSchemaValidationRowKey)
+            ) ? nodeDiffState?.nodeDiffsSeverities : undefined}
           />
         ))}
 
