@@ -18,6 +18,8 @@ import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/A
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
+import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
+import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
 import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types"
 import { TextValueVariant } from "@apihub/components/shared-components/TextValue/types"
 import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow"
@@ -47,6 +49,7 @@ import {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
+import { resolveJsonSchemaPropertyNestingIndicatorTitle } from "../utils/resolve-json-schema-nesting-indicator-title"
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
@@ -154,6 +157,10 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   )
 
   const validationRows = useMemo(() => resolveValidationRows(value), [value])
+  const propertyNestingIndicatorTitle = useMemo(
+    () => resolveJsonSchemaPropertyNestingIndicatorTitle(node),
+    [node],
+  )
 
   const descriptionRowDiffProps = useMemo(
     () => buildRowDiffProps<JsonSchemaTreeNodeValue>(nodeDiffState, {
@@ -258,8 +265,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           <JsonSchemaExtensionsSection extensions={value.extensions} />
         )}
 
-        {!node.isCycle && (
+        {!node.isCycle && children.length > 0 && (
           <LevelContext.Provider value={level + 1}>
+            <NestingIndicatorTitleRow
+              data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+              title={propertyNestingIndicatorTitle}
+              usage={NestingIndicatorTitleRowUsage.JsonSchema}
+              lastInvisible
+            />
             {children.map((child, index) => (
               <JsonSchemaNodeViewer
                 key={child.id}
