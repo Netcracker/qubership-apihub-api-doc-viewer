@@ -2,7 +2,8 @@ import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsCo
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
   resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
@@ -36,10 +37,15 @@ import { JsonSchemaExtensionsSection } from "./JsonSchemaExtensionsSection"
 import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
 import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
 import { JsonSchemaValidationChips } from "./JsonSchemaValidationChips"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
+import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
+import { TitleRowProps } from "../../shared-components/TitleRow/types"
+
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
-  node: JsonSchemaTreeNode
+  node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
   isLastInList?: boolean
 }
 
@@ -133,6 +139,19 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
   const validationRows = useMemo(() => resolveValidationRows(value), [value])
 
+  const nodeDiffState = useNodeDiffState(node, isJsonSchemaTreeNodeWithDiffs)
+  const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities"> = useMemo(
+    () => buildRowDiffProps(nodeDiffState),
+    [nodeDiffState],
+  )
+  const descriptionRowDiffProps = useMemo(
+    () => buildRowDiffProps<JsonSchemaTreeNodeValue>(nodeDiffState, {
+      diffKey: "description" as keyof JsonSchemaTreeNodeValue,
+      diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
+    }),
+    [nodeDiffState],
+  )
+
   return (
     <div data-testid="json-schema-node-viewer" data-name="JsonNode" className="flex flex-col">
       <TitleRow
@@ -145,6 +164,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
         variant={TextValueVariant.body2}
         subheader={subheader}
         usage={TitleRowUsage.JsonSchemaProperty}
+        {...titleRowDiffProps}
       />
 
       {showNodeBody && (
@@ -157,11 +177,12 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           />
         )}
 
-        {visibility.showDescription && value?.description && (
+        {visibility.showDescription && (value?.description || descriptionRowDiffProps.diff) && (
           <MarkdownTextRow
             data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
             usage={TextRowUsage.JsonSchemaDescription}
-            value={value.description}
+            value={value?.description ?? ""}
+            {...descriptionRowDiffProps}
           />
         )}
 

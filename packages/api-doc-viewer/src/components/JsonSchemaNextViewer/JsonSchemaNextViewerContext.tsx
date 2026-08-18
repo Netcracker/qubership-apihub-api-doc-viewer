@@ -1,9 +1,9 @@
-import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { createContext, useContext } from "react"
 
 export type JsonSchemaNextViewerContextValue = {
   expandedDepth: number
-  materializeChildren: (node: JsonSchemaTreeNode) => void
+  materializeChildren: (node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs) => void
   /** Bumped after lazy materialization so viewers re-read `childrenNodes()`. */
   treeRevision: number
 }

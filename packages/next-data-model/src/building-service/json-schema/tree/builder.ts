@@ -11,8 +11,6 @@ import {
   ITreeNode,
   SimpleTreeNodeParams,
   TreeNodeComplexityTypes,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TreeNodeParams,
 } from "../../../model/abstract/tree/tree-node.interface"
 import { isObject, isArray } from "../../../utilities"
 import { NodeId, NodeKey } from "../../../utility-types"
@@ -42,18 +40,20 @@ type ComplexJsonSchemaTreeNodeParams = ComplexTreeNodeParams<
   JsonSchemaTreeNodeMeta
 >
 
+const JSON_SCHEMA_LOG_PREFIX = "[JSON Schema]"
+
 export class JsonSchemaTreeBuilder extends TreeBuilder<
   JsonSchemaTreeNodeValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta
 > {
   public readonly tree: JsonSchemaTree
-  private readonly source: unknown
-  private readonly materializeDepth: number | undefined
-  private readonly logger: BuildingServiceLogger
-  private readonly nodeDataBuilder: JsonSchemaNodeDataBuilder
-  private readonly lazyState = new LazyMaterializationState<JsonSchemaCrawlRule>()
-  private crawlHooks: ReturnType<typeof createJsonSchemaTreeBuildingHooks> | null = null
+  protected readonly source: unknown
+  protected readonly materializeDepth: number | undefined
+  protected readonly logger: BuildingServiceLogger
+  protected readonly nodeDataBuilder: JsonSchemaNodeDataBuilder
+  protected readonly lazyState = new LazyMaterializationState<JsonSchemaCrawlRule>()
+  protected crawlHooks: ReturnType<typeof createJsonSchemaTreeBuildingHooks> | null = null
 
   constructor(params: JsonSchemaTreeBuilderParams) {
     const {
@@ -66,12 +66,13 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     this.source = source
     this.materializeDepth = materializeDepth
     this.logger = logger
-    this.tree = new JsonSchemaTree()
-    this.nodeDataBuilder = new JsonSchemaNodeDataBuilder((source, keys) => this.pick(source, keys))
+    this.tree = this.createTree()
+    this.nodeDataBuilder = this.createNodeDataBuilder()
   }
 
   public build(): JsonSchemaTree {
-    if (!isObject(this.source)) {
+    const preparedSource = this.prepareSource()
+    if (!preparedSource || !isObject(preparedSource)) {
       return this.tree
     }
 
@@ -87,7 +88,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     const initialRules: JsonSchemaCrawlRule = getJsonSchemaCrawlRules()
 
     this.crawlHooks = createJsonSchemaTreeBuildingHooks({
-      source: this.source,
+      source: preparedSource,
       tree: this.tree,
       supportedNodeKinds: JsonSchemaTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
@@ -126,10 +127,10 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
         },
     })
 
-    this.logger.debug("[JSON Schema] Building tree from source:", this.source)
+    this.logger.debug(`${this.logPrefix} Building tree from source:`, preparedSource)
 
     syncCrawl<JsonSchemaTreeCrawlState, JsonSchemaCrawlRule>(
-      this.source,
+      preparedSource,
       this.crawlHooks,
       {
         state: initialState,
@@ -165,6 +166,25 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
       },
       true,
     )
+  }
+
+  protected get logPrefix(): string {
+    return JSON_SCHEMA_LOG_PREFIX
+  }
+
+  protected createTree(): JsonSchemaTree {
+    return new JsonSchemaTree()
+  }
+
+  protected createNodeDataBuilder(): JsonSchemaNodeDataBuilder {
+    return new JsonSchemaNodeDataBuilder((source, keys) => this.pick(source, keys))
+  }
+
+  protected prepareSource(): unknown | null {
+    if (!isObject(this.source)) {
+      return null
+    }
+    return this.source
   }
 
   protected createNodeFromRaw(
@@ -240,11 +260,11 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     return node.type === TreeNodeComplexityTypes.COMPLEX
   }
 
-  private takeSimpleTreeNode(node: JsonSchemaTreeNode | null): JsonSchemaTreeNode | null {
+  protected takeSimpleTreeNode(node: JsonSchemaTreeNode | null): JsonSchemaTreeNode | null {
     return node && this.isSimpleTreeNode(node) ? node : null
   }
 
-  private takeComplexTreeNode(node: JsonSchemaTreeNode | null): JsonSchemaTreeNode | null {
+  protected takeComplexTreeNode(node: JsonSchemaTreeNode | null): JsonSchemaTreeNode | null {
     return node && this.isComplexTreeNode(node) ? node : null
   }
 }

@@ -52,8 +52,8 @@ Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-rows-simple-object-samples--case-1-1-two-added-three-removed`).
 
 Stories merge `before.yaml` / `after.yaml` via `prepareJsonDiffSchema` and render through
-`JsonSchemaNextViewer` (`json-schema-diffs-utils.tsx`). Changed-only row hiding is exercised
-once the Next diffs stack lands on that viewer; regenerate snapshots after visual changes.
+`JsonSchemaNextDiffsViewer` (`json-schema-diffs-utils.tsx`). Changed-only row hiding is exercised
+once the Next diffs stack supports it; regenerate snapshots after visual changes.
 
 ```bash
 cd packages/api-doc-viewer

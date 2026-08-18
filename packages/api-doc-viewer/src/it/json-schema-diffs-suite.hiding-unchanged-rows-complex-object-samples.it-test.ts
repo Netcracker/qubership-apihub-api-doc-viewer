@@ -7,8 +7,8 @@ import { storyPage } from "./service/storybook-service";
 
 const META_ID = "json-schema-diffs-suite-hiding-unchanged-rows-complex-object-samples";
 
-async function waitForJsonSchemaNextViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true });
+async function waitForJsonSchemaNextDiffsViewer() {
+  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
@@ -26,49 +26,49 @@ describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Complex Object", () =>
 
   it("2.1-root-description-changed", async () => {
     story = await storyPage(page, `${META_ID}--case-2-1-root-description-changed`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.2-primitive-props-added", async () => {
     story = await storyPage(page, `${META_ID}--case-2-2-primitive-props-added`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.3-nested-object-props-added", async () => {
     story = await storyPage(page, `${META_ID}--case-2-3-nested-object-props-added`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.4-primitive-added-nested-removed", async () => {
     story = await storyPage(page, `${META_ID}--case-2-4-primitive-added-nested-removed`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.5-nested-prop-added-and-removed", async () => {
     story = await storyPage(page, `${META_ID}--case-2-5-nested-prop-added-and-removed`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.6-nested-prop-added-object-removed", async () => {
     story = await storyPage(page, `${META_ID}--case-2-6-nested-prop-added-object-removed`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("2.7-object-added-nested-prop-removed", async () => {
     story = await storyPage(page, `${META_ID}--case-2-7-object-added-nested-prop-removed`);
-    await waitForJsonSchemaNextViewer();
+    await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

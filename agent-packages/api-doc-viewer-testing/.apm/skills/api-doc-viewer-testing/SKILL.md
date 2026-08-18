@@ -119,10 +119,14 @@ in another terminal, or use full `npm run screenshot-test` which starts it autom
 
 ### JSON Schema Next viewer mount selector
 
-Plain and diff JSON Schema Next screenshot ITs wait for `[data-testid="json-schema-next-viewer"]`
+Plain JSON Schema Next screenshot ITs wait for `[data-testid="json-schema-next-viewer"]`
 and at least one `[data-name="JsonNode"]`, then run the paint-settle helper (see **Flaky
-rendering**). A wrong story id produces the same timeout as a broken viewer — rule out ID
-mismatch first.
+rendering**).
+
+JSON Schema **diff** screenshot ITs wait for `[data-testid="json-schema-next-diffs-viewer"]`
+and at least one `[data-name="JsonNode"]`, then the same paint-settle helper.
+
+A wrong story id produces the same timeout as a broken viewer — rule out ID mismatch first.
 
 ### DDL diff viewer mount selector
 
@@ -318,7 +322,7 @@ contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (no
 Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 
 Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
-**`JsonSchemaNextViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
+**`JsonSchemaNextDiffsViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
 
 1. YAML pair under the appropriate suite subdirectory.
 2. Story export in the matching `*-samples.stories.tsx`.
