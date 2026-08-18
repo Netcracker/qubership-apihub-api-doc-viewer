@@ -117,6 +117,13 @@ npx jest --maxWorkers 1 --verbose -c .config/it/it-test-docker.jest.config.cjs \
 (Requires static showcase on 9009 — e.g. run `npm run development:local-server:static`
 in another terminal, or use full `npm run screenshot-test` which starts it automatically.)
 
+### JSON Schema Next viewer mount selector
+
+Plain and diff JSON Schema Next screenshot ITs wait for `[data-testid="json-schema-next-viewer"]`
+and at least one `[data-name="JsonNode"]`, then run the paint-settle helper (see **Flaky
+rendering**). A wrong story id produces the same timeout as a broken viewer — rule out ID
+mismatch first.
+
 ### DDL diff viewer mount selector
 
 Diff screenshot ITs wait for `[data-testid="ddl-table-diffs-viewer"]`. A wrong story id
@@ -176,6 +183,9 @@ Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts`.
+- JSON Schema Next diff suites — `src/stories/json-schema-diffs-suite/` and
+  `src/it/json-schema-diffs-suite.*.it-test.ts` (fixtures under
+  `packages/samples/json-schema-diffs/`).
 - DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios-samples.stories.tsx`
   and `src/it/ddlapi-suite/e2e-scenarios-samples.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under
@@ -294,6 +304,26 @@ simplified placeholder expression unless the ticket specifies one.
 Rename from **highest case number downward** through a temporary prefix (e.g. `tmp-306-…`) to
 avoid collisions. On bash, avoid arithmetic that treats zero-padded ids as octal — use
 explicit paths or `10#` prefix.
+
+## JSON Schema diff fixtures (`packages/samples/json-schema-diffs/`)
+
+Hand-written YAML pairs for JSON Schema Next diff screenshot suites. Each case directory
+contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (not full OpenAPI).
+
+| Path | Purpose | Stories / tests |
+| --- | --- | --- |
+| `hiding-unchanged-rows/simple-object/` | Changed-only row hiding — flat object, primitive props | `hiding-unchanged-rows-simple-object-samples.*` |
+| `hiding-unchanged-rows/complex-object/` | Changed-only row hiding — nested object props | `hiding-unchanged-rows-complex-object-samples.*` |
+
+Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
+
+Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
+**`JsonSchemaNextViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
+
+1. YAML pair under the appropriate suite subdirectory.
+2. Story export in the matching `*-samples.stories.tsx`.
+3. Matching `it(...)` in the paired `src/it/json-schema-diffs-suite.*.it-test.ts`.
+4. Screenshot snapshots via `npm run regenerate-screenshots`.
 
 ## Flaky rendering
 
