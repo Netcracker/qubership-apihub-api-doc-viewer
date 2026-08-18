@@ -1,6 +1,11 @@
 import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
+import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import { isDdlPropertyRowContentVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { FC, memo, useMemo } from "react"
 import "../../shared-styles/preceded-by.css"
+import { LevelIndicator } from "../LevelIndicator"
 import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
@@ -12,8 +17,29 @@ const MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TextRowUsage, st
   [TextRowUsage.JsonSchemaDescription]: X_AXIS_PADDING_ROWS_JSO,
 }
 
+const MARKDOWN_TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TextRowUsage, string[]>> = {
+  [TextRowUsage.DdlApiProperty]: ["min-h-[26px]"],
+}
+
 function getMarkdownTextRowClassesByUsage(usage: TextRowUsage): string {
-  return MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  const xAxisPaddingClass = MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  const additionalClasses = MARKDOWN_TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE[usage] ?? []
+  return [xAxisPaddingClass, ...additionalClasses].join(" ")
+}
+
+function isMarkdownSideContentVisible(
+  diff: MarkdownTextRowContentProps["diff"],
+  layoutSide: MarkdownTextRowContentProps["layoutSide"],
+  usage: TextRowUsage,
+): boolean {
+  if (usage === TextRowUsage.DdlApiProperty) {
+    return isDdlPropertyRowContentVisible(diff, layoutSide)
+  }
+  if (!diff?.data) {
+    return true
+  }
+  const styles = layoutSide === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after
+  return styles.isContentVisible ?? true
 }
 
 export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<MarkdownTextRowContentProps>((props) => {
@@ -22,25 +48,73 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
     variant = TextValueVariant.body2,
     layoutSide,
     usage = TextRowUsage.Default,
+    hideLevelIndicatorWhenSideEmpty = false,
     diff,
   } = props
 
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
+  const level = useLevelContext()
+  const isDdlApiPropertyRow = usage === TextRowUsage.DdlApiProperty
+  const showsLevelIndentForUsage = isDdlApiPropertyRow || usage === TextRowUsage.JsonSchemaDescription
+  const isSideContentVisible = useMemo(
+    () => isMarkdownSideContentVisible(diff, layoutSide, usage),
+    [diff, layoutSide, usage],
+  )
+  const showsLevelIndent = showsLevelIndentForUsage
+    && level > 0
+    && (!hideLevelIndicatorWhenSideEmpty || isSideContentVisible)
+
+  const diffsStyleClasses = useMemo(() => {
+    if (!diff?.data) {
+      return []
+    }
+    const { styles } = diff
+    const diffsStyleClasses: string[] = []
+    if (layoutSide === ORIGIN_LAYOUT_SIDE) {
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.before.backgroundColor))
+    }
+    if (layoutSide === CHANGED_LAYOUT_SIDE) {
+      diffsStyleClasses.push(DiffsClassesBuilder.background(styles.after.backgroundColor))
+    }
+    return diffsStyleClasses
+  }, [diff, layoutSide])
+
   const usageDrivenClasses = useMemo(() => getMarkdownTextRowClassesByUsage(usage), [usage])
+
+  const markdownValue = (
+    <MarkdownTextValue
+      value={value}
+      variant={variant}
+      usage={usage}
+      layoutSide={layoutSide}
+      diff={diff}
+    />
+  )
 
   return (
     <div
       data-precededby={precededBy}
-      className={`markdown-text-row-content flex w-full h-full ${usageDrivenClasses} gap-2`}
+      className={[
+        "markdown-text-row-content flex w-full h-full gap-2",
+        isDdlApiPropertyRow ? "items-stretch" : "",
+        usageDrivenClasses,
+        ...diffsStyleClasses,
+      ].filter(Boolean).join(" ")}
     >
-      <MarkdownTextValue
-        value={value}
-        variant={variant}
-        usage={usage}
-        layoutSide={layoutSide}
-        diff={diff}
-      />
+      {showsLevelIndent && (
+        <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
+          <LevelIndicator level={level} />
+          <div className="w-4" aria-hidden="true" />
+        </div>
+      )}
+      {isDdlApiPropertyRow ? (
+        <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
+          {markdownValue}
+        </div>
+      ) : (
+        markdownValue
+      )}
     </div>
   )
 })

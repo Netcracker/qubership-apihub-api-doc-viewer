@@ -1,5 +1,4 @@
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { takeDiffSideBackgroundColor } from "@apihub/utils/diffs/take-diff-side-background-color"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -170,14 +169,25 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
     [usage, variant],
   )
 
+  const diffsStyleClasses = useMemo(() => {
+    if (!diff?.data) {
+      return []
+    }
+    const styles = layoutSide === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after
+    const classes: string[] = []
+    if (styles.textHighlighterColor) {
+      classes.push(DiffsClassesBuilder.highlighter(styles.textHighlighterColor))
+    }
+    return classes
+  }, [diff, layoutSide])
+
   const markdownClassName = useMemo(() => {
-    const backgroundColor = takeDiffSideBackgroundColor(diff, layoutSide)
     return [
       "markdown",
       typography.markdownClassName,
-      DiffsClassesBuilder.background(backgroundColor),
+      ...diffsStyleClasses,
     ].filter(Boolean).join(" ")
-  }, [diff, layoutSide, typography.markdownClassName])
+  }, [diffsStyleClasses, typography.markdownClassName])
 
   const onToggleExpanded = useCallback(() => {
     setExpanded(prev => !prev)
