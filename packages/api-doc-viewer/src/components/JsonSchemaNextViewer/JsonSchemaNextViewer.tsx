@@ -6,11 +6,13 @@ import { LevelContext } from "@apihub/contexts/LevelContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { JsonSchemaTreeBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
-import { FC, memo, useMemo } from "react"
+import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { FC, memo, useCallback, useMemo, useReducer } from "react"
 import "../../index.css"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsonSchemaNodeViewer } from "./JsonSchemaNodeViewer"
+import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
 
 export type JsonSchemaNextViewerProps = {
   schema: unknown
@@ -45,14 +47,32 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
-  const tree = useMemo(() => {
-    const builder = new JsonSchemaTreeBuilder({
+  const builder = useMemo(
+    () => new JsonSchemaTreeBuilder({
       source: schema,
       materializeDepth: expandedDepth,
       logger,
-    })
-    return builder.build()
-  }, [schema, expandedDepth, logger])
+    }),
+    [schema, expandedDepth, logger],
+  )
+
+  const tree = useMemo(() => builder.build(), [builder])
+
+  const [treeRevision, bumpTreeRevision] = useReducer((revision: number) => revision + 1, 0)
+
+  const materializeChildren = useCallback((node: JsonSchemaTreeNode) => {
+    builder.materializeChildren(node)
+    bumpTreeRevision()
+  }, [builder])
+
+  const viewerContext = useMemo(
+    () => ({
+      expandedDepth,
+      materializeChildren,
+      treeRevision,
+    }),
+    [expandedDepth, materializeChildren, treeRevision],
+  )
 
   console.debug('[JSON Schema] Schema:', schema)
   console.debug('[JSON Schema] Tree:', tree)
@@ -63,16 +83,18 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
   }
 
   return (
-    <CustomizationOptionsContext.Provider value={customizationOptions}>
-      <DisplayModeContext.Provider value={displayMode}>
-        <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
-          <LevelContext.Provider value={initialLevel}>
-            <div data-testid="json-schema-next-viewer">
-              <JsonSchemaNodeViewer node={root} />
-            </div>
-          </LevelContext.Provider>
-        </LayoutModeContext.Provider>
-      </DisplayModeContext.Provider>
-    </CustomizationOptionsContext.Provider>
+    <JsonSchemaNextViewerContext.Provider value={viewerContext}>
+      <CustomizationOptionsContext.Provider value={customizationOptions}>
+        <DisplayModeContext.Provider value={displayMode}>
+          <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
+            <LevelContext.Provider value={initialLevel}>
+              <div data-testid="json-schema-next-viewer">
+                <JsonSchemaNodeViewer node={root} />
+              </div>
+            </LevelContext.Provider>
+          </LayoutModeContext.Provider>
+        </DisplayModeContext.Provider>
+      </CustomizationOptionsContext.Provider>
+    </JsonSchemaNextViewerContext.Provider>
   )
 }

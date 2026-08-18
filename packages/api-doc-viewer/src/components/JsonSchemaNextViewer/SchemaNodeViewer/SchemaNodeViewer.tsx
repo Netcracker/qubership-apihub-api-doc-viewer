@@ -6,10 +6,12 @@ import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
   resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
+  resolvePlainPropertyIsExpandable,
+  resolvePlainPropertyInitiallyExpanded,
   resolvePlainPropertyListLastRowFlags,
   resolvePlainPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback, useMemo, useState } from "react"
 import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
 import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
@@ -34,6 +36,7 @@ import { JsonSchemaExtensionsSection } from "./JsonSchemaExtensionsSection"
 import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
 import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
 import { JsonSchemaValidationChips } from "./JsonSchemaValidationChips"
+import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 
 export type SchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode
@@ -49,6 +52,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
+  const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaNextViewerContext()
   const customizationOptions = useCustomizationOptions()
   const value = node.value()
   const meta = node.meta()
@@ -62,7 +66,38 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [isLastInList, visibility],
   )
 
-  const children = node.childrenNodes()
+  const children = useMemo(
+    () => node.childrenNodes(),
+    // treeRevision: lazy materialization mutates tree in place
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- treeRevision
+    [node, treeRevision],
+  )
+
+  const expandable = useMemo(
+    () => resolvePlainPropertyIsExpandable(node),
+    // treeRevision: lazy materialization adds children without changing node identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- treeRevision
+    [node, treeRevision],
+  )
+
+  const initiallyExpanded = useMemo(
+    () => resolvePlainPropertyInitiallyExpanded(node, { expandedDepth, level }),
+    [node, expandedDepth, level],
+  )
+
+  const [expanded, setExpanded] = useState(initiallyExpanded)
+
+  const onClickExpander = useCallback(() => {
+    setExpanded((previousExpanded) => {
+      const nextExpanded = !previousExpanded
+      if (nextExpanded) {
+        materializeChildren(node)
+      }
+      return nextExpanded
+    })
+  }, [materializeChildren, node])
+
+  const showNodeBody = !expandable || expanded
 
   const titleDisplay = useMemo(
     () => resolveJsonSchemaNodeTitleDisplay({
@@ -104,13 +139,15 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
         data-precededby={precededBy}
         {...listLastRowFlags}
         titleContent={titleContent}
-        expandable={false}
-        expanded={false}
+        expandable={expandable}
+        expanded={expanded}
+        onClickExpander={expandable ? onClickExpander : undefined}
         variant={TextValueVariant.body2}
         subheader={subheader}
         usage={TitleRowUsage.JsonSchemaProperty}
       />
 
+      {showNodeBody && (
       <>
         {visibility.showDeprecationReasonRow && visibility.deprecationReason && (
           <MarkdownTextRow
@@ -202,6 +239,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           </LevelContext.Provider>
         )}
       </>
+      )}
     </div>
   )
 }

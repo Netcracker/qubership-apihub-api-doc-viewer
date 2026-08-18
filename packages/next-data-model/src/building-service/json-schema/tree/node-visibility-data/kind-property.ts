@@ -4,11 +4,17 @@ import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/ty
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { resolveValidationKeysForType } from "@apihub/next-data-model/model/json-schema/validation-keys"
+import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
 import type {
   JsonSchemaPropertyAdditionalInfoRowKind,
   JsonSchemaPropertyListLastRowFlags,
   JsonSchemaPropertyRowVisibility,
 } from "./types"
+
+export type PlainPropertyExpandStateOptions = {
+  expandedDepth: number
+  level: number
+}
 
 function hasDefinedValue(value: unknown): boolean {
   return value !== undefined && value !== null
@@ -98,15 +104,28 @@ export class PlainPropertyNodeVisibilityManager {
     if (node.isCycle) {
       return false
     }
-    return node.childrenNodes().length > 0
+    if (node.childrenNodes().length > 0) {
+      return true
+    }
+    const meta = typeof node.meta === "function" ? node.meta() : undefined
+    const fragment = meta?._fragment
+    return fragment !== undefined && jsonSchemaHasOwnChildren(fragment, undefined)
   }
 
-  public resolveInitiallyExpanded(node: JsonSchemaTreeNode): boolean {
+  public resolveInitiallyExpanded(
+    node: JsonSchemaTreeNode,
+    options?: PlainPropertyExpandStateOptions,
+  ): boolean {
     if (node.isCycle) {
       return false
     }
-    const children = node.childrenNodes()
-    return children.length === 0
+    if (!this.resolveIsExpandable(node)) {
+      return true
+    }
+    if (options) {
+      return options.level < options.expandedDepth
+    }
+    return false
   }
 }
 
@@ -137,6 +156,9 @@ export function resolvePlainPropertyIsExpandable(node: JsonSchemaTreeNode): bool
   return defaultInstance.resolveIsExpandable(node)
 }
 
-export function resolvePlainPropertyInitiallyExpanded(node: JsonSchemaTreeNode): boolean {
-  return defaultInstance.resolveInitiallyExpanded(node)
+export function resolvePlainPropertyInitiallyExpanded(
+  node: JsonSchemaTreeNode,
+  options?: PlainPropertyExpandStateOptions,
+): boolean {
+  return defaultInstance.resolveInitiallyExpanded(node, options)
 }

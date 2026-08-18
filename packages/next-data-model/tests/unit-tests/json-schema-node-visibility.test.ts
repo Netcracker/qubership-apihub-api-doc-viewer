@@ -116,6 +116,8 @@ describe("plain JSON Schema property node visibility", () => {
 
     expect(resolvePlainPropertyIsExpandable(node as never)).toBe(true)
     expect(resolvePlainPropertyInitiallyExpanded(node as never)).toBe(false)
+    expect(resolvePlainPropertyInitiallyExpanded(node as never, { expandedDepth: 2, level: 1 })).toBe(true)
+    expect(resolvePlainPropertyInitiallyExpanded(node as never, { expandedDepth: 2, level: 2 })).toBe(false)
   })
 })
 
