@@ -1,7 +1,7 @@
 import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
-import { CHANGED_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
@@ -41,6 +41,10 @@ import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-d
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
+import {
+  isDiffSideHeaderVisible,
+  takeAddRemoveDiffIfPresent,
+} from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 
@@ -124,26 +128,33 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [meta, node],
   )
 
-  const subheader = useCallback(
-    () => (
-      <JsonSchemaTitleSubheader
-        value={value}
-        meta={meta}
-        isCycle={node.isCycle}
-        layoutSide={CHANGED_LAYOUT_SIDE}
-        showTypeLabel={showTypeSubheader}
-      />
-    ),
-    [meta, node.isCycle, showTypeSubheader, value],
-  )
-
-  const validationRows = useMemo(() => resolveValidationRows(value), [value])
-
   const nodeDiffState = useNodeDiffState(node, isJsonSchemaTreeNodeWithDiffs)
   const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities"> = useMemo(
     () => buildRowDiffProps(nodeDiffState),
     [nodeDiffState],
   )
+
+  const subheader = useCallback(
+    (layoutSide: LayoutSide) => {
+      if (!isDiffSideHeaderVisible(takeAddRemoveDiffIfPresent(titleRowDiffProps.diff), layoutSide)) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaTitleSubheader
+          value={value}
+          meta={meta}
+          isCycle={node.isCycle}
+          layoutSide={layoutSide}
+          showTypeLabel={showTypeSubheader}
+        />
+      )
+    },
+    [meta, node.isCycle, showTypeSubheader, titleRowDiffProps.diff, value],
+  )
+
+  const validationRows = useMemo(() => resolveValidationRows(value), [value])
+
   const descriptionRowDiffProps = useMemo(
     () => buildRowDiffProps<JsonSchemaTreeNodeValue>(nodeDiffState, {
       diffKey: "description" as keyof JsonSchemaTreeNodeValue,

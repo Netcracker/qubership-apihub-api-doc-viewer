@@ -184,3 +184,40 @@ export function isListItemVisibleOnSide(
     : diff.styles.after
   return styles.isContentVisible
 }
+
+export function isDiffSideContentVisible(
+  diff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): boolean {
+  if (!diff) {
+    return true
+  }
+  return isListItemVisibleOnSide(diff, layoutSide)
+}
+
+export function isDiffSideHeaderVisible(
+  diff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): boolean {
+  if (!diff) {
+    return true
+  }
+
+  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
+    ? diff.styles.before
+    : diff.styles.after
+
+  return styles.isHeaderVisible
+}
+
+export function takeAddRemoveDiffIfPresent(
+  diff: ChangedPropertyMetaData | undefined,
+): ChangedPropertyMetaData | undefined {
+  if (!diff) {
+    return undefined
+  }
+  if (isDiffAdd(diff.data) || isDiffRemove(diff.data)) {
+    return diff
+  }
+  return undefined
+}
