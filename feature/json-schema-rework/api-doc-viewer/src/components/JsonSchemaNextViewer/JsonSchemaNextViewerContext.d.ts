@@ -1,7 +1,7 @@
-import { JsonSchemaTreeNode } from '../../../../next-data-model/src/model/json-schema/types/aliases';
+import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from '../../../../next-data-model/src/model/json-schema/types/aliases';
 export type JsonSchemaNextViewerContextValue = {
     expandedDepth: number;
-    materializeChildren: (node: JsonSchemaTreeNode) => void;
+    materializeChildren: (node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs) => void;
     /** Bumped after lazy materialization so viewers re-read `childrenNodes()`. */
     treeRevision: number;
 };
