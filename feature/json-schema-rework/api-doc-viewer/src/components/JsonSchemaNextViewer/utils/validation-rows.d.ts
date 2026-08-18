@@ -3,7 +3,7 @@ import { JsonSchemaValidationRowKey } from "./validation-row-keys";
 export type JsonSchemaValidationRow = {
     key: JsonSchemaValidationRowKey;
     label: string;
-    value: string;
+    values: string[];
 };
 export declare function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | undefined): JsonSchemaValidationRow[];
-export declare function resolveListValidationValue(values: unknown[]): string;
+export declare function resolveListValidationValues(values: unknown[]): string[];

@@ -7,5 +7,6 @@ export type JsonSchemaTitleSubheaderProps = {
     meta: JsonSchemaTreeNodeMeta | null | undefined;
     isCycle: boolean;
     layoutSide: LayoutSide;
+    showTypeLabel?: boolean;
 };
 export declare const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps>;
