@@ -11,6 +11,7 @@ export type MarkdownTextRowProps = WithPrecededByProps & {
     descendantDiffs?: NodeDescendantDiffs;
     diffsSeverities?: NodeDiffsSeverities;
     diffsSeverityPlacement?: NodeDiffsSeverityPlacemennt;
+    hideLevelIndicatorWhenSideEmpty?: boolean;
 };
 export type MarkdownTextRowContentProps = MarkdownTextRowProps & {
     layoutSide: LayoutSide;
