@@ -32,3 +32,4 @@ export declare const Case_2_4_primitive_added_nested_removed: Story;
 export declare const Case_2_5_nested_prop_added_and_removed: Story;
 export declare const Case_2_6_nested_prop_added_object_removed: Story;
 export declare const Case_2_7_object_added_nested_prop_removed: Story;
+export declare const Case_2_8_nested_property_metadata_and_constraints_changed: Story;

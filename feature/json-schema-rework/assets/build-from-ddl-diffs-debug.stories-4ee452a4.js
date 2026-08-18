@@ -1,4 +1,4 @@
-import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{D as y}from"./DdlTableDiffsViewer-8f8d663e.js";import{k as A}from"./DiffBadge-6dc75daf.js";import{r as f}from"./index-f46741a2.js";import{b as D}from"./build-from-ddl-browser-92425940.js";import{T as u}from"./index-8cf80a84.js";import{a as _,r as M}from"./ddl-story-realm-utils-c0692776.js";import"./IndexesNodeViewer-aea25c4a.js";/* empty css              */import"./iframe-d3d311c6.js";import"../sb-preview/runtime.js";const h=`CREATE SCHEMA IF NOT EXISTS public;
+import{j as d}from"./_commonjs-dynamic-modules-6308e768.js";import{D as y}from"./DdlTableDiffsViewer-8f8d663e.js";import{k as A}from"./DiffBadge-6dc75daf.js";import{r as f}from"./index-f46741a2.js";import{b as D}from"./build-from-ddl-browser-a6371438.js";import{T as u}from"./index-8cf80a84.js";import{a as _,r as M}from"./ddl-story-realm-utils-c0692776.js";import"./IndexesNodeViewer-aea25c4a.js";/* empty css              */import"./iframe-b5e9b255.js";import"../sb-preview/runtime.js";const h=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
   id integer

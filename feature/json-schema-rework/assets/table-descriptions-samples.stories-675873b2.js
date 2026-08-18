@@ -1,4 +1,4 @@
-import{c as l,a as p,d,b as m}from"./ddl-samples-common-255c122e.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d80b27e9.js";import"./DiffBadge-6dc75daf.js";import"./IndexesNodeViewer-aea25c4a.js";import"./build-from-ddl-browser-92425940.js";import"./iframe-d3d311c6.js";import"../sb-preview/runtime.js";const u=`CREATE SCHEMA IF NOT EXISTS public;
+import{c as l,a as p,d,b as m}from"./ddl-samples-common-a1ff4330.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d80b27e9.js";import"./DiffBadge-6dc75daf.js";import"./IndexesNodeViewer-aea25c4a.js";import"./build-from-ddl-browser-a6371438.js";import"./iframe-b5e9b255.js";import"../sb-preview/runtime.js";const u=`CREATE SCHEMA IF NOT EXISTS public;
 
 CREATE TABLE public.t (
   id integer
