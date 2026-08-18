@@ -1,9 +1,9 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { AdditionalInfoRowLayoutOverrides, AdditionalInfoRowUsage } from "./types"
 
 const ADDITIONAL_INFO_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<AdditionalInfoRowUsage, string>> = {
   [AdditionalInfoRowUsage.DdlApiProperty]: X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES,
-  [AdditionalInfoRowUsage.JsonSchemaValidation]: X_AXIS_PADDING_ROWS_ASYNC_API,
+  [AdditionalInfoRowUsage.JsonSchemaValidation]: X_AXIS_PADDING_ROWS_JSO,
 }
 
 const ADDITIONAL_INFO_ROW_BODY_CLASS_BY_USAGE: Partial<Record<AdditionalInfoRowUsage, string>> = {
