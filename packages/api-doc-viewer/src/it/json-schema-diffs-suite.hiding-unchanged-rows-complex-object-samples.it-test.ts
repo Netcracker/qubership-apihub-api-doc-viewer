@@ -72,4 +72,14 @@ describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Complex Object", () =>
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("2.8-nested-property-metadata-and-constraints-changed", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-2-8-nested-property-metadata-and-constraints-changed`,
+    );
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });

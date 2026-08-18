@@ -47,4 +47,14 @@ describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Simple Object", () => 
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("1.4-property-metadata-and-constraints-changed", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-1-4-property-metadata-and-constraints-changed`,
+    );
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });

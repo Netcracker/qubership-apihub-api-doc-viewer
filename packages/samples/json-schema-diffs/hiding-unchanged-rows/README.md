@@ -3,7 +3,7 @@
 Hand-written YAML pairs for screenshot-diff scenarios that exercise **changed-only** row
 hiding in the JSON Schema Next diffs viewer.
 
-- Total cases: 10 (3 simple-object + 7 complex-object)
+- Total cases: 12 (4 simple-object + 8 complex-object)
 - Layout: `json-schema-diffs/hiding-unchanged-rows/<suite>/<case-id>/before.yaml` and
   `.../after.yaml`
 - Each file is a **standalone JSON Schema** document (not wrapped in OpenAPI).
@@ -21,6 +21,7 @@ Prerequisite: object-typed schema with five **primitive** properties (`prop1` �
 | `1.1-two-added-three-removed` | Two properties added, three removed |
 | `1.2-second-and-fifth-added-others-unchanged` | `prop2` and `prop5` added; `prop1`, `prop3`, `prop4` unchanged |
 | `1.3-root-description-replaced` | No property changes; root `description` replaced |
+| `1.4-property-metadata-and-constraints-changed` | `#`.1 description replaced; `#`.2 enum value appended (3→4); `#`.3 `minimum`/`maximum` added; `#`.4 `default` removed; `#`.5 unchanged |
 
 ## Suite 2 — complex object
 
@@ -37,6 +38,7 @@ are primitives; `prop2` and `prop4` are objects with two to four primitive neste
 | `2.5-nested-prop-added-and-removed` | `#`.2.2 added; `#`.4.1 removed |
 | `2.6-nested-prop-added-object-removed` | `#`.2.2 added; `#`.4 removed |
 | `2.7-object-added-nested-prop-removed` | `#`.2 added; `#`.4.1 removed |
+| `2.8-nested-property-metadata-and-constraints-changed` | Inside `#`.2: `.1` description replaced; `.2` enum appended (3→4); `.3` `minimum`/`maximum` added; `.4` `default` removed; `#`.1, `#`.3, `#`.4, `#`.5 unchanged |
 
 ## Storybook and screenshot tests
 

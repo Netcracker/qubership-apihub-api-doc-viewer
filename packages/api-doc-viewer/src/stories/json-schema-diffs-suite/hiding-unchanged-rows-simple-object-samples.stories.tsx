@@ -41,3 +41,6 @@ export const Case_1_2_second_and_fifth_added_others_unchanged: Story = createCas
   "1.2-second-and-fifth-added-others-unchanged",
 );
 export const Case_1_3_root_description_replaced: Story = createCaseStory("1.3-root-description-replaced");
+export const Case_1_4_property_metadata_and_constraints_changed: Story = createCaseStory(
+  "1.4-property-metadata-and-constraints-changed",
+);
