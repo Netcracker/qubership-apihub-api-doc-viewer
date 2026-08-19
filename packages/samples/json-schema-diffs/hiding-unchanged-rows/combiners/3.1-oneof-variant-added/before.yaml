@@ -1,0 +1,11 @@
+type: object
+properties:
+  status:
+    oneOf:
+      - type: string
+        description: Строковый вариант
+      - type: number
+        description: Числовой вариант
+  unchangedProp:
+    type: string
+    description: Без изменений

@@ -3,7 +3,7 @@
 Hand-written YAML pairs for screenshot-diff scenarios that exercise **changed-only** row
 hiding in the JSON Schema Next diffs viewer.
 
-- Total cases: 12 (4 simple-object + 8 complex-object)
+- Total cases: 14 (4 simple-object + 8 complex-object + 2 combiners)
 - Layout: `json-schema-diffs/hiding-unchanged-rows/<suite>/<case-id>/before.yaml` and
   `.../after.yaml`
 - Each file is a **standalone JSON Schema** document (not wrapped in OpenAPI).
@@ -40,6 +40,17 @@ are primitives; `prop2` and `prop4` are objects with two to four primitive neste
 | `2.7-object-added-nested-prop-removed` | `#`.2 added; `#`.4.1 removed |
 | `2.8-nested-property-metadata-and-constraints-changed` | Inside `#`.2: `.1` description replaced; `.2` enum appended (3→4); `.3` `minimum`/`maximum` added; `.4` `default` removed; `#`.1, `#`.3, `#`.4, `#`.5 unchanged |
 
+## Suite 3 — combiners
+
+Prerequisite: object-typed schema with at least one `oneOf` / `anyOf` / `allOf` property and
+unchanged sibling properties. Cases mirror design rules 3–4 in
+`packages/api-doc-viewer/json-schema-hiding-nodes-design.ru.md`.
+
+| Case id | Change |
+| --- | --- |
+| `3.1-oneof-variant-added` | `#`.status: third `oneOf` branch (`boolean`) added; `#`.unchangedProp unchanged |
+| `4.1-oneof-variant-content-changed` | `#`.value: first `oneOf` object branch description and `#`.value.nestedChanged updated; `#`.value.nestedUnchanged and `#`.otherProp unchanged |
+
 ## Storybook and screenshot tests
 
 Hand-written suites live under `packages/api-doc-viewer/src/stories/json-schema-diffs-suite/`
@@ -49,6 +60,7 @@ and `packages/api-doc-viewer/src/it/`. Shared helpers are in `json-schema-diffs-
 | --- | --- | --- |
 | Simple object | `JSON Schema Diffs Suite/Hiding Unchanged Rows Simple Object Samples` | `hiding-unchanged-rows-simple-object-samples.*` |
 | Complex object | `JSON Schema Diffs Suite/Hiding Unchanged Rows Complex Object Samples` | `hiding-unchanged-rows-complex-object-samples.*` |
+| Combiners | `JSON Schema Diffs Suite/Hiding Unchanged Rows Combiners Samples` | `hiding-unchanged-rows-combiners-samples.*` |
 
 Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-rows-simple-object-samples--case-1-1-two-added-three-removed`).

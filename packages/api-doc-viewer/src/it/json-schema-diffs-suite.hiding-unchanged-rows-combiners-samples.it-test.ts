@@ -1,0 +1,43 @@
+/**
+ * Screenshot tests for JSON Schema Diffs Suite — hiding unchanged rows (combiners).
+ */
+import { StoryPage } from "./service/story-page";
+import { ViewComponent } from "./service/view-component";
+import { storyPage } from "./service/storybook-service";
+
+const META_ID = "json-schema-diffs-suite-hiding-unchanged-rows-combiners-samples";
+
+async function waitForJsonSchemaNextDiffsViewer() {
+  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForFunction(() => document.readyState === "complete");
+  await page.evaluate(() => new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+  ));
+}
+
+describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Combiners", () => {
+  let story: StoryPage;
+  let component: ViewComponent;
+
+  beforeEach(async () => {
+    await jestPuppeteer.resetPage();
+  });
+
+  it("3.1-oneof-variant-added", async () => {
+    story = await storyPage(page, `${META_ID}--case-3-1-oneof-variant-added`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("4.1-oneof-variant-content-changed", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-4-1-oneof-variant-content-changed`,
+    );
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+});
