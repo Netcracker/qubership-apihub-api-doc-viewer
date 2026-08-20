@@ -36,6 +36,7 @@ export type SchemaNodeTitleRowProps = WithPrecededByProps & {
   expandable?: boolean
   expanded?: boolean
   onClickExpander?: () => void
+  titleRowDiffProps?: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities">
 }
 
 export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
@@ -48,6 +49,7 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
     expandable = false,
     expanded = false,
     onClickExpander,
+    titleRowDiffProps: titleRowDiffPropsOverride,
     [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
@@ -82,8 +84,8 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
 
   const nodeDiffState = useNodeDiffState(displayNode, isJsonSchemaTreeNodeWithDiffs)
   const titleRowDiffProps: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities"> = useMemo(
-    () => buildRowDiffProps(nodeDiffState),
-    [nodeDiffState],
+    () => titleRowDiffPropsOverride ?? buildRowDiffProps(nodeDiffState),
+    [nodeDiffState, titleRowDiffPropsOverride],
   )
 
   const subheader = useCallback(

@@ -31,6 +31,10 @@ import {
   resolveCombinerBranchDisplayValue,
   resolveCombinerLeafStructuralChildren,
 } from "../utils/resolve-combiner-display"
+import {
+  buildCombinerSelectorOption,
+  buildCombinerSelectorRowPresentation,
+} from "../utils/resolve-combiner-node-diffs"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { SchemaNodePlainContent } from "../SchemaNodeViewer/SchemaNodePlainContent"
@@ -127,7 +131,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
 
   const propertyNestingIndicatorTitle = useMemo(
     () => resolveJsonSchemaTypeLabel(activeLeafDisplayValue, activeLeaf.meta()),
-    [activeLeaf.meta, activeLeafDisplayValue],
+    [activeLeaf, activeLeafDisplayValue],
   )
 
   const onSelectOption = useCallback((
@@ -175,38 +179,28 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
 
       <LevelContext.Provider value={level + 1}>
         {selectorLevels.map((selectorLevel) => {
-          const options = selectorLevel.nestedNodes.map((nestedNode, index) => ({
-            title: resolveJsonSchemaTypeLabel(
-              resolveCombinerBranchDisplayValue(nestedNode),
-              nestedNode.meta(),
-            ),
-            node: nestedNode,
-            testId: `json-schema-combiner-option-${index}`,
-          }))
+          const options = selectorLevel.nestedNodes.map((nestedNode, index) => (
+            buildCombinerSelectorOption(nestedNode, index)
+          ))
 
           const selectedOption = options.find(
             (option) => option.node.id === selectorLevel.selectedNestedNode.id,
           ) ?? options[0] ?? null
 
+          const selectorRowPresentation = buildCombinerSelectorRowPresentation(selectorLevel.combinerNode)
+
           return (
-            <div key={selectorLevel.combinerNode.id} className="flex flex-col">
-              {selectorLevel.combinerKindLabel && (
-                <NestingIndicatorTitleRow
-                  data-precededby={rowPrecededBy}
-                  title={selectorLevel.combinerKindLabel}
-                  usage={NestingIndicatorTitleRowUsage.JsonSchema}
-                  lastInvisible
-                />
-              )}
-              {selectorLevel.showSelector && (
-                <CombinerSelectorRow
-                  data-precededby={rowPrecededBy}
-                  options={options}
-                  selectedOption={selectedOption}
-                  onSelectOption={(option) => onSelectOption(selectorLevel.combinerNode, option)}
-                />
-              )}
-            </div>
+            <CombinerSelectorRow
+              key={selectorLevel.combinerNode.id}
+              data-precededby={rowPrecededBy}
+              combinerKindLabel={selectorLevel.combinerKindLabel}
+              showSelector={selectorLevel.showSelector}
+              options={options}
+              selectedOption={selectedOption}
+              onSelectOption={(option) => onSelectOption(selectorLevel.combinerNode, option)}
+              selectorRowDiff={selectorRowPresentation.selectorRowDiff}
+              diffsSeverities={selectorRowPresentation.diffsSeverities}
+            />
           )
         })}
 

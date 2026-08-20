@@ -101,6 +101,7 @@ export class JsonSchemaNodeDescendantDiffsAggregatorKindAny extends AbstractNode
         isContentVisible: false,
         isHeaderVisible: true,
         backgroundColor: HighlightVariant.Green,
+        borderShadowColor: HighlightVariant.Green,
       }
       afterFlags = { ...afterFlags, increaseLevel: true }
     }
@@ -110,6 +111,7 @@ export class JsonSchemaNodeDescendantDiffsAggregatorKindAny extends AbstractNode
         isContentVisible: false,
         isHeaderVisible: true,
         backgroundColor: HighlightVariant.Red,
+        borderShadowColor: HighlightVariant.Red,
       }
       beforeFlags = { ...beforeFlags, increaseLevel: true }
       afterStyles = {
