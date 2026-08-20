@@ -6,6 +6,7 @@ import { isDdlPropertyRowContentVisible } from "@netcracker/qubership-apihub-nex
 import { FC, memo, useMemo } from "react"
 import "../../shared-styles/preceded-by.css"
 import { LevelIndicator } from "../LevelIndicator"
+import { JsonSchemaRootExpanderOffset } from "../JsonSchemaExpanderColumn/JsonSchemaExpanderColumn"
 import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
@@ -61,6 +62,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
     () => isMarkdownSideContentVisible(diff, layoutSide, usage),
     [diff, layoutSide, usage],
   )
+  const showsJsonSchemaRootExpanderOffset = usage === TextRowUsage.JsonSchemaDescription && level === 0
   const showsLevelIndent = showsLevelIndentForUsage
     && level > 0
     && (!hideLevelIndicatorWhenSideEmpty || isSideContentVisible)
@@ -102,6 +104,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
         ...diffsStyleClasses,
       ].filter(Boolean).join(" ")}
     >
+      {showsJsonSchemaRootExpanderOffset && <JsonSchemaRootExpanderOffset />}
       {showsLevelIndent && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
           <LevelIndicator level={level} />

@@ -4,6 +4,7 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { FC, memo, useMemo } from "react"
 import { LevelIndicator } from "../LevelIndicator"
+import { JsonSchemaRootExpanderOffset } from "../JsonSchemaExpanderColumn/JsonSchemaExpanderColumn"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import '../../shared-styles/preceded-by.css'
 import { resolveAdditionalInfoRowLayout } from "./layout-classes"
@@ -56,6 +57,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
     return diffStyles?.isContentVisible ?? true
   }, [colorizingDiff, diffStyles?.isContentVisible, layoutSide])
 
+  const showsJsonSchemaRootExpanderOffset = usage === AdditionalInfoRowUsage.JsonSchemaValidation && level === 0
   const showsLevelIndicator = level > 0 && (!hideLevelIndicatorWhenSideEmpty || isContentVisible)
 
   return (
@@ -71,6 +73,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
         diffsStyleClasses.join(' '),
       ].filter(Boolean).join(' ')}
     >
+      {showsJsonSchemaRootExpanderOffset && <JsonSchemaRootExpanderOffset />}
       {showsLevelIndicator && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
           <LevelIndicator level={level} />

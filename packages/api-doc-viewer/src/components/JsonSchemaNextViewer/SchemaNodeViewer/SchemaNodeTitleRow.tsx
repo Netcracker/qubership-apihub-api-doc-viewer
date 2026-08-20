@@ -18,6 +18,7 @@ import {
   isJsonSchemaBooleanAdditionalPropertiesNode,
   resolveJsonSchemaNodeTitleDisplay,
 } from "../utils/resolve-json-schema-node-title"
+import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
 import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
 import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
 import { buildRowDiffProps, useNodeDiffState } from "../../shared-components/diffs/node-diff-props"
@@ -114,6 +115,7 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
       titleContent={titleContent}
       expandable={expandable}
       expanded={expanded}
+      isRoot={isJsonSchemaRootNode(ownerNode)}
       onClickExpander={expandable ? onClickExpander : undefined}
       variant={TextValueVariant.body2}
       subheader={subheader}

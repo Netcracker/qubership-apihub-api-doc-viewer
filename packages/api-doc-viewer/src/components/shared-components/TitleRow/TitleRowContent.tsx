@@ -7,6 +7,7 @@ import { DiffHiglightingApplicationArea, DIFF_HIGHLIGHTING_MODES_DEFAULT } from 
 import { FC, memo, useMemo } from "react"
 import '../../shared-styles/preceded-by.css'
 import { Expander } from "../Expander"
+import { JsonSchemaExpanderColumn } from "../JsonSchemaExpanderColumn/JsonSchemaExpanderColumn"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
@@ -35,6 +36,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   const {
     expandable,
     expanded,
+    isRoot = false,
     onClickExpander,
     value,
     titleContent,
@@ -114,6 +116,8 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     )
   }, [titleContent, enableHeaderValue, precededBy, value, variant, layoutSide, diff, usage, highlightingModeForKey, onClickExpander])
   const isDdlApiPropertyRow = usage === TitleRowUsage.DdlApiProperty
+  const isJsonSchemaPropertyRow = usage === TitleRowUsage.JsonSchemaProperty
+  const jsonSchemaIsRoot = isRoot || level === 0
 
   const header = useMemo(() => {
     if (!enableHeader) {
@@ -122,6 +126,24 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       }
       return level > 0 && <LevelIndicator level={level} />
     }
+
+    if (isJsonSchemaPropertyRow) {
+      return (
+        <>
+          <div data-precededby={precededBy} className="level-indicator-column flex shrink-0 items-stretch self-stretch">
+            <LevelIndicator level={level} />
+            <JsonSchemaExpanderColumn
+              isRoot={jsonSchemaIsRoot}
+              expandable={expandable}
+              expanded={expanded}
+              onClick={onClickExpander}
+            />
+          </div>
+          {headerValue}
+        </>
+      )
+    }
+
     return (
       <>
         {(expandable || level > 0) && (
@@ -138,7 +160,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         {!isDdlApiPropertyRow && headerValue}
       </>
     )
-  }, [enableHeader, expandable, expanded, headerValue, hideLevelIndicatorWhenSideEmpty, isDdlApiPropertyRow, level, onClickExpander, precededBy])
+  }, [enableHeader, expandable, expanded, headerValue, hideLevelIndicatorWhenSideEmpty, isDdlApiPropertyRow, isJsonSchemaPropertyRow, jsonSchemaIsRoot, level, onClickExpander, precededBy])
 
   const usageDrivenClasses = useMemo(() => {
     return getTitleRowClassesByUsage(usage)
