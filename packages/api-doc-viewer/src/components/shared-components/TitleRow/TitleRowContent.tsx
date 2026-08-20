@@ -23,7 +23,6 @@ const TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TitleRowUsage, string>> 
 const TITLE_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TitleRowUsage, string[]>> = {
   [TitleRowUsage.JsoProperty]: ['min-h-[26px]'],
   [TitleRowUsage.DdlApiProperty]: ['min-h-[26px]'],
-  [TitleRowUsage.JsonSchemaProperty]: ['min-h-[26px]'],
 }
 
 function getTitleRowClassesByUsage(usage: TitleRowUsage): string {
@@ -129,18 +128,15 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
     if (isJsonSchemaPropertyRow) {
       return (
-        <>
-          <div data-precededby={precededBy} className="level-indicator-column flex shrink-0 items-stretch self-stretch">
-            <LevelIndicator level={level} />
-            <JsonSchemaExpanderColumn
-              isRoot={jsonSchemaIsRoot}
-              expandable={expandable}
-              expanded={expanded}
-              onClick={onClickExpander}
-            />
-          </div>
-          {headerValue}
-        </>
+        <div data-precededby={precededBy} className="level-indicator-column flex shrink-0 items-stretch self-stretch">
+          <LevelIndicator level={level} />
+          <JsonSchemaExpanderColumn
+            isRoot={jsonSchemaIsRoot}
+            expandable={expandable}
+            expanded={expanded}
+            onClick={onClickExpander}
+          />
+        </div>
       )
     }
 
@@ -160,7 +156,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
         {!isDdlApiPropertyRow && headerValue}
       </>
     )
-  }, [enableHeader, expandable, expanded, headerValue, hideLevelIndicatorWhenSideEmpty, isDdlApiPropertyRow, isJsonSchemaPropertyRow, jsonSchemaIsRoot, level, onClickExpander, precededBy])
+  }, [enableHeader, expandable, expanded, hideLevelIndicatorWhenSideEmpty, isDdlApiPropertyRow, isJsonSchemaPropertyRow, jsonSchemaIsRoot, level, onClickExpander, precededBy])
 
   const usageDrivenClasses = useMemo(() => {
     return getTitleRowClassesByUsage(usage)
@@ -171,7 +167,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
       data-usage={usage !== TitleRowUsage.Default ? usage : undefined}
-      className={`title-row-content flex w-full ${isDdlApiPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`title-row-content flex w-full ${isDdlApiPropertyRow || isJsonSchemaPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}
       {isDdlApiPropertyRow ? (
@@ -179,7 +175,14 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
           {headerValue}
           {subheader?.(layoutSide)}
         </div>
-      ) : subheader?.(layoutSide)}
+      ) : isJsonSchemaPropertyRow ? (
+        <div className="json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center gap-2">
+          {headerValue}
+          {subheader?.(layoutSide)}
+        </div>
+      ) : (
+        subheader?.(layoutSide)
+      )}
     </div>
   )
 })

@@ -110,7 +110,11 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   )
 
   return (
-    <div data-testid="json-schema-node-viewer" data-name="JsonNode" className="flex flex-col">
+    <div
+      data-testid="json-schema-node-viewer"
+      data-name="JsonNode"
+      className="json-schema-property flex flex-col"
+    >
       <SchemaNodeTitleRow
         data-precededby={precededBy}
         ownerNode={node}
@@ -124,7 +128,6 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
       {showNodeBody && (
         <>
           <SchemaNodePlainContent
-            data-precededby={precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER}
             node={node}
             isLastInList={isLastInList && children.length === 0}
           />
@@ -132,14 +135,12 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
           {!node.isCycle && children.length > 0 && (
             <LevelContext.Provider value={level + 1}>
               <NestingIndicatorTitleRow
-                data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
                 title={propertyNestingIndicatorTitle}
                 usage={NestingIndicatorTitleRowUsage.JsonSchema}
                 lastInvisible
               />
               {nodeWithDiffs && unchangedBlocksContext ? (
                 <SchemaNodeChildrenListWithDiffs
-                  data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
                   children={children as JsonSchemaTreeNodeWithDiffs[]}
                 />
               ) : (
@@ -147,14 +148,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
                   nodeWithDiffs ? (
                     <JsonSchemaNodeViewerWithDiffs
                       key={child.id}
-                      data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+                      data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
                       node={child as JsonSchemaTreeNodeWithDiffs}
                       isLastInList={index === children.length - 1}
                     />
                   ) : (
                     <JsonSchemaNodeViewer
                       key={child.id}
-                      data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+                      data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
                       node={child}
                       isLastInList={index === children.length - 1}
                     />

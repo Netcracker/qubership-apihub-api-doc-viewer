@@ -9,11 +9,7 @@ import { TextValueVariant } from "@apihub/components/shared-components/TextValue
 import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow"
 import { TitleRowUsage } from "@apihub/components/shared-components/TitleRow/types"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
-import {
-  ATTRIBUTE_PRECEDED_BY,
-  PrecededBy,
-  WithPrecededByProps,
-} from "../../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import {
   isJsonSchemaBooleanAdditionalPropertiesNode,
   resolveJsonSchemaNodeTitleDisplay,
@@ -110,8 +106,8 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
 
   return (
     <TitleRow
-      data-precededby={precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER}
       {...listLastRowFlags}
+      data-precededby={precededBy}
       titleContent={titleContent}
       expandable={expandable}
       expanded={expanded}

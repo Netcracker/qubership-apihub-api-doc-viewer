@@ -6,12 +6,10 @@ import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qub
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
-  resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
   resolvePlainPropertyListLastRowFlags,
   resolvePlainPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
 import {
-  resolveJsonSchemaPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
 import {
@@ -36,11 +34,6 @@ import { AdditionalInfoRow } from "@apihub/components/shared-components/Addition
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
 import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types"
-import {
-  ATTRIBUTE_PRECEDED_BY,
-  PrecededBy,
-  WithPrecededByProps,
-} from "../../shared-components/WithPrecededByProps"
 import { resolveValidationRows } from "../utils/validation-rows"
 import { JsonSchemaValidationRowKey as ViewerValidationRowKey } from "../utils/validation-row-keys"
 import {
@@ -72,7 +65,7 @@ function isJsonSchemaPropertyNodeWithDiffs(
   return isJsonSchemaTreeNodeWithDiffs(node) && node.kind === JsonSchemaTreeNodeKinds.PROPERTY
 }
 
-export type SchemaNodePlainContentProps = WithPrecededByProps & {
+export type SchemaNodePlainContentProps = {
   node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
   displayValue?: JsonSchemaTreeNodeValue | null
   isLastInList?: boolean
@@ -83,7 +76,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     node,
     displayValue,
     isLastInList = false,
-    [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
   const displayMode = useDisplayMode()
@@ -160,10 +152,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
     return [...baseRows, ...diffOnlyRows]
   }, [propertyNodeWithDiffs, value])
-
-  const resolveAdditionalInfoRowUsesAfterRowPrecededBy = propertyNodeWithDiffs
-    ? resolveJsonSchemaPropertyAdditionalInfoRowUsesAfterRowPrecededBy
-    : resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy
 
   const enumValuesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -243,13 +231,10 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     [],
   )
 
-  const rowPrecededBy = precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER
-
   return (
     <>
       {visibility.showDeprecationReasonRow && visibility.deprecationReason && (
         <MarkdownTextRow
-          data-precededby={rowPrecededBy}
           usage={TextRowUsage.JsonSchemaDescription}
           value={`**Deprecation reason:** ${visibility.deprecationReason}`}
         />
@@ -257,7 +242,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
       {visibility.showDescription && (value?.description || descriptionRowDiffProps.diff) && (
         <MarkdownTextRow
-          data-precededby={rowPrecededBy}
           usage={TextRowUsage.JsonSchemaDescription}
           value={value?.description ?? ""}
           {...descriptionRowDiffProps}
@@ -266,7 +250,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
       {visibility.showEnumValuesRow && (
         <AdditionalInfoRow
-          data-precededby={rowPrecededBy}
           label="Allowed values"
           usage={AdditionalInfoRowUsage.JsonSchemaValidation}
           subheader={enumValuesAdditionalInfoSubheader}
@@ -281,11 +264,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
       {visibility.showDefaultRow && (
         <AdditionalInfoRow
-          data-precededby={
-            resolveAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
-              ? rowPrecededBy
-              : rowPrecededBy
-          }
           label="Default"
           usage={AdditionalInfoRowUsage.JsonSchemaValidation}
           subheader={defaultAdditionalInfoSubheader}
@@ -296,7 +274,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
       {visibility.showExamplesRow && (
         <AdditionalInfoRow
-          data-precededby={rowPrecededBy}
           label="Examples"
           usage={AdditionalInfoRowUsage.JsonSchemaValidation}
           subheader={examplesAdditionalInfoSubheader}
@@ -308,7 +285,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
       {visibility.showValidationsSection && validationRows.map((row) => (
         <AdditionalInfoRow
           key={row.key}
-          data-precededby={rowPrecededBy}
           label={row.label}
           usage={AdditionalInfoRowUsage.JsonSchemaValidation}
           subheader={buildValidationRowSubheader(row.key, row.values)}

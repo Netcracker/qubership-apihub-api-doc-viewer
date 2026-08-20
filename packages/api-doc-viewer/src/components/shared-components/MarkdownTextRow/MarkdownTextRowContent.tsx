@@ -99,7 +99,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
       data-precededby={precededBy}
       className={[
         "markdown-text-row-content flex w-full h-full gap-2",
-        isDdlApiPropertyRow ? "items-stretch" : "",
+        isDdlApiPropertyRow || usage === TextRowUsage.JsonSchemaDescription ? "items-stretch" : "",
         usageDrivenClasses,
         ...diffsStyleClasses,
       ].filter(Boolean).join(" ")}
@@ -113,6 +113,10 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
       )}
       {isDdlApiPropertyRow ? (
         <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
+          {markdownValue}
+        </div>
+      ) : usage === TextRowUsage.JsonSchemaDescription ? (
+        <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center gap-2">
           {markdownValue}
         </div>
       ) : (

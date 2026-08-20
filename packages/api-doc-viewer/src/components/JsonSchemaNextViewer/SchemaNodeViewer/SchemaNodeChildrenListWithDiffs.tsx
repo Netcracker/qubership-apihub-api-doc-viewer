@@ -4,20 +4,16 @@ import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { resolveJsonSchemaUnchangedBlocks } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/changed-only"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { FC, Fragment, useMemo } from "react"
-import {
-  ATTRIBUTE_PRECEDED_BY,
-  PrecededBy,
-  WithPrecededByProps,
-} from "../../shared-components/WithPrecededByProps"
+import { PrecededBy } from "../../shared-components/WithPrecededByProps"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useUnchangedBlocksContext } from "../UnchangedBlocksContext"
 
-export type SchemaNodeChildrenListWithDiffsProps = WithPrecededByProps & {
+export type SchemaNodeChildrenListWithDiffsProps = {
   children: readonly JsonSchemaTreeNodeWithDiffs[]
 }
 
 export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffsProps> = (props) => {
-  const { children, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { children } = props
   const { hideUnchangedNodes, revealedBlockIds, revealBlock } = useUnchangedBlocksContext()
   const diffTypes = useDiffTypes()
 
@@ -38,8 +34,6 @@ export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffs
     <>
       {visibleSequence.map((item, visibleIndex) => {
         const isLastInList = visibleIndex === visibleSequence.length - 1
-        const rowPrecededBy = precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER
-
         if (item.kind === "placeholder") {
           if (revealedBlockIds.has(item.unchangedBlockId)) {
             return (
@@ -49,7 +43,7 @@ export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffs
                   .map((blockChild, blockChildIndex) => (
                     <JsonSchemaNodeViewerWithDiffs
                       key={blockChild.id}
-                      data-precededby={rowPrecededBy}
+                      data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
                       node={blockChild}
                       isLastInList={isLastInList && blockChildIndex === item.blockSize - 1}
                     />
@@ -61,7 +55,6 @@ export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffs
           return (
             <ShowUnchangedRow
               key={item.unchangedBlockId}
-              data-precededby={rowPrecededBy}
               unchangedBlockId={item.unchangedBlockId}
               count={item.blockSize}
               onReveal={revealBlock}
@@ -72,7 +65,7 @@ export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffs
         return (
           <JsonSchemaNodeViewerWithDiffs
             key={item.node.id}
-            data-precededby={rowPrecededBy}
+            data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
             node={item.node}
             isLastInList={isLastInList}
           />

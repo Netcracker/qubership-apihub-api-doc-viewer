@@ -179,7 +179,6 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     return null
   }
 
-  const rowPrecededBy = precededBy ?? PrecededBy.JSON_SCHEMA_VIEWER
   const showLeafChildren = expanded && !activeLeaf.isCycle && leafChildren.length > 0
   const useHideUnchangedLeafChildren = Boolean(nodeWithDiffs && unchangedBlocksContext)
   const ChildNodeViewer = nodeWithDiffs
@@ -187,7 +186,10 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     : JsonSchemaNodeViewer
 
   return (
-    <div data-testid="json-schema-combiner-node-viewer" className="flex flex-col">
+    <div
+      data-testid="json-schema-combiner-node-viewer"
+      className="json-schema-property flex flex-col"
+    >
       <SchemaNodeTitleRow
         data-precededby={precededBy}
         ownerNode={node}
@@ -201,7 +203,6 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
       />
 
       <SchemaNodePlainContent
-        data-precededby={rowPrecededBy}
         node={activeLeaf}
         displayValue={activeLeafDisplayValue}
         isLastInList={isLastInList && !expandable && selectorLevels.every((selectorLevel) => !selectorLevel.showSelector)}
@@ -222,7 +223,6 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
           return (
             <CombinerSelectorRow
               key={selectorLevel.combinerNode.id}
-              data-precededby={rowPrecededBy}
               combinerKindLabel={selectorLevel.combinerKindLabel}
               showSelector={selectorLevel.showSelector}
               options={options}
@@ -237,21 +237,19 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
         {showLeafChildren && (
           <>
             <NestingIndicatorTitleRow
-              data-precededby={rowPrecededBy}
               title={propertyNestingIndicatorTitle}
               usage={NestingIndicatorTitleRowUsage.JsonSchema}
               lastInvisible
             />
             {useHideUnchangedLeafChildren ? (
               <SchemaNodeChildrenListWithDiffs
-                data-precededby={rowPrecededBy}
                 children={leafChildren as JsonSchemaTreeNodeWithDiffs[]}
               />
             ) : (
               leafChildren.map((child, index) => (
                 <ChildNodeViewer
                   key={child.id}
-                  data-precededby={rowPrecededBy}
+                  data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
                   node={child as never}
                   isLastInList={index === leafChildren.length - 1}
                 />

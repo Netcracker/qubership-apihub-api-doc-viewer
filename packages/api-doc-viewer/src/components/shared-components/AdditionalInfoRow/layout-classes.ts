@@ -9,7 +9,7 @@ const ADDITIONAL_INFO_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<AdditionalInfo
 const ADDITIONAL_INFO_ROW_BODY_CLASS_BY_USAGE: Partial<Record<AdditionalInfoRowUsage, string>> = {
   [AdditionalInfoRowUsage.DdlApiProperty]: 'ddlapi-property-row-body',
   [AdditionalInfoRowUsage.Default]: 'additional-info-row-body',
-  [AdditionalInfoRowUsage.JsonSchemaValidation]: 'additional-info-row-body',
+  [AdditionalInfoRowUsage.JsonSchemaValidation]: 'json-schema-property-row-body',
 }
 
 const ADDITIONAL_INFO_ROW_MIN_HEIGHT_BY_USAGE: Partial<Record<AdditionalInfoRowUsage, string>> = {

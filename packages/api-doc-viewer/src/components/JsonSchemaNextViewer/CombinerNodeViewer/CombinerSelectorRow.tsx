@@ -20,9 +20,8 @@ import { DiffFloatingBadgeWrapper } from "../../shared-components/DiffFloatingBa
 import { LevelIndicator } from "../../shared-components/LevelIndicator"
 import { OneSideLayout } from "../../shared-components/Layout/OneSideLayout"
 import { SideBySideLayout } from "../../shared-components/Layout/SideBySideLayout"
-import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 
-export type CombinerSelectorRowProps<N extends JsonSchemaTreeNode = JsonSchemaTreeNode> = WithPrecededByProps & {
+export type CombinerSelectorRowProps<N extends JsonSchemaTreeNode = JsonSchemaTreeNode> = {
   combinerKindLabel?: string
   showSelector?: boolean
   options: SelectorOption<N>[]
@@ -56,7 +55,6 @@ const CombinerSelectorControlsRow = memo(<N extends JsonSchemaTreeNode>(props: C
     onSelectOption,
     selectorRowDiff,
     layoutSide,
-    [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
   const level = useLevelContext()
@@ -68,20 +66,21 @@ const CombinerSelectorControlsRow = memo(<N extends JsonSchemaTreeNode>(props: C
   return (
     <div
       data-testid="json-schema-combiner-selector-row-content"
-      data-precededby={precededBy}
-      className={`json-schema-combiner-selector-row-content flex w-full items-stretch gap-2 py-1 ${X_AXIS_PADDING_ROWS_JSO} ${rowBackgroundClass}`.trim()}
+      className={`json-schema-combiner-selector-row-content flex w-full items-stretch gap-2 ${X_AXIS_PADDING_ROWS_JSO} ${rowBackgroundClass}`.trim()}
     >
-      <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
+      <div className="level-indicator-column flex items-stretch self-stretch">
         <LevelIndicator level={level} />
         <div className="w-4" aria-hidden="true" />
       </div>
-      <Selector
-        options={options}
-        selectedOption={selectedOption}
-        onSelectOption={onSelectOption}
-        variant={SelectorVariant.Primary}
-        layoutSide={layoutSide}
-      />
+      <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">
+        <Selector
+          options={options}
+          selectedOption={selectedOption}
+          onSelectOption={onSelectOption}
+          variant={SelectorVariant.Secondary}
+          layoutSide={layoutSide}
+        />
+      </div>
     </div>
   )
 }) as <N extends JsonSchemaTreeNode>(props: CombinerSelectorRowContentProps<N>) => JSX.Element
@@ -91,18 +90,15 @@ const CombinerSelectorRowContent = memo(<N extends JsonSchemaTreeNode>(props: Co
     combinerKindLabel,
     showSelector = true,
     selectorRowDiff,
-    [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
   return (
     <div
       data-testid="json-schema-combiner-selector-row"
-      data-precededby={precededBy}
       className="json-schema-combiner-selector-row flex w-full flex-col"
     >
       {combinerKindLabel && (
         <NestingIndicatorTitleRowContent
-          data-precededby={precededBy}
           title={combinerKindLabel}
           usage={NestingIndicatorTitleRowUsage.JsonSchema}
           lastInvisible

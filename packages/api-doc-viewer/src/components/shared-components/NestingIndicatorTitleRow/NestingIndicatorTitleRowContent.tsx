@@ -46,12 +46,15 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
     return classes
   }, [diff, layoutSide])
 
+  const isJsonSchemaUsage = usage === NestingIndicatorTitleRowUsage.JsonSchema
+
   return (
     <div
       data-testid="nesting-indicator-title-row-content"
       data-precededby={precededBy}
       className={[
-        "nesting-indicator-title-row-content flex w-full h-full items-stretch gap-2",
+        "nesting-indicator-title-row-content flex w-full h-full",
+        isJsonSchemaUsage ? "items-stretch" : "",
         usageDrivenClasses,
         ...diffsStyleClasses,
       ].filter(Boolean).join(" ")}
@@ -59,7 +62,13 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
       <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
         <LevelIndicator level={level} lastInvisible={lastInvisible} />
       </div>
-      <NestingIndicatorTitleLabel title={title} />
+      {isJsonSchemaUsage ? (
+        <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">
+          <NestingIndicatorTitleLabel title={title} />
+        </div>
+      ) : (
+        <NestingIndicatorTitleLabel title={title} />
+      )}
     </div>
   )
 })

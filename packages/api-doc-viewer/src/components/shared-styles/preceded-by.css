@@ -19,6 +19,11 @@
   padding-bottom: 0;
 }
 
+.json-schema-property .title-row-content {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .title-row-content[data-precededby="root"] {
   padding-top: 8px;
   padding-bottom: 8px;
@@ -143,6 +148,41 @@
 }
 
 /* DDL API End */
+
+/* JSON Schema Next — vertical band on row body only (LevelIndicator stays full-height) */
+
+.json-schema-property .title-row-content,
+.json-schema-property .markdown-text-row-content,
+.json-schema-property .additional-info-row-content,
+.json-schema-property .nesting-indicator-title-row-content,
+.json-schema-property .json-schema-combiner-selector-row-content,
+.json-schema-property .show-unchanged-row-content {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.json-schema-property .markdown-text-row-content,
+.json-schema-property .additional-info-row-content,
+.json-schema-property .nesting-indicator-title-row-content,
+.json-schema-property .json-schema-combiner-selector-row-content,
+.json-schema-property .show-unchanged-row-content {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.json-schema-property .json-schema-property-row-body {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.json-schema-property .title-row-content > .json-schema-property-row-body {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+.json-schema-property .title-row-content[data-precededby="json-schema-viewer"] > .json-schema-property-row-body {
+  padding-top: 16px;
+}
 
 /* ─── AdditionalInfoRowContent ─────────────────────────────────────────────── */
 
