@@ -24,9 +24,7 @@ function hasNonEmptyArray(value: unknown): value is unknown[] {
  * Used for lazy materialization at build time (not interactive expand).
  */
 export function jsonSchemaHasOwnChildren(value: unknown, rules: JsonSchemaCrawlRule | undefined): boolean {
-  if (rules?.complex) {
-    return hasNonEmptyArray(value)
-  }
+  void rules
 
   if (!isObject(value) && !isArray(value)) {
     return false

@@ -32,9 +32,6 @@ export function getJsonSchemaCrawlRules<S extends JsonSchemaTreeCrawlState = Jso
       "/*": () => getJsonSchemaCrawlRules(jsonSchemaNodeKind.patternProperty),
     },
     kind,
-    complex: kind === jsonSchemaNodeKind.allOf
-      || kind === jsonSchemaNodeKind.oneOf
-      || kind === jsonSchemaNodeKind.anyOf,
     transformers: jsonSchemaTransformers,
   }
 }

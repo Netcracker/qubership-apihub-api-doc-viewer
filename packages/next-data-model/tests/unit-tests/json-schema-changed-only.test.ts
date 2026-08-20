@@ -3,6 +3,7 @@ import {
   isJsonSchemaNodeChanged,
   resolveJsonSchemaUnchangedBlocks,
 } from "../../src/building-service/json-schema/tree-with-diffs/changed-only"
+import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "../../src/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property-expand"
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { TreeNodeComplexityTypes } from "../../src/model/abstract/tree/tree-node.interface"
@@ -326,6 +327,54 @@ describe("JSON Schema changed-only data layer", () => {
         item.kind === "placeholder" && item.blockSize === 1
       ))
       expect(childCPlaceholder).toBeDefined()
+    })
+
+    it("hides unchanged nested property under oneOf branch in case 4.1", () => {
+      const tree = buildTreeFromFixture("combiners/4.1-oneof-variant-content-changed")
+      const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")
+      expect(valueProperty).toBeDefined()
+
+      const objectBranch = valueProperty!.nestedNodes()[0]
+      const branchChildren = objectBranch.childrenNodes().filter(isJsonSchemaTreeNodeWithDiffs)
+      const nestedChanged = branchChildren.find((node) => node.key === "nestedChanged")
+      const nestedUnchanged = branchChildren.find((node) => node.key === "nestedUnchanged")
+
+      expect(nestedChanged).toBeDefined()
+      expect(nestedUnchanged).toBeDefined()
+      expect(isJsonSchemaNodeChanged(nestedChanged!)).toBe(true)
+      expect(isJsonSchemaNodeChanged(nestedUnchanged!)).toBe(false)
+
+      const { visibleSequence } = resolveJsonSchemaUnchangedBlocks(branchChildren)
+      const visibleKeys = visibleSequence
+        .filter((item): item is Extract<typeof item, { kind: "node" }> => item.kind === "node")
+        .map((item) => String(item.node.key))
+
+      expect(visibleKeys).toEqual(["nestedChanged"])
+      expect(visibleSequence.some((item) => item.kind === "placeholder" && item.blockSize === 1)).toBe(true)
+    })
+  })
+
+  describe("resolveJsonSchemaPropertyInitiallyExpandedWithDiffs", () => {
+    it("expands changed oneOf branch and collapses unchanged branch in case 4.1", () => {
+      const tree = buildTreeFromFixture("combiners/4.1-oneof-variant-content-changed")
+      const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")
+      expect(valueProperty).toBeDefined()
+
+      const objectBranch = valueProperty!.nestedNodes()[0]
+      const numberBranch = valueProperty!.nestedNodes()[1]
+
+      expect(isJsonSchemaNodeChanged(objectBranch)).toBe(true)
+      expect(isJsonSchemaNodeChanged(numberBranch)).toBe(false)
+      expect(objectBranch.childrenNodes().length).toBeGreaterThan(0)
+      expect(numberBranch.childrenNodes()).toHaveLength(0)
+
+      expect(
+        resolveJsonSchemaPropertyInitiallyExpandedWithDiffs(objectBranch, {
+          expandedDepth: 5,
+          level: 2,
+          hideUnchangedNodes: true,
+        }),
+      ).toBe(true)
     })
   })
 })

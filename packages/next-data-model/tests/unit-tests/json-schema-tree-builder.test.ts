@@ -81,6 +81,55 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(tree.root!.nestedNodes()).toHaveLength(2)
   })
 
+  it("creates simple combiner branch nodes with typed value()", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        value: {
+          oneOf: [
+            {
+              type: "object",
+              description: "Object variant",
+              properties: {
+                nestedChanged: { type: "string", description: "Changed" },
+                nestedUnchanged: { type: "string", description: "Unchanged" },
+              },
+            },
+            {
+              type: "number",
+              description: "Number variant",
+            },
+          ],
+        },
+      },
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
+    const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")!
+
+    expect(valueProperty.type).toBe(TreeNodeComplexityTypes.COMPLEX)
+    expect(valueProperty.nestedNodes()).toHaveLength(2)
+
+    const objectBranch = valueProperty.nestedNodes()[0]
+    const numberBranch = valueProperty.nestedNodes()[1]
+
+    expect(objectBranch.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+    expect(objectBranch.kind).toBe(JsonSchemaTreeNodeKinds.ONE_OF)
+    expect(objectBranch.value()?.type).toBe("object")
+    expect(objectBranch.value()?.description).toBe("Object variant")
+    expect(objectBranch.childrenNodes()).toHaveLength(2)
+    expect(objectBranch.childrenNodes().map((node) => node.key)).toEqual([
+      "nestedChanged",
+      "nestedUnchanged",
+    ])
+
+    expect(numberBranch.type).toBe(TreeNodeComplexityTypes.SIMPLE)
+    expect(numberBranch.kind).toBe(JsonSchemaTreeNodeKinds.ONE_OF)
+    expect(numberBranch.value()?.type).toBe("number")
+    expect(numberBranch.value()?.description).toBe("Number variant")
+    expect(numberBranch.childrenNodes()).toHaveLength(0)
+  })
+
   it("hasOwnChildren matches children after full materialization", () => {
     const cases: { fragment: Record<string, unknown>; expectChildren: boolean }[] = [
       { fragment: { type: "string", minLength: 1 }, expectChildren: false },
