@@ -1,1 +1,0 @@
-import{p as a}from"./public-api-d6a34651.js";const p=e=>{let r;try{r=JSON.parse(e)}catch(o){console.error("Cannot parse JSON:",o),r=void 0}try{r||(r=a(e))}catch(o){console.error("Cannot parse YAML:",o),r=void 0}return!r||typeof r!="object"?{}:r};export{p};
