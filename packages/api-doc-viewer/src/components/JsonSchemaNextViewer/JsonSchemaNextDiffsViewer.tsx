@@ -18,6 +18,10 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import "../shared-styles/diffs/index.css"
 import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
 import { JsonSchemaNodeViewerWithDiffs } from "./JsonSchemaNodeViewerWithDiffs"
+import {
+  UnchangedBlocksContext,
+  useUnchangedBlocksContextValue,
+} from "./UnchangedBlocksContext"
 
 export type JsonSchemaNextDiffsViewerProps = {
   schema: unknown
@@ -28,6 +32,7 @@ export type JsonSchemaNextDiffsViewerProps = {
   customizationOptions?: CustomizationOptions
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
+  hideUnchangedNodes?: boolean
 }
 
 export const JsonSchemaNextDiffsViewer: FC<JsonSchemaNextDiffsViewerProps> = memo((props) => {
@@ -52,7 +57,10 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
     customizationOptions,
     diffMetaKeys,
     diffTypes,
+    hideUnchangedNodes = true,
   } = props
+
+  const unchangedBlocksContext = useUnchangedBlocksContextValue(hideUnchangedNodes)
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
@@ -95,19 +103,21 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
   return (
     <DiffMetaKeysContext.Provider value={diffMetaKeys}>
       <DiffTypesContext.Provider value={diffTypes}>
-        <JsonSchemaNextViewerContext.Provider value={viewerContext}>
-          <CustomizationOptionsContext.Provider value={customizationOptions}>
-            <DisplayModeContext.Provider value={displayMode}>
-              <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-                <LevelContext.Provider value={initialLevel}>
-                  <div data-testid="json-schema-next-diffs-viewer">
-                    <JsonSchemaNodeViewerWithDiffs node={root} />
-                  </div>
-                </LevelContext.Provider>
-              </LayoutModeContext.Provider>
-            </DisplayModeContext.Provider>
-          </CustomizationOptionsContext.Provider>
-        </JsonSchemaNextViewerContext.Provider>
+        <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
+          <JsonSchemaNextViewerContext.Provider value={viewerContext}>
+            <CustomizationOptionsContext.Provider value={customizationOptions}>
+              <DisplayModeContext.Provider value={displayMode}>
+                <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
+                  <LevelContext.Provider value={initialLevel}>
+                    <div data-testid="json-schema-next-diffs-viewer">
+                      <JsonSchemaNodeViewerWithDiffs node={root} />
+                    </div>
+                  </LevelContext.Provider>
+                </LayoutModeContext.Provider>
+              </DisplayModeContext.Provider>
+            </CustomizationOptionsContext.Provider>
+          </JsonSchemaNextViewerContext.Provider>
+        </UnchangedBlocksContext.Provider>
       </DiffTypesContext.Provider>
     </DiffMetaKeysContext.Provider>
   )

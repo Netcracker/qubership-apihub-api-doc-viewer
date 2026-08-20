@@ -10,6 +10,7 @@ import {
 import {
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
+import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property-expand"
 import { FC, useCallback, useMemo, useState } from "react"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
@@ -22,6 +23,9 @@ import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 import { resolveJsonSchemaPropertyNestingIndicatorTitle } from "../utils/resolve-json-schema-nesting-indicator-title"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
+import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
+import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
+import { SchemaNodeChildrenListWithDiffs } from "./SchemaNodeChildrenListWithDiffs"
 import { SchemaNodePlainContent } from "./SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "./SchemaNodeTitleRow"
 
@@ -47,6 +51,8 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   const level = useLevelContext()
   const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaNextViewerContext()
   const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
+  const nodeWithDiffs = isJsonSchemaTreeNodeWithDiffs(node) ? node : undefined
+  const unchangedBlocksContext = useOptionalUnchangedBlocksContext()
 
   const visibility = useMemo(
     () => propertyNodeWithDiffs
@@ -70,8 +76,18 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   )
 
   const initiallyExpanded = useMemo(
-    () => resolvePlainPropertyInitiallyExpanded(node, { expandedDepth, level }),
-    [node, expandedDepth, level],
+    () => {
+      if (nodeWithDiffs && unchangedBlocksContext?.hideUnchangedNodes) {
+        return resolveJsonSchemaPropertyInitiallyExpandedWithDiffs(nodeWithDiffs, {
+          expandedDepth,
+          level,
+          hideUnchangedNodes: true,
+          isRoot: node.kind === JsonSchemaTreeNodeKinds.ROOT,
+        })
+      }
+      return resolvePlainPropertyInitiallyExpanded(node, { expandedDepth, level })
+    },
+    [expandedDepth, level, node, nodeWithDiffs, unchangedBlocksContext?.hideUnchangedNodes],
   )
 
   const [expanded, setExpanded] = useState(initiallyExpanded)
@@ -121,14 +137,30 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
                 usage={NestingIndicatorTitleRowUsage.JsonSchema}
                 lastInvisible
               />
-              {children.map((child, index) => (
-                <JsonSchemaNodeViewer
-                  key={child.id}
+              {nodeWithDiffs && unchangedBlocksContext ? (
+                <SchemaNodeChildrenListWithDiffs
                   data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
-                  node={child}
-                  isLastInList={index === children.length - 1}
+                  children={children as JsonSchemaTreeNodeWithDiffs[]}
                 />
-              ))}
+              ) : (
+                children.map((child, index) => (
+                  nodeWithDiffs ? (
+                    <JsonSchemaNodeViewerWithDiffs
+                      key={child.id}
+                      data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+                      node={child as JsonSchemaTreeNodeWithDiffs}
+                      isLastInList={index === children.length - 1}
+                    />
+                  ) : (
+                    <JsonSchemaNodeViewer
+                      key={child.id}
+                      data-precededby={PrecededBy.JSON_SCHEMA_VIEWER}
+                      node={child}
+                      isLastInList={index === children.length - 1}
+                    />
+                  )
+                ))
+              )}
             </LevelContext.Provider>
           )}
         </>
