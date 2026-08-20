@@ -30,6 +30,7 @@ const preview: Preview = {
           'Debug',
           [
             'Json Schema Viewer',
+            'Json Schema Diff Viewer',
             'GraphQL Debug Page',
             'Async Api Viewer',
             'Async Api Diffs Viewer',
