@@ -16,6 +16,7 @@ export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
     titleContent?: ReactElement;
     expandable: boolean;
     expanded?: boolean;
+    isRoot?: boolean;
     onClickExpander?: () => void;
     variant: TextValueVariant;
     enableHeader?: boolean;
