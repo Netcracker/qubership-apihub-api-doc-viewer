@@ -12,5 +12,6 @@ export type JsonSchemaNextDiffsViewerProps = {
     customizationOptions?: CustomizationOptions;
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
+    hideUnchangedNodes?: boolean;
 };
 export declare const JsonSchemaNextDiffsViewer: FC<JsonSchemaNextDiffsViewerProps>;

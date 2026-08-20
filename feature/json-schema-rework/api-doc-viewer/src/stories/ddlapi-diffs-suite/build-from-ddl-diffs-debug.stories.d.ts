@@ -6,6 +6,24 @@ declare const meta: {
     title: string;
     component: import('../../../../../node_modules/react').FC<import("./BuildFromDdlDiffsDebug").BuildFromDdlDiffsDebugProps>;
     argTypes: {
+        useCustomTableKey: {
+            control: "boolean";
+            description: string;
+        };
+        tableSchemaName: {
+            control: "text";
+            if: {
+                arg: string;
+            };
+            description: string;
+        };
+        tableName: {
+            control: "text";
+            if: {
+                arg: string;
+            };
+            description: string;
+        };
         beforeSql: {
             control: "text";
         };
@@ -19,6 +37,9 @@ declare const meta: {
         };
     };
     args: {
+        useCustomTableKey: boolean;
+        tableSchemaName: string;
+        tableName: string;
         beforeSql: string;
         afterSql: string;
         displayMode: "detailed";
