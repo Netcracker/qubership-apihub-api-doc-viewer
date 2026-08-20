@@ -40,3 +40,9 @@ export const Case_3_1_oneof_variant_added: Story = createCaseStory("3.1-oneof-va
 export const Case_4_1_oneof_variant_content_changed: Story = createCaseStory(
   "4.1-oneof-variant-content-changed",
 );
+export const Case_5_1_oneof_three_variants_unchanged: Story = createCaseStory(
+  "5.1-oneof-three-variants-unchanged",
+);
+export const Case_5_2_root_description_changed_oneof_unchanged: Story = createCaseStory(
+  "5.2-root-description-changed-oneof-unchanged",
+);

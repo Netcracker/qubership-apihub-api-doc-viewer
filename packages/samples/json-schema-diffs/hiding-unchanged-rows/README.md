@@ -3,7 +3,7 @@
 Hand-written YAML pairs for screenshot-diff scenarios that exercise **changed-only** row
 hiding in the JSON Schema Next diffs viewer.
 
-- Total cases: 14 (4 simple-object + 8 complex-object + 2 combiners)
+- Total cases: 16 (4 simple-object + 8 complex-object + 4 combiners)
 - Layout: `json-schema-diffs/hiding-unchanged-rows/<suite>/<case-id>/before.yaml` and
   `.../after.yaml`
 - Each file is a **standalone JSON Schema** document (not wrapped in OpenAPI).
@@ -50,6 +50,8 @@ unchanged sibling properties. Cases mirror design rules 3–4 in
 | --- | --- |
 | `3.1-oneof-variant-added` | `#`.status: third `oneOf` branch (`boolean`) added; `#`.unchangedProp unchanged |
 | `4.1-oneof-variant-content-changed` | `#`.value: first `oneOf` object branch description and `#`.value.nestedChanged updated; `#`.value.nestedUnchanged and `#`.otherProp unchanged |
+| `5.1-oneof-three-variants-unchanged` | `#`.status: `oneOf` with string, number, object variants — no changes between before and after |
+| `5.2-root-description-changed-oneof-unchanged` | `#`.description replaced; `#`.status `oneOf` (string, number, object) and `#`.unchangedProp unchanged |
 
 ## Storybook and screenshot tests
 

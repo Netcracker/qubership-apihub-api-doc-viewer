@@ -40,4 +40,21 @@ describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Combiners", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("5.1-oneof-three-variants-unchanged", async () => {
+    story = await storyPage(page, `${META_ID}--case-5-1-oneof-three-variants-unchanged`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("5.2-root-description-changed-oneof-unchanged", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-5-2-root-description-changed-oneof-unchanged`,
+    );
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });
