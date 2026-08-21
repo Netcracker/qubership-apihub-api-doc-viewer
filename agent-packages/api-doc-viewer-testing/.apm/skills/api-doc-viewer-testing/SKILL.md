@@ -187,8 +187,8 @@ Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts`.
-- JSON Schema Next diff suites — `src/stories/json-schema-diffs-suite/` and
-  `src/it/json-schema-diffs-suite.*.it-test.ts` (fixtures under
+- JSON Schema Next diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
+  `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
 - DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios-samples.stories.tsx`
   and `src/it/ddlapi-suite/e2e-scenarios-samples.it-test.ts`.
@@ -316,8 +316,9 @@ contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (no
 
 | Path | Purpose | Stories / tests |
 | --- | --- | --- |
-| `hiding-unchanged-rows/simple-object/` | Changed-only row hiding — flat object, primitive props | `hiding-unchanged-rows-simple-object-samples.*` |
-| `hiding-unchanged-rows/complex-object/` | Changed-only row hiding — nested object props | `hiding-unchanged-rows-complex-object-samples.*` |
+| `hiding-unchanged-rows/simple-object/` | Changed-only row hiding — flat object, primitive props | `simple-object-samples.*` |
+| `hiding-unchanged-rows/complex-object/` | Changed-only row hiding — nested object props | `complex-object-samples.*` |
+| `hiding-unchanged-rows/combiners/` | Changed-only row hiding — combiners (oneOf, etc.) | `combiners-samples.*` |
 
 Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 
@@ -326,7 +327,7 @@ Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
 
 1. YAML pair under the appropriate suite subdirectory.
 2. Story export in the matching `*-samples.stories.tsx`.
-3. Matching `it(...)` in the paired `src/it/json-schema-diffs-suite.*.it-test.ts`.
+3. Matching `it(...)` in the paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`.
 4. Screenshot snapshots via `npm run regenerate-screenshots`.
 
 ## Flaky rendering

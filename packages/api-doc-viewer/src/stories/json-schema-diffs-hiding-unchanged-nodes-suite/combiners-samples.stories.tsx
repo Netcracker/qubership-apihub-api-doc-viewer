@@ -8,12 +8,12 @@ import {
 } from "./json-schema-diffs-utils";
 
 const beforeFiles = import.meta.glob(
-  "../../../../samples/json-schema-diffs/hiding-unchanged-rows/simple-object/*/before.yaml",
+  "../../../../samples/json-schema-diffs/hiding-unchanged-rows/combiners/*/before.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
 const afterFiles = import.meta.glob(
-  "../../../../samples/json-schema-diffs/hiding-unchanged-rows/simple-object/*/after.yaml",
+  "../../../../samples/json-schema-diffs/hiding-unchanged-rows/combiners/*/after.yaml",
   { as: "raw", eager: true },
 ) as Record<string, string>;
 
@@ -22,7 +22,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Hiding Unchanged Rows Simple Object Samples",
+  title: "JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Combiners Samples",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
@@ -36,11 +36,16 @@ const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
   sampleById,
 );
 
-export const Case_1_1_two_added_three_removed: Story = createCaseStory("1.1-two-added-three-removed");
-export const Case_1_2_second_and_fifth_added_others_unchanged: Story = createCaseStory(
-  "1.2-second-and-fifth-added-others-unchanged",
+export const Case_3_1_oneof_variant_added: Story = createCaseStory("3.1-oneof-variant-added");
+export const Case_4_1_oneof_variant_content_changed: Story = createCaseStory(
+  "4.1-oneof-variant-content-changed",
 );
-export const Case_1_3_root_description_replaced: Story = createCaseStory("1.3-root-description-replaced");
-export const Case_1_4_property_metadata_and_constraints_changed: Story = createCaseStory(
-  "1.4-property-metadata-and-constraints-changed",
+export const Case_4_2_oneof_variant_description_only_changed: Story = createCaseStory(
+  "4.2-oneof-variant-description-only-changed",
+);
+export const Case_5_1_oneof_three_variants_unchanged: Story = createCaseStory(
+  "5.1-oneof-three-variants-unchanged",
+);
+export const Case_5_2_root_description_changed_oneof_unchanged: Story = createCaseStory(
+  "5.2-root-description-changed-oneof-unchanged",
 );

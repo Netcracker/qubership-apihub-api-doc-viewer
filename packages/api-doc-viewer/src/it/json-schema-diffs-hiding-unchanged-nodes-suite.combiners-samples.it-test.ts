@@ -1,11 +1,11 @@
 /**
- * Screenshot tests for JSON Schema Diffs Suite — hiding unchanged rows (simple object).
+ * Screenshot tests for JSON Schema Diffs Suite (Hiding Unchanged Nodes) — combiners.
  */
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-hiding-unchanged-rows-simple-object-samples";
+const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-combiners-samples";
 
 async function waitForJsonSchemaNextDiffsViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaNextDiffsViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Simple Object", () => {
+describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -24,34 +24,44 @@ describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Simple Object", () => 
     await jestPuppeteer.resetPage();
   });
 
-  it("1.1-two-added-three-removed", async () => {
-    story = await storyPage(page, `${META_ID}--case-1-1-two-added-three-removed`);
+  it("3.1-oneof-variant-added", async () => {
+    story = await storyPage(page, `${META_ID}--case-3-1-oneof-variant-added`);
     await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("1.2-second-and-fifth-added-others-unchanged", async () => {
+  it("4.1-oneof-variant-content-changed", async () => {
     story = await storyPage(
       page,
-      `${META_ID}--case-1-2-second-and-fifth-added-others-unchanged`,
+      `${META_ID}--case-4-1-oneof-variant-content-changed`,
     );
     await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("1.3-root-description-replaced", async () => {
-    story = await storyPage(page, `${META_ID}--case-1-3-root-description-replaced`);
+  it("4.2-oneof-variant-description-only-changed", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-4-2-oneof-variant-description-only-changed`,
+    );
     await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("1.4-property-metadata-and-constraints-changed", async () => {
+  it("5.1-oneof-three-variants-unchanged", async () => {
+    story = await storyPage(page, `${META_ID}--case-5-1-oneof-three-variants-unchanged`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("5.2-root-description-changed-oneof-unchanged", async () => {
     story = await storyPage(
       page,
-      `${META_ID}--case-1-4-property-metadata-and-constraints-changed`,
+      `${META_ID}--case-5-2-root-description-changed-oneof-unchanged`,
     );
     await waitForJsonSchemaNextDiffsViewer();
     component = await story.viewComponent();

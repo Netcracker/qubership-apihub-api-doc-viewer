@@ -56,17 +56,18 @@ unchanged sibling properties. Cases mirror design rules 3–4 in
 
 ## Storybook and screenshot tests
 
-Hand-written suites live under `packages/api-doc-viewer/src/stories/json-schema-diffs-suite/`
+Hand-written suites live under
+`packages/api-doc-viewer/src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/`
 and `packages/api-doc-viewer/src/it/`. Shared helpers are in `json-schema-diffs-utils.tsx`.
 
 | Suite | Story title | Story / IT files |
 | --- | --- | --- |
-| Simple object | `JSON Schema Diffs Suite/Hiding Unchanged Rows Simple Object Samples` | `hiding-unchanged-rows-simple-object-samples.*` |
-| Complex object | `JSON Schema Diffs Suite/Hiding Unchanged Rows Complex Object Samples` | `hiding-unchanged-rows-complex-object-samples.*` |
-| Combiners | `JSON Schema Diffs Suite/Hiding Unchanged Rows Combiners Samples` | `hiding-unchanged-rows-combiners-samples.*` |
+| Simple object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Simple Object Samples` | `simple-object-samples.*` |
+| Complex object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Complex Object Samples` | `complex-object-samples.*` |
+| Combiners | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Combiners Samples` | `combiners-samples.*` |
 
 Story id pattern: `{meta-id}--case-{case-id}` (for example
-`json-schema-diffs-suite-hiding-unchanged-rows-simple-object-samples--case-1-1-two-added-three-removed`).
+`json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples--case-1-1-two-added-three-removed`).
 
 Stories merge `before.yaml` / `after.yaml` via `prepareJsonDiffSchema` and render through
 `JsonSchemaNextDiffsViewer` (`json-schema-diffs-utils.tsx`). Changed-only row hiding is exercised

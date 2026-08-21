@@ -1,11 +1,11 @@
 /**
- * Screenshot tests for JSON Schema Diffs Suite — hiding unchanged rows (complex object).
+ * Screenshot tests for JSON Schema Diffs Suite (Hiding Unchanged Nodes) — complex object.
  */
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-hiding-unchanged-rows-complex-object-samples";
+const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-complex-object-samples";
 
 async function waitForJsonSchemaNextDiffsViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaNextDiffsViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite - Hiding Unchanged Rows Complex Object", () => {
+describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Complex Object", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
