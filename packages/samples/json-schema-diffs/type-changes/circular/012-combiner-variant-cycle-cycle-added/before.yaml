@@ -1,0 +1,7 @@
+type: object
+description: Combiner with cyclic object variant
+properties:
+  value:
+    oneOf:
+      - type: string
+

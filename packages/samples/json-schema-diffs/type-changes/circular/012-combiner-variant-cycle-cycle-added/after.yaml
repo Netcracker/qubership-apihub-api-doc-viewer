@@ -1,0 +1,12 @@
+type: object
+description: Combiner with cyclic object variant
+properties:
+  value:
+    oneOf:
+      - type: string
+      - type: object
+        description: Cyclic object variant
+        properties:
+          nested:
+            $ref: "#/properties/value"
+

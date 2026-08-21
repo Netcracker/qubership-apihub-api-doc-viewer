@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-08-21T08:50:15.217Z",
+  "totalCases": 145,
+  "suites": [
+    {
+      "globPath": "type-flags",
+      "caseCount": 8
+    },
+    {
+      "globPath": "description-changes",
+      "caseCount": 8
+    },
+    {
+      "globPath": "string-validation/enum",
+      "caseCount": 5
+    },
+    {
+      "globPath": "string-validation/examples",
+      "caseCount": 5
+    },
+    {
+      "globPath": "string-validation/value-range",
+      "caseCount": 41
+    },
+    {
+      "globPath": "string-validation/value-length",
+      "caseCount": 16
+    },
+    {
+      "globPath": "extended/default",
+      "caseCount": 4
+    },
+    {
+      "globPath": "extended/object",
+      "caseCount": 9
+    },
+    {
+      "globPath": "extended/array",
+      "caseCount": 9
+    },
+    {
+      "globPath": "extended/misc",
+      "caseCount": 6
+    },
+    {
+      "globPath": "extended/combiners-one-level",
+      "caseCount": 11
+    },
+    {
+      "globPath": "extended/combiners-two-level",
+      "caseCount": 11
+    },
+    {
+      "globPath": "circular",
+      "caseCount": 12
+    }
+  ]
+}

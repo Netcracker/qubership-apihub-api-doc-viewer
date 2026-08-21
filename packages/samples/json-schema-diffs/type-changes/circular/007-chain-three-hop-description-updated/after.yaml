@@ -1,0 +1,22 @@
+$schema: http://json-schema.org/draft-07/schema#
+type: object
+description: Updated cyclic schema description
+properties:
+  name:
+    type: string
+  nodeA:
+    $ref: "#/definitions/A"
+definitions:
+  A:
+    type: object
+    description: Entity A
+    properties:
+      nodeB:
+        $ref: "#/definitions/B"
+  B:
+    type: object
+    description: Entity B
+    properties:
+      backToRoot:
+        $ref: "#"
+

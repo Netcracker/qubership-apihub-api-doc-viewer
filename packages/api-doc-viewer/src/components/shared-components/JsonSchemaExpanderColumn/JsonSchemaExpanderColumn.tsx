@@ -2,7 +2,8 @@ import { FC } from "react"
 import { ExpandingCaret } from "../../common/layout/Expander/ExpandingCaret"
 import { NestingHorizontalIndicator } from "../../common/NestingHorizontalIndicator"
 
-export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-5 min-w-[20px] shrink-0 flex-none"
+export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-4 min-w-[16px] shrink-0 flex-none"
+// export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-3 min-w-[12px] shrink-0 flex-none"
 
 export const JsonSchemaRootExpanderOffset: FC = () => (
   <div className={JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS} aria-hidden="true" />

@@ -1,0 +1,4 @@
+type: string
+maximum: 10
+exclusiveMaximum: true
+
