@@ -11,9 +11,12 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorFactory {
   public static instance(
     kind: JsonSchemaTreeNodeKind,
   ): AbstractNodeDiffsSeveritiesAggregator<JsonSchemaTreeNodeValue | null> {
-    if (kind === JsonSchemaTreeNodeKinds.PROPERTY) {
-      return this.kindPropertyInstance
+    switch (kind) {
+      case JsonSchemaTreeNodeKinds.ROOT:
+      case JsonSchemaTreeNodeKinds.PROPERTY:
+        return this.kindPropertyInstance
+      default:
+        return this.kindAnyInstance
     }
-    return this.kindAnyInstance
   }
 }

@@ -5,8 +5,10 @@ import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-sche
 import {
   takeJsonSchemaDefaultDiff,
   takeJsonSchemaDefaultRowColorizingDiff,
+  takeJsonSchemaEnumDiff,
   takeJsonSchemaEnumRowColorizingDiff,
   takeJsonSchemaEnumValueDiffs,
+  takeJsonSchemaExamplesDiff,
   takeJsonSchemaExamplesRowColorizingDiff,
   takeJsonSchemaExamplesValueDiffs,
   takeJsonSchemaValidationRowColorizingDiff,
@@ -57,6 +59,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
       && (!!value?.description || !!node.diffs.description)
     const showEnumValuesRow = detailed && (
       plainVisibility.showEnumValuesRow
+      || !!takeJsonSchemaEnumDiff(node)
       || !!takeJsonSchemaEnumValueDiffs(node)
       || !!takeJsonSchemaEnumRowColorizingDiff(node)
     )
@@ -67,6 +70,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
     )
     const showExamplesRow = detailed && (
       plainVisibility.showExamplesRow
+      || !!takeJsonSchemaExamplesDiff(node)
       || !!takeJsonSchemaExamplesValueDiffs(node)
       || !!takeJsonSchemaExamplesRowColorizingDiff(node)
     )

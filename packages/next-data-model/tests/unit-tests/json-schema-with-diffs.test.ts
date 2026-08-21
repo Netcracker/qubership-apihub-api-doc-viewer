@@ -1,9 +1,12 @@
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, DiffAction, apiDiff } from "@netcracker/qubership-apihub-api-diff"
-import { HighlightVariant, NODE_LEVEL_DIFF_KEY } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
+import { HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaSpecWithDiffsTransformer } from "../../src/building-service/json-schema/shared/json-schema-spec-with-diffs-transformer"
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { formatJsonSchemaValidationRowChipDisplay } from "../../src/model/json-schema/tree-with-diffs/validation-row-chip-display"
+import { resolveJsonSchemaValidationRowSideEntries } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
+import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
 import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guards/tree-node"
 import { createBuildingServiceLogger } from "../../src/loggers"
 import { simplifyConsole } from "../helpers/simplify-console"
@@ -96,6 +99,101 @@ describe("JsonSchema with-diffs stack", () => {
     expect(prop6Node!.diffs[NODE_LEVEL_DIFF_KEY]).toBeDefined()
   })
 
+  it("aggregates enum list diffs from schema-level and per-item records", () => {
+    const wholeFieldCases = [
+      {
+        caseId: "001-enum-two-values-added",
+        expectedRowAction: DiffAction.add,
+        expectedRowBackgroundSide: "after" as const,
+        expectedRowBackground: HighlightVariant.Green,
+      },
+      {
+        caseId: "002-enum-two-values-removed",
+        expectedRowAction: DiffAction.remove,
+        expectedRowBackgroundSide: "before" as const,
+        expectedRowBackground: HighlightVariant.Red,
+      },
+    ]
+
+    for (const testCase of wholeFieldCases) {
+      const fixtureDir = path.resolve(
+        __dirname,
+        "../../../samples/json-schema-diffs/type-changes/string-validation/enum",
+        testCase.caseId,
+      )
+      const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+      const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+      const merged = mergeSchemas(beforeSchema, afterSchema)
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: merged,
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+
+      const rootDiffs = tree.root!.diffs as Record<string, {
+        data?: { action?: string }
+        styles?: { before?: { backgroundColor?: string }, after?: { backgroundColor?: string } }
+      }>
+
+      expect(rootDiffs.enumDiff?.data?.action).toBe(testCase.expectedRowAction)
+      expect(rootDiffs.enumValueDiffs).toBeUndefined()
+      expect(rootDiffs.enumRowColorizingDiff?.data?.action).toBe(testCase.expectedRowAction)
+      expect(
+        rootDiffs.enumRowColorizingDiff?.styles?.[testCase.expectedRowBackgroundSide]?.backgroundColor,
+      ).toBe(testCase.expectedRowBackground)
+      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
+    }
+
+    const partialItemCases = [
+      {
+        caseId: "003-enum-value-appended",
+        expectedKeys: ["2"],
+        expectedActions: [DiffAction.add],
+        expectedRowAction: DiffAction.replace,
+        expectedRowBackgroundSide: "before" as const,
+        expectedRowBackground: HighlightVariant.Yellow,
+      },
+      {
+        caseId: "004-enum-value-removed",
+        expectedKeys: ["2"],
+        expectedActions: [DiffAction.remove],
+        expectedRowAction: DiffAction.replace,
+        expectedRowBackgroundSide: "before" as const,
+        expectedRowBackground: HighlightVariant.Yellow,
+      },
+    ]
+
+    for (const testCase of partialItemCases) {
+      const fixtureDir = path.resolve(
+        __dirname,
+        "../../../samples/json-schema-diffs/type-changes/string-validation/enum",
+        testCase.caseId,
+      )
+      const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+      const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+      const merged = mergeSchemas(beforeSchema, afterSchema)
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: merged,
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+
+      const rootDiffs = tree.root!.diffs as Record<string, {
+        data?: { action?: string }
+        styles?: { before?: { backgroundColor?: string }, after?: { backgroundColor?: string } }
+      }>
+
+      expect(rootDiffs.enumDiff).toBeUndefined()
+      expect(Object.keys(rootDiffs.enumValueDiffs ?? {}).sort()).toEqual(testCase.expectedKeys.sort())
+      for (const [index, key] of testCase.expectedKeys.entries()) {
+        expect(rootDiffs.enumValueDiffs?.[key]?.data?.action).toBe(testCase.expectedActions[index])
+      }
+      expect(rootDiffs.enumRowColorizingDiff?.data?.action).toBe(testCase.expectedRowAction)
+      expect(
+        rootDiffs.enumRowColorizingDiff?.styles?.[testCase.expectedRowBackgroundSide]?.backgroundColor,
+      ).toBe(testCase.expectedRowBackground)
+      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
+    }
+  })
+
   it("aggregates property metadata and constraint diffs for case 1.4", () => {
     const fixtureDir = path.resolve(
       __dirname,
@@ -118,11 +216,21 @@ describe("JsonSchema with-diffs stack", () => {
     expect(prop4).toBeDefined()
 
     const prop2Diffs = prop2!.diffs as Record<string, { data?: { action?: string }, styles?: { before?: { backgroundColor?: string } } }>
-    expect(prop2Diffs.enumValueDiffs?.delta?.data?.action).toBe(DiffAction.add)
+    expect(prop2Diffs.enumDiff).toBeUndefined()
+    expect(prop2Diffs.enumValueDiffs?.["3"]?.data?.action).toBe(DiffAction.add)
     expect(prop2Diffs.enumRowColorizingDiff?.data?.action).toBe(DiffAction.replace)
     expect(prop2Diffs.enumRowColorizingDiff?.styles?.before?.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(prop2!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
 
-    const prop3Diffs = prop3!.diffs as Record<string, { data?: { action?: string }, styles?: { after?: { backgroundColor?: string } } }>
+    const prop3Diffs = prop3!.diffs as Record<string, {
+      data?: { action?: string }
+      styles?: { after?: { backgroundColor?: string } }
+      validationRowDiffs?: Record<string, { data?: { action?: string } }>
+      validationRowValueDiffs?: Record<string, Record<string, { data?: { action?: string } }>>
+    }>
+    expect(prop3Diffs.validationRowDiffs?.[JsonSchemaValidationRowKeys.VALUE_RANGE]?.data?.action)
+      .toBe(DiffAction.add)
+    expect(prop3Diffs.validationRowValueDiffs?.[JsonSchemaValidationRowKeys.VALUE_RANGE]).toBeUndefined()
     expect(prop3Diffs.validationRowColorizingDiffs?.[JsonSchemaValidationRowKeys.VALUE_RANGE]?.data?.action)
       .toBe(DiffAction.add)
     expect(prop3Diffs.validationRowColorizingDiffs?.[JsonSchemaValidationRowKeys.VALUE_RANGE]?.styles?.after?.backgroundColor)
@@ -132,5 +240,95 @@ describe("JsonSchema with-diffs stack", () => {
     expect(prop4Diffs.default?.data?.action).toBe(DiffAction.remove)
     expect(prop4Diffs.defaultRowColorizingDiff?.data?.action).toBe(DiffAction.remove)
     expect(prop4Diffs.defaultRowColorizingDiff?.styles?.before?.backgroundColor).toBe(HighlightVariant.Red)
+  })
+
+  it("formats validation-row chip display in diff side entries", () => {
+    expect(formatJsonSchemaValidationRowChipDisplay(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      "minLength",
+      1,
+    )).toBe(">= 1")
+    expect(formatJsonSchemaValidationRowChipDisplay(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      "maxLength",
+      10,
+    )).toBe("<= 10")
+
+    const fixtureDir = path.resolve(
+      __dirname,
+      "../../../samples/json-schema-diffs/type-changes/string-validation/value-length/003-min-length-replaced",
+    )
+    const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+    const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+
+    const rootDiffs = tree.root!.diffs as {
+      validationRowValueDiffs?: Record<string, Record<string, unknown>>
+    }
+    const valueLengthDiffs = rootDiffs.validationRowValueDiffs?.[JsonSchemaValidationRowKeys.VALUE_LENGTH]
+    expect(valueLengthDiffs?.minLength).toBeDefined()
+
+    const mergedChipValues = [">= 3"]
+    const originEntries = resolveJsonSchemaValidationRowSideEntries(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      mergedChipValues,
+      undefined,
+      valueLengthDiffs as never,
+      ORIGIN_LAYOUT_SIDE,
+    )
+    const changedEntries = resolveJsonSchemaValidationRowSideEntries(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      mergedChipValues,
+      undefined,
+      valueLengthDiffs as never,
+      CHANGED_LAYOUT_SIDE,
+    )
+
+    expect(originEntries.map((entry) => entry.text)).toEqual([">= 1"])
+    expect(changedEntries.map((entry) => entry.text)).toEqual([">= 3"])
+    expect(originEntries[0]?.valueDiffKey).toBe("minLength")
+    expect(changedEntries[0]?.valueDiffKey).toBe("minLength")
+
+    const maxLengthReplacedDir = path.resolve(
+      __dirname,
+      "../../../samples/json-schema-diffs/type-changes/string-validation/value-length/006-max-length-replaced",
+    )
+    const maxBefore = yaml.parse(fs.readFileSync(path.join(maxLengthReplacedDir, "before.yaml"), "utf8"))
+    const maxAfter = yaml.parse(fs.readFileSync(path.join(maxLengthReplacedDir, "after.yaml"), "utf8"))
+    const maxMerged = mergeSchemas(maxBefore, maxAfter)
+    const maxTree = new JsonSchemaTreeWithDiffsBuilder({
+      source: maxMerged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+    const maxRootDiffs = maxTree.root!.diffs as {
+      validationRowValueDiffs?: Record<string, Record<string, unknown>>
+    }
+    const maxLengthDiffs = maxRootDiffs.validationRowValueDiffs?.[JsonSchemaValidationRowKeys.VALUE_LENGTH]
+    expect(maxLengthDiffs?.maxLength).toBeDefined()
+
+    const maxMergedChipValues = ["<= 256"]
+    const maxOriginEntries = resolveJsonSchemaValidationRowSideEntries(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      maxMergedChipValues,
+      undefined,
+      maxLengthDiffs as never,
+      ORIGIN_LAYOUT_SIDE,
+    )
+    const maxChangedEntries = resolveJsonSchemaValidationRowSideEntries(
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      maxMergedChipValues,
+      undefined,
+      maxLengthDiffs as never,
+      CHANGED_LAYOUT_SIDE,
+    )
+
+    expect(maxOriginEntries.map((entry) => entry.text)).toEqual(["<= 128"])
+    expect(maxChangedEntries.map((entry) => entry.text)).toEqual(["<= 256"])
+    expect(maxOriginEntries[0]?.valueDiffKey).toBe("maxLength")
+    expect(maxChangedEntries[0]?.valueDiffKey).toBe("maxLength")
   })
 })

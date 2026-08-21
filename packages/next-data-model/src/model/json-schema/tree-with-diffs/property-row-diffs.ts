@@ -4,18 +4,32 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   LayoutSide,
+  ORIGIN_LAYOUT_SIDE,
 } from "@apihub/next-data-model/model/abstract/layout-side"
 import {
   resolveFieldSideText,
-  resolveListSideItems,
+  type ListSideItem,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
+import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
   JsonSchemaListValueDiffs,
   JsonSchemaPropertyRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
-import { JsonSchemaValidationRowKey } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import {
+  JsonSchemaValidationRowKey,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import {
+  formatJsonSchemaValidationRowChipDisplay,
+  resolveValidationSourceKeyDisplayIndex,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
+
+/** Side-visible list item without diff styling — use {@link valueDiffKey} for chip highlight lookup. */
+export type JsonSchemaListSideEntry = {
+  readonly text: string
+  readonly valueDiffKey?: string
+}
 
 export type {
   JsonSchemaListValueDiffs,
@@ -43,9 +57,18 @@ export function takeJsonSchemaDefaultRowColorizingDiff(
   return takePropertyRowDiffs(node).defaultRowColorizingDiff
 }
 
+export function takeJsonSchemaEnumDiff(
+  node: JsonSchemaPropertyNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takePropertyRowDiffs(node).enumDiff
+}
+
 export function takeJsonSchemaEnumValueDiffs(
   node: JsonSchemaPropertyNodeWithDiffs,
 ): JsonSchemaListValueDiffs | undefined {
+  const t = takePropertyRowDiffs(node)
+  console.log("t", t)
+  console.log("t.enumValueDiffs", t.enumValueDiffs)
   return takePropertyRowDiffs(node).enumValueDiffs
 }
 
@@ -53,6 +76,12 @@ export function takeJsonSchemaEnumRowColorizingDiff(
   node: JsonSchemaPropertyNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).enumRowColorizingDiff
+}
+
+export function takeJsonSchemaExamplesDiff(
+  node: JsonSchemaPropertyNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takePropertyRowDiffs(node).examplesDiff
 }
 
 export function takeJsonSchemaExamplesValueDiffs(
@@ -72,6 +101,13 @@ export function takeJsonSchemaValidationRowDiff(
   rowKey: JsonSchemaValidationRowKey,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).validationRowDiffs?.[rowKey]
+}
+
+export function takeJsonSchemaValidationRowValueDiffs(
+  node: JsonSchemaPropertyNodeWithDiffs,
+  rowKey: JsonSchemaValidationRowKey,
+): JsonSchemaListValueDiffs | undefined {
+  return takePropertyRowDiffs(node).validationRowValueDiffs?.[rowKey]
 }
 
 export function takeJsonSchemaValidationRowColorizingDiff(
@@ -100,13 +136,378 @@ function formatListDisplayValue(value: unknown): string {
   return JSON.stringify(value)
 }
 
+function resolveJsonSchemaWholeListSideEntries(
+  mergedValues: readonly unknown[],
+  listDiff: ChangedPropertyMetaData,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  const { data } = listDiff
+
+  if (isDiffAdd(data)) {
+    if (isOrigin) {
+      return []
+    }
+    return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
+  }
+
+  if (isDiffRemove(data)) {
+    if (!isOrigin) {
+      return []
+    }
+    return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
+  }
+
+  if (isDiffReplace(data)) {
+    const values = isOrigin
+      ? (Array.isArray(data.beforeValue) ? data.beforeValue : mergedValues)
+      : (Array.isArray(data.afterValue) ? data.afterValue : mergedValues)
+    return values.map((value) => ({ text: formatListDisplayValue(value) }))
+  }
+
+  return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
+}
+
+function resolveJsonSchemaPartialListSideEntries(
+  mergedValues: readonly unknown[],
+  itemDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  const processedDiffKeys = new Set<string>()
+  const entries: JsonSchemaListSideEntry[] = []
+
+  for (let index = 0; index < mergedValues.length; index++) {
+    const valueDiffKey = String(index)
+    const diff = itemDiffs?.[valueDiffKey]
+    const mergedText = formatListDisplayValue(mergedValues[index])
+
+    if (!diff) {
+      entries.push({ text: mergedText })
+      continue
+    }
+    if (processedDiffKeys.has(valueDiffKey)) {
+      continue
+    }
+    processedDiffKeys.add(valueDiffKey)
+
+    const { data } = diff
+    if (isDiffAdd(data)) {
+      if (!isOrigin) {
+        entries.push({
+          text: formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+          valueDiffKey,
+        })
+      }
+      continue
+    }
+    if (isDiffRemove(data)) {
+      if (isOrigin) {
+        entries.push({
+          text: formatListDisplayValue(data.beforeValue ?? mergedValues[index]),
+          valueDiffKey,
+        })
+      }
+      continue
+    }
+    if (isDiffReplace(data)) {
+      entries.push({
+        text: isOrigin
+          ? formatListDisplayValue(data.beforeValue ?? mergedValues[index])
+          : formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+        valueDiffKey,
+      })
+    }
+  }
+
+  for (const [valueDiffKey, diff] of Object.entries(itemDiffs ?? {})) {
+    if (!diff || processedDiffKeys.has(valueDiffKey)) {
+      continue
+    }
+    if (isDiffRemove(diff.data) && isOrigin) {
+      entries.push({
+        text: formatListDisplayValue(diff.data.beforeValue),
+        valueDiffKey,
+      })
+      processedDiffKeys.add(valueDiffKey)
+    }
+  }
+
+  const indexOf = (text: string): number => {
+    for (let index = 0; index < mergedValues.length; index++) {
+      if (formatListDisplayValue(mergedValues[index]) === text) {
+        return index
+      }
+    }
+    return mergedValues.length
+  }
+
+  return entries.sort((left, right) => indexOf(left.text) - indexOf(right.text))
+}
+
+function resolveValidationRowChipDisplayText(
+  rowKey: JsonSchemaValidationRowKey,
+  sourceKey: string,
+  rawValue: unknown,
+  formattedFallback: string,
+): string {
+  if (rawValue === undefined) {
+    return formattedFallback
+  }
+  return formatJsonSchemaValidationRowChipDisplay(rowKey, sourceKey, rawValue)
+}
+
+function findValidationRowSourceKeyDiffForDisplayIndex(
+  mergedDisplayValues: readonly unknown[],
+  itemDiffs: JsonSchemaListValueDiffs | undefined,
+  displayIndex: number,
+): string | undefined {
+  if (!itemDiffs) {
+    return undefined
+  }
+  return Object.keys(itemDiffs).find(
+    (sourceKey) => resolveValidationSourceKeyDisplayIndex(sourceKey, mergedDisplayValues) === displayIndex,
+  )
+}
+
+function resolveJsonSchemaValidationRowPartialSideEntries(
+  rowKey: JsonSchemaValidationRowKey,
+  mergedValues: readonly unknown[],
+  itemDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  const processedDiffKeys = new Set<string>()
+  const entries: JsonSchemaListSideEntry[] = []
+
+  for (let displayIndex = 0; displayIndex < mergedValues.length; displayIndex++) {
+    const valueDiffKey = findValidationRowSourceKeyDiffForDisplayIndex(
+      mergedValues,
+      itemDiffs,
+      displayIndex,
+    )
+    const diff = valueDiffKey ? itemDiffs?.[valueDiffKey] : undefined
+    const mergedText = formatListDisplayValue(mergedValues[displayIndex])
+
+    if (!diff || !valueDiffKey) {
+      entries.push({ text: mergedText })
+      continue
+    }
+    if (processedDiffKeys.has(valueDiffKey)) {
+      continue
+    }
+    processedDiffKeys.add(valueDiffKey)
+
+    const { data } = diff
+    if (isDiffAdd(data)) {
+      if (!isOrigin) {
+        entries.push({
+          text: resolveValidationRowChipDisplayText(
+            rowKey,
+            valueDiffKey,
+            data.afterValue ?? mergedValues[displayIndex],
+            mergedText,
+          ),
+          valueDiffKey,
+        })
+      }
+      continue
+    }
+    if (isDiffRemove(data)) {
+      if (isOrigin) {
+        entries.push({
+          text: resolveValidationRowChipDisplayText(
+            rowKey,
+            valueDiffKey,
+            data.beforeValue ?? mergedValues[displayIndex],
+            mergedText,
+          ),
+          valueDiffKey,
+        })
+      }
+      continue
+    }
+    if (isDiffReplace(data)) {
+      entries.push({
+        text: isOrigin
+          ? resolveValidationRowChipDisplayText(
+            rowKey,
+            valueDiffKey,
+            data.beforeValue ?? mergedValues[displayIndex],
+            mergedText,
+          )
+          : resolveValidationRowChipDisplayText(
+            rowKey,
+            valueDiffKey,
+            data.afterValue ?? mergedValues[displayIndex],
+            mergedText,
+          ),
+        valueDiffKey,
+      })
+    }
+  }
+
+  for (const [valueDiffKey, diff] of Object.entries(itemDiffs ?? {})) {
+    if (!diff || processedDiffKeys.has(valueDiffKey)) {
+      continue
+    }
+    if (isDiffRemove(diff.data) && isOrigin) {
+      entries.push({
+        text: resolveValidationRowChipDisplayText(
+          rowKey,
+          valueDiffKey,
+          diff.data.beforeValue,
+          formatListDisplayValue(diff.data.beforeValue),
+        ),
+        valueDiffKey,
+      })
+      processedDiffKeys.add(valueDiffKey)
+    }
+  }
+
+  const chipIndexOf = (valueDiffKey: string | undefined, text: string): number => {
+    if (valueDiffKey) {
+      return resolveValidationSourceKeyDisplayIndex(valueDiffKey, mergedValues)
+    }
+    for (let displayIndex = 0; displayIndex < mergedValues.length; displayIndex++) {
+      if (formatListDisplayValue(mergedValues[displayIndex]) === text) {
+        return displayIndex
+      }
+    }
+    return mergedValues.length
+  }
+
+  return entries.sort((left, right) => (
+    chipIndexOf(left.valueDiffKey, left.text) - chipIndexOf(right.valueDiffKey, right.text)
+  ))
+}
+
+export function resolveJsonSchemaEnumSideEntries(
+  mergedValues: readonly unknown[],
+  enumDiff: ChangedPropertyMetaData | undefined,
+  enumValueDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  if (enumDiff) {
+    return resolveJsonSchemaWholeListSideEntries(mergedValues, enumDiff, layoutSide)
+  }
+  return resolveJsonSchemaPartialListSideEntries(mergedValues, enumValueDiffs, layoutSide)
+}
+
+export function resolveJsonSchemaExamplesSideEntries(
+  mergedValues: readonly unknown[],
+  examplesDiff: ChangedPropertyMetaData | undefined,
+  examplesValueDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  if (examplesDiff) {
+    return resolveJsonSchemaWholeListSideEntries(mergedValues, examplesDiff, layoutSide)
+  }
+  return resolveJsonSchemaPartialListSideEntries(mergedValues, examplesValueDiffs, layoutSide)
+}
+
+export function resolveJsonSchemaValidationRowSideEntries(
+  rowKey: JsonSchemaValidationRowKey,
+  mergedValues: readonly unknown[],
+  validationRowDiff: ChangedPropertyMetaData | undefined,
+  validationRowValueDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  if (validationRowDiff) {
+    return resolveJsonSchemaWholeListSideEntries(mergedValues, validationRowDiff, layoutSide)
+  }
+  return resolveJsonSchemaValidationRowPartialSideEntries(
+    rowKey,
+    mergedValues,
+    validationRowValueDiffs,
+    layoutSide,
+  )
+}
+
+export function takeJsonSchemaListValueDiffAtKey(
+  itemDiffs: JsonSchemaListValueDiffs | undefined,
+  valueDiffKey: string | undefined,
+): ChangedPropertyMetaData | undefined {
+  if (!valueDiffKey) {
+    return undefined
+  }
+  return itemDiffs?.[valueDiffKey]
+}
+
 export function resolveJsonSchemaListValueSideItems(
   mergedValues: readonly unknown[],
   itemDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
-): ReturnType<typeof resolveListSideItems> {
-  const mergedOrder = mergedValues.map(formatListDisplayValue)
-  return resolveListSideItems(mergedOrder, itemDiffs, layoutSide)
+): readonly ListSideItem[] {
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  const processedDiffs = new Set<ChangedPropertyMetaData>()
+  const items: ListSideItem[] = []
+
+  for (let index = 0; index < mergedValues.length; index++) {
+    const diff = itemDiffs?.[String(index)]
+    const mergedText = formatListDisplayValue(mergedValues[index])
+
+    if (!diff) {
+      items.push({ text: mergedText })
+      continue
+    }
+    if (processedDiffs.has(diff)) {
+      continue
+    }
+    processedDiffs.add(diff)
+
+    const { data } = diff
+    if (isDiffAdd(data)) {
+      if (!isOrigin) {
+        items.push({
+          text: formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+          diff,
+        })
+      }
+      continue
+    }
+    if (isDiffRemove(data)) {
+      if (isOrigin) {
+        items.push({
+          text: formatListDisplayValue(data.beforeValue ?? mergedValues[index]),
+          diff,
+        })
+      }
+      continue
+    }
+    if (isDiffReplace(data)) {
+      items.push({
+        text: isOrigin
+          ? formatListDisplayValue(data.beforeValue ?? mergedValues[index])
+          : formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+        diff,
+      })
+    }
+  }
+
+  for (const [, diff] of Object.entries(itemDiffs ?? {})) {
+    if (!diff || processedDiffs.has(diff)) {
+      continue
+    }
+    if (isDiffRemove(diff.data) && isOrigin) {
+      items.push({
+        text: formatListDisplayValue(diff.data.beforeValue),
+        diff,
+      })
+      processedDiffs.add(diff)
+    }
+  }
+
+  const indexOf = (text: string): number => {
+    for (let index = 0; index < mergedValues.length; index++) {
+      if (formatListDisplayValue(mergedValues[index]) === text) {
+        return index
+      }
+    }
+    return mergedValues.length
+  }
+
+  return items.sort((left, right) => indexOf(left.text) - indexOf(right.text))
 }
 
 export function isJsonSchemaWholePropertyAddOrRemove(

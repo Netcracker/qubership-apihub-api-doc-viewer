@@ -27,11 +27,16 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
     const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
       propertyDiffs.default,
       propertyDiffs.defaultRowColorizingDiff,
+      propertyDiffs.enumDiff,
       propertyDiffs.enumRowColorizingDiff,
+      propertyDiffs.examplesDiff,
       propertyDiffs.examplesRowColorizingDiff,
       ...Object.values(propertyDiffs.enumValueDiffs ?? {}),
       ...Object.values(propertyDiffs.examplesValueDiffs ?? {}),
       ...Object.values(propertyDiffs.validationRowDiffs ?? {}),
+      ...Object.values(propertyDiffs.validationRowValueDiffs ?? {}).flatMap((rowValueDiffs) => (
+        Object.values(rowValueDiffs ?? {})
+      )),
       ...Object.values(propertyDiffs.validationRowColorizingDiffs ?? {}),
     )
     if (!maxPropertyDiff) {

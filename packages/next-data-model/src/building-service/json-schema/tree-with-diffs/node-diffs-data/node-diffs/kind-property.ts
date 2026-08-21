@@ -10,6 +10,7 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS,
+  JSON_SCHEMA_VALIDATION_SOURCE_KEY_CHIP_INDEX,
   JsonSchemaValidationRowKey,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import {
@@ -32,13 +33,6 @@ import {
   isDiffReplace,
 } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaNodeDiffsAggregatorKindAny } from "./kind-any"
-
-function formatListDisplayValue(value: unknown): string {
-  if (typeof value === "string") {
-    return value
-  }
-  return JSON.stringify(value)
-}
 
 export class JsonSchemaNodeDiffsAggregatorKindProperty
   extends JsonSchemaNodeDiffsAggregatorKindAny {
@@ -74,9 +68,13 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const { diffsMetaKey } = diffsMetaKeys
     const crawlDiffs = Reflect.get(crawlValue, diffsMetaKey)
     const hasCrawlDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(crawlDiffs)
-    const enumValueDiffs = this.resolveListFieldValueDiffs(crawlValue, "enum", diffsMetaKey)
-    const examplesValueDiffs = this.resolveListFieldValueDiffs(crawlValue, "examples", diffsMetaKey)
-    const hasListDiffs = Object.keys(enumValueDiffs).length > 0 || Object.keys(examplesValueDiffs).length > 0
+    const enumDiff = this.resolveWholeListFieldDiff(crawlValue, "enum", diffsMetaKey)
+    const examplesDiff = this.resolveWholeListFieldDiff(crawlValue, "examples", diffsMetaKey)
+    const enumValueDiffs = this.resolveListFieldItemDiffs(crawlValue, "enum", diffsMetaKey)
+    const examplesValueDiffs = this.resolveListFieldItemDiffs(crawlValue, "examples", diffsMetaKey)
+    const hasListDiffs = !!enumDiff || !!examplesDiff
+      || Object.keys(enumValueDiffs).length > 0
+      || Object.keys(examplesValueDiffs).length > 0
 
     if (!superNodeDiffs && !hasCrawlDiffs && !hasListDiffs) {
       return undefined
@@ -93,8 +91,14 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       this.aggregateValidationRowDiffs(crawlDiffs, nodeDiffs)
     }
 
+    if (enumDiff) {
+      nodeDiffs.enumDiff = enumDiff
+    }
     if (Object.keys(enumValueDiffs).length > 0) {
       nodeDiffs.enumValueDiffs = enumValueDiffs
+    }
+    if (examplesDiff) {
+      nodeDiffs.examplesDiff = examplesDiff
     }
     if (Object.keys(examplesValueDiffs).length > 0) {
       nodeDiffs.examplesValueDiffs = examplesValueDiffs
@@ -117,54 +121,62 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     return this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
-  private resolveListFieldValueDiffs(
+  private resolveWholeListFieldDiff(
+    crawlValue: object,
+    fieldKey: "enum" | "examples",
+    diffsMetaKey: symbol,
+  ): ChangedPropertyMetaData | undefined {
+    const crawlDiffs = Reflect.get(crawlValue, diffsMetaKey)
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(crawlDiffs)) {
+      return undefined
+    }
+
+    const fieldDiff = crawlDiffs[fieldKey]
+    if (!AbstractNodeDiffsAggregator.isDiff(fieldDiff)) {
+      return undefined
+    }
+
+    if (isDiffAdd(fieldDiff) && Array.isArray(fieldDiff.afterValue)) {
+      return this.buildChangedPropertyMetaDataFromDiff(fieldDiff)
+    }
+
+    if (isDiffRemove(fieldDiff) && Array.isArray(fieldDiff.beforeValue)) {
+      return this.buildChangedPropertyMetaDataFromDiff(fieldDiff)
+    }
+
+    return undefined
+  }
+
+  private resolveListFieldItemDiffs(
     crawlValue: object,
     fieldKey: "enum" | "examples",
     diffsMetaKey: symbol,
   ): JsonSchemaListValueDiffs {
+    const keyedDiffs: JsonSchemaListValueDiffs = {}
+
     const listValue = Reflect.get(crawlValue, fieldKey)
     if (!Array.isArray(listValue)) {
-      return {}
+      return keyedDiffs
     }
 
     const arrayDiffs = Reflect.get(listValue, diffsMetaKey)
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(arrayDiffs)) {
-      return {}
-    }
-
-    const keyedDiffs: JsonSchemaListValueDiffs = {}
-    for (const diff of Object.values(arrayDiffs)) {
-      if (!diff) {
-        continue
-      }
-
-      if (isDiffAdd(diff) && diff.afterValue !== undefined) {
-        keyedDiffs[formatListDisplayValue(diff.afterValue)] = this.buildListValueDiffMetadata(diff)
-        continue
-      }
-
-      if (isDiffRemove(diff) && diff.beforeValue !== undefined) {
-        keyedDiffs[formatListDisplayValue(diff.beforeValue)] = this.buildListValueDiffMetadata(diff)
-        continue
-      }
-
-      if (isDiffReplace(diff)) {
-        const beforeKey = diff.beforeValue !== undefined
-          ? formatListDisplayValue(diff.beforeValue)
-          : undefined
-        const afterKey = diff.afterValue !== undefined
-          ? formatListDisplayValue(diff.afterValue)
-          : undefined
-        if (beforeKey) {
-          keyedDiffs[beforeKey] = this.buildListValueDiffMetadata(diff)
-        }
-        if (afterKey && afterKey !== beforeKey) {
-          keyedDiffs[afterKey] = this.buildListValueDiffMetadata(diff)
-        }
-      }
+    if (AbstractNodeDiffsAggregator.isDiffsRecord(arrayDiffs)) {
+      this.collectListItemDiffsFromDiffsRecord(arrayDiffs, keyedDiffs)
     }
 
     return keyedDiffs
+  }
+
+  private collectListItemDiffsFromDiffsRecord(
+    diffsRecord: Partial<Record<string, Diff<DiffType>>>,
+    keyedDiffs: JsonSchemaListValueDiffs,
+  ): void {
+    for (const [diffKey, diff] of Object.entries(diffsRecord)) {
+      if (!diff || keyedDiffs[diffKey]) {
+        continue
+      }
+      keyedDiffs[diffKey] = this.buildListValueDiffMetadata(diff)
+    }
   }
 
   private buildListValueDiffMetadata(diff: Diff<DiffType>): ChangedPropertyMetaData {
@@ -188,6 +200,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       crawlValue,
       nodeDiffs,
       "enum",
+      "enumDiff",
       "enumValueDiffs",
       "enumRowColorizingDiff",
     )
@@ -201,6 +214,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       crawlValue,
       nodeDiffs,
       "examples",
+      "examplesDiff",
       "examplesValueDiffs",
       "examplesRowColorizingDiff",
     )
@@ -210,6 +224,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     crawlValue: object,
     nodeDiffs: JsonSchemaPropertyRowDiffs,
     listFieldKey: "enum" | "examples",
+    wholeFieldDiffKey: "enumDiff" | "examplesDiff",
     itemDiffsKey: "enumValueDiffs" | "examplesValueDiffs",
     colorizingDiffKey: "enumRowColorizingDiff" | "examplesRowColorizingDiff",
   ): void {
@@ -221,6 +236,12 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
       nodeDiffs[colorizingDiffKey] = nodeLevelDiff
+      return
+    }
+
+    const wholeFieldDiff = nodeDiffs[wholeFieldDiffKey]
+    if (wholeFieldDiff) {
+      nodeDiffs[colorizingDiffKey] = wholeFieldDiff
       return
     }
 
@@ -284,52 +305,78 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         continue
       }
 
-      const syntheticRowDiff = this.buildSyntheticValidationRowDiff(rowDiffs)
-      if (!syntheticRowDiff) {
+      const allAdd = rowDiffs.every(isDiffAdd)
+      const allRemove = rowDiffs.every(isDiffRemove)
+
+      nodeDiffs.validationRowColorizingDiffs ??= {}
+
+      if (allAdd) {
+        const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
+          rowDiffs,
+          DiffAction.add,
+        ) as DiffAdd)
+        nodeDiffs.validationRowDiffs ??= {}
+        nodeDiffs.validationRowDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
         continue
       }
 
-      nodeDiffs.validationRowDiffs ??= {}
-      nodeDiffs.validationRowColorizingDiffs ??= {}
-      nodeDiffs.validationRowDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+      if (allRemove) {
+        const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
+          rowDiffs,
+          DiffAction.remove,
+        ) as DiffRemove)
+        nodeDiffs.validationRowDiffs ??= {}
+        nodeDiffs.validationRowDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+        continue
+      }
+
+      const metadatas = rowDiffs.map((diff) => this.buildChangedPropertyMetaDataFromDiff(diff))
+      const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        ...metadatas,
+      )
+      if (!representativeDiff) {
+        continue
+      }
+
+      nodeDiffs.validationRowValueDiffs ??= {}
+      nodeDiffs.validationRowValueDiffs[rowKey as JsonSchemaValidationRowKey] =
+        this.buildValidationRowValueDiffs(
+          rowKey as JsonSchemaValidationRowKey,
+          activeSourceKeys,
+          crawlDiffs,
+        )
       nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] =
-        this.buildValidationRowColorizingDiff(syntheticRowDiff)
+        this.asReplaceRowColorizingDiff(representativeDiff)
     }
   }
 
-  private buildSyntheticValidationRowDiff(
-    rowDiffs: Diff<DiffType>[],
-  ): ChangedPropertyMetaData | undefined {
-    if (rowDiffs.length === 0) {
-      return undefined
+  private buildValidationRowValueDiffs(
+    rowKey: JsonSchemaValidationRowKey,
+    activeSourceKeys: readonly string[],
+    crawlDiffs: Partial<Record<string, Diff<DiffType>>>,
+  ): JsonSchemaListValueDiffs {
+    const chipIndexBySourceKey = JSON_SCHEMA_VALIDATION_SOURCE_KEY_CHIP_INDEX[rowKey]
+    const itemDiffs: JsonSchemaListValueDiffs = {}
+
+    for (const sourceKey of activeSourceKeys) {
+      const diff = crawlDiffs[sourceKey]
+      if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
+        continue
+      }
+      const chipIndex = chipIndexBySourceKey[sourceKey]
+      if (chipIndex === undefined) {
+        continue
+      }
+      const metadata = this.buildListValueDiffMetadata(diff)
+      itemDiffs[sourceKey] = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        itemDiffs[sourceKey],
+        metadata,
+      ) ?? metadata
     }
 
-    const metadatas = rowDiffs.map((diff) => this.buildChangedPropertyMetaDataFromDiff(diff))
-    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
-      ...metadatas,
-    )
-    if (!representativeDiff) {
-      return undefined
-    }
-
-    const allAdd = rowDiffs.every(isDiffAdd)
-    const allRemove = rowDiffs.every(isDiffRemove)
-
-    if (allAdd) {
-      return this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
-        rowDiffs,
-        DiffAction.add,
-      ) as DiffAdd)
-    }
-
-    if (allRemove) {
-      return this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
-        rowDiffs,
-        DiffAction.remove,
-      ) as DiffRemove)
-    }
-
-    return this.asReplaceRowColorizingDiff(representativeDiff)
+    return itemDiffs
   }
 
   private mergeDiffActionFragment(
@@ -363,15 +410,5 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       beforeValue: null,
       beforeDeclarationPaths,
     }
-  }
-
-  private buildValidationRowColorizingDiff(
-    rowDiff: ChangedPropertyMetaData,
-  ): ChangedPropertyMetaData {
-    const { data } = rowDiff
-    if (isDiffAdd(data) || isDiffRemove(data)) {
-      return rowDiff
-    }
-    return this.asReplaceRowColorizingDiff(rowDiff)
   }
 }

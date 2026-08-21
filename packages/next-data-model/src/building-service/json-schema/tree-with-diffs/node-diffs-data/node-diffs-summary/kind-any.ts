@@ -44,6 +44,13 @@ export class JsonSchemaNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryA
         continue
       }
 
+      if (key === "validationRowValueDiffs") {
+        for (const rowValueDiffs of Object.values(propertyDiffs.validationRowValueDiffs ?? {})) {
+          addNestedDiffTypes(summary, rowValueDiffs)
+        }
+        continue
+      }
+
       if (isChangedPropertyMetaData(diff)) {
         summary.add(diff.data.type)
       }
