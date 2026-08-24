@@ -1,3 +1,14 @@
+const { pathsToModuleNameMapper } = require('ts-jest')
+
+// Derive the mapping from the tsconfig rather than restating it. A jest mapping that
+// disagrees with the compiler does not error - it resolves somewhere else, or nowhere,
+// while tsc stays green.
+//
+// Plain require() because this tsconfig is plain JSON. If a comment is ever added here,
+// jest fails to start with a parse error - loud, and preferable to importing typescript,
+// which this package does not declare.
+const { compilerOptions } = require('./tsconfig.json')
+
 module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
@@ -20,15 +31,6 @@ module.exports = {
   //   "^@netcracker/qubership-apihub-api-unifier$":'<rootDir>/../qubership-apihub-api-unifier/src',
   //   "^@netcracker/qubership-apihub-api-diff$":'<rootDir>/../qubership-apihub-api-diff/src',
   // },
-  moduleNameMapper: {
-    "^@apihub/api-data-model/abstract-model$": "<rootDir>/src/abstract",
-    "^@apihub/api-data-model/abstract-model/(.*)$": "<rootDir>/src/abstract/$1",
-    "^@apihub/api-data-model/graph-api-model$": "<rootDir>/src/graph-api",
-    "^@apihub/api-data-model/graph-api-model/(.*)$": "<rootDir>/src/graph-api/$1",
-    "^@apihub/api-data-model/json-schema-model$": "<rootDir>/src/json-schema",
-    "^@apihub/api-data-model/json-schema-model/(.*)$": "<rootDir>/src/json-schema/$1",
-    "^@apihub/api-data-model$": "<rootDir>/src",
-    "^@apihub/api-data-model/(.*)$": "<rootDir>/src/$1",
-  },
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   collectCoverage: true,
 }
