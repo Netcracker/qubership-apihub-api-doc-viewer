@@ -14,7 +14,7 @@ import {
   JsonSchemaValidationRowKey,
   JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
-import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialInclusiveBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
+import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import {
   JsonSchemaListValueDiffs,
   JsonSchemaPropertyRowDiffs,
@@ -355,7 +355,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
       if (
         valueRangeCrawlDiffs
-        && isValueRangePartialInclusiveBoundChange(valueRangeSideInput, valueRangeCrawlDiffs)
+        && isValueRangePartialBoundChange(valueRangeSideInput, valueRangeCrawlDiffs)
       ) {
         this.mergeValueRangeLabelChipDiffs(crawlValue, valueRangeCrawlDiffs, nodeDiffs, validationRowKey)
         this.applyValueRangeFormattingRowColorizingDiff(

@@ -1,6 +1,0 @@
-type: integer
-minimum: 1
-exclusiveMinimum: true
-maximum: 10
-exclusiveMaximum: true
-

@@ -45,6 +45,96 @@ const DEFAULT_NORMALIZE_OPTIONS: NormalizeOptions = {
   allowNotValidSyntheticChanges: true,
 }
 
+function oas31TemplateInstance(): any {
+  return {
+    openapi: '3.1.0',
+    paths: {
+      '/test': {
+        post: {
+          summary: 'Test Operation',
+          description: 'Description for Test Operation',
+          parameters: [
+            {
+              name: 'TestRequestHeader',
+              in: 'header',
+              schema: { $ref: '#/components/schemas/__Substitution__' },
+            },
+            {
+              name: 'TestRequestCookie',
+              in: 'cookie',
+              schema: { $ref: '#/components/schemas/__Substitution__' },
+            },
+            {
+              name: 'TestPathParam',
+              in: 'path',
+              schema: { $ref: '#/components/schemas/__Substitution__' },
+            },
+            {
+              name: 'TestQueryParam',
+              in: 'query',
+              schema: { $ref: '#/components/schemas/__Substitution__' },
+            },
+          ],
+          requestBody: {
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/__Substitution__' },
+              },
+            },
+          },
+          responses: {
+            200: {
+              headers: {
+                testResponseHeader: {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+            },
+            401: {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+            },
+            403: {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+            },
+            404: {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+            },
+            500: {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/__Substitution__' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        __Substitution__: null as unknown,
+      },
+    },
+  }
+}
+
 function oas3TemplateInstance(): any {
   return {
     openapi: '3.0.2',
@@ -338,6 +428,17 @@ export type JsonDiffSchemaOptions = {
 }
 
 export function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown {
+  return prepareJsonDiffSchemaWithTemplate(options, oas3TemplateInstance)
+}
+
+export function prepareJsonDiffSchemaOas31(options: JsonDiffSchemaOptions): unknown {
+  return prepareJsonDiffSchemaWithTemplate(options, oas31TemplateInstance)
+}
+
+function prepareJsonDiffSchemaWithTemplate(
+  options: JsonDiffSchemaOptions,
+  templateFactory: () => any,
+): unknown {
   const {
     beforeSchema,
     afterSchema,
@@ -347,10 +448,10 @@ export function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown {
     circular = false,
   } = options
 
-  const beforeDocument = oas3TemplateInstance()
+  const beforeDocument = templateFactory()
   beforeDocument.components.schemas.__Substitution__ = beforeSchema
   beforeDocument.components = mergeComponents(beforeDocument.components, beforeAdditionalComponents)
-  const afterDocument = oas3TemplateInstance()
+  const afterDocument = templateFactory()
   afterDocument.components.schemas.__Substitution__ = afterSchema
   afterDocument.components = mergeComponents(afterDocument.components, afterAdditionalComponents)
 

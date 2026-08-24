@@ -2,7 +2,7 @@ import { JsonSchemaNextDiffsViewer } from "@apihub/components/JsonSchemaNextView
 import type { ArgTypes } from "@storybook/react";
 import type { ComponentProps } from "react";
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
-import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from "../preprocess";
+import { prepareJsonDiffSchemaOas31, RESPONSE_200_BODY_TARGET } from "../preprocess";
 import { parseYamlSource } from "../utils/parse-yaml-source";
 
 export const JSON_SCHEMA_DIFF_META_KEYS = {
@@ -54,7 +54,7 @@ export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
   beforeSchema: Record<string, unknown>,
   afterSchema: Record<string, unknown>,
 ): JsonSchemaNextDiffsViewerProps => ({
-  schema: prepareJsonDiffSchema({
+  schema: prepareJsonDiffSchemaOas31({
     beforeSchema,
     afterSchema,
     target: RESPONSE_200_BODY_TARGET,
@@ -68,7 +68,7 @@ export const createJsonSchemaNextDiffsViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
 ): JsonSchemaNextDiffsViewerProps => ({
-  schema: prepareJsonDiffSchema({
+  schema: prepareJsonDiffSchemaOas31({
     beforeSchema: createSchemaFromYaml(beforeSourceText),
     afterSchema: createSchemaFromYaml(afterSourceText),
     target: RESPONSE_200_BODY_TARGET,

@@ -1,8 +1,11 @@
 import {
   JsonSchemaBoundRangeInput,
   JsonSchemaBoundRangeLabel,
+  inferJsonSchemaBoundRangeDialect,
+  JsonSchemaBoundRangeDialect,
   resolveBoundRangeLabel,
 } from "@apihub/next-data-model/model/json-schema/bound-range"
+import type { JsonSchemaBoundRangeDialectValue } from "@apihub/next-data-model/model/json-schema/json-schema-bound-range-dialect"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
 import { JsonSchemaListValueDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -311,6 +314,74 @@ function isValueRangeInclusiveChipText(chipText: unknown): boolean {
     && (chipText.startsWith(">=") || chipText.startsWith("<="))
 }
 
+function collectChangedValueRangeChipDiffs(
+  data: ValueRangeSideInput,
+  changes: ValueRangeCrawlDiffData,
+): Array<DiffAdd | DiffRemove | DiffReplace> {
+  const chipStringDiffs = buildValueRangeChipStringDiffs(data, changes)
+  return [
+    chipStringDiffs[VALUE_RANGE_LOWER_CHIP_DIFF_KEY],
+    chipStringDiffs[VALUE_RANGE_UPPER_CHIP_DIFF_KEY],
+  ].filter((diff): diff is DiffAdd | DiffRemove | DiffReplace => diff !== undefined)
+}
+
+/**
+ * Infers bound-range dialect from merged node fields and crawl diffs
+ * (numeric exclusiveMinimum / exclusiveMaximum → OAS 3.1).
+ */
+export function inferValueRangeBoundRangeDialect(
+  data: ValueRangeSideInput,
+  changes: ValueRangeCrawlDiffData,
+): JsonSchemaBoundRangeDialectValue {
+  const boundInput: JsonSchemaBoundRangeInput = {
+    min: data.min ?? data.minimum,
+    max: data.max ?? data.maximum,
+    exclusiveMin: data.exclusiveMin ?? data.exclusiveMinimum,
+    exclusiveMax: data.exclusiveMax ?? data.exclusiveMaximum,
+  }
+  if (inferJsonSchemaBoundRangeDialect(boundInput) === JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE) {
+    return JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE
+  }
+
+  for (const sourceKey of ["exclusiveMinimum", "exclusiveMaximum"] as const) {
+    const diff = changes[sourceKey]
+    if (!diff) {
+      continue
+    }
+    if (isDiffAdd(diff) && typeof diff.afterValue === "number") {
+      return JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE
+    }
+    if (isDiffRemove(diff) && typeof diff.beforeValue === "number") {
+      return JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE
+    }
+    if (isDiffReplace(diff) && (typeof diff.beforeValue === "number" || typeof diff.afterValue === "number")) {
+      return JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE
+    }
+  }
+
+  return JsonSchemaBoundRangeDialect.OAS_3_0_BOOLEAN_EXCLUSIVE
+}
+
+/**
+ * OAS 3.1: row stays visible and exactly one chip is added or removed.
+ */
+export function isValueRangePartialSingleChipChange(
+  data: ValueRangeSideInput,
+  changes: ValueRangeCrawlDiffData,
+): boolean {
+  if (classifyValueRangeWholeRowAction(data, changes) !== undefined) {
+    return false
+  }
+
+  const changedChipDiffs = collectChangedValueRangeChipDiffs(data, changes)
+  if (changedChipDiffs.length !== 1) {
+    return false
+  }
+
+  const chipDiff = changedChipDiffs[0]
+  return isDiffAdd(chipDiff) || isDiffRemove(chipDiff)
+}
+
 /**
  * Single-slot bound add/remove where the changed chip uses an inclusive operator (>= / <=).
  * Row gets replace colorizing; the changed chip gets add/remove highlighting.
@@ -319,11 +390,7 @@ export function isValueRangePartialInclusiveBoundChange(
   data: ValueRangeSideInput,
   changes: ValueRangeCrawlDiffData,
 ): boolean {
-  const chipStringDiffs = buildValueRangeChipStringDiffs(data, changes)
-  const changedChipDiffs = [
-    chipStringDiffs[VALUE_RANGE_LOWER_CHIP_DIFF_KEY],
-    chipStringDiffs[VALUE_RANGE_UPPER_CHIP_DIFF_KEY],
-  ].filter((diff): diff is DiffAdd | DiffRemove | DiffReplace => diff !== undefined)
+  const changedChipDiffs = collectChangedValueRangeChipDiffs(data, changes)
 
   if (changedChipDiffs.length !== 1) {
     return false
@@ -336,6 +403,23 @@ export function isValueRangePartialInclusiveBoundChange(
 
   const chipText = isDiffAdd(chipDiff) ? chipDiff.afterValue : chipDiff.beforeValue
   return isValueRangeInclusiveChipText(chipText)
+}
+
+/**
+ * Dialect-aware partial bound styling: yellow row + chip add/remove.
+ * - OAS 3.0 boolean exclusive: inclusive single-chip changes only.
+ * - OAS 3.1 numeric exclusive: any single-chip add/remove while the row stays visible.
+ */
+export function isValueRangePartialBoundChange(
+  data: ValueRangeSideInput,
+  changes: ValueRangeCrawlDiffData,
+  dialect?: JsonSchemaBoundRangeDialectValue,
+): boolean {
+  const resolvedDialect = dialect ?? inferValueRangeBoundRangeDialect(data, changes)
+  if (resolvedDialect === JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE) {
+    return isValueRangePartialSingleChipChange(data, changes)
+  }
+  return isValueRangePartialInclusiveBoundChange(data, changes)
 }
 
 function buildSideEntriesFromLabels(

@@ -164,11 +164,20 @@ Helpers in `src/it/service/`:
 
 ## Generated vs hand-written suites
 
-**Filename rule:** use `.generated.it-test.ts` / `.generated.stories.tsx` **only**
-when stories are driven by samples from
-[`Netcracker/qubership-apihub-compatibility-suites`](https://github.com/Netcracker/qubership-apihub-compatibility-suites).
-Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
-`*.it-test.ts` / `*.stories.tsx` even when a bin script regenerates them.
+**Filename rule:** `.gitignore` excludes `*.generated.*`. Use that suffix **only**
+when stories or tests are driven by samples from the **external**
+[`Netcracker/qubership-apihub-compatibility-suites`](https://github.com/Netcracker/qubership-apihub-compatibility-suites)
+repo (compatibility-suite `*.generated.stories.tsx` /
+`*.generated.it-test.ts`).
+
+**In-repo** bin scripts and utilities must **not** emit `.generated.ts`,
+`.generated.stories.tsx`, or `.generated.it-test.ts` — those names are gitignored and
+the output is internal, not external. Write normal committed filenames instead (e.g.
+`value-range-diff-case-definitions.ts`, `number-validation-value-range-samples.stories.tsx`).
+See `api-doc-viewer-repo` skill — **Generated filenames**.
+
+Local fixture suites (JSO, AsyncAPI, DDL, JSON Schema diffs under `packages/samples/`)
+use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regenerates them.
 
 **Generated — compatibility suites only** (do not edit by hand; regenerate):
 
@@ -177,11 +186,16 @@ Local fixture suites (JSO, AsyncAPI, DDL under `packages/samples/`) use plain
   `src/stories/compatibility-suite/*.generated.stories.tsx` and
   `src/it/compatibility-suite/*.generated.it-test.ts`.
 
-**Regenerated from local samples** (do not edit by hand; run generators):
+**Regenerated from local samples** (do not edit by hand; run generators; **no**
+`generated` in the filename):
 
 - DDL API suites — `bin/generate-ddl-suite-stories.mjs` and
   `bin/generate-ddl-suite-tests.mjs` → `src/stories/ddlapi-suite/` and
-  `src/it/ddlapi-suite/*.it-test.ts` (no `generated` in the filename).
+  `src/it/ddlapi-suite/*.it-test.ts`.
+- JSON Schema value-range (programmatic) — `bin/generate-value-range-diff-stories.mjs` →
+  `number-validation-value-range-samples.stories.tsx`,
+  `number-validation-value-range-oas-3-1-samples.stories.tsx`, and paired ITs. Case
+  definitions live in `value-range-diff-case-definitions.ts` (not `.generated.ts`).
 
 **Hand-written** (edit stories and matching IT files together):
 

@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 161
+- Total cases: 104 (YAML fixtures; value-range suites are programmatic — see `number-validation/README.md`)
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -63,69 +63,10 @@ Path: `type-changes/string-validation/examples/` (5 cases)
 | `004-examples-one-removed` | Removed one example from existing 3 values |
 | `005-examples-two-unchanged` | Unchanged 2 examples |
 
-### Number Validation Value Range Samples
+### Number validation — value range (programmatic)
 
-Path: `type-changes/number-validation/value-range/` (57 cases)
-
-| Case id | Change |
-| --- | --- |
-| `001-minimum-added` | Added minimum |
-| `002-minimum-added-with-exclusive-minimum-true` | Added minimum with exclusiveMinimum = true |
-| `003-exclusive-minimum-numeric-added` | Added exclusiveMinimum (numeric) |
-| `004-minimum-removed` | Removed minimum |
-| `005-minimum-with-exclusive-minimum-true-removed` | Removed minimum with exclusiveMinimum = true |
-| `006-exclusive-minimum-numeric-removed` | Removed exclusiveMinimum (numeric) |
-| `007-exclusive-minimum-false-to-true` | Changed exclusiveMinimum from false to true on existing minimum |
-| `008-exclusive-minimum-true-to-false` | Changed exclusiveMinimum from true to false on existing minimum |
-| `009-maximum-added` | Added maximum |
-| `010-maximum-added-with-exclusive-maximum-true` | Added maximum with exclusiveMaximum = true |
-| `011-exclusive-maximum-numeric-added` | Added exclusiveMaximum (numeric) |
-| `012-maximum-removed` | Removed maximum |
-| `013-maximum-with-exclusive-maximum-true-removed` | Removed maximum with exclusiveMaximum = true |
-| `014-exclusive-maximum-numeric-removed` | Removed exclusiveMaximum (numeric) |
-| `015-exclusive-maximum-false-to-true` | Changed exclusiveMaximum from false to true on existing maximum |
-| `016-exclusive-maximum-true-to-false` | Changed exclusiveMaximum from true to false on existing maximum |
-| `017-minimum-maximum-added` | Added minimum, maximum |
-| `018-minimum-inclusive-maximum-exclusive-added` | Added minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true) |
-| `019-minimum-exclusive-maximum-inclusive-added` | Added minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = false) |
-| `020-minimum-maximum-both-exclusive-added` | Added minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true) |
-| `021-minimum-maximum-removed` | Removed minimum, maximum |
-| `022-minimum-inclusive-maximum-exclusive-removed` | Removed minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true) |
-| `023-minimum-exclusive-maximum-inclusive-removed` | Removed minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = false) |
-| `024-minimum-maximum-both-exclusive-removed` | Removed minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true) |
-| `025-min-ex-max-in-min-ex-to-inclusive` | Changed exclusiveMinimum to false |
-| `026-min-ex-max-in-max-in-to-exclusive` | Changed exclusiveMaximum to true |
-| `027-min-in-max-ex-min-in-to-exclusive` | Changed exclusiveMinimum to true |
-| `028-min-in-max-ex-max-ex-to-inclusive` | Changed exclusiveMaximum to false |
-| `029-min-in-max-in-min-in-to-exclusive` | Changed exclusiveMinimum to true |
-| `030-min-in-max-in-max-in-to-exclusive` | Changed exclusiveMaximum to true |
-| `031-min-in-max-in-both-to-exclusive` | Changed exclusiveMinimum and exclusiveMaximum to true |
-| `032-min-ex-max-ex-min-ex-to-inclusive` | Changed exclusiveMinimum to false |
-| `033-min-ex-max-ex-max-ex-to-inclusive` | Changed exclusiveMaximum to false |
-| `034-min-ex-max-ex-both-to-inclusive` | Changed exclusiveMinimum and exclusiveMaximum to false |
-| `035-unchanged-minimum-inclusive` | Unchanged minimum (exclusiveMinimum = false) |
-| `036-unchanged-minimum-exclusive` | Unchanged minimum (exclusiveMinimum = true) |
-| `037-unchanged-maximum-inclusive` | Unchanged maximum (exclusiveMaximum = false) |
-| `038-unchanged-maximum-exclusive` | Unchanged maximum (exclusiveMaximum = true) |
-| `039-unchanged-min-max-inclusive` | Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = false) |
-| `040-unchanged-min-inclusive-max-exclusive` | Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true) |
-| `041-unchanged-min-max-both-exclusive` | Unchanged minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true) |
-| `042-min-in-add-max-in` | Added inclusive maximum to existing inclusive minimum |
-| `043-min-in-add-max-ex` | Added exclusive maximum to existing inclusive minimum |
-| `044-min-ex-add-max-in` | Added inclusive maximum to existing exclusive minimum |
-| `045-min-ex-add-max-ex` | Added exclusive maximum to existing exclusive minimum |
-| `046-max-in-add-min-in` | Added inclusive minimum to existing inclusive maximum |
-| `047-max-in-add-min-ex` | Added exclusive minimum to existing inclusive maximum |
-| `048-max-ex-add-min-in` | Added inclusive minimum to existing exclusive maximum |
-| `049-max-ex-add-min-ex` | Added exclusive minimum to existing exclusive maximum |
-| `050-min-in-max-in-remove-minimum` | Removed minimum from existing inclusive minimum and inclusive maximum |
-| `051-min-in-max-in-remove-maximum` | Removed maximum from existing inclusive minimum and inclusive maximum |
-| `052-min-ex-max-ex-remove-minimum` | Removed minimum from existing exclusive minimum and exclusive maximum |
-| `053-min-ex-max-ex-remove-maximum` | Removed maximum from existing exclusive minimum and exclusive maximum |
-| `054-min-in-max-ex-remove-minimum` | Removed minimum from existing inclusive minimum and exclusive maximum |
-| `055-min-in-max-ex-remove-maximum` | Removed maximum from existing inclusive minimum and exclusive maximum |
-| `056-min-ex-max-in-remove-minimum` | Removed minimum from existing exclusive minimum and inclusive maximum |
-| `057-min-ex-max-in-remove-maximum` | Removed maximum from existing exclusive minimum and inclusive maximum |
+No YAML fixtures. See [`number-validation/README.md`](number-validation/README.md) for case definitions,
+OAS 3.0 / OAS 3.1 resolvers, Storybook paths, and regeneration commands (53 + 57 cases).
 
 ### String Validation Value Length Samples
 
@@ -269,7 +210,10 @@ Screenshot ITs live under `packages/api-doc-viewer/src/it/json-schema-diffs-suit
 ```bash
 cd packages/api-doc-viewer
 node bin/generate-json-schema-type-changes-samples.mjs
+node --experimental-strip-types bin/generate-value-range-diff-stories.mjs
 npm run build:showcase
 npm run regenerate-screenshots -- --testPathPattern=type-changes
 ```
+
+Value-range suites are programmatic only; see [`number-validation/README.md`](number-validation/README.md).
 

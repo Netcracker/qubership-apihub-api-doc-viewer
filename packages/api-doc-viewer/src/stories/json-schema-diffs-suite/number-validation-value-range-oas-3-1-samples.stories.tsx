@@ -8,15 +8,15 @@ import {
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./json-schema-diffs-utils";
-import { buildValueRangeDiffProgrammaticSampleCases } from "./value-range-diff-samples";
+} from "./json-schema-diffs-oas-3-1-utils";
+import { buildValueRangeDiffOas31ProgrammaticSampleCases } from "./value-range-diff-oas-31-samples";
 
-const sampleCases = buildValueRangeDiffProgrammaticSampleCases({ includeOas31Only: false });
+const sampleCases = buildValueRangeDiffOas31ProgrammaticSampleCases({ includeOas31Only: true });
 const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Number Validation Value Range Samples",
+  title: "JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1 Samples",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
@@ -83,3 +83,7 @@ export const Case_050_min_in_max_ex_remove_minimum: Story = createCaseStory("050
 export const Case_051_min_in_max_ex_remove_maximum: Story = createCaseStory("051-min-in-max-ex-remove-maximum");
 export const Case_052_min_ex_max_in_remove_minimum: Story = createCaseStory("052-min-ex-max-in-remove-minimum");
 export const Case_053_min_ex_max_in_remove_maximum: Story = createCaseStory("053-min-ex-max-in-remove-maximum");
+export const Case_054_exclusive_minimum_numeric_added: Story = createCaseStory("054-exclusive-minimum-numeric-added");
+export const Case_055_exclusive_minimum_numeric_removed: Story = createCaseStory("055-exclusive-minimum-numeric-removed");
+export const Case_056_exclusive_maximum_numeric_added: Story = createCaseStory("056-exclusive-maximum-numeric-added");
+export const Case_057_exclusive_maximum_numeric_removed: Story = createCaseStory("057-exclusive-maximum-numeric-removed");

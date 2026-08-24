@@ -1,4 +1,8 @@
 import { resolveBoundRangeLabel } from "../../src/model/json-schema/bound-range"
+import {
+  inferJsonSchemaBoundRangeDialect,
+  JsonSchemaBoundRangeDialect,
+} from "../../src/model/json-schema/json-schema-bound-range-dialect"
 import { resolveJsonSchemaTypeLabel } from "../../src/model/json-schema/type-label"
 import { JsonSchemaValidationKeys } from "../../src/model/json-schema/types/validation-key"
 import { resolveValidationKeysForType } from "../../src/model/json-schema/validation-keys"
@@ -70,6 +74,26 @@ describe("JSON Schema model resolvers", () => {
     })).toEqual({
       visible: true,
       data: { lower: "> 5" },
+    })
+  })
+
+  it("infers OAS 3.1 dialect from numeric exclusive bounds", () => {
+    expect(inferJsonSchemaBoundRangeDialect({ exclusiveMin: 2 })).toBe(
+      JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE,
+    )
+    expect(inferJsonSchemaBoundRangeDialect({ min: 1, exclusiveMin: true })).toBe(
+      JsonSchemaBoundRangeDialect.OAS_3_0_BOOLEAN_EXCLUSIVE,
+    )
+  })
+
+  it("does not render standalone boolean exclusive bounds without a paired minimum/maximum", () => {
+    expect(resolveBoundRangeLabel({ exclusiveMin: true })).toEqual({
+      visible: false,
+      data: {},
+    })
+    expect(resolveBoundRangeLabel({ exclusiveMax: true })).toEqual({
+      visible: false,
+      data: {},
     })
   })
 })

@@ -49,18 +49,23 @@ Raw / merged schema JSON
 
 | UI element | Condition | Source |
 | --- | --- | --- |
-| Property name + required `*` | non-root property | `node.key`, `meta.required` |
-| Type subheader | always on title row | `resolveJsonSchemaTypeLabel(value, meta)` |
+| Root title (`Type: `) | root node | `resolveJsonSchemaNodeTitleDisplay` + `customizationOptions.headerRowTitle` |
+| Property name + required `*` | non-root property | `resolveJsonSchemaNodeTitleDisplay` |
+| Structural title badges | `items`, `additionalItems`, `additionalProperties`, `patternProperty` | `JsonSchemaNodeTitle` → `UxBadge` |
+| Tuple item index | `item` kind | `[index]` via `resolveJsonSchemaNodeTitleDisplay` |
+| Type subheader | title row, except boolean `additionalProperties` | `resolveJsonSchemaTypeLabel(value, meta)` |
 | Broken `$ref` label | `meta.brokenRef` set | type label shows `$ref: …` |
 | **readOnly** / **writeOnly** / **deprecated** badges | meta flags | `DiffTags` (plain, no diff chrome) |
 | Circular ref icon | `node.isCycle` | `CircularRefIcon` + tooltip |
+| Expander (caret) | `resolvePlainPropertyIsExpandable`; not on cycle nodes | `TitleRow` + local React `expanded` / `onClickExpander` |
+| Initial expand depth | `expandedDepth` prop + `LevelContext` level | `resolvePlainPropertyInitiallyExpanded`; collapse hides body rows and children |
 
 ### Content rows (detailed display mode)
 
 | UI element | Condition | Visibility resolver |
 | --- | --- | --- |
-| Deprecation reason | `x-deprecated-reason` in `value.extensions` | `showDeprecationReasonRow` |
-| Description | `value.description` | `showDescription` |
+| Deprecation reason | `x-deprecated-reason` in `value.extensions` | `showDeprecationReasonRow`; `TextRowUsage.JsonSchemaDescription` |
+| Description | `value.description` | `showDescription`; `TextRowUsage.JsonSchemaDescription` |
 | Allowed values | `value.enum` | `showEnumValuesRow` |
 | Default | `value.default` defined | `showDefaultRow` |
 | Examples | `value.examples` | `showExamplesRow` |
@@ -71,7 +76,7 @@ Raw / merged schema JSON
 
 | UI element | Condition | Notes |
 | --- | --- | --- |
-| Property children | materialized at build time | gated by `!node.isCycle` only |
+| Property children | materialized at build or on expand | gated by `expanded` and `!node.isCycle` |
 | Combiner selector | `oneOf` / `anyOf` / `allOf`, ≥2 branches | `CombinerNodeViewer` |
 | Single combiner branch | exactly one branch | renders branch without selector |
 
@@ -82,12 +87,9 @@ Raw / merged schema JSON
 | Item | Tag | Notes |
 | --- | --- | --- |
 | **`const` constraint row** | `intentional-gap` | Not requested by current consumers; enum uses Allowed values row. |
-| **Per-node expand/collapse** | `intentional-gap` | `TitleRow` always `expandable={false}` `expanded={false}`; tree depth via `expandedDepth` / `materializeDepth` at build. |
-| **Expand-on-click + UI `materializeChildren`** | `intentional-gap` | Data-layer expand resolvers exist; viewer wiring deferred post–Phase 2 gate. |
 | **Property sort toggle** | `phase-4+` | Legacy `onToggleSort` not ported. |
 | **With-diffs rendering** | `phase-3` | Separate viewer + aggregators. |
 | **Full extensions embedding registry** | `phase-4+` | Interim: embed `JsoViewer` for `extensions` object (mirrors legacy). |
-| **Root scalar “expand fix”** | `intentional-gap` | Root title row hidden when `isRoot`; content always shown. |
 
 ---
 
@@ -100,16 +102,16 @@ Raw / merged schema JSON
 | Number | 8 | 8 |
 | Integer | 8 | 8 |
 | Object | 32 | 32 |
-| Array | 32 | 32 |
+| Array | 24 | 24 |
 | Circular `$ref` | 1 | 1 |
-| **Total** | **97** | **97** |
+| **Total** | **89** | **89** |
 
 Generate stories: `node bin/generate-json-schema-next-suite-stories.mjs`  
 Generate ITs: `node bin/generate-json-schema-next-suite-tests.mjs`  
 (both from `packages/api-doc-viewer`)
 
 Phase 2 gate: all generated plain screenshot ITs pass; builder tests verify `jsonSchemaHasOwnChildren`
-and `materializeDepth`; TitleRow expand flags remain falsy.
+and `materializeDepth`; per-node caret expand uses React state only (not `api-state-model`).
 
 ---
 

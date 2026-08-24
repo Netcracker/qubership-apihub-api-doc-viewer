@@ -4,9 +4,10 @@ import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-wi
 import {
   takeJsonSchemaValidationRowValueDiffs,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
-import fs from "fs"
-import path from "path"
-import yaml from "yaml"
+import {
+  listValueRangeDiffFixtureCaseIds,
+  resolveValueRangeDiffFixtureSchemas,
+} from "../helpers/value-range-diff-fixtures"
 
 const DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
@@ -35,16 +36,11 @@ function mergeSchemas(beforeSchema: object, afterSchema: object): object {
 
 describe("value range exclusive flag scan", () => {
   it("never treats boolean exclusive flags as standalone chip or row diffs", () => {
-    const baseDir = path.resolve(
-      __dirname,
-      "../../../samples/json-schema-diffs/type-changes/number-validation/value-range",
-    )
-    const caseIds = fs.readdirSync(baseDir).filter((name) => fs.statSync(path.join(baseDir, name)).isDirectory())
+    const caseIds = listValueRangeDiffFixtureCaseIds({ includeOas31Only: false })
     const rowKey = JsonSchemaValidationRowKeys.VALUE_RANGE
 
-    for (const caseId of caseIds.sort()) {
-      const beforeSchema = yaml.parse(fs.readFileSync(path.join(baseDir, caseId, "before.yaml"), "utf8"))
-      const afterSchema = yaml.parse(fs.readFileSync(path.join(baseDir, caseId, "after.yaml"), "utf8"))
+    for (const caseId of caseIds) {
+      const { before: beforeSchema, after: afterSchema } = resolveValueRangeDiffFixtureSchemas(caseId)
       const merged = mergeSchemas(beforeSchema, afterSchema)
       const tree = new JsonSchemaTreeWithDiffsBuilder({
         source: merged,

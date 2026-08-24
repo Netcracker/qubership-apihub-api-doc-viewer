@@ -1,3 +1,12 @@
+import {
+  inferJsonSchemaBoundRangeDialect,
+  JsonSchemaBoundRangeDialect,
+  JsonSchemaBoundRangeDialectInput,
+  JsonSchemaBoundRangeDialectValue,
+  JsonSchemaBoundRangeInput,
+  resolveJsonSchemaBoundRangeDialect,
+} from "@apihub/next-data-model/model/json-schema/json-schema-bound-range-dialect"
+
 export type JsonSchemaBoundRangeLabel = Partial<{
   lower: string
   upper: string
@@ -8,11 +17,12 @@ export type JsonSchemaBoundRangeResult = {
   visible: boolean
 }
 
-export type JsonSchemaBoundRangeInput = {
-  min?: number
-  max?: number
-  exclusiveMin?: number | boolean
-  exclusiveMax?: number | boolean
+export type { JsonSchemaBoundRangeInput, JsonSchemaBoundRangeDialectInput }
+
+export {
+  JsonSchemaBoundRangeDialect,
+  inferJsonSchemaBoundRangeDialect,
+  resolveJsonSchemaBoundRangeDialect,
 }
 
 const DEFAULT_CHARACTER = "?"
@@ -104,16 +114,8 @@ function isVisible(lower?: string, upper?: string): boolean {
   return isDefined(lower) || isDefined(upper)
 }
 
-export function resolveBoundRangeLabel(input: JsonSchemaBoundRangeInput): JsonSchemaBoundRangeResult {
-  const result: JsonSchemaBoundRangeResult = {
-    data: {},
-    visible: false,
-  }
-
+function buildPresenceBitwiseKey(input: JsonSchemaBoundRangeInput): number {
   const { min, max, exclusiveMin, exclusiveMax } = input
-  const exclusiveLowerValue = typeof exclusiveMin === "number" ? exclusiveMin : undefined
-  const exclusiveUpperValue = typeof exclusiveMax === "number" ? exclusiveMax : undefined
-
   let bitwiseKey = 0
 
   if (min !== undefined) {
@@ -129,25 +131,87 @@ export function resolveBoundRangeLabel(input: JsonSchemaBoundRangeInput): JsonSc
     bitwiseKey |= BITWISE_EXCLUSIVE_MAXIMUM
   }
 
-  if (typeof exclusiveMin !== "number" && !(bitwiseKey & BITWISE_MINIMUM)) {
-    bitwiseKey &= ~BITWISE_EXCLUSIVE_MINIMUM
+  return bitwiseKey
+}
+
+/** OAS 3.0: boolean exclusive flags without a paired bound carry no display value. */
+function applyOas30BooleanExclusiveSuppression(
+  bitwiseKey: number,
+  input: JsonSchemaBoundRangeInput,
+): number {
+  let key = bitwiseKey
+  if (typeof input.exclusiveMin !== "number" && !(key & BITWISE_MINIMUM)) {
+    key &= ~BITWISE_EXCLUSIVE_MINIMUM
   }
-  if (typeof exclusiveMax !== "number" && !(bitwiseKey & BITWISE_MAXIMUM)) {
-    bitwiseKey &= ~BITWISE_EXCLUSIVE_MAXIMUM
+  if (typeof input.exclusiveMax !== "number" && !(key & BITWISE_MAXIMUM)) {
+    key &= ~BITWISE_EXCLUSIVE_MAXIMUM
+  }
+  return key
+}
+
+/** OAS 3.1: numeric exclusive bounds stand alone; suppress only boolean flags without a paired bound. */
+function applyOas31ExclusiveSuppression(
+  bitwiseKey: number,
+  input: JsonSchemaBoundRangeInput,
+): number {
+  return applyOas30BooleanExclusiveSuppression(bitwiseKey, input)
+}
+
+function applyEffectiveExclusiveResolution(
+  bitwiseKey: number,
+  input: JsonSchemaBoundRangeInput,
+): number {
+  const exclusiveLowerValue = typeof input.exclusiveMin === "number" ? input.exclusiveMin : undefined
+  const exclusiveUpperValue = typeof input.exclusiveMax === "number" ? input.exclusiveMax : undefined
+
+  let key = resolveEffectiveLowerBitwiseKey(bitwiseKey, input.min, exclusiveLowerValue)
+  key = resolveEffectiveUpperBitwiseKey(key, input.max, exclusiveUpperValue)
+  return key
+}
+
+type BoundRangeDialectStrategy = {
+  applyExclusiveSuppression: (bitwiseKey: number, input: JsonSchemaBoundRangeInput) => number
+}
+
+const BOUND_RANGE_DIALECT_STRATEGIES: Record<JsonSchemaBoundRangeDialectValue, BoundRangeDialectStrategy> = {
+  [JsonSchemaBoundRangeDialect.OAS_3_0_BOOLEAN_EXCLUSIVE]: {
+    applyExclusiveSuppression: applyOas30BooleanExclusiveSuppression,
+  },
+  [JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE]: {
+    applyExclusiveSuppression: applyOas31ExclusiveSuppression,
+  },
+}
+
+function resolveBitwiseKey(
+  input: JsonSchemaBoundRangeDialectInput,
+  dialect: JsonSchemaBoundRangeDialectValue,
+): number {
+  const strategy = BOUND_RANGE_DIALECT_STRATEGIES[dialect]
+  let bitwiseKey = buildPresenceBitwiseKey(input)
+  bitwiseKey = strategy.applyExclusiveSuppression(bitwiseKey, input)
+  return applyEffectiveExclusiveResolution(bitwiseKey, input)
+}
+
+export function resolveBoundRangeLabel(input: JsonSchemaBoundRangeDialectInput): JsonSchemaBoundRangeResult {
+  const result: JsonSchemaBoundRangeResult = {
+    data: {},
+    visible: false,
   }
 
-  bitwiseKey = resolveEffectiveLowerBitwiseKey(bitwiseKey, min, exclusiveLowerValue)
-  bitwiseKey = resolveEffectiveUpperBitwiseKey(bitwiseKey, max, exclusiveUpperValue)
+  const dialect = resolveJsonSchemaBoundRangeDialect(input)
+  const exclusiveLowerValue = typeof input.exclusiveMin === "number" ? input.exclusiveMin : undefined
+  const exclusiveUpperValue = typeof input.exclusiveMax === "number" ? input.exclusiveMax : undefined
+  const bitwiseKey = resolveBitwiseKey(input, dialect)
 
   const mapping = bitwiseKey in MINIMAX_CHAINS_MAPPING
     ? { ...MINIMAX_CHAINS_MAPPING[bitwiseKey] }
     : undefined
 
   if (mapping?.lower) {
-    result.data.lower = substituteValues(mapping.lower, min, exclusiveLowerValue)
+    result.data.lower = substituteValues(mapping.lower, input.min, exclusiveLowerValue)
   }
   if (mapping?.upper) {
-    result.data.upper = substituteValues(mapping.upper, max, exclusiveUpperValue)
+    result.data.upper = substituteValues(mapping.upper, input.max, exclusiveUpperValue)
   }
 
   result.visible = isVisible(result.data.lower, result.data.upper)

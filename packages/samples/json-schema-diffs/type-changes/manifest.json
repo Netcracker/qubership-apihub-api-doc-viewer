@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-24T18:58:21.007Z",
-  "totalCases": 161,
+  "generatedAt": "2026-08-24T20:44:00.000Z",
+  "totalCases": 104,
   "suites": [
     {
       "globPath": "type-flags",
@@ -17,10 +17,6 @@
     {
       "globPath": "string-validation/examples",
       "caseCount": 5
-    },
-    {
-      "globPath": "number-validation/value-range",
-      "caseCount": 57
     },
     {
       "globPath": "string-validation/value-length",
@@ -53,6 +49,18 @@
     {
       "globPath": "circular",
       "caseCount": 12
+    }
+  ],
+  "programmaticSuites": [
+    {
+      "id": "number-validation-value-range",
+      "caseCount": 53,
+      "doc": "number-validation/README.md"
+    },
+    {
+      "id": "number-validation-value-range-oas-3-1",
+      "caseCount": 57,
+      "doc": "number-validation/README.md"
     }
   ]
 }
