@@ -1,0 +1,6 @@
+type: integer
+minimum: 1
+exclusiveMinimum: false
+maximum: 10
+exclusiveMaximum: false
+

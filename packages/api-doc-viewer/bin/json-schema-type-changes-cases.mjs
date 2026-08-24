@@ -23,6 +23,8 @@ const STRING_DESC_ENUM = () => ({
 
 const STRING_PLAIN = () => ({ type: "string" });
 
+const INTEGER_PLAIN = () => ({ type: "integer" });
+
 const LONG_DESCRIPTION = "L".repeat(650);
 
 const SHORT_DESCRIPTION = "Short unchanged description";
@@ -44,8 +46,8 @@ const objectWithStringProperty = (required = false) => {
   return schema;
 };
 
-const stringRange = ({ minimum, exclusiveMinimum, maximum, exclusiveMaximum } = {}) => {
-  const schema = STRING_PLAIN();
+const numberRange = ({ minimum, exclusiveMinimum, maximum, exclusiveMaximum } = {}) => {
+  const schema = INTEGER_PLAIN();
   if (minimum !== undefined) {
     schema.minimum = minimum;
   }
@@ -311,228 +313,228 @@ const collectExamplesCases = (cases) => {
 
 /** @param {TypeChangeCase[]} cases */
 const collectValueRangeCases = (cases) => {
-  const dir = "string-validation/value-range";
-  const base = STRING_PLAIN();
+  const dir = "number-validation/value-range";
+  const base = INTEGER_PLAIN();
 
   const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
 
-  add("minimum-added", base, stringRange({ minimum: 1 }), "Added minimum");
+  add("minimum-added", base, numberRange({ minimum: 1 }), "Added minimum");
   add(
     "minimum-added-with-exclusive-minimum-true",
     base,
-    stringRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
     "Added minimum with exclusiveMinimum = true",
   );
   add(
     "exclusive-minimum-numeric-added",
     base,
-    stringRange({ exclusiveMinimum: 2 }),
+    numberRange({ exclusiveMinimum: 2 }),
     "Added exclusiveMinimum (numeric)",
   );
-  add("minimum-removed", stringRange({ minimum: 1 }), base, "Removed minimum");
+  add("minimum-removed", numberRange({ minimum: 1 }), base, "Removed minimum");
   add(
     "minimum-with-exclusive-minimum-true-removed",
-    stringRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
     base,
     "Removed minimum with exclusiveMinimum = true",
   );
   add(
     "exclusive-minimum-numeric-removed",
-    stringRange({ exclusiveMinimum: 2 }),
+    numberRange({ exclusiveMinimum: 2 }),
     base,
     "Removed exclusiveMinimum (numeric)",
   );
   add(
     "exclusive-minimum-false-to-true",
-    stringRange({ minimum: 1, exclusiveMinimum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
     "Changed exclusiveMinimum from false to true on existing minimum",
   );
   add(
     "exclusive-minimum-true-to-false",
-    stringRange({ minimum: 1, exclusiveMinimum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
     "Changed exclusiveMinimum from true to false on existing minimum",
   );
 
-  add("maximum-added", base, stringRange({ maximum: 10 }), "Added maximum");
+  add("maximum-added", base, numberRange({ maximum: 10 }), "Added maximum");
   add(
     "maximum-added-with-exclusive-maximum-true",
     base,
-    stringRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
     "Added maximum with exclusiveMaximum = true",
   );
   add(
     "exclusive-maximum-numeric-added",
     base,
-    stringRange({ exclusiveMaximum: 10 }),
+    numberRange({ exclusiveMaximum: 10 }),
     "Added exclusiveMaximum (numeric)",
   );
-  add("maximum-removed", stringRange({ maximum: 10 }), base, "Removed maximum");
+  add("maximum-removed", numberRange({ maximum: 10 }), base, "Removed maximum");
   add(
     "maximum-with-exclusive-maximum-true-removed",
-    stringRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
     base,
     "Removed maximum with exclusiveMaximum = true",
   );
   add(
     "exclusive-maximum-numeric-removed",
-    stringRange({ exclusiveMaximum: 10 }),
+    numberRange({ exclusiveMaximum: 10 }),
     base,
     "Removed exclusiveMaximum (numeric)",
   );
   add(
     "exclusive-maximum-false-to-true",
-    stringRange({ maximum: 10, exclusiveMaximum: false }),
-    stringRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMaximum from false to true on existing maximum",
   );
   add(
     "exclusive-maximum-true-to-false",
-    stringRange({ maximum: 10, exclusiveMaximum: true }),
-    stringRange({ maximum: 10, exclusiveMaximum: false }),
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMaximum from true to false on existing maximum",
   );
 
   add(
     "minimum-maximum-added",
     base,
-    stringRange({ minimum: 1, maximum: 10 }),
+    numberRange({ minimum: 1, maximum: 10 }),
     "Added minimum, maximum",
   );
   add(
     "minimum-inclusive-maximum-exclusive-added",
     base,
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
     "Added minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true)",
   );
   add(
     "minimum-exclusive-maximum-inclusive-added",
     base,
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
     "Added minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = false)",
   );
   add(
     "minimum-maximum-both-exclusive-added",
     base,
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
     "Added minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true)",
   );
   add(
     "minimum-maximum-removed",
-    stringRange({ minimum: 1, maximum: 10 }),
+    numberRange({ minimum: 1, maximum: 10 }),
     base,
     "Removed minimum, maximum",
   );
   add(
     "minimum-inclusive-maximum-exclusive-removed",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
     base,
     "Removed minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true)",
   );
   add(
     "minimum-exclusive-maximum-inclusive-removed",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
     base,
     "Removed minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = false)",
   );
   add(
     "minimum-maximum-both-exclusive-removed",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
     base,
     "Removed minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true)",
   );
 
   add(
     "min-ex-max-in-min-ex-to-inclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMinimum to false",
   );
   add(
     "min-ex-max-in-max-in-to-exclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMaximum to true",
   );
   add(
     "min-in-max-ex-min-in-to-exclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMinimum to true",
   );
   add(
     "min-in-max-ex-max-ex-to-inclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMaximum to false",
   );
   add(
     "min-in-max-in-min-in-to-exclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMinimum to true",
   );
   add(
     "min-in-max-in-max-in-to-exclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMaximum to true",
   );
   add(
     "min-in-max-in-both-to-exclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMinimum and exclusiveMaximum to true",
   );
   add(
     "min-ex-max-ex-min-ex-to-inclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
     "Changed exclusiveMinimum to false",
   );
   add(
     "min-ex-max-ex-max-ex-to-inclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMaximum to false",
   );
   add(
     "min-ex-max-ex-both-to-inclusive",
-    stringRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
-    stringRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
     "Changed exclusiveMinimum and exclusiveMaximum to false",
   );
 
-  const unchangedMinInclusive = stringRange({ minimum: 1, exclusiveMinimum: false });
+  const unchangedMinInclusive = numberRange({ minimum: 1, exclusiveMinimum: false });
   add(
     "unchanged-minimum-inclusive",
     unchangedMinInclusive,
     clone(unchangedMinInclusive),
     "Unchanged minimum (exclusiveMinimum = false)",
   );
-  const unchangedMinExclusive = stringRange({ minimum: 1, exclusiveMinimum: true });
+  const unchangedMinExclusive = numberRange({ minimum: 1, exclusiveMinimum: true });
   add(
     "unchanged-minimum-exclusive",
     unchangedMinExclusive,
     clone(unchangedMinExclusive),
     "Unchanged minimum (exclusiveMinimum = true)",
   );
-  const unchangedMaxInclusive = stringRange({ maximum: 10, exclusiveMaximum: false });
+  const unchangedMaxInclusive = numberRange({ maximum: 10, exclusiveMaximum: false });
   add(
     "unchanged-maximum-inclusive",
     unchangedMaxInclusive,
     clone(unchangedMaxInclusive),
     "Unchanged maximum (exclusiveMaximum = false)",
   );
-  const unchangedMaxExclusive = stringRange({ maximum: 10, exclusiveMaximum: true });
+  const unchangedMaxExclusive = numberRange({ maximum: 10, exclusiveMaximum: true });
   add(
     "unchanged-maximum-exclusive",
     unchangedMaxExclusive,
     clone(unchangedMaxExclusive),
     "Unchanged maximum (exclusiveMaximum = true)",
   );
-  const unchangedBothInclusive = stringRange({
+  const unchangedBothInclusive = numberRange({
     minimum: 1,
     exclusiveMinimum: false,
     maximum: 10,
@@ -544,7 +546,7 @@ const collectValueRangeCases = (cases) => {
     clone(unchangedBothInclusive),
     "Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = false)",
   );
-  const unchangedMinInMaxEx = stringRange({
+  const unchangedMinInMaxEx = numberRange({
     minimum: 1,
     exclusiveMinimum: false,
     maximum: 10,
@@ -556,7 +558,7 @@ const collectValueRangeCases = (cases) => {
     clone(unchangedMinInMaxEx),
     "Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true)",
   );
-  const unchangedMinExMaxEx = stringRange({
+  const unchangedMinExMaxEx = numberRange({
     minimum: 1,
     exclusiveMinimum: true,
     maximum: 10,
@@ -567,6 +569,131 @@ const collectValueRangeCases = (cases) => {
     unchangedMinExMaxEx,
     clone(unchangedMinExMaxEx),
     "Unchanged minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true)",
+  );
+
+  add(
+    "min-in-add-max-in",
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    "Added inclusive maximum to existing inclusive minimum",
+  );
+  add(
+    "min-in-add-max-ex",
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    "Added exclusive maximum to existing inclusive minimum",
+  );
+  add(
+    "min-ex-add-max-in",
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    "Added inclusive maximum to existing exclusive minimum",
+  );
+  add(
+    "min-ex-add-max-ex",
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    "Added exclusive maximum to existing exclusive minimum",
+  );
+  add(
+    "max-in-add-min-in",
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: false }),
+    "Added inclusive minimum to existing inclusive maximum",
+  );
+  add(
+    "max-in-add-min-ex",
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: false }),
+    "Added exclusive minimum to existing inclusive maximum",
+  );
+  add(
+    "max-ex-add-min-in",
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: false, maximum: 10, exclusiveMaximum: true }),
+    "Added inclusive minimum to existing exclusive maximum",
+  );
+  add(
+    "max-ex-add-min-ex",
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
+    numberRange({ minimum: 1, exclusiveMinimum: true, maximum: 10, exclusiveMaximum: true }),
+    "Added exclusive minimum to existing exclusive maximum",
+  );
+
+  const minInMaxIn = numberRange({
+    minimum: 1,
+    exclusiveMinimum: false,
+    maximum: 10,
+    exclusiveMaximum: false,
+  });
+  add(
+    "min-in-max-in-remove-minimum",
+    minInMaxIn,
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
+    "Removed minimum from existing inclusive minimum and inclusive maximum",
+  );
+  add(
+    "min-in-max-in-remove-maximum",
+    minInMaxIn,
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
+    "Removed maximum from existing inclusive minimum and inclusive maximum",
+  );
+
+  const minExMaxEx = numberRange({
+    minimum: 1,
+    exclusiveMinimum: true,
+    maximum: 10,
+    exclusiveMaximum: true,
+  });
+  add(
+    "min-ex-max-ex-remove-minimum",
+    minExMaxEx,
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
+    "Removed minimum from existing exclusive minimum and exclusive maximum",
+  );
+  add(
+    "min-ex-max-ex-remove-maximum",
+    minExMaxEx,
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
+    "Removed maximum from existing exclusive minimum and exclusive maximum",
+  );
+
+  const minInMaxEx = numberRange({
+    minimum: 1,
+    exclusiveMinimum: false,
+    maximum: 10,
+    exclusiveMaximum: true,
+  });
+  add(
+    "min-in-max-ex-remove-minimum",
+    minInMaxEx,
+    numberRange({ maximum: 10, exclusiveMaximum: true }),
+    "Removed minimum from existing inclusive minimum and exclusive maximum",
+  );
+  add(
+    "min-in-max-ex-remove-maximum",
+    minInMaxEx,
+    numberRange({ minimum: 1, exclusiveMinimum: false }),
+    "Removed maximum from existing inclusive minimum and exclusive maximum",
+  );
+
+  const minExMaxIn = numberRange({
+    minimum: 1,
+    exclusiveMinimum: true,
+    maximum: 10,
+    exclusiveMaximum: false,
+  });
+  add(
+    "min-ex-max-in-remove-minimum",
+    minExMaxIn,
+    numberRange({ maximum: 10, exclusiveMaximum: false }),
+    "Removed minimum from existing exclusive minimum and inclusive maximum",
+  );
+  add(
+    "min-ex-max-in-remove-maximum",
+    minExMaxIn,
+    numberRange({ minimum: 1, exclusiveMinimum: true }),
+    "Removed maximum from existing exclusive minimum and inclusive maximum",
   );
 };
 
@@ -1184,12 +1311,12 @@ export const STORY_SUITES = [
     testFileName: "string-validation-examples-samples.it-test.ts",
   },
   {
-    suiteKey: "string-validation-value-range",
-    title: "JSON Schema Diffs Suite/String Validation Value Range Samples",
-    metaKebab: "json-schema-diffs-suite-string-validation-value-range-samples",
-    globPath: "string-validation/value-range",
-    storyFileName: "string-validation-value-range-samples.stories.tsx",
-    testFileName: "string-validation-value-range-samples.it-test.ts",
+    suiteKey: "number-validation-value-range",
+    title: "JSON Schema Diffs Suite/Number Validation Value Range Samples",
+    metaKebab: "json-schema-diffs-suite-number-validation-value-range-samples",
+    globPath: "number-validation/value-range",
+    storyFileName: "number-validation-value-range-samples.stories.tsx",
+    testFileName: "number-validation-value-range-samples.it-test.ts",
   },
   {
     suiteKey: "string-validation-value-length",

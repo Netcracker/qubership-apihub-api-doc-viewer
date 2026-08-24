@@ -12,7 +12,9 @@ import {
   JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS,
   JSON_SCHEMA_VALIDATION_SOURCE_KEY_CHIP_INDEX,
   JsonSchemaValidationRowKey,
+  JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialInclusiveBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import {
   JsonSchemaListValueDiffs,
   JsonSchemaPropertyRowDiffs,
@@ -27,6 +29,7 @@ import {
   DiffAction,
   DiffAdd,
   DiffRemove,
+  DiffReplace,
   DiffType,
   isDiffAdd,
   isDiffRemove,
@@ -88,7 +91,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         nodeDiffs.default = this.buildDefaultValueDiffMetadata(defaultDiff)
       }
 
-      this.aggregateValidationRowDiffs(crawlDiffs, nodeDiffs)
+      this.aggregateValidationRowDiffs(crawlValue, crawlDiffs, nodeDiffs)
     }
 
     if (enumDiff) {
@@ -292,11 +295,34 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
   }
 
   private aggregateValidationRowDiffs(
+    crawlValue: object,
     crawlDiffs: Partial<Record<string, Diff<DiffType>>>,
     nodeDiffs: JsonSchemaPropertyRowDiffs,
   ): void {
     for (const [rowKey, sourceKeys] of Object.entries(JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS)) {
       const activeSourceKeys = sourceKeys.filter((sourceKey) => crawlDiffs[sourceKey])
+      if (activeSourceKeys.length === 0) {
+        continue
+      }
+
+      const validationRowKey = rowKey as JsonSchemaValidationRowKey
+      const valueRangeCrawlDiffs = validationRowKey === JsonSchemaValidationRowKeys.VALUE_RANGE
+        ? {
+          minimum: crawlDiffs.minimum,
+          exclusiveMinimum: crawlDiffs.exclusiveMinimum,
+          maximum: crawlDiffs.maximum,
+          exclusiveMaximum: crawlDiffs.exclusiveMaximum,
+        }
+        : undefined
+
+      if (valueRangeCrawlDiffs) {
+        nodeDiffs.valueRangeCrawlDiffs = valueRangeCrawlDiffs
+      }
+
+      const semanticKeys = validationRowKey === JsonSchemaValidationRowKeys.VALUE_RANGE
+        ? filterValueRangeSemanticSourceKeys(activeSourceKeys, crawlDiffs)
+        : activeSourceKeys
+
       const rowDiffs = activeSourceKeys
         .map((sourceKey) => crawlDiffs[sourceKey])
         .filter((diff): diff is Diff<DiffType> => AbstractNodeDiffsAggregator.isDiff(diff))
@@ -305,10 +331,44 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         continue
       }
 
+      nodeDiffs.validationRowColorizingDiffs ??= {}
+
+      const valueRangeSideInput = resolveValueRangeSideInputFromNodeValue(crawlValue)
+
+      const valueRangeWholeRowAction = valueRangeCrawlDiffs
+        ? classifyValueRangeWholeRowAction(valueRangeSideInput, valueRangeCrawlDiffs)
+        : undefined
+
+      if (
+        valueRangeCrawlDiffs
+        && (valueRangeWholeRowAction === DiffAction.add || valueRangeWholeRowAction === DiffAction.remove)
+      ) {
+        const syntheticDiff = valueRangeWholeRowAction === DiffAction.add
+          ? this.mergeDiffActionFragment(rowDiffs, DiffAction.add) as DiffAdd
+          : this.mergeDiffActionFragment(rowDiffs, DiffAction.remove) as DiffRemove
+        const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(syntheticDiff)
+        nodeDiffs.validationRowDiffs ??= {}
+        nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowColorizingDiffs[validationRowKey] = syntheticRowDiff
+        continue
+      }
+
+      if (
+        valueRangeCrawlDiffs
+        && isValueRangePartialInclusiveBoundChange(valueRangeSideInput, valueRangeCrawlDiffs)
+      ) {
+        this.mergeValueRangeLabelChipDiffs(crawlValue, valueRangeCrawlDiffs, nodeDiffs, validationRowKey)
+        this.applyValueRangeFormattingRowColorizingDiff(
+          activeSourceKeys,
+          crawlDiffs,
+          nodeDiffs,
+          validationRowKey,
+        )
+        continue
+      }
+
       const allAdd = rowDiffs.every(isDiffAdd)
       const allRemove = rowDiffs.every(isDiffRemove)
-
-      nodeDiffs.validationRowColorizingDiffs ??= {}
 
       if (allAdd) {
         const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
@@ -316,8 +376,8 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
           DiffAction.add,
         ) as DiffAdd)
         nodeDiffs.validationRowDiffs ??= {}
-        nodeDiffs.validationRowDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
-        nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowColorizingDiffs[validationRowKey] = syntheticRowDiff
         continue
       }
 
@@ -327,12 +387,28 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
           DiffAction.remove,
         ) as DiffRemove)
         nodeDiffs.validationRowDiffs ??= {}
-        nodeDiffs.validationRowDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
-        nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
+        nodeDiffs.validationRowColorizingDiffs[validationRowKey] = syntheticRowDiff
         continue
       }
 
-      const metadatas = rowDiffs.map((diff) => this.buildChangedPropertyMetaDataFromDiff(diff))
+      if (semanticKeys.length === 0) {
+        if (valueRangeCrawlDiffs) {
+          this.mergeValueRangeLabelChipDiffs(crawlValue, valueRangeCrawlDiffs, nodeDiffs, validationRowKey)
+          this.applyValueRangeFormattingRowColorizingDiff(
+            activeSourceKeys,
+            crawlDiffs,
+            nodeDiffs,
+            validationRowKey,
+          )
+        }
+        continue
+      }
+
+      const metadatas = semanticKeys
+        .map((sourceKey) => crawlDiffs[sourceKey])
+        .filter((diff): diff is Diff<DiffType> => AbstractNodeDiffsAggregator.isDiff(diff))
+        .map((diff) => this.buildChangedPropertyMetaDataFromDiff(diff))
       const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
         ...metadatas,
       )
@@ -340,16 +416,129 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         continue
       }
 
+      const valueDiffs = this.buildValidationRowValueDiffs(
+        validationRowKey,
+        semanticKeys,
+        crawlDiffs,
+      )
+
       nodeDiffs.validationRowValueDiffs ??= {}
-      nodeDiffs.validationRowValueDiffs[rowKey as JsonSchemaValidationRowKey] =
-        this.buildValidationRowValueDiffs(
-          rowKey as JsonSchemaValidationRowKey,
-          activeSourceKeys,
-          crawlDiffs,
-        )
-      nodeDiffs.validationRowColorizingDiffs[rowKey as JsonSchemaValidationRowKey] =
+      nodeDiffs.validationRowValueDiffs[validationRowKey] = valueDiffs
+      nodeDiffs.validationRowColorizingDiffs[validationRowKey] =
         this.asReplaceRowColorizingDiff(representativeDiff)
+
+      if (valueRangeCrawlDiffs) {
+        this.mergeValueRangeLabelChipDiffs(crawlValue, valueRangeCrawlDiffs, nodeDiffs, validationRowKey)
+      }
     }
+  }
+
+  private mergeValueRangeLabelChipDiffs(
+    crawlValue: object,
+    valueRangeCrawlDiffs: NonNullable<JsonSchemaPropertyRowDiffs["valueRangeCrawlDiffs"]>,
+    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    validationRowKey: JsonSchemaValidationRowKey,
+  ): void {
+    const chipStringDiffs = buildValueRangeChipStringDiffs(
+      resolveValueRangeSideInputFromNodeValue(crawlValue),
+      valueRangeCrawlDiffs,
+    )
+    const chipDiffKeys = [VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY] as const
+    const hasChipStringDiffs = chipDiffKeys.some((key) => chipStringDiffs[key])
+    if (!hasChipStringDiffs) {
+      return
+    }
+
+    nodeDiffs.validationRowValueDiffs ??= {}
+    const existingValueDiffs = nodeDiffs.validationRowValueDiffs[validationRowKey] ?? {}
+    const mergedValueDiffs: JsonSchemaListValueDiffs = { ...existingValueDiffs }
+
+    for (const chipDiffKey of chipDiffKeys) {
+      const chipDiff = chipStringDiffs[chipDiffKey]
+      if (!chipDiff || mergedValueDiffs[chipDiffKey]) {
+        continue
+      }
+      const slot = chipDiffKey === VALUE_RANGE_LOWER_CHIP_DIFF_KEY ? "lower" : "upper"
+      const chipDiffWithPaths = this.attachValueRangeChipDiffPaths(chipDiff, slot, valueRangeCrawlDiffs)
+      mergedValueDiffs[chipDiffKey] = this.buildValueRangeLabelChipDiffMetadata(chipDiffWithPaths)
+    }
+
+    nodeDiffs.validationRowValueDiffs[validationRowKey] = mergedValueDiffs
+  }
+
+  private applyValueRangeFormattingRowColorizingDiff(
+    activeSourceKeys: readonly string[],
+    crawlDiffs: Partial<Record<string, Diff<DiffType>>>,
+    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    validationRowKey: JsonSchemaValidationRowKey,
+  ): void {
+    const chipValueDiffs = nodeDiffs.validationRowValueDiffs?.[validationRowKey]
+    if (!chipValueDiffs || !Object.values(chipValueDiffs).some((diff) => diff !== undefined)) {
+      return
+    }
+
+    const crawlDiffList = activeSourceKeys
+      .map((sourceKey) => crawlDiffs[sourceKey])
+      .filter((diff): diff is Diff<DiffType> => AbstractNodeDiffsAggregator.isDiff(diff))
+    if (crawlDiffList.length === 0) {
+      return
+    }
+
+    const metadatas = crawlDiffList.map((diff) => this.buildChangedPropertyMetaDataFromDiff(diff))
+    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...metadatas,
+    )
+    if (!representativeDiff) {
+      return
+    }
+
+    nodeDiffs.validationRowColorizingDiffs![validationRowKey] =
+      this.asReplaceRowColorizingDiff(representativeDiff)
+  }
+
+  private attachValueRangeChipDiffPaths(
+    chipDiff: DiffAdd | DiffRemove | DiffReplace,
+    slot: "lower" | "upper",
+    valueRangeCrawlDiffs: NonNullable<JsonSchemaPropertyRowDiffs["valueRangeCrawlDiffs"]>,
+  ): DiffAdd | DiffRemove | DiffReplace {
+    const sourceDiffs = slot === "lower"
+      ? [valueRangeCrawlDiffs.minimum, valueRangeCrawlDiffs.exclusiveMinimum]
+      : [valueRangeCrawlDiffs.maximum, valueRangeCrawlDiffs.exclusiveMaximum]
+
+    const beforeDeclarationPaths: DiffRemove["beforeDeclarationPaths"] = []
+    const afterDeclarationPaths: DiffAdd["afterDeclarationPaths"] = []
+
+    for (const sourceDiff of sourceDiffs) {
+      if (!sourceDiff) {
+        continue
+      }
+      if ("beforeDeclarationPaths" in sourceDiff && sourceDiff.beforeDeclarationPaths) {
+        beforeDeclarationPaths.push(...sourceDiff.beforeDeclarationPaths)
+      }
+      if ("afterDeclarationPaths" in sourceDiff && sourceDiff.afterDeclarationPaths) {
+        afterDeclarationPaths.push(...sourceDiff.afterDeclarationPaths)
+      }
+    }
+
+    return {
+      ...chipDiff,
+      ...(beforeDeclarationPaths.length > 0 ? { beforeDeclarationPaths } : {}),
+      ...(afterDeclarationPaths.length > 0 ? { afterDeclarationPaths } : {}),
+    }
+  }
+
+  private buildValueRangeLabelChipDiffMetadata(
+    diff: DiffAdd | DiffRemove | DiffReplace,
+  ): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      return this.buildChipReplaceDiffMetadata(diff, {
+        textHighlighterColor: HighlightVariant.Yellow,
+      })
+    }
+    return this.buildChipAddRemoveDiffMetadata(diff, {
+      addAfter: { borderShadowColor: HighlightVariant.Green },
+      removeBefore: { borderShadowColor: HighlightVariant.Red, isFontMuted: true },
+    })
   }
 
   private buildValidationRowValueDiffs(

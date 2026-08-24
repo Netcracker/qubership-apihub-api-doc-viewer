@@ -18,7 +18,13 @@ import {
   JsonSchemaPropertyRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import {
+  resolveValueRangeDiffSideEntries,
+  resolveValueRangeSideInputFromNodeValue,
+  ValueRangeCrawlDiffData,
+} from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
+import {
   JsonSchemaValidationRowKey,
+  JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import {
   formatJsonSchemaValidationRowChipDisplay,
@@ -66,9 +72,6 @@ export function takeJsonSchemaEnumDiff(
 export function takeJsonSchemaEnumValueDiffs(
   node: JsonSchemaPropertyNodeWithDiffs,
 ): JsonSchemaListValueDiffs | undefined {
-  const t = takePropertyRowDiffs(node)
-  console.log("t", t)
-  console.log("t.enumValueDiffs", t.enumValueDiffs)
   return takePropertyRowDiffs(node).enumValueDiffs
 }
 
@@ -115,6 +118,29 @@ export function takeJsonSchemaValidationRowColorizingDiff(
   rowKey: JsonSchemaValidationRowKey,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).validationRowColorizingDiffs?.[rowKey]
+}
+
+export function takeJsonSchemaValueRangeCrawlDiffs(
+  node: JsonSchemaPropertyNodeWithDiffs,
+): ValueRangeCrawlDiffData | undefined {
+  return takePropertyRowDiffs(node).valueRangeCrawlDiffs
+}
+
+export function hasJsonSchemaValidationRowSemanticDiffs(
+  node: JsonSchemaPropertyNodeWithDiffs,
+  rowKey: JsonSchemaValidationRowKey,
+): boolean {
+  if (takeJsonSchemaValidationRowDiff(node, rowKey)) {
+    return true
+  }
+  if (takeJsonSchemaValidationRowColorizingDiff(node, rowKey)) {
+    return true
+  }
+  const valueDiffs = takeJsonSchemaValidationRowValueDiffs(node, rowKey)
+  if (!valueDiffs) {
+    return false
+  }
+  return Object.values(valueDiffs).some((diff) => diff !== undefined)
 }
 
 export function resolveJsonSchemaDefaultSideDisplay(
@@ -412,7 +438,25 @@ export function resolveJsonSchemaValidationRowSideEntries(
   validationRowDiff: ChangedPropertyMetaData | undefined,
   validationRowValueDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
+  valueRangeContext?: {
+    nodeValue: {
+      minimum?: number
+      maximum?: number
+      exclusiveMinimum?: number | boolean
+      exclusiveMaximum?: number | boolean
+    } | null | undefined
+    crawlDiffs: ValueRangeCrawlDiffData
+  },
 ): readonly JsonSchemaListSideEntry[] {
+  if (rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && valueRangeContext?.crawlDiffs) {
+    return resolveValueRangeDiffSideEntries(
+      resolveValueRangeSideInputFromNodeValue(valueRangeContext.nodeValue),
+      valueRangeContext.crawlDiffs,
+      layoutSide,
+      validationRowDiff,
+      validationRowValueDiffs,
+    )
+  }
   if (validationRowDiff) {
     return resolveJsonSchemaWholeListSideEntries(mergedValues, validationRowDiff, layoutSide)
   }
@@ -431,7 +475,8 @@ export function takeJsonSchemaListValueDiffAtKey(
   if (!valueDiffKey) {
     return undefined
   }
-  return itemDiffs?.[valueDiffKey]
+  const diff = itemDiffs?.[valueDiffKey]
+  return diff
 }
 
 export function resolveJsonSchemaListValueSideItems(

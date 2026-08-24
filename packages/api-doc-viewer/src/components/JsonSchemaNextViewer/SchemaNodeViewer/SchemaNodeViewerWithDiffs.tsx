@@ -1,6 +1,6 @@
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { FC } from "react"
-import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
+// import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import { SchemaNodeViewer, SchemaNodeViewerProps } from "./SchemaNodeViewer"
 
 export type SchemaNodeViewerWithDiffsProps = Omit<SchemaNodeViewerProps, "node"> & {

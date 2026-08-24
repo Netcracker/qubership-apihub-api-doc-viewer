@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T08:50:15.217Z",
-  "totalCases": 145,
+  "generatedAt": "2026-08-24T18:58:21.007Z",
+  "totalCases": 161,
   "suites": [
     {
       "globPath": "type-flags",
@@ -19,8 +19,8 @@
       "caseCount": 5
     },
     {
-      "globPath": "string-validation/value-range",
-      "caseCount": 41
+      "globPath": "number-validation/value-range",
+      "caseCount": 57
     },
     {
       "globPath": "string-validation/value-length",

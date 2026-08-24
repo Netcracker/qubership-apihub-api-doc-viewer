@@ -26,11 +26,13 @@ import {
   takeJsonSchemaExamplesRowColorizingDiff,
   takeJsonSchemaExamplesValueDiffs,
   takeJsonSchemaListValueDiffAtKey,
+  hasJsonSchemaValidationRowSemanticDiffs,
   takeJsonSchemaValidationRowColorizingDiff,
   takeJsonSchemaValidationRowDiff,
   takeJsonSchemaValidationRowValueDiffs,
+  takeJsonSchemaValueRangeCrawlDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
-import { JsonSchemaValidationRowKey } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { JsonSchemaValidationRowKey, JsonSchemaValidationRowKeys } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { FC, useCallback, useMemo } from "react"
@@ -157,10 +159,9 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     const presentKeys = new Set(baseRows.map((row) => row.key))
     const diffOnlyRows = (Object.keys(VALIDATION_ROW_LABELS) as ViewerValidationRowKey[])
       .filter((rowKey) => !presentKeys.has(rowKey))
-      .filter((rowKey) => (
-        !!takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, rowKey as JsonSchemaValidationRowKey)
-        || !!takeJsonSchemaValidationRowValueDiffs(propertyNodeWithDiffs, rowKey as JsonSchemaValidationRowKey)
-        || !!takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, rowKey as JsonSchemaValidationRowKey)
+      .filter((rowKey) => hasJsonSchemaValidationRowSemanticDiffs(
+        propertyNodeWithDiffs,
+        rowKey as JsonSchemaValidationRowKey,
       ))
       .map((rowKey) => ({
         key: rowKey,
@@ -259,6 +260,17 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         validationRowDiff,
         validationRowValueDiffs,
         layoutSide,
+        rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && propertyNodeWithDiffs
+          ? {
+            nodeValue: value as {
+              minimum?: number
+              maximum?: number
+              exclusiveMinimum?: number | boolean
+              exclusiveMaximum?: number | boolean
+            },
+            crawlDiffs: takeJsonSchemaValueRangeCrawlDiffs(propertyNodeWithDiffs) ?? {},
+          }
+          : undefined,
       )
       if (sideEntries.length === 0) {
         return <></>
@@ -274,7 +286,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [propertyNodeWithDiffs],
+    [propertyNodeWithDiffs, value],
   )
 
   return (
@@ -335,27 +347,23 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         const validationRowDiff = propertyNodeWithDiffs
           ? takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, validationRowKey)
           : undefined
-        const validationRowValueDiffs = propertyNodeWithDiffs
-          ? takeJsonSchemaValidationRowValueDiffs(propertyNodeWithDiffs, validationRowKey)
-          : undefined
         const validationRowColorizingDiff = propertyNodeWithDiffs
           ? takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, validationRowKey)
           : undefined
 
         return (
-        <AdditionalInfoRow
-          key={row.key}
-          label={row.label}
-          usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-          subheader={buildValidationRowSubheader(validationRowKey, row.values)}
-          diff={validationRowDiff}
-          colorizingDiff={validationRowColorizingDiff}
-          diffsSeverities={propertyNodeWithDiffs && (
-            validationRowDiff
-            || validationRowValueDiffs
-            || validationRowColorizingDiff
-          ) ? nodeDiffState?.nodeDiffsSeverities : undefined}
-        />
+          <AdditionalInfoRow
+            key={row.key}
+            label={row.label}
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={buildValidationRowSubheader(validationRowKey, row.values)}
+            diff={validationRowDiff}
+            colorizingDiff={validationRowColorizingDiff}
+            diffsSeverities={propertyNodeWithDiffs && hasJsonSchemaValidationRowSemanticDiffs(
+              propertyNodeWithDiffs,
+              validationRowKey,
+            ) ? nodeDiffState?.nodeDiffsSeverities : undefined}
+          />
         )
       })}
 

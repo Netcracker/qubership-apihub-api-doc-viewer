@@ -4,6 +4,17 @@ import {
   JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 
+export function formatJsonSchemaValueRangeBoundChip(
+  boundKey: "minimum" | "maximum",
+  boundValue: number,
+  exclusiveFlag: number | boolean | undefined,
+): string | undefined {
+  if (boundKey === "minimum") {
+    return resolveBoundRangeLabel({ min: boundValue, exclusiveMin: exclusiveFlag }).data.lower
+  }
+  return resolveBoundRangeLabel({ max: boundValue, exclusiveMax: exclusiveFlag }).data.upper
+}
+
 function formatScalar(value: unknown): string {
   if (typeof value === "string") {
     return value

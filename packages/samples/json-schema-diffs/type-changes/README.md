@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 145
+- Total cases: 161
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -63,9 +63,9 @@ Path: `type-changes/string-validation/examples/` (5 cases)
 | `004-examples-one-removed` | Removed one example from existing 3 values |
 | `005-examples-two-unchanged` | Unchanged 2 examples |
 
-### String Validation Value Range Samples
+### Number Validation Value Range Samples
 
-Path: `type-changes/string-validation/value-range/` (41 cases)
+Path: `type-changes/number-validation/value-range/` (57 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -110,6 +110,22 @@ Path: `type-changes/string-validation/value-range/` (41 cases)
 | `039-unchanged-min-max-inclusive` | Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = false) |
 | `040-unchanged-min-inclusive-max-exclusive` | Unchanged minimum (exclusiveMinimum = false), maximum (exclusiveMaximum = true) |
 | `041-unchanged-min-max-both-exclusive` | Unchanged minimum (exclusiveMinimum = true), maximum (exclusiveMaximum = true) |
+| `042-min-in-add-max-in` | Added inclusive maximum to existing inclusive minimum |
+| `043-min-in-add-max-ex` | Added exclusive maximum to existing inclusive minimum |
+| `044-min-ex-add-max-in` | Added inclusive maximum to existing exclusive minimum |
+| `045-min-ex-add-max-ex` | Added exclusive maximum to existing exclusive minimum |
+| `046-max-in-add-min-in` | Added inclusive minimum to existing inclusive maximum |
+| `047-max-in-add-min-ex` | Added exclusive minimum to existing inclusive maximum |
+| `048-max-ex-add-min-in` | Added inclusive minimum to existing exclusive maximum |
+| `049-max-ex-add-min-ex` | Added exclusive minimum to existing exclusive maximum |
+| `050-min-in-max-in-remove-minimum` | Removed minimum from existing inclusive minimum and inclusive maximum |
+| `051-min-in-max-in-remove-maximum` | Removed maximum from existing inclusive minimum and inclusive maximum |
+| `052-min-ex-max-ex-remove-minimum` | Removed minimum from existing exclusive minimum and exclusive maximum |
+| `053-min-ex-max-ex-remove-maximum` | Removed maximum from existing exclusive minimum and exclusive maximum |
+| `054-min-in-max-ex-remove-minimum` | Removed minimum from existing inclusive minimum and exclusive maximum |
+| `055-min-in-max-ex-remove-maximum` | Removed maximum from existing inclusive minimum and exclusive maximum |
+| `056-min-ex-max-in-remove-minimum` | Removed minimum from existing exclusive minimum and inclusive maximum |
+| `057-min-ex-max-in-remove-maximum` | Removed maximum from existing exclusive minimum and inclusive maximum |
 
 ### String Validation Value Length Samples
 
