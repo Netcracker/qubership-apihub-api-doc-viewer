@@ -5,7 +5,7 @@
 import type { StoryObj } from "@storybook/react";
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: import("./json-schema-diffs-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: import("./json-schema-diffs-oas-3-1-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {
@@ -82,3 +82,7 @@ export declare const Case_050_min_in_max_ex_remove_minimum: Story;
 export declare const Case_051_min_in_max_ex_remove_maximum: Story;
 export declare const Case_052_min_ex_max_in_remove_minimum: Story;
 export declare const Case_053_min_ex_max_in_remove_maximum: Story;
+export declare const Case_054_exclusive_minimum_numeric_added: Story;
+export declare const Case_055_exclusive_minimum_numeric_removed: Story;
+export declare const Case_056_exclusive_maximum_numeric_added: Story;
+export declare const Case_057_exclusive_maximum_numeric_removed: Story;

@@ -55,6 +55,7 @@ export type JsonDiffSchemaOptions = {
     circular?: boolean;
 };
 export declare function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown;
+export declare function prepareJsonDiffSchemaOas31(options: JsonDiffSchemaOptions): unknown;
 export type GraphApiSchemaOptions = {
     source: unknown;
     circular?: boolean;
