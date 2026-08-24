@@ -1,29 +1,13 @@
+import { buildValueRangeSchema } from "../shared/value-range-schema-builder.ts";
 import type { ValueRangeDiffCase, ValueRangeDiffCaseDefinition, ValueRangeDiffSampleListOptions } from "./value-range-diff-samples.types";
-
-type NumberRangeBounds = {
-  minimum?: number;
-  exclusiveMinimum?: number | boolean;
-  maximum?: number;
-  exclusiveMaximum?: number | boolean;
-};
 
 const clone = <T>(value: T): T => structuredClone(value);
 
 const integerPlain = (): Record<string, unknown> => ({ type: "integer" });
 
-const numberRange = ({
-  minimum,
-  exclusiveMinimum,
-  maximum,
-  exclusiveMaximum,
-}: NumberRangeBounds = {}): Record<string, unknown> => {
-  const schema = integerPlain();
-  if (minimum !== undefined) schema.minimum = minimum;
-  if (exclusiveMinimum !== undefined) schema.exclusiveMinimum = exclusiveMinimum;
-  if (maximum !== undefined) schema.maximum = maximum;
-  if (exclusiveMaximum !== undefined) schema.exclusiveMaximum = exclusiveMaximum;
-  return schema;
-};
+const numberRange = (
+  bounds: Parameters<typeof buildValueRangeSchema>[0] = {},
+): Record<string, unknown> => buildValueRangeSchema({ type: "integer", ...bounds });
 
 export function getValueRangeDiffCaseDefinitions(): ValueRangeDiffCaseDefinition[] {
   const definitions: ValueRangeDiffCaseDefinition[] = [];
