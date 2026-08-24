@@ -470,6 +470,17 @@ differ. FK link highlighting belongs in `kind-column.buildForeignKeyTargetDiffMe
 property names use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` via
 `aggregateTextDiff`; boolean default replace belongs in `buildDefaultValueDiffMetadata`.
 
+## JSON Schema validation rows
+
+When aggregating or resolving **constraint rows** (`validationRowDiffs`,
+`validationRowValueDiffs`, `validationRowColorizingDiffs`) — especially **value range** with OAS
+3.0/3.1 bound dialects — read:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+
+Fix diff metadata in `kind-property.ts` and `value-range-diff-side-display.ts`; do not patch viewer
+chip components.
+
 ## Cross-package boundary
 
 View components in `packages/api-doc-viewer` import builders and node types

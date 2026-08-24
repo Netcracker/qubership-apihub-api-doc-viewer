@@ -129,5 +129,6 @@ and `materializeDepth`; per-node caret expand uses React state only (not `api-st
 ## § Related documents
 
 - Stack analysis and phase roadmap: `packages/api-doc-viewer/json-schema-next-stack-analysis.md`
+- Validation rows (plain + with-diffs): `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
 - Legacy reference viewer: `packages/api-doc-viewer/src/components/JsonSchemaViewer/`
 - Legacy screenshot suite: `packages/api-doc-viewer/src/stories/json-schema-suite/`

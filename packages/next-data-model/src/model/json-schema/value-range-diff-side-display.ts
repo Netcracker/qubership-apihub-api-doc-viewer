@@ -309,11 +309,6 @@ export function buildValueRangeChipStringDiffs(
   return result
 }
 
-function isValueRangeInclusiveChipText(chipText: unknown): boolean {
-  return typeof chipText === "string"
-    && (chipText.startsWith(">=") || chipText.startsWith("<="))
-}
-
 function collectChangedValueRangeChipDiffs(
   data: ValueRangeSideInput,
   changes: ValueRangeCrawlDiffData,
@@ -363,7 +358,7 @@ export function inferValueRangeBoundRangeDialect(
 }
 
 /**
- * OAS 3.1: row stays visible and exactly one chip is added or removed.
+ * Row stays visible and exactly one bound chip is added or removed (inclusive or exclusive).
  */
 export function isValueRangePartialSingleChipChange(
   data: ValueRangeSideInput,
@@ -383,43 +378,15 @@ export function isValueRangePartialSingleChipChange(
 }
 
 /**
- * Single-slot bound add/remove where the changed chip uses an inclusive operator (>= / <=).
- * Row gets replace colorizing; the changed chip gets add/remove highlighting.
- */
-export function isValueRangePartialInclusiveBoundChange(
-  data: ValueRangeSideInput,
-  changes: ValueRangeCrawlDiffData,
-): boolean {
-  const changedChipDiffs = collectChangedValueRangeChipDiffs(data, changes)
-
-  if (changedChipDiffs.length !== 1) {
-    return false
-  }
-
-  const chipDiff = changedChipDiffs[0]
-  if (!isDiffAdd(chipDiff) && !isDiffRemove(chipDiff)) {
-    return false
-  }
-
-  const chipText = isDiffAdd(chipDiff) ? chipDiff.afterValue : chipDiff.beforeValue
-  return isValueRangeInclusiveChipText(chipText)
-}
-
-/**
- * Dialect-aware partial bound styling: yellow row + chip add/remove.
- * - OAS 3.0 boolean exclusive: inclusive single-chip changes only.
- * - OAS 3.1 numeric exclusive: any single-chip add/remove while the row stays visible.
+ * Partial bound styling: yellow row + chip add/remove when the row stays visible and exactly
+ * one chip is added or removed. Same rule for OAS 3.0 (boolean exclusive) and OAS 3.1
+ * (numeric exclusive) — cases 038–053 including exclusive extensions 039, 041, 043, 045, 048–052.
  */
 export function isValueRangePartialBoundChange(
   data: ValueRangeSideInput,
   changes: ValueRangeCrawlDiffData,
-  dialect?: JsonSchemaBoundRangeDialectValue,
 ): boolean {
-  const resolvedDialect = dialect ?? inferValueRangeBoundRangeDialect(data, changes)
-  if (resolvedDialect === JsonSchemaBoundRangeDialect.OAS_3_1_NUMERIC_EXCLUSIVE) {
-    return isValueRangePartialSingleChipChange(data, changes)
-  }
-  return isValueRangePartialInclusiveBoundChange(data, changes)
+  return isValueRangePartialSingleChipChange(data, changes)
 }
 
 function buildSideEntriesFromLabels(

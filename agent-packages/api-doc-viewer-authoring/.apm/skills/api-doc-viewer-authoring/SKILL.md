@@ -146,6 +146,16 @@ Compatibility-suite stories and tests are **generated** — run
 `packages/api-doc-viewer` rather than hand-editing
 `src/stories/compatibility-suite/` or `src/it/compatibility-suite/`.
 
+## JSON Schema validation rows (Next viewer)
+
+Constraint rows in `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` (`Value range`, `Value
+length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+
+Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
+rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in

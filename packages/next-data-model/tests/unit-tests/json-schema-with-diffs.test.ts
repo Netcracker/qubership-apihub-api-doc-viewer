@@ -394,20 +394,20 @@ describe("JsonSchema with-diffs stack", () => {
     expectChangedTexts: string[]
   }> = [
     { caseId: "038-min-in-add-max-in", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: [">= 1"], expectChangedTexts: [">= 1", "<= 10"] },
-    { caseId: "039-min-in-add-max-ex", expectRowAction: DiffAction.add, expectColorizing: DiffAction.add, expectOriginTexts: [">= 1"], expectChangedTexts: [">= 1", "< 10"] },
+    { caseId: "039-min-in-add-max-ex", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: [">= 1"], expectChangedTexts: [">= 1", "< 10"] },
     { caseId: "040-min-ex-add-max-in", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: ["> 1"], expectChangedTexts: ["> 1", "<= 10"] },
-    { caseId: "041-min-ex-add-max-ex", expectRowAction: DiffAction.add, expectColorizing: DiffAction.add, expectOriginTexts: ["> 1"], expectChangedTexts: ["> 1", "< 10"] },
+    { caseId: "041-min-ex-add-max-ex", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: ["> 1"], expectChangedTexts: ["> 1", "< 10"] },
     { caseId: "042-max-in-add-min-in", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["<= 10"], expectChangedTexts: [">= 1", "<= 10"] },
-    { caseId: "043-max-in-add-min-ex", expectRowAction: DiffAction.add, expectColorizing: DiffAction.add, expectOriginTexts: ["<= 10"], expectChangedTexts: ["> 1", "<= 10"] },
+    { caseId: "043-max-in-add-min-ex", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["<= 10"], expectChangedTexts: ["> 1", "<= 10"] },
     { caseId: "044-max-ex-add-min-in", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["< 10"], expectChangedTexts: [">= 1", "< 10"] },
-    { caseId: "045-max-ex-add-min-ex", expectRowAction: DiffAction.add, expectColorizing: DiffAction.add, expectOriginTexts: ["< 10"], expectChangedTexts: ["> 1", "< 10"] },
+    { caseId: "045-max-ex-add-min-ex", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["< 10"], expectChangedTexts: ["> 1", "< 10"] },
     { caseId: "046-min-in-max-in-remove-minimum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: [">= 1", "<= 10"], expectChangedTexts: ["<= 10"] },
     { caseId: "047-min-in-max-in-remove-maximum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: [">= 1", "<= 10"], expectChangedTexts: [">= 1"] },
-    { caseId: "048-min-ex-max-ex-remove-minimum", expectRowAction: DiffAction.remove, expectColorizing: DiffAction.remove, expectOriginTexts: ["> 1", "< 10"], expectChangedTexts: ["< 10"] },
-    { caseId: "049-min-ex-max-ex-remove-maximum", expectRowAction: DiffAction.remove, expectColorizing: DiffAction.remove, expectOriginTexts: ["> 1", "< 10"], expectChangedTexts: ["> 1"] },
+    { caseId: "048-min-ex-max-ex-remove-minimum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["> 1", "< 10"], expectChangedTexts: ["< 10"] },
+    { caseId: "049-min-ex-max-ex-remove-maximum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: ["> 1", "< 10"], expectChangedTexts: ["> 1"] },
     { caseId: "050-min-in-max-ex-remove-minimum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: [">= 1", "< 10"], expectChangedTexts: ["< 10"] },
-    { caseId: "051-min-in-max-ex-remove-maximum", expectRowAction: DiffAction.remove, expectColorizing: DiffAction.remove, expectOriginTexts: [">= 1", "< 10"], expectChangedTexts: [">= 1"] },
-    { caseId: "052-min-ex-max-in-remove-minimum", expectRowAction: DiffAction.remove, expectColorizing: DiffAction.remove, expectOriginTexts: ["> 1", "<= 10"], expectChangedTexts: ["<= 10"] },
+    { caseId: "051-min-in-max-ex-remove-maximum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: [">= 1", "< 10"], expectChangedTexts: [">= 1"] },
+    { caseId: "052-min-ex-max-in-remove-minimum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["0"], expectOriginTexts: ["> 1", "<= 10"], expectChangedTexts: ["<= 10"] },
     { caseId: "053-min-ex-max-in-remove-maximum", expectColorizing: DiffAction.replace, expectValueDiffKeys: ["1"], expectOriginTexts: ["> 1", "<= 10"], expectChangedTexts: ["> 1"] },
   ]
 

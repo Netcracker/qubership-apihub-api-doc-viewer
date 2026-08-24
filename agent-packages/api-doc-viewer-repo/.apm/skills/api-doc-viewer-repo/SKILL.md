@@ -81,7 +81,8 @@ be **committed** under normal filenames.
 
 Regenerated local suites (DDL API, JSON Schema type-changes YAML, value-range programmatic
 stories) use **plain** names even when a bin script rewrites them. Details:
-`api-doc-viewer-testing` skill — **Generated vs hand-written suites**.
+`api-doc-viewer-testing` skill — **Generated vs hand-written suites**;
+`api-doc-viewer-repo/.../json-schema-validation-rows.md` — validation-row display rules.
 
 ## JSON Schema Diffs Suite (type changes)
 
@@ -106,6 +107,16 @@ Number validation **value-range** cases are **not** YAML pairs. They are built p
 | OAS 3.0 resolver | `value-range-diff-samples.ts` |
 | OAS 3.1 resolver | `value-range-diff-oas-31-samples.ts` |
 | Regenerate stories/ITs | `node bin/generate-value-range-diff-stories.mjs` |
+
+### Validation rows (plain and with-diffs)
+
+Constraint rows (`Value range`, `Value length`, `Value pattern`, …) have dedicated display and diff
+rules. Full reference (grouped by plain vs diffs, then row kind):
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+
+Apply when changing validation-row chips, row colorizing, OAS 3.0/3.1 bound dialects, or value-range
+sample cases.
 
 ## JSON Schema Next diffs (hiding unchanged rows)
 
@@ -143,4 +154,5 @@ from **highest index downward** via a temporary prefix.
 - Coverage baselines: `packages/api-doc-viewer/ddlapi-display-coverage.md`,
   `packages/samples/ddlapi-diffs/README.md`,
   `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
+- JSON Schema validation rows (plain + diffs): `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`.
 - Do **not** add minor feature notes to the repository root `README.md` unless asked.
