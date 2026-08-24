@@ -1,7 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
@@ -13,7 +11,7 @@ import {
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
 import {
-  resolveJsonSchemaDefaultSideDisplay,
+  resolveJsonSchemaDefaultSideEntries,
   resolveJsonSchemaEnumSideEntries,
   resolveJsonSchemaExamplesSideEntries,
   resolveJsonSchemaValidationRowSideEntries,
@@ -36,8 +34,6 @@ import { JsonSchemaValidationRowKey, JsonSchemaValidationRowKeys } from "@netcra
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { FC, useCallback, useMemo } from "react"
-import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
-import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
@@ -224,20 +220,25 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
   const defaultAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
-      const defaultValue = propertyNodeWithDiffs
-        ? resolveJsonSchemaDefaultSideDisplay(propertyNodeWithDiffs, layoutSide)
-        : (value && "default" in value ? String(value.default) : undefined)
-      if (defaultValue === undefined) {
+      const mergedDefault = value && "default" in value ? value.default : undefined
+      const sideEntries = propertyNodeWithDiffs
+        ? resolveJsonSchemaDefaultSideEntries(
+          mergedDefault,
+          takeJsonSchemaDefaultDiff(propertyNodeWithDiffs),
+          layoutSide,
+        )
+        : resolveJsonSchemaDefaultSideEntries(mergedDefault, undefined, layoutSide)
+      if (sideEntries.length === 0) {
         return <></>
       }
 
       return (
-        <AdditionalInfoPiece
-          isVisible={true}
-          value={defaultValue}
-          usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-          textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
-          borderShadowColor={takeDiffSideBorderShadowColor(defaultValueDiff, layoutSide)}
+        <JsonSchemaValidationChips
+          layoutSide={layoutSide}
+          sideItems={sideEntries.map(({ text }) => ({
+            text,
+            diff: defaultValueDiff,
+          }))}
         />
       )
     },

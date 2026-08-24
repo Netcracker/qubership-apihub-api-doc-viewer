@@ -7,7 +7,6 @@ import {
   ORIGIN_LAYOUT_SIDE,
 } from "@apihub/next-data-model/model/abstract/layout-side"
 import {
-  resolveFieldSideText,
   type ListSideItem,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
@@ -143,23 +142,67 @@ export function hasJsonSchemaValidationRowSemanticDiffs(
   return Object.values(valueDiffs).some((diff) => diff !== undefined)
 }
 
-export function resolveJsonSchemaDefaultSideDisplay(
-  node: JsonSchemaPropertyNodeWithDiffs,
-  layoutSide: LayoutSide,
-): string | undefined {
-  const mergedDefault = node.value()?.default
-  return resolveFieldSideText(
-    mergedDefault !== undefined ? String(mergedDefault) : undefined,
-    takeJsonSchemaDefaultDiff(node),
-    layoutSide,
-  )
-}
-
-function formatListDisplayValue(value: unknown): string {
+export function formatJsonSchemaListDisplayValue(value: unknown): string {
   if (typeof value === "string") {
     return value
   }
   return JSON.stringify(value)
+}
+
+export function resolveJsonSchemaDefaultSideEntries(
+  mergedDefault: unknown | undefined,
+  defaultDiff: ChangedPropertyMetaData | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  if (!defaultDiff) {
+    if (mergedDefault === undefined) {
+      return []
+    }
+    return [{ text: formatJsonSchemaListDisplayValue(mergedDefault) }]
+  }
+
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  const { data } = defaultDiff
+
+  if (isDiffAdd(data)) {
+    if (isOrigin) {
+      return []
+    }
+    return [{ text: formatJsonSchemaListDisplayValue(data.afterValue ?? mergedDefault) }]
+  }
+  if (isDiffRemove(data)) {
+    if (!isOrigin) {
+      return []
+    }
+    return [{ text: formatJsonSchemaListDisplayValue(data.beforeValue ?? mergedDefault) }]
+  }
+  if (isDiffReplace(data)) {
+    const sideValue = isOrigin
+      ? (data.beforeValue ?? mergedDefault)
+      : (data.afterValue ?? mergedDefault)
+    return [{ text: formatJsonSchemaListDisplayValue(sideValue) }]
+  }
+
+  if (mergedDefault === undefined) {
+    return []
+  }
+  return [{ text: formatJsonSchemaListDisplayValue(mergedDefault) }]
+}
+
+export function resolveJsonSchemaDefaultSideDisplay(
+  node: JsonSchemaPropertyNodeWithDiffs,
+  layoutSide: LayoutSide,
+): string | undefined {
+  const sideEntries = resolveJsonSchemaDefaultSideEntries(
+    node.value()?.default,
+    takeJsonSchemaDefaultDiff(node),
+    layoutSide,
+  )
+  return sideEntries[0]?.text
+}
+
+function formatListDisplayValue(value: unknown): string {
+  return formatJsonSchemaListDisplayValue(value)
 }
 
 function resolveJsonSchemaWholeListSideEntries(
