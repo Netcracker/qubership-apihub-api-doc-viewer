@@ -3,16 +3,16 @@ properties:
   value:
     oneOf:
       - type: object
-        description: Вариант object (после)
+        description: Object variant (after)
         properties:
           nestedChanged:
             type: string
-            description: Было
+            description: Before
           nestedUnchanged:
             type: string
-            description: Без изменений
+            description: Unchanged
       - type: number
-        description: Числовой вариант без изменений
+        description: Number variant unchanged
   otherProp:
     type: string
-    description: Без изменений
+    description: Unchanged

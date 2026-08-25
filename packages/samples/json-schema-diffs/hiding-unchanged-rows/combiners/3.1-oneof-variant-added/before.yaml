@@ -3,9 +3,9 @@ properties:
   status:
     oneOf:
       - type: string
-        description: Строковый вариант
+        description: String variant
       - type: number
-        description: Числовой вариант
+        description: Number variant
   unchangedProp:
     type: string
-    description: Без изменений
+    description: Unchanged
