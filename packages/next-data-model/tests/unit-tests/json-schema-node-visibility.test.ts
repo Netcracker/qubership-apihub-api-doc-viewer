@@ -6,6 +6,7 @@ import {
   resolvePlainPropertyNodeVisibility,
   resolvePlainPropertyIsExpandable,
   resolvePlainPropertyInitiallyExpanded,
+  resolvePlainPropertyExpanderExpanded,
 } from "../../src/building-service/json-schema/tree/node-visibility-data/kind-property"
 import {
   isPlainCombinerNodeKind,
@@ -20,6 +21,7 @@ function makePropertyNode(value: Record<string, unknown> | null, children: unkno
     isCycle: false,
     value: () => value,
     childrenNodes: () => children,
+    meta: () => ({ _fragment: value }),
   }
 }
 
@@ -118,6 +120,27 @@ describe("plain JSON Schema property node visibility", () => {
     expect(resolvePlainPropertyInitiallyExpanded(node as never)).toBe(false)
     expect(resolvePlainPropertyInitiallyExpanded(node as never, { expandedDepth: 2, level: 1 })).toBe(true)
     expect(resolvePlainPropertyInitiallyExpanded(node as never, { expandedDepth: 2, level: 2 })).toBe(false)
+  })
+
+  it("keeps expanded state false when structural children are deferred", () => {
+    const deferredNode = makePropertyNode({
+      type: "object",
+      properties: {
+        child: { type: "string" },
+      },
+    })
+
+    expect(resolvePlainPropertyIsExpandable(deferredNode as never)).toBe(true)
+    expect(resolvePlainPropertyExpanderExpanded(deferredNode as never, true)).toBe(false)
+    expect(resolvePlainPropertyExpanderExpanded(deferredNode as never, false)).toBe(false)
+
+    const materializedNode = makePropertyNode(
+      { type: "object" },
+      [{ key: "child" }],
+    )
+
+    expect(resolvePlainPropertyExpanderExpanded(materializedNode as never, true)).toBe(true)
+    expect(resolvePlainPropertyExpanderExpanded(materializedNode as never, false)).toBe(false)
   })
 })
 

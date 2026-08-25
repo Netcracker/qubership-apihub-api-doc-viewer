@@ -3,6 +3,7 @@ import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
+  resolvePlainPropertyExpanderExpanded,
   resolvePlainPropertyInitiallyExpanded,
   resolvePlainPropertyIsExpandable,
   resolvePlainPropertyNodeVisibility,
@@ -11,7 +12,7 @@ import {
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
 import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property-expand"
-import { FC, useCallback, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
 import {
@@ -90,7 +91,18 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [expandedDepth, level, node, nodeWithDiffs, unchangedBlocksContext?.hideUnchangedNodes],
   )
 
-  const [expanded, setExpanded] = useState(initiallyExpanded)
+  const effectiveInitiallyExpanded = useMemo(
+    () => resolvePlainPropertyExpanderExpanded(node, initiallyExpanded),
+    // treeRevision: lazy materialization adds children without changing node identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- treeRevision
+    [initiallyExpanded, node, treeRevision],
+  )
+
+  const [expanded, setExpanded] = useState(effectiveInitiallyExpanded)
+
+  useEffect(() => {
+    setExpanded((currentExpanded) => resolvePlainPropertyExpanderExpanded(node, currentExpanded))
+  }, [node, treeRevision])
 
   const onClickExpander = useCallback(() => {
     setExpanded((previousExpanded) => {
@@ -98,7 +110,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
       if (nextExpanded) {
         materializeChildren(node)
       }
-      return nextExpanded
+      return resolvePlainPropertyExpanderExpanded(node, nextExpanded)
     })
   }, [materializeChildren, node])
 

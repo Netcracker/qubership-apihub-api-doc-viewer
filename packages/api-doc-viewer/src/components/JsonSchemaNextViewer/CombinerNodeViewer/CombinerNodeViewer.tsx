@@ -1,5 +1,6 @@
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import {
+  resolvePlainPropertyExpanderExpanded,
   resolvePlainPropertyInitiallyExpanded,
   resolvePlainPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
@@ -142,11 +143,22 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     ],
   )
 
-  const [expanded, setExpanded] = useState(initiallyExpanded)
+  const effectiveInitiallyExpanded = useMemo(
+    () => resolvePlainPropertyExpanderExpanded(activeLeaf, initiallyExpanded),
+    // treeRevision: lazy materialization adds children without changing node identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- treeRevision
+    [activeLeaf, initiallyExpanded, treeRevision],
+  )
+
+  const [expanded, setExpanded] = useState(effectiveInitiallyExpanded)
 
   useEffect(() => {
-    setExpanded(initiallyExpanded)
-  }, [activeLeaf.id, initiallyExpanded])
+    setExpanded(resolvePlainPropertyExpanderExpanded(activeLeaf, initiallyExpanded))
+  }, [activeLeaf.id, activeLeaf, initiallyExpanded])
+
+  useEffect(() => {
+    setExpanded((currentExpanded) => resolvePlainPropertyExpanderExpanded(activeLeaf, currentExpanded))
+  }, [activeLeaf, treeRevision])
 
   const onClickExpander = useCallback(() => {
     setExpanded((previousExpanded) => {
@@ -154,7 +166,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
       if (nextExpanded) {
         materializeChildren(activeLeaf)
       }
-      return nextExpanded
+      return resolvePlainPropertyExpanderExpanded(activeLeaf, nextExpanded)
     })
   }, [activeLeaf, materializeChildren])
 

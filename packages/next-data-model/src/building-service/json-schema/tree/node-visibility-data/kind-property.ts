@@ -127,6 +127,16 @@ export class PlainPropertyNodeVisibilityManager {
     }
     return false
   }
+
+  public resolveExpanderExpanded(node: JsonSchemaTreeNode, expanded: boolean): boolean {
+    if (!expanded) {
+      return false
+    }
+    if (this.resolveIsExpandable(node) && node.childrenNodes().length === 0) {
+      return false
+    }
+    return true
+  }
 }
 
 const defaultInstance = new PlainPropertyNodeVisibilityManager()
@@ -161,4 +171,11 @@ export function resolvePlainPropertyInitiallyExpanded(
   options?: PlainPropertyExpandStateOptions,
 ): boolean {
   return defaultInstance.resolveInitiallyExpanded(node, options)
+}
+
+export function resolvePlainPropertyExpanderExpanded(
+  node: JsonSchemaTreeNode,
+  expanded: boolean,
+): boolean {
+  return defaultInstance.resolveExpanderExpanded(node, expanded)
 }
