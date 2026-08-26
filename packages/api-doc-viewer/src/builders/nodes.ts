@@ -26,6 +26,7 @@ import { UNKNOWN_TYPE_TEXT } from '../consts/types'
 import { GraphNodeTitleDataOptions, JsonNodeTitleDataOptions, NodeTitleData, } from '../types/NodeTitleData'
 import { GraphNodeTypeDataOptions, JsonNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData'
 import { isRefNode } from '../types/guards/nodes'
+import { safePropertyIn } from '../utils/common/objects'
 import {
   isAdditionalItemsNode,
   isAdditionalPropertyNode,
@@ -108,7 +109,9 @@ export function buildNodeTypeData(options: JsonNodeTypeDataOptions | GraphNodeTy
   const nodeValue = originalValue ?? node?.value()
   const $nodeValue = nodeValue as JsonSchemaDiffNodeValue | GraphSchemaDiffNodeValue
 
-  const brokenRef = isRefNode(node) && node?.meta && 'brokenRef' in node.meta ? `${node.meta.brokenRef}` : undefined
+  const brokenRef = isRefNode(node)
+    ? `${(node!.meta as { brokenRef: string }).brokenRef}`
+    : undefined
   const type = brokenRef ? `$ref: ${brokenRef}` : $nodeValue?.type ?? UNKNOWN_TYPE_TEXT
   const nullable = nodeValue?.nullable
   const title = $nodeValue?.title
