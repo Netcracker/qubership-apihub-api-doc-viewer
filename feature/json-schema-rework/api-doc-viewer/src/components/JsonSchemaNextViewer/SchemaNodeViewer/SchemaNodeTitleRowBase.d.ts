@@ -1,6 +1,7 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { JsonSchemaTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
 import { JsonSchemaPropertyRowVisibility } from '../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types';
+import { Diff } from "@netcracker/qubership-apihub-api-diff";
 import { FC, ReactElement } from '../../../../../../node_modules/react';
 import { TitleRowProps } from "../../shared-components/TitleRow/types";
 import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps";
@@ -15,6 +16,8 @@ export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
     expanded?: boolean;
     onClickExpander?: () => void;
     titleRowDiffProps?: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities">;
+    requiredDiff?: Diff;
+    withRequiredDiffIndicator?: boolean;
     renderSubheader: (context: {
         layoutSide: LayoutSide;
         displayValueResolved: JsonSchemaTreeNodeValue | null | undefined;

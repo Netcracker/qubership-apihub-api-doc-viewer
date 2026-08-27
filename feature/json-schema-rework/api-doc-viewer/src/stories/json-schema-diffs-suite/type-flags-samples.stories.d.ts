@@ -37,3 +37,8 @@ export declare const Case_005_deprecated_added: Story;
 export declare const Case_006_deprecated_removed: Story;
 export declare const Case_007_required_added: Story;
 export declare const Case_008_required_removed: Story;
+export declare const Case_009_unchanged_read_only: Story;
+export declare const Case_010_unchanged_write_only: Story;
+export declare const Case_011_unchanged_deprecated: Story;
+export declare const Case_012_unchanged_required_field: Story;
+export declare const Case_013_unchanged_required_optional: Story;
