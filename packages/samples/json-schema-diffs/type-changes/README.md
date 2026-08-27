@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 134
+- Total cases: 149
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -233,6 +233,28 @@ Path: `type-changes/type-value-changes/` (30 cases)
 | `028-object-to-integer` | Root type change: object → integer |
 | `029-object-to-boolean` | Root type change: object → boolean |
 | `030-object-to-array` | Root type change: object → array |
+
+### Type Annotations Changes Samples
+
+Path: `type-changes/type-annotations-changes/` (15 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-title-added` | Title added |
+| `002-title-removed` | Title removed |
+| `003-title-replaced` | Title replaced; format unchanged |
+| `004-format-added` | Format added |
+| `005-format-removed` | Format removed |
+| `006-format-replaced` | Format replaced; title unchanged |
+| `007-title-added-format-added` | Title added; format added |
+| `008-title-added-format-removed` | Title added; format removed |
+| `009-title-added-format-replaced` | Title added; format replaced |
+| `010-title-removed-format-added` | Title removed; format added |
+| `011-title-removed-format-removed` | Title removed; format removed |
+| `012-title-removed-format-replaced` | Title removed; format replaced |
+| `013-title-replaced-format-added` | Title replaced; format added |
+| `014-title-replaced-format-removed` | Title replaced; format removed |
+| `015-title-replaced-format-replaced` | Title replaced; format replaced |
 
 ## Storybook and screenshot tests
 

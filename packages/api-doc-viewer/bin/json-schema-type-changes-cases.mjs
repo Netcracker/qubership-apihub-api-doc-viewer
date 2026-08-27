@@ -986,6 +986,156 @@ const collectTypeValueChangeCases = (cases) => {
   }
 };
 
+const STRING_ANNOTATIONS_BASE = () => ({ type: "string" });
+
+const TYPE_ANNOTATIONS_TITLE_BEFORE = "Before title";
+const TYPE_ANNOTATIONS_TITLE_AFTER = "After title";
+const TYPE_ANNOTATIONS_TITLE_LABEL = "Label";
+const TYPE_ANNOTATIONS_FORMAT_BEFORE = "date";
+const TYPE_ANNOTATIONS_FORMAT_AFTER = "date-time";
+const TYPE_ANNOTATIONS_FORMAT_ADDED = "uuid";
+
+/** @param {object} schema @param {string} title */
+const withTypeAnnotationTitle = (schema, title) => merge(schema, { title });
+
+/** @param {object} schema @param {string} format */
+const withTypeAnnotationFormat = (schema, format) => merge(schema, { format });
+
+/** @param {TypeChangeCase[]} cases */
+const collectTypeAnnotationsChangeCases = (cases) => {
+  const dir = "type-annotations-changes";
+  const base = STRING_ANNOTATIONS_BASE();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add(
+    "title-added",
+    base,
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_LABEL),
+    "Title added",
+  );
+  add(
+    "title-removed",
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_LABEL),
+    base,
+    "Title removed",
+  );
+  add(
+    "title-replaced",
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_BEFORE,
+      format: TYPE_ANNOTATIONS_FORMAT_BEFORE,
+    }),
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_AFTER,
+      format: TYPE_ANNOTATIONS_FORMAT_BEFORE,
+    }),
+    "Title replaced; format unchanged",
+  );
+  add(
+    "format-added",
+    base,
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_ADDED),
+    "Format added",
+  );
+  add(
+    "format-removed",
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_ADDED),
+    base,
+    "Format removed",
+  );
+  add(
+    "format-replaced",
+    merge(base, {
+      format: TYPE_ANNOTATIONS_FORMAT_BEFORE,
+      title: TYPE_ANNOTATIONS_TITLE_BEFORE,
+    }),
+    merge(base, {
+      format: TYPE_ANNOTATIONS_FORMAT_AFTER,
+      title: TYPE_ANNOTATIONS_TITLE_BEFORE,
+    }),
+    "Format replaced; title unchanged",
+  );
+
+  add(
+    "title-added-format-added",
+    base,
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_LABEL,
+      format: TYPE_ANNOTATIONS_FORMAT_ADDED,
+    }),
+    "Title added; format added",
+  );
+  add(
+    "title-added-format-removed",
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_ADDED),
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_LABEL),
+    "Title added; format removed",
+  );
+  add(
+    "title-added-format-replaced",
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_BEFORE),
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_LABEL,
+      format: TYPE_ANNOTATIONS_FORMAT_AFTER,
+    }),
+    "Title added; format replaced",
+  );
+  add(
+    "title-removed-format-added",
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_LABEL),
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_ADDED),
+    "Title removed; format added",
+  );
+  add(
+    "title-removed-format-removed",
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_LABEL,
+      format: TYPE_ANNOTATIONS_FORMAT_ADDED,
+    }),
+    base,
+    "Title removed; format removed",
+  );
+  add(
+    "title-removed-format-replaced",
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_LABEL,
+      format: TYPE_ANNOTATIONS_FORMAT_BEFORE,
+    }),
+    withTypeAnnotationFormat(base, TYPE_ANNOTATIONS_FORMAT_AFTER),
+    "Title removed; format replaced",
+  );
+  add(
+    "title-replaced-format-added",
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_BEFORE),
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_AFTER,
+      format: TYPE_ANNOTATIONS_FORMAT_ADDED,
+    }),
+    "Title replaced; format added",
+  );
+  add(
+    "title-replaced-format-removed",
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_BEFORE,
+      format: TYPE_ANNOTATIONS_FORMAT_ADDED,
+    }),
+    withTypeAnnotationTitle(base, TYPE_ANNOTATIONS_TITLE_AFTER),
+    "Title replaced; format removed",
+  );
+  add(
+    "title-replaced-format-replaced",
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_BEFORE,
+      format: TYPE_ANNOTATIONS_FORMAT_BEFORE,
+    }),
+    merge(base, {
+      title: TYPE_ANNOTATIONS_TITLE_AFTER,
+      format: TYPE_ANNOTATIONS_FORMAT_AFTER,
+    }),
+    "Title replaced; format replaced",
+  );
+};
+
 export const STORY_SUITES = [
   {
     suiteKey: "type-flags",
@@ -1091,6 +1241,14 @@ export const STORY_SUITES = [
     storyFileName: "type-value-changes-samples.stories.tsx",
     testFileName: "type-value-changes-samples.it-test.ts",
   },
+  {
+    suiteKey: "type-annotations-changes",
+    title: "JSON Schema Diffs Suite/Type Annotations Changes Samples",
+    metaKebab: "json-schema-diffs-suite-type-annotations-changes-samples",
+    globPath: "type-annotations-changes",
+    storyFileName: "type-annotations-changes-samples.stories.tsx",
+    testFileName: "type-annotations-changes-samples.it-test.ts",
+  },
 ];
 
 export const collectTypeChangeCases = () => {
@@ -1111,6 +1269,7 @@ export const collectTypeChangeCases = () => {
   collectCombinerCases(cases);
   collectCircularCases(cases);
   collectTypeValueChangeCases(cases);
+  collectTypeAnnotationsChangeCases(cases);
   return cases;
 };
 
