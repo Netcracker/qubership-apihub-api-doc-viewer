@@ -7,6 +7,10 @@ import {
   NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import {
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JsonSchemaSharedRowDiffs,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
@@ -27,10 +31,30 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
 
     const diffsSeverities: NodeDiffsSeverities = {}
 
-    this.applyRowSeverity(nodeDiffs, "title", NodeDiffsSeverityPlacemennt.TitleRow, diffsSeverities)
+    this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
     this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
+  }
+
+  private applyMaxRowSeverityFromTypeLabelDiffs(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const sharedDiffs = nodeDiffs as JsonSchemaSharedRowDiffs
+    const titleRowDiffs = [
+      sharedDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY],
+      ...Object.values(sharedDiffs.typeLabelFieldDiffs ?? {}),
+    ]
+
+    const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...titleRowDiffs,
+    )
+    if (!maxPropertyDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] = this.buildNodeDiffsSeverity(maxPropertyDiff)
   }
 
   protected buildNodeDiffsSeverity(propertyDiff: ChangedPropertyMetaData): NodeDiffsSeverity {

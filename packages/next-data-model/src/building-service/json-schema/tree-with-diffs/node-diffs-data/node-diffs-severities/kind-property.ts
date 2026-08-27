@@ -4,7 +4,7 @@ import {
   NodeDiffsSeverities,
   NodeDiffsSeverityPlacemennt,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { JsonSchemaPropertyRowDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
+import { JsonSchemaKindPropertyNodeDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaNodeDiffsSeveritiesAggregatorKindAny } from "./kind-any"
 
@@ -23,7 +23,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
     diffsSeverities: NodeDiffsSeverities,
   ): void {
-    const propertyDiffs = nodeDiffs as JsonSchemaPropertyRowDiffs
+    const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs
     const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
       propertyDiffs.default,
       propertyDiffs.defaultRowColorizingDiff,

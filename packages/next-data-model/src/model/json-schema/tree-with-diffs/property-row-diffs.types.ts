@@ -6,10 +6,34 @@ import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-sche
 import { JsonSchemaValidationRowKey } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { ValueRangeCrawlDiffData } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 
+/** Synthetic diff slot: resolved title-row background diff for type-label field changes. */
+export const JSON_SCHEMA_TITLE_ROW_DIFF_KEY = "titleRow" as const
+
+export const JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS = [
+  "type",
+  "format",
+  "title",
+] as const
+
+export type JsonSchemaTypeLabelFieldDiffKey = (typeof JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS)[number]
+
+/** Per-field diffs for type subheader parts (`type`, `(format)`, `<title>`). */
+export type JsonSchemaTypeLabelFieldDiffs = Partial<
+  Record<JsonSchemaTypeLabelFieldDiffKey, ChangedPropertyMetaData>
+>
+
 /** Per-index diffs for list-valued fields (`enum`, `examples`); keys match the source diffs record. */
 export type JsonSchemaListValueDiffs = Partial<Record<string, ChangedPropertyMetaData>>
 
-export type JsonSchemaPropertyRowDiffs = NodeDiffs<JsonSchemaTreeNodeValue | null> & {
+export type JsonSchemaSharedRowDiffs = {
+  typeLabelFieldDiffs?: JsonSchemaTypeLabelFieldDiffs
+  [JSON_SCHEMA_TITLE_ROW_DIFF_KEY]?: ChangedPropertyMetaData
+}
+
+/** Diffs bag produced by kind-any aggregation before property-specific keys are added. */
+export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | null> & JsonSchemaSharedRowDiffs
+
+export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
   default?: ChangedPropertyMetaData
   defaultRowColorizingDiff?: ChangedPropertyMetaData
   /** Whole `enum` field add/remove; mutually exclusive with {@link enumValueDiffs}. */

@@ -43,6 +43,7 @@ import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
 import { SchemaNodeChildrenListWithDiffs } from "../SchemaNodeViewer/SchemaNodeChildrenListWithDiffs"
 import { SchemaNodePlainContent } from "../SchemaNodeViewer/SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "../SchemaNodeViewer/SchemaNodeTitleRow"
+import { SchemaNodeTitleRowWithDiffs } from "../SchemaNodeViewer/SchemaNodeTitleRowWithDiffs"
 import { CombinerSelectorRow } from "./CombinerSelectorRow"
 
 function isJsonSchemaPropertyNodeWithDiffs(
@@ -202,17 +203,31 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
       data-testid="json-schema-combiner-node-viewer"
       className="json-schema-property flex flex-col"
     >
-      <SchemaNodeTitleRow
-        data-precededby={precededBy}
-        ownerNode={node}
-        displayNode={activeLeaf}
-        displayValue={activeLeafDisplayValue}
-        contentVisibility={contentVisibility}
-        isLastInList={isLastInList && !contentVisibility.showContentSection && !expandable}
-        expandable={expandable}
-        expanded={expanded}
-        onClickExpander={onClickExpander}
-      />
+      {nodeWithDiffs && activeLeafWithDiffs ? (
+        <SchemaNodeTitleRowWithDiffs
+          data-precededby={precededBy}
+          ownerNode={nodeWithDiffs}
+          displayNode={activeLeafWithDiffs}
+          displayValue={activeLeafDisplayValue}
+          contentVisibility={contentVisibility}
+          isLastInList={isLastInList && !contentVisibility.showContentSection && !expandable}
+          expandable={expandable}
+          expanded={expanded}
+          onClickExpander={onClickExpander}
+        />
+      ) : (
+        <SchemaNodeTitleRow
+          data-precededby={precededBy}
+          ownerNode={node}
+          displayNode={activeLeaf}
+          displayValue={activeLeafDisplayValue}
+          contentVisibility={contentVisibility}
+          isLastInList={isLastInList && !contentVisibility.showContentSection && !expandable}
+          expandable={expandable}
+          expanded={expanded}
+          onClickExpander={onClickExpander}
+        />
+      )}
 
       <SchemaNodePlainContent
         node={activeLeaf}

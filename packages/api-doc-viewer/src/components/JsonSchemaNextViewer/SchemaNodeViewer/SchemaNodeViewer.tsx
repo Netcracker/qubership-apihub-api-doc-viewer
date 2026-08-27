@@ -29,6 +29,7 @@ import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
 import { SchemaNodeChildrenListWithDiffs } from "./SchemaNodeChildrenListWithDiffs"
 import { SchemaNodePlainContent } from "./SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "./SchemaNodeTitleRow"
+import { SchemaNodeTitleRowWithDiffs } from "./SchemaNodeTitleRowWithDiffs"
 
 function isJsonSchemaPropertyNodeWithDiffs(
   node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
@@ -127,15 +128,27 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
       data-name="JsonNode"
       className="json-schema-property flex flex-col"
     >
-      <SchemaNodeTitleRow
-        data-precededby={precededBy}
-        ownerNode={node}
-        contentVisibility={visibility}
-        isLastInList={isLastInList}
-        expandable={expandable}
-        expanded={expanded}
-        onClickExpander={onClickExpander}
-      />
+      {nodeWithDiffs ? (
+        <SchemaNodeTitleRowWithDiffs
+          data-precededby={precededBy}
+          ownerNode={nodeWithDiffs}
+          contentVisibility={visibility}
+          isLastInList={isLastInList}
+          expandable={expandable}
+          expanded={expanded}
+          onClickExpander={onClickExpander}
+        />
+      ) : (
+        <SchemaNodeTitleRow
+          data-precededby={precededBy}
+          ownerNode={node}
+          contentVisibility={visibility}
+          isLastInList={isLastInList}
+          expandable={expandable}
+          expanded={expanded}
+          onClickExpander={onClickExpander}
+        />
+      )}
 
       {showNodeBody && (
         <>

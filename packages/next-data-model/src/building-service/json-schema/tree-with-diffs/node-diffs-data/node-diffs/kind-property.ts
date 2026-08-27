@@ -17,7 +17,7 @@ import {
 import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import {
   JsonSchemaListValueDiffs,
-  JsonSchemaPropertyRowDiffs,
+  JsonSchemaKindPropertyNodeDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
@@ -83,7 +83,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       return undefined
     }
 
-    const nodeDiffs: JsonSchemaPropertyRowDiffs = { ...(superNodeDiffs ?? {}) }
+    const nodeDiffs: JsonSchemaKindPropertyNodeDiffs = { ...(superNodeDiffs ?? {}) }
 
     if (hasCrawlDiffs) {
       const defaultDiff = crawlDiffs.default
@@ -197,7 +197,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private aggregateEnumRowColorizingDiff(
     crawlValue: object,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     this.aggregateListRowColorizingDiff(
       crawlValue,
@@ -211,7 +211,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private aggregateExamplesRowColorizingDiff(
     crawlValue: object,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     this.aggregateListRowColorizingDiff(
       crawlValue,
@@ -225,7 +225,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private aggregateListRowColorizingDiff(
     crawlValue: object,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
     listFieldKey: "enum" | "examples",
     wholeFieldDiffKey: "enumDiff" | "examplesDiff",
     itemDiffsKey: "enumValueDiffs" | "examplesValueDiffs",
@@ -265,7 +265,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private aggregateDefaultRowColorizingDiff(
     crawlValue: object,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     const defaultValue = Reflect.get(crawlValue, "default")
     const hasDefaultInMerged = defaultValue !== undefined && defaultValue !== null
@@ -297,7 +297,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
   private aggregateValidationRowDiffs(
     crawlValue: object,
     crawlDiffs: Partial<Record<string, Diff<DiffType>>>,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     for (const [rowKey, sourceKeys] of Object.entries(JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS)) {
       const activeSourceKeys = sourceKeys.filter((sourceKey) => crawlDiffs[sourceKey])
@@ -435,8 +435,8 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private mergeValueRangeLabelChipDiffs(
     crawlValue: object,
-    valueRangeCrawlDiffs: NonNullable<JsonSchemaPropertyRowDiffs["valueRangeCrawlDiffs"]>,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    valueRangeCrawlDiffs: NonNullable<JsonSchemaKindPropertyNodeDiffs["valueRangeCrawlDiffs"]>,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
     validationRowKey: JsonSchemaValidationRowKey,
   ): void {
     const chipStringDiffs = buildValueRangeChipStringDiffs(
@@ -469,7 +469,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
   private applyValueRangeFormattingRowColorizingDiff(
     activeSourceKeys: readonly string[],
     crawlDiffs: Partial<Record<string, Diff<DiffType>>>,
-    nodeDiffs: JsonSchemaPropertyRowDiffs,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
     validationRowKey: JsonSchemaValidationRowKey,
   ): void {
     const chipValueDiffs = nodeDiffs.validationRowValueDiffs?.[validationRowKey]
@@ -499,7 +499,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
   private attachValueRangeChipDiffPaths(
     chipDiff: DiffAdd | DiffRemove | DiffReplace,
     slot: "lower" | "upper",
-    valueRangeCrawlDiffs: NonNullable<JsonSchemaPropertyRowDiffs["valueRangeCrawlDiffs"]>,
+    valueRangeCrawlDiffs: NonNullable<JsonSchemaKindPropertyNodeDiffs["valueRangeCrawlDiffs"]>,
   ): DiffAdd | DiffRemove | DiffReplace {
     const sourceDiffs = slot === "lower"
       ? [valueRangeCrawlDiffs.minimum, valueRangeCrawlDiffs.exclusiveMinimum]

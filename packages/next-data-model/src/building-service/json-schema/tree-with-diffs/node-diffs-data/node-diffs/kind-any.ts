@@ -1,5 +1,6 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
+import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import {
   ChangedPropertyKey,
   ChangedPropertyMetaData,
@@ -10,6 +11,14 @@ import {
   NODE_LEVEL_DIFF_KEY,
   NodeDiffs,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import {
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
+  JsonSchemaKindAnyNodeDiffs,
+  JsonSchemaSharedRowDiffs,
+  JsonSchemaTypeLabelFieldDiffKey,
+  JsonSchemaTypeLabelFieldDiffs,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
@@ -53,7 +62,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
 
     const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
-    const nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null> = {}
+    const nodeDiffs: JsonSchemaKindAnyNodeDiffs = {}
 
     if (containerNode) {
       const containerNodeDiff = containerNode.diffs[NODE_LEVEL_DIFF_KEY]
@@ -84,7 +93,13 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
 
     const titleDiff = diffs["title"]
-    titleDiff && this.aggregateTextDiff(titleDiff, "title", nodeDiffs)
+    const formatDiff = diffs["format"]
+    const typeDiff = diffs["type"]
+
+    this.aggregateTypeLabelFieldDiffs(
+      { type: typeDiff, format: formatDiff, title: titleDiff },
+      nodeDiffs,
+    )
 
     const descriptionDiff = diffs["description"]
     descriptionDiff && this.aggregateTextDiff(descriptionDiff, "description", nodeDiffs)
@@ -101,6 +116,55 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
   ): void {
     nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  private aggregateTypeLabelFieldDiffs(
+    crawlDiffs: Partial<Record<JsonSchemaTypeLabelFieldDiffKey, Diff<DiffType>>>,
+    nodeDiffs: JsonSchemaSharedRowDiffs,
+  ): void {
+    const typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs = {}
+
+    for (const fieldKey of JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS) {
+      const diff = crawlDiffs[fieldKey]
+      if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
+        continue
+      }
+      typeLabelFieldDiffs[fieldKey] = this.buildTypeLabelFieldDiffMetadata(diff)
+    }
+
+    if (Object.keys(typeLabelFieldDiffs).length > 0) {
+      nodeDiffs.typeLabelFieldDiffs = typeLabelFieldDiffs
+      this.aggregateTypeLabelTitleRowDiff(nodeDiffs)
+    }
+  }
+
+  private aggregateTypeLabelTitleRowDiff(nodeDiffs: JsonSchemaSharedRowDiffs): void {
+    const typeLabelFieldDiffs = nodeDiffs.typeLabelFieldDiffs
+    if (!typeLabelFieldDiffs || Object.keys(typeLabelFieldDiffs).length === 0) {
+      return
+    }
+
+    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(typeLabelFieldDiffs),
+    )
+    if (!representativeDiff) {
+      return
+    }
+
+    nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceRowColorizingDiff(representativeDiff)
+  }
+
+  private buildTypeLabelFieldDiffMetadata(diff: Diff<DiffType>): ChangedPropertyMetaData {
+    if (isDiffReplace(diff)) {
+      return this.buildChipReplaceDiffMetadata(diff, {
+        textHighlighterColor: HighlightVariant.Yellow,
+      })
+    }
+
+    return this.buildChipAddRemoveDiffMetadata(diff, {
+      addAfter: { textHighlighterColor: HighlightVariant.Green },
+      removeBefore: { textHighlighterColor: HighlightVariant.Red },
+    })
   }
 
   protected buildChangedPropertyMetaDataFromDiff(diff: Diff<DiffType>): ChangedPropertyMetaData {

@@ -14,8 +14,14 @@ import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
   JsonSchemaListValueDiffs,
-  JsonSchemaPropertyRowDiffs,
+  JsonSchemaKindPropertyNodeDiffs,
+  JsonSchemaSharedRowDiffs,
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
+import {
+  resolveJsonSchemaTypeLabelSideDisplay,
+  takeJsonSchemaTypeLabelFieldDiffs,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/type-label-diffs"
 import {
   resolveValueRangeDiffSideEntries,
   resolveValueRangeSideInputFromNodeValue,
@@ -38,16 +44,50 @@ export type JsonSchemaListSideEntry = {
 
 export type {
   JsonSchemaListValueDiffs,
-  JsonSchemaPropertyRowDiffs,
+  JsonSchemaKindPropertyNodeDiffs as JsonSchemaPropertyRowDiffs,
+  JsonSchemaSharedRowDiffs,
+  JsonSchemaTypeLabelFieldDiffKey,
+  JsonSchemaTypeLabelFieldDiffs,
 } from "./property-row-diffs.types"
+export {
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
+} from "./property-row-diffs.types"
+export {
+  resolveJsonSchemaTypeLabelSideDisplay,
+  takeJsonSchemaTypeLabelFieldDiffs,
+} from "./type-label-diffs"
+export type { JsonSchemaTypeLabelSideSegment } from "./type-label-diffs"
 
 export type JsonSchemaPropertyNodeWithDiffs =
   JsonSchemaTreeNodeWithDiffs<typeof JsonSchemaTreeNodeKinds.PROPERTY>
 
+export type JsonSchemaNodeWithDiffs = JsonSchemaTreeNodeWithDiffs
+
+function takeSharedRowDiffs(
+  node: JsonSchemaTreeNodeWithDiffs,
+): JsonSchemaSharedRowDiffs {
+  return node.diffs as JsonSchemaSharedRowDiffs
+}
+
+export function takeJsonSchemaTitleRowDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeSharedRowDiffs(node)[JSON_SCHEMA_TITLE_ROW_DIFF_KEY]
+    ?? node.diffs[NODE_LEVEL_DIFF_KEY]
+}
+
+export function resolveJsonSchemaTypeLabelSideDisplayForNode(
+  node: JsonSchemaTreeNodeWithDiffs,
+  layoutSide: LayoutSide,
+): ReturnType<typeof resolveJsonSchemaTypeLabelSideDisplay> {
+  return resolveJsonSchemaTypeLabelSideDisplay(node, node.meta(), layoutSide)
+}
+
 function takePropertyRowDiffs(
   node: JsonSchemaPropertyNodeWithDiffs,
-): JsonSchemaPropertyRowDiffs {
-  return node.diffs as JsonSchemaPropertyRowDiffs
+): JsonSchemaKindPropertyNodeDiffs {
+  return node.diffs as JsonSchemaKindPropertyNodeDiffs
 }
 
 export function takeJsonSchemaDefaultDiff(
