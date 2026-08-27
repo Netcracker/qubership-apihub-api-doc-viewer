@@ -31,13 +31,18 @@ export function buildJsonSchemaDiffTagsProps(
   "isNodeChanged" | "isContentChanged" | "requiredChanged" | "$nodeChange" | "$metaChanges"
 > {
   const isNodeChanged = !!node.diffs[NODE_LEVEL_DIFF_KEY]
-  const $metaChanges = takeJsonSchemaSubheaderFlagRawDiffs(node)
+  const allMeta = takeJsonSchemaMetaFlagRawDiffs(node)
+  const flagDiffs = takeJsonSchemaSubheaderFlagRawDiffs(node)
+  const requiredDiff = allMeta.required
+  const $metaChanges = requiredDiff
+    ? { ...flagDiffs, required: requiredDiff }
+    : flagDiffs
   const isContentChanged = Object.keys($metaChanges).length > 0
 
   return {
     isNodeChanged,
     isContentChanged,
-    requiredChanged: false,
+    requiredChanged: !isNodeChanged && !!requiredDiff,
     $nodeChange: node.diffs[NODE_LEVEL_DIFF_KEY]?.data,
     $metaChanges,
   }

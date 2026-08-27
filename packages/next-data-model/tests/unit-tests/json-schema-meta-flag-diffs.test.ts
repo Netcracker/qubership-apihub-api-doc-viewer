@@ -18,10 +18,20 @@ import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guar
 import { createBuildingServiceLogger } from "../../src/loggers"
 import { simplifyConsole } from "../helpers/simplify-console"
 
+const syntheticTitleFlag = Symbol("syntheticTitle")
+
 const DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
   aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY,
 }
+
+const NORMALIZED_DIFF_OPTIONS = {
+  syntheticTitleFlag,
+  unify: true,
+  validate: true,
+  liftCombiners: true,
+  allowNotValidSyntheticChanges: true,
+} as const
 
 function mergeSchemas(beforeSchema: object, afterSchema: object): object {
   const beforeDocument = {
@@ -46,6 +56,60 @@ function mergeSchemas(beforeSchema: object, afterSchema: object): object {
   }
 
   return apiDiff(beforeDocument, afterDocument, {
+    beforeSource: beforeDocument,
+    afterSource: afterDocument,
+    metaKey: DIFF_META_KEY,
+  }).merged.components.schemas.__Substitution__ as object
+}
+
+function mergeSchemasWithOasNormalize(beforeSchema: object, afterSchema: object): object {
+  const beforeDocument = {
+    openapi: "3.0.0",
+    info: { title: "Test", version: "1.0.0" },
+    paths: {
+      "/test": {
+        post: {
+          requestBody: {
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/__Substitution__" },
+              },
+            },
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        __Substitution__: beforeSchema,
+      },
+    },
+  }
+  const afterDocument = {
+    openapi: "3.0.0",
+    info: { title: "Test", version: "1.0.0" },
+    paths: {
+      "/test": {
+        post: {
+          requestBody: {
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/__Substitution__" },
+              },
+            },
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        __Substitution__: afterSchema,
+      },
+    },
+  }
+
+  return apiDiff(beforeDocument, afterDocument, {
+    ...NORMALIZED_DIFF_OPTIONS,
     beforeSource: beforeDocument,
     afterSource: afterDocument,
     metaKey: DIFF_META_KEY,
@@ -268,5 +332,58 @@ describe("JSON Schema meta flag diffs", () => {
     expect(prop2Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
     expect(takeJsonSchemaRequiredMetaDiff(prop2Node)).toBeUndefined()
     expect(takeJsonSchemaRequiredMetaDiffForDisplay(prop2Node)).toBeUndefined()
+  })
+
+  it("aggregates required add via OAS-normalized merge (storybook path, case 007 shape)", () => {
+    const merged = mergeSchemasWithOasNormalize(
+      {
+        type: "object",
+        description: "Object with one string property",
+        properties: {
+          name: { type: "string", description: "Name property" },
+        },
+      },
+      {
+        type: "object",
+        description: "Object with one string property",
+        properties: {
+          name: { type: "string", description: "Name property" },
+        },
+        required: ["name"],
+      },
+    )
+    const tree = buildTree(merged)
+    const nameNode = findPropertyNode(tree, "name")
+
+    expect(takeJsonSchemaRequiredMetaDiff(nameNode)?.data.action).toBe(DiffAction.add)
+    expect(takeJsonSchemaRequiredMetaDiffForDisplay(nameNode)?.afterValue).toBe(true)
+    expect(takeJsonSchemaTitleRowDiff(nameNode)?.data.action).toBe(DiffAction.replace)
+    expect(takeJsonSchemaTitleRowDiff(nameNode)?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("aggregates required remove via OAS-normalized merge (storybook path, case 008 shape)", () => {
+    const merged = mergeSchemasWithOasNormalize(
+      {
+        type: "object",
+        description: "Object with one string property",
+        properties: {
+          name: { type: "string", description: "Name property" },
+        },
+        required: ["name"],
+      },
+      {
+        type: "object",
+        description: "Object with one string property",
+        properties: {
+          name: { type: "string", description: "Name property" },
+        },
+      },
+    )
+    const tree = buildTree(merged)
+    const nameNode = findPropertyNode(tree, "name")
+
+    expect(takeJsonSchemaRequiredMetaDiff(nameNode)?.data.action).toBe(DiffAction.remove)
+    expect(takeJsonSchemaRequiredMetaDiffForDisplay(nameNode)?.beforeValue).toBe(true)
+    expect(takeJsonSchemaTitleRowDiff(nameNode)?.data.action).toBe(DiffAction.replace)
   })
 })

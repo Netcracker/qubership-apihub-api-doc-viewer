@@ -1,8 +1,7 @@
-import { DiffBadge } from "@apihub/components/common/diffs/DiffBadge"
-import { REQUIRED_TAG } from "@apihub/constants/tags"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getLayoutModeFlags, getLayoutSideFlags } from "@apihub/utils/common/changes"
+import { isDefined } from "@apihub/utils/common/checkers"
 import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { FC } from "react"
 
@@ -19,45 +18,20 @@ function shouldShowRequiredStar(
   originSide: boolean,
   changedSide: boolean,
 ): boolean {
-  if (!requiredDiff) {
-    return isSideBySideDiffsLayoutMode ? required : required
-  }
+  const shouldDisplayInSideBySide = required === true && !isDefined(requiredDiff)
+    || !!requiredDiff && (
+      requiredDiff.action === DiffAction.remove && originSide
+      || requiredDiff.action === DiffAction.add && changedSide
+      || requiredDiff.action === DiffAction.replace && (
+        requiredDiff.beforeValue === true && originSide
+        || requiredDiff.afterValue === true && changedSide
+      )
+    )
 
-  switch (requiredDiff.action) {
-    case DiffAction.add:
-      return isSideBySideDiffsLayoutMode ? changedSide : true
-    case DiffAction.remove:
-      return isSideBySideDiffsLayoutMode ? originSide : true
-    case DiffAction.replace:
-      return isSideBySideDiffsLayoutMode
-        ? (requiredDiff.beforeValue === true && originSide)
-          || (requiredDiff.afterValue === true && changedSide)
-        : required
-    default:
-      return required
+  if (isSideBySideDiffsLayoutMode) {
+    return shouldDisplayInSideBySide
   }
-}
-
-function shouldShowRequiredBadge(
-  requiredDiff: Diff | undefined,
-  isSideBySideDiffsLayoutMode: boolean,
-  originSide: boolean,
-  changedSide: boolean,
-): boolean {
-  if (!requiredDiff) {
-    return false
-  }
-
-  switch (requiredDiff.action) {
-    case DiffAction.add:
-      return isSideBySideDiffsLayoutMode ? changedSide : true
-    case DiffAction.remove:
-      return isSideBySideDiffsLayoutMode ? originSide : true
-    case DiffAction.replace:
-      return isSideBySideDiffsLayoutMode ? originSide || changedSide : true
-    default:
-      return false
-  }
+  return required
 }
 
 export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicatorProps> = (props) => {
@@ -74,37 +48,15 @@ export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicator
     return null
   }
 
-  const showStar = shouldShowRequiredStar(
+  if (!shouldShowRequiredStar(
     required,
     requiredDiff,
     isSideBySideDiffsLayoutMode,
     originSide,
     changedSide,
-  )
-  const showBadge = shouldShowRequiredBadge(
-    requiredDiff,
-    isSideBySideDiffsLayoutMode,
-    originSide,
-    changedSide,
-  )
-
-  if (!showStar && !showBadge) {
+  )) {
     return null
   }
 
-  return (
-    <span className="inline-flex items-center gap-1">
-      {showStar && <sup className="ml-0.5 text-red-500">*</sup>}
-      {showBadge && requiredDiff && (
-        <DiffBadge
-          label={REQUIRED_TAG}
-          layoutMode={layoutMode}
-          layoutSide={layoutSide}
-          isNodeChanged={false}
-          isContentChanged={true}
-          $changes={requiredDiff}
-        />
-      )}
-    </span>
-  )
+  return <sup className="ml-0.5 text-red-500">*</sup>
 }

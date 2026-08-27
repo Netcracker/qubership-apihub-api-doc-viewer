@@ -4,14 +4,14 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 149
+- Total cases: 154
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
 
 ### Type Flags Samples
 
-Path: `type-changes/type-flags/` (8 cases)
+Path: `type-changes/type-flags/` (13 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -23,6 +23,11 @@ Path: `type-changes/type-flags/` (8 cases)
 | `006-deprecated-removed` | Removed deprecated: true |
 | `007-required-added` | Property added to parent required |
 | `008-required-removed` | Property removed from parent required |
+| `009-unchanged-read-only` | Unchanged readOnly: true |
+| `010-unchanged-write-only` | Unchanged writeOnly: true |
+| `011-unchanged-deprecated` | Unchanged deprecated: true |
+| `012-unchanged-required-field` | Unchanged required property |
+| `013-unchanged-required-optional` | Unchanged optional property |
 
 ### Description Changes Samples
 

@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-27T11:51:21.539Z",
-  "totalCases": 149,
+  "generatedAt": "2026-08-27T18:27:12.192Z",
+  "totalCases": 154,
   "suites": [
     {
       "globPath": "type-flags",
-      "caseCount": 8
+      "caseCount": 13
     },
     {
       "globPath": "description-changes",

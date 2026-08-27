@@ -80,4 +80,39 @@ describe("JSON Schema Diffs Suite/Type Flags Samples", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("009-unchanged-read-only", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-009-unchanged-read-only`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("010-unchanged-write-only", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-010-unchanged-write-only`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("011-unchanged-deprecated", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-011-unchanged-deprecated`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("012-unchanged-required-field", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-012-unchanged-required-field`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("013-unchanged-required-optional", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-013-unchanged-required-optional`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });

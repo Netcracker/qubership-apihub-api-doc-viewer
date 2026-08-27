@@ -142,6 +142,53 @@ const collectTypeFlagsCases = (cases) => {
     objOptional,
     "Property removed from parent required",
   );
+
+  const readOnlyTrue = merge(base, { readOnly: true });
+  pushCase(
+    cases,
+    dir,
+    "unchanged-read-only",
+    readOnlyTrue,
+    clone(readOnlyTrue),
+    "Unchanged readOnly: true",
+  );
+
+  const writeOnlyTrue = merge(base, { writeOnly: true });
+  pushCase(
+    cases,
+    dir,
+    "unchanged-write-only",
+    writeOnlyTrue,
+    clone(writeOnlyTrue),
+    "Unchanged writeOnly: true",
+  );
+
+  const deprecatedTrue = merge(base, { deprecated: true });
+  pushCase(
+    cases,
+    dir,
+    "unchanged-deprecated",
+    deprecatedTrue,
+    clone(deprecatedTrue),
+    "Unchanged deprecated: true",
+  );
+
+  pushCase(
+    cases,
+    dir,
+    "unchanged-required-field",
+    objRequired,
+    clone(objRequired),
+    "Unchanged required property",
+  );
+  pushCase(
+    cases,
+    dir,
+    "unchanged-required-optional",
+    objOptional,
+    clone(objOptional),
+    "Unchanged optional property",
+  );
 };
 
 /** @param {TypeChangeCase[]} cases */

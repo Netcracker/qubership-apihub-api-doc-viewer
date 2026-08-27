@@ -193,69 +193,134 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const parentCrawlDiffs = isObject(parentCrawlValue)
       ? Reflect.get(parentCrawlValue, diffsMetaKey)
       : undefined
-    const requiredArray = isObject(parentValue) && Array.isArray(parentValue.required)
+    const crawlRequiredArray = isObject(parentCrawlValue)
+      ? Reflect.get(parentCrawlValue, "required")
+      : undefined
+    const valueRequiredArray = isObject(parentValue) && "required" in parentValue
       ? parentValue.required
-      : isObject(parentCrawlValue) && Array.isArray(Reflect.get(parentCrawlValue, "required"))
-        ? Reflect.get(parentCrawlValue, "required") as unknown[]
+      : undefined
+    const requiredArray = Array.isArray(crawlRequiredArray)
+      ? crawlRequiredArray
+      : Array.isArray(valueRequiredArray)
+        ? valueRequiredArray
         : undefined
 
     if (AbstractNodeDiffsAggregator.isDiffsRecord(parentCrawlDiffs)) {
-      const wholeRequiredDiff = parentCrawlDiffs.required
-      if (AbstractNodeDiffsAggregator.isDiff(wholeRequiredDiff)) {
-        if (isDiffAdd(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.afterValue)
-          && wholeRequiredDiff.afterValue.includes(propertyKey)) {
-          return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+      const requiredFieldDiff = parentCrawlDiffs.required
+      if (AbstractNodeDiffsAggregator.isDiff(requiredFieldDiff)) {
+        const wholeArrayDiff = this.resolveRequiredMetaDiffFromWholeArrayDiff(
+          requiredFieldDiff,
+          propertyKey,
+        )
+        if (wholeArrayDiff) {
+          return wholeArrayDiff
         }
-        if (isDiffRemove(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.beforeValue)
-          && wholeRequiredDiff.beforeValue.includes(propertyKey)) {
-          return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
-        }
-        if (isDiffReplace(wholeRequiredDiff)) {
-          const beforeRequired = Array.isArray(wholeRequiredDiff.beforeValue)
-            ? wholeRequiredDiff.beforeValue
-            : []
-          const afterRequired = Array.isArray(wholeRequiredDiff.afterValue)
-            ? wholeRequiredDiff.afterValue
-            : []
-          const wasRequired = beforeRequired.includes(propertyKey)
-          const isRequired = afterRequired.includes(propertyKey)
-          if (wasRequired !== isRequired) {
-            return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
-          }
+      }
+      if (AbstractNodeDiffsAggregator.isDiffsRecord(requiredFieldDiff)) {
+        const indexedDiff = this.resolveRequiredMetaDiffFromIndexedDiffsRecord(
+          requiredFieldDiff,
+          propertyKey,
+          requiredArray,
+        )
+        if (indexedDiff) {
+          return indexedDiff
         }
       }
     }
 
-    if (!Array.isArray(requiredArray)) {
-      return undefined
+    if (Array.isArray(requiredArray)) {
+      const arrayAttachedDiff = this.resolveRequiredMetaDiffFromArrayAttachedDiffs(
+        requiredArray,
+        diffsMetaKey,
+        propertyKey,
+      )
+      if (arrayAttachedDiff) {
+        return arrayAttachedDiff
+      }
     }
 
-    const requiredIndex = requiredArray.indexOf(propertyKey)
-    if (requiredIndex >= 0) {
-      const requiredArrayDiffs = Reflect.get(requiredArray, diffsMetaKey)
-      if (AbstractNodeDiffsAggregator.isDiffsRecord(requiredArrayDiffs)) {
-        const indexDiff = requiredArrayDiffs[String(requiredIndex)]
+    return undefined
+  }
+
+  private resolveRequiredMetaDiffFromWholeArrayDiff(
+    wholeRequiredDiff: Diff<DiffType>,
+    propertyKey: string,
+  ): ChangedPropertyMetaData | undefined {
+    if (isDiffAdd(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.afterValue)
+      && wholeRequiredDiff.afterValue.includes(propertyKey)) {
+      return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+    }
+    if (isDiffRemove(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.beforeValue)
+      && wholeRequiredDiff.beforeValue.includes(propertyKey)) {
+      return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+    }
+    if (isDiffReplace(wholeRequiredDiff)) {
+      const beforeRequired = Array.isArray(wholeRequiredDiff.beforeValue)
+        ? wholeRequiredDiff.beforeValue
+        : []
+      const afterRequired = Array.isArray(wholeRequiredDiff.afterValue)
+        ? wholeRequiredDiff.afterValue
+        : []
+      if (beforeRequired.includes(propertyKey) !== afterRequired.includes(propertyKey)) {
+        return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+      }
+    }
+    return undefined
+  }
+
+  private resolveRequiredMetaDiffFromIndexedDiffsRecord(
+    requiredIndexedDiffs: Partial<Record<string, Diff<DiffType>>>,
+    propertyKey: string,
+    requiredArray: unknown[] | undefined,
+  ): ChangedPropertyMetaData | undefined {
+    if (Array.isArray(requiredArray)) {
+      const requiredIndex = requiredArray.indexOf(propertyKey)
+      if (requiredIndex >= 0) {
+        const indexDiff = requiredIndexedDiffs[String(requiredIndex)]
         if (AbstractNodeDiffsAggregator.isDiff(indexDiff)) {
           return this.buildChangedPropertyMetaDataFromDiff(indexDiff)
         }
       }
     }
+    return this.resolveRequiredMetaDiffFromPropertyKeyDiffs(requiredIndexedDiffs, propertyKey)
+  }
 
-    if (AbstractNodeDiffsAggregator.isDiffsRecord(Reflect.get(requiredArray, diffsMetaKey))) {
-      const requiredArrayDiffs = Reflect.get(requiredArray, diffsMetaKey) as Partial<Record<string, Diff<DiffType>>>
-      for (const diff of Object.values(requiredArrayDiffs)) {
-        if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
-          continue
-        }
-        if (isDiffAdd(diff) && diff.afterValue === propertyKey) {
-          return this.buildChangedPropertyMetaDataFromDiff(diff)
-        }
-        if (isDiffRemove(diff) && diff.beforeValue === propertyKey) {
-          return this.buildChangedPropertyMetaDataFromDiff(diff)
-        }
+  private resolveRequiredMetaDiffFromArrayAttachedDiffs(
+    requiredArray: unknown[],
+    diffsMetaKey: symbol,
+    propertyKey: string,
+  ): ChangedPropertyMetaData | undefined {
+    const requiredArrayDiffs = Reflect.get(requiredArray, diffsMetaKey)
+    if (!AbstractNodeDiffsAggregator.isDiffsRecord(requiredArrayDiffs)) {
+      return undefined
+    }
+
+    const requiredIndex = requiredArray.indexOf(propertyKey)
+    if (requiredIndex >= 0) {
+      const indexDiff = requiredArrayDiffs[String(requiredIndex)]
+      if (AbstractNodeDiffsAggregator.isDiff(indexDiff)) {
+        return this.buildChangedPropertyMetaDataFromDiff(indexDiff)
       }
     }
 
+    return this.resolveRequiredMetaDiffFromPropertyKeyDiffs(requiredArrayDiffs, propertyKey)
+  }
+
+  private resolveRequiredMetaDiffFromPropertyKeyDiffs(
+    diffsRecord: Partial<Record<string, Diff<DiffType>>>,
+    propertyKey: string,
+  ): ChangedPropertyMetaData | undefined {
+    for (const diff of Object.values(diffsRecord)) {
+      if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
+        continue
+      }
+      if (isDiffAdd(diff) && diff.afterValue === propertyKey) {
+        return this.buildChangedPropertyMetaDataFromDiff(diff)
+      }
+      if (isDiffRemove(diff) && diff.beforeValue === propertyKey) {
+        return this.buildChangedPropertyMetaDataFromDiff(diff)
+      }
+    }
     return undefined
   }
 
