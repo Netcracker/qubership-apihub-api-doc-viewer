@@ -156,6 +156,16 @@ length`, …) consume precomputed diffs from next-data-model. Display and diff-s
 Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
 rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
 
+## JSON Schema meta flags and `required` (Next viewer)
+
+Type-flag diffs (`readOnly`, `writeOnly`, `deprecated`, parent **`required`**) use title-row and
+subheader chrome — not validation rows. Parent-scoped `required` resolution and viewer wiring traps:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`
+
+Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `DiffTags` via
+`buildJsonSchemaDiffTagsProps` — not the type-label subheader alone.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in

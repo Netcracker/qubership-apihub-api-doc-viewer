@@ -479,6 +479,12 @@ When aggregating or resolving **constraint rows** (`validationRowDiffs`,
 `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
 
 Fix diff metadata in `kind-property.ts` and `value-range-diff-side-display.ts`; do not patch viewer
+components to compensate.
+
+**Meta flags and parent `required`:** `resolveRequiredMetaDiff` in `kind-property.ts` reads parent
+crawl fragments — not picked `parent.value().required`. See
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`.
+Unit tests: `json-schema-meta-flag-diffs.test.ts` (include OAS-normalized merge cases for Storybook parity).
 chip components.
 
 ## Cross-package boundary

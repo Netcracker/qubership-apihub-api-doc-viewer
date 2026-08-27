@@ -118,6 +118,16 @@ rules. Full reference (grouped by plain vs diffs, then row kind):
 Apply when changing validation-row chips, row colorizing, OAS 3.0/3.1 bound dialects, or value-range
 sample cases.
 
+### Meta flags and `required` (type-flags diffs)
+
+`readOnly`, `writeOnly`, `deprecated`, and parent **`required`** are parent-derived or schema-meta
+diffs — not validation rows. Full reference (legacy propagation, crawl-fragment traps, viewer layout):
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`
+
+Apply when changing type-flags samples (`type-changes/type-flags/`), `resolveRequiredMetaDiff`,
+title-row required asterisk, or subheader `required` badge behaviour.
+
 ## JSON Schema Next diffs (hiding unchanged rows)
 
 Hand-written YAML pairs under `packages/samples/json-schema-diffs/hiding-unchanged-rows/`.
