@@ -26,7 +26,6 @@ import { UNKNOWN_TYPE_TEXT } from '../consts/types'
 import { GraphNodeTitleDataOptions, JsonNodeTitleDataOptions, NodeTitleData, } from '../types/NodeTitleData'
 import { GraphNodeTypeDataOptions, JsonNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData'
 import { isRefNode } from '../types/guards/nodes'
-import { safePropertyIn } from '../utils/common/objects'
 import {
   isAdditionalItemsNode,
   isAdditionalPropertyNode,
