@@ -892,6 +892,100 @@ const collectCircularCases = (cases) => {
   }
 };
 
+const TYPE_VALUE_CHANGE_TYPES = ["string", "number", "integer", "boolean", "array", "object"];
+
+const TYPE_VALUE_CHANGE_OBJECT_PROPERTIES = {
+  name: { type: "string" },
+  id: { type: "integer" },
+};
+
+const TYPE_VALUE_CHANGE_OBJECT_DEFAULT = { name: "sample", id: 1 };
+
+/** @param {string} schemaType */
+const buildFullSchemaForTypeValueChange = (schemaType) => {
+  switch (schemaType) {
+    case "string":
+      return {
+        type: "string",
+        description: "Sample string schema with all string validations",
+        default: "alpha",
+        enum: ["alpha", "beta", "gamma"],
+        minLength: 1,
+        maxLength: 128,
+        pattern: "^[a-z]+$",
+      };
+    case "number":
+      return {
+        type: "number",
+        description: "Sample number schema with all number validations",
+        default: 1.5,
+        minimum: 0,
+        maximum: 100,
+        multipleOf: 0.5,
+      };
+    case "integer":
+      return {
+        type: "integer",
+        description: "Sample integer schema with all integer validations",
+        default: 1,
+        minimum: 0,
+        maximum: 100,
+        multipleOf: 1,
+      };
+    case "boolean":
+      return {
+        type: "boolean",
+        description: "Sample boolean schema",
+        default: false,
+      };
+    case "array":
+      return {
+        type: "array",
+        description: "Sample array schema with all array validations",
+        items: { type: "string" },
+        default: ["alpha", "beta"],
+        minItems: 1,
+        maxItems: 10,
+        uniqueItems: true,
+      };
+    case "object":
+      return {
+        type: "object",
+        description: "Sample object schema with all object validations",
+        properties: clone(TYPE_VALUE_CHANGE_OBJECT_PROPERTIES),
+        default: clone(TYPE_VALUE_CHANGE_OBJECT_DEFAULT),
+        minProperties: 1,
+        maxProperties: 5,
+      };
+    default:
+      throw new Error(`Unsupported type-value-change schema type: ${schemaType}`);
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectTypeValueChangeCases = (cases) => {
+  const dir = "type-value-changes";
+
+  for (const fromType of TYPE_VALUE_CHANGE_TYPES) {
+    for (const toType of TYPE_VALUE_CHANGE_TYPES) {
+      if (fromType === toType) {
+        continue;
+      }
+
+      const before = buildFullSchemaForTypeValueChange(fromType);
+      const after = buildFullSchemaForTypeValueChange(toType);
+      pushCase(
+        cases,
+        dir,
+        `${fromType}-to-${toType}`,
+        before,
+        after,
+        `Root type change: ${fromType} → ${toType}`,
+      );
+    }
+  }
+};
+
 export const STORY_SUITES = [
   {
     suiteKey: "type-flags",
@@ -989,6 +1083,14 @@ export const STORY_SUITES = [
     storyFileName: "circular-samples.stories.tsx",
     testFileName: "circular-samples.it-test.ts",
   },
+  {
+    suiteKey: "type-value-changes",
+    title: "JSON Schema Diffs Suite/Type Value Changes Samples",
+    metaKebab: "json-schema-diffs-suite-type-value-changes-samples",
+    globPath: "type-value-changes",
+    storyFileName: "type-value-changes-samples.stories.tsx",
+    testFileName: "type-value-changes-samples.it-test.ts",
+  },
 ];
 
 export const collectTypeChangeCases = () => {
@@ -1008,6 +1110,7 @@ export const collectTypeChangeCases = () => {
   collectExtendedPatternAndNumberCases(cases);
   collectCombinerCases(cases);
   collectCircularCases(cases);
+  collectTypeValueChangeCases(cases);
   return cases;
 };
 

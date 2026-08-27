@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 104 (YAML fixtures; value-range suites are programmatic — see `number-validation/README.md`)
+- Total cases: 134
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -62,11 +62,6 @@ Path: `type-changes/string-validation/examples/` (5 cases)
 | `003-examples-one-appended` | Added one example to existing 2 values |
 | `004-examples-one-removed` | Removed one example from existing 3 values |
 | `005-examples-two-unchanged` | Unchanged 2 examples |
-
-### Number validation — value range (programmatic)
-
-No YAML fixtures. See [`number-validation/README.md`](number-validation/README.md) for case definitions,
-OAS 3.0 / OAS 3.1 resolvers, Storybook paths, and regeneration commands (53 + 57 cases).
 
 ### String Validation Value Length Samples
 
@@ -202,6 +197,43 @@ Path: `type-changes/circular/` (12 cases)
 | `011-combiner-variant-cycle-cycle-removed` | Combiner variant cycle: cyclic link removed |
 | `012-combiner-variant-cycle-cycle-added` | Combiner variant cycle: cyclic link added |
 
+### Type Value Changes Samples
+
+Path: `type-changes/type-value-changes/` (30 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-string-to-number` | Root type change: string → number |
+| `002-string-to-integer` | Root type change: string → integer |
+| `003-string-to-boolean` | Root type change: string → boolean |
+| `004-string-to-array` | Root type change: string → array |
+| `005-string-to-object` | Root type change: string → object |
+| `006-number-to-string` | Root type change: number → string |
+| `007-number-to-integer` | Root type change: number → integer |
+| `008-number-to-boolean` | Root type change: number → boolean |
+| `009-number-to-array` | Root type change: number → array |
+| `010-number-to-object` | Root type change: number → object |
+| `011-integer-to-string` | Root type change: integer → string |
+| `012-integer-to-number` | Root type change: integer → number |
+| `013-integer-to-boolean` | Root type change: integer → boolean |
+| `014-integer-to-array` | Root type change: integer → array |
+| `015-integer-to-object` | Root type change: integer → object |
+| `016-boolean-to-string` | Root type change: boolean → string |
+| `017-boolean-to-number` | Root type change: boolean → number |
+| `018-boolean-to-integer` | Root type change: boolean → integer |
+| `019-boolean-to-array` | Root type change: boolean → array |
+| `020-boolean-to-object` | Root type change: boolean → object |
+| `021-array-to-string` | Root type change: array → string |
+| `022-array-to-number` | Root type change: array → number |
+| `023-array-to-integer` | Root type change: array → integer |
+| `024-array-to-boolean` | Root type change: array → boolean |
+| `025-array-to-object` | Root type change: array → object |
+| `026-object-to-string` | Root type change: object → string |
+| `027-object-to-number` | Root type change: object → number |
+| `028-object-to-integer` | Root type change: object → integer |
+| `029-object-to-boolean` | Root type change: object → boolean |
+| `030-object-to-array` | Root type change: object → array |
+
 ## Storybook and screenshot tests
 
 Stories live under `packages/api-doc-viewer/src/stories/json-schema-diffs-suite/`.
@@ -210,10 +242,7 @@ Screenshot ITs live under `packages/api-doc-viewer/src/it/json-schema-diffs-suit
 ```bash
 cd packages/api-doc-viewer
 node bin/generate-json-schema-type-changes-samples.mjs
-node --experimental-strip-types bin/generate-value-range-diff-stories.mjs
 npm run build:showcase
 npm run regenerate-screenshots -- --testPathPattern=type-changes
 ```
-
-Value-range suites are programmatic only; see [`number-validation/README.md`](number-validation/README.md).
 

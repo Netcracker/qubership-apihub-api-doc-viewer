@@ -3,7 +3,7 @@
 Hand-written YAML pairs for screenshot-diff scenarios that exercise **changed-only** row
 hiding in the JSON Schema Next diffs viewer.
 
-- Total cases: 17 (4 simple-object + 8 complex-object + 5 combiners)
+- Total cases: 18 (4 simple-object + 9 complex-object + 5 combiners)
 - Layout: `json-schema-diffs/hiding-unchanged-rows/<suite>/<case-id>/before.yaml` and
   `.../after.yaml`
 - Each file is a **standalone JSON Schema** document (not wrapped in OpenAPI).
@@ -39,6 +39,7 @@ are primitives; `prop2` and `prop4` are objects with two to four primitive neste
 | `2.6-nested-prop-added-object-removed` | `#`.2.2 added; `#`.4 removed |
 | `2.7-object-added-nested-prop-removed` | `#`.2 added; `#`.4.1 removed |
 | `2.8-nested-property-metadata-and-constraints-changed` | Inside `#`.2: `.1` description replaced; `.2` enum appended (3→4); `.3` `minimum`/`maximum` added; `.4` `default` removed; `#`.1, `#`.3, `#`.4, `#`.5 unchanged |
+| `2.9-second-property-type-string-to-number` | `#`.2 `type` changed from `string` to `number` only; `#`.1 and `#`.3 unchanged |
 
 ## Suite 3 — combiners
 

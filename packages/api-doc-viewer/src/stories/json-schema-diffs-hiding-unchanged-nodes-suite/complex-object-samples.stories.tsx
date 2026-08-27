@@ -54,3 +54,6 @@ export const Case_2_7_object_added_nested_prop_removed: Story = createCaseStory(
 export const Case_2_8_nested_property_metadata_and_constraints_changed: Story = createCaseStory(
   "2.8-nested-property-metadata-and-constraints-changed",
 );
+export const Case_2_9_second_property_type_string_to_number: Story = createCaseStory(
+  "2.9-second-property-type-string-to-number",
+);

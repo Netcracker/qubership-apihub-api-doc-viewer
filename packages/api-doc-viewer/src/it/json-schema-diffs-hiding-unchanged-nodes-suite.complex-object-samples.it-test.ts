@@ -82,4 +82,14 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Complex Object", ()
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("2.9-second-property-type-string-to-number", async () => {
+    story = await storyPage(
+      page,
+      `${META_ID}--case-2-9-second-property-type-string-to-number`,
+    );
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });
