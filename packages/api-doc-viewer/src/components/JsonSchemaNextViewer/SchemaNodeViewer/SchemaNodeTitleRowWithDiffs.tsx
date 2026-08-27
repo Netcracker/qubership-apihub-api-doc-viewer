@@ -1,6 +1,7 @@
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
+import { takeJsonSchemaRequiredMetaDiffForDisplay } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
   isDiffSideHeaderVisible,
   takeAddRemoveDiffIfPresent,
@@ -43,6 +44,11 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
     [displayNode, titleRowDiffPropsOverride],
   )
 
+  const requiredDiff = useMemo(
+    () => takeJsonSchemaRequiredMetaDiffForDisplay(ownerNode),
+    [ownerNode],
+  )
+
   return (
     <SchemaNodeTitleRowBase
       {...precededByProps}
@@ -55,6 +61,8 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
       expanded={expanded}
       onClickExpander={onClickExpander}
       titleRowDiffProps={titleRowDiffProps}
+      requiredDiff={requiredDiff}
+      withRequiredDiffIndicator={true}
       renderSubheader={({
         layoutSide,
         displayMeta,

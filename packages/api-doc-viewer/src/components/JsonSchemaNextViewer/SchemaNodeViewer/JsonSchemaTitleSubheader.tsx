@@ -10,6 +10,8 @@ import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { FC } from "react"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { buildJsonSchemaDiffTagsProps } from "../utils/json-schema-diff-tags-props"
 import { JsonSchemaTypeLabelWithDiffs } from "./JsonSchemaTypeLabelWithDiffs"
 
 export type JsonSchemaTitleSubheaderProps = {
@@ -59,6 +61,8 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
 
 export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithDiffsProps> = (props) => {
   const { meta, node, isCycle, layoutSide, showTypeLabel = true } = props
+  const layoutMode = useLayoutMode()
+  const diffTagsProps = buildJsonSchemaDiffTagsProps(node, layoutMode)
 
   return (
     <div className="flex flex-row items-center gap-2">
@@ -79,8 +83,7 @@ export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithD
         writeOnly={meta?.writeOnly}
         deprecated={meta?.deprecated}
         layoutSide={layoutSide}
-        isNodeChanged={false}
-        isContentChanged={false}
+        {...diffTagsProps}
       />
     </div>
   )

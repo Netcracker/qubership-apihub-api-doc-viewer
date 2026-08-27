@@ -94,6 +94,9 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   }, [diff, layoutSide])
 
   const headerValue = useMemo(() => {
+    if (typeof titleContent === "function") {
+      return titleContent(layoutSide)
+    }
     if (titleContent) {
       return titleContent
     }

@@ -16,6 +16,8 @@ import {
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import {
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
   JsonSchemaListValueDiffs,
   JsonSchemaKindPropertyNodeDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
@@ -80,7 +82,13 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       || Object.keys(examplesValueDiffs).length > 0
 
     if (!superNodeDiffs && !hasCrawlDiffs && !hasListDiffs) {
-      return undefined
+      const requiredMetaDiff = this.resolveRequiredMetaDiff(nodeKey, parentNode, diffsMetaKey)
+      if (!requiredMetaDiff) {
+        return undefined
+      }
+      const nodeDiffs: JsonSchemaKindPropertyNodeDiffs = { required: requiredMetaDiff }
+      this.aggregatePropertyTitleRowDiff(nodeDiffs)
+      return nodeDiffs
     }
 
     const nodeDiffs: JsonSchemaKindPropertyNodeDiffs = { ...(superNodeDiffs ?? {}) }
@@ -111,7 +119,144 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     this.aggregateExamplesRowColorizingDiff(crawlValue, nodeDiffs)
     this.aggregateDefaultRowColorizingDiff(crawlValue, nodeDiffs)
 
+    if (!this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      const requiredMetaDiff = this.resolveRequiredMetaDiff(nodeKey, parentNode, diffsMetaKey)
+      if (requiredMetaDiff) {
+        nodeDiffs.required = requiredMetaDiff
+      }
+    } else {
+      delete nodeDiffs.required
+    }
+
+    this.stripMetaFlagDiffsWhenWholeNode(nodeDiffs)
+    this.aggregatePropertyTitleRowDiff(nodeDiffs)
+
     return Object.keys(nodeDiffs).length > 0 ? nodeDiffs : undefined
+  }
+
+  protected aggregatePropertyTitleRowDiff(
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
+      return
+    }
+
+    for (const flagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+      const flagDiff = nodeDiffs[flagKey]
+      if (flagDiff) {
+        nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
+        return
+      }
+    }
+
+    const requiredDiff = nodeDiffs.required
+    if (requiredDiff) {
+      nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(requiredDiff)
+      return
+    }
+
+    this.aggregateTypeLabelTitleRowDiff(nodeDiffs)
+  }
+
+  protected override stripMetaFlagDiffsWhenWholeNode(
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
+  ): void {
+    super.stripMetaFlagDiffsWhenWholeNode(nodeDiffs)
+    if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      delete nodeDiffs.required
+    }
+  }
+
+  private resolveRequiredMetaDiff(
+    nodeKey: NodeKey,
+    parentNode: ITreeNodeWithDiffs<
+      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeKind,
+      JsonSchemaTreeNodeMeta,
+      JsonSchemaTreeNodeValue | null
+    > | undefined,
+    diffsMetaKey: symbol,
+  ): ChangedPropertyMetaData | undefined {
+    if (!parentNode || typeof nodeKey !== "string" || !nodeKey) {
+      return undefined
+    }
+
+    const parentValue = parentNode.value()
+    const parentCrawlValue = parentNode.meta()?._fragment
+    if (!isObject(parentCrawlValue) && !isObject(parentValue)) {
+      return undefined
+    }
+
+    const propertyKey = String(nodeKey)
+    const parentCrawlDiffs = isObject(parentCrawlValue)
+      ? Reflect.get(parentCrawlValue, diffsMetaKey)
+      : undefined
+    const requiredArray = isObject(parentValue) && Array.isArray(parentValue.required)
+      ? parentValue.required
+      : isObject(parentCrawlValue) && Array.isArray(Reflect.get(parentCrawlValue, "required"))
+        ? Reflect.get(parentCrawlValue, "required") as unknown[]
+        : undefined
+
+    if (AbstractNodeDiffsAggregator.isDiffsRecord(parentCrawlDiffs)) {
+      const wholeRequiredDiff = parentCrawlDiffs.required
+      if (AbstractNodeDiffsAggregator.isDiff(wholeRequiredDiff)) {
+        if (isDiffAdd(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.afterValue)
+          && wholeRequiredDiff.afterValue.includes(propertyKey)) {
+          return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+        }
+        if (isDiffRemove(wholeRequiredDiff) && Array.isArray(wholeRequiredDiff.beforeValue)
+          && wholeRequiredDiff.beforeValue.includes(propertyKey)) {
+          return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+        }
+        if (isDiffReplace(wholeRequiredDiff)) {
+          const beforeRequired = Array.isArray(wholeRequiredDiff.beforeValue)
+            ? wholeRequiredDiff.beforeValue
+            : []
+          const afterRequired = Array.isArray(wholeRequiredDiff.afterValue)
+            ? wholeRequiredDiff.afterValue
+            : []
+          const wasRequired = beforeRequired.includes(propertyKey)
+          const isRequired = afterRequired.includes(propertyKey)
+          if (wasRequired !== isRequired) {
+            return this.buildChangedPropertyMetaDataFromDiff(wholeRequiredDiff)
+          }
+        }
+      }
+    }
+
+    if (!Array.isArray(requiredArray)) {
+      return undefined
+    }
+
+    const requiredIndex = requiredArray.indexOf(propertyKey)
+    if (requiredIndex >= 0) {
+      const requiredArrayDiffs = Reflect.get(requiredArray, diffsMetaKey)
+      if (AbstractNodeDiffsAggregator.isDiffsRecord(requiredArrayDiffs)) {
+        const indexDiff = requiredArrayDiffs[String(requiredIndex)]
+        if (AbstractNodeDiffsAggregator.isDiff(indexDiff)) {
+          return this.buildChangedPropertyMetaDataFromDiff(indexDiff)
+        }
+      }
+    }
+
+    if (AbstractNodeDiffsAggregator.isDiffsRecord(Reflect.get(requiredArray, diffsMetaKey))) {
+      const requiredArrayDiffs = Reflect.get(requiredArray, diffsMetaKey) as Partial<Record<string, Diff<DiffType>>>
+      for (const diff of Object.values(requiredArrayDiffs)) {
+        if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
+          continue
+        }
+        if (isDiffAdd(diff) && diff.afterValue === propertyKey) {
+          return this.buildChangedPropertyMetaDataFromDiff(diff)
+        }
+        if (isDiffRemove(diff) && diff.beforeValue === propertyKey) {
+          return this.buildChangedPropertyMetaDataFromDiff(diff)
+        }
+      }
+    }
+
+    return undefined
   }
 
   private buildDefaultValueDiffMetadata(diff: Diff<DiffType>): ChangedPropertyMetaData {

@@ -1,6 +1,7 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
+import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { FC, ReactElement } from "react"
 import { TextValueVariant } from "@apihub/components/shared-components/TextValue/types"
 import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow"
@@ -21,6 +22,8 @@ export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
   expanded?: boolean
   onClickExpander?: () => void
   titleRowDiffProps?: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities">
+  requiredDiff?: Diff
+  withRequiredDiffIndicator?: boolean
   renderSubheader: (context: {
     layoutSide: LayoutSide
     displayValueResolved: JsonSchemaTreeNodeValue | null | undefined
@@ -41,6 +44,8 @@ export const SchemaNodeTitleRowBase: FC<SchemaNodeTitleRowBaseProps> = (props) =
     expanded = false,
     onClickExpander,
     titleRowDiffProps,
+    requiredDiff,
+    withRequiredDiffIndicator = false,
     renderSubheader,
     [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
@@ -57,6 +62,8 @@ export const SchemaNodeTitleRowBase: FC<SchemaNodeTitleRowBaseProps> = (props) =
     displayValue,
     contentVisibility,
     isLastInList,
+    requiredDiff,
+    withRequiredDiffIndicator,
   })
 
   return (

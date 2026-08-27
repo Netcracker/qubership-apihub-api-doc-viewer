@@ -15,6 +15,14 @@ export const JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS = [
   "title",
 ] as const
 
+export const JSON_SCHEMA_META_FLAG_DIFF_KEYS = [
+  "readOnly",
+  "writeOnly",
+  "deprecated",
+] as const
+
+export type JsonSchemaMetaFlagDiffKey = (typeof JSON_SCHEMA_META_FLAG_DIFF_KEYS)[number]
+
 export type JsonSchemaTypeLabelFieldDiffKey = (typeof JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS)[number]
 
 /** Per-field diffs for type subheader parts (`type`, `(format)`, `<title>`). */
@@ -31,9 +39,15 @@ export type JsonSchemaSharedRowDiffs = {
 }
 
 /** Diffs bag produced by kind-any aggregation before property-specific keys are added. */
-export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | null> & JsonSchemaSharedRowDiffs
+export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | null> & JsonSchemaSharedRowDiffs & {
+  readOnly?: ChangedPropertyMetaData
+  writeOnly?: ChangedPropertyMetaData
+  deprecated?: ChangedPropertyMetaData
+}
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
+  /** Parent-derived required meta diff (not a property value field). */
+  required?: ChangedPropertyMetaData
   default?: ChangedPropertyMetaData
   defaultRowColorizingDiff?: ChangedPropertyMetaData
   /** Whole `enum` field add/remove; mutually exclusive with {@link enumValueDiffs}. */

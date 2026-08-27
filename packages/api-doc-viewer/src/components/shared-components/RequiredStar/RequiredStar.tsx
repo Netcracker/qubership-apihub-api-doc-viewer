@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { DiffRecord, isDiff } from '@netcracker/qubership-apihub-api-data-model'
-import { Diff, DiffAction } from '@netcracker/qubership-apihub-api-diff'
-import { FC, ReactNode } from 'react'
-import { LayoutMode } from '../../types/LayoutMode'
-import { LayoutSide } from '../../types/internal/LayoutSide'
-import { getLayoutModeFlags, getLayoutSideFlags } from '../../utils/common/changes'
-import { isDefined } from '../../utils/common/checkers'
+import { DiffRecord, isDiff } from "@netcracker/qubership-apihub-api-data-model"
+import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
+import { FC, ReactNode } from "react"
+import { LayoutMode } from "@apihub/types/LayoutMode"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { getLayoutModeFlags, getLayoutSideFlags } from "@apihub/utils/common/changes"
+import { isDefined } from "@apihub/utils/common/checkers"
 
 type RequiredStarProps = Partial<{
   value: boolean

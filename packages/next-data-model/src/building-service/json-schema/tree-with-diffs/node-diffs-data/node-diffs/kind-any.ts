@@ -12,9 +12,11 @@ import {
   NodeDiffs,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
   JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
   JsonSchemaKindAnyNodeDiffs,
+  JsonSchemaMetaFlagDiffKey,
   JsonSchemaSharedRowDiffs,
   JsonSchemaTypeLabelFieldDiffKey,
   JsonSchemaTypeLabelFieldDiffs,
@@ -24,7 +26,7 @@ import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schem
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
-import { Diff, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 export class JsonSchemaNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
@@ -92,6 +94,9 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       return undefined
     }
 
+    const wholeNodeDiff = diffs[NODE_LEVEL_DIFF_KEY]
+    wholeNodeDiff && this.aggregateTextDiff(wholeNodeDiff, NODE_LEVEL_DIFF_KEY, nodeDiffs)
+
     const titleDiff = diffs["title"]
     const formatDiff = diffs["format"]
     const typeDiff = diffs["type"]
@@ -104,8 +109,18 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     const descriptionDiff = diffs["description"]
     descriptionDiff && this.aggregateTextDiff(descriptionDiff, "description", nodeDiffs)
 
-    const wholeNodeDiff = diffs[NODE_LEVEL_DIFF_KEY]
-    wholeNodeDiff && this.aggregateTextDiff(wholeNodeDiff, NODE_LEVEL_DIFF_KEY, nodeDiffs)
+    const suppressMetaFlagDiffs = this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)
+    if (!suppressMetaFlagDiffs) {
+      for (const metaFlagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+        const metaFlagDiff = diffs[metaFlagKey]
+        if (AbstractNodeDiffsAggregator.isDiff(metaFlagDiff)) {
+          this.aggregateMetaFlagDiff(metaFlagDiff, metaFlagKey, nodeDiffs)
+        }
+      }
+    }
+
+    this.stripMetaFlagDiffsWhenWholeNode(nodeDiffs)
+    this.aggregateTitleRowDiff(nodeDiffs)
 
     return Object.keys(nodeDiffs).length > 0 ? nodeDiffs : undefined
   }
@@ -114,6 +129,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     diff: Diff<DiffType>,
     key: ChangedPropertyKey<JsonSchemaTreeNodeValue | null>,
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+  ): void {
+    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+  }
+
+  protected aggregateMetaFlagDiff(
+    diff: Diff<DiffType>,
+    key: JsonSchemaMetaFlagDiffKey,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
   ): void {
     nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
   }
@@ -134,11 +157,28 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
     if (Object.keys(typeLabelFieldDiffs).length > 0) {
       nodeDiffs.typeLabelFieldDiffs = typeLabelFieldDiffs
-      this.aggregateTypeLabelTitleRowDiff(nodeDiffs)
     }
   }
 
-  private aggregateTypeLabelTitleRowDiff(nodeDiffs: JsonSchemaSharedRowDiffs): void {
+  protected aggregateTitleRowDiff(nodeDiffs: JsonSchemaKindAnyNodeDiffs): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
+      return
+    }
+
+    for (const flagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+      const flagDiff = nodeDiffs[flagKey]
+      if (flagDiff) {
+        nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
+        return
+      }
+    }
+
+    this.aggregateTypeLabelTitleRowDiff(nodeDiffs)
+  }
+
+  protected aggregateTypeLabelTitleRowDiff(nodeDiffs: JsonSchemaSharedRowDiffs): void {
     const typeLabelFieldDiffs = nodeDiffs.typeLabelFieldDiffs
     if (!typeLabelFieldDiffs || Object.keys(typeLabelFieldDiffs).length === 0) {
       return
@@ -375,5 +415,77 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   ): boolean {
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     return !!nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))
+  }
+
+  protected stripMetaFlagDiffsWhenWholeNode(nodeDiffs: JsonSchemaKindAnyNodeDiffs): void {
+    if (!this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
+      return
+    }
+
+    for (const metaFlagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+      delete nodeDiffs[metaFlagKey]
+    }
+  }
+
+  protected readonly TITLE_ROW_FLAG_AS_REPLACE_STYLES: { before: DiffStyles; after: DiffStyles } = {
+    before: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+    },
+    after: {
+      isContentVisible: true,
+      isHeaderVisible: true,
+      backgroundColor: HighlightVariant.Yellow,
+    },
+  }
+
+  protected asReplaceFlagDiffForTitleRow(
+    flagDiff: ChangedPropertyMetaData,
+  ): ChangedPropertyMetaData {
+    const { data } = flagDiff
+
+    if (isDiffReplace(data)) {
+      return {
+        ...flagDiff,
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    if (isDiffAdd(data)) {
+      return {
+        ...flagDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.replace,
+          beforeValue: false,
+          afterValue: data.afterValue ?? true,
+          beforeDeclarationPaths: [],
+          afterDeclarationPaths: data.afterDeclarationPaths,
+        },
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    if (isDiffRemove(data)) {
+      return {
+        ...flagDiff,
+        data: {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.replace,
+          beforeValue: data.beforeValue ?? true,
+          afterValue: false,
+          beforeDeclarationPaths: data.beforeDeclarationPaths,
+          afterDeclarationPaths: [],
+        },
+        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
+      }
+    }
+
+    return flagDiff
   }
 }

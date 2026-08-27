@@ -1,14 +1,16 @@
 import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { resolvePlainPropertyListLastRowFlags } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
+import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { useMemo } from "react"
 import {
   isJsonSchemaBooleanAdditionalPropertiesNode,
   resolveJsonSchemaNodeTitleDisplay,
 } from "../utils/resolve-json-schema-node-title"
-import { JsonSchemaNodeTitle } from "./JsonSchemaNodeTitle"
+import { JsonSchemaNodeTitlePlain, JsonSchemaNodeTitleWithDiffs } from "./JsonSchemaNodeTitle"
 
 export type SchemaNodeTitleRowSharedInput = {
   ownerNode: JsonSchemaTreeNode
@@ -16,6 +18,8 @@ export type SchemaNodeTitleRowSharedInput = {
   displayValue?: JsonSchemaTreeNodeValue | null
   contentVisibility: JsonSchemaPropertyRowVisibility
   isLastInList: boolean
+  requiredDiff?: Diff
+  withRequiredDiffIndicator?: boolean
 }
 
 export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput) {
@@ -25,6 +29,8 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
     displayValue,
     contentVisibility,
     isLastInList,
+    requiredDiff,
+    withRequiredDiffIndicator = false,
   } = input
 
   const customizationOptions = useCustomizationOptions()
@@ -47,8 +53,22 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
   )
 
   const titleContent = useMemo(
-    () => <JsonSchemaNodeTitle display={titleDisplay} />,
-    [titleDisplay],
+    () => (layoutSide: LayoutSide) => withRequiredDiffIndicator
+      ? (
+        <JsonSchemaNodeTitleWithDiffs
+          display={titleDisplay}
+          required={ownerMeta?.required}
+          requiredDiff={requiredDiff}
+          layoutSide={layoutSide}
+        />
+      )
+      : (
+        <JsonSchemaNodeTitlePlain
+          display={titleDisplay}
+          required={ownerMeta?.required}
+        />
+      ),
+    [ownerMeta?.required, requiredDiff, titleDisplay, withRequiredDiffIndicator],
   )
 
   const showTypeSubheader = useMemo(

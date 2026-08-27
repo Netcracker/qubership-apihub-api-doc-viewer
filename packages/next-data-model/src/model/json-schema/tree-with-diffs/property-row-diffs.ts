@@ -9,13 +9,15 @@ import {
 import {
   type ListSideItem,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { isDiffAdd, isDiffRemove, isDiffReplace, Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
   JsonSchemaListValueDiffs,
+  JsonSchemaKindAnyNodeDiffs,
   JsonSchemaKindPropertyNodeDiffs,
   JsonSchemaSharedRowDiffs,
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import {
@@ -50,6 +52,7 @@ export type {
   JsonSchemaTypeLabelFieldDiffs,
 } from "./property-row-diffs.types"
 export {
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
   JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
 } from "./property-row-diffs.types"
@@ -75,6 +78,132 @@ export function takeJsonSchemaTitleRowDiff(
 ): ChangedPropertyMetaData | undefined {
   return takeSharedRowDiffs(node)[JSON_SCHEMA_TITLE_ROW_DIFF_KEY]
     ?? node.diffs[NODE_LEVEL_DIFF_KEY]
+}
+
+function takeKindAnyNodeDiffs(
+  node: JsonSchemaTreeNodeWithDiffs,
+): JsonSchemaKindAnyNodeDiffs {
+  return node.diffs as JsonSchemaKindAnyNodeDiffs
+}
+
+export function takeJsonSchemaReadOnlyDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeKindAnyNodeDiffs(node).readOnly
+}
+
+export function takeJsonSchemaWriteOnlyDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeKindAnyNodeDiffs(node).writeOnly
+}
+
+export function takeJsonSchemaDeprecatedDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeKindAnyNodeDiffs(node).deprecated
+}
+
+export function takeJsonSchemaRequiredMetaDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takePropertyRowDiffsForRequired(node)?.required
+}
+
+export function normalizeJsonSchemaRequiredMetaDiffForDisplay(
+  requiredMeta: ChangedPropertyMetaData | undefined,
+): Diff | undefined {
+  if (!requiredMeta?.data) {
+    return undefined
+  }
+
+  const diff = requiredMeta.data
+  if (isDiffAdd(diff)) {
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      description: diff.description,
+      action: DiffAction.add,
+      afterValue: true,
+      afterDeclarationPaths: diff.afterDeclarationPaths,
+    }
+  }
+
+  if (isDiffRemove(diff)) {
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      description: diff.description,
+      action: DiffAction.remove,
+      beforeValue: true,
+      beforeDeclarationPaths: diff.beforeDeclarationPaths,
+    }
+  }
+
+  if (isDiffReplace(diff)) {
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      description: diff.description,
+      action: DiffAction.replace,
+      beforeValue: true,
+      afterValue: true,
+      beforeDeclarationPaths: diff.beforeDeclarationPaths,
+      afterDeclarationPaths: diff.afterDeclarationPaths,
+    }
+  }
+
+  return diff
+}
+
+export function takeJsonSchemaRequiredMetaDiffForDisplay(
+  node: JsonSchemaTreeNodeWithDiffs,
+): Diff | undefined {
+  return normalizeJsonSchemaRequiredMetaDiffForDisplay(takeJsonSchemaRequiredMetaDiff(node))
+}
+
+function takePropertyRowDiffsForRequired(
+  node: JsonSchemaTreeNodeWithDiffs,
+): JsonSchemaKindPropertyNodeDiffs | undefined {
+  if (node.kind !== JsonSchemaTreeNodeKinds.PROPERTY) {
+    return undefined
+  }
+  return node.diffs as JsonSchemaKindPropertyNodeDiffs
+}
+
+export type JsonSchemaMetaFlagRawDiffs = Partial<{
+  readOnly: Diff
+  writeOnly: Diff
+  deprecated: Diff
+  required: Diff
+}>
+
+export function takeJsonSchemaMetaFlagRawDiffs(
+  node: JsonSchemaTreeNodeWithDiffs,
+): JsonSchemaMetaFlagRawDiffs {
+  const kindAnyDiffs = takeKindAnyNodeDiffs(node)
+  const propertyDiffs = takePropertyRowDiffsForRequired(node)
+  const rawDiffs: JsonSchemaMetaFlagRawDiffs = {}
+
+  for (const key of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+    const meta = kindAnyDiffs[key]
+    if (meta?.data) {
+      rawDiffs[key] = meta.data
+    }
+  }
+
+  const requiredMeta = propertyDiffs?.required
+  if (requiredMeta?.data) {
+    rawDiffs.required = normalizeJsonSchemaRequiredMetaDiffForDisplay(requiredMeta)
+  }
+
+  return rawDiffs
+}
+
+export function hasJsonSchemaMetaFlagContentChange(
+  node: JsonSchemaTreeNodeWithDiffs,
+): boolean {
+  return Object.keys(takeJsonSchemaMetaFlagRawDiffs(node)).length > 0
 }
 
 export function resolveJsonSchemaTypeLabelSideDisplayForNode(

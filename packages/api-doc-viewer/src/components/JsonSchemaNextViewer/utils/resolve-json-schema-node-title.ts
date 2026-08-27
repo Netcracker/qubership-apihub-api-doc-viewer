@@ -52,8 +52,7 @@ export function resolveJsonSchemaNodeTitleDisplay(
     return { variant: "text", text: `[${String(node.key)}]` }
   }
 
-  const requiredSuffix = meta?.required ? " *" : ""
-  return { variant: "text", text: `${String(node.key)}${requiredSuffix}` }
+  return { variant: "text", text: String(node.key) }
 }
 
 export function isJsonSchemaBooleanAdditionalPropertiesNode(
