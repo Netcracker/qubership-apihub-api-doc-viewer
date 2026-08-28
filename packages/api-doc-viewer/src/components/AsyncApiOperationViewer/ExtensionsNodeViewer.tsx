@@ -1,4 +1,4 @@
-import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
+import { useDiffMetaKeys } from "../../contexts/DiffMetaKeysContext"
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"

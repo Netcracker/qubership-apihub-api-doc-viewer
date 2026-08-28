@@ -1,4 +1,4 @@
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "../../../types/internal/LayoutSide"
 import type {
   ChangedPropertyMetaData,
   NodeDiffsSeverities,

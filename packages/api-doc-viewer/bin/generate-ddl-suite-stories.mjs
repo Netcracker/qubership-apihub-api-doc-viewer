@@ -72,7 +72,7 @@ const printStoryFile = ({ suiteId, title, displayMode }) => {
     .join("\n");
 
   const displayModeImport = displayMode
-    ? `import { ${displayMode === "simple" ? "SIMPLE" : "DETAILED"}_DISPLAY_MODE } from "@apihub/types/DisplayMode";\n`
+    ? `import { ${displayMode === "simple" ? "SIMPLE" : "DETAILED"}_DISPLAY_MODE } from "../../types/DisplayMode";\n`
     : "";
   const factoryOptions = displayMode
     ? `, { displayMode: ${displayMode === "simple" ? "SIMPLE" : "DETAILED"}_DISPLAY_MODE }`

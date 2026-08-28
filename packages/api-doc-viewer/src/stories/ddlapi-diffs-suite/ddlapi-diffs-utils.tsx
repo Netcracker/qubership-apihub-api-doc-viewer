@@ -1,4 +1,4 @@
-import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableDiffsViewer";
+import { DdlTableDiffsViewer } from "../../components/DdlTableViewer/DdlTableDiffsViewer";
 import { apiDiff } from "@netcracker/qubership-apihub-api-diff";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { ArgTypes, Meta, StoryObj } from "@storybook/react";

@@ -1,5 +1,5 @@
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { takeDiffSideTextHighlighterColor } from "../../../utils/diffs/take-diff-side-text-highlighter-color"
+import { LayoutSide } from "../../../types/internal/LayoutSide"
 import {
   DdlColumnTypeLabelSideSegment,
   resolveColumnTypeLabelSideDisplay,

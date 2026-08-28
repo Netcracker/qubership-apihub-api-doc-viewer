@@ -1,9 +1,9 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { takeIndexFlagDiffs } from "@apihub/utils/ddlapi/column-row-badges"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
+import { takeIndexFlagDiffs } from "../../utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
-} from "@apihub/utils/ddlapi/node-level-diff"
+} from "../../utils/ddlapi/node-level-diff"
 import {
   isDdlPropertySubheaderVisible,
   resolveIndexPartNamesSideDisplay,
@@ -15,7 +15,7 @@ import {
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/node-visibility/kind-index"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "../../types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"

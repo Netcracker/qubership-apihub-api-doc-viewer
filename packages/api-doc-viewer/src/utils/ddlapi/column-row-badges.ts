@@ -1,4 +1,4 @@
-import { ColumnRowBadgesFlagDiffs } from "@apihub/components/DdlTableViewer/ColumnRowBadges/types"
+import { ColumnRowBadgesFlagDiffs } from "../../components/DdlTableViewer/ColumnRowBadges/types"
 import {
   takeColumnFlagDiffs as takeColumnFlagDiffsFromModel,
   takeColumnForeignKeyTargetDiffs as takeColumnForeignKeyTargetDiffsFromModel,

@@ -1,11 +1,11 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
 import {
   resolvePlainIndexListLastRowFlags,
   resolvePlainIndexNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-visibility/kind-index"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "../../types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { DEFAULT_LONG_TEXT_COLOR } from "../shared-components/TextRow/consts"

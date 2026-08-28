@@ -1,4 +1,4 @@
-import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer";
+import { JsoDiffsViewer } from "../../components/JsoViewer/JsoDiffsViewer";
 import type { Meta, StoryObj } from "@storybook/react";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {

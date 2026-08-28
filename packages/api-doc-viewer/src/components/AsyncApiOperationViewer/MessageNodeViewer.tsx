@@ -1,5 +1,5 @@
-import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-checkers";
-import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
+import { isMessageSectionSelectorNode } from "../../utils/async-api/node-type-checkers";
+import { shouldBeDisplayed } from "../../utils/async-api/visibility-checkers";
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";

@@ -1,4 +1,4 @@
-import { isDefined } from '@apihub/utils/common/checkers'
+import { isDefined } from '../common/checkers'
 import { DdlApiColumnRowValue } from '@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value'
 
 export function hasDdlColumnAdditionalInfoRows(

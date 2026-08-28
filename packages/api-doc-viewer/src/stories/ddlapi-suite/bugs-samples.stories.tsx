@@ -4,7 +4,7 @@
  */
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { Meta, StoryObj } from "@storybook/react";
-import { DdlTableViewer } from "@apihub/components/DdlTableViewer/DdlTableViewer";
+import { DdlTableViewer } from "../../components/DdlTableViewer/DdlTableViewer";
 import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
 

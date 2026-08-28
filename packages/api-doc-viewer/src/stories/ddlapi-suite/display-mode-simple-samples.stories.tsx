@@ -1,4 +1,4 @@
-import { SIMPLE_DISPLAY_MODE } from "@apihub/types/DisplayMode";
+import { SIMPLE_DISPLAY_MODE } from "../../types/DisplayMode";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   collectDdlSampleCases,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsoViewer } from '@apihub/components/JsoViewer/JsoViewer';
+import { JsoViewer } from '../../components/JsoViewer/JsoViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 
 // It's necessary because storybook doesn't render nested stories without this empty story
