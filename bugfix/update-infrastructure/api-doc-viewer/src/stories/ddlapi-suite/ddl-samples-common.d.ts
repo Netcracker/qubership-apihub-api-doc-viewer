@@ -1,4 +1,4 @@
-import type { DisplayMode } from '../../types/DisplayMode';
+import type { DisplayMode } from "../../types/DisplayMode";
 import type { Meta, StoryObj } from "@storybook/react";
 import type { DdlSampleCase } from "../utils/ddl-samples-cases";
 import { type DdlCaseStoryComponentProps } from "./ddl-samples-utils";

@@ -1,4 +1,4 @@
-import { type AsyncApiOperationDiffsViewerProps } from '../../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
+import { type AsyncApiOperationDiffsViewerProps } from "../../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
 export type AsyncApiDiffSampleCase = {
     caseId: string;
     beforeYaml: string;

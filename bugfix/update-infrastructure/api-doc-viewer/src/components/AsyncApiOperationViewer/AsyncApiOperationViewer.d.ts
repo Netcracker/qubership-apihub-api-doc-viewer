@@ -1,4 +1,4 @@
-import { DisplayMode } from '../../types/DisplayMode';
+import { DisplayMode } from "../../types/DisplayMode";
 import { FC } from '../../../../../node_modules/react';
 import { OperationKeys } from '../../../../next-data-model/src/shared/async-api/types/operation-keys';
 export type AsyncApiOperationViewerProps = {

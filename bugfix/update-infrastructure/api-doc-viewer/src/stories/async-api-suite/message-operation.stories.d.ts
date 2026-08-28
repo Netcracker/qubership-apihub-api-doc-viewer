@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../../components/AsyncApiOperationViewer/AsyncApiOperationViewer').AsyncApiOperationViewerProps>;
+    component: import('../../../../../node_modules/react').FC<import("../..").AsyncApiOperationViewerProps>;
     parameters: {};
     argTypes: {
         source: {

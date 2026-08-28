@@ -1,4 +1,4 @@
-import { LayoutSide } from '../../types/internal/LayoutSide';
+import { LayoutSide } from "../../types/internal/LayoutSide";
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC, ReactElement } from '../../../../../node_modules/react';
 export type RenderFunction = (layoutSide: LayoutSide) => ReactElement | null;
