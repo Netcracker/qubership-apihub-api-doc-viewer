@@ -50,15 +50,6 @@ export default defineConfig({
       '@netcracker/qubership-apihub-samples': path.resolve(__dirname, '../samples/src'),
       '@apihub/api-data-model': path.resolve(__dirname, '../api-data-model/src'),
       '@apihub/next-data-model': path.resolve(__dirname, '../next-data-model/src'),
-
-      // Internal aliases (within this package)
-      '@apihub/builders': path.resolve(__dirname, 'src/builders'),
-      '@apihub/components': path.resolve(__dirname, 'src/components'),
-      '@apihub/constants': path.resolve(__dirname, 'src/consts'),
-      '@apihub/contexts': path.resolve(__dirname, 'src/contexts'),
-      '@apihub/hooks': path.resolve(__dirname, 'src/hooks'),
-      '@apihub/types': path.resolve(__dirname, 'src/types'),
-      '@apihub/utils': path.resolve(__dirname, 'src/utils')
     }
   }
 })
