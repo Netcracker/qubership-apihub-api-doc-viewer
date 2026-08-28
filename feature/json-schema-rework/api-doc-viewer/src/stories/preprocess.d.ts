@@ -53,6 +53,8 @@ export type JsonDiffSchemaOptions = {
     afterAdditionalComponents?: Record<PropertyKey, unknown>;
     target: OASTarget;
     circular?: boolean;
+    /** When true, inline schemas in the OAS template instead of $ref to __Substitution__. */
+    disableSubstitutionTitle?: boolean;
 };
 export declare function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown;
 export declare function prepareJsonDiffSchemaOas31(options: JsonDiffSchemaOptions): unknown;

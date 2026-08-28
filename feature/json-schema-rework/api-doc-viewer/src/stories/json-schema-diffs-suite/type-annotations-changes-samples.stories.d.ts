@@ -5,7 +5,7 @@
 import type { StoryObj } from "@storybook/react";
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: import("./json-schema-diffs-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: import("./json-schema-diffs-type-annotations-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {
@@ -44,3 +44,6 @@ export declare const Case_012_title_removed_format_replaced: Story;
 export declare const Case_013_title_replaced_format_added: Story;
 export declare const Case_014_title_replaced_format_removed: Story;
 export declare const Case_015_title_replaced_format_replaced: Story;
+export declare const Case_016_monolithic_type_title_format_replaced: Story;
+export declare const Case_017_type_title_replaced: Story;
+export declare const Case_018_type_format_replaced: Story;
