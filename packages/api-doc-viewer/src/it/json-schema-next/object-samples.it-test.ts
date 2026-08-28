@@ -41,6 +41,8 @@ const TEST_IDS: string[] = [
   'case-030-header-properties-additional-properties-additional-info',
   'case-031-description-properties-additional-properties-additional-info',
   'case-032-header-description-properties-additional-properties-additional-info',
+  'case-033-additional-properties-true',
+  'case-034-additional-properties-false',
 ]
 
 async function waitForJsonSchemaNextViewer() {

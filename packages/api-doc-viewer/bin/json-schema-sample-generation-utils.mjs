@@ -203,9 +203,40 @@ const propertiesFragment = () => ({
   },
 });
 
-const additionalPropertiesFragment = () => ({
-  additionalProperties: { type: "string" },
+/** Rule1 string schema (full string validations) for additionalProperties samples. */
+const buildRule1StringSchema = () => ({
+  type: "string",
+  description: "Sample string schema with all string validations",
+  default: "alpha",
+  enum: ["alpha", "beta", "gamma"],
+  minLength: 1,
+  maxLength: 128,
+  pattern: "^[a-z]+$",
 });
+
+const additionalPropertiesFragment = () => ({
+  additionalProperties: buildRule1StringSchema(),
+});
+
+/** Extra samples beyond the rendering-group power set (object-only for now). */
+const SUPPLEMENTARY_CASES_BY_TYPE = {
+  object: [
+    {
+      slug: "additional-properties-true",
+      schema: {
+        type: "object",
+        additionalProperties: true,
+      },
+    },
+    {
+      slug: "additional-properties-false",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+      },
+    },
+  ],
+};
 
 const itemsFragment = () => ({
   items: { type: "string" },
@@ -267,9 +298,10 @@ export const collectCasesForType = (schemaType) => {
   const subsets = powerSet(groupOrder).filter(
     (activeGroups) => !isRedundantRenderingGroupSubset(schemaType, activeGroups),
   );
-  const totalCount = subsets.length;
+  const supplementary = SUPPLEMENTARY_CASES_BY_TYPE[schemaType] ?? [];
+  const totalCount = subsets.length + supplementary.length;
 
-  return subsets.map((activeGroups, subsetIndex) => {
+  const baseCases = subsets.map((activeGroups, subsetIndex) => {
     const index = subsetIndex + 1;
     return {
       index,
@@ -278,6 +310,18 @@ export const collectCasesForType = (schemaType) => {
       schema: buildSchema(schemaType, activeGroups),
     };
   });
+
+  const supplementaryCases = supplementary.map((definition, offset) => {
+    const index = subsets.length + offset + 1;
+    return {
+      index,
+      caseId: `${padCaseIndex(index, totalCount)}-${definition.slug}`,
+      activeGroups: [],
+      schema: definition.schema,
+    };
+  });
+
+  return [...baseCases, ...supplementaryCases];
 };
 
 export const writeSampleCase = (

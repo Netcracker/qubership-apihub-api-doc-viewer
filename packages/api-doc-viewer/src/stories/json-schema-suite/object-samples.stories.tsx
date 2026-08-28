@@ -62,3 +62,5 @@ export const Case_029_properties_additional_properties_additional_info: Story = 
 export const Case_030_header_properties_additional_properties_additional_info: Story = createCaseStory("030-header-properties-additional-properties-additional-info");
 export const Case_031_description_properties_additional_properties_additional_info: Story = createCaseStory("031-description-properties-additional-properties-additional-info");
 export const Case_032_header_description_properties_additional_properties_additional_info: Story = createCaseStory("032-header-description-properties-additional-properties-additional-info");
+export const Case_033_additional_properties_true: Story = createCaseStory("033-additional-properties-true");
+export const Case_034_additional_properties_false: Story = createCaseStory("034-additional-properties-false");

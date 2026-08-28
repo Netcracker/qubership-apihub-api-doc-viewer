@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-28T12:46:04.882Z",
-  "totalCases": 301,
+  "generatedAt": "2026-08-28T14:06:49.293Z",
+  "totalCases": 385,
   "suites": [
     {
       "globPath": "type-flags",
@@ -60,7 +60,7 @@
     },
     {
       "globPath": "object-properties",
-      "caseCount": 24
+      "caseCount": 108
     },
     {
       "globPath": "array-indexed-items",

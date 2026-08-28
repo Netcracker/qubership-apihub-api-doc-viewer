@@ -1030,6 +1030,19 @@ const buildRule1ObjectWithProperties = (propKeys, schemaType) => {
   };
 };
 
+/** @param {string} schemaType */
+const buildRule1ObjectVariantBase = (schemaType) => buildRule1ObjectWithProperties(["prop0"], schemaType);
+
+/** @param {object} objectSchema @param {string} schemaType */
+const withRule1AdditionalProperties = (objectSchema, schemaType) => merge(objectSchema, {
+  additionalProperties: clone(buildRule1PropertySchema(schemaType)),
+});
+
+/** @param {object} objectSchema */
+const withAdditionalPropertiesFalseOnObject = (objectSchema) => merge(objectSchema, {
+  additionalProperties: false,
+});
+
 /** @param {number} indexedItemCount @param {string} schemaType */
 const buildRule1TupleArray = (indexedItemCount, schemaType) => {
   const itemSchema = buildRule1PropertySchema(schemaType);
@@ -1178,6 +1191,156 @@ const collectObjectPropertyChangeCases = (cases) => {
       buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType),
       buildRule1ObjectWithProperties([], schemaType),
       "Object with 2 properties: remove 2 properties",
+    );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectPropertiesAdditionalPropertiesCases = (cases) => {
+  const dir = "object-properties";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    const base = buildRule1ObjectVariantBase(schemaType);
+    const withRule1Ap = withRule1AdditionalProperties(base, schemaType);
+    const withFalseAp = withAdditionalPropertiesFalseOnObject(base);
+
+    pushRule1Case(
+      cases,
+      dir,
+      "add-additional-properties-rule1",
+      schemaType,
+      base,
+      withRule1Ap,
+      "Added additionalProperties (Rule1 schema)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-additional-properties-rule1",
+      schemaType,
+      withRule1Ap,
+      base,
+      "Removed additionalProperties (Rule1 schema)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "add-additional-properties-false",
+      schemaType,
+      base,
+      withFalseAp,
+      "Added additionalProperties: false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-additional-properties-false",
+      schemaType,
+      withFalseAp,
+      base,
+      "Removed additionalProperties: false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "change-additional-properties-rule1-to-false",
+      schemaType,
+      withRule1Ap,
+      withFalseAp,
+      "Changed additionalProperties: Rule1 schema → false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "change-additional-properties-false-to-rule1",
+      schemaType,
+      withFalseAp,
+      withRule1Ap,
+      "Changed additionalProperties: false → Rule1 schema",
+    );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectPropertiesOneOfVariantAdditionalPropertiesCases = (cases) => {
+  const dir = "object-properties";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    const variantBase = buildRule1ObjectVariantBase(schemaType);
+    const variantWithRule1Ap = withRule1AdditionalProperties(variantBase, schemaType);
+    const variantWithFalseAp = withAdditionalPropertiesFalseOnObject(variantBase);
+
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-added",
+      schemaType,
+      buildOneOfObjectVariantRoot(undefined),
+      buildOneOfObjectVariantRoot(variantBase),
+      "Added oneOf object variant (OneOfVariant2, Rule1)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-removed",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantBase),
+      buildOneOfObjectVariantRoot(undefined),
+      "Removed oneOf object variant (OneOfVariant2, Rule1)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-add-additional-properties-rule1",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantBase),
+      buildOneOfObjectVariantRoot(variantWithRule1Ap),
+      "OneOf variant: added additionalProperties (Rule1 schema)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-remove-additional-properties-rule1",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantWithRule1Ap),
+      buildOneOfObjectVariantRoot(variantBase),
+      "OneOf variant: removed additionalProperties (Rule1 schema)",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-add-additional-properties-false",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantBase),
+      buildOneOfObjectVariantRoot(variantWithFalseAp),
+      "OneOf variant: added additionalProperties: false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-remove-additional-properties-false",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantWithFalseAp),
+      buildOneOfObjectVariantRoot(variantBase),
+      "OneOf variant: removed additionalProperties: false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-change-additional-properties-rule1-to-false",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantWithRule1Ap),
+      buildOneOfObjectVariantRoot(variantWithFalseAp),
+      "OneOf variant: changed additionalProperties: Rule1 schema → false",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-variant2-change-additional-properties-false-to-rule1",
+      schemaType,
+      buildOneOfObjectVariantRoot(variantWithFalseAp),
+      buildOneOfObjectVariantRoot(variantWithRule1Ap),
+      "OneOf variant: changed additionalProperties: false → Rule1 schema",
     );
   }
 };
@@ -1772,6 +1935,8 @@ export const collectTypeChangeCases = () => {
   collectTypeValueChangeCases(cases);
   collectTypeAnnotationsChangeCases(cases);
   collectObjectPropertyChangeCases(cases);
+  collectObjectPropertiesAdditionalPropertiesCases(cases);
+  collectObjectPropertiesOneOfVariantAdditionalPropertiesCases(cases);
   collectArrayIndexedItemChangeCases(cases);
   collectOneOfObjectVariantCases(cases);
   collectOneOfArrayVariantCases(cases);
