@@ -2,6 +2,7 @@ import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { JsonSchemaTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
 import { JsonSchemaTreeNodeValue } from '../../../../../next-data-model/src/model/json-schema/types/node-value';
 import { JsonSchemaPropertyRowVisibility } from '../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types';
+import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { Diff } from "@netcracker/qubership-apihub-api-diff";
 export type SchemaNodeTitleRowSharedInput = {
     ownerNode: JsonSchemaTreeNode;
@@ -11,6 +12,7 @@ export type SchemaNodeTitleRowSharedInput = {
     isLastInList: boolean;
     requiredDiff?: Diff;
     withRequiredDiffIndicator?: boolean;
+    titleRowDiff?: ChangedPropertyMetaData;
 };
 export declare function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput): {
     displayValueResolved: import('../../../../../next-data-model/src/model/json-schema/types/node-value').JsonSchemaTreeNodeValueBase | null;
@@ -25,6 +27,6 @@ export declare function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSha
         readonly isCycle: boolean;
     }>;
     listLastRowFlags: import('../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types').JsonSchemaPropertyListLastRowFlags;
-    titleContent: (layoutSide: LayoutSide) => import('../../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    titleContent: (layoutSide: LayoutSide) => import('../../../../../../node_modules/react/jsx-runtime').JSX.Element | null;
     showTypeSubheader: boolean;
 };
