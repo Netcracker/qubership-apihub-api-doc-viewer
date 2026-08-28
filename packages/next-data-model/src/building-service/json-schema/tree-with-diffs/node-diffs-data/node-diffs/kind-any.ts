@@ -410,6 +410,36 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
   }
 
+  protected buildWholeNodeInheritedRowColorizingDiff(
+    nodeLevelDiff: ChangedPropertyMetaData,
+  ): ChangedPropertyMetaData {
+    const { data } = nodeLevelDiff
+
+    if (isDiffAdd(data)) {
+      return this.buildChangedPropertyMetaDataFromDiff({
+        type: data.type,
+        scope: data.scope,
+        description: data.description,
+        action: DiffAction.add,
+        afterValue: true,
+        afterDeclarationPaths: data.afterDeclarationPaths ?? [],
+      })
+    }
+
+    if (isDiffRemove(data)) {
+      return this.buildChangedPropertyMetaDataFromDiff({
+        type: data.type,
+        scope: data.scope,
+        description: data.description,
+        action: DiffAction.remove,
+        beforeValue: true,
+        beforeDeclarationPaths: data.beforeDeclarationPaths ?? [],
+      })
+    }
+
+    return nodeLevelDiff
+  }
+
   protected hasWholeNodeAddOrRemoveDiff(
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
   ): boolean {

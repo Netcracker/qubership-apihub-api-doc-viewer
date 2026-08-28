@@ -64,6 +64,7 @@ export const SchemaNodeTitleRowBase: FC<SchemaNodeTitleRowBaseProps> = (props) =
     isLastInList,
     requiredDiff,
     withRequiredDiffIndicator,
+    titleRowDiff: titleRowDiffProps?.diff,
   })
 
   return (

@@ -118,6 +118,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     this.aggregateEnumRowColorizingDiff(crawlValue, nodeDiffs)
     this.aggregateExamplesRowColorizingDiff(crawlValue, nodeDiffs)
     this.aggregateDefaultRowColorizingDiff(crawlValue, nodeDiffs)
+    this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
 
     if (!this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       const requiredMetaDiff = this.resolveRequiredMetaDiff(nodeKey, parentNode, diffsMetaKey)
@@ -448,7 +449,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
-      nodeDiffs[colorizingDiffKey] = nodeLevelDiff
+      nodeDiffs[colorizingDiffKey] = this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
       return
     }
 
@@ -483,7 +484,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
       if (hasDefaultInMerged || nodeDiffs.default) {
-        nodeDiffs.defaultRowColorizingDiff = nodeLevelDiff
+        nodeDiffs.defaultRowColorizingDiff = this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
       }
       return
     }
@@ -501,6 +502,31 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
     if (isDiffReplace(diff)) {
       nodeDiffs.defaultRowColorizingDiff = this.asReplaceRowColorizingDiff(defaultValueDiff)
+    }
+  }
+
+  private aggregateWholeNodeInheritedValidationRowDiffs(
+    crawlValue: object,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff || !(isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      return
+    }
+
+    for (const [rowKey, sourceKeys] of Object.entries(JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS)) {
+      const validationRowKey = rowKey as JsonSchemaValidationRowKey
+      const hasRowContent = sourceKeys.some((sourceKey) => Reflect.get(crawlValue, sourceKey) !== undefined)
+      if (!hasRowContent) {
+        continue
+      }
+
+      nodeDiffs.validationRowColorizingDiffs ??= {}
+
+      if (!nodeDiffs.validationRowColorizingDiffs[validationRowKey]) {
+        nodeDiffs.validationRowColorizingDiffs[validationRowKey] =
+          this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
+      }
     }
   }
 

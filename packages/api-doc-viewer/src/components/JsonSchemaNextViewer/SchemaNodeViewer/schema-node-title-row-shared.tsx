@@ -4,6 +4,8 @@ import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { resolvePlainPropertyListLastRowFlags } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
+import { isDiffSideContentVisible, isDiffSideHeaderVisible, takeAddRemoveDiffIfPresent } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
+import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { useMemo } from "react"
 import {
@@ -20,6 +22,7 @@ export type SchemaNodeTitleRowSharedInput = {
   isLastInList: boolean
   requiredDiff?: Diff
   withRequiredDiffIndicator?: boolean
+  titleRowDiff?: ChangedPropertyMetaData
 }
 
 export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput) {
@@ -31,6 +34,7 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
     isLastInList,
     requiredDiff,
     withRequiredDiffIndicator = false,
+    titleRowDiff,
   } = input
 
   const customizationOptions = useCustomizationOptions()
@@ -53,22 +57,33 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
   )
 
   const titleContent = useMemo(
-    () => (layoutSide: LayoutSide) => withRequiredDiffIndicator
-      ? (
-        <JsonSchemaNodeTitleWithDiffs
-          display={titleDisplay}
-          required={ownerMeta?.required}
-          requiredDiff={requiredDiff}
-          layoutSide={layoutSide}
-        />
-      )
-      : (
-        <JsonSchemaNodeTitlePlain
-          display={titleDisplay}
-          required={ownerMeta?.required}
-        />
-      ),
-    [ownerMeta?.required, requiredDiff, titleDisplay, withRequiredDiffIndicator],
+    () => (layoutSide: LayoutSide) => {
+      const addRemoveDiff = takeAddRemoveDiffIfPresent(titleRowDiff)
+      const isVisible = addRemoveDiff
+        ? isDiffSideHeaderVisible(addRemoveDiff, layoutSide)
+        : isDiffSideContentVisible(titleRowDiff, layoutSide)
+
+      if (!isVisible) {
+        return null
+      }
+
+      return withRequiredDiffIndicator
+        ? (
+          <JsonSchemaNodeTitleWithDiffs
+            display={titleDisplay}
+            required={ownerMeta?.required}
+            requiredDiff={requiredDiff}
+            layoutSide={layoutSide}
+          />
+        )
+        : (
+          <JsonSchemaNodeTitlePlain
+            display={titleDisplay}
+            required={ownerMeta?.required}
+          />
+        )
+    },
+    [ownerMeta?.required, requiredDiff, titleDisplay, titleRowDiff, withRequiredDiffIndicator],
   )
 
   const showTypeSubheader = useMemo(

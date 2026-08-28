@@ -1,6 +1,8 @@
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, DiffAction, apiDiff } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
+import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
 import { HighlightVariant, NODE_LEVEL_DIFF_KEY } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
+import { isDiffSideHeaderVisible } from "../../src/model/abstract/tree-with-diffs/list-side-display"
 import { JSON_SCHEMA_TITLE_ROW_DIFF_KEY } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import {
@@ -332,6 +334,36 @@ describe("JSON Schema meta flag diffs", () => {
     expect(prop2Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
     expect(takeJsonSchemaRequiredMetaDiff(prop2Node)).toBeUndefined()
     expect(takeJsonSchemaRequiredMetaDiffForDisplay(prop2Node)).toBeUndefined()
+
+    const titleRowDiff = takeJsonSchemaTitleRowDiff(prop2Node)
+    expect(titleRowDiff?.data.action).toBe(DiffAction.add)
+    expect(isDiffSideHeaderVisible(titleRowDiff, ORIGIN_LAYOUT_SIDE)).toBe(false)
+    expect(isDiffSideHeaderVisible(titleRowDiff, CHANGED_LAYOUT_SIDE)).toBe(true)
+  })
+
+  it("hides title row content on changed side for removed property nodes", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: {
+          prop1: { type: "string" },
+          prop2: { type: "string" },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          prop1: { type: "string" },
+        },
+      },
+    )
+    const tree = buildTree(merged)
+    const prop2Node = findPropertyNode(tree, "prop2")
+    const titleRowDiff = takeJsonSchemaTitleRowDiff(prop2Node)
+
+    expect(titleRowDiff?.data.action).toBe(DiffAction.remove)
+    expect(isDiffSideHeaderVisible(titleRowDiff, ORIGIN_LAYOUT_SIDE)).toBe(true)
+    expect(isDiffSideHeaderVisible(titleRowDiff, CHANGED_LAYOUT_SIDE)).toBe(false)
   })
 
   it("aggregates required add via OAS-normalized merge (storybook path, case 007 shape)", () => {

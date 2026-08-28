@@ -7,7 +7,15 @@ import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-wi
 import { formatJsonSchemaValidationRowChipDisplay } from "../../src/model/json-schema/tree-with-diffs/validation-row-chip-display"
 import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 import {
+  resolveJsonSchemaDefaultSideEntries,
+  resolveJsonSchemaEnumSideEntries,
   resolveJsonSchemaValidationRowSideEntries,
+  takeJsonSchemaDefaultDiff,
+  takeJsonSchemaDefaultRowColorizingDiff,
+  takeJsonSchemaEnumDiff,
+  takeJsonSchemaEnumRowColorizingDiff,
+  takeJsonSchemaValidationRowColorizingDiff,
+  takeJsonSchemaValidationRowDiff,
   takeJsonSchemaValidationRowValueDiffs,
   takeJsonSchemaValueRangeCrawlDiffs,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
@@ -545,5 +553,130 @@ describe("JsonSchema with-diffs stack", () => {
       useOas31SchemaForm: true,
       ...caseSpec,
     })
+  })
+
+  const rule1StringProperty = {
+    type: "string",
+    description: "Sample string schema with all string validations",
+    default: "alpha",
+    enum: ["alpha", "beta", "gamma"],
+    minLength: 1,
+    maxLength: 128,
+    pattern: "^[a-z]+$",
+  } as const
+
+  it("inherits whole-node add colorizing onto enum and validation rows for added property", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: {
+          prop0: rule1StringProperty,
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          prop0: rule1StringProperty,
+          prop1: rule1StringProperty,
+        },
+      },
+    )
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")
+    expect(prop1Node).toBeDefined()
+    expect(isJsonSchemaTreeNodeWithDiffs(prop1Node!)).toBe(true)
+
+    const nodeLevelDiff = prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]
+    expect(nodeLevelDiff?.data.action).toBe(DiffAction.add)
+
+    expect(takeJsonSchemaEnumDiff(prop1Node!)).toBeUndefined()
+    const enumRowColorizingDiff = takeJsonSchemaEnumRowColorizingDiff(prop1Node!)
+    expect(enumRowColorizingDiff).toBeDefined()
+    expect(enumRowColorizingDiff).not.toBe(nodeLevelDiff)
+    expect(enumRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(enumRowColorizingDiff?.data.afterValue).toBe(true)
+    expect(enumRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
+    expect(enumRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(resolveJsonSchemaEnumSideEntries(
+      rule1StringProperty.enum,
+      undefined,
+      undefined,
+      CHANGED_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
+
+    expect(takeJsonSchemaDefaultDiff(prop1Node!)).toBeUndefined()
+    const defaultRowColorizingDiff = takeJsonSchemaDefaultRowColorizingDiff(prop1Node!)
+    expect(defaultRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(defaultRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
+    expect(resolveJsonSchemaDefaultSideEntries(
+      rule1StringProperty.default,
+      undefined,
+      CHANGED_LAYOUT_SIDE,
+    )).toEqual([{ text: "alpha" }])
+
+    for (const rowKey of [
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+      JsonSchemaValidationRowKeys.VALUE_PATTERN,
+    ] as const) {
+      expect(takeJsonSchemaValidationRowDiff(prop1Node!, rowKey)).toBeUndefined()
+      const validationRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(prop1Node!, rowKey)
+      expect(validationRowColorizingDiff?.data.action).toBe(DiffAction.add)
+      expect(validationRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
+      expect(validationRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    }
+  })
+
+  it("inherits whole-node remove colorizing onto enum and validation rows for removed property", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: {
+          prop0: rule1StringProperty,
+          prop1: rule1StringProperty,
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          prop0: rule1StringProperty,
+        },
+      },
+    )
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")
+    expect(prop1Node).toBeDefined()
+
+    const nodeLevelDiff = prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]
+    expect(nodeLevelDiff?.data.action).toBe(DiffAction.remove)
+
+    expect(takeJsonSchemaEnumDiff(prop1Node!)).toBeUndefined()
+    const enumRowColorizingDiff = takeJsonSchemaEnumRowColorizingDiff(prop1Node!)
+    expect(enumRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(enumRowColorizingDiff?.styles.before.borderShadowColor).toBeUndefined()
+    expect(resolveJsonSchemaEnumSideEntries(
+      rule1StringProperty.enum,
+      undefined,
+      undefined,
+      ORIGIN_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
+
+    expect(takeJsonSchemaValidationRowDiff(
+      prop1Node!,
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+    )).toBeUndefined()
+    const valueLengthColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+      prop1Node!,
+      JsonSchemaValidationRowKeys.VALUE_LENGTH,
+    )
+    expect(valueLengthColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(valueLengthColorizingDiff?.styles.before.borderShadowColor).toBeUndefined()
   })
 })
