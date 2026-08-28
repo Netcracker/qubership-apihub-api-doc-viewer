@@ -129,4 +129,25 @@ describe("JSON Schema Diffs Suite/Type Annotations Changes Samples", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("016-monolithic-type-title-format-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-016-monolithic-type-title-format-replaced`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("017-type-title-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-017-type-title-replaced`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("018-type-format-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-018-type-format-replaced`);
+    await waitForJsonSchemaNextDiffsViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });

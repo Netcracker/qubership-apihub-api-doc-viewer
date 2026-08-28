@@ -79,7 +79,7 @@ describe("JSON Schema type label diffs", () => {
     expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 
-  it("resolves whole-label side display when format and title replace together", () => {
+  it("resolves partial side display when format and title replace together without type change", () => {
     const merged = mergeSchemas(
       { type: "string", format: "date", title: "Birth date" },
       { type: "string", format: "date-time", title: "Birth timestamp" },
@@ -91,17 +91,81 @@ describe("JSON Schema type label diffs", () => {
     const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
     const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
 
-    expect(originDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
-    expect(changedDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
+    expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
 
-    if (originDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
-      expect(originDisplay.text).toBe("string (date) <Birth date>")
-      expect(originDisplay.diff.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    if (originDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
+      throw new Error("expected partial diffs display")
     }
-    if (changedDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
-      expect(changedDisplay.text).toBe("string (date-time) <Birth timestamp>")
-      expect(changedDisplay.diff.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    if (changedDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
+      throw new Error("expected partial diffs display")
     }
+
+    expect(originDisplay.segments.map(segment => segment.text)).toEqual([
+      "string",
+      "(date)",
+      "<Birth date>",
+    ])
+    expect(changedDisplay.segments.map(segment => segment.text)).toEqual([
+      "string",
+      "(date-time)",
+      "<Birth timestamp>",
+    ])
+
+    expect(originDisplay.segments[0]?.diff).toBeUndefined()
+    expect(changedDisplay.segments[0]?.diff).toBeUndefined()
+    expect(originDisplay.segments[1]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(originDisplay.segments[2]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(changedDisplay.segments[1]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(changedDisplay.segments[2]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("resolves partial side display when title and format add together without type change", () => {
+    const merged = mergeSchemas(
+      { type: "string" },
+      { type: "string", format: "uuid", title: "Label" },
+    )
+    const tree = buildTree(merged)
+    const root = tree.root!
+    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (changedDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
+      throw new Error("expected partial diffs display")
+    }
+
+    expect(changedDisplay.segments.map(segment => segment.text)).toEqual([
+      "string",
+      "(uuid)",
+      "<Label>",
+    ])
+    expect(changedDisplay.segments[0]?.diff).toBeUndefined()
+    expect(changedDisplay.segments[1]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Green)
+    expect(changedDisplay.segments[2]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Green)
+  })
+
+  it("resolves partial side display when title and format remove together without type change", () => {
+    const merged = mergeSchemas(
+      { type: "string", format: "uuid", title: "Label" },
+      { type: "string" },
+    )
+    const tree = buildTree(merged)
+    const root = tree.root!
+    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+
+    expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (originDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
+      throw new Error("expected partial diffs display")
+    }
+
+    expect(originDisplay.segments.map(segment => segment.text)).toEqual([
+      "string",
+      "(uuid)",
+      "<Label>",
+    ])
+    expect(originDisplay.segments[0]?.diff).toBeUndefined()
+    expect(originDisplay.segments[1]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Red)
+    expect(originDisplay.segments[2]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Red)
   })
 
   it("resolves partial side display when only format replaces", () => {
@@ -180,6 +244,31 @@ describe("JSON Schema type label diffs", () => {
     if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       expect(originDisplay.segments.map(segment => segment.text)).toEqual(["string", "(uuid)"])
       expect(originDisplay.segments[1]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Red)
+    }
+  })
+
+  it("resolves whole-label side display when type, title, and format replace together", () => {
+    const merged = mergeSchemas(
+      { type: "string", title: "Calendar", format: "date-time" },
+      { type: "number", title: "Money", format: "<CurrencyMarker> N.MK" },
+    )
+    const tree = buildTree(merged)
+    const root = tree.root!
+    expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
+
+    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+
+    expect(originDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
+
+    if (originDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
+      expect(originDisplay.text).toBe("string (date-time) <Calendar>")
+      expect(originDisplay.diff.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    }
+    if (changedDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
+      expect(changedDisplay.text).toBe("number (<CurrencyMarker> N.MK) <Money>")
+      expect(changedDisplay.diff.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
     }
   })
 

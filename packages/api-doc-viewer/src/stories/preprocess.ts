@@ -135,93 +135,105 @@ function oas31TemplateInstance(): any {
   }
 }
 
-function oas3TemplateInstance(): any {
+function createOas3PathsPostOperation(schema: unknown): any {
   return {
-    openapi: '3.0.2',
-    paths: {
-      '/test': {
-        post: {
-          summary: 'Test Operation',
-          description: 'Description for Test Operation',
-          parameters: [
-            {
-              name: 'TestRequestHeader',
-              in: 'header',
-              schema: { $ref: '#/components/schemas/__Substitution__' },
+    '/test': {
+      post: {
+        summary: 'Test Operation',
+        description: 'Description for Test Operation',
+        parameters: [
+          {
+            name: 'TestRequestHeader',
+            in: 'header',
+            schema,
+          },
+          {
+            name: 'TestRequestCookie',
+            in: 'cookie',
+            schema,
+          },
+          {
+            name: 'TestPathParam',
+            in: 'path',
+            schema,
+          },
+          {
+            name: 'TestQueryParam',
+            in: 'query',
+            schema,
+          },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema,
             },
-            {
-              name: 'TestRequestCookie',
-              in: 'cookie',
-              schema: { $ref: '#/components/schemas/__Substitution__' },
+          },
+        },
+        responses: {
+          200: {
+            headers: {
+              testResponseHeader: {
+                schema,
+              },
             },
-            {
-              name: 'TestPathParam',
-              in: 'path',
-              schema: { $ref: '#/components/schemas/__Substitution__' },
-            },
-            {
-              name: 'TestQueryParam',
-              in: 'query',
-              schema: { $ref: '#/components/schemas/__Substitution__' },
-            },
-          ],
-          requestBody: {
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/__Substitution__' },
+                schema,
               },
             },
           },
-          responses: {
-            200: {
-              headers: {
-                testResponseHeader: {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
-              },
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
+          401: {
+            content: {
+              'application/json': {
+                schema,
               },
             },
-            401: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
+          },
+          403: {
+            content: {
+              'application/json': {
+                schema,
               },
             },
-            403: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
+          },
+          404: {
+            content: {
+              'application/json': {
+                schema,
               },
             },
-            404: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
-              },
-            },
-            500: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/__Substitution__' },
-                },
+          },
+          500: {
+            content: {
+              'application/json': {
+                schema,
               },
             },
           },
         },
       },
     },
+  }
+}
+
+function oas3TemplateInstance(): any {
+  const substitutionRef = { $ref: '#/components/schemas/__Substitution__' }
+  return {
+    openapi: '3.0.2',
+    paths: createOas3PathsPostOperation(substitutionRef),
     components: {
       schemas: {
         __Substitution__: null as unknown,
       },
     },
+  }
+}
+
+function oas3InlineTemplateInstance(schema: unknown): any {
+  return {
+    openapi: '3.0.2',
+    paths: createOas3PathsPostOperation(schema),
   }
 }
 
@@ -425,9 +437,14 @@ export type JsonDiffSchemaOptions = {
   afterAdditionalComponents?: Record<PropertyKey, unknown>
   target: OASTarget,
   circular?: boolean
+  /** When true, inline schemas in the OAS template instead of $ref to __Substitution__. */
+  disableSubstitutionTitle?: boolean
 }
 
 export function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown {
+  if (options.disableSubstitutionTitle) {
+    return prepareJsonDiffSchemaWithInlineTemplate(options, oas3InlineTemplateInstance)
+  }
   return prepareJsonDiffSchemaWithTemplate(options, oas3TemplateInstance)
 }
 
@@ -454,6 +471,42 @@ function prepareJsonDiffSchemaWithTemplate(
   const afterDocument = templateFactory()
   afterDocument.components.schemas.__Substitution__ = afterSchema
   afterDocument.components = mergeComponents(afterDocument.components, afterAdditionalComponents)
+
+  const mergedDocument = apiDiff(beforeDocument, afterDocument, {
+    ...DEFAULT_NORMALIZE_OPTIONS,
+    beforeSource: beforeDocument,
+    afterSource: afterDocument,
+    metaKey: DIFF_META_KEY,
+  }).merged as any
+
+  const mergedSchema = getSchemaByTarget(mergedDocument, target)
+  if (circular && isObject(mergedSchema)) {
+    mergedSchema.toJSON = () => stringifyCyclicJso(mergedSchema)
+  }
+  return mergedSchema
+}
+
+function prepareJsonDiffSchemaWithInlineTemplate(
+  options: JsonDiffSchemaOptions,
+  inlineTemplateFactory: (schema: unknown) => any,
+): unknown {
+  const {
+    beforeSchema,
+    afterSchema,
+    beforeAdditionalComponents = {},
+    afterAdditionalComponents = {},
+    target,
+    circular = false,
+  } = options
+
+  const beforeDocument = inlineTemplateFactory(beforeSchema)
+  if (Object.keys(beforeAdditionalComponents).length > 0) {
+    beforeDocument.components = mergeComponents(beforeDocument.components ?? {}, beforeAdditionalComponents)
+  }
+  const afterDocument = inlineTemplateFactory(afterSchema)
+  if (Object.keys(afterAdditionalComponents).length > 0) {
+    afterDocument.components = mergeComponents(afterDocument.components ?? {}, afterAdditionalComponents)
+  }
 
   const mergedDocument = apiDiff(beforeDocument, afterDocument, {
     ...DEFAULT_NORMALIZE_OPTIONS,

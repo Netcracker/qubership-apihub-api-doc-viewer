@@ -9,7 +9,7 @@ import {
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./json-schema-diffs-utils";
+} from "./json-schema-diffs-type-annotations-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/type-annotations-changes/*/before.yaml",
@@ -55,3 +55,6 @@ export const Case_012_title_removed_format_replaced: Story = createCaseStory("01
 export const Case_013_title_replaced_format_added: Story = createCaseStory("013-title-replaced-format-added");
 export const Case_014_title_replaced_format_removed: Story = createCaseStory("014-title-replaced-format-removed");
 export const Case_015_title_replaced_format_replaced: Story = createCaseStory("015-title-replaced-format-replaced");
+export const Case_016_monolithic_type_title_format_replaced: Story = createCaseStory("016-monolithic-type-title-format-replaced");
+export const Case_017_type_title_replaced: Story = createCaseStory("017-type-title-replaced");
+export const Case_018_type_format_replaced: Story = createCaseStory("018-type-format-replaced");

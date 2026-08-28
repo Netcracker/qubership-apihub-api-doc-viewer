@@ -131,6 +131,10 @@ function shouldUseMonolithicTypeLabelHighlight(
     return false
   }
 
+  if (!fieldDiffs.type || !fieldDiffs.title || !fieldDiffs.format) {
+    return false
+  }
+
   const actions = new Set(entries.map(([, diff]) => diff.data.action))
   return actions.size === 1
 }

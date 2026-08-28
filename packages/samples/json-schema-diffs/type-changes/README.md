@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 154
+- Total cases: 157
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -241,7 +241,7 @@ Path: `type-changes/type-value-changes/` (30 cases)
 
 ### Type Annotations Changes Samples
 
-Path: `type-changes/type-annotations-changes/` (15 cases)
+Path: `type-changes/type-annotations-changes/` (18 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -260,6 +260,9 @@ Path: `type-changes/type-annotations-changes/` (15 cases)
 | `013-title-replaced-format-added` | Title replaced; format added |
 | `014-title-replaced-format-removed` | Title replaced; format removed |
 | `015-title-replaced-format-replaced` | Title replaced; format replaced |
+| `016-monolithic-type-title-format-replaced` | Type, title, and format replaced together (monolithic type-label highlight) |
+| `017-type-title-replaced` | Type and title replaced; format unchanged |
+| `018-type-format-replaced` | Type and format replaced; title unchanged |
 
 ## Storybook and screenshot tests
 

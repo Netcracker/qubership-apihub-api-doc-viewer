@@ -1041,6 +1041,16 @@ const TYPE_ANNOTATIONS_TITLE_LABEL = "Label";
 const TYPE_ANNOTATIONS_FORMAT_BEFORE = "date";
 const TYPE_ANNOTATIONS_FORMAT_AFTER = "date-time";
 const TYPE_ANNOTATIONS_FORMAT_ADDED = "uuid";
+const TYPE_ANNOTATIONS_MONOLITHIC_BEFORE = {
+  type: "string",
+  title: "Calendar",
+  format: "date-time",
+};
+const TYPE_ANNOTATIONS_MONOLITHIC_AFTER = {
+  type: "number",
+  title: "Money",
+  format: "<CurrencyMarker> N.MK",
+};
 
 /** @param {object} schema @param {string} title */
 const withTypeAnnotationTitle = (schema, title) => merge(schema, { title });
@@ -1181,6 +1191,32 @@ const collectTypeAnnotationsChangeCases = (cases) => {
     }),
     "Title replaced; format replaced",
   );
+  add(
+    "monolithic-type-title-format-replaced",
+    TYPE_ANNOTATIONS_MONOLITHIC_BEFORE,
+    TYPE_ANNOTATIONS_MONOLITHIC_AFTER,
+    "Type, title, and format replaced together (monolithic type-label highlight)",
+  );
+  add(
+    "type-title-replaced",
+    TYPE_ANNOTATIONS_MONOLITHIC_BEFORE,
+    {
+      type: TYPE_ANNOTATIONS_MONOLITHIC_AFTER.type,
+      title: TYPE_ANNOTATIONS_MONOLITHIC_AFTER.title,
+      format: TYPE_ANNOTATIONS_MONOLITHIC_BEFORE.format,
+    },
+    "Type and title replaced; format unchanged",
+  );
+  add(
+    "type-format-replaced",
+    TYPE_ANNOTATIONS_MONOLITHIC_BEFORE,
+    {
+      type: TYPE_ANNOTATIONS_MONOLITHIC_AFTER.type,
+      title: TYPE_ANNOTATIONS_MONOLITHIC_BEFORE.title,
+      format: TYPE_ANNOTATIONS_MONOLITHIC_AFTER.format,
+    },
+    "Type and format replaced; title unchanged",
+  );
 };
 
 export const STORY_SUITES = [
@@ -1295,6 +1331,7 @@ export const STORY_SUITES = [
     globPath: "type-annotations-changes",
     storyFileName: "type-annotations-changes-samples.stories.tsx",
     testFileName: "type-annotations-changes-samples.it-test.ts",
+    diffUtilsModule: "./json-schema-diffs-type-annotations-utils",
   },
 ];
 
