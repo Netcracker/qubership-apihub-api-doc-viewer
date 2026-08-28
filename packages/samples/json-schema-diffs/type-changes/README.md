@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 157
+- Total cases: 301
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -263,6 +263,178 @@ Path: `type-changes/type-annotations-changes/` (18 cases)
 | `016-monolithic-type-title-format-replaced` | Type, title, and format replaced together (monolithic type-label highlight) |
 | `017-type-title-replaced` | Type and title replaced; format unchanged |
 | `018-type-format-replaced` | Type and format replaced; title unchanged |
+
+### Object Properties Samples
+
+Path: `type-changes/object-properties/` (24 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-add-one-property-string` | Object with 1 property: add 1 property (string) |
+| `002-remove-one-property-string` | Object with 2 properties: remove 1 property (string) |
+| `003-add-two-properties-string` | Object with 0 properties: add 2 properties (string) |
+| `004-remove-two-properties-string` | Object with 2 properties: remove 2 properties (string) |
+| `005-add-one-property-number` | Object with 1 property: add 1 property (number) |
+| `006-remove-one-property-number` | Object with 2 properties: remove 1 property (number) |
+| `007-add-two-properties-number` | Object with 0 properties: add 2 properties (number) |
+| `008-remove-two-properties-number` | Object with 2 properties: remove 2 properties (number) |
+| `009-add-one-property-integer` | Object with 1 property: add 1 property (integer) |
+| `010-remove-one-property-integer` | Object with 2 properties: remove 1 property (integer) |
+| `011-add-two-properties-integer` | Object with 0 properties: add 2 properties (integer) |
+| `012-remove-two-properties-integer` | Object with 2 properties: remove 2 properties (integer) |
+| `013-add-one-property-boolean` | Object with 1 property: add 1 property (boolean) |
+| `014-remove-one-property-boolean` | Object with 2 properties: remove 1 property (boolean) |
+| `015-add-two-properties-boolean` | Object with 0 properties: add 2 properties (boolean) |
+| `016-remove-two-properties-boolean` | Object with 2 properties: remove 2 properties (boolean) |
+| `017-add-one-property-array` | Object with 1 property: add 1 property (array) |
+| `018-remove-one-property-array` | Object with 2 properties: remove 1 property (array) |
+| `019-add-two-properties-array` | Object with 0 properties: add 2 properties (array) |
+| `020-remove-two-properties-array` | Object with 2 properties: remove 2 properties (array) |
+| `021-add-one-property-object` | Object with 1 property: add 1 property (object) |
+| `022-remove-one-property-object` | Object with 2 properties: remove 1 property (object) |
+| `023-add-two-properties-object` | Object with 0 properties: add 2 properties (object) |
+| `024-remove-two-properties-object` | Object with 2 properties: remove 2 properties (object) |
+
+### Array Indexed Items Samples
+
+Path: `type-changes/array-indexed-items/` (24 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-add-one-indexed-item-string` | Array with 1 indexed item: add 1 indexed item (string) |
+| `002-remove-one-indexed-item-string` | Array with 2 indexed items: remove 1 indexed item (string) |
+| `003-add-two-indexed-items-string` | Array with no indexed items: add 2 indexed items (string) |
+| `004-remove-two-indexed-items-string` | Array with 2 indexed items: remove 2 indexed items (string) |
+| `005-add-one-indexed-item-number` | Array with 1 indexed item: add 1 indexed item (number) |
+| `006-remove-one-indexed-item-number` | Array with 2 indexed items: remove 1 indexed item (number) |
+| `007-add-two-indexed-items-number` | Array with no indexed items: add 2 indexed items (number) |
+| `008-remove-two-indexed-items-number` | Array with 2 indexed items: remove 2 indexed items (number) |
+| `009-add-one-indexed-item-integer` | Array with 1 indexed item: add 1 indexed item (integer) |
+| `010-remove-one-indexed-item-integer` | Array with 2 indexed items: remove 1 indexed item (integer) |
+| `011-add-two-indexed-items-integer` | Array with no indexed items: add 2 indexed items (integer) |
+| `012-remove-two-indexed-items-integer` | Array with 2 indexed items: remove 2 indexed items (integer) |
+| `013-add-one-indexed-item-boolean` | Array with 1 indexed item: add 1 indexed item (boolean) |
+| `014-remove-one-indexed-item-boolean` | Array with 2 indexed items: remove 1 indexed item (boolean) |
+| `015-add-two-indexed-items-boolean` | Array with no indexed items: add 2 indexed items (boolean) |
+| `016-remove-two-indexed-items-boolean` | Array with 2 indexed items: remove 2 indexed items (boolean) |
+| `017-add-one-indexed-item-array` | Array with 1 indexed item: add 1 indexed item (array) |
+| `018-remove-one-indexed-item-array` | Array with 2 indexed items: remove 1 indexed item (array) |
+| `019-add-two-indexed-items-array` | Array with no indexed items: add 2 indexed items (array) |
+| `020-remove-two-indexed-items-array` | Array with 2 indexed items: remove 2 indexed items (array) |
+| `021-add-one-indexed-item-object` | Array with 1 indexed item: add 1 indexed item (object) |
+| `022-remove-one-indexed-item-object` | Array with 2 indexed items: remove 1 indexed item (object) |
+| `023-add-two-indexed-items-object` | Array with no indexed items: add 2 indexed items (object) |
+| `024-remove-two-indexed-items-object` | Array with 2 indexed items: remove 2 indexed items (object) |
+
+### OneOf Object Variant Samples
+
+Path: `type-changes/one-of-object-variant/` (48 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-object-variant-add-one-property-string` | Object variant with 1 property: add 1 property (string) |
+| `002-object-variant-remove-one-property-string` | Object variant with 2 properties: remove 1 property (string) |
+| `003-object-variant-add-two-properties-string` | Object variant with 0 properties: add 2 properties (string) |
+| `004-object-variant-remove-two-properties-string` | Object variant with 2 properties: remove 2 properties (string) |
+| `005-object-variant-added-string` | Added object oneOf variant (string) |
+| `006-object-variant-removed-string` | Removed object oneOf variant (string) |
+| `007-one-of-prop-added-string` | Added oneOf property on root (string) |
+| `008-one-of-prop-removed-string` | Removed oneOf property from root (string) |
+| `009-object-variant-add-one-property-number` | Object variant with 1 property: add 1 property (number) |
+| `010-object-variant-remove-one-property-number` | Object variant with 2 properties: remove 1 property (number) |
+| `011-object-variant-add-two-properties-number` | Object variant with 0 properties: add 2 properties (number) |
+| `012-object-variant-remove-two-properties-number` | Object variant with 2 properties: remove 2 properties (number) |
+| `013-object-variant-added-number` | Added object oneOf variant (number) |
+| `014-object-variant-removed-number` | Removed object oneOf variant (number) |
+| `015-one-of-prop-added-number` | Added oneOf property on root (number) |
+| `016-one-of-prop-removed-number` | Removed oneOf property from root (number) |
+| `017-object-variant-add-one-property-integer` | Object variant with 1 property: add 1 property (integer) |
+| `018-object-variant-remove-one-property-integer` | Object variant with 2 properties: remove 1 property (integer) |
+| `019-object-variant-add-two-properties-integer` | Object variant with 0 properties: add 2 properties (integer) |
+| `020-object-variant-remove-two-properties-integer` | Object variant with 2 properties: remove 2 properties (integer) |
+| `021-object-variant-added-integer` | Added object oneOf variant (integer) |
+| `022-object-variant-removed-integer` | Removed object oneOf variant (integer) |
+| `023-one-of-prop-added-integer` | Added oneOf property on root (integer) |
+| `024-one-of-prop-removed-integer` | Removed oneOf property from root (integer) |
+| `025-object-variant-add-one-property-boolean` | Object variant with 1 property: add 1 property (boolean) |
+| `026-object-variant-remove-one-property-boolean` | Object variant with 2 properties: remove 1 property (boolean) |
+| `027-object-variant-add-two-properties-boolean` | Object variant with 0 properties: add 2 properties (boolean) |
+| `028-object-variant-remove-two-properties-boolean` | Object variant with 2 properties: remove 2 properties (boolean) |
+| `029-object-variant-added-boolean` | Added object oneOf variant (boolean) |
+| `030-object-variant-removed-boolean` | Removed object oneOf variant (boolean) |
+| `031-one-of-prop-added-boolean` | Added oneOf property on root (boolean) |
+| `032-one-of-prop-removed-boolean` | Removed oneOf property from root (boolean) |
+| `033-object-variant-add-one-property-array` | Object variant with 1 property: add 1 property (array) |
+| `034-object-variant-remove-one-property-array` | Object variant with 2 properties: remove 1 property (array) |
+| `035-object-variant-add-two-properties-array` | Object variant with 0 properties: add 2 properties (array) |
+| `036-object-variant-remove-two-properties-array` | Object variant with 2 properties: remove 2 properties (array) |
+| `037-object-variant-added-array` | Added object oneOf variant (array) |
+| `038-object-variant-removed-array` | Removed object oneOf variant (array) |
+| `039-one-of-prop-added-array` | Added oneOf property on root (array) |
+| `040-one-of-prop-removed-array` | Removed oneOf property from root (array) |
+| `041-object-variant-add-one-property-object` | Object variant with 1 property: add 1 property (object) |
+| `042-object-variant-remove-one-property-object` | Object variant with 2 properties: remove 1 property (object) |
+| `043-object-variant-add-two-properties-object` | Object variant with 0 properties: add 2 properties (object) |
+| `044-object-variant-remove-two-properties-object` | Object variant with 2 properties: remove 2 properties (object) |
+| `045-object-variant-added-object` | Added object oneOf variant (object) |
+| `046-object-variant-removed-object` | Removed object oneOf variant (object) |
+| `047-one-of-prop-added-object` | Added oneOf property on root (object) |
+| `048-one-of-prop-removed-object` | Removed oneOf property from root (object) |
+
+### OneOf Array Variant Samples
+
+Path: `type-changes/one-of-array-variant/` (48 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-array-variant-add-one-indexed-item-string` | Array variant with 1 indexed item: add 1 indexed item (string) |
+| `002-array-variant-remove-one-indexed-item-string` | Array variant with 2 indexed items: remove 1 indexed item (string) |
+| `003-array-variant-add-two-indexed-items-string` | Array variant with no indexed items: add 2 indexed items (string) |
+| `004-array-variant-remove-two-indexed-items-string` | Array variant with 2 indexed items: remove 2 indexed items (string) |
+| `005-array-variant-added-string` | Added array oneOf variant (string) |
+| `006-array-variant-removed-string` | Removed array oneOf variant (string) |
+| `007-one-of-prop-added-string` | Added oneOf property on root (string) |
+| `008-one-of-prop-removed-string` | Removed oneOf property from root (string) |
+| `009-array-variant-add-one-indexed-item-number` | Array variant with 1 indexed item: add 1 indexed item (number) |
+| `010-array-variant-remove-one-indexed-item-number` | Array variant with 2 indexed items: remove 1 indexed item (number) |
+| `011-array-variant-add-two-indexed-items-number` | Array variant with no indexed items: add 2 indexed items (number) |
+| `012-array-variant-remove-two-indexed-items-number` | Array variant with 2 indexed items: remove 2 indexed items (number) |
+| `013-array-variant-added-number` | Added array oneOf variant (number) |
+| `014-array-variant-removed-number` | Removed array oneOf variant (number) |
+| `015-one-of-prop-added-number` | Added oneOf property on root (number) |
+| `016-one-of-prop-removed-number` | Removed oneOf property from root (number) |
+| `017-array-variant-add-one-indexed-item-integer` | Array variant with 1 indexed item: add 1 indexed item (integer) |
+| `018-array-variant-remove-one-indexed-item-integer` | Array variant with 2 indexed items: remove 1 indexed item (integer) |
+| `019-array-variant-add-two-indexed-items-integer` | Array variant with no indexed items: add 2 indexed items (integer) |
+| `020-array-variant-remove-two-indexed-items-integer` | Array variant with 2 indexed items: remove 2 indexed items (integer) |
+| `021-array-variant-added-integer` | Added array oneOf variant (integer) |
+| `022-array-variant-removed-integer` | Removed array oneOf variant (integer) |
+| `023-one-of-prop-added-integer` | Added oneOf property on root (integer) |
+| `024-one-of-prop-removed-integer` | Removed oneOf property from root (integer) |
+| `025-array-variant-add-one-indexed-item-boolean` | Array variant with 1 indexed item: add 1 indexed item (boolean) |
+| `026-array-variant-remove-one-indexed-item-boolean` | Array variant with 2 indexed items: remove 1 indexed item (boolean) |
+| `027-array-variant-add-two-indexed-items-boolean` | Array variant with no indexed items: add 2 indexed items (boolean) |
+| `028-array-variant-remove-two-indexed-items-boolean` | Array variant with 2 indexed items: remove 2 indexed items (boolean) |
+| `029-array-variant-added-boolean` | Added array oneOf variant (boolean) |
+| `030-array-variant-removed-boolean` | Removed array oneOf variant (boolean) |
+| `031-one-of-prop-added-boolean` | Added oneOf property on root (boolean) |
+| `032-one-of-prop-removed-boolean` | Removed oneOf property from root (boolean) |
+| `033-array-variant-add-one-indexed-item-array` | Array variant with 1 indexed item: add 1 indexed item (array) |
+| `034-array-variant-remove-one-indexed-item-array` | Array variant with 2 indexed items: remove 1 indexed item (array) |
+| `035-array-variant-add-two-indexed-items-array` | Array variant with no indexed items: add 2 indexed items (array) |
+| `036-array-variant-remove-two-indexed-items-array` | Array variant with 2 indexed items: remove 2 indexed items (array) |
+| `037-array-variant-added-array` | Added array oneOf variant (array) |
+| `038-array-variant-removed-array` | Removed array oneOf variant (array) |
+| `039-one-of-prop-added-array` | Added oneOf property on root (array) |
+| `040-one-of-prop-removed-array` | Removed oneOf property from root (array) |
+| `041-array-variant-add-one-indexed-item-object` | Array variant with 1 indexed item: add 1 indexed item (object) |
+| `042-array-variant-remove-one-indexed-item-object` | Array variant with 2 indexed items: remove 1 indexed item (object) |
+| `043-array-variant-add-two-indexed-items-object` | Array variant with no indexed items: add 2 indexed items (object) |
+| `044-array-variant-remove-two-indexed-items-object` | Array variant with 2 indexed items: remove 2 indexed items (object) |
+| `045-array-variant-added-object` | Added array oneOf variant (object) |
+| `046-array-variant-removed-object` | Removed array oneOf variant (object) |
+| `047-one-of-prop-added-object` | Added oneOf property on root (object) |
+| `048-one-of-prop-removed-object` | Removed oneOf property from root (object) |
 
 ## Storybook and screenshot tests
 

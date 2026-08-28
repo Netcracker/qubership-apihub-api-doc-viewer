@@ -1,0 +1,13 @@
+type: array
+description: Array with homogeneous integer items schema (no indexed items)
+items:
+  type: integer
+  description: Sample integer schema with all integer validations
+  default: 1
+  minimum: 0
+  maximum: 100
+  multipleOf: 1
+minItems: 0
+maxItems: 10
+uniqueItems: true
+

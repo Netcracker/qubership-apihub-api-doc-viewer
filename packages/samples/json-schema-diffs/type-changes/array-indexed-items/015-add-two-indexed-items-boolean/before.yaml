@@ -1,0 +1,10 @@
+type: array
+description: Array with homogeneous boolean items schema (no indexed items)
+items:
+  type: boolean
+  description: Sample boolean schema
+  default: false
+minItems: 0
+maxItems: 10
+uniqueItems: true
+

@@ -1,0 +1,17 @@
+type: array
+description: Array with homogeneous array items schema (no indexed items)
+items:
+  type: array
+  description: Sample array schema with all array validations
+  items:
+    type: string
+  default:
+    - alpha
+    - beta
+  minItems: 1
+  maxItems: 10
+  uniqueItems: true
+minItems: 0
+maxItems: 10
+uniqueItems: true
+

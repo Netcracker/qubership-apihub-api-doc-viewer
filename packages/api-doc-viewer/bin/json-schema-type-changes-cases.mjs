@@ -1009,6 +1009,400 @@ const buildFullSchemaForTypeValueChange = (schemaType) => {
   }
 };
 
+const RULE1_SCHEMA_TYPES = TYPE_VALUE_CHANGE_TYPES;
+
+/** @param {string} schemaType */
+const buildRule1PropertySchema = (schemaType) => clone(buildFullSchemaForTypeValueChange(schemaType));
+
+/** @param {readonly string[]} propKeys @param {string} schemaType */
+const buildRule1ObjectWithProperties = (propKeys, schemaType) => {
+  /** @type {Record<string, object>} */
+  const properties = {};
+  for (const propKey of propKeys) {
+    properties[propKey] = buildRule1PropertySchema(schemaType);
+  }
+  return {
+    type: "object",
+    description: `Object with ${propKeys.length} ${schemaType} property schema(s)`,
+    properties,
+    minProperties: 0,
+    maxProperties: 10,
+  };
+};
+
+/** @param {number} indexedItemCount @param {string} schemaType */
+const buildRule1TupleArray = (indexedItemCount, schemaType) => {
+  const itemSchema = buildRule1PropertySchema(schemaType);
+  return {
+    type: "array",
+    description: `Tuple array with ${indexedItemCount} indexed ${schemaType} item schema(s)`,
+    items: Array.from({ length: indexedItemCount }, () => clone(itemSchema)),
+    minItems: 0,
+    maxItems: 10,
+    uniqueItems: true,
+  };
+};
+
+/** @param {string} schemaType */
+const buildRule1HomogeneousArray = (schemaType) => ({
+  type: "array",
+  description: `Array with homogeneous ${schemaType} items schema (no indexed items)`,
+  items: buildRule1PropertySchema(schemaType),
+  minItems: 0,
+  maxItems: 10,
+  uniqueItems: true,
+});
+
+/** @param {string} schemaType */
+const buildRule1ArrayWithoutIndexedItems = (schemaType) => ({
+  type: "array",
+  description: `Array with no indexed item schemas (${schemaType} suite)`,
+  minItems: 0,
+  maxItems: 10,
+  uniqueItems: true,
+});
+
+const ONE_OF_UNCHANGED_STRING_VARIANT = {
+  type: "string",
+  description: "String oneOf variant (unchanged)",
+};
+
+const ONE_OF_UNCHANGED_NUMBER_VARIANT = {
+  type: "number",
+  description: "Number oneOf variant (unchanged)",
+};
+
+const ONE_OF_PROP_KEY = "oneOfProp";
+const PLAIN_PROP_KEY = "plainProp";
+
+/** @param {object | undefined} variantSchema @param {boolean} includeOneOfProp */
+const buildOneOfObjectVariantRoot = (variantSchema, includeOneOfProp = true) => {
+  /** @type {Record<string, object>} */
+  const properties = {
+    [PLAIN_PROP_KEY]: {
+      type: "string",
+      description: "Arbitrary plain property",
+    },
+  };
+  if (includeOneOfProp) {
+    /** @type {object[]} */
+    const oneOfVariants = [clone(ONE_OF_UNCHANGED_STRING_VARIANT), clone(ONE_OF_UNCHANGED_NUMBER_VARIANT)];
+    if (variantSchema) {
+      oneOfVariants.push(clone(variantSchema));
+    }
+    properties[ONE_OF_PROP_KEY] = {
+      oneOf: oneOfVariants,
+    };
+  }
+  return {
+    type: "object",
+    description: "Root schema with oneOf object variant property",
+    properties,
+  };
+};
+
+/** @param {object | undefined} variantSchema @param {boolean} includeOneOfProp */
+const buildOneOfArrayVariantRoot = (variantSchema, includeOneOfProp = true) => {
+  /** @type {Record<string, object>} */
+  const properties = {
+    [PLAIN_PROP_KEY]: {
+      type: "string",
+      description: "Arbitrary plain property",
+    },
+  };
+  if (includeOneOfProp) {
+    /** @type {object[]} */
+    const oneOfVariants = [clone(ONE_OF_UNCHANGED_STRING_VARIANT), clone(ONE_OF_UNCHANGED_NUMBER_VARIANT)];
+    if (variantSchema) {
+      oneOfVariants.push(clone(variantSchema));
+    }
+    properties[ONE_OF_PROP_KEY] = {
+      oneOf: oneOfVariants,
+    };
+  }
+  return {
+    type: "object",
+    description: "Root schema with oneOf array variant property",
+    properties,
+  };
+};
+
+/**
+ * @param {TypeChangeCase[]} cases
+ * @param {string} sampleDir
+ * @param {string} slug
+ * @param {string} schemaType
+ * @param {object} before
+ * @param {object} after
+ * @param {string} summary
+ */
+const pushRule1Case = (cases, sampleDir, slug, schemaType, before, after, summary) => {
+  pushCase(
+    cases,
+    sampleDir,
+    `${slug}-${schemaType}`,
+    before,
+    after,
+    `${summary} (${schemaType})`,
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectPropertyChangeCases = (cases) => {
+  const dir = "object-properties";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    pushRule1Case(
+      cases,
+      dir,
+      "add-one-property",
+      schemaType,
+      buildRule1ObjectWithProperties(["prop0"], schemaType),
+      buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType),
+      "Object with 1 property: add 1 property",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-one-property",
+      schemaType,
+      buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType),
+      buildRule1ObjectWithProperties(["prop0"], schemaType),
+      "Object with 2 properties: remove 1 property",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "add-two-properties",
+      schemaType,
+      buildRule1ObjectWithProperties([], schemaType),
+      buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType),
+      "Object with 0 properties: add 2 properties",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-two-properties",
+      schemaType,
+      buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType),
+      buildRule1ObjectWithProperties([], schemaType),
+      "Object with 2 properties: remove 2 properties",
+    );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectArrayIndexedItemChangeCases = (cases) => {
+  const dir = "array-indexed-items";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    pushRule1Case(
+      cases,
+      dir,
+      "add-one-indexed-item",
+      schemaType,
+      buildRule1TupleArray(1, schemaType),
+      buildRule1TupleArray(2, schemaType),
+      "Array with 1 indexed item: add 1 indexed item",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-one-indexed-item",
+      schemaType,
+      buildRule1TupleArray(2, schemaType),
+      buildRule1TupleArray(1, schemaType),
+      "Array with 2 indexed items: remove 1 indexed item",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "add-two-indexed-items",
+      schemaType,
+      buildRule1HomogeneousArray(schemaType),
+      buildRule1TupleArray(2, schemaType),
+      "Array with no indexed items: add 2 indexed items",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "remove-two-indexed-items",
+      schemaType,
+      buildRule1TupleArray(2, schemaType),
+      buildRule1ArrayWithoutIndexedItems(schemaType),
+      "Array with 2 indexed items: remove 2 indexed items",
+    );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectOneOfObjectVariantCases = (cases) => {
+  const dir = "one-of-object-variant";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    const objectVariantWithOneProp = buildRule1ObjectWithProperties(["prop0"], schemaType);
+    const objectVariantWithTwoProps = buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType);
+    const objectVariantEmpty = buildRule1ObjectWithProperties([], schemaType);
+
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-add-one-property",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp),
+      buildOneOfObjectVariantRoot(buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType)),
+      "Object variant with 1 property: add 1 property",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-remove-one-property",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp),
+      "Object variant with 2 properties: remove 1 property",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-add-two-properties",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantEmpty),
+      buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
+      "Object variant with 0 properties: add 2 properties",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-remove-two-properties",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
+      buildOneOfObjectVariantRoot(objectVariantEmpty),
+      "Object variant with 2 properties: remove 2 properties",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-added",
+      schemaType,
+      buildOneOfObjectVariantRoot(undefined),
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp),
+      "Added object oneOf variant",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "object-variant-removed",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp),
+      buildOneOfObjectVariantRoot(undefined),
+      "Removed object oneOf variant",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-prop-added",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp, false),
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp, true),
+      "Added oneOf property on root",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-prop-removed",
+      schemaType,
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp, true),
+      buildOneOfObjectVariantRoot(objectVariantWithOneProp, false),
+      "Removed oneOf property from root",
+    );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectOneOfArrayVariantCases = (cases) => {
+  const dir = "one-of-array-variant";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    const arrayVariantWithOneItem = buildRule1TupleArray(1, schemaType);
+    const arrayVariantWithTwoItems = buildRule1TupleArray(2, schemaType);
+    const arrayVariantWithoutIndexedItems = buildRule1ArrayWithoutIndexedItems(schemaType);
+
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-add-one-indexed-item",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
+      buildOneOfArrayVariantRoot(buildRule1TupleArray(2, schemaType)),
+      "Array variant with 1 indexed item: add 1 indexed item",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-remove-one-indexed-item",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
+      "Array variant with 2 indexed items: remove 1 indexed item",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-add-two-indexed-items",
+      schemaType,
+      buildOneOfArrayVariantRoot(buildRule1HomogeneousArray(schemaType)),
+      buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
+      "Array variant with no indexed items: add 2 indexed items",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-remove-two-indexed-items",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
+      buildOneOfArrayVariantRoot(arrayVariantWithoutIndexedItems),
+      "Array variant with 2 indexed items: remove 2 indexed items",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-added",
+      schemaType,
+      buildOneOfArrayVariantRoot(undefined),
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
+      "Added array oneOf variant",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "array-variant-removed",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
+      buildOneOfArrayVariantRoot(undefined),
+      "Removed array oneOf variant",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-prop-added",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem, false),
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem, true),
+      "Added oneOf property on root",
+    );
+    pushRule1Case(
+      cases,
+      dir,
+      "one-of-prop-removed",
+      schemaType,
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem, true),
+      buildOneOfArrayVariantRoot(arrayVariantWithOneItem, false),
+      "Removed oneOf property from root",
+    );
+  }
+};
+
 /** @param {TypeChangeCase[]} cases */
 const collectTypeValueChangeCases = (cases) => {
   const dir = "type-value-changes";
@@ -1333,6 +1727,38 @@ export const STORY_SUITES = [
     testFileName: "type-annotations-changes-samples.it-test.ts",
     diffUtilsModule: "./json-schema-diffs-type-annotations-utils",
   },
+  {
+    suiteKey: "object-properties",
+    title: "JSON Schema Diffs Suite/Object Properties Samples",
+    metaKebab: "json-schema-diffs-suite-object-properties-samples",
+    globPath: "object-properties",
+    storyFileName: "object-properties-samples.stories.tsx",
+    testFileName: "object-properties-samples.it-test.ts",
+  },
+  {
+    suiteKey: "array-indexed-items",
+    title: "JSON Schema Diffs Suite/Array Indexed Items Samples",
+    metaKebab: "json-schema-diffs-suite-array-indexed-items-samples",
+    globPath: "array-indexed-items",
+    storyFileName: "array-indexed-items-samples.stories.tsx",
+    testFileName: "array-indexed-items-samples.it-test.ts",
+  },
+  {
+    suiteKey: "one-of-object-variant",
+    title: "JSON Schema Diffs Suite/OneOf Object Variant Samples",
+    metaKebab: "json-schema-diffs-suite-one-of-object-variant-samples",
+    globPath: "one-of-object-variant",
+    storyFileName: "one-of-object-variant-samples.stories.tsx",
+    testFileName: "one-of-object-variant-samples.it-test.ts",
+  },
+  {
+    suiteKey: "one-of-array-variant",
+    title: "JSON Schema Diffs Suite/OneOf Array Variant Samples",
+    metaKebab: "json-schema-diffs-suite-one-of-array-variant-samples",
+    globPath: "one-of-array-variant",
+    storyFileName: "one-of-array-variant-samples.stories.tsx",
+    testFileName: "one-of-array-variant-samples.it-test.ts",
+  },
 ];
 
 export const collectTypeChangeCases = () => {
@@ -1354,6 +1780,10 @@ export const collectTypeChangeCases = () => {
   collectCircularCases(cases);
   collectTypeValueChangeCases(cases);
   collectTypeAnnotationsChangeCases(cases);
+  collectObjectPropertyChangeCases(cases);
+  collectArrayIndexedItemChangeCases(cases);
+  collectOneOfObjectVariantCases(cases);
+  collectOneOfArrayVariantCases(cases);
   return cases;
 };
 

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-28T08:48:10.363Z",
-  "totalCases": 157,
+  "generatedAt": "2026-08-28T12:09:53.709Z",
+  "totalCases": 301,
   "suites": [
     {
       "globPath": "type-flags",
@@ -57,6 +57,22 @@
     {
       "globPath": "type-annotations-changes",
       "caseCount": 18
+    },
+    {
+      "globPath": "object-properties",
+      "caseCount": 24
+    },
+    {
+      "globPath": "array-indexed-items",
+      "caseCount": 24
+    },
+    {
+      "globPath": "one-of-object-variant",
+      "caseCount": 48
+    },
+    {
+      "globPath": "one-of-array-variant",
+      "caseCount": 48
     }
   ]
 }
