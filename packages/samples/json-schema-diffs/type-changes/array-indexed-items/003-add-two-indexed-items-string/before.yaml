@@ -1,16 +1,6 @@
 type: array
-description: Array with homogeneous string items schema (no indexed items)
-items:
-  type: string
-  description: Sample string schema with all string validations
-  default: alpha
-  enum:
-    - alpha
-    - beta
-    - gamma
-  minLength: 1
-  maxLength: 128
-  pattern: ^[a-z]+$
+description: Tuple array with 0 indexed string item schemas
+items: []
 minItems: 0
 maxItems: 10
 uniqueItems: true

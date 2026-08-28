@@ -1,9 +1,6 @@
 type: array
-description: Array with homogeneous boolean items schema (no indexed items)
-items:
-  type: boolean
-  description: Sample boolean schema
-  default: false
+description: Tuple array with 0 indexed boolean item schemas
+items: []
 minItems: 0
 maxItems: 10
 uniqueItems: true

@@ -1,18 +1,6 @@
 type: array
-description: Array with homogeneous object items schema (no indexed items)
-items:
-  type: object
-  description: Sample object schema with all object validations
-  properties:
-    name:
-      type: string
-    id:
-      type: integer
-  default:
-    name: sample
-    id: 1
-  minProperties: 1
-  maxProperties: 5
+description: Tuple array with 0 indexed object item schemas
+items: []
 minItems: 0
 maxItems: 10
 uniqueItems: true

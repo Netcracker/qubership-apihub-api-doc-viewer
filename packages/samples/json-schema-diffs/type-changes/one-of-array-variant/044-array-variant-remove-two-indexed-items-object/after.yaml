@@ -11,7 +11,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (object suite)
+        description: Tuple array with 0 indexed object item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true

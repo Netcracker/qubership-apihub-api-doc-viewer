@@ -1,12 +1,6 @@
 type: array
-description: Array with homogeneous number items schema (no indexed items)
-items:
-  type: number
-  description: Sample number schema with all number validations
-  default: 1.5
-  minimum: 0
-  maximum: 100
-  multipleOf: 0.5
+description: Tuple array with 0 indexed number item schemas
+items: []
 minItems: 0
 maxItems: 10
 uniqueItems: true

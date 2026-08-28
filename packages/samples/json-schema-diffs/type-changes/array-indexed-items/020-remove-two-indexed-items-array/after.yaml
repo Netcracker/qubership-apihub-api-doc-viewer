@@ -1,5 +1,6 @@
 type: array
-description: Array with no indexed item schemas (array suite)
+description: Tuple array with 0 indexed array item schemas
+items: []
 minItems: 0
 maxItems: 10
 uniqueItems: true

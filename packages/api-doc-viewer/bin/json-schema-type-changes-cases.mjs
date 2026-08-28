@@ -1044,19 +1044,10 @@ const buildRule1TupleArray = (indexedItemCount, schemaType) => {
 };
 
 /** @param {string} schemaType */
-const buildRule1HomogeneousArray = (schemaType) => ({
+const buildRule1EmptyTupleArray = (schemaType) => ({
   type: "array",
-  description: `Array with homogeneous ${schemaType} items schema (no indexed items)`,
-  items: buildRule1PropertySchema(schemaType),
-  minItems: 0,
-  maxItems: 10,
-  uniqueItems: true,
-});
-
-/** @param {string} schemaType */
-const buildRule1ArrayWithoutIndexedItems = (schemaType) => ({
-  type: "array",
-  description: `Array with no indexed item schemas (${schemaType} suite)`,
+  description: `Tuple array with 0 indexed ${schemaType} item schemas`,
+  items: [],
   minItems: 0,
   maxItems: 10,
   uniqueItems: true,
@@ -1219,7 +1210,7 @@ const collectArrayIndexedItemChangeCases = (cases) => {
       dir,
       "add-two-indexed-items",
       schemaType,
-      buildRule1HomogeneousArray(schemaType),
+      buildRule1EmptyTupleArray(schemaType),
       buildRule1TupleArray(2, schemaType),
       "Array with no indexed items: add 2 indexed items",
     );
@@ -1229,7 +1220,7 @@ const collectArrayIndexedItemChangeCases = (cases) => {
       "remove-two-indexed-items",
       schemaType,
       buildRule1TupleArray(2, schemaType),
-      buildRule1ArrayWithoutIndexedItems(schemaType),
+      buildRule1EmptyTupleArray(schemaType),
       "Array with 2 indexed items: remove 2 indexed items",
     );
   }
@@ -1326,7 +1317,7 @@ const collectOneOfArrayVariantCases = (cases) => {
   for (const schemaType of RULE1_SCHEMA_TYPES) {
     const arrayVariantWithOneItem = buildRule1TupleArray(1, schemaType);
     const arrayVariantWithTwoItems = buildRule1TupleArray(2, schemaType);
-    const arrayVariantWithoutIndexedItems = buildRule1ArrayWithoutIndexedItems(schemaType);
+    const arrayVariantWithoutIndexedItems = buildRule1EmptyTupleArray(schemaType);
 
     pushRule1Case(
       cases,
@@ -1351,7 +1342,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       dir,
       "array-variant-add-two-indexed-items",
       schemaType,
-      buildOneOfArrayVariantRoot(buildRule1HomogeneousArray(schemaType)),
+      buildOneOfArrayVariantRoot(buildRule1EmptyTupleArray(schemaType)),
       buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
       "Array variant with no indexed items: add 2 indexed items",
     );
