@@ -48,3 +48,5 @@ export declare const Case_029_properties_additional_properties_additional_info: 
 export declare const Case_030_header_properties_additional_properties_additional_info: Story;
 export declare const Case_031_description_properties_additional_properties_additional_info: Story;
 export declare const Case_032_header_description_properties_additional_properties_additional_info: Story;
+export declare const Case_033_additional_properties_true: Story;
+export declare const Case_034_additional_properties_false: Story;
