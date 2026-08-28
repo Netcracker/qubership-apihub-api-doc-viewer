@@ -79,18 +79,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous string items schema (no indexed items)
-        items:
-          type: string
-          description: Sample string schema with all string validations
-          default: alpha
-          enum:
-            - alpha
-            - beta
-            - gamma
-          minLength: 1
-          maxLength: 128
-          pattern: ^[a-z]+$
+        description: Tuple array with 0 indexed string item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -281,14 +271,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous number items schema (no indexed items)
-        items:
-          type: number
-          description: Sample number schema with all number validations
-          default: 1.5
-          minimum: 0
-          maximum: 100
-          multipleOf: 0.5
+        description: Tuple array with 0 indexed number item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -463,14 +447,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous integer items schema (no indexed items)
-        items:
-          type: integer
-          description: Sample integer schema with all integer validations
-          default: 1
-          minimum: 0
-          maximum: 100
-          multipleOf: 1
+        description: Tuple array with 0 indexed integer item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -636,11 +614,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous boolean items schema (no indexed items)
-        items:
-          type: boolean
-          description: Sample boolean schema
-          default: false
+        description: Tuple array with 0 indexed boolean item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -815,18 +790,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous array items schema (no indexed items)
-        items:
-          type: array
-          description: Sample array schema with all array validations
-          items:
-            type: string
-          default:
-            - alpha
-            - beta
-          minItems: 1
-          maxItems: 10
-          uniqueItems: true
+        description: Tuple array with 0 indexed array item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -1035,20 +1000,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with homogeneous object items schema (no indexed items)
-        items:
-          type: object
-          description: Sample object schema with all object validations
-          properties:
-            name:
-              type: string
-            id:
-              type: integer
-          default:
-            name: sample
-            id: 1
-          minProperties: 1
-          maxProperties: 5
+        description: Tuple array with 0 indexed object item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -1298,7 +1251,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (string suite)
+        description: Tuple array with 0 indexed string item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -1481,7 +1435,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (number suite)
+        description: Tuple array with 0 indexed number item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -1656,7 +1611,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (integer suite)
+        description: Tuple array with 0 indexed integer item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -1816,7 +1772,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (boolean suite)
+        description: Tuple array with 0 indexed boolean item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -2005,7 +1962,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (array suite)
+        description: Tuple array with 0 indexed array item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true
@@ -2218,7 +2176,8 @@ properties:
       - type: number
         description: Number oneOf variant (unchanged)
       - type: array
-        description: Array with no indexed item schemas (object suite)
+        description: Tuple array with 0 indexed object item schemas
+        items: []
         minItems: 0
         maxItems: 10
         uniqueItems: true

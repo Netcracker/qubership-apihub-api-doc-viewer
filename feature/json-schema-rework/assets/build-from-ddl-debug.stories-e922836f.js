@@ -1,4 +1,4 @@
-import{r as x,a as A,D as _,b as y}from"./resolve-debug-table-key-6e3bcd82.js";import{j as r}from"./_commonjs-dynamic-modules-6308e768.js";import{D as R}from"./DdlTableViewer-26a81a70.js";import{r as a}from"./index-f46741a2.js";import{b as S}from"./build-from-ddl-browser-5d12114c.js";import{a as h}from"./ddl-story-realm-utils-c0692776.js";import"./DiffBadge-636b527d.js";import"./IndexesNodeViewer-33d050d7.js";import"./iframe-aed3d58b.js";import"../sb-preview/runtime.js";const B=`CREATE TABLE users (
+import{r as x,a as A,D as _,b as y}from"./resolve-debug-table-key-6e3bcd82.js";import{j as r}from"./_commonjs-dynamic-modules-6308e768.js";import{D as R}from"./DdlTableViewer-26a81a70.js";import{r as a}from"./index-f46741a2.js";import{b as S}from"./build-from-ddl-browser-b8995858.js";import{a as h}from"./ddl-story-realm-utils-c0692776.js";import"./DiffBadge-636b527d.js";import"./IndexesNodeViewer-33d050d7.js";import"./iframe-304de7c2.js";import"../sb-preview/runtime.js";const B=`CREATE TABLE users (
   id bigint PRIMARY KEY,
   email varchar(255) NOT NULL,
   created_at timestamp DEFAULT now()
