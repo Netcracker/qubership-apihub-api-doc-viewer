@@ -1,8 +1,8 @@
 import { ChangedPropertyMetaData, DiffHighlightingApplicationMode } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-import { LayoutSide } from "../../../types/internal/LayoutSide";
+import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { Dispatch, FC, SetStateAction } from '../../../../../../node_modules/react';
-import { TitleRowUsage } from "../TitleRow/types";
-import { TextValueVariant } from "./types";
+import { TitleRowUsage } from '../TitleRow/types';
+import { TextValueVariant } from './types';
 type TextValueProps = {
     value?: string;
     variant: TextValueVariant;

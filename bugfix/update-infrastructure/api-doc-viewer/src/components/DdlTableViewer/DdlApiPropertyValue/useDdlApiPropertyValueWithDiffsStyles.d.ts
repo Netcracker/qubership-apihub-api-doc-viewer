@@ -1,5 +1,5 @@
 import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-import { DdlApiPropertyValueAppearance } from "./useDdlApiPropertyValueStyles";
+import { DdlApiPropertyValueAppearance } from './useDdlApiPropertyValueStyles';
 export type UseDdlApiPropertyValueWithDiffsStylesInput = {
     appearance: DdlApiPropertyValueAppearance;
     textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;

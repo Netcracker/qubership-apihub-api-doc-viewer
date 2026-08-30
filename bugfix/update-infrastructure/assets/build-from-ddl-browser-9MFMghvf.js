@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./parser.browser-CnSQLPq_.js","./rolldown-runtime-DkW27tQK.js"])))=>i.map(i=>d[i]);
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{n as t,t as n}from"./preload-helper-wdlQj8DP.js";import"./ddl-story-realm-utils-D3K-sVAw.js";async function r(e,t){let{buildFromDdl:r}=await n(async()=>{let{buildFromDdl:e}=await import(`./parser.browser-CnSQLPq_.js`);return{buildFromDdl:e}},__vite__mapDeps([0,1]),import.meta.url);return r(e,t)}function i(){return(i=e((()=>{t()})))()}export{i as n,r as t};

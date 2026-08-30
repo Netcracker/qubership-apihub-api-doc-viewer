@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { type JsoCaseStoryComponentProps } from "./jso-diffs-utils";
-export declare const JsoPropertySamplesStory: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { JsoCaseStoryComponentProps } from './jso-diffs-utils';
+export declare const JsoPropertySamplesStory: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import("react/jsx-runtime").JSX.Element;
 export type JsoPropertySamplesStoryMeta = Meta<typeof JsoPropertySamplesStory>;
 export type JsoPropertySamplesStoryObj = StoryObj<JsoPropertySamplesStoryMeta>;
 export declare const jsoPropertySamplesStoryMetaBase: {
-    component: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: JsoCaseStoryComponentProps) => import("react/jsx-runtime").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

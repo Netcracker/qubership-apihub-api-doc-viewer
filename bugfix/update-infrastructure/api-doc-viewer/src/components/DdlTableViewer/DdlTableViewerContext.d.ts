@@ -1,5 +1,5 @@
 import { NavigationLinkBuilder } from '../../../../next-data-model/src/shared/ddlapi/types/navigation-link-builder';
-import type { NavigationLinkComponent } from "./DefaultNavigationLink";
+import { NavigationLinkComponent } from './DefaultNavigationLink';
 export type DdlTableViewerContextValue = {
     navigationLinkBuilder: NavigationLinkBuilder;
     navigationLinkComponent: NavigationLinkComponent;

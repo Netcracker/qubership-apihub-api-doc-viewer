@@ -1,4 +1,4 @@
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { FC, ReactElement } from '../../../../../../node_modules/react';
 type DiffFloatingBadgeWrapperProps = {
     children: ReactElement;

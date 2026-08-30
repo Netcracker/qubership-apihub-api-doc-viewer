@@ -1,3 +1,3 @@
 import { FC } from '../../../../../../node_modules/react';
-import type { TextRowProps } from "./types";
+import { TextRowProps } from './types';
 export declare const TextRow: FC<TextRowProps>;

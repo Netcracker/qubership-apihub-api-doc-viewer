@@ -1,7 +1,7 @@
-import type { DisplayMode } from "../../types/DisplayMode";
-import type { Meta, StoryObj } from "@storybook/react";
-import type { DdlSampleCase } from "../utils/ddl-samples-cases";
-import { type DdlCaseStoryComponentProps } from "./ddl-samples-utils";
+import { DisplayMode } from '../../types/DisplayMode';
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { DdlSampleCase } from '../utils/ddl-samples-cases';
+import { DdlCaseStoryComponentProps } from './ddl-samples-utils';
 export declare const DdlSampleStory: (_props: DdlCaseStoryComponentProps) => null;
 export type DdlSamplesStoryMeta = Meta<typeof DdlSampleStory>;
 export type DdlSamplesStoryObj = StoryObj<DdlSamplesStoryMeta>;

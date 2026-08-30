@@ -1,8 +1,8 @@
-import type { LayoutSide } from "../../../types/internal/LayoutSide";
-import type { ChangedPropertyMetaData, DiffHighlightingApplicationMode, DiffHiglightingApplicationArea, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-import type { ReactElement } from '../../../../../../node_modules/react';
-import { TextValueVariant } from "../TextValue/types";
-import { WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps";
+import { LayoutSide } from '../../../types/internal/LayoutSide';
+import { ChangedPropertyMetaData, DiffHighlightingApplicationMode, DiffHiglightingApplicationArea, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { ReactElement } from '../../../../../../node_modules/react';
+import { TextValueVariant } from '../TextValue/types';
+import { WithDdlListLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
 export declare enum TitleRowUsage {
     Default = "default",
     AsyncApiJsoSection = "async-api-jso-section",

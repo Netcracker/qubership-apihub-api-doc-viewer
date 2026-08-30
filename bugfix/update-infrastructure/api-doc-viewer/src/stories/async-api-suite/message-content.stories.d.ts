@@ -1,7 +1,7 @@
-import type { StoryObj } from '@storybook/react';
+import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
-    component: import('../../../../../node_modules/react').FC<import("../..").AsyncApiOperationViewerProps>;
+    component: import('../../../../../node_modules/react').FC<import('../..').AsyncApiOperationViewerProps>;
     parameters: {};
     argTypes: {
         source: {

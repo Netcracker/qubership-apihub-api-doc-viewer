@@ -1,6 +1,6 @@
 import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
-import { DdlApiPropertyValueAppearance } from "./useDdlApiPropertyValueStyles";
+import { DdlApiPropertyValueAppearance } from './useDdlApiPropertyValueStyles';
 export type DdlApiPropertyValueWithDiffsProps = {
     isVisible: boolean;
     value: unknown;

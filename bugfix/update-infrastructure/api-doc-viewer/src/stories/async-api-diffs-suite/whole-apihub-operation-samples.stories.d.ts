@@ -1,8 +1,8 @@
-import type { StoryObj } from "@storybook/react";
-import { type AsyncApiCaseStoryComponentProps } from "./async-api-diffs-utils";
+import { StoryObj } from '@storybook/react-vite';
+import { AsyncApiCaseStoryComponentProps } from './async-api-diffs-utils';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import("react/jsx-runtime").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

@@ -1,4 +1,4 @@
-import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
+import { Realm } from '@netcracker/qubership-apihub-ddlapi';
 /** True when the Realm contains at least one table (CREATE SCHEMA-only DDL yields false). */
 export declare function realmHasTables(realm: Realm): boolean;
 /**

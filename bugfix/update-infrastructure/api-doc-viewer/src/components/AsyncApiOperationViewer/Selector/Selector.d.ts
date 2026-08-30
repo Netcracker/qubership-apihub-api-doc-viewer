@@ -1,8 +1,8 @@
-import { LayoutSide } from "../../../types/internal/LayoutSide";
+import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { AsyncApiTreeNode } from '../../../../../next-data-model/src/model/async-api/types/aliases';
 import { FC } from '../../../../../../node_modules/react';
-import { SizeVariant } from "../types/SizeVariant";
+import { SizeVariant } from '../types/SizeVariant';
 export type SelectorOption<V extends object | null = object | null> = {
     title: string;
     node: AsyncApiTreeNode;

@@ -1,5 +1,5 @@
-import { JsoDiffsViewer } from "../../components/JsoViewer/JsoDiffsViewer";
-import type { ComponentProps } from '../../../../../node_modules/react';
+import { JsoDiffsViewer } from '../../components/JsoViewer/JsoDiffsViewer';
+import { ComponentProps } from '../../../../../node_modules/react';
 export type JsoDiffSampleCase = {
     caseId: string;
     beforeYaml: string;
