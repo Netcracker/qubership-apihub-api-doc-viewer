@@ -1,3 +1,6 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 /**
  * Copyright 2024-2025 NetCracker Technology Corporation
  *
@@ -17,31 +20,18 @@
 import type {StorybookConfig} from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
+const require = createRequire(import.meta.url);
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@storybook/addon-onboarding",
-    "@storybook/addon-interactions",
-    {
-      name: '@storybook/addon-styling',
-      options: {
-        // Check out https://github.com/storybookjs/addon-styling/blob/main/docs/api.md
-        // For more details on this addon's options.
-        postCss: {
-          implementation: require.resolve('postcss'),
-        },
-      },
-    },
-  ],
+
+  addons: [getAbsolutePath("@storybook/addon-links"), getAbsolutePath("@storybook/addon-docs")],
+
   framework: {
-    name: "@storybook/react-vite",
+    name: getAbsolutePath("@storybook/react-vite"),
     options: {},
   },
-  docs: {
-    autodocs: "tag",
-  },
+
   async viteFinal(config) {
     return mergeConfig(config, {
       optimizeDeps: {
@@ -54,7 +44,11 @@ const config: StorybookConfig = {
         ],
       },
     });
-  },
+  }
 };
 
 export default config;
+
+function getAbsolutePath(value: string): any {
+  return dirname(require.resolve(join(value, "package.json")));
+}

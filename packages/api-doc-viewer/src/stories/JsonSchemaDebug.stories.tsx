@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 import { prepareJsonSchema, REQUEST_BODY_TARGET } from './preprocess';
 import { ComponentProps } from 'react';
