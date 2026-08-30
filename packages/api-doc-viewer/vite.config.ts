@@ -39,6 +39,12 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
       fileName: 'index',
+      /* Vite 8 names library CSS after the entry, so this emitted index.css where every
+         earlier version emitted style.css. That filename is part of the published
+         contract - package.json exports "./dist/style.css", and ui imports it from
+         GraphQlOperationViewer.tsx and JsonSchemaViewer.tsx - so it is pinned here
+         rather than renamed downstream. */
+      cssFileName: 'style',
     },
   },
   resolve: {
