@@ -19,6 +19,7 @@ import {
   JsonSchemaValidationRowKey,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { resolveValidationKeysForType } from "@apihub/next-data-model/model/json-schema/validation-keys"
+import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import {
   PlainPropertyNodeVisibilityManager,
   resolvePlainPropertyAdditionalInfoRowUsesAfterRowPrecededBy,
@@ -52,11 +53,12 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
     displayMode: DisplayMode,
   ): JsonSchemaPropertyRowVisibility {
     const value = node.value()
+    const typedValue = asJsonSchemaTypedNodeValue(value)
     const plainVisibility = plainPropertyNodeVisibilityManager.resolveNodeVisibility(node, displayMode)
     const detailed = isDetailedDisplayMode(displayMode)
 
     const showDescription = detailed
-      && (!!value?.description || !!node.diffs.description)
+      && (!!typedValue?.description || !!node.diffs.description)
     const showEnumValuesRow = detailed && (
       plainVisibility.showEnumValuesRow
       || !!takeJsonSchemaEnumDiff(node)
@@ -64,7 +66,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
       || !!takeJsonSchemaEnumRowColorizingDiff(node)
     )
     const showDefaultRow = detailed && (
-      hasDefinedValue(value?.default)
+      hasDefinedValue(typedValue?.default)
       || !!takeJsonSchemaDefaultDiff(node)
       || !!takeJsonSchemaDefaultRowColorizingDiff(node)
     )

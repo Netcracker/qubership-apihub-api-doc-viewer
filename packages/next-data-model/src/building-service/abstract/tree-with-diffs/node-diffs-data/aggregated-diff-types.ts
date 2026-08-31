@@ -43,7 +43,7 @@ function isDiffsSet(value: unknown): value is Set<Diff<DiffType>> {
  * Reads Diff objects from document-level rollup (`aggregateDiffsWithRollup`).
  */
 export function takeAggregatedDiffs(
-  crawlValue: object | null | undefined,
+  crawlValue: object | boolean | null | undefined,
   diffsMetaKeys: DiffMetaKeys | undefined,
 ): ReadonlySet<Diff<DiffType>> {
   if (!isObject(crawlValue) || !diffsMetaKeys) {
@@ -57,7 +57,7 @@ export function takeAggregatedDiffs(
 }
 
 export function takeAggregatedDiffTypes(
-  crawlValue: object | null | undefined,
+  crawlValue: object | boolean | null | undefined,
   diffsMetaKeys: DiffMetaKeys | undefined,
 ): ReadonlySet<DiffType> {
   const types = new Set<DiffType>()
@@ -76,7 +76,7 @@ export function takeAggregatedDiffTypes(
 export function mergeAggregatedDiffTypesIntoDescendantSummary(
   descendantDiffsSummary: NodeDescendantDiffsSummary,
   nodeDiffs: NodeDiffs | undefined,
-  crawlValue: object | null | undefined,
+  crawlValue: object | boolean | null | undefined,
   diffsMetaKeys: DiffMetaKeys | undefined,
 ): void {
   const ownDiffData = new Set<Diff<DiffType>>()

@@ -1,12 +1,13 @@
 import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
-import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
+import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { resolvePlainPropertyListLastRowFlags } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
+import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { isDiffSideContentVisible, isDiffSideHeaderVisible, takeAddRemoveDiffIfPresent } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { Diff } from "@netcracker/qubership-apihub-api-diff"
+import { JsonSchemaViewerTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { useMemo } from "react"
 import {
   isJsonSchemaBooleanAdditionalPropertiesNode,
@@ -15,9 +16,9 @@ import {
 import { JsonSchemaNodeTitlePlain, JsonSchemaNodeTitleWithDiffs } from "./JsonSchemaNodeTitle"
 
 export type SchemaNodeTitleRowSharedInput = {
-  ownerNode: JsonSchemaTreeNode
-  displayNode: JsonSchemaTreeNode
-  displayValue?: JsonSchemaTreeNodeValue | null
+  ownerNode: JsonSchemaViewerTreeNode
+  displayNode: JsonSchemaViewerTreeNode
+  displayValue?: JsonSchemaTreeNodeStoredValue | null
   contentVisibility: JsonSchemaPropertyRowVisibility
   isLastInList: boolean
   requiredDiff?: Diff
@@ -39,7 +40,7 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
 
   const customizationOptions = useCustomizationOptions()
   const ownerMeta = ownerNode.meta()
-  const displayValueResolved = displayValue ?? displayNode.value()
+  const displayValueResolved = asJsonSchemaTypedNodeValue(displayValue ?? displayNode.value())
   const displayMeta = displayNode.meta()
 
   const listLastRowFlags = useMemo(

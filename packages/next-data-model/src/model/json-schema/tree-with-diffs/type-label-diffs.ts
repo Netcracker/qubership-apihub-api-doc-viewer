@@ -16,7 +16,8 @@ import {
 import { resolveJsonSchemaTypeLabel } from "@apihub/next-data-model/model/json-schema/type-label"
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import {
   JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
   JsonSchemaSharedRowDiffs,
@@ -48,6 +49,10 @@ export function resolveJsonSchemaTypeLabelSideDisplay(
   }
 
   const value = node.value()
+  if (isJsonSchemaPrimitiveNodeValue(value)) {
+    return { kind: SideListDisplayKinds.NO_DIFFS, text: "" }
+  }
+
   const fieldDiffs = takeJsonSchemaTypeLabelFieldDiffs(node)
   if (!fieldDiffs) {
     return {
@@ -226,16 +231,16 @@ function resolveWrappedFieldSideText(
 }
 
 function takeNullableSuffixSegment(
-  value: JsonSchemaTreeNodeValue | null | undefined,
+  value: JsonSchemaTreeNodeStoredValue | null | undefined,
 ): JsonSchemaTypeLabelSideSegment | undefined {
-  if (!value?.nullable) {
+  if (isJsonSchemaPrimitiveNodeValue(value) || !value?.nullable) {
     return undefined
   }
   return { text: NULLABLE_SUFFIX.trim() }
 }
 
-function takeMergedFormat(value: JsonSchemaTreeNodeValue | null | undefined): string | undefined {
-  if (!value || !("format" in value)) {
+function takeMergedFormat(value: JsonSchemaTreeNodeStoredValue | null | undefined): string | undefined {
+  if (!value || typeof value !== "object" || !("format" in value)) {
     return undefined
   }
   const format = value.format

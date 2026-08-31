@@ -5,15 +5,15 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaNodeChangedOptions } from "./types"
 
 type JsonSchemaWithDiffsNode = ITreeNodeWithDiffs<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta,
-  JsonSchemaTreeNodeValue | null
+  JsonSchemaTreeNodeStoredValue | null
 >
 
 function hasNonEmptyRecord(record: object | undefined): boolean {

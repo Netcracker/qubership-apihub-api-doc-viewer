@@ -5,6 +5,12 @@ import {
   JsonSchemaNodeValueTypes,
 } from "@apihub/next-data-model/model/json-schema/types/node-value-type"
 
+/** Raw boolean schema fragments (e.g. `additionalProperties: false`). */
+export type JsonSchemaTreeNodePrimitiveValue = boolean
+
+/** Value returned by `JsonSchemaTreeNode.value()` — typed schema object or a raw primitive. */
+export type JsonSchemaTreeNodeStoredValue = JsonSchemaTreeNodeValue | JsonSchemaTreeNodePrimitiveValue
+
 export type JsonSchemaTreeNodeValue<T extends JsonSchemaNodeValueType = JsonSchemaNodeValueType> =
   T extends typeof JsonSchemaNodeValueTypes.ANY
     ? JsonSchemaTreeNodeValueAnyType

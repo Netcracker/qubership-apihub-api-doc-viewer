@@ -9,21 +9,21 @@ import {
   NodeDiffs,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JsonSchemaKindPropertyNodeDiffs,
+  JsonSchemaListValueDiffs,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
+import {
   JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS,
   JSON_SCHEMA_VALIDATION_SOURCE_KEY_CHIP_INDEX,
   JsonSchemaValidationRowKey,
   JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
-import { filterValueRangeSemanticSourceKeys, classifyValueRangeWholeRowAction, buildValueRangeChipStringDiffs, resolveValueRangeSideInputFromNodeValue, isValueRangePartialBoundChange, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
-import {
-  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
-  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
-  JsonSchemaListValueDiffs,
-  JsonSchemaKindPropertyNodeDiffs,
-} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { buildValueRangeChipStringDiffs, classifyValueRangeWholeRowAction, filterValueRangeSemanticSourceKeys, isValueRangePartialBoundChange, resolveValueRangeSideInputFromNodeValue, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import {
@@ -42,22 +42,22 @@ import { JsonSchemaNodeDiffsAggregatorKindAny } from "./kind-any"
 export class JsonSchemaNodeDiffsAggregatorKindProperty
   extends JsonSchemaNodeDiffsAggregatorKindAny {
   public aggregate(
-    crawlValue: object | null,
+    crawlValue: JsonSchemaTreeNodeStoredValue | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
     parentNode?: ITreeNodeWithDiffs<
-      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeStoredValue | null,
       JsonSchemaTreeNodeKind,
       JsonSchemaTreeNodeMeta,
-      JsonSchemaTreeNodeValue | null
+      JsonSchemaTreeNodeStoredValue | null
     >,
     containerNode?: ITreeNodeWithDiffs<
-      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeStoredValue | null,
       JsonSchemaTreeNodeKind,
       JsonSchemaTreeNodeMeta,
-      JsonSchemaTreeNodeValue | null
+      JsonSchemaTreeNodeStoredValue | null
     >,
-  ): NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined {
+  ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     const superNodeDiffs = super.aggregate(
       crawlValue,
       diffsMetaKeys,
@@ -173,10 +173,10 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
   private resolveRequiredMetaDiff(
     nodeKey: NodeKey,
     parentNode: ITreeNodeWithDiffs<
-      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeStoredValue | null,
       JsonSchemaTreeNodeKind,
       JsonSchemaTreeNodeMeta,
-      JsonSchemaTreeNodeValue | null
+      JsonSchemaTreeNodeStoredValue | null
     > | undefined,
     diffsMetaKey: symbol,
   ): ChangedPropertyMetaData | undefined {

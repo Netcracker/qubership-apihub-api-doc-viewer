@@ -3,6 +3,10 @@ import {
   JsonSchemaNodeValueType,
   JsonSchemaNodeValueTypesList,
 } from "@apihub/next-data-model/model/json-schema/types/node-value-type"
+import {
+  JsonSchemaTreeNodeStoredValue,
+  JsonSchemaTreeNodeValue,
+} from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isArray, isObject, isString } from "@apihub/next-data-model/utilities"
 
 export function isJsonSchemaNodeType(type: unknown): type is JsonSchemaNodeValueType {
@@ -19,6 +23,25 @@ export function isBrokenRef(value: unknown): value is Record<typeof JSON_SCHEMA_
 function hasCombinerArray(value: Record<PropertyKey, unknown>, key: "allOf" | "oneOf" | "anyOf"): boolean {
   const combiner = value[key]
   return isArray(combiner) && combiner.length > 0
+}
+
+export function isJsonSchemaPrimitiveNodeValue(value: unknown): value is boolean {
+  return typeof value === "boolean"
+}
+
+export function isJsonSchemaTypedNodeValue(
+  value: unknown,
+): value is JsonSchemaTreeNodeValue {
+  return isObject(value) && !isArray(value)
+}
+
+export function asJsonSchemaTypedNodeValue(
+  value: JsonSchemaTreeNodeStoredValue | null | undefined,
+): JsonSchemaTreeNodeValue | null | undefined {
+  if (value === null || value === undefined || typeof value === "boolean") {
+    return null
+  }
+  return value
 }
 
 export function isJsonSchemaComplexValue(value: unknown): boolean {

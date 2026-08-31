@@ -1,21 +1,32 @@
 import { TYPE_UNKNOWN } from "@apihub/next-data-model/model/abstract/constants"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import {
+  JsonSchemaTreeNodeStoredValue,
+  JsonSchemaTreeNodeValue,
+} from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
+import { isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 
 const NULLABLE_SUFFIX = " or null"
 const SEPARATOR = " "
 
 export function resolveJsonSchemaTypeLabel(
-  value: JsonSchemaTreeNodeValue | null | undefined,
+  value: JsonSchemaTreeNodeStoredValue | null | undefined,
   meta: JsonSchemaTreeNodeMeta | null | undefined,
 ): string {
   if (meta?.brokenRef) {
     return `$ref: ${meta.brokenRef}`
   }
 
-  const type = value?.type ?? TYPE_UNKNOWN
-  const format = value && "format" in value ? value.format : undefined
-  const nullableSuffix = value?.nullable ? NULLABLE_SUFFIX : ""
+  if (isJsonSchemaPrimitiveNodeValue(value)) {
+    return ""
+  }
+
+  const typedValue = value as JsonSchemaTreeNodeValue | null | undefined
+  const type = typedValue?.type ?? TYPE_UNKNOWN
+  const format = typedValue && typeof typedValue === "object" && "format" in typedValue
+    ? typedValue.format
+    : undefined
+  const nullableSuffix = typedValue?.nullable ? NULLABLE_SUFFIX : ""
 
   const parts: string[] = [String(type)]
   if (format) {

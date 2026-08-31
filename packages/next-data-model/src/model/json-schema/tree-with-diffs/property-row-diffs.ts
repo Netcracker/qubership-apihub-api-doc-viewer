@@ -1,42 +1,42 @@
 import {
-  ChangedPropertyMetaData,
-  NODE_LEVEL_DIFF_KEY,
-} from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import {
   LayoutSide,
   ORIGIN_LAYOUT_SIDE,
 } from "@apihub/next-data-model/model/abstract/layout-side"
 import {
   type ListSideItem,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
-import { isDiffAdd, isDiffRemove, isDiffReplace, Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
-import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
-  JsonSchemaListValueDiffs,
-  JsonSchemaKindAnyNodeDiffs,
-  JsonSchemaKindPropertyNodeDiffs,
-  JsonSchemaSharedRowDiffs,
+  ChangedPropertyMetaData,
+  NODE_LEVEL_DIFF_KEY,
+} from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import {
   JSON_SCHEMA_META_FLAG_DIFF_KEYS,
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JsonSchemaKindAnyNodeDiffs,
+  JsonSchemaKindPropertyNodeDiffs,
+  JsonSchemaListValueDiffs,
+  JsonSchemaSharedRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import {
-  resolveJsonSchemaTypeLabelSideDisplay,
-  takeJsonSchemaTypeLabelFieldDiffs,
+  resolveJsonSchemaTypeLabelSideDisplay
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/type-label-diffs"
+import {
+  formatJsonSchemaValidationRowChipDisplay,
+  resolveValidationSourceKeyDisplayIndex,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
+import {
+  JsonSchemaValidationRowKey,
+  JsonSchemaValidationRowKeys,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
   resolveValueRangeDiffSideEntries,
   resolveValueRangeSideInputFromNodeValue,
   ValueRangeCrawlDiffData,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
-import {
-  JsonSchemaValidationRowKey,
-  JsonSchemaValidationRowKeys,
-} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
-import {
-  formatJsonSchemaValidationRowChipDisplay,
-  resolveValidationSourceKeyDisplayIndex,
-} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
+import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
+import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 /** Side-visible list item without diff styling — use {@link valueDiffKey} for chip highlight lookup. */
 export type JsonSchemaListSideEntry = {
@@ -44,21 +44,21 @@ export type JsonSchemaListSideEntry = {
   readonly valueDiffKey?: string
 }
 
+export {
+  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
+  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS
+} from "./property-row-diffs.types"
 export type {
   JsonSchemaListValueDiffs,
   JsonSchemaKindPropertyNodeDiffs as JsonSchemaPropertyRowDiffs,
   JsonSchemaSharedRowDiffs,
   JsonSchemaTypeLabelFieldDiffKey,
-  JsonSchemaTypeLabelFieldDiffs,
-} from "./property-row-diffs.types"
-export {
-  JSON_SCHEMA_META_FLAG_DIFF_KEYS,
-  JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
-  JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
+  JsonSchemaTypeLabelFieldDiffs
 } from "./property-row-diffs.types"
 export {
   resolveJsonSchemaTypeLabelSideDisplay,
-  takeJsonSchemaTypeLabelFieldDiffs,
+  takeJsonSchemaTypeLabelFieldDiffs
 } from "./type-label-diffs"
 export type { JsonSchemaTypeLabelSideSegment } from "./type-label-diffs"
 
@@ -363,7 +363,7 @@ export function resolveJsonSchemaDefaultSideDisplay(
   layoutSide: LayoutSide,
 ): string | undefined {
   const sideEntries = resolveJsonSchemaDefaultSideEntries(
-    node.value()?.default,
+    asJsonSchemaTypedNodeValue(node.value())?.default,
     takeJsonSchemaDefaultDiff(node),
     layoutSide,
   )

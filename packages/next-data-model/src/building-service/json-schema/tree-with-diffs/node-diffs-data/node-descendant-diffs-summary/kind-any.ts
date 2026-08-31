@@ -9,7 +9,7 @@ export class JsonSchemaNodeDescendantDiffsSummaryAggregatorKindAny extends Abstr
     nodeDiffs?: NodeDiffs,
     nodeDescendantDiffs?: NodeDescendantDiffs,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    crawlValue?: object | null,
+    crawlValue?: object | boolean | null,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diffsMetaKeys?: DiffMetaKeys,
   ): NodeDescendantDiffsSummary | undefined {

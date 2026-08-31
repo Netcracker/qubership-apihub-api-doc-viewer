@@ -3,10 +3,10 @@ import { TreeNodeComplexityType, TreeNodeComplexityTypes } from "../tree/tree-no
 import { ITreeNodeWithDiffs, NodeDescendantDiffs, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSeverities, NodeDiffsSummary, TreeNodeWithDiffsParams } from "./tree-node.interface";
 
 export class SimpleTreeNodeWithDiffs<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
-  D extends object | null,
+  D extends object | boolean | null,
 > implements ITreeNodeWithDiffs<V, K, M, D> {
 
   public readonly type: TreeNodeComplexityType
@@ -76,7 +76,9 @@ export class SimpleTreeNodeWithDiffs<
       parent: parent,
       container: null,
       newDataLevel: this.newDataLevel,
-      value: this._value !== null ? { ...this._value } : null,
+      value: this._value !== null
+        ? (typeof this._value === "object" ? { ...(this._value as object) } as V : this._value)
+        : null,
       meta: { ...this._meta },
     });
     // Share the same children/nested arrays so later additions to the source are visible on the clone.

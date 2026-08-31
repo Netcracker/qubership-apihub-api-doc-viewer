@@ -19,7 +19,7 @@ export class JsonSchemaNodeDiffsSummaryKindAny extends AbstractNodeDiffsSummaryA
   public aggregate(
     nodeDiffs?: NodeDiffs,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    crawlValue?: object | null,
+    crawlValue?: object | boolean | null,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diffsMetaKeys?: DiffMetaKeys,
   ): NodeDiffsSummary | undefined {

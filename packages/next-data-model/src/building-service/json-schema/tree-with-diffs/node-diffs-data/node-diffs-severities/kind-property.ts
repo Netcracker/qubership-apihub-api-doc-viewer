@@ -5,14 +5,14 @@ import {
   NodeDiffsSeverityPlacemennt,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaKindPropertyNodeDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaNodeDiffsSeveritiesAggregatorKindAny } from "./kind-any"
 
 export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
   extends JsonSchemaNodeDiffsSeveritiesAggregatorKindAny {
 
   public aggregate(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): NodeDiffsSeverities | undefined {
     const diffsSeverities = super.aggregate(nodeDiffs) ?? {}
     this.applyMaxAdditionalInfoRowSeverity(nodeDiffs, diffsSeverities)
@@ -20,7 +20,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
   }
 
   private applyMaxAdditionalInfoRowSeverity(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     diffsSeverities: NodeDiffsSeverities,
   ): void {
     const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs

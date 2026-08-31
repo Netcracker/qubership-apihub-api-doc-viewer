@@ -35,6 +35,7 @@ import {
   JsonSchemaTreeNodeValueTypeObject,
   JsonSchemaTreeNodeValueTypeString,
   JsonSchemaTreeNodeValue,
+  JsonSchemaTreeNodeStoredValue,
 } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaNodeValueType, JsonSchemaNodeValueTypes } from "@apihub/next-data-model/model/json-schema/types/node-value-type"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
@@ -46,7 +47,9 @@ import {
   isBrokenRef,
   isJsonSchemaComplexValue,
   isJsonSchemaNodeType,
+  isJsonSchemaPrimitiveNodeValue,
 } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
+import { resolveJsonSchemaPrimitiveCrawlNodeValue } from "@apihub/next-data-model/shared/json-schema/additional-properties-node-value"
 import { isRequiredJsonSchemaProperty } from "@apihub/next-data-model/shared/json-schema/guards/tree-node"
 import {
   JSON_SCHEMA_NODE_VALUE_PROPERTY_EXTENSIONS,
@@ -76,7 +79,7 @@ type JsonSchemaCommonNodeValue =
   | JsonSchemaTreeNodeValue<typeof JsonSchemaNodeValueTypes.UNKNOWN>
 
 export class JsonSchemaNodeDataBuilder extends AbstractNodeDataBuilder<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeMeta
 > {
   public static readonly JSON_SCHEMA_TREE_NODE_META_PROPS = [
@@ -176,7 +179,7 @@ export class JsonSchemaNodeDataBuilder extends AbstractNodeDataBuilder<
   public buildNodeMeta(
     value: unknown,
     key: NodeKey = "",
-    parent: ITreeNode<JsonSchemaTreeNodeValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta> | null = null,
+    parent: ITreeNode<JsonSchemaTreeNodeStoredValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta> | null = null,
     isCycle = false,
   ): JsonSchemaTreeNodeMeta {
     const required = isRequiredJsonSchemaProperty(key, parent)
@@ -207,16 +210,24 @@ export class JsonSchemaNodeDataBuilder extends AbstractNodeDataBuilder<
   }
 
   public override createNodeValue(
-    kind: string,
+    kind: JsonSchemaTreeNodeKind | string,
     key: PropertyKey,
     value: unknown,
     pick: NodeDataPickFunction,
-  ): JsonSchemaTreeNodeValue | null {
-    void kind
+  ): JsonSchemaTreeNodeStoredValue | null {
     void key
 
     if (value === undefined || value === null) {
       return null
+    }
+
+    const primitiveNodeValue = resolveJsonSchemaPrimitiveCrawlNodeValue(kind, value)
+    if (primitiveNodeValue !== undefined) {
+      return primitiveNodeValue
+    }
+
+    if (isJsonSchemaPrimitiveNodeValue(value)) {
+      return value
     }
     if (!isObject(value)) {
       return null

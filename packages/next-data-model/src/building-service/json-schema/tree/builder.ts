@@ -1,10 +1,10 @@
 import { JsonSchemaTree } from "@apihub/next-data-model/model/json-schema/tree/tree.impl"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKind, JsonSchemaTreeNodeKindsList } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeBuilderParams } from "@apihub/next-data-model/shared/json-schema/types/tree-builder-params"
-import { isJsonSchemaComplexValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
+import { isJsonSchemaComplexValue, isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { syncCrawl } from "@netcracker/qubership-apihub-json-crawl"
 import {
   ComplexTreeNodeParams,
@@ -29,13 +29,13 @@ import { createJsonSchemaTreeBuildingHooks, JsonSchemaTreeBuildingNodeParams } f
 import { JsonSchemaNodeDataBuilder } from "./node-data/builder"
 
 type SimpleJsonSchemaTreeNodeParams = SimpleTreeNodeParams<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta
 >
 
 type ComplexJsonSchemaTreeNodeParams = ComplexTreeNodeParams<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta
 >
@@ -43,7 +43,7 @@ type ComplexJsonSchemaTreeNodeParams = ComplexTreeNodeParams<
 const JSON_SCHEMA_LOG_PREFIX = "[JSON Schema]"
 
 export class JsonSchemaTreeBuilder extends TreeBuilder<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta
 > {
@@ -93,7 +93,11 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
       supportedNodeKinds: JsonSchemaTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
       createNodeParams: (value, parent, container) => ({
-        value: isObject(value) && !Array.isArray(value) ? value : null,
+        value: (isJsonSchemaPrimitiveNodeValue(value)
+          ? value
+          : isObject(value) && !Array.isArray(value)
+            ? value
+            : null) as JsonSchemaTreeNodeStoredValue | null,
         newDataLevel: true,
         parent,
         container,
@@ -195,7 +199,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     params: JsonSchemaTreeBuildingNodeParams,
   ): JsonSchemaTreeNode | undefined {
     const { parent, container, newDataLevel, value } = params
-    const isComplex = complex || isJsonSchemaComplexValue(value)
+    const isComplex = complex || (isObject(value) && isJsonSchemaComplexValue(value))
 
     if (isComplex) {
       const nodeMeta = this.createNodeMeta(key, params)
@@ -235,7 +239,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     key: NodeKey,
     kind: JsonSchemaTreeNodeKind,
     params: JsonSchemaTreeBuildingNodeParams,
-  ): JsonSchemaTreeNodeValue | null {
+  ): JsonSchemaTreeNodeStoredValue | null {
     const { value } = params
     return this.nodeDataBuilder.createNodeValue(
       kind,
@@ -252,11 +256,11 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
     return key
   }
 
-  protected isSimpleTreeNode(node: ITreeNode<JsonSchemaTreeNodeValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta>): boolean {
+  protected isSimpleTreeNode(node: ITreeNode<JsonSchemaTreeNodeStoredValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta>): boolean {
     return node.type === TreeNodeComplexityTypes.SIMPLE
   }
 
-  protected isComplexTreeNode(node: ITreeNode<JsonSchemaTreeNodeValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta>): boolean {
+  protected isComplexTreeNode(node: ITreeNode<JsonSchemaTreeNodeStoredValue | null, JsonSchemaTreeNodeKind, JsonSchemaTreeNodeMeta>): boolean {
     return node.type === TreeNodeComplexityTypes.COMPLEX
   }
 

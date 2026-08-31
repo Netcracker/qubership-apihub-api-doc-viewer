@@ -11,15 +11,14 @@ import {
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
   JsonSchemaSharedRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
-import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
-  extends AbstractNodeDiffsSeveritiesAggregator<JsonSchemaTreeNodeValue | null> {
+  extends AbstractNodeDiffsSeveritiesAggregator<JsonSchemaTreeNodeStoredValue | null> {
 
   public aggregate(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): NodeDiffsSeverities | undefined {
     const diffNode = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (diffNode) {
@@ -38,7 +37,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
   }
 
   private applyMaxRowSeverityFromTypeLabelDiffs(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     diffsSeverities: NodeDiffsSeverities,
   ): void {
     const sharedDiffs = nodeDiffs as JsonSchemaSharedRowDiffs
@@ -72,7 +71,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
   }
 
   protected applyRowSeverity(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     propertyKey: string,
     placement: NodeDiffsSeverityPlacemennt,
     diffsSeverities: NodeDiffsSeverities,

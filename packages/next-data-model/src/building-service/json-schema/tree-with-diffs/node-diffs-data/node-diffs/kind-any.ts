@@ -23,17 +23,17 @@ import {
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 export class JsonSchemaNodeDiffsAggregatorKindAny
   extends AbstractNodeDiffsAggregator<
-    JsonSchemaTreeNodeValue | null,
+    JsonSchemaTreeNodeStoredValue | null,
     JsonSchemaTreeNodeKind,
     JsonSchemaTreeNodeMeta,
-    JsonSchemaTreeNodeValue | null
+    JsonSchemaTreeNodeStoredValue | null
   > {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
     isContentVisible: true,
@@ -41,22 +41,22 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   }
 
   public aggregate(
-    crawlValue: object | null,
+    crawlValue: JsonSchemaTreeNodeStoredValue | null,
     diffsMetaKeys: DiffMetaKeys,
     nodeKey: NodeKey,
     parentNode?: ITreeNodeWithDiffs<
-      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeStoredValue | null,
       JsonSchemaTreeNodeKind,
       JsonSchemaTreeNodeMeta,
-      JsonSchemaTreeNodeValue | null
+      JsonSchemaTreeNodeStoredValue | null
     >,
     containerNode?: ITreeNodeWithDiffs<
-      JsonSchemaTreeNodeValue | null,
+      JsonSchemaTreeNodeStoredValue | null,
       JsonSchemaTreeNodeKind,
       JsonSchemaTreeNodeMeta,
-      JsonSchemaTreeNodeValue | null
+      JsonSchemaTreeNodeStoredValue | null
     >,
-  ): NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined {
+  ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
     if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
@@ -127,8 +127,8 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
   protected aggregateTextDiff(
     diff: Diff<DiffType>,
-    key: ChangedPropertyKey<JsonSchemaTreeNodeValue | null>,
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    key: ChangedPropertyKey<JsonSchemaTreeNodeStoredValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): void {
     nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
   }
@@ -441,7 +441,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   }
 
   protected hasWholeNodeAddOrRemoveDiff(
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): boolean {
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     return !!nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))

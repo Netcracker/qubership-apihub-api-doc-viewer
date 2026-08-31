@@ -3,7 +3,7 @@ import { JsonPath } from "@netcracker/qubership-apihub-json-crawl"
 import { AncestorsRegistry } from "./ancestors-registry"
 
 export interface CommonState<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
   N extends ITreeNode<V, K, M> = ITreeNode<V, K, M>,

@@ -8,18 +8,18 @@ import {
 import { JsonSchemaTreeWithDiffs } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/tree.impl"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKind, JsonSchemaTreeNodeKindsList } from "@apihub/next-data-model/model/json-schema/types/node-kind"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isJsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/shared/json-schema/guards/tree-node"
 import { JsonSchemaTreeWithDiffsBuilderParams } from "@apihub/next-data-model/shared/json-schema/types/tree-builder-params"
 import { NodeId, NodeKey } from "@apihub/next-data-model/utility-types"
-import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { mergeAggregatedDiffTypesIntoDescendantSummary } from "../../abstract/tree-with-diffs/node-diffs-data/aggregated-diff-types"
+import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import {
   JsonSchemaSpecWithDiffsTransformer,
   JsonSchemaWithDiffs,
 } from "../shared/json-schema-spec-with-diffs-transformer"
-import { JsonSchemaTreeBuildingNodeParams } from "../tree/building-hooks"
 import { JsonSchemaTreeBuilder } from "../tree/builder"
+import { JsonSchemaTreeBuildingNodeParams } from "../tree/building-hooks"
 import { JsonSchemaNodeDataBuilder } from "../tree/node-data/builder"
 import { JsonSchemaNodeDataWithDiffsBuilder } from "./node-data/builder"
 import { JsonSchemaNodeDescendantDiffsSummaryAggregatorFactory } from "./node-diffs-data/node-descendant-diffs-summary/factory"
@@ -81,7 +81,7 @@ export class JsonSchemaTreeWithDiffsBuilder extends JsonSchemaTreeBuilder {
     key: NodeKey,
     kind: string,
     params: JsonSchemaTreeBuildingNodeParams,
-  ): NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined {
+  ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     if (!this.isJsonSchemaTreeNodeKind(kind)) {
       return undefined
     }
@@ -94,8 +94,8 @@ export class JsonSchemaTreeWithDiffsBuilder extends JsonSchemaTreeBuilder {
 
   protected createNodeDiffsSummary(
     kind: string,
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined,
-    crawlValue: object | null | undefined,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined,
+    crawlValue: object | boolean | null | undefined,
     diffsMetaKeys: DiffMetaKeys | undefined,
   ): NodeDiffsSummary | undefined {
     if (!this.isJsonSchemaTreeNodeKind(kind)) {
@@ -120,14 +120,14 @@ export class JsonSchemaTreeWithDiffsBuilder extends JsonSchemaTreeBuilder {
 
   protected updateNodeDiffsByDescendantDiffs(
     kind: string,
-    crawlValue: object | null | undefined,
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null>,
+    crawlValue: object | boolean | null | undefined,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     nodeDescendantDiffs: NodeDescendantDiffs,
-  ): NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined {
+  ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     if (!this.isJsonSchemaTreeNodeKind(kind)) {
       return undefined
     }
-    if (!crawlValue) {
+    if (crawlValue === null || crawlValue === undefined) {
       return undefined
     }
     return JsonSchemaNodeDiffsAggregatorFactory
@@ -137,9 +137,9 @@ export class JsonSchemaTreeWithDiffsBuilder extends JsonSchemaTreeBuilder {
 
   protected createNodeDescendantsDiffsSummary(
     kind: string,
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined,
     nodeDescendantDiffs: NodeDescendantDiffs | undefined,
-    crawlValue: object | null | undefined,
+    crawlValue: object | boolean | null | undefined,
     diffsMetaKeys: DiffMetaKeys | undefined,
   ): NodeDescendantDiffsSummary | undefined {
     if (!this.isJsonSchemaTreeNodeKind(kind)) {
@@ -155,7 +155,7 @@ export class JsonSchemaTreeWithDiffsBuilder extends JsonSchemaTreeBuilder {
 
   protected createNodeDiffsSeverities(
     kind: string,
-    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeValue | null> | undefined,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined,
   ): NodeDiffsSeverities | undefined {
     if (!this.isJsonSchemaTreeNodeKind(kind)) {
       return undefined

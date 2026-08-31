@@ -3,6 +3,7 @@ import { isDetailedDisplayMode } from "@apihub/next-data-model/model/abstract/gu
 import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { resolveValidationKeysForType } from "@apihub/next-data-model/model/json-schema/validation-keys"
 import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
 import type {
@@ -37,16 +38,17 @@ export class PlainPropertyNodeVisibilityManager {
     displayMode: DisplayMode,
   ): JsonSchemaPropertyRowVisibility {
     const value = node.value()
+    const typedValue = asJsonSchemaTypedNodeValue(value)
     const detailed = isDetailedDisplayMode(displayMode)
 
-    const deprecationReason = resolveDeprecationReason(value)
-    const showDescription = detailed && !!value?.description
+    const deprecationReason = resolveDeprecationReason(typedValue)
+    const showDescription = detailed && !!typedValue?.description
     const showDeprecationReasonRow = detailed && !!deprecationReason
-    const showDefaultRow = detailed && hasDefinedValue(value?.default)
-    const showExamplesRow = detailed && Array.isArray(value?.examples) && value.examples.length > 0
-    const showEnumValuesRow = detailed && Array.isArray(value?.enum) && value.enum.length > 0
+    const showDefaultRow = detailed && hasDefinedValue(typedValue?.default)
+    const showExamplesRow = detailed && Array.isArray(typedValue?.examples) && typedValue.examples.length > 0
+    const showEnumValuesRow = detailed && Array.isArray(typedValue?.enum) && typedValue.enum.length > 0
     const showValidationsSection = detailed && resolveValidationKeysForType(value).length > 0
-    const showExtensionsRow = detailed && hasExtensions(value)
+    const showExtensionsRow = detailed && hasExtensions(typedValue)
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
       || showValidationsSection || showExtensionsRow
     const showContentSection = showDescription || showDeprecationReasonRow || showAnyAdditionalInfoRow

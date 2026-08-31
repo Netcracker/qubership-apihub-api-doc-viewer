@@ -1,5 +1,5 @@
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { takeJsonSchemaRequiredMetaDiffForDisplay } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
@@ -16,7 +16,7 @@ import { SchemaNodeTitleRowBase } from "./SchemaNodeTitleRowBase"
 export type SchemaNodeTitleRowWithDiffsProps = WithPrecededByProps & {
   ownerNode: JsonSchemaTreeNodeWithDiffs
   displayNode?: JsonSchemaTreeNodeWithDiffs
-  displayValue?: JsonSchemaTreeNodeValue | null
+  displayValue?: JsonSchemaTreeNodeStoredValue | null
   contentVisibility: JsonSchemaPropertyRowVisibility
   isLastInList?: boolean
   expandable?: boolean

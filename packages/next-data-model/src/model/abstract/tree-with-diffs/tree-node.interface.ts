@@ -4,29 +4,29 @@ import { JsonPath } from "@netcracker/qubership-apihub-json-crawl";
 import { ITreeNode, TreeNodeComplexityTypes, TreeNodeParams } from "../tree/tree-node.interface";
 
 export interface TreeNodeWithDiffsParams<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
-  D extends object | null,
+  D extends object | boolean | null,
 > extends TreeNodeParams<V, K, M> {
   parent: ITreeNodeWithDiffs<V, K, M, D> | null
   container: ITreeNodeWithDiffs<V, K, M, D> | null
 }
 
 export interface SimpleTreeNodeWithDiffsParams<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
-  D extends object | null,
+  D extends object | boolean | null,
 > extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.SIMPLE
 }
 
 export interface ComplexTreeNodeWithDiffsParams<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
-  D extends object | null,
+  D extends object | boolean | null,
 > extends TreeNodeWithDiffsParams<V, K, M, D> {
   type: typeof TreeNodeComplexityTypes.COMPLEX
 }
@@ -78,9 +78,9 @@ export const DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY: DiffHi
 
 export const NODE_LEVEL_DIFF_KEY = "" as const
 
-export type ChangedPropertyKey<V extends object | null = object | null> =
+export type ChangedPropertyKey<V extends object | boolean | null = object | boolean | null> =
   | typeof NODE_LEVEL_DIFF_KEY
-  | (V extends null ? never : keyof V)
+  | (V extends object ? keyof V : never)
 export type ChangedPropertyMetaData = {
   data: Diff<DiffType>
   styles: {
@@ -94,7 +94,7 @@ export type ChangedPropertyMetaData = {
   highlightingMode: Map<DiffHiglightingApplicationArea, DiffHighlightingApplicationMode>
   inherited?: boolean
 }
-export type NodeDiffs<V extends object | null = object | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
+export type NodeDiffs<V extends object | boolean | null = object | boolean | null> = Partial<Record<ChangedPropertyKey<V>, ChangedPropertyMetaData>>
 
 export enum NodeDiffsSeverityPlacemennt {
   TitleRow = 'title-row',
@@ -118,10 +118,10 @@ export type NodeDescendantDiffsSummary = Set<DiffType>
 export type NodeDiffsSummary = Set<DiffType>
 
 export interface ITreeNodeWithDiffs<
-  V extends object | null = object | null,
+  V extends object | boolean | null = object | boolean | null,
   K extends string = string,
   M extends object = object,
-  D extends object | null = object | null
+  D extends object | boolean | null = object | boolean | null
 > extends ITreeNode<V, K, M> {
   parent: ITreeNodeWithDiffs | null
   container: ITreeNodeWithDiffs | null

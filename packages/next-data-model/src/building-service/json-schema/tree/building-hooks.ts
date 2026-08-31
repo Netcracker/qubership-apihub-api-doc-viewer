@@ -1,4 +1,4 @@
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
@@ -8,7 +8,7 @@ import { JsonSchemaCrawlRule } from "../json-crawl-entities/rules/types"
 import { JsonSchemaTreeCrawlState } from "../json-crawl-entities/state/types"
 
 export type JsonSchemaTreeBuildingNodeParams = {
-  value: object | null
+  value: JsonSchemaTreeNodeStoredValue | null
   newDataLevel: boolean
   parent: JsonSchemaTreeNode | null
   container: JsonSchemaTreeNode | null
@@ -16,7 +16,7 @@ export type JsonSchemaTreeBuildingNodeParams = {
 
 export interface JsonSchemaTreeBuildingHooksFactoryParams
   extends TreeBuildingHooksFactoryParams<
-    JsonSchemaTreeNodeValue | null,
+    JsonSchemaTreeNodeStoredValue | null,
     JsonSchemaTreeNodeKind,
     JsonSchemaTreeNodeMeta,
     JsonSchemaTreeNode,
@@ -33,7 +33,7 @@ export function createJsonSchemaTreeBuildingHooks(
   SyncCrawlHook<JsonSchemaTreeCrawlState, JsonSchemaCrawlRule>,
 ] {
   return createTreeBuildingHooks<
-    JsonSchemaTreeNodeValue | null,
+    JsonSchemaTreeNodeStoredValue | null,
     JsonSchemaTreeNodeKind,
     JsonSchemaTreeNodeMeta,
     JsonSchemaTreeNode,

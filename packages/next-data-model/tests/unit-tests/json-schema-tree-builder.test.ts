@@ -227,4 +227,44 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(additionalItemsNode).toBeDefined()
     expect(additionalItemsNode!.value()?.type).toBe("integer")
   })
+
+  it("creates an additionalProperties node with primitive value false", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        first: { type: "string" },
+        second: { type: "string" },
+      },
+      additionalProperties: false,
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
+    const additionalPropertiesNode = tree.root!.childrenNodes().find(
+      (node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
+    )
+
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.value()).toBe(false)
+    expect(additionalPropertiesNode!.meta()?._fragment).toBe(false)
+    expect(additionalPropertiesNode!.childrenNodes()).toHaveLength(0)
+  })
+
+  it("creates an additionalProperties node with type any when value is true", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+      },
+      additionalProperties: true,
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
+    const additionalPropertiesNode = tree.root!.childrenNodes().find(
+      (node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
+    )
+
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.value()).toEqual({ type: "any" })
+    expect(additionalPropertiesNode!.meta()?._fragment).toBe(true)
+  })
 })

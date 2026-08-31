@@ -1,7 +1,8 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
   resolvePlainPropertyListLastRowFlags,
@@ -74,7 +75,7 @@ function isJsonSchemaPropertyNodeWithDiffs(
 
 export type SchemaNodePlainContentProps = {
   node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
-  displayValue?: JsonSchemaTreeNodeValue | null
+  displayValue?: JsonSchemaTreeNodeValue | JsonSchemaTreeNodeStoredValue | null
   isLastInList?: boolean
 }
 
@@ -87,6 +88,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
   const displayMode = useDisplayMode()
   const value = displayValue ?? node.value()
+  const typedValue = asJsonSchemaTypedNodeValue(value)
   const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
 
   const visibility = useMemo(
@@ -147,7 +149,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   )
 
   const validationRows = useMemo(() => {
-    const baseRows = resolveValidationRows(value)
+    const baseRows = resolveValidationRows(typedValue)
     if (!propertyNodeWithDiffs) {
       return baseRows
     }
@@ -166,12 +168,12 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
       }))
 
     return [...baseRows, ...diffOnlyRows]
-  }, [propertyNodeWithDiffs, value])
+  }, [propertyNodeWithDiffs, typedValue])
 
   const enumValuesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
       const sideEntries = resolveJsonSchemaEnumSideEntries(
-        value?.enum ?? [],
+        typedValue?.enum ?? [],
         enumDiff,
         enumValueDiffs,
         layoutSide,
@@ -190,13 +192,13 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [enumDiff, enumValueDiffs, value?.enum],
+    [enumDiff, enumValueDiffs, typedValue?.enum],
   )
 
   const examplesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
       const sideEntries = resolveJsonSchemaExamplesSideEntries(
-        value?.examples ?? [],
+        typedValue?.examples ?? [],
         examplesDiff,
         examplesValueDiffs,
         layoutSide,
@@ -215,12 +217,12 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [examplesDiff, examplesValueDiffs, value?.examples],
+    [examplesDiff, examplesValueDiffs, typedValue?.examples],
   )
 
   const defaultAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
-      const mergedDefault = value && "default" in value ? value.default : undefined
+      const mergedDefault = typedValue?.default
       const sideEntries = propertyNodeWithDiffs
         ? resolveJsonSchemaDefaultSideEntries(
           mergedDefault,
@@ -299,10 +301,10 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )}
 
-      {visibility.showDescription && (value?.description || descriptionRowDiffProps.diff) && (
+      {visibility.showDescription && (typedValue?.description || descriptionRowDiffProps.diff) && (
         <MarkdownTextRow
           usage={TextRowUsage.JsonSchemaDescription}
-          value={value?.description ?? ""}
+          value={typedValue?.description ?? ""}
           {...descriptionRowDiffProps}
         />
       )}
@@ -368,8 +370,8 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         )
       })}
 
-      {visibility.showExtensionsRow && value?.extensions && (
-        <JsonSchemaExtensionsSection extensions={value.extensions} />
+      {visibility.showExtensionsRow && typedValue?.extensions && (
+        <JsonSchemaExtensionsSection extensions={typedValue.extensions} />
       )}
     </>
   )

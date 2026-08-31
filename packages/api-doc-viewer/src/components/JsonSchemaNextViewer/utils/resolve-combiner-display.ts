@@ -10,7 +10,7 @@ export function resolveCombinerBranchDisplayValue(
 ): JsonSchemaTreeNodeValue | null {
   const directValue = node.value()
   if (directValue !== null) {
-    return directValue
+    return typeof directValue === "boolean" ? null : directValue
   }
 
   const fragment = node.meta()?._fragment

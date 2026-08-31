@@ -1,5 +1,6 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaViewerTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { FC, ReactElement } from "react"
@@ -10,12 +11,11 @@ import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
 import { useSchemaNodeTitleRowShared } from "./schema-node-title-row-shared"
-import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 
 export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
-  ownerNode: JsonSchemaTreeNode
-  displayNode: JsonSchemaTreeNode
-  displayValue?: JsonSchemaTreeNodeValue | null
+  ownerNode: JsonSchemaViewerTreeNode
+  displayNode: JsonSchemaViewerTreeNode
+  displayValue?: JsonSchemaTreeNodeStoredValue | null
   contentVisibility: JsonSchemaPropertyRowVisibility
   isLastInList?: boolean
   expandable?: boolean
@@ -27,8 +27,8 @@ export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
   renderSubheader: (context: {
     layoutSide: LayoutSide
     displayValueResolved: JsonSchemaTreeNodeValue | null | undefined
-    displayMeta: ReturnType<JsonSchemaTreeNode["meta"]>
-    displayNode: JsonSchemaTreeNode
+    displayMeta: ReturnType<JsonSchemaViewerTreeNode["meta"]>
+    displayNode: JsonSchemaViewerTreeNode
     showTypeSubheader: boolean
   }) => ReactElement
 }

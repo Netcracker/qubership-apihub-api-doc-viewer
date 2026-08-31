@@ -9,6 +9,11 @@ import { resolveValidationKeysForType } from "../../src/model/json-schema/valida
 import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 
 describe("JSON Schema model resolvers", () => {
+  it("returns an empty label for boolean primitive node values", () => {
+    expect(resolveJsonSchemaTypeLabel(false, null)).toBe("")
+    expect(resolveJsonSchemaTypeLabel(true, null)).toBe("")
+  })
+
   it("resolves type label with format and nullable suffix", () => {
     expect(resolveJsonSchemaTypeLabel({ type: "string", format: "uuid", nullable: true }, null))
       .toBe("string uuid or null")

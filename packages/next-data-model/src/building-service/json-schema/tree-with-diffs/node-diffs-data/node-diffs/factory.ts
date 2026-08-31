@@ -1,7 +1,7 @@
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 import { JsonSchemaTreeNodeKind, JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaNodeDiffsAggregatorKindAny } from "./kind-any"
 import { JsonSchemaNodeDiffsAggregatorKindProperty } from "./kind-property"
 
@@ -12,10 +12,10 @@ export class JsonSchemaNodeDiffsAggregatorFactory {
   public static instance(
     kind: JsonSchemaTreeNodeKind,
   ): AbstractNodeDiffsAggregator<
-    JsonSchemaTreeNodeValue | null,
+    JsonSchemaTreeNodeStoredValue | null,
     JsonSchemaTreeNodeKind,
     JsonSchemaTreeNodeMeta,
-    JsonSchemaTreeNodeValue | null
+    JsonSchemaTreeNodeStoredValue | null
   > {
     switch (kind) {
       case JsonSchemaTreeNodeKinds.ROOT:

@@ -26,17 +26,19 @@ export function resolveJsonSchemaNodeTitleDisplay(
     return { variant: "text", text: headerRowTitle ?? DEFAULT_HEADER_ROW_TITLE }
   }
 
-  if (
-    kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES
-    || kind === JsonSchemaTreeNodeKinds.PATTERN_PROPERTY
-  ) {
-    if (typeof meta?._fragment === "boolean") {
+  if (kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES) {
+    const fragment = meta?._fragment ?? node.value()
+    if (fragment === false) {
       return {
         variant: "badge",
         text: "no additional properties",
         badgeKind: BADGE_KIND_ALTERNATIVE_INFO,
       }
     }
+    return { variant: "badge", text: "additional property", badgeKind: BADGE_KIND_INFO }
+  }
+
+  if (kind === JsonSchemaTreeNodeKinds.PATTERN_PROPERTY) {
     return { variant: "badge", text: "additional property", badgeKind: BADGE_KIND_INFO }
   }
 
@@ -59,6 +61,7 @@ export function isJsonSchemaBooleanAdditionalPropertiesNode(
   node: JsonSchemaTreeNode,
   meta: JsonSchemaTreeNodeMeta | null | undefined,
 ): boolean {
+  const fragment = meta?._fragment ?? node.value()
   return node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES
-    && typeof meta?._fragment === "boolean"
+    && fragment === false
 }

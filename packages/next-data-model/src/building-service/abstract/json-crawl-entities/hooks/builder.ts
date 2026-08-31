@@ -20,7 +20,7 @@ function defaultIsDisallowedValue(value: unknown): boolean {
 }
 
 type CycleCloneFactory<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
   N extends ITreeNode<V, K, M>
@@ -34,7 +34,7 @@ type CycleCloneFactory<
 }
 
 export interface TreeBuildingHooksFactoryParams<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
   N extends ITreeNode<V, K, M>,
@@ -85,7 +85,7 @@ export interface TreeBuildingHooksFactoryParams<
 }
 
 export function createTreeBuildingHooks<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
   N extends ITreeNode<V, K, M>,

@@ -1,10 +1,10 @@
 import { Tree } from "@apihub/next-data-model/model/abstract/tree/tree.impl"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 
 export class JsonSchemaTree extends Tree<
-  JsonSchemaTreeNodeValue | null,
+  JsonSchemaTreeNodeStoredValue | null,
   JsonSchemaTreeNodeKind,
   JsonSchemaTreeNodeMeta
 > {

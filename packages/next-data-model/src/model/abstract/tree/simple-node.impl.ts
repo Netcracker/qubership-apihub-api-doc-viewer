@@ -2,7 +2,7 @@ import { NodeId, NodeKey } from "../../../utility-types";
 import { ITreeNode, TreeNodeComplexityType, TreeNodeComplexityTypes, TreeNodeParams } from "./tree-node.interface";
 
 export class SimpleTreeNode<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
 > implements ITreeNode<V, K, M> {
@@ -53,7 +53,9 @@ export class SimpleTreeNode<
       parent: parent,
       container: null,
       newDataLevel: this.newDataLevel,
-      value: this._value !== null ? { ...this._value } : null,
+      value: this._value !== null
+        ? (typeof this._value === "object" ? { ...(this._value as object) } as V : this._value)
+        : null,
       meta: { ...this._meta },
     });
     // Share the same children/nested arrays so later additions to the source are visible on the clone.

@@ -1,29 +1,31 @@
 import {
+  JsonSchemaTreeNodeStoredValue,
   JsonSchemaTreeNodeValueTypeArray,
   JsonSchemaTreeNodeValueTypeNumber,
   JsonSchemaTreeNodeValueTypeObject,
-  JsonSchemaTreeNodeValueTypeString,
-  JsonSchemaTreeNodeValue,
+  JsonSchemaTreeNodeValueTypeString
 } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import {
   JsonSchemaValidationKey,
   JsonSchemaValidationKeys,
 } from "@apihub/next-data-model/model/json-schema/types/validation-key"
+import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 
 function isDefined(value: unknown): value is NonNullable<unknown> {
   return value !== undefined && value !== null
 }
 
 export function resolveValidationKeysForType(
-  value: JsonSchemaTreeNodeValue | null | undefined,
+  value: JsonSchemaTreeNodeStoredValue | null | undefined,
 ): JsonSchemaValidationKey[] {
-  if (!value) {
+  const typedValue = asJsonSchemaTypedNodeValue(value)
+  if (!typedValue) {
     return []
   }
 
   const keys: JsonSchemaValidationKey[] = []
 
-  const stringValue = value as JsonSchemaTreeNodeValueTypeString
+  const stringValue = typedValue as JsonSchemaTreeNodeValueTypeString
   if (stringValue.minLength !== undefined) {
     keys.push(JsonSchemaValidationKeys.MIN_LENGTH)
   }
@@ -34,7 +36,7 @@ export function resolveValidationKeysForType(
     keys.push(JsonSchemaValidationKeys.PATTERN)
   }
 
-  const numberValue = value as JsonSchemaTreeNodeValueTypeNumber
+  const numberValue = typedValue as JsonSchemaTreeNodeValueTypeNumber
   if (numberValue.minimum !== undefined) {
     keys.push(JsonSchemaValidationKeys.MINIMUM)
   }
@@ -51,7 +53,7 @@ export function resolveValidationKeysForType(
     keys.push(JsonSchemaValidationKeys.MULTIPLE_OF)
   }
 
-  const objectValue = value as JsonSchemaTreeNodeValueTypeObject
+  const objectValue = typedValue as JsonSchemaTreeNodeValueTypeObject
   if (objectValue.minProperties !== undefined) {
     keys.push(JsonSchemaValidationKeys.MIN_PROPERTIES)
   }
@@ -59,7 +61,7 @@ export function resolveValidationKeysForType(
     keys.push(JsonSchemaValidationKeys.MAX_PROPERTIES)
   }
 
-  const arrayValue = value as JsonSchemaTreeNodeValueTypeArray
+  const arrayValue = typedValue as JsonSchemaTreeNodeValueTypeArray
   if (arrayValue.uniqueItems !== undefined) {
     keys.push(JsonSchemaValidationKeys.UNIQUE_ITEMS)
   }

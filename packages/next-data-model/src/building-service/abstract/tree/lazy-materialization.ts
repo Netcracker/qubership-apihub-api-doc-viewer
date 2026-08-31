@@ -34,7 +34,7 @@ export function buildNodeId(pathPrefix: JsonPath, path: JsonPath): NodeId {
  * Rebuilds path-local ancestors for rematerialization from already-built parents.
  */
 export function collectAncestorsFromTree<
-  V extends object | null,
+  V extends object | boolean | null,
   K extends string,
   M extends object,
   N extends ITreeNode<V, K, M>,
