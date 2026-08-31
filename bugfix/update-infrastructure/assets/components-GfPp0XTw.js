@@ -1,0 +1,1 @@
+import"./jsx-runtime-DRGMQe9r.js";import{ct as e,st as t}from"./DocsRenderer-JROSPFPF-rOsCSIio.js";e();export{t as createCopyToClipboardFunction};
