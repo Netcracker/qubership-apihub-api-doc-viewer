@@ -111,7 +111,20 @@ import { storyPage } from "../service/storybook-service";
 const META_ID = "${metaId}";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForFunction(() => {
+    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
+      const element = document.querySelector(selector);
+      if (!element) {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        return true;
+      }
+    }
+    return false;
+  });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
