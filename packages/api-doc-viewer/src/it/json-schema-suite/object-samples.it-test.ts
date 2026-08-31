@@ -46,6 +46,7 @@ const TEST_IDS: string[] = [
 ]
 
 async function waitForJsonSchemaViewer() {
+  await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
   await page.waitForFunction(() => document.readyState === 'complete')
   await page.evaluate(() => new Promise<void>(resolve =>

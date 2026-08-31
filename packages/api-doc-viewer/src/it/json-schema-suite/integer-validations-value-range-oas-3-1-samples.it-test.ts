@@ -1,11 +1,11 @@
 /**
- * Auto-generated screenshot tests for JSON Schema Next/Number Validations Value Range OAS 3.1 stories.
+ * Auto-generated screenshot tests for JSON Schema Suite/Integer Validations Value Range OAS 3.1 stories.
  * Regenerate: node --experimental-strip-types bin/generate-json-schema-validation-suite-tests.mjs
  */
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'json-schema-next-number-validations-value-range-oas-3-1'
+const META_ID = 'json-schema-suite-integer-validations-value-range-oas-3-1'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [
@@ -30,7 +30,7 @@ const TEST_IDS: string[] = [
   'case-019-value-range-min-1-exclusive-max-10-inclusive-oas-31',
 ]
 
-async function waitForJsonSchemaNextViewer() {
+async function waitForJsonSchemaViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
   await page.waitForFunction(() => document.readyState === 'complete')
@@ -46,7 +46,7 @@ beforeEach(async () => {
 for (const testId of TEST_IDS) {
   it(testId, async () => {
     const story = await storyPage(page, `${META_ID}--${testId}`)
-    await waitForJsonSchemaNextViewer()
+    await waitForJsonSchemaViewer()
     const component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

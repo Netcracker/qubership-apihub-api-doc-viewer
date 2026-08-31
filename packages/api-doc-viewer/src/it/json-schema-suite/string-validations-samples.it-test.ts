@@ -1,25 +1,41 @@
 /**
- * Auto-generated screenshot tests for JSON Schema Next/Number stories.
- * Regenerate: node bin/generate-json-schema-next-suite-tests.mjs (from packages/api-doc-viewer).
+ * Auto-generated screenshot tests for JSON Schema Suite/String  Validations stories.
+ * Regenerate: node --experimental-strip-types bin/generate-json-schema-validation-suite-tests.mjs
  */
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'json-schema-next-number'
+const META_ID = 'json-schema-suite-string-validations'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [
-  'case-001-type-only',
-  'case-002-header',
-  'case-003-description',
-  'case-004-header-description',
-  'case-005-additional-info',
-  'case-006-header-additional-info',
-  'case-007-description-additional-info',
-  'case-008-header-description-additional-info',
+  'case-001-default-empty',
+  'case-002-example-empty',
+  'case-003-default-whitespaces',
+  'case-004-example-whitespaces',
+  'case-005-default-crlf',
+  'case-006-example-crlf',
+  'case-007-default-cr',
+  'case-008-example-cr',
+  'case-009-default-lf',
+  'case-010-example-lf',
+  'case-011-default-tab',
+  'case-012-example-tab',
+  'case-013-default-padded',
+  'case-014-example-padded',
+  'case-015-default-plain',
+  'case-016-example-plain',
+  'case-017-examples-all-samples',
+  'case-018-enum-all-samples',
+  'case-019-min-length-0',
+  'case-020-min-length-1',
+  'case-021-max-length-1',
+  'case-022-min-length-0-max-length-1',
+  'case-023-min-length-1-max-length-2',
+  'case-024-pattern-email',
 ]
 
-async function waitForJsonSchemaNextViewer() {
+async function waitForJsonSchemaViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
   await page.waitForFunction(() => document.readyState === 'complete')
@@ -35,7 +51,7 @@ beforeEach(async () => {
 for (const testId of TEST_IDS) {
   it(testId, async () => {
     const story = await storyPage(page, `${META_ID}--${testId}`)
-    await waitForJsonSchemaNextViewer()
+    await waitForJsonSchemaViewer()
     const component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

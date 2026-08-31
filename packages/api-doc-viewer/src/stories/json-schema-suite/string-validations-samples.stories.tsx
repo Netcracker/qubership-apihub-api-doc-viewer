@@ -8,11 +8,11 @@ import {
   createJsonSchemaSampleById,
 } from "../utils/json-schema-samples-cases";
 import {
-  JsonSchemaNextSampleStory,
-  createNextCaseStoryFactory,
-  jsonSchemaNextSamplesStoryMetaBase,
-  type JsonSchemaNextSamplesStoryObj,
-} from "./json-schema-next-samples-common";
+  JsonSchemaSampleStory,
+  createCaseStoryFactory,
+  jsonSchemaSamplesStoryMetaBase,
+  type JsonSchemaSamplesStoryObj,
+} from "./json-schema-samples-common";
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/string-validations/*/sample.yaml",
@@ -21,18 +21,18 @@ const sampleFiles = import.meta.glob(
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);
 const sampleById = createJsonSchemaSampleById(sampleCases);
-const createCaseStory = createNextCaseStoryFactory(sampleById);
+const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  ...jsonSchemaNextSamplesStoryMetaBase,
-  id: "json-schema-next-string-validations",
-  title: "JSON Schema Next/String  Validations",
-} satisfies Meta<typeof JsonSchemaNextSampleStory>;
+  ...jsonSchemaSamplesStoryMetaBase,
+  id: "json-schema-suite-string-validations",
+  title: "JSON Schema Suite/String  Validations",
+} satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;
 
-type Story = JsonSchemaNextSamplesStoryObj;
+type Story = JsonSchemaSamplesStoryObj;
 
 export const Case_001_default_empty: Story = createCaseStory("001-default-empty");
 export const Case_002_example_empty: Story = createCaseStory("002-example-empty");

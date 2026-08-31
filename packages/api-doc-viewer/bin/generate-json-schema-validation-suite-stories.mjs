@@ -15,7 +15,7 @@ exitIfInsideNodeModules(import.meta.url);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, "..");
-const storiesOutDir = path.resolve(packageRoot, "src/stories/json-schema-next");
+const storiesOutDir = path.resolve(packageRoot, "src/stories/json-schema-suite");
 const sampleFormat = resolveSampleFormat();
 const sampleFileName = getSampleFileName(sampleFormat);
 
@@ -38,11 +38,11 @@ import {
   createJsonSchemaSampleById,
 } from "../utils/json-schema-samples-cases";
 import {
-  JsonSchemaNextSampleStory,
-  createNextCaseStoryFactory,
-  jsonSchemaNextSamplesStoryMetaBase,
-  type JsonSchemaNextSamplesStoryObj,
-} from "./json-schema-next-samples-common";
+  JsonSchemaSampleStory,
+  createCaseStoryFactory,
+  jsonSchemaSamplesStoryMetaBase,
+  type JsonSchemaSamplesStoryObj,
+} from "./json-schema-samples-common";
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/${group}/*/${sampleFileName}",
@@ -51,18 +51,18 @@ const sampleFiles = import.meta.glob(
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);
 const sampleById = createJsonSchemaSampleById(sampleCases);
-const createCaseStory = createNextCaseStoryFactory(sampleById);
+const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  ...jsonSchemaNextSamplesStoryMetaBase,
+  ...jsonSchemaSamplesStoryMetaBase,
   id: "${metaId}",
   title: "${title}",
-} satisfies Meta<typeof JsonSchemaNextSampleStory>;
+} satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;
 
-type Story = JsonSchemaNextSamplesStoryObj;
+type Story = JsonSchemaSamplesStoryObj;
 
 ${exports}
 `;
@@ -84,10 +84,10 @@ const printValueRangeStoryFile = (suite) => {
 import type { Meta, StoryObj } from "@storybook/react";
 import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
 import {
-  JsonSchemaNextSampleStory,
-  jsonSchemaNextSamplesStoryMetaBase,
-  type JsonSchemaNextSamplesStoryObj,
-} from "./json-schema-next-samples-common";
+  JsonSchemaSampleStory,
+  jsonSchemaSamplesStoryMetaBase,
+  type JsonSchemaSamplesStoryObj,
+} from "./json-schema-samples-common";
 import {
   ${suite.sampleBuilderName},
   type ValueRangePlainProgrammaticSampleCase,
@@ -102,7 +102,7 @@ const sampleById = sampleCases.reduce<Record<string, ValueRangePlainProgrammatic
   {},
 );
 
-const createCaseStory = (caseId: string): JsonSchemaNextSamplesStoryObj => {
+const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
   const sampleCase = sampleById[caseId];
   if (!sampleCase) {
     throw new Error(\`Sample case not found: \${caseId}\`);
@@ -122,14 +122,14 @@ const createCaseStory = (caseId: string): JsonSchemaNextSamplesStoryObj => {
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  ...jsonSchemaNextSamplesStoryMetaBase,
+  ...jsonSchemaSamplesStoryMetaBase,
   id: "${suite.metaId}",
   title: "${suite.title}",
-} satisfies Meta<typeof JsonSchemaNextSampleStory>;
+} satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;
 
-type Story = JsonSchemaNextSamplesStoryObj;
+type Story = JsonSchemaSamplesStoryObj;
 
 ${exports}
 `;

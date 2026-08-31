@@ -4,11 +4,11 @@ import {
   createJsonSchemaSampleById,
 } from "../utils/json-schema-samples-cases"
 import {
-  JsonSchemaNextSampleStory,
-  createNextCaseStoryFactory,
-  jsonSchemaNextSamplesStoryMetaBase,
-  type JsonSchemaNextSamplesStoryObj,
-} from "./json-schema-next-samples-common"
+  JsonSchemaSampleStory,
+  createCaseStoryFactory,
+  jsonSchemaSamplesStoryMetaBase,
+  type JsonSchemaSamplesStoryObj,
+} from "./json-schema-samples-common"
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/combiner/*/sample.yaml",
@@ -17,17 +17,17 @@ const sampleFiles = import.meta.glob(
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles)
 const sampleById = createJsonSchemaSampleById(sampleCases)
-const createCaseStory = createNextCaseStoryFactory(sampleById)
+const createCaseStory = createCaseStoryFactory(sampleById)
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  ...jsonSchemaNextSamplesStoryMetaBase,
-  id: "json-schema-next-combiner",
-  title: "JSON Schema Next/Combiner",
-} satisfies Meta<typeof JsonSchemaNextSampleStory>
+  ...jsonSchemaSamplesStoryMetaBase,
+  id: "json-schema-suite-combiner",
+  title: "JSON Schema Suite/Combiner",
+} satisfies Meta<typeof JsonSchemaSampleStory>
 
 export default meta
 
-type Story = JsonSchemaNextSamplesStoryObj
+type Story = JsonSchemaSamplesStoryObj
 
 export const Case_001_oneof_nested_anyof: Story = createCaseStory("001-oneof-nested-anyof")

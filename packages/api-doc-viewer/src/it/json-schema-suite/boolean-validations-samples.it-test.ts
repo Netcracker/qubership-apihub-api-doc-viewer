@@ -1,25 +1,24 @@
 /**
- * Auto-generated screenshot tests for JSON Schema Next/Boolean stories.
- * Regenerate: node bin/generate-json-schema-next-suite-tests.mjs (from packages/api-doc-viewer).
+ * Auto-generated screenshot tests for JSON Schema Suite/Boolean  Validations stories.
+ * Regenerate: node --experimental-strip-types bin/generate-json-schema-validation-suite-tests.mjs
  */
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'json-schema-next-boolean'
+const META_ID = 'json-schema-suite-boolean-validations'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
 
 const TEST_IDS: string[] = [
-  'case-001-type-only',
-  'case-002-header',
-  'case-003-description',
-  'case-004-header-description',
-  'case-005-additional-info',
-  'case-006-header-additional-info',
-  'case-007-description-additional-info',
-  'case-008-header-description-additional-info',
+  'case-001-default-false',
+  'case-002-default-true',
+  'case-003-example-false',
+  'case-004-example-true',
+  'case-005-examples-false',
+  'case-006-examples-true',
+  'case-007-examples-true-false',
 ]
 
-async function waitForJsonSchemaNextViewer() {
+async function waitForJsonSchemaViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
   await page.waitForFunction(() => document.readyState === 'complete')
@@ -35,7 +34,7 @@ beforeEach(async () => {
 for (const testId of TEST_IDS) {
   it(testId, async () => {
     const story = await storyPage(page, `${META_ID}--${testId}`)
-    await waitForJsonSchemaNextViewer()
+    await waitForJsonSchemaViewer()
     const component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

@@ -8,7 +8,7 @@ import {
   createCaseStoryFactory,
   jsonSchemaSamplesStoryMetaBase,
   type JsonSchemaSamplesStoryObj,
-} from "./json-schema-samples-common";
+} from "./json-schema-samples-common"
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/number/*/sample.yaml",

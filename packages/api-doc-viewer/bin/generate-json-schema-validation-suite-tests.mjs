@@ -15,7 +15,7 @@ exitIfInsideNodeModules(import.meta.url);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, "..");
-const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-next");
+const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-suite");
 
 const printTestFile = ({ title, metaId, testIdsLiteral }) => `/**
  * Auto-generated screenshot tests for ${title} stories.
@@ -31,7 +31,7 @@ const TEST_IDS: string[] = [
 ${testIdsLiteral}
 ]
 
-async function waitForJsonSchemaNextViewer() {
+async function waitForJsonSchemaViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
   await page.waitForFunction(() => document.readyState === 'complete')
@@ -47,7 +47,7 @@ beforeEach(async () => {
 for (const testId of TEST_IDS) {
   it(testId, async () => {
     const story = await storyPage(page, \`\${META_ID}--\${testId}\`)
-    await waitForJsonSchemaNextViewer()
+    await waitForJsonSchemaViewer()
     const component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

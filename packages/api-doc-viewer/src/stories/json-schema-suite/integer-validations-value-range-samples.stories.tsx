@@ -5,10 +5,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
 import {
-  JsonSchemaNextSampleStory,
-  jsonSchemaNextSamplesStoryMetaBase,
-  type JsonSchemaNextSamplesStoryObj,
-} from "./json-schema-next-samples-common";
+  JsonSchemaSampleStory,
+  jsonSchemaSamplesStoryMetaBase,
+  type JsonSchemaSamplesStoryObj,
+} from "./json-schema-samples-common";
 import {
   buildValueRangePlainProgrammaticSampleCases,
   type ValueRangePlainProgrammaticSampleCase,
@@ -23,7 +23,7 @@ const sampleById = sampleCases.reduce<Record<string, ValueRangePlainProgrammatic
   {},
 );
 
-const createCaseStory = (caseId: string): JsonSchemaNextSamplesStoryObj => {
+const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
   const sampleCase = sampleById[caseId];
   if (!sampleCase) {
     throw new Error(`Sample case not found: ${caseId}`);
@@ -43,14 +43,14 @@ const createCaseStory = (caseId: string): JsonSchemaNextSamplesStoryObj => {
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  ...jsonSchemaNextSamplesStoryMetaBase,
-  id: "json-schema-next-integer-validations-value-range",
-  title: "JSON Schema Next/Integer Validations Value Range",
-} satisfies Meta<typeof JsonSchemaNextSampleStory>;
+  ...jsonSchemaSamplesStoryMetaBase,
+  id: "json-schema-suite-integer-validations-value-range",
+  title: "JSON Schema Suite/Integer Validations Value Range",
+} satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;
 
-type Story = JsonSchemaNextSamplesStoryObj;
+type Story = JsonSchemaSamplesStoryObj;
 
 export const Case_001_value_range_min_0_inclusive: Story = createCaseStory("001-value-range-min-0-inclusive");
 export const Case_002_value_range_min_1_inclusive: Story = createCaseStory("002-value-range-min-1-inclusive");
