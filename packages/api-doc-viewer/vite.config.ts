@@ -18,11 +18,30 @@ import react from '@vitejs/plugin-react';
 import path from "path";
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
+import { esmExternalRequirePlugin } from 'rolldown/plugins';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    /* Vite 8 bundles with rolldown, which deliberately leaves an external dependency as a
+       literal require() rather than converting it to an import - the two have different
+       semantics, and require() is undefined in environments like Cloudflare Workers. It then
+       injects a helper that THROWS when that require is reached in a browser:
+
+         Uncaught Error: Calling `require` for "react" in an environment that
+         doesn't expose the `require` function
+
+       This library is consumed by ui, which bundles it, so the throw surfaces in ui's app
+       bundle regardless of which vite ui itself uses - a vite 4 build of ui shows the same
+       rolldown error. See rolldown-vite issues #223 and #596.
+
+       react/react-dom MOVE here from build.rollupOptions.external rather than being listed
+       in both: top-level external takes precedence, and a module named in both stays a raw
+       require(). The rewrite only applies to ESM output, which is what lib.formats gives. */
+    esmExternalRequirePlugin({
+      external: ['react', 'react-dom'],
+    }),
     dts({
       insertTypesEntry: true,
     }),
@@ -32,9 +51,6 @@ export default defineConfig({
     outDir: './dist',
     minify: false,
     emptyOutDir: true,
-    rollupOptions: {
-      external: ["react", "react-dom"],
-    },
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
