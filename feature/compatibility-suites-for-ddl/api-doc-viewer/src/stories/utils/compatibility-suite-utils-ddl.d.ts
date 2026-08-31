@@ -4,6 +4,6 @@ import type { TableKey } from '../../../../next-data-model/src/shared/ddlapi/typ
 export declare function prepareDdlCompatibilitySuiteMergedSource(beforeSql: string, afterSql: string): Promise<Realm>;
 /**
  * The diffs viewer renders one table.
- * Prefer a table that has diffs; otherwise take the first table in the realm.
+ * Whole-table add/remove lives on the tables array, not on the table object.
  */
 export declare function resolveDdlCompatibilitySuiteTableKey(merged: Realm): TableKey;
