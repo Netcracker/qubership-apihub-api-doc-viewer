@@ -1900,7 +1900,7 @@ export const STORY_SUITES = [
   {
     suiteKey: "one-of-object-variant",
     title: "JSON Schema Diffs Suite/OneOf Object Variant Samples",
-    metaKebab: "json-schema-diffs-suite-one-of-object-variant-samples",
+    metaKebab: "json-schema-diffs-suite-oneof-object-variant-samples",
     globPath: "one-of-object-variant",
     storyFileName: "one-of-object-variant-samples.stories.tsx",
     testFileName: "one-of-object-variant-samples.it-test.ts",
@@ -1908,7 +1908,7 @@ export const STORY_SUITES = [
   {
     suiteKey: "one-of-array-variant",
     title: "JSON Schema Diffs Suite/OneOf Array Variant Samples",
-    metaKebab: "json-schema-diffs-suite-one-of-array-variant-samples",
+    metaKebab: "json-schema-diffs-suite-oneof-array-variant-samples",
     globPath: "one-of-array-variant",
     storyFileName: "one-of-array-variant-samples.stories.tsx",
     testFileName: "one-of-array-variant-samples.it-test.ts",

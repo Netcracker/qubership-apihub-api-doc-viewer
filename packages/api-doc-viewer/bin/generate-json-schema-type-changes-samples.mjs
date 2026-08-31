@@ -9,6 +9,10 @@ import {
   toExportName,
 } from "./json-schema-type-changes-cases.mjs";
 import { spawnSync } from "child_process";
+import {
+  toStorybookMetaId,
+  toStorybookStorySlug,
+} from "./storybook-story-id-utils.mjs";
 
 exitIfInsideNodeModules(import.meta.url);
 
@@ -80,15 +84,19 @@ ${exports}
 };
 
 const printTestFile = (suite, caseIds) => {
+  const metaId = toStorybookMetaId(suite.title);
   const tests = caseIds
     .map(
-      (caseId) => `
+      (caseId) => {
+        const storySlug = toStorybookStorySlug(toExportName(caseId));
+        return `
   it("${caseId}", async () => {
-    story = await storyPage(page, \`${suite.metaKebab}--case-${caseId}\`);
+    story = await storyPage(page, \`${metaId}--${storySlug}\`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });`,
+  });`;
+      },
     )
     .join("\n");
 
@@ -100,7 +108,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "${suite.metaKebab}";
+const META_ID = "${metaId}";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
