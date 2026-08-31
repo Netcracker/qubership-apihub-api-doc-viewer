@@ -15,9 +15,9 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/SKILL.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
 - repo_url: _local/api-doc-viewer-repo

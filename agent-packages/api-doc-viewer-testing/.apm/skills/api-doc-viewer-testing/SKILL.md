@@ -19,10 +19,18 @@ From `packages/api-doc-viewer/`:
 | Script | Purpose |
 | --- | --- |
 | `npm test` | Unit tests only |
+| `npm run generate-stories` | Regenerate **compatibility-suite only** (`*.generated.stories.tsx`) |
+| `npm run generate-tests` | Regenerate **compatibility-suite only** (`*.generated.it-test.ts`) |
 | `npm run screenshot-test` | Build showcase, start static server, run IT config |
 | `npm run regenerate-screenshots` | Same as above with `--updateSnapshot` |
 
 Root monorepo: `npm run screenshot-test` runs via Lerna.
+
+**`generate-stories` / `generate-tests` (mandatory):** in `packages/api-doc-viewer/package.json`
+these npm scripts must call **only** `generate-compatibility-suite-stories.mjs` and
+`generate-compatibility-suite-tests.mjs`. Never add other `bin/generate-*.mjs` there. All
+other suites are **persistent** committed sources; run their generators explicitly when
+fixtures change, then commit the output.
 
 IT Jest config: `.config/it/it-test-docker.jest.config.cjs` (local Docker
 Chrome). Setup and snapshot tuning are in `.jest/setup.tests.ts`
@@ -186,16 +194,20 @@ use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regen
   `src/stories/compatibility-suite/*.generated.stories.tsx` and
   `src/it/compatibility-suite/*.generated.it-test.ts`.
 
-**Regenerated from local samples** (do not edit by hand; run generators; **no**
-`generated` in the filename):
+**Regenerated from local samples** (persistent committed output — run generators **explicitly**,
+not via `npm run generate-stories` / `generate-tests`; do not edit output by hand except when
+the generator is wrong):
 
-- DDL API suites — `bin/generate-ddl-suite-stories.mjs` and
-  `bin/generate-ddl-suite-tests.mjs` → `src/stories/ddlapi-suite/` and
+- DDL API suites — `node bin/generate-ddl-suite-stories.mjs` and
+  `node bin/generate-ddl-suite-tests.mjs` → `src/stories/ddlapi-suite/` and
   `src/it/ddlapi-suite/*.it-test.ts`.
-- JSON Schema value-range (programmatic) — `bin/generate-value-range-diff-stories.mjs` →
-  `number-validation-value-range-samples.stories.tsx`,
-  `number-validation-value-range-oas-3-1-samples.stories.tsx`, and paired ITs. Case
-  definitions live in `value-range-diff-case-definitions.ts` (not `.generated.ts`).
+- JSON Schema suites — `node bin/generate-json-schema-samples.mjs` (plain-type YAML fixtures),
+  `node bin/generate-json-schema-suite-stories.mjs`,
+  `node bin/generate-json-schema-validation-suite-stories.mjs`,
+  `node bin/generate-json-schema-type-changes-samples.mjs`,
+  `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
+  `number-validation-value-range-samples.stories.tsx` and paired ITs.
 
 **Hand-written** (edit stories and matching IT files together):
 
@@ -210,8 +222,9 @@ use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regen
   `packages/samples/`, export a story, and append a matching `it(...)` with
   the correct story ID.
 
-Run `npm run generate-stories` / `npm run generate-tests` before screenshot
-runs when compatibility-suite or DDL sample fixtures changed.
+Run `npm run generate-stories` / `npm run generate-tests` before screenshot runs **only when
+compatibility-suite fixtures changed**. For DDL, JSON Schema, or other local sample changes,
+run the relevant `node bin/generate-*.mjs` explicitly and commit the updated stories/ITs.
 
 ## DDL API sample fixtures
 
