@@ -142,9 +142,13 @@ Diff-suite stories typically:
    kebab-case story IDs (`metaId--story-name`).
 
 Compatibility-suite stories and tests are **generated** — run
-`npm run generate-stories` / `npm run generate-tests` inside
-`packages/api-doc-viewer` rather than hand-editing
-`src/stories/compatibility-suite/` or `src/it/compatibility-suite/`.
+`npm run generate-stories` / `npm run generate-tests` inside `packages/api-doc-viewer`
+rather than hand-editing `src/stories/compatibility-suite/` or
+`src/it/compatibility-suite/`.
+
+**Do not** add DDL, JSON Schema, or other generators to those npm scripts. Other suites are
+**persistent**; run `node bin/generate-<suite>-*.mjs` explicitly when fixtures change and
+commit the result.
 
 ## DDL viewer notes
 

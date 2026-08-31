@@ -1,0 +1,78 @@
+{
+  "generatedAt": "2026-08-28T14:06:49.293Z",
+  "totalCases": 385,
+  "suites": [
+    {
+      "globPath": "type-flags",
+      "caseCount": 13
+    },
+    {
+      "globPath": "description-changes",
+      "caseCount": 8
+    },
+    {
+      "globPath": "string-validation/enum",
+      "caseCount": 5
+    },
+    {
+      "globPath": "string-validation/examples",
+      "caseCount": 5
+    },
+    {
+      "globPath": "string-validation/value-length",
+      "caseCount": 16
+    },
+    {
+      "globPath": "extended/default",
+      "caseCount": 4
+    },
+    {
+      "globPath": "extended/object",
+      "caseCount": 9
+    },
+    {
+      "globPath": "extended/array",
+      "caseCount": 9
+    },
+    {
+      "globPath": "extended/misc",
+      "caseCount": 6
+    },
+    {
+      "globPath": "extended/combiners-one-level",
+      "caseCount": 11
+    },
+    {
+      "globPath": "extended/combiners-two-level",
+      "caseCount": 11
+    },
+    {
+      "globPath": "circular",
+      "caseCount": 12
+    },
+    {
+      "globPath": "type-value-changes",
+      "caseCount": 30
+    },
+    {
+      "globPath": "type-annotations-changes",
+      "caseCount": 18
+    },
+    {
+      "globPath": "object-properties",
+      "caseCount": 108
+    },
+    {
+      "globPath": "array-indexed-items",
+      "caseCount": 24
+    },
+    {
+      "globPath": "one-of-object-variant",
+      "caseCount": 48
+    },
+    {
+      "globPath": "one-of-array-variant",
+      "caseCount": 48
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+type: object
+description: Self-referencing object
+properties:
+  label:
+    type: string
+  child:
+    $ref: "#"
+

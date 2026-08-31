@@ -1,0 +1,8 @@
+type: object
+description: Updated cyclic schema description
+properties:
+  label:
+    type: string
+  child:
+    $ref: "#"
+

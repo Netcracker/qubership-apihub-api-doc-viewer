@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-08-06T07:25:00.953278+00:00'
+generated_at: '2026-08-31T11:44:01.655861+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -15,9 +15,9 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/SKILL.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
 - repo_url: _local/api-doc-viewer-testing
@@ -33,9 +33,9 @@ dependencies:
   - .cursor/skills/api-doc-viewer-testing/SKILL.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-testing.md: sha256:9754dea129ac33d8ea028b990761a79feb56aefac3dc620a7be325911aa3eaf1
-    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:8e7622389146ef42040cead1824a22f50bc10ea1024cc5a18eaf96701d74fefd
+    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:ae0a4c08436ae4b4a412dc21bbd4ba3b7a195f5286caedbdc78a9125b30a9a3b
     .cursor/rules/api-doc-viewer-testing.mdc: sha256:8468b19496e2b1340a495472365b3161590716c1e6515ab17f6637a90e0b6bed
-    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:8e7622389146ef42040cead1824a22f50bc10ea1024cc5a18eaf96701d74fefd
+    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:ae0a4c08436ae4b4a412dc21bbd4ba3b7a195f5286caedbdc78a9125b30a9a3b
   source: local
   local_path: ./agent-packages/api-doc-viewer-testing
 - repo_url: _local/api-doc-viewer-using
@@ -227,7 +227,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+  content_hash: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-testing
@@ -245,7 +245,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:8e7622389146ef42040cead1824a22f50bc10ea1024cc5a18eaf96701d74fefd
+  content_hash: sha256:ae0a4c08436ae4b4a412dc21bbd4ba3b7a195f5286caedbdc78a9125b30a9a3b
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-using
@@ -443,7 +443,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:f6143ef787d1cab86162c82941dda760813805167c883849b3644af86087102b
+  content_hash: sha256:43cfd896ce26ad7cc5e1d1f9e208e8b54d72d5401aaa36499c9c981b1d88b69c
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-testing
@@ -461,7 +461,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:8e7622389146ef42040cead1824a22f50bc10ea1024cc5a18eaf96701d74fefd
+  content_hash: sha256:ae0a4c08436ae4b4a412dc21bbd4ba3b7a195f5286caedbdc78a9125b30a9a3b
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-using
