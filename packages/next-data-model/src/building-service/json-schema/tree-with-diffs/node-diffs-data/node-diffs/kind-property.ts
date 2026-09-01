@@ -24,6 +24,7 @@ import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schem
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { buildValueRangeChipStringDiffs, classifyValueRangeWholeRowAction, filterValueRangeSemanticSourceKeys, isValueRangePartialBoundChange, resolveValueRangeSideInputFromNodeValue, VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
+import { formatJsonSchemaValidationRowChipDisplay } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import {
@@ -580,8 +581,16 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         && (valueRangeWholeRowAction === DiffAction.add || valueRangeWholeRowAction === DiffAction.remove)
       ) {
         const syntheticDiff = valueRangeWholeRowAction === DiffAction.add
-          ? this.mergeDiffActionFragment(rowDiffs, DiffAction.add) as DiffAdd
-          : this.mergeDiffActionFragment(rowDiffs, DiffAction.remove) as DiffRemove
+          ? this.mergeDiffActionFragment(
+            rowDiffs,
+            DiffAction.add,
+            this.resolveWholeRowDisplayValues(validationRowKey, activeSourceKeys, rowDiffs, DiffAction.add),
+          ) as DiffAdd
+          : this.mergeDiffActionFragment(
+            rowDiffs,
+            DiffAction.remove,
+            this.resolveWholeRowDisplayValues(validationRowKey, activeSourceKeys, rowDiffs, DiffAction.remove),
+          ) as DiffRemove
         const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(syntheticDiff)
         nodeDiffs.validationRowDiffs ??= {}
         nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
@@ -607,9 +616,16 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       const allRemove = rowDiffs.every(isDiffRemove)
 
       if (allAdd) {
+        const displayValues = this.resolveWholeRowDisplayValues(
+          validationRowKey,
+          activeSourceKeys,
+          rowDiffs,
+          DiffAction.add,
+        )
         const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
           rowDiffs,
           DiffAction.add,
+          displayValues,
         ) as DiffAdd)
         nodeDiffs.validationRowDiffs ??= {}
         nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
@@ -618,9 +634,16 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       }
 
       if (allRemove) {
+        const displayValues = this.resolveWholeRowDisplayValues(
+          validationRowKey,
+          activeSourceKeys,
+          rowDiffs,
+          DiffAction.remove,
+        )
         const syntheticRowDiff = this.buildChangedPropertyMetaDataFromDiff(this.mergeDiffActionFragment(
           rowDiffs,
           DiffAction.remove,
+          displayValues,
         ) as DiffRemove)
         nodeDiffs.validationRowDiffs ??= {}
         nodeDiffs.validationRowDiffs[validationRowKey] = syntheticRowDiff
@@ -804,9 +827,31 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     return itemDiffs
   }
 
+  /** Formats the row's chip texts for the transitioning side, so the whole-row entry keeps the actual before/after values instead of losing them to a null placeholder. */
+  private resolveWholeRowDisplayValues(
+    rowKey: JsonSchemaValidationRowKey,
+    activeSourceKeys: readonly string[],
+    rowDiffs: readonly Diff<DiffType>[],
+    action: typeof DiffAction.add | typeof DiffAction.remove,
+  ): string[] {
+    const displayValues: string[] = []
+    activeSourceKeys.forEach((sourceKey, index) => {
+      const diff = rowDiffs[index]
+      const rawValue = action === DiffAction.add
+        ? (isDiffAdd(diff) ? diff.afterValue : undefined)
+        : (isDiffRemove(diff) ? diff.beforeValue : undefined)
+      if (rawValue === undefined) {
+        return
+      }
+      displayValues.push(formatJsonSchemaValidationRowChipDisplay(rowKey, sourceKey, rawValue))
+    })
+    return displayValues
+  }
+
   private mergeDiffActionFragment(
     rowDiffs: Diff<DiffType>[],
     action: typeof DiffAction.add | typeof DiffAction.remove,
+    displayValues: string[],
   ): DiffAdd | DiffRemove {
     const representative = rowDiffs[0]
     const beforeDeclarationPaths = rowDiffs.flatMap((diff) => (
@@ -822,7 +867,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
         scope: representative.scope,
         description: representative.description,
         action: DiffAction.add,
-        afterValue: null,
+        afterValue: displayValues,
         afterDeclarationPaths,
       }
     }
@@ -832,7 +877,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       scope: representative.scope,
       description: representative.description,
       action: DiffAction.remove,
-      beforeValue: null,
+      beforeValue: displayValues,
       beforeDeclarationPaths,
     }
   }

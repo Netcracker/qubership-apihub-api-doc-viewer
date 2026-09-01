@@ -11,7 +11,7 @@ import {
   NodeDescendantDiffs,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DiffsRecord, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities"
-import { Diff } from "@netcracker/qubership-apihub-api-diff"
+import { Diff, DiffAction, DiffAdd, DiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 
@@ -23,6 +23,9 @@ const JSON_SCHEMA_CHILD_DIFF_BAG_KEYS = [
   "oneOf",
   "items",
 ] as const
+
+/** Keyed maps (property name -> schema); a whole add/remove of the bag decomposes per property key. */
+const JSON_SCHEMA_OBJECT_CHILD_DIFF_BAG_KEYS = new Set<string>(["properties", "patternProperties"])
 
 export class JsonSchemaNodeDescendantDiffsAggregatorKindAny extends AbstractNodeDescendantsDiffsAggregator {
   private readonly DEFAULT_DIFF_STYLES: DiffStyles = {
@@ -78,10 +81,65 @@ export class JsonSchemaNodeDescendantDiffsAggregatorKindAny extends AbstractNode
       const bagDiffs = takeIfDiffsRecord(Reflect.get(childBag, diffsMetaKey))
       if (bagDiffs) {
         records.push(bagDiffs)
+        continue
+      }
+
+      // Whole bag replaced by a type change (e.g. string -> object): api-diff reports one
+      // add/remove Diff keyed by the bag name instead of per-entry diffs on the bag itself.
+      // Decompose it so each existing child key (property name or tuple index) is recognised
+      // as wholly added/removed too - matching the per-entry case above.
+      const wholeBagDiff = ownDiffs?.[childBagKey]
+      if (wholeBagDiff && (isDiffAdd(wholeBagDiff) || isDiffRemove(wholeBagDiff))) {
+        const isObjectMapBag = JSON_SCHEMA_OBJECT_CHILD_DIFF_BAG_KEYS.has(childBagKey)
+        const canDecompose = isObjectMapBag ? isObject(childBag) : isArray(childBag)
+        if (canDecompose) {
+          const decomposed = this.decomposeWholeChildBagDiff(childBag, wholeBagDiff)
+          if (decomposed) {
+            records.push(decomposed)
+          }
+        }
       }
     }
 
     return records
+  }
+
+  private decomposeWholeChildBagDiff(
+    childBag: Record<PropertyKey, unknown> | unknown[],
+    wholeBagDiff: DiffAdd | DiffRemove,
+  ): DiffsRecord | undefined {
+    const keys = isArray(childBag) ? childBag.map((_, index) => String(index)) : Object.keys(childBag)
+    if (keys.length === 0) {
+      return undefined
+    }
+
+    const record: DiffsRecord = {}
+    for (const key of keys) {
+      record[key] = this.buildDecomposedChildBagEntryDiff(wholeBagDiff)
+    }
+    return record
+  }
+
+  private buildDecomposedChildBagEntryDiff(wholeBagDiff: DiffAdd | DiffRemove): Diff {
+    if (isDiffAdd(wholeBagDiff)) {
+      return {
+        type: wholeBagDiff.type,
+        scope: wholeBagDiff.scope,
+        description: wholeBagDiff.description,
+        action: DiffAction.add,
+        afterValue: null,
+        afterDeclarationPaths: wholeBagDiff.afterDeclarationPaths,
+      }
+    }
+
+    return {
+      type: wholeBagDiff.type,
+      scope: wholeBagDiff.scope,
+      description: wholeBagDiff.description,
+      action: DiffAction.remove,
+      beforeValue: null,
+      beforeDeclarationPaths: wholeBagDiff.beforeDeclarationPaths,
+    }
   }
 
   private buildDescendantDiffMetadata(diff: Diff) {

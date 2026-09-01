@@ -386,14 +386,16 @@ function resolveJsonSchemaWholeListSideEntries(
     if (isOrigin) {
       return []
     }
-    return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
+    const values = Array.isArray(data.afterValue) ? data.afterValue : mergedValues
+    return values.map((value) => ({ text: formatListDisplayValue(value) }))
   }
 
   if (isDiffRemove(data)) {
     if (!isOrigin) {
       return []
     }
-    return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
+    const values = Array.isArray(data.beforeValue) ? data.beforeValue : mergedValues
+    return values.map((value) => ({ text: formatListDisplayValue(value) }))
   }
 
   if (isDiffReplace(data)) {
