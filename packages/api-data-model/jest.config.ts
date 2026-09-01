@@ -11,7 +11,14 @@ const { compilerOptions } = require('./tsconfig.json')
 
 module.exports = {
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    // TypeScript 6 requires rootDir to be explicit once an outDir is in play
+    // (TS5011), and ts-jest supplies one. Without it the common source directory
+    // is inferred as ./test and every suite fails to compile - which 5.8.2 never
+    // reported, so these tests had not been compiled by the fleet baseline until
+    // the root declared it. Set here rather than in tsconfig.json: that config
+    // describes the library program (include: src), this one the test program,
+    // and the tsconfig has to stay comment-free plain JSON for the require above.
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: { rootDir: './' } }],
   },
   testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.(ts?|tsx?|js?|jsx?)$',
   moduleFileExtensions: [
