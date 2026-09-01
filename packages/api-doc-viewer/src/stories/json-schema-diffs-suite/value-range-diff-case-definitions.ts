@@ -1,4 +1,4 @@
-import { buildValueRangeSchema } from "../shared/value-range-schema-builder.ts";
+import { buildValueRangeSchema } from "../shared/value-range-schema-builder";
 import type { ValueRangeDiffCase, ValueRangeDiffCaseDefinition, ValueRangeDiffSampleListOptions } from "./value-range-diff-samples.types";
 
 const clone = <T>(value: T): T => structuredClone(value);

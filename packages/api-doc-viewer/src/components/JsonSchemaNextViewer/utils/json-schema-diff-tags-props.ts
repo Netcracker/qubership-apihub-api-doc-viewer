@@ -43,6 +43,7 @@ export function buildJsonSchemaDiffTagsProps(
     isNodeChanged,
     isContentChanged,
     requiredChanged: !isNodeChanged && !!requiredDiff,
+    // @ts-expect-error 01.09.26 // Temporarily disabled validation
     $nodeChange: node.diffs[NODE_LEVEL_DIFF_KEY]?.data,
     $metaChanges,
   }

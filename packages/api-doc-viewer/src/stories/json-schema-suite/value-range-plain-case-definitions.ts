@@ -1,8 +1,5 @@
-import {
-  buildValueRangeSchema,
-  formatValueRangeCaseTitle,
-  type ValueRangeBounds,
-} from "../shared/value-range-schema-builder.ts";
+import { buildValueRangeSchema, formatValueRangeCaseTitle, ValueRangeBounds } from "../shared/value-range-schema-builder";
+
 
 export type ValueRangePlainCaseDefinition = {
   slug: string;

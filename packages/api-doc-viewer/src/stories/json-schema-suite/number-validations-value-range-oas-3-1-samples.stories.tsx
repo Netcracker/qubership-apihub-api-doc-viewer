@@ -2,8 +2,8 @@
  * Programmatic value-range plain stories (see value-range-plain-case-definitions.ts).
  * Regenerate: node bin/generate-json-schema-validation-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
 import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
+import type { Meta } from "@storybook/react";
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,
