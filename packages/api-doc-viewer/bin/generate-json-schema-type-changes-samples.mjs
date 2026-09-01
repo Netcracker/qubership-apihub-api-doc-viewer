@@ -10,9 +10,12 @@ import {
 } from "./json-schema-type-changes-cases.mjs";
 import { spawnSync } from "child_process";
 import {
+  printJsonSchemaDiffsItWaitFunction,
   toStorybookMetaId,
   toStorybookStorySlug,
 } from "./storybook-story-id-utils.mjs";
+
+const testsOnly = process.argv.includes("--tests-only");
 
 exitIfInsideNodeModules(import.meta.url);
 
@@ -110,26 +113,7 @@ import { storyPage } from "../service/storybook-service";
 
 const META_ID = "${metaId}";
 
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-}
+${printJsonSchemaDiffsItWaitFunction()}
 
 describe("${suite.title}", () => {
   let story: StoryPage;
@@ -188,33 +172,37 @@ const buildReadme = (cases) => {
   return `${lines.join("\n")}\n`;
 };
 
-rmSync(samplesRoot, { recursive: true, force: true });
-mkdirSync(samplesRoot, { recursive: true });
 mkdirSync(storiesOutDir, { recursive: true });
 mkdirSync(testsOutDir, { recursive: true });
 
 const cases = collectTypeChangeCases();
-for (const sampleCase of cases) {
-  writeSampleCase(sampleCase);
+
+if (!testsOnly) {
+  rmSync(samplesRoot, { recursive: true, force: true });
+  mkdirSync(samplesRoot, { recursive: true });
+
+  for (const sampleCase of cases) {
+    writeSampleCase(sampleCase);
+  }
+
+  writeFileSync(
+    path.join(samplesRoot, "manifest.json"),
+    `${JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        totalCases: cases.length,
+        suites: STORY_SUITES.map((suite) => ({
+          globPath: suite.globPath,
+          caseCount: cases.filter((sampleCase) => sampleCase.sampleDir === suite.globPath).length,
+        })),
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  writeFileSync(path.join(samplesRoot, "README.md"), buildReadme(cases));
 }
-
-writeFileSync(
-  path.join(samplesRoot, "manifest.json"),
-  `${JSON.stringify(
-    {
-      generatedAt: new Date().toISOString(),
-      totalCases: cases.length,
-      suites: STORY_SUITES.map((suite) => ({
-        globPath: suite.globPath,
-        caseCount: cases.filter((sampleCase) => sampleCase.sampleDir === suite.globPath).length,
-      })),
-    },
-    null,
-    2,
-  )}\n`,
-);
-
-writeFileSync(path.join(samplesRoot, "README.md"), buildReadme(cases));
 
 for (const suite of STORY_SUITES) {
   const caseIds = cases
@@ -224,22 +212,26 @@ for (const suite of STORY_SUITES) {
 
   const storyPath = path.join(storiesOutDir, suite.storyFileName);
   const testPath = path.join(testsOutDir, suite.testFileName);
-  writeFileSync(storyPath, printStoryFile(suite, caseIds));
+  if (!testsOnly) {
+    writeFileSync(storyPath, printStoryFile(suite, caseIds));
+  }
   writeFileSync(testPath, printTestFile(suite, caseIds));
-  console.log(`Generated ${caseIds.length} cases -> ${suite.storyFileName}`);
+  console.log(`Generated ${caseIds.length} ${testsOnly ? "tests" : "cases"} -> ${suite.testFileName}`);
 }
 
-console.log(`Wrote ${cases.length} sample pairs under ${samplesRoot}`);
+if (!testsOnly) {
+  console.log(`Wrote ${cases.length} sample pairs under ${samplesRoot}`);
 
-const valueRangeStoriesScript = path.join(__dirname, "generate-value-range-diff-stories.mjs");
-const valueRangeResult = spawnSync(
-  process.execPath,
-  ["--experimental-strip-types", valueRangeStoriesScript],
-  {
-    cwd: packageRoot,
-    stdio: "inherit",
-  },
-);
-if (valueRangeResult.status !== 0) {
-  process.exit(valueRangeResult.status ?? 1);
+  const valueRangeStoriesScript = path.join(__dirname, "generate-value-range-diff-stories.mjs");
+  const valueRangeResult = spawnSync(
+    process.execPath,
+    ["--experimental-strip-types", valueRangeStoriesScript],
+    {
+      cwd: packageRoot,
+      stdio: "inherit",
+    },
+  );
+  if (valueRangeResult.status !== 0) {
+    process.exit(valueRangeResult.status ?? 1);
+  }
 }

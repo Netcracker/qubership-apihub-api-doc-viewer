@@ -8,9 +8,21 @@ import { storyPage } from "../service/storybook-service";
 
 const META_ID = "json-schema-diffs-suite-string-validation-enum-samples";
 
-async function waitForJsonSchemaNextDiffsViewer() {
+async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForFunction(() => {
+    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
+      const element = document.querySelector(selector);
+      if (!element) {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        return true;
+      }
+    }
+    return false;
+  });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
@@ -27,35 +39,35 @@ describe("JSON Schema Diffs Suite/String Validation Enum Samples", () => {
 
   it("001-enum-two-values-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-enum-samples--case-001-enum-two-values-added`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-enum-two-values-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-enum-samples--case-002-enum-two-values-removed`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-enum-value-appended", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-enum-samples--case-003-enum-value-appended`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-enum-value-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-enum-samples--case-004-enum-value-removed`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-enum-two-values-unchanged", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-enum-samples--case-005-enum-two-values-unchanged`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

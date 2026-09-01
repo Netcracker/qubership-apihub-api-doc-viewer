@@ -5,6 +5,11 @@ import {
   listValueRangeDiffCases,
   toValueRangeCaseExportName,
 } from "./value-range-diff-case-definitions.mjs";
+import {
+  printJsonSchemaDiffsItWaitFunction,
+  toStorybookMetaId,
+  toStorybookStorySlug,
+} from "./storybook-story-id-utils.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, "..");
@@ -90,15 +95,19 @@ ${exports}
  * @param {ReturnType<typeof listValueRangeDiffCases>} cases
  */
 const printTestFile = (suite, cases) => {
+  const metaId = toStorybookMetaId(suite.title);
   const tests = cases
     .map(
-      (sampleCase) => `
+      (sampleCase) => {
+        const storySlug = toStorybookStorySlug(toValueRangeCaseExportName(sampleCase.caseId));
+        return `
   it("${sampleCase.caseId}", async () => {
-    story = await storyPage(page, \`${suite.metaKebab}--case-${sampleCase.caseId}\`);
-    await waitForJsonSchemaNextDiffsViewer();
+    story = await storyPage(page, \`${metaId}--${storySlug}\`);
+    await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });`,
+  });`;
+      },
     )
     .join("\n");
 
@@ -110,28 +119,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "${suite.metaKebab}";
+const META_ID = "${metaId}";
 
-async function waitForJsonSchemaNextDiffsViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-}
+${printJsonSchemaDiffsItWaitFunction()}
 
 describe("${suite.title}", () => {
   let story: StoryPage;
