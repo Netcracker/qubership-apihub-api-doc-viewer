@@ -1,4 +1,4 @@
-import { type ValueRangeBounds } from "../shared/value-range-schema-builder.ts";
+import { ValueRangeBounds } from "../shared/value-range-schema-builder";
 export type ValueRangePlainCaseDefinition = {
     slug: string;
     bounds: ValueRangeBounds;
