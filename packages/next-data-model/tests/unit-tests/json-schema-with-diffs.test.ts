@@ -9,6 +9,8 @@ import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 import {
   resolveJsonSchemaDefaultSideEntries,
   resolveJsonSchemaEnumSideEntries,
+  resolveJsonSchemaTypeLabelSideDisplay,
+  resolveJsonSchemaTypeSideValue,
   resolveJsonSchemaValidationRowSideEntries,
   takeJsonSchemaDefaultDiff,
   takeJsonSchemaDefaultRowColorizingDiff,
@@ -21,7 +23,9 @@ import {
   takeJsonSchemaValueRangeCrawlDiffs,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
+import { SideListDisplayKinds } from "../../src/model/abstract/tree-with-diffs/list-side-display"
 import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guards/tree-node"
+import { isJsonSchemaPrimitiveValueType } from "../../src/shared/json-schema/guards/schema-value"
 import { createBuildingServiceLogger } from "../../src/loggers"
 import { simplifyConsole } from "../helpers/simplify-console"
 import {
@@ -886,5 +890,141 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
     expect(takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)).toBeUndefined()
     expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]).toBeUndefined()
+  })
+})
+
+describe("JsonSchema nesting-indicator type label diffs", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  function buildTreeFromFixture(fixtureDirName: string) {
+    const fixtureDir = path.resolve(
+      __dirname,
+      `../../../samples/json-schema-diffs/type-changes/type-value-changes/${fixtureDirName}`,
+    )
+    const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+    const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+    return buildTree(beforeSchema, afterSchema)
+  }
+
+  it("classifies primitive vs complex type keyword values", () => {
+    expect(isJsonSchemaPrimitiveValueType("string")).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType("number")).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType("integer")).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType("boolean")).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType("object")).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType("array")).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType("unknown")).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(undefined)).toBe(false)
+  })
+
+  it("hides both sides for a primitive-to-primitive type change (001-string-to-number)", () => {
+    const tree = buildTreeFromFixture("001-string-to-number")
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
+  })
+
+  it("shows the correct origin-side type and hides the primitive changed side (021-array-to-string)", () => {
+    const tree = buildTreeFromFixture("021-array-to-string")
+    const root = tree.root!
+
+    const originType = resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)
+    const changedType = resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)
+    expect(originType).toBe("array")
+    expect(changedType).toBe("string")
+    expect(isJsonSchemaPrimitiveValueType(originType)).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(changedType)).toBe(true)
+
+    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
+      const typeSegment = originDisplay.segments.find((segment) => segment.text === "array")
+      expect(typeSegment?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    }
+  })
+
+  it("shows the correct origin-side type and hides the primitive changed side (027-object-to-number)", () => {
+    const tree = buildTreeFromFixture("027-object-to-number")
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
+  })
+
+  it("keeps both sides visible with yellow highlighting and colors the row for a complex-to-complex change (030-object-to-array)", () => {
+    const tree = buildTreeFromFixture("030-object-to-array")
+    const root = tree.root!
+
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(false)
+
+    for (const layoutSide of [ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE]) {
+      const display = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), layoutSide)
+      expect(display.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+      if (display.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
+        const typeSegment = display.segments[0]
+        const highlighterColor = layoutSide === ORIGIN_LAYOUT_SIDE
+          ? typeSegment.diff?.styles.before.textHighlighterColor
+          : typeSegment.diff?.styles.after.textHighlighterColor
+        expect(highlighterColor).toBe(HighlightVariant.Yellow)
+      }
+    }
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+
+    const severity = root.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the nesting-indicator row for a title/format-only change, even without a type change", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: { prop0: { type: "string" } },
+      },
+      {
+        type: "object",
+        title: "Renamed object",
+        properties: { prop0: { type: "string" } },
+      },
+    )
+    const root = tree.root!
+
+    expect(root.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("includes the title segment in the nesting-indicator display when a title keyword is present alongside a type change", () => {
+    const tree = buildTree(
+      { type: "object", title: "My Schema", properties: { prop0: { type: "string" } } },
+      { type: "array", title: "My Schema", items: { type: "string" } },
+    )
+    const root = tree.root!
+
+    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (changedDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
+      const titleSegment = changedDisplay.segments.find((segment) => segment.text === "<My Schema>")
+      expect(titleSegment).toBeDefined()
+    }
   })
 })

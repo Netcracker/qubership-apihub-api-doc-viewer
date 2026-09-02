@@ -62,6 +62,8 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
   }, [diff, layoutSide])
 
   const isJsonSchemaUsage = usage === NestingIndicatorTitleRowUsage.JsonSchema
+  const resolvedTitle = typeof title === "function" ? title(layoutSide) : title
+  const isTitleVisible = isLabelVisible && resolvedTitle != null
 
   return (
     <div
@@ -79,10 +81,10 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
       </div>
       {isJsonSchemaUsage ? (
         <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">
-          {isLabelVisible && <NestingIndicatorTitleLabel title={title} />}
+          {isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />}
         </div>
       ) : (
-        isLabelVisible && <NestingIndicatorTitleLabel title={title} />
+        isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />
       )}
     </div>
   )

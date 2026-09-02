@@ -4,7 +4,7 @@ import {
   JsonSchemaTypeLabelSideSegment,
   resolveJsonSchemaTypeLabelSideDisplay,
 } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
-import { SideListDisplayKinds } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
+import { SideListDisplay, SideListDisplayKinds } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { FC, memo } from "react"
@@ -46,9 +46,18 @@ function renderTypeLabelSegment(
   )
 }
 
-export const JsonSchemaTypeLabelWithDiffs: FC<JsonSchemaTypeLabelWithDiffsProps> = memo<JsonSchemaTypeLabelWithDiffsProps>((props) => {
-  const { node, meta, layoutSide } = props
-  const display = resolveJsonSchemaTypeLabelSideDisplay(node, meta, layoutSide)
+export type JsonSchemaTypeLabelSideDisplayProps = {
+  display: SideListDisplay
+  layoutSide: LayoutSide
+}
+
+/**
+ * Renders an already-resolved {@link SideListDisplay} (type/format/title segments with
+ * per-side diff highlighting). Extracted so other rows - e.g. the nesting-indicator row -
+ * can render type/format/title in exactly the same format as the title row subheader.
+ */
+export const JsonSchemaTypeLabelSideDisplay: FC<JsonSchemaTypeLabelSideDisplayProps> = memo<JsonSchemaTypeLabelSideDisplayProps>((props) => {
+  const { display, layoutSide } = props
 
   if (display.kind === SideListDisplayKinds.NO_DIFFS || display.kind === SideListDisplayKinds.WHOLE_DIFFS) {
     return (
@@ -64,4 +73,10 @@ export const JsonSchemaTypeLabelWithDiffs: FC<JsonSchemaTypeLabelWithDiffsProps>
       {display.segments.map((segment, index) => renderTypeLabelSegment(segment, index, layoutSide))}
     </span>
   )
+})
+
+export const JsonSchemaTypeLabelWithDiffs: FC<JsonSchemaTypeLabelWithDiffsProps> = memo<JsonSchemaTypeLabelWithDiffsProps>((props) => {
+  const { node, meta, layoutSide } = props
+  const display = resolveJsonSchemaTypeLabelSideDisplay(node, meta, layoutSide)
+  return <JsonSchemaTypeLabelSideDisplay display={display} layoutSide={layoutSide} />
 })

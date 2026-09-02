@@ -1,6 +1,7 @@
 import { JSON_SCHEMA_PROPERTY_REF } from "@netcracker/qubership-apihub-api-unifier"
 import {
   JsonSchemaNodeValueType,
+  JsonSchemaNodeValueTypes,
   JsonSchemaNodeValueTypesList,
 } from "@apihub/next-data-model/model/json-schema/types/node-value-type"
 import {
@@ -42,6 +43,22 @@ export function asJsonSchemaTypedNodeValue(
     return null
   }
   return value
+}
+
+const JSON_SCHEMA_PRIMITIVE_VALUE_TYPES: readonly string[] = [
+  JsonSchemaNodeValueTypes.STRING,
+  JsonSchemaNodeValueTypes.NUMBER,
+  JsonSchemaNodeValueTypes.INTEGER,
+  JsonSchemaNodeValueTypes.BOOLEAN,
+]
+
+/**
+ * True when `type` is a primitive JSON Schema `type` keyword value (string/number/integer/boolean).
+ * Distinct from {@link isJsonSchemaPrimitiveNodeValue}, which checks whether the *node itself*
+ * is a literal boolean schema (`true`/`false`), not the `type` keyword's value.
+ */
+export function isJsonSchemaPrimitiveValueType(type: string | undefined): boolean {
+  return !!type && JSON_SCHEMA_PRIMITIVE_VALUE_TYPES.includes(type)
 }
 
 export function isJsonSchemaComplexValue(value: unknown): boolean {

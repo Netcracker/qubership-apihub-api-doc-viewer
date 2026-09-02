@@ -196,6 +196,17 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       return
     }
 
+    const typeLabelFieldDiffs = nodeDiffs.typeLabelFieldDiffs
+    if (typeLabelFieldDiffs && Object.keys(typeLabelFieldDiffs).length > 0) {
+      const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        ...Object.values(typeLabelFieldDiffs),
+      )
+      if (representativeDiff) {
+        nodeDiffs.nestingIndicatorRowColorizingDiff = this.asReplaceRowColorizingDiff(representativeDiff)
+        return
+      }
+    }
+
     if (!isObject(crawlValue)) {
       return
     }

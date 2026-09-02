@@ -1,7 +1,7 @@
-import { FC, memo } from "react"
+import { FC, memo, ReactNode } from "react"
 
 type NestingIndicatorTitleLabelProps = {
-  title: string
+  title: ReactNode
 }
 
 export const NestingIndicatorTitleLabel: FC<NestingIndicatorTitleLabelProps> = memo<NestingIndicatorTitleLabelProps>((props) => {

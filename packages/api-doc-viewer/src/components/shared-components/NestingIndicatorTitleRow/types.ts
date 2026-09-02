@@ -4,6 +4,7 @@ import type {
   NodeDiffsSeverities,
   NodeDiffsSeverityPlacemennt,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import type { ReactNode } from "react"
 import { WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum NestingIndicatorTitleRowUsage {
@@ -12,7 +13,7 @@ export enum NestingIndicatorTitleRowUsage {
 }
 
 export type NestingIndicatorTitleRowProps = WithPrecededByProps & {
-  title: string
+  title: ReactNode | ((layoutSide: LayoutSide) => ReactNode)
   usage?: NestingIndicatorTitleRowUsage
   lastInvisible?: boolean
   diff?: ChangedPropertyMetaData

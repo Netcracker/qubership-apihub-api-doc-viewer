@@ -58,6 +58,7 @@ export type {
 } from "./property-row-diffs.types"
 export {
   resolveJsonSchemaTypeLabelSideDisplay,
+  resolveJsonSchemaTypeSideValue,
   takeJsonSchemaTypeLabelFieldDiffs
 } from "./type-label-diffs"
 export type { JsonSchemaTypeLabelSideSegment } from "./type-label-diffs"

@@ -17,7 +17,7 @@ import { resolveJsonSchemaTypeLabel } from "@apihub/next-data-model/model/json-s
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
-import { isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
+import { asJsonSchemaTypedNodeValue, isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import {
   JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS,
   JsonSchemaSharedRowDiffs,
@@ -37,6 +37,20 @@ export function takeJsonSchemaTypeLabelFieldDiffs(
     return undefined
   }
   return typeLabelFieldDiffs
+}
+
+/**
+ * Per-side resolved `type` keyword value — used to decide nesting-indicator visibility
+ * (primitive types hide the row on that side) before rendering the full label.
+ */
+export function resolveJsonSchemaTypeSideValue(
+  node: JsonSchemaTreeNodeWithDiffs,
+  layoutSide: LayoutSide,
+): string {
+  const value = asJsonSchemaTypedNodeValue(node.value())
+  const mergedType = value?.type ?? TYPE_UNKNOWN
+  const fieldDiffs = takeJsonSchemaTypeLabelFieldDiffs(node)
+  return resolveFieldSideText(mergedType, fieldDiffs?.type, layoutSide) ?? String(mergedType)
 }
 
 export function resolveJsonSchemaTypeLabelSideDisplay(
