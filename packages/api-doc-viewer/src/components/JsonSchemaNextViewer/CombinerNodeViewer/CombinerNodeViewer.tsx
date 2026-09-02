@@ -11,6 +11,8 @@ import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "@netcracker
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
+import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
@@ -176,6 +178,11 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     [activeLeaf, activeLeafDisplayValue],
   )
 
+  const nestingIndicatorRowColorizingDiff = useMemo(
+    () => activeLeafWithDiffs ? takeJsonSchemaNestingIndicatorRowColorizingDiff(activeLeafWithDiffs) : undefined,
+    [activeLeafWithDiffs],
+  )
+
   const onSelectOption = useCallback((
     combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
     option: SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs>,
@@ -267,6 +274,9 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
               title={propertyNestingIndicatorTitle}
               usage={NestingIndicatorTitleRowUsage.JsonSchema}
               lastInvisible
+              diff={nestingIndicatorRowColorizingDiff}
+              diffsSeverities={activeLeafWithDiffs?.diffsSeverities}
+              diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
             />
             {useHideUnchangedLeafChildren ? (
               <SchemaNodeChildrenListWithDiffs
