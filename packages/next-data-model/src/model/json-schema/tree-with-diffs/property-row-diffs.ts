@@ -104,6 +104,12 @@ export function takeJsonSchemaDeprecatedDiff(
   return takeKindAnyNodeDiffs(node).deprecated
 }
 
+export function takeJsonSchemaNestingIndicatorRowColorizingDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeKindAnyNodeDiffs(node).nestingIndicatorRowColorizingDiff
+}
+
 export function takeJsonSchemaRequiredMetaDiff(
   node: JsonSchemaTreeNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {

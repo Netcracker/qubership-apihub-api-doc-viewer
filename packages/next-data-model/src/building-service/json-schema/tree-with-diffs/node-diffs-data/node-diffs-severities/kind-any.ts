@@ -25,6 +25,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
       return {
         [NodeDiffsSeverityPlacemennt.TitleRow]: this.buildNodeDiffsSeverity(diffNode),
         [NodeDiffsSeverityPlacemennt.DescriptionRow]: this.buildNodeDiffsSeverity(diffNode),
+        [NodeDiffsSeverityPlacemennt.NestingIndicatorRow]: this.buildNodeDiffsSeverity(diffNode),
       }
     }
 
@@ -32,6 +33,12 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
 
     this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
     this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
+    this.applyRowSeverity(
+      nodeDiffs,
+      "nestingIndicatorRowColorizingDiff",
+      NodeDiffsSeverityPlacemennt.NestingIndicatorRow,
+      diffsSeverities,
+    )
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
   }

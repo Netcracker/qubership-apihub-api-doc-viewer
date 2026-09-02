@@ -43,6 +43,13 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
   readOnly?: ChangedPropertyMetaData
   writeOnly?: ChangedPropertyMetaData
   deprecated?: ChangedPropertyMetaData
+  /**
+   * Row background for the "Properties"/"Items" nesting-indicator header row shown above a
+   * node's children list. Set when the node itself (or an ancestor container/parent) was
+   * wholly added/removed, or when every visible child was uniformly added or uniformly
+   * removed - single-side visibility only (green add-only / red remove-only), never yellow.
+   */
+  nestingIndicatorRowColorizingDiff?: ChangedPropertyMetaData
 }
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {

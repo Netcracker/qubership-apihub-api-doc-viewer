@@ -14,6 +14,7 @@ import {
   takeJsonSchemaDefaultRowColorizingDiff,
   takeJsonSchemaEnumDiff,
   takeJsonSchemaEnumRowColorizingDiff,
+  takeJsonSchemaNestingIndicatorRowColorizingDiff,
   takeJsonSchemaValidationRowColorizingDiff,
   takeJsonSchemaValidationRowDiff,
   takeJsonSchemaValidationRowValueDiffs,
@@ -678,5 +679,108 @@ describe("JsonSchema with-diffs stack", () => {
     )
     expect(valueLengthColorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(valueLengthColorizingDiff?.styles.before.borderShadowColor).toBeUndefined()
+  })
+})
+
+describe("JsonSchema nesting-indicator row colorizing diff", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the row green, changed-side-only, when every child was added (real fixture)", () => {
+    const fixtureDir = path.resolve(
+      __dirname,
+      "../../../samples/json-schema-diffs/type-changes/object-properties/003-add-two-properties-string",
+    )
+    const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+    const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+    const tree = buildTree(beforeSchema, afterSchema)
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(false)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the row red, origin-side-only, when every child was removed (real fixture)", () => {
+    const fixtureDir = path.resolve(
+      __dirname,
+      "../../../samples/json-schema-diffs/type-changes/object-properties/004-remove-two-properties-string",
+    )
+    const beforeSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+    const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+    const tree = buildTree(beforeSchema, afterSchema)
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(true)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors a wholly-added property's own row green, even though it has no children of its own", () => {
+    const tree = buildTree(
+      { type: "object", properties: { prop0: { type: "string" } } },
+      {
+        type: "object",
+        properties: {
+          prop0: { type: "string" },
+          prop1: { type: "string" },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")
+    expect(prop1Node).toBeDefined()
+    expect(isJsonSchemaTreeNodeWithDiffs(prop1Node!)).toBe(true)
+    expect(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(prop1Node!)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const severity = prop1Node!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
+    expect(severity?.type).toBe(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.type)
+  })
+
+  it("leaves the row uncolored when a node was itself neither added/removed nor its children uniformly changed", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: {
+          prop0: { type: "string" },
+          prop1: { type: "string" },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          prop0: { type: "string" },
+          prop1: { type: "string" },
+          prop2: { type: "string" },
+        },
+      },
+    )
+
+    // Root itself was not added/removed, and only one of its two-plus children (prop2) changed
+    // - prop0/prop1 stayed unchanged, so the children are not "uniformly" added.
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]).toBeUndefined()
   })
 })

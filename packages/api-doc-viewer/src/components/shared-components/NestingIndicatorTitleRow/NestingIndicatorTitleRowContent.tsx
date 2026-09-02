@@ -2,6 +2,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_JSO } from "@apihub/
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { FC, memo, useMemo } from "react"
 import "../../shared-styles/preceded-by.css"
 import { LevelIndicator } from "../LevelIndicator"
@@ -46,6 +47,20 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
     return classes
   }, [diff, layoutSide])
 
+  const isLabelVisible = useMemo(() => {
+    const diffData = diff?.data
+    if (!diffData) {
+      return true
+    }
+    if (isDiffAdd(diffData)) {
+      return layoutSide === CHANGED_LAYOUT_SIDE
+    }
+    if (isDiffRemove(diffData)) {
+      return layoutSide === ORIGIN_LAYOUT_SIDE
+    }
+    return true
+  }, [diff, layoutSide])
+
   const isJsonSchemaUsage = usage === NestingIndicatorTitleRowUsage.JsonSchema
 
   return (
@@ -64,10 +79,10 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
       </div>
       {isJsonSchemaUsage ? (
         <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">
-          <NestingIndicatorTitleLabel title={title} />
+          {isLabelVisible && <NestingIndicatorTitleLabel title={title} />}
         </div>
       ) : (
-        <NestingIndicatorTitleLabel title={title} />
+        isLabelVisible && <NestingIndicatorTitleLabel title={title} />
       )}
     </div>
   )

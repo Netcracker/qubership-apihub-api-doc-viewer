@@ -9,6 +9,7 @@ import {
   HighlightVariant,
   ITreeNodeWithDiffs,
   NODE_LEVEL_DIFF_KEY,
+  NodeDescendantDiffs,
   NodeDiffs,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
@@ -123,6 +124,105 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     this.aggregateTitleRowDiff(nodeDiffs)
 
     return Object.keys(nodeDiffs).length > 0 ? nodeDiffs : undefined
+  }
+
+  public aggregateByDescendantDiffs(
+    crawlValue: object | boolean | null,
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    nodeDescendantDiffs: NodeDescendantDiffs,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    diffMetaKeys: DiffMetaKeys,
+  ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
+    this.aggregateNestingIndicatorRowColorizingDiff(
+      crawlValue,
+      nodeDiffs as JsonSchemaKindAnyNodeDiffs,
+      nodeDescendantDiffs,
+    )
+    return nodeDiffs
+  }
+
+  /**
+   * Background for the nesting-indicator header row above a node's children list:
+   * - node itself (or an inherited parent/container) was wholly added/removed -> reuse that
+   *   whole-node diff, single-side only (green add-only / red remove-only);
+   * - otherwise, every visible child was uniformly added, or uniformly removed -> synthesize
+   *   the same single-side-only styling from that uniform child diff.
+   * Mixed or partially-unchanged children leave the row uncolored.
+   */
+  protected aggregateNestingIndicatorRowColorizingDiff(
+    crawlValue: object | boolean | null,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+    nodeDescendantDiffs: NodeDescendantDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      nodeDiffs.nestingIndicatorRowColorizingDiff = this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
+      return
+    }
+
+    if (!isObject(crawlValue)) {
+      return
+    }
+
+    const childKeys = this.collectJsonSchemaChildKeys(crawlValue)
+    if (childKeys.length === 0) {
+      return
+    }
+
+    const childDiffs = childKeys.map((key) => nodeDescendantDiffs[key])
+    if (childDiffs.some((diff) => !diff)) {
+      // Some child has no diff of its own (unchanged) - children are not uniformly changed.
+      return
+    }
+
+    const [firstDiff, ...restDiffs] = childDiffs as ChangedPropertyMetaData[]
+    if (!isDiffAdd(firstDiff.data) && !isDiffRemove(firstDiff.data)) {
+      return
+    }
+
+    const firstAction = firstDiff.data.action
+    const isUniform = restDiffs.every((diff) => (
+      diff.data.action === firstAction && (isDiffAdd(diff.data) || isDiffRemove(diff.data))
+    ))
+    if (!isUniform) {
+      return
+    }
+
+    nodeDiffs.nestingIndicatorRowColorizingDiff = this.buildChangedPropertyMetaDataFromDiff(firstDiff.data)
+  }
+
+  /** Raw-source keys that become this node's visible `childrenNodes()` (not `nestedNodes()`). */
+  private collectJsonSchemaChildKeys(crawlValue: object): string[] {
+    const keys: string[] = []
+
+    const properties = Reflect.get(crawlValue, "properties")
+    if (isObject(properties)) {
+      keys.push(...Object.keys(properties))
+    }
+
+    const patternProperties = Reflect.get(crawlValue, "patternProperties")
+    if (isObject(patternProperties)) {
+      keys.push(...Object.keys(patternProperties))
+    }
+
+    const items = Reflect.get(crawlValue, "items")
+    if (Array.isArray(items)) {
+      items.forEach((_, index) => keys.push(String(index)))
+    } else if (items !== undefined && items !== null) {
+      keys.push("items")
+    }
+
+    const additionalProperties = Reflect.get(crawlValue, "additionalProperties")
+    if (additionalProperties !== undefined && additionalProperties !== null) {
+      keys.push("additionalProperties")
+    }
+
+    const additionalItems = Reflect.get(crawlValue, "additionalItems")
+    if (additionalItems !== undefined && additionalItems !== null) {
+      keys.push("additionalItems")
+    }
+
+    return keys
   }
 
   protected aggregateTextDiff(

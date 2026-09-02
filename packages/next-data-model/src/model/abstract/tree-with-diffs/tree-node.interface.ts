@@ -104,6 +104,7 @@ export enum NodeDiffsSeverityPlacemennt {
   AddressRow = 'address-row',
   BindingVersionRow = 'binding-version-row',
   ServerAddressRow = 'server-address-row',
+  NestingIndicatorRow = 'nesting-indicator-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType

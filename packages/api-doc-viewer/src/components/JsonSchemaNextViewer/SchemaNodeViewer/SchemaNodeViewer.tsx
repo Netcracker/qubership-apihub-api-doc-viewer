@@ -21,6 +21,8 @@ import {
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
+import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 import { resolveJsonSchemaPropertyNestingIndicatorTitle } from "../utils/resolve-json-schema-nesting-indicator-title"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
@@ -122,6 +124,11 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [node],
   )
 
+  const nestingIndicatorRowColorizingDiff = useMemo(
+    () => nodeWithDiffs ? takeJsonSchemaNestingIndicatorRowColorizingDiff(nodeWithDiffs) : undefined,
+    [nodeWithDiffs],
+  )
+
   return (
     <div
       data-testid="json-schema-node-viewer"
@@ -163,6 +170,9 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
                 title={propertyNestingIndicatorTitle}
                 usage={NestingIndicatorTitleRowUsage.JsonSchema}
                 lastInvisible
+                diff={nestingIndicatorRowColorizingDiff}
+                diffsSeverities={nodeWithDiffs?.diffsSeverities}
+                diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
               />
               {nodeWithDiffs && unchangedBlocksContext ? (
                 <SchemaNodeChildrenListWithDiffs
