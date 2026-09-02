@@ -812,131 +812,253 @@ const collectCombinerCases = (cases) => {
   collectCombinerCasesForLevel(cases, "extended/combiners-two-level", 2);
 };
 
-const circularSelfObject = () => ({
+// Circular fixtures embed the cyclic schema in named OAS components (referenced via
+// "#/components/schemas/<Name>") because the fixture is substituted into an OAS document
+// whose root has no "definitions" and isn't itself an addressable component — "#" or
+// "#/definitions/..." refs would resolve against that OAS root and fail to find a schema.
+const CIRCULAR_UPDATED_DESCRIPTION = "Updated cyclic schema description";
+
+const SELF_OBJECT_COMPONENT = "SelfObject";
+const SELF_OBJECT_DESCRIPTION = "Self-referencing object";
+const SELF_OBJECT_SCHEMA_REF = { $ref: `#/components/schemas/${SELF_OBJECT_COMPONENT}` };
+const selfObjectComponentSchema = (description) => ({
   type: "object",
-  description: "Self-referencing object",
+  description,
   properties: {
     label: { type: "string" },
-    child: { $ref: "#" },
+    child: { $ref: `#/components/schemas/${SELF_OBJECT_COMPONENT}` },
+  },
+});
+const selfObjectComponentSchemaWithoutCycle = (description) => ({
+  type: "object",
+  description,
+  properties: {
+    label: { type: "string" },
   },
 });
 
-const circularSelfArray = () => ({
+const SELF_ARRAY_COMPONENT = "SelfArray";
+const SELF_ARRAY_DESCRIPTION = "Self-referencing array";
+const SELF_ARRAY_SCHEMA_REF = { $ref: `#/components/schemas/${SELF_ARRAY_COMPONENT}` };
+const selfArrayComponentSchema = (description) => ({
   type: "array",
-  description: "Self-referencing array",
-  items: { $ref: "#" },
+  description,
+  items: { $ref: `#/components/schemas/${SELF_ARRAY_COMPONENT}` },
+});
+const selfArrayComponentSchemaWithoutCycle = (description) => ({
+  type: "array",
+  description,
+  items: { type: "string" },
 });
 
-const circularChainRoot = () => ({
-  $schema: "http://json-schema.org/draft-07/schema#",
+const CHAIN_ROOT_COMPONENT = "ChainRoot";
+const CHAIN_A_COMPONENT = "ChainA";
+const CHAIN_B_COMPONENT = "ChainB";
+const CHAIN_ROOT_DESCRIPTION = "Root of A→B→root chain";
+const CHAIN_SCHEMA_REF = { $ref: `#/components/schemas/${CHAIN_ROOT_COMPONENT}` };
+const chainRootComponentSchema = (description, includeCycle) => {
+  const schema = {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    type: "object",
+    description,
+    properties: {
+      name: { type: "string" },
+    },
+  };
+  if (includeCycle) {
+    schema.properties.nodeA = { $ref: `#/components/schemas/${CHAIN_A_COMPONENT}` };
+  }
+  return schema;
+};
+const chainAComponentSchema = () => ({
   type: "object",
-  description: "Root of A→B→root chain",
+  description: "Entity A",
   properties: {
-    name: { type: "string" },
-    nodeA: { $ref: "#/definitions/A" },
+    nodeB: { $ref: `#/components/schemas/${CHAIN_B_COMPONENT}` },
   },
-  definitions: {
-    A: {
-      type: "object",
-      description: "Entity A",
-      properties: {
-        nodeB: { $ref: "#/definitions/B" },
-      },
-    },
-    B: {
-      type: "object",
-      description: "Entity B",
-      properties: {
-        backToRoot: { $ref: "#" },
-      },
-    },
+});
+const chainBComponentSchema = () => ({
+  type: "object",
+  description: "Entity B",
+  properties: {
+    backToRoot: { $ref: `#/components/schemas/${CHAIN_ROOT_COMPONENT}` },
+  },
+});
+const chainComponents = (rootDescription, includeCycle) => ({
+  schemas: {
+    [CHAIN_ROOT_COMPONENT]: chainRootComponentSchema(rootDescription, includeCycle),
+    [CHAIN_A_COMPONENT]: chainAComponentSchema(),
+    [CHAIN_B_COMPONENT]: chainBComponentSchema(),
   },
 });
 
-const circularCombinerVariant = () => ({
+const COMBINER_VALUE_COMPONENT = "CyclicValue";
+const COMBINER_DESCRIPTION = "Combiner with cyclic object variant";
+const combinerValueComponentSchema = (includeCycle) => {
+  const oneOf = [{ type: "string" }];
+  if (includeCycle) {
+    oneOf.push({
+      type: "object",
+      description: "Cyclic object variant",
+      properties: {
+        nested: { $ref: `#/components/schemas/${COMBINER_VALUE_COMPONENT}` },
+      },
+    });
+  }
+  return { oneOf };
+};
+const combinerComponents = (includeCycle) => ({
+  schemas: {
+    [COMBINER_VALUE_COMPONENT]: combinerValueComponentSchema(includeCycle),
+  },
+});
+const combinerSchema = (description) => ({
   type: "object",
-  description: "Combiner with cyclic object variant",
+  description,
   properties: {
-    value: {
-      oneOf: [
-        { type: "string" },
-        {
-          type: "object",
-          description: "Cyclic object variant",
-          properties: {
-            nested: { $ref: "#/properties/value" },
-          },
-        },
-      ],
-    },
+    value: { $ref: `#/components/schemas/${COMBINER_VALUE_COMPONENT}` },
   },
 });
 
 /** @param {TypeChangeCase[]} cases */
 const collectCircularCases = (cases) => {
   const dir = "circular";
-  const prerequisites = [
-    { slug: "self-object", build: circularSelfObject, label: "Self-referencing object" },
-    { slug: "self-array", build: circularSelfArray, label: "Self-referencing array" },
-    { slug: "chain-three-hop", build: circularChainRoot, label: "Root→A→B→root chain" },
-    { slug: "combiner-variant-cycle", build: circularCombinerVariant, label: "Combiner variant cycle" },
-  ];
 
-  for (const prerequisite of prerequisites) {
-    const beforeBase = prerequisite.build();
-    pushCase(
-      cases,
-      dir,
-      `${prerequisite.slug}-description-updated`,
-      beforeBase,
-      merge(beforeBase, { description: "Updated cyclic schema description" }),
-      `${prerequisite.label}: description updated`,
-    );
+  pushCase(
+    cases,
+    dir,
+    "self-object-description-updated",
+    {
+      beforeSchema: SELF_OBJECT_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchema(SELF_OBJECT_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_OBJECT_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchema(CIRCULAR_UPDATED_DESCRIPTION) } },
+    },
+    "Self-referencing object: description updated",
+  );
+  pushCase(
+    cases,
+    dir,
+    "self-object-cycle-removed",
+    {
+      beforeSchema: SELF_OBJECT_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchema(SELF_OBJECT_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_OBJECT_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchemaWithoutCycle(SELF_OBJECT_DESCRIPTION) } },
+    },
+    "Self-referencing object: cyclic link removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "self-object-cycle-added",
+    {
+      beforeSchema: SELF_OBJECT_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchemaWithoutCycle(SELF_OBJECT_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_OBJECT_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_OBJECT_COMPONENT]: selfObjectComponentSchema(SELF_OBJECT_DESCRIPTION) } },
+    },
+    "Self-referencing object: cyclic link added",
+  );
 
-    const withoutCycle = clone(beforeBase);
-    if (prerequisite.slug === "self-object") {
-      delete withoutCycle.properties.child;
-    } else if (prerequisite.slug === "self-array") {
-      withoutCycle.items = { type: "string" };
-    } else if (prerequisite.slug === "chain-three-hop") {
-      delete withoutCycle.properties.nodeA;
-    } else {
-      withoutCycle.properties.value.oneOf.pop();
-    }
-    pushCase(
-      cases,
-      dir,
-      `${prerequisite.slug}-cycle-removed`,
-      beforeBase,
-      withoutCycle,
-      `${prerequisite.label}: cyclic link removed`,
-    );
+  pushCase(
+    cases,
+    dir,
+    "self-array-description-updated",
+    {
+      beforeSchema: SELF_ARRAY_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchema(SELF_ARRAY_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_ARRAY_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchema(CIRCULAR_UPDATED_DESCRIPTION) } },
+    },
+    "Self-referencing array: description updated",
+  );
+  pushCase(
+    cases,
+    dir,
+    "self-array-cycle-removed",
+    {
+      beforeSchema: SELF_ARRAY_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchema(SELF_ARRAY_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_ARRAY_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchemaWithoutCycle(SELF_ARRAY_DESCRIPTION) } },
+    },
+    "Self-referencing array: cyclic link removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "self-array-cycle-added",
+    {
+      beforeSchema: SELF_ARRAY_SCHEMA_REF,
+      beforeAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchemaWithoutCycle(SELF_ARRAY_DESCRIPTION) } },
+    },
+    {
+      afterSchema: SELF_ARRAY_SCHEMA_REF,
+      afterAdditionalComponents: { schemas: { [SELF_ARRAY_COMPONENT]: selfArrayComponentSchema(SELF_ARRAY_DESCRIPTION) } },
+    },
+    "Self-referencing array: cyclic link added",
+  );
 
-    const withCycleRestored = clone(withoutCycle);
-    if (prerequisite.slug === "self-object") {
-      withCycleRestored.properties.child = { $ref: "#" };
-    } else if (prerequisite.slug === "self-array") {
-      withCycleRestored.items = { $ref: "#" };
-    } else if (prerequisite.slug === "chain-three-hop") {
-      withCycleRestored.properties.nodeA = { $ref: "#/definitions/A" };
-    } else {
-      withCycleRestored.properties.value.oneOf.push({
-        type: "object",
-        description: "Cyclic object variant",
-        properties: {
-          nested: { $ref: "#/properties/value" },
-        },
-      });
-    }
-    pushCase(
-      cases,
-      dir,
-      `${prerequisite.slug}-cycle-added`,
-      withoutCycle,
-      withCycleRestored,
-      `${prerequisite.label}: cyclic link added`,
-    );
-  }
+  pushCase(
+    cases,
+    dir,
+    "chain-three-hop-description-updated",
+    { beforeSchema: CHAIN_SCHEMA_REF, beforeAdditionalComponents: chainComponents(CHAIN_ROOT_DESCRIPTION, true) },
+    { afterSchema: CHAIN_SCHEMA_REF, afterAdditionalComponents: chainComponents(CIRCULAR_UPDATED_DESCRIPTION, true) },
+    "Root→A→B→root chain: description updated",
+  );
+  pushCase(
+    cases,
+    dir,
+    "chain-three-hop-cycle-removed",
+    { beforeSchema: CHAIN_SCHEMA_REF, beforeAdditionalComponents: chainComponents(CHAIN_ROOT_DESCRIPTION, true) },
+    { afterSchema: CHAIN_SCHEMA_REF, afterAdditionalComponents: chainComponents(CHAIN_ROOT_DESCRIPTION, false) },
+    "Root→A→B→root chain: cyclic link removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "chain-three-hop-cycle-added",
+    { beforeSchema: CHAIN_SCHEMA_REF, beforeAdditionalComponents: chainComponents(CHAIN_ROOT_DESCRIPTION, false) },
+    { afterSchema: CHAIN_SCHEMA_REF, afterAdditionalComponents: chainComponents(CHAIN_ROOT_DESCRIPTION, true) },
+    "Root→A→B→root chain: cyclic link added",
+  );
+
+  pushCase(
+    cases,
+    dir,
+    "combiner-variant-cycle-description-updated",
+    { beforeSchema: combinerSchema(COMBINER_DESCRIPTION), beforeAdditionalComponents: combinerComponents(true) },
+    { afterSchema: combinerSchema(CIRCULAR_UPDATED_DESCRIPTION), afterAdditionalComponents: combinerComponents(true) },
+    "Combiner variant cycle: description updated",
+  );
+  pushCase(
+    cases,
+    dir,
+    "combiner-variant-cycle-cycle-removed",
+    { beforeSchema: combinerSchema(COMBINER_DESCRIPTION), beforeAdditionalComponents: combinerComponents(true) },
+    { afterSchema: combinerSchema(COMBINER_DESCRIPTION), afterAdditionalComponents: combinerComponents(false) },
+    "Combiner variant cycle: cyclic link removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "combiner-variant-cycle-cycle-added",
+    { beforeSchema: combinerSchema(COMBINER_DESCRIPTION), beforeAdditionalComponents: combinerComponents(false) },
+    { afterSchema: combinerSchema(COMBINER_DESCRIPTION), afterAdditionalComponents: combinerComponents(true) },
+    "Combiner variant cycle: cyclic link added",
+  );
 };
 
 const TYPE_VALUE_CHANGE_TYPES = ["string", "number", "integer", "boolean", "array", "object"];
@@ -1863,6 +1985,7 @@ export const STORY_SUITES = [
     globPath: "circular",
     storyFileName: "circular-samples.stories.tsx",
     testFileName: "circular-samples.it-test.ts",
+    diffUtilsModule: "./circular-samples-utils",
   },
   {
     suiteKey: "type-value-changes",

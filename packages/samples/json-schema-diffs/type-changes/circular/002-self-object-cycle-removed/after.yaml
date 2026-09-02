@@ -1,6 +1,11 @@
-type: object
-description: Self-referencing object
-properties:
-  label:
-    type: string
+afterSchema:
+  $ref: "#/components/schemas/SelfObject"
+afterAdditionalComponents:
+  schemas:
+    SelfObject:
+      type: object
+      description: Self-referencing object
+      properties:
+        label:
+          type: string
 
