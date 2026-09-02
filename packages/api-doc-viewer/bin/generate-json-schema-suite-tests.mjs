@@ -29,7 +29,7 @@ import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
 const META_ID = '${metaId}'
-const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
+const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 const TEST_IDS: string[] = [
 ${testIdsLiteral}

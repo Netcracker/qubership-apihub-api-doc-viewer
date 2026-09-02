@@ -1,17 +1,16 @@
 /**
  * Screenshot test for JSON Schema Suite circular $ref story.
  */
-import path from "path"
-import { storyPage } from "../service/storybook-service"
+import path from 'path'
+import { storyPage } from '../service/storybook-service'
 
-const META_ID = "json-schema-suite-circular-ref"
-const TEST_ID = "cycled"
-const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__")
+const META_ID = 'json-schema-suite-circular-ref'
+const TEST_ID = 'cycled'
+const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 async function waitForJsonSchemaViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
-  await page.waitForFunction(() => document.readyState === "complete")
+  await page.waitForFunction(() => document.readyState === 'complete')
   await page.evaluate(() => new Promise<void>(resolve =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
   ))
