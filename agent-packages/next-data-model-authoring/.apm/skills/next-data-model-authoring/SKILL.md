@@ -218,6 +218,34 @@ Key resolution for value-level diff rendering:
 Full phased actions and entity IDs are in
 `packages/api-doc-viewer/jso-diffs-implementation-actions.md`.
 
+### `aggregateByDescendantDiffs` — combining node diffs with descendant diffs
+
+`AbstractNodeDiffsAggregator.aggregateByDescendantDiffs(crawlValue, nodeDiffs, nodeDescendantDiffs,
+diffMetaKeys)` is a no-op hook on the abstract base, already wired into each spec's
+`assignNodeDiffs` (called **after** both `node.diffs` and `node.descendantDiffs` are populated).
+Use it — do not recompute descendant diffs a second time inside `aggregate()` — whenever a field
+needs to react to "are my children uniformly added/removed" (ddlapi's
+`DdlApiNodeDiffsAggregatorKindPropertyListSection`, async-api's binding/parameter/server kinds,
+JSON Schema's nesting-indicator row colorizing — see `api-doc-viewer-repo` skill,
+**"Nesting-indicator row diffs"**). It exists per spec already; check for an override before
+adding new "count my descendant diffs" logic from scratch.
+
+The hook's return value is **discarded** by the caller — implementations must **mutate** the
+`nodeDiffs` object passed in.
+
+**Trap:** `nodeDescendantDiffs` is not guaranteed to contain only real child-key entries — some
+spec's descendant-diffs aggregators also fold in the node's own raw field-level diffs under their
+literal key. Enumerate the actual child keys yourself and look each one up individually; do not
+trust `Object.keys(nodeDescendantDiffs).length` as a child count.
+
+**Row colorizing needs a matching severity, from the same diff object.** A `*RowColorizingDiff`
+field only drives the `diff` prop (background). `diffsSeverities` / `DiffFloatingBadgeWrapper` is
+a **separate** prop from a **separate** aggregator (`node-diffs-severities/`) that must be updated
+in the same change — add a dedicated `NodeDiffsSeverityPlacemennt` member and build its severity
+from the identical diff object already used for colorizing (see async-api's `ServerAddressRow`
+pattern in `AsyncApiNodeDiffsSeveritiesAggregatorKindAny`). Do not treat severities as an optional
+follow-up; a missing severity silently drops the floating diff badge with no error.
+
 ## Crawl rules
 
 Document traversal rules live in
@@ -485,7 +513,12 @@ components to compensate.
 crawl fragments — not picked `parent.value().required`. See
 `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`.
 Unit tests: `json-schema-meta-flag-diffs.test.ts` (include OAS-normalized merge cases for Storybook parity).
-chip components.
+
+**Nesting-indicator row diffs:** `nestingIndicatorRowColorizingDiff` in `kind-any.ts`
+(`aggregateByDescendantDiffs` override) covers whole-node add/remove (including inherited
+parent/container) and uniform-children add/remove for the row `SchemaNodeViewer` renders above a
+node's children list. See
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`.
 
 ## Cross-package boundary
 

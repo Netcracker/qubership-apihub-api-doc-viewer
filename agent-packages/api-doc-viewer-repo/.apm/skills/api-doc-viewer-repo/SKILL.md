@@ -128,6 +128,18 @@ diffs — not validation rows. Full reference (legacy propagation, crawl-fragmen
 Apply when changing type-flags samples (`type-changes/type-flags/`), `resolveRequiredMetaDiff`,
 title-row required asterisk, or subheader `required` badge behaviour.
 
+### Nesting-indicator row diffs (`NestingIndicatorTitleRow`)
+
+The "Properties"/"Items" header row above a node's children list highlights when the owning node
+(or an inherited parent/container) was wholly added/removed, or when every visible child was
+uniformly added/removed. Full reference (why the row can't reuse `NODE_LEVEL_DIFF_KEY`,
+`nodeDescendantDiffs` pollution trap, and the row-colorizing-vs-severity pairing rule):
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+
+Apply when changing `SchemaNodeViewer`'s nesting-indicator wiring or the shared
+`NestingIndicatorTitleRow` components.
+
 ## JSON Schema Next diffs (hiding unchanged rows)
 
 Hand-written YAML pairs under `packages/samples/json-schema-diffs/hiding-unchanged-rows/`.
@@ -165,4 +177,5 @@ from **highest index downward** via a temporary prefix.
   `packages/samples/ddlapi-diffs/README.md`,
   `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 - JSON Schema validation rows (plain + diffs): `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`.
+- JSON Schema nesting-indicator row diffs: `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`.
 - Do **not** add minor feature notes to the repository root `README.md` unless asked.

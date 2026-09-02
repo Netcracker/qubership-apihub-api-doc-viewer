@@ -170,6 +170,17 @@ subheader chrome — not validation rows. Parent-scoped `required` resolution an
 Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `DiffTags` via
 `buildJsonSchemaDiffTagsProps` — not the type-label subheader alone.
 
+## JSON Schema nesting-indicator row diffs (Next viewer)
+
+`SchemaNodeViewer` renders `NestingIndicatorTitleRow` above a node's children list. Wire **both**
+`diff` (background) and `diffsSeverities` + `diffsSeverityPlacement` (floating badge via
+`DiffFloatingBadgeWrapper`) from `takeJsonSchemaNestingIndicatorRowColorizingDiff` /
+`node.diffsSeverities` — passing only `diff` leaves `diffType`/`diffTypeCause` undefined and the
+badge silently never renders. If a row must hide content on one side, keep the element mounted
+and toggle `visibility` on its content, not conditional unmounting — see session lessons:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in
