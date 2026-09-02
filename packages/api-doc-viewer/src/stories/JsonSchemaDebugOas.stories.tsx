@@ -1,36 +1,31 @@
-import { isObject } from '@netcracker/qubership-apihub-json-crawl';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ComponentProps } from 'react';
 import { parse } from 'yaml';
 import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
-import { prepareJsonSchema, REQUEST_BODY_TARGET } from './preprocess';
+import { prepareJsonSchemaFromOAS } from './preprocess';
 
 type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
-  schemaText: string
-  componentsText?: string
+  oasText: string // OAS 3.0 or OAS 3.1, JSON or YAML
+  refToSchema: string // #/components/schemas/JsonOffering
 }
 
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: 'Debug/Json Schema Viewer',
+  title: 'Debug/Json Schema Viewer (OAS)',
   component: JsonSchemaViewer,
   parameters: {},
   argTypes: {
-    schemaText: {
+    oasText: {
       control: 'text',
     },
-    componentsText: {
+    refToSchema: {
       control: 'text',
     },
-    schema: {
-      control: { disable: true },
-      table: { disable: true },
-    }
   },
   args: {
-    schemaText: '',
-    componentsText: '',
+    oasText: '',
+    refToSchema: '',
   }
 } satisfies Meta<StoryArgs>;
 
@@ -38,29 +33,29 @@ export default meta;
 
 type Story = StoryObj<StoryArgs>
 
-export const Debug: Story = {
+export const DebugOas30: Story = {
   args: {
-    schemaText: '',
-    componentsText: '',
+    oasText: '',
+    refToSchema: '',
   },
   render: (args) => {
-    const { schemaText, componentsText, ...viewerArgs } = args
+    const { oasText, refToSchema, ...viewerArgs } = args
 
-    const parsedSchema = parseJsonOrYaml(schemaText)
-    const parsedComponents = componentsText ? parseJsonOrYaml(componentsText) : undefined
+    const parsedOas = parseJsonOrYaml(oasText)
 
-    const schema = prepareJsonSchema({
-      schema: parsedSchema,
-      additionalComponents: isObject(parsedComponents) ? parsedComponents : undefined,
-      target: REQUEST_BODY_TARGET,
+    const schema = prepareJsonSchemaFromOAS({
+      source: parsedOas,
+      path: refToSchema.split('/').slice(1),
     })
 
-    console.log(schemaText)
+    console.log('OAS:', oasText)
+    console.log('Ref to schema:', refToSchema)
     console.debug('Prepared schema:', schema)
 
     return <JsonSchemaViewer {...viewerArgs} schema={schema} />
   }
 }
+DebugOas30.storyName = 'Debug OAS 3.0';
 
 function parseJsonOrYaml(text: string): unknown {
   let parsed: unknown = undefined
