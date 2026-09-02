@@ -250,9 +250,12 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
   }
 
   protected resolveNodeKey(key: NodeKey, value: unknown): NodeKey {
-    if (isObject(value) && typeof value.title === "string" && value.title.length > 0) {
-      return value.title
-    }
+    // `title` must not drive node identity: for $ref-derived values (in particular
+    // circular self-references) api-unifier's denormalize() synthesizes `title` from the
+    // referenced component name (e.g. "SelfObject"), which would otherwise overwrite the
+    // real raw-source property key (e.g. "child"). `title` stays a display-only field on
+    // the node value.
+    void value
     return key
   }
 

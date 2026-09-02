@@ -34,8 +34,8 @@ describe("JsonSchemaTreeBuilder", () => {
     const propertyNodes = tree.root!.childrenNodes()
     expect(propertyNodes).toHaveLength(2)
 
-    const nameNode = propertyNodes.find((node) => node.key === "name")
-    const ageNode = propertyNodes.find((node) => node.key === "age")
+    const nameNode = propertyNodes.find((node: any) => node.key === "name")
+    const ageNode = propertyNodes.find((node: any) => node.key === "age")
 
     expect(nameNode).toBeDefined()
     expect(nameNode!.kind).toBe(JsonSchemaTreeNodeKinds.PROPERTY)
@@ -49,7 +49,7 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(ageNode!.meta()?.required).toBeFalsy()
   })
 
-  it("resolves node key from title when present", () => {
+  it("keeps the raw source property key even when a display title is present", () => {
     const schema = {
       type: "object",
       properties: {
@@ -63,7 +63,33 @@ describe("JsonSchemaTreeBuilder", () => {
     const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
     const propertyNode = tree.root!.childrenNodes()[0]
 
-    expect(propertyNode.key).toBe("Display Title")
+    expect(propertyNode.key).toBe("internalKey")
+    expect(propertyNode.value()?.title).toBe("Display Title")
+  })
+
+  it("keeps the raw source property key for a self-referencing (circular) $ref property", () => {
+    // Mirrors what api-unifier's denormalize() produces for a schema like:
+    //   SelfObject: { type: object, properties: { child: { $ref: "#/.../SelfObject" } } }
+    // The resolved "child" value is the very same object again (real JS circularity), and,
+    // since the referenced schema declares no title of its own, denormalize() synthesizes
+    // `title` from the $ref target name ("SelfObject"). Regression: that synthesized title
+    // must not leak into node identity - the cycled node must still be keyed "child" (the raw
+    // source property key), not "SelfObject" (the $ref target name).
+    const selfObject: { type: string; title?: string; properties: Record<string, unknown> } = {
+      type: "object",
+      properties: {
+        label: { type: "string" },
+      },
+    }
+    selfObject.properties.child = selfObject
+    selfObject.title = "SelfObject"
+
+    const tree = new JsonSchemaTreeBuilder({ source: selfObject }).build()
+    const childNode = tree.root!.childrenNodes().find((node: any) => node.key === "child")
+
+    expect(childNode).toBeDefined()
+    expect(childNode!.key).toBe("child")
+    expect(childNode!.isCycle).toBe(true)
   })
 
   it("creates complex nodes for combiner schemas", () => {
@@ -105,7 +131,7 @@ describe("JsonSchemaTreeBuilder", () => {
     }
 
     const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
-    const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")!
+    const valueProperty = tree.root!.childrenNodes().find((node: any) => node.key === "value")!
 
     expect(valueProperty.type).toBe(TreeNodeComplexityTypes.COMPLEX)
     expect(valueProperty.nestedNodes()).toHaveLength(2)
@@ -118,7 +144,7 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(objectBranch.value()?.type).toBe("object")
     expect(objectBranch.value()?.description).toBe("Object variant")
     expect(objectBranch.childrenNodes()).toHaveLength(2)
-    expect(objectBranch.childrenNodes().map((node) => node.key)).toEqual([
+    expect(objectBranch.childrenNodes().map((node: any) => node.key)).toEqual([
       "nestedChanged",
       "nestedUnchanged",
     ])
@@ -181,7 +207,7 @@ describe("JsonSchemaTreeBuilder", () => {
 
     const builder = new JsonSchemaTreeBuilder({ source: schema, materializeDepth: 2 })
     const tree = builder.build()
-    const outer = tree.root!.childrenNodes().find((node) => node.key === "outer")!
+    const outer = tree.root!.childrenNodes().find((node: any) => node.key === "outer")!
 
     expect(outer.childrenNodes()).toHaveLength(0)
 
@@ -216,14 +242,14 @@ describe("JsonSchemaTreeBuilder", () => {
     const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
     const rootChildren = tree.root!.childrenNodes()
 
-    expect(rootChildren.some((node) => node.kind === JsonSchemaTreeNodeKinds.ITEMS)).toBe(false)
+    expect(rootChildren.some((node: any) => node.kind === JsonSchemaTreeNodeKinds.ITEMS)).toBe(false)
 
-    const itemNode = rootChildren.find((node) => node.kind === JsonSchemaTreeNodeKinds.ITEM)
+    const itemNode = rootChildren.find((node: any) => node.kind === JsonSchemaTreeNodeKinds.ITEM)
     expect(itemNode).toBeDefined()
     expect(itemNode!.key).toBe(0)
     expect(itemNode!.value()?.type).toBe("string")
 
-    const additionalItemsNode = rootChildren.find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_ITEMS)
+    const additionalItemsNode = rootChildren.find((node: any) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_ITEMS)
     expect(additionalItemsNode).toBeDefined()
     expect(additionalItemsNode!.value()?.type).toBe("integer")
   })
@@ -240,7 +266,7 @@ describe("JsonSchemaTreeBuilder", () => {
 
     const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
     const additionalPropertiesNode = tree.root!.childrenNodes().find(
-      (node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
+      (node: any) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
     )
 
     expect(additionalPropertiesNode).toBeDefined()
@@ -260,7 +286,7 @@ describe("JsonSchemaTreeBuilder", () => {
 
     const tree = new JsonSchemaTreeBuilder({ source: schema }).build()
     const additionalPropertiesNode = tree.root!.childrenNodes().find(
-      (node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
+      (node: any) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES,
     )
 
     expect(additionalPropertiesNode).toBeDefined()
