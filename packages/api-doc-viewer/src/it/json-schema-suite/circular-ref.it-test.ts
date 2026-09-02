@@ -6,7 +6,7 @@ import { storyPage } from '../service/storybook-service'
 
 const META_ID = 'json-schema-suite-circular-ref'
 const TEST_ID = 'cycled'
-const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
+const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 async function waitForJsonSchemaViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true })

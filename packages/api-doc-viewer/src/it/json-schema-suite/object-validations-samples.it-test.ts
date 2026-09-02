@@ -6,7 +6,7 @@ import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
 const META_ID = 'json-schema-suite-object-validations'
-const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
+const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 const TEST_IDS: string[] = [
   'case-001-default-empty-object',
