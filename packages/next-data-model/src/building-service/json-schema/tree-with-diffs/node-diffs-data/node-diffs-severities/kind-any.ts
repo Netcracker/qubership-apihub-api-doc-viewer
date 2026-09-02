@@ -9,6 +9,7 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
+  JsonSchemaKindAnyNodeDiffs,
   JsonSchemaSharedRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
@@ -21,26 +22,51 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): NodeDiffsSeverities | undefined {
     const diffNode = nodeDiffs[NODE_LEVEL_DIFF_KEY]
-    if (diffNode) {
-      return {
-        [NodeDiffsSeverityPlacemennt.TitleRow]: this.buildNodeDiffsSeverity(diffNode),
-        [NodeDiffsSeverityPlacemennt.DescriptionRow]: this.buildNodeDiffsSeverity(diffNode),
-        [NodeDiffsSeverityPlacemennt.NestingIndicatorRow]: this.buildNodeDiffsSeverity(diffNode),
-      }
-    }
-
     const diffsSeverities: NodeDiffsSeverities = {}
 
-    this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
-    this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
-    this.applyRowSeverity(
-      nodeDiffs,
-      "nestingIndicatorRowColorizingDiff",
-      NodeDiffsSeverityPlacemennt.NestingIndicatorRow,
-      diffsSeverities,
-    )
+    if (diffNode) {
+      diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] = this.buildNodeDiffsSeverity(diffNode)
+      diffsSeverities[NodeDiffsSeverityPlacemennt.DescriptionRow] = this.buildNodeDiffsSeverity(diffNode)
+      diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow] = this.buildNodeDiffsSeverity(diffNode)
+    } else {
+      this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
+      this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
+      this.applyRowSeverity(
+        nodeDiffs,
+        "nestingIndicatorRowColorizingDiff",
+        NodeDiffsSeverityPlacemennt.NestingIndicatorRow,
+        diffsSeverities,
+      )
+    }
+
+    this.applyMaxAdditionalInfoRowSeverityFromValidationRowDiffs(nodeDiffs, diffsSeverities)
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
+  }
+
+  /**
+   * Floating diff badge for validation-constraint rows (`AdditionalInfoRow` placement), computed
+   * for every node kind - not just property/root - so combiner-variant nodes get the same
+   * severity indicator as a top-level property. Property/root nodes extend this with
+   * default/enum/examples severities in {@link JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty}.
+   */
+  private applyMaxAdditionalInfoRowSeverityFromValidationRowDiffs(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const validationDiffs = nodeDiffs as JsonSchemaKindAnyNodeDiffs
+    const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(validationDiffs.validationRowDiffs ?? {}),
+      ...Object.values(validationDiffs.validationRowValueDiffs ?? {}).flatMap((rowValueDiffs) => (
+        Object.values(rowValueDiffs ?? {})
+      )),
+      ...Object.values(validationDiffs.validationRowColorizingDiffs ?? {}),
+    )
+    if (!maxPropertyDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.AdditionalInfoRow] = this.buildNodeDiffsSeverity(maxPropertyDiff)
   }
 
   private applyMaxRowSeverityFromTypeLabelDiffs(

@@ -50,6 +50,19 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
    * removed - single-side visibility only (green add-only / red remove-only), never yellow.
    */
   nestingIndicatorRowColorizingDiff?: ChangedPropertyMetaData
+  /**
+   * Validation-constraint row diffs (`Value range`, `Value length`, `Properties count`,
+   * `Items count`, `Unique items`, ...). Computed for every node kind - not just
+   * property/root - so combiner-variant nodes (`oneOf`/`anyOf`/`allOf`) that carry
+   * constraints directly (e.g. `minItems`/`maxItems`/`uniqueItems` on an array variant)
+   * get the same row highlighting as a top-level property.
+   */
+  validationRowDiffs?: Partial<Record<JsonSchemaValidationRowKey, ChangedPropertyMetaData>>
+  /** Per-chip diffs for partial validation-row changes; keys are chip indices as strings. */
+  validationRowValueDiffs?: Partial<Record<JsonSchemaValidationRowKey, JsonSchemaListValueDiffs>>
+  validationRowColorizingDiffs?: Partial<Record<JsonSchemaValidationRowKey, ChangedPropertyMetaData>>
+  /** Raw crawl diffs for value-range chip side resolution (includes boolean exclusive flag changes). */
+  valueRangeCrawlDiffs?: ValueRangeCrawlDiffData
 }
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
@@ -67,10 +80,4 @@ export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
   /** Per-index diffs under `examples`; keys match the source array diffs record. */
   examplesValueDiffs?: JsonSchemaListValueDiffs
   examplesRowColorizingDiff?: ChangedPropertyMetaData
-  validationRowDiffs?: Partial<Record<JsonSchemaValidationRowKey, ChangedPropertyMetaData>>
-  /** Per-chip diffs for partial validation-row changes; keys are chip indices as strings. */
-  validationRowValueDiffs?: Partial<Record<JsonSchemaValidationRowKey, JsonSchemaListValueDiffs>>
-  validationRowColorizingDiffs?: Partial<Record<JsonSchemaValidationRowKey, ChangedPropertyMetaData>>
-  /** Raw crawl diffs for value-range chip side resolution (includes boolean exclusive flag changes). */
-  valueRangeCrawlDiffs?: ValueRangeCrawlDiffData
 }

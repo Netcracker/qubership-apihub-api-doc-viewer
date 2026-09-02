@@ -90,6 +90,9 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   const value = displayValue ?? node.value()
   const typedValue = asJsonSchemaTypedNodeValue(value)
   const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
+  // Validation-constraint rows (`Value range`, `Items count`, ...) are aggregated for every
+  // node kind - including oneOf/anyOf/allOf combiner variants - not just property/root.
+  const validationDiffsNode = isJsonSchemaTreeNodeWithDiffs(node) ? node : undefined
 
   const visibility = useMemo(
     () => {
@@ -150,7 +153,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
   const validationRows = useMemo(() => {
     const baseRows = resolveValidationRows(typedValue)
-    if (!propertyNodeWithDiffs) {
+    if (!validationDiffsNode) {
       return baseRows
     }
 
@@ -158,7 +161,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     const diffOnlyRows = (Object.keys(VALIDATION_ROW_LABELS) as ViewerValidationRowKey[])
       .filter((rowKey) => !presentKeys.has(rowKey))
       .filter((rowKey) => hasJsonSchemaValidationRowSemanticDiffs(
-        propertyNodeWithDiffs,
+        validationDiffsNode,
         rowKey as JsonSchemaValidationRowKey,
       ))
       .map((rowKey) => ({
@@ -168,7 +171,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
       }))
 
     return [...baseRows, ...diffOnlyRows]
-  }, [propertyNodeWithDiffs, typedValue])
+  }, [validationDiffsNode, typedValue])
 
   const enumValuesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -251,11 +254,11 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     (rowKey: JsonSchemaValidationRowKey, rowValues: string[]) => (
       layoutSide: LayoutSide,
     ) => {
-      const validationRowDiff = propertyNodeWithDiffs
-        ? takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, rowKey)
+      const validationRowDiff = validationDiffsNode
+        ? takeJsonSchemaValidationRowDiff(validationDiffsNode, rowKey)
         : undefined
-      const validationRowValueDiffs = propertyNodeWithDiffs
-        ? takeJsonSchemaValidationRowValueDiffs(propertyNodeWithDiffs, rowKey)
+      const validationRowValueDiffs = validationDiffsNode
+        ? takeJsonSchemaValidationRowValueDiffs(validationDiffsNode, rowKey)
         : undefined
       const sideEntries = resolveJsonSchemaValidationRowSideEntries(
         rowKey,
@@ -263,7 +266,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         validationRowDiff,
         validationRowValueDiffs,
         layoutSide,
-        rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && propertyNodeWithDiffs
+        rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && validationDiffsNode
           ? {
             nodeValue: value as {
               minimum?: number
@@ -271,7 +274,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
               exclusiveMinimum?: number | boolean
               exclusiveMaximum?: number | boolean
             },
-            crawlDiffs: takeJsonSchemaValueRangeCrawlDiffs(propertyNodeWithDiffs) ?? {},
+            crawlDiffs: takeJsonSchemaValueRangeCrawlDiffs(validationDiffsNode) ?? {},
           }
           : undefined,
       )
@@ -289,7 +292,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [propertyNodeWithDiffs, value],
+    [validationDiffsNode, value],
   )
 
   return (
@@ -347,11 +350,11 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
       {visibility.showValidationsSection && validationRows.map((row) => {
         const validationRowKey = row.key as JsonSchemaValidationRowKey
-        const validationRowDiff = propertyNodeWithDiffs
-          ? takeJsonSchemaValidationRowDiff(propertyNodeWithDiffs, validationRowKey)
+        const validationRowDiff = validationDiffsNode
+          ? takeJsonSchemaValidationRowDiff(validationDiffsNode, validationRowKey)
           : undefined
-        const validationRowColorizingDiff = propertyNodeWithDiffs
-          ? takeJsonSchemaValidationRowColorizingDiff(propertyNodeWithDiffs, validationRowKey)
+        const validationRowColorizingDiff = validationDiffsNode
+          ? takeJsonSchemaValidationRowColorizingDiff(validationDiffsNode, validationRowKey)
           : undefined
 
         return (
@@ -362,8 +365,8 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
             subheader={buildValidationRowSubheader(validationRowKey, row.values)}
             diff={validationRowDiff}
             colorizingDiff={validationRowColorizingDiff}
-            diffsSeverities={propertyNodeWithDiffs && hasJsonSchemaValidationRowSemanticDiffs(
-              propertyNodeWithDiffs,
+            diffsSeverities={validationDiffsNode && hasJsonSchemaValidationRowSemanticDiffs(
+              validationDiffsNode,
               validationRowKey,
             ) ? nodeDiffState?.nodeDiffsSeverities : undefined}
           />

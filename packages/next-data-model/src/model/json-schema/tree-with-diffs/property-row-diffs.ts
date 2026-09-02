@@ -274,34 +274,34 @@ export function takeJsonSchemaExamplesRowColorizingDiff(
 }
 
 export function takeJsonSchemaValidationRowDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
   rowKey: JsonSchemaValidationRowKey,
 ): ChangedPropertyMetaData | undefined {
-  return takePropertyRowDiffs(node).validationRowDiffs?.[rowKey]
+  return takeKindAnyNodeDiffs(node).validationRowDiffs?.[rowKey]
 }
 
 export function takeJsonSchemaValidationRowValueDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
   rowKey: JsonSchemaValidationRowKey,
 ): JsonSchemaListValueDiffs | undefined {
-  return takePropertyRowDiffs(node).validationRowValueDiffs?.[rowKey]
+  return takeKindAnyNodeDiffs(node).validationRowValueDiffs?.[rowKey]
 }
 
 export function takeJsonSchemaValidationRowColorizingDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
   rowKey: JsonSchemaValidationRowKey,
 ): ChangedPropertyMetaData | undefined {
-  return takePropertyRowDiffs(node).validationRowColorizingDiffs?.[rowKey]
+  return takeKindAnyNodeDiffs(node).validationRowColorizingDiffs?.[rowKey]
 }
 
 export function takeJsonSchemaValueRangeCrawlDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ValueRangeCrawlDiffData | undefined {
-  return takePropertyRowDiffs(node).valueRangeCrawlDiffs
+  return takeKindAnyNodeDiffs(node).valueRangeCrawlDiffs
 }
 
 export function hasJsonSchemaValidationRowSemanticDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
   rowKey: JsonSchemaValidationRowKey,
 ): boolean {
   if (takeJsonSchemaValidationRowDiff(node, rowKey)) {

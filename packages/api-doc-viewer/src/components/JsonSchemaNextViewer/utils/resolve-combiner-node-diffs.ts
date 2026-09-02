@@ -3,6 +3,7 @@ import { maxDiffType } from "../../../utils/common/changes"
 import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { isChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/guards/property-row-diffs"
 import {
   ChangedPropertyMetaData,
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
@@ -94,6 +95,29 @@ function buildNodeDiffsSeverityFromDiff(diff: Diff): NodeDiffsSeverity {
     },
     highlightingMode: DIFF_HIGHLIGHTING_MODES_DEFAULT,
   })
+}
+
+/**
+ * `node.diffs` is a flat-looking record, but some entries (`typeLabelFieldDiffs`,
+ * `validationRowDiffs`, `validationRowColorizingDiffs`, `enumValueDiffs`, ...) are themselves
+ * nested maps of `ChangedPropertyMetaData` rather than a `ChangedPropertyMetaData` directly (see
+ * the equivalent recursion in next-data-model's `JsonSchemaNodeDiffsSummaryKindAny`). Walk down
+ * until real diff leaves are found instead of assuming every top-level value is a leaf.
+ */
+function collectChangedPropertyMetaData(
+  value: unknown,
+  out: ChangedPropertyMetaData[],
+): void {
+  if (!value || typeof value !== "object") {
+    return
+  }
+  if (isChangedPropertyMetaData(value)) {
+    out.push(value)
+    return
+  }
+  for (const nested of Object.values(value as Record<string, unknown>)) {
+    collectChangedPropertyMetaData(nested, out)
+  }
 }
 
 function maxNodeDiffsSeverity(
@@ -205,10 +229,12 @@ export function buildCombinerSelectorRowDiffsSeverities(
       }
     }
 
+    const nestedChangedProperties: ChangedPropertyMetaData[] = []
     for (const nestedDiff of Object.values(nestedNode.diffs)) {
-      if (nestedDiff) {
-        severityCandidates.push(buildNodeDiffsSeverityFromChangedProperty(nestedDiff))
-      }
+      collectChangedPropertyMetaData(nestedDiff, nestedChangedProperties)
+    }
+    for (const nestedChangedProperty of nestedChangedProperties) {
+      severityCandidates.push(buildNodeDiffsSeverityFromChangedProperty(nestedChangedProperty))
     }
 
     const nestedSummaryMaxType = maxDiffType([
@@ -225,10 +251,12 @@ export function buildCombinerSelectorRowDiffsSeverities(
     severityCandidates.push(buildNodeDiffsSeverityFromChangedProperty(combinerNodeLevelDiff))
   }
 
+  const ownChangedProperties: ChangedPropertyMetaData[] = []
   for (const propertyDiff of Object.values(combinerNode.diffs)) {
-    if (propertyDiff) {
-      severityCandidates.push(buildNodeDiffsSeverityFromChangedProperty(propertyDiff))
-    }
+    collectChangedPropertyMetaData(propertyDiff, ownChangedProperties)
+  }
+  for (const ownChangedProperty of ownChangedProperties) {
+    severityCandidates.push(buildNodeDiffsSeverityFromChangedProperty(ownChangedProperty))
   }
 
   const summaryMaxType = maxDiffType([

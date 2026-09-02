@@ -680,6 +680,110 @@ describe("JsonSchema with-diffs stack", () => {
     expect(valueLengthColorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(valueLengthColorizingDiff?.styles.before.borderShadowColor).toBeUndefined()
   })
+
+  it("inherits whole-node add colorizing onto validation rows on a wholly-added oneOf array variant", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: {
+          plainProp: { type: "string" },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          plainProp: { type: "string" },
+          oneOfProp: {
+            oneOf: [
+              { type: "string" },
+              {
+                type: "array",
+                items: [{ type: "string" }],
+                minItems: 0,
+                maxItems: 10,
+                uniqueItems: true,
+              },
+            ],
+          },
+        },
+      },
+    )
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+
+    const oneOfPropNode = tree.root!.childrenNodes().find((node) => node.key === "oneOfProp")
+    expect(oneOfPropNode).toBeDefined()
+
+    const arrayVariantNode = oneOfPropNode!.nestedNodes().find((node) => node.value()?.type === "array")
+    expect(arrayVariantNode).toBeDefined()
+    expect(arrayVariantNode!.kind).toBe(JsonSchemaTreeNodeKinds.ONE_OF)
+    expect(isJsonSchemaTreeNodeWithDiffs(arrayVariantNode!)).toBe(true)
+
+    const nodeLevelDiff = arrayVariantNode!.diffs[NODE_LEVEL_DIFF_KEY]
+    expect(nodeLevelDiff?.data.action).toBe(DiffAction.add)
+
+    for (const rowKey of [
+      JsonSchemaValidationRowKeys.ITEMS_COUNT,
+      JsonSchemaValidationRowKeys.UNIQUE_ITEMS,
+    ] as const) {
+      const validationRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(arrayVariantNode!, rowKey)
+      expect(validationRowColorizingDiff?.data.action).toBe(DiffAction.add)
+      expect(validationRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    }
+  })
+
+  it("inherits whole-node remove colorizing onto validation rows on a wholly-removed oneOf object variant", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: {
+          plainProp: { type: "string" },
+          oneOfProp: {
+            oneOf: [
+              { type: "string" },
+              {
+                type: "object",
+                properties: {
+                  prop0: { type: "string" },
+                },
+                minProperties: 0,
+                maxProperties: 10,
+              },
+            ],
+          },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          plainProp: { type: "string" },
+        },
+      },
+    )
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+
+    const oneOfPropNode = tree.root!.childrenNodes().find((node) => node.key === "oneOfProp")
+    expect(oneOfPropNode).toBeDefined()
+
+    const objectVariantNode = oneOfPropNode!.nestedNodes().find((node) => node.value()?.type === "object")
+    expect(objectVariantNode).toBeDefined()
+    expect(objectVariantNode!.kind).toBe(JsonSchemaTreeNodeKinds.ONE_OF)
+
+    const nodeLevelDiff = objectVariantNode!.diffs[NODE_LEVEL_DIFF_KEY]
+    expect(nodeLevelDiff?.data.action).toBe(DiffAction.remove)
+
+    const propertiesCountColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+      objectVariantNode!,
+      JsonSchemaValidationRowKeys.PROPERTIES_COUNT,
+    )
+    expect(propertiesCountColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(propertiesCountColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
 })
 
 describe("JsonSchema nesting-indicator row colorizing diff", () => {
