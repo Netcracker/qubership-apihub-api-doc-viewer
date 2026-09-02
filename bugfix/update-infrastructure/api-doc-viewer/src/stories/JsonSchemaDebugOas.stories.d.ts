@@ -2,34 +2,26 @@ import { StoryObj } from '@storybook/react-vite';
 import { ComponentProps } from '../../../../node_modules/react';
 import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
-    schemaText: string;
-    componentsText?: string;
+    oasText: string;
+    refToSchema: string;
 };
 declare const meta: {
     title: string;
     component: import('../../../../node_modules/react').FC<import('..').JsonSchemaViewerProps>;
     parameters: {};
     argTypes: {
-        schemaText: {
+        oasText: {
             control: "text";
         };
-        componentsText: {
+        refToSchema: {
             control: "text";
-        };
-        schema: {
-            control: {
-                disable: true;
-            };
-            table: {
-                disable: true;
-            };
         };
     };
     args: {
-        schemaText: string;
-        componentsText: string;
+        oasText: string;
+        refToSchema: string;
     };
 };
 export default meta;
 type Story = StoryObj<StoryArgs>;
-export declare const Debug: Story;
+export declare const DebugOas30: Story;
