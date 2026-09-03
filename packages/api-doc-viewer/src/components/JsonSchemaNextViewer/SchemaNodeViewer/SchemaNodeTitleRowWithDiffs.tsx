@@ -1,12 +1,18 @@
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
-import { takeJsonSchemaRequiredMetaDiffForDisplay } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import {
+  takeJsonSchemaNodeChangesSummary,
+  takeJsonSchemaRequiredMetaDiffForDisplay,
+} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
   isDiffSideHeaderVisible,
   takeAddRemoveDiffIfPresent,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { FC, useMemo } from "react"
+import { UxMarkerPanel } from "@apihub/components/kit/ux/UxMarkerPanel/UxMarkerPanel"
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import { buildJsonSchemaTitleRowDiffProps } from "../utils/json-schema-title-row-diff-props"
@@ -49,6 +55,17 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
     [ownerNode],
   )
 
+  const layoutMode = useLayoutMode()
+  const nodeChangesSummary = useMemo(
+    () => takeJsonSchemaNodeChangesSummary(displayNode),
+    [displayNode],
+  )
+  const showNodeChangesSummary = !expanded
+    && expandable
+    && layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE
+    && !!nodeChangesSummary
+    && nodeChangesSummary.size > 0
+
   return (
     <SchemaNodeTitleRowBase
       {...precededByProps}
@@ -74,13 +91,18 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
         }
 
         return (
-          <JsonSchemaTitleSubheaderWithDiffs
-            meta={displayMeta}
-            node={displayNode}
-            isCycle={subheaderDisplayNode.isCycle}
-            layoutSide={layoutSide}
-            showTypeLabel={showTypeSubheader}
-          />
+          <>
+            <JsonSchemaTitleSubheaderWithDiffs
+              meta={displayMeta}
+              node={displayNode}
+              isCycle={subheaderDisplayNode.isCycle}
+              layoutSide={layoutSide}
+              showTypeLabel={showTypeSubheader}
+            />
+            {showNodeChangesSummary && (
+              <UxMarkerPanel values={Array.from(nodeChangesSummary!)} />
+            )}
+          </>
         )
       }}
     />

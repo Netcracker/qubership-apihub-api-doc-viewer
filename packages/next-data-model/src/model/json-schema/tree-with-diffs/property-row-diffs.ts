@@ -8,6 +8,7 @@ import {
 import {
   ChangedPropertyMetaData,
   NODE_LEVEL_DIFF_KEY,
+  NodeDiffsSummary,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   JSON_SCHEMA_META_FLAG_DIFF_KEYS,
@@ -109,6 +110,12 @@ export function takeJsonSchemaNestingIndicatorRowColorizingDiff(
   node: JsonSchemaTreeNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takeKindAnyNodeDiffs(node).nestingIndicatorRowColorizingDiff
+}
+
+export function takeJsonSchemaNodeChangesSummary(
+  node: JsonSchemaTreeNodeWithDiffs,
+): NodeDiffsSummary | undefined {
+  return takeKindAnyNodeDiffs(node).nodeChangesSummary
 }
 
 export function takeJsonSchemaRequiredMetaDiff(

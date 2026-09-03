@@ -1,6 +1,7 @@
 import {
   ChangedPropertyMetaData,
   NodeDiffs,
+  NodeDiffsSummary,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaValidationRowKey } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
@@ -50,6 +51,13 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
    * removed - single-side visibility only (green add-only / red remove-only), never yellow.
    */
   nestingIndicatorRowColorizingDiff?: ChangedPropertyMetaData
+  /**
+   * Merged diff-type set for this node's whole subtree (own diffs + every descendant's, any
+   * depth) - excluding this node's OWN `type`/`title`/`format` diffs (already shown via the
+   * always-visible type label). Drives the collapsed-node `UxMarkerPanel` summary in the view
+   * layer.
+   */
+  nodeChangesSummary?: NodeDiffsSummary
   /**
    * Validation-constraint row diffs (`Value range`, `Value length`, `Properties count`,
    * `Items count`, `Unique items`, ...). Computed for every node kind - not just

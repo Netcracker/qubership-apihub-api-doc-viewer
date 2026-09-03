@@ -17,6 +17,7 @@ import {
   takeJsonSchemaEnumDiff,
   takeJsonSchemaEnumRowColorizingDiff,
   takeJsonSchemaNestingIndicatorRowColorizingDiff,
+  takeJsonSchemaNodeChangesSummary,
   takeJsonSchemaValidationRowColorizingDiff,
   takeJsonSchemaValidationRowDiff,
   takeJsonSchemaValidationRowValueDiffs,
@@ -1110,5 +1111,110 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       const titleSegment = changedDisplay.segments.find((segment) => segment.text === "<My Schema>")
       expect(titleSegment).toBeDefined()
     }
+  })
+})
+
+describe("JsonSchema node changes summary", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("merges own diffs and descendant diffs into one Set<DiffType>", () => {
+    const tree = buildTree(
+      { type: "object", description: "old", properties: { prop0: { type: "string" } } },
+      {
+        type: "object",
+        description: "new",
+        properties: { prop0: { type: "string" }, prop1: { type: "string" } },
+      },
+    )
+
+    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    // Own description change + descendant (prop1) add - two distinct diff types merged together.
+    expect(summary?.size).toBe(2)
+  })
+
+  it("excludes the node's own type diff when it's the only change (no children to summarize)", () => {
+    const tree = buildTree({ type: "string" }, { type: "number" })
+
+    // Empty summaries are not assigned at all (keeps `node.diffs` free of placeholder keys, which
+    // would otherwise defeat "changed only" filtering elsewhere) - so this reads as undefined.
+    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    expect(summary).toBeUndefined()
+  })
+
+  it("excludes the node's own title diff but keeps an unrelated descendant's diff type", () => {
+    const tree = buildTree(
+      { type: "object", properties: { prop0: { type: "string" } } },
+      {
+        type: "object",
+        title: "Renamed",
+        properties: { prop0: { type: "string" }, prop1: { type: "string" } },
+      },
+    )
+
+    const ownTitleDiffType = tree.root!.diffs.typeLabelFieldDiffs?.title?.data.type
+    expect(ownTitleDiffType).toBeDefined()
+
+    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    expect(summary?.size).toBe(1)
+    expect(summary?.has(ownTitleDiffType!)).toBe(false)
+  })
+
+  it("does not exclude a descendant's own type diff from the ancestor's summary, but does exclude it from the descendant's own summary", () => {
+    const tree = buildTree(
+      { type: "object", properties: { prop0: { type: "string" } } },
+      { type: "object", properties: { prop0: { type: "number" } } },
+    )
+    const prop0 = tree.root!.childrenNodes().find((node) => node.key === "prop0")!
+    expect(isJsonSchemaTreeNodeWithDiffs(prop0)).toBe(true)
+
+    const prop0OwnTypeDiffType = prop0.diffs.typeLabelFieldDiffs?.type?.data.type
+    expect(prop0OwnTypeDiffType).toBeDefined()
+
+    const rootSummary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    expect(rootSummary?.has(prop0OwnTypeDiffType!)).toBe(true)
+
+    const prop0Summary = takeJsonSchemaNodeChangesSummary(prop0)
+    expect(prop0Summary).toBeUndefined()
+  })
+
+  it("scopes each combiner variant's summary independently, with no cross-variant leakage", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: {
+          value: {
+            oneOf: [
+              { type: "string" },
+              { type: "object", properties: { a: { type: "string" } } },
+            ],
+          },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          value: {
+            oneOf: [
+              { type: "string" },
+              { type: "object", properties: { a: { type: "string" }, b: { type: "string" } } },
+            ],
+          },
+        },
+      },
+    )
+
+    const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")!
+    const [stringVariant, objectVariant] = valueProperty.nestedNodes()
+
+    expect(takeJsonSchemaNodeChangesSummary(stringVariant)).toBeUndefined()
+    expect(takeJsonSchemaNodeChangesSummary(objectVariant)?.size).toBe(1)
   })
 })

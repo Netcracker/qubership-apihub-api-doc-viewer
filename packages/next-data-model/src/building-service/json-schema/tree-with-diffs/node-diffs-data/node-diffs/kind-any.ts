@@ -1,6 +1,7 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+import { takeAggregatedDiffs } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/aggregated-diff-types"
 import {
   ChangedPropertyKey,
   ChangedPropertyMetaData,
@@ -11,6 +12,7 @@ import {
   NODE_LEVEL_DIFF_KEY,
   NodeDescendantDiffs,
   NodeDiffs,
+  NodeDiffsSummary,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   JSON_SCHEMA_META_FLAG_DIFF_KEYS,
@@ -167,7 +169,6 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     crawlValue: object | boolean | null,
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     nodeDescendantDiffs: NodeDescendantDiffs,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     diffMetaKeys: DiffMetaKeys,
   ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     this.aggregateNestingIndicatorRowColorizingDiff(
@@ -175,7 +176,56 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       nodeDiffs as JsonSchemaKindAnyNodeDiffs,
       nodeDescendantDiffs,
     )
+    this.aggregateNodeChangesSummary(
+      crawlValue,
+      nodeDiffs as JsonSchemaKindAnyNodeDiffs,
+      diffMetaKeys,
+    )
     return nodeDiffs
+  }
+
+  /**
+   * "Node changes summary": the merged set of diff types found anywhere in this node's subtree
+   * (its own diffs plus every descendant's, recursively) - excluding this node's OWN `type`/
+   * `title`/`format` diffs (already conveyed by the always-visible type label, so redundant in a
+   * collapsed-node summary marker). A descendant's own type/title/format change is NOT excluded -
+   * collapsing hides that descendant's row entirely, so the summary is the only remaining signal.
+   *
+   * Reuses the document-level `aggregatedDiffsMetaKey` rollup (`takeAggregatedDiffs`) read off
+   * this node's OWN `crawlValue` - since JSON Schema's crawl rules map each data-model node 1:1
+   * onto the raw JSON fragment at that same path (properties/oneOf/anyOf/allOf/items entries),
+   * the rollup already correctly scopes to exactly this node's subtree, with no raw-level/
+   * model-level mapping needed (contrast AsyncAPI's channel/parameters case, where the mapping
+   * differs).
+   */
+  private aggregateNodeChangesSummary(
+    crawlValue: object | boolean | null,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+    diffMetaKeys: DiffMetaKeys,
+  ): void {
+    const ownTypeLabelDiffs = new Set<Diff<DiffType>>()
+    for (const fieldDiff of Object.values(nodeDiffs.typeLabelFieldDiffs ?? {})) {
+      if (fieldDiff?.data) {
+        ownTypeLabelDiffs.add(fieldDiff.data)
+      }
+    }
+
+    const summary: NodeDiffsSummary = new Set()
+    for (const diff of takeAggregatedDiffs(crawlValue, diffMetaKeys)) {
+      if (ownTypeLabelDiffs.has(diff)) {
+        continue
+      }
+      if (diff?.type) {
+        summary.add(diff.type)
+      }
+    }
+    // Only assign when non-empty: an always-present key (even with an empty Set) would make
+    // `Object.keys(node.diffs).length > 0` true for every node, breaking "changed only" filtering
+    // (`hasOwnChangeSignals` in changed-only/has-own-change-signals.ts treats any key on
+    // `node.diffs` as a change signal).
+    if (summary.size > 0) {
+      nodeDiffs.nodeChangesSummary = summary
+    }
   }
 
   /**
