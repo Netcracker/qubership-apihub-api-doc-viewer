@@ -1,6 +1,6 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { isDefined } from "@apihub/utils/common/checkers"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
+import { LayoutSide } from "../../types/internal/LayoutSide"
+import { isDefined } from "../../utils/common/checkers"
 import {
   resolvePlainColumnAdditionalInfoRowUsesAfterRowPrecededBy,
   resolvePlainColumnListLastRowFlags,

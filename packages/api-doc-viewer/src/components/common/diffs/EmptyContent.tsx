@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LevelIndicator } from '@apihub/components/shared-components/LevelIndicator'
+import { LevelIndicator } from '../../shared-components/LevelIndicator'
 import type { FC } from 'react'
 
 export type EmptyContentProps = {

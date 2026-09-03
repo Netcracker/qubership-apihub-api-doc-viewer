@@ -1,9 +1,9 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
 import {
   buildDdlTableTitleRowDiffProps,
   takeTableNodeDiffIfPresent,
-} from "@apihub/utils/ddlapi/node-level-diff"
-import { getDdlApiChildNodes, isColumnsNode, isIndexesNode } from "@apihub/utils/ddlapi/node-type-checkers"
+} from "../../utils/ddlapi/node-level-diff"
+import { getDdlApiChildNodes, isColumnsNode, isIndexesNode } from "../../utils/ddlapi/node-type-checkers"
 import {
   resolveTableSchemaNameSideDisplay,
   takeTableDescriptionDiff,
@@ -11,7 +11,7 @@ import {
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "../../types/internal/LayoutSide"
 import { FC, useCallback, useMemo } from "react"
 import { DETAILED_DISPLAY_MODE } from "../../types/DisplayMode"
 import { TextRow } from "../shared-components/TextRow/TextRow"

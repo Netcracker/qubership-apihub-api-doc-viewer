@@ -1,5 +1,5 @@
-import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableDiffsViewer";
-import { DisplayMode } from "@apihub/types/DisplayMode";
+import { DdlTableDiffsViewer } from "../../components/DdlTableViewer/DdlTableDiffsViewer";
+import { DisplayMode } from "../../types/DisplayMode";
 import { apiDiff } from "@netcracker/qubership-apihub-api-diff";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";

@@ -1,5 +1,5 @@
-import { JsoViewer } from '@apihub/components/JsoViewer/JsoViewer';
-import type { Meta, StoryObj } from '@storybook/react';
+import { JsoViewer } from '../components/JsoViewer/JsoViewer';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { parse } from 'yaml';
 import { ComponentProps } from 'react';
 

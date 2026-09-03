@@ -16,7 +16,7 @@
 
 import '../../index.css'
 
-import { CustomizationOptionsContext, CustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
+import { CustomizationOptionsContext, CustomizationOptions } from '../../contexts/CustomizationOptionsContext'
 import { createJsonSchemaTree, JsonSchemaTreeNode } from '@netcracker/qubership-apihub-api-data-model'
 import { JsonSchemaState } from '@netcracker/qubership-apihub-api-state-model'
 import { FC, useMemo } from 'react'

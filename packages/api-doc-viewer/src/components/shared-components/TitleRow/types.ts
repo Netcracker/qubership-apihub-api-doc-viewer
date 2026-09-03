@@ -1,4 +1,4 @@
-import type { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import type { LayoutSide } from "../../../types/internal/LayoutSide"
 import type {
   ChangedPropertyMetaData,
   DiffHighlightingApplicationMode, DiffHiglightingApplicationArea,

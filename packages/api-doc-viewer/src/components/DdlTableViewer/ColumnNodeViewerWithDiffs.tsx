@@ -1,13 +1,13 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
-import { takeDiffSideIsFontMuted } from "@apihub/utils/diffs/take-diff-side-is-font-muted"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
-import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "@apihub/utils/ddlapi/column-row-badges"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
+import { takeDiffSideBorderShadowColor } from "../../utils/diffs/take-diff-side-border-shadow-color"
+import { takeDiffSideIsFontMuted } from "../../utils/diffs/take-diff-side-is-font-muted"
+import { takeDiffSideTextHighlighterColor } from "../../utils/diffs/take-diff-side-text-highlighter-color"
+import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "../../utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
   takeNodeDiffIfPresent,
-} from "@apihub/utils/ddlapi/node-level-diff"
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+} from "../../utils/ddlapi/node-level-diff"
+import { LayoutSide } from "../../types/internal/LayoutSide"
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   isDdlPropertySubheaderVisible,
