@@ -1,7 +1,7 @@
 import { JsoPropertySamplesStoryObj } from './property-samples-common';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: import('./jso-diffs-utils').JsoCaseStoryComponentProps) => import("react/jsx-runtime").JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: import('./jso-diffs-utils').JsoCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

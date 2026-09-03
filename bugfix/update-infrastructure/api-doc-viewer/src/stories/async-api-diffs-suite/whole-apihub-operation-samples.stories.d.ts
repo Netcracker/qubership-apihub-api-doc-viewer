@@ -2,7 +2,7 @@ import { StoryObj } from '@storybook/react-vite';
 import { AsyncApiCaseStoryComponentProps } from './async-api-diffs-utils';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import("react/jsx-runtime").JSX.Element;
+    component: ({ beforeYaml, afterYaml, }: AsyncApiCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

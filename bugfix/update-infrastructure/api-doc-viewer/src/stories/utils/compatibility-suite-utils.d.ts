@@ -3,5 +3,5 @@ export type GraphQLCompatibilitySuiteStoryArgs = {
     before: string;
     after: string;
 };
-export declare function GraphQLStoryComponent({ before, after }: GraphQLCompatibilitySuiteStoryArgs): import("react/jsx-runtime").JSX.Element;
+export declare function GraphQLStoryComponent({ before, after }: GraphQLCompatibilitySuiteStoryArgs): import("react").JSX.Element;
 export declare function getGraphQLStoryArgs(suiteType: TestSpecType, suiteId: string, testId: string): GraphQLCompatibilitySuiteStoryArgs;
