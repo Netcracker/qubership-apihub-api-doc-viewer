@@ -1,5 +1,7 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
@@ -32,6 +34,7 @@ import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
 import { NestingIndicatorTypeLabelWithDiffs } from "./NestingIndicatorTypeLabelWithDiffs"
+import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
 import { SchemaNodeChildrenListWithDiffs } from "./SchemaNodeChildrenListWithDiffs"
 import { SchemaNodePlainContent } from "./SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "./SchemaNodeTitleRow"
@@ -145,6 +148,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     [nodeWithDiffs],
   )
 
+  const asyncLevel = useAsyncLevelContext()
+  const currentBeforeLevel = asyncLevel?.beforeLevel ?? level
+  const currentAfterLevel = asyncLevel?.afterLevel ?? level
+  const { beforeLevel: nextBeforeLevel, afterLevel: nextAfterLevel } = useMemo(
+    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, nestingIndicatorRowColorizingDiff),
+    [currentBeforeLevel, currentAfterLevel, nestingIndicatorRowColorizingDiff],
+  )
+
   return (
     <div
       data-testid="json-schema-node-viewer"
@@ -182,37 +193,39 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
           {!node.isCycle && children.length > 0 && (
             <LevelContext.Provider value={level + 1}>
-              <NestingIndicatorTitleRow
-                title={nestingIndicatorTitle}
-                usage={NestingIndicatorTitleRowUsage.JsonSchema}
-                lastInvisible
-                diff={nestingIndicatorRowColorizingDiff}
-                diffsSeverities={nodeWithDiffs?.diffsSeverities}
-                diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
-              />
-              {nodeWithDiffs && unchangedBlocksContext ? (
-                <SchemaNodeChildrenListWithDiffs
-                  children={children as JsonSchemaTreeNodeWithDiffs[]}
+              <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
+                <NestingIndicatorTitleRow
+                  title={nestingIndicatorTitle}
+                  usage={NestingIndicatorTitleRowUsage.JsonSchema}
+                  lastInvisible
+                  diff={nestingIndicatorRowColorizingDiff}
+                  diffsSeverities={nodeWithDiffs?.diffsSeverities}
+                  diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
                 />
-              ) : (
-                children.map((child, index) => (
-                  nodeWithDiffs ? (
-                    <JsonSchemaNodeViewerWithDiffs
-                      key={child.id}
-                      data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
-                      node={child as JsonSchemaTreeNodeWithDiffs}
-                      isLastInList={index === children.length - 1}
-                    />
-                  ) : (
-                    <JsonSchemaNodeViewer
-                      key={child.id}
-                      data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
-                      node={child}
-                      isLastInList={index === children.length - 1}
-                    />
-                  )
-                ))
-              )}
+                {nodeWithDiffs && unchangedBlocksContext ? (
+                  <SchemaNodeChildrenListWithDiffs
+                    children={children as JsonSchemaTreeNodeWithDiffs[]}
+                  />
+                ) : (
+                  children.map((child, index) => (
+                    nodeWithDiffs ? (
+                      <JsonSchemaNodeViewerWithDiffs
+                        key={child.id}
+                        data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
+                        node={child as JsonSchemaTreeNodeWithDiffs}
+                        isLastInList={index === children.length - 1}
+                      />
+                    ) : (
+                      <JsonSchemaNodeViewer
+                        key={child.id}
+                        data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
+                        node={child}
+                        isLastInList={index === children.length - 1}
+                      />
+                    )
+                  ))
+                )}
+              </AsyncLevelContextProvider>
             </LevelContext.Provider>
           )}
         </>

@@ -1,4 +1,4 @@
-import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
@@ -25,7 +25,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
   } = props
 
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRow } = props
-  const level = useLevelContext()
+  const level = useEffectiveLevel(layoutSide)
   const layout = useMemo(
     () => resolveAdditionalInfoRowLayout(usage, { xPaddingClass, bodyClass, minHeightClass }),
     [usage, xPaddingClass, bodyClass, minHeightClass],

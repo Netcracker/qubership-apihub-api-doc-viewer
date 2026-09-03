@@ -1,5 +1,6 @@
 import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
-import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
+import { applyLevelReduction } from "@apihub/contexts/AsyncLevelContext/applyLevelReduction"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
@@ -25,11 +26,16 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
     usage = NestingIndicatorTitleRowUsage.Default,
     lastInvisible = false,
     diff,
+    levelReductionAction,
   } = props
 
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
-  const level = useLevelContext()
+  const baseLevel = useEffectiveLevel(layoutSide)
+  const level = useMemo(
+    () => applyLevelReduction(baseLevel, layoutSide, levelReductionAction),
+    [baseLevel, layoutSide, levelReductionAction],
+  )
   const usageDrivenClasses = useMemo(() => getNestingIndicatorTitleRowClassesByUsage(usage), [usage])
 
   const diffsStyleClasses = useMemo(() => {
@@ -77,7 +83,7 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
       ].filter(Boolean).join(" ")}
     >
       <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
-        <LevelIndicator level={level} lastInvisible={lastInvisible} />
+        <LevelIndicator level={level} lastInvisible={lastInvisible && isLabelVisible} />
       </div>
       {isJsonSchemaUsage ? (
         <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">

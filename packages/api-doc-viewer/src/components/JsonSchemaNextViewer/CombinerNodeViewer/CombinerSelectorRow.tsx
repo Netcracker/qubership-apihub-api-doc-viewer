@@ -4,7 +4,8 @@ import { NestingIndicatorTitleRowContent } from "@apihub/components/shared-compo
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
 import { X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
+import { applyLevelReduction } from "@apihub/contexts/AsyncLevelContext/applyLevelReduction"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
@@ -15,6 +16,7 @@ import {
   NodeDiffsSeverityPlacemennt,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
+import { DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { memo, useMemo } from "react"
 import { DiffFloatingBadgeWrapper } from "../../shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { LevelIndicator } from "../../shared-components/LevelIndicator"
@@ -29,6 +31,7 @@ export type CombinerSelectorRowProps<N extends JsonSchemaTreeNode = JsonSchemaTr
   onSelectOption: (option: SelectorOption<N>) => void
   selectorRowDiff?: ChangedPropertyMetaData
   diffsSeverities?: NodeDiffsSeverities
+  levelReductionAction?: typeof DiffAction.add | typeof DiffAction.remove
 }
 
 type CombinerSelectorRowContentProps<N extends JsonSchemaTreeNode = JsonSchemaTreeNode> = CombinerSelectorRowProps<N> & {
@@ -55,9 +58,14 @@ const CombinerSelectorControlsRow = memo(<N extends JsonSchemaTreeNode>(props: C
     onSelectOption,
     selectorRowDiff,
     layoutSide,
+    levelReductionAction,
   } = props
 
-  const level = useLevelContext()
+  const baseLevel = useEffectiveLevel(layoutSide)
+  const level = useMemo(
+    () => applyLevelReduction(baseLevel, layoutSide, levelReductionAction),
+    [baseLevel, layoutSide, levelReductionAction],
+  )
   const rowBackgroundClass = useMemo(
     () => resolveRowBackgroundClass(selectorRowDiff, layoutSide),
     [layoutSide, selectorRowDiff],
@@ -104,6 +112,7 @@ const CombinerSelectorRowContent = memo(<N extends JsonSchemaTreeNode>(props: Co
           lastInvisible
           layoutSide={props.layoutSide}
           diff={selectorRowDiff}
+          levelReductionAction={props.levelReductionAction}
         />
       )}
       {showSelector && (

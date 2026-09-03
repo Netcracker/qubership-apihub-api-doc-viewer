@@ -42,6 +42,7 @@ import {
   VALUE_RANGE_UPPER_CHIP_DIFF_KEY,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import { formatJsonSchemaValidationRowChipDisplay } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
+import { isJsonSchemaPrimitiveValueType } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import {
@@ -192,7 +193,9 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   ): void {
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
-      nodeDiffs.nestingIndicatorRowColorizingDiff = this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
+      nodeDiffs.nestingIndicatorRowColorizingDiff = this.withNestingLevelFlags(
+        this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff),
+      )
       return
     }
 
@@ -202,7 +205,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         ...Object.values(typeLabelFieldDiffs),
       )
       if (representativeDiff) {
-        nodeDiffs.nestingIndicatorRowColorizingDiff = this.asReplaceRowColorizingDiff(representativeDiff)
+        nodeDiffs.nestingIndicatorRowColorizingDiff = {
+          ...this.asReplaceRowColorizingDiff(representativeDiff),
+          flags: this.resolveTypeLabelNestingLevelFlags(typeLabelFieldDiffs),
+        }
         return
       }
     }
@@ -235,7 +241,60 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       return
     }
 
-    nodeDiffs.nestingIndicatorRowColorizingDiff = this.buildChangedPropertyMetaDataFromDiff(firstDiff.data)
+    nodeDiffs.nestingIndicatorRowColorizingDiff = this.withNestingLevelFlags(
+      this.buildChangedPropertyMetaDataFromDiff(firstDiff.data),
+    )
+  }
+
+  /**
+   * Sets `flags.before/after.increaseLevel` on a nesting-indicator-row colorizing diff so the view
+   * layer can decide, per side, whether to increment nesting depth or stay flat when providing
+   * `AsyncLevelContext` to a node's children/nesting-indicator-row - mirrors JSO's
+   * `JsoNodeDiffsAggregatorKindAny` use of the same field for the same purpose. Add: content absent
+   * on origin -> freeze origin (`increaseLevel: false`), increment changed normally. Remove: mirror.
+   * Replace or anything else: increment both sides normally - today's default depth behaviour,
+   * unaffected. Not used for the type/format/title-replace branch - see
+   * {@link resolveTypeLabelNestingLevelFlags} for that one, which additionally accounts for a
+   * primitive<->complex `type` transition.
+   */
+  private withNestingLevelFlags(diff: ChangedPropertyMetaData): ChangedPropertyMetaData {
+    const { data } = diff
+    if (isDiffAdd(data)) {
+      return { ...diff, flags: { before: { increaseLevel: false }, after: { increaseLevel: true } } }
+    }
+    if (isDiffRemove(data)) {
+      return { ...diff, flags: { before: { increaseLevel: true }, after: { increaseLevel: false } } }
+    }
+    return { ...diff, flags: { before: { increaseLevel: true }, after: { increaseLevel: true } } }
+  }
+
+  /**
+   * `flags.before/after.increaseLevel` for the type/format/title-replace nesting-indicator branch.
+   * Normally both sides increment (a metadata-only rename never changes what children exist). But
+   * when the `type` keyword itself flips between a primitive (string/number/integer/boolean) and a
+   * complex type (object/array), the primitive side has no real children while the complex side's
+   * children only exist because of the type change - treat that exactly like Case 1's add/remove
+   * freeze: pin the primitive side, increment the complex side. A primitive<->primitive or
+   * complex<->complex change (e.g. object->array) leaves both sides incrementing normally, since
+   * both genuinely have their own nested content.
+   */
+  private resolveTypeLabelNestingLevelFlags(
+    typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs,
+  ): { before: { increaseLevel: boolean }; after: { increaseLevel: boolean } } {
+    const typeDiff = typeLabelFieldDiffs.type?.data
+    if (typeDiff && isDiffReplace(typeDiff)) {
+      const beforeType = typeof typeDiff.beforeValue === "string" ? typeDiff.beforeValue : undefined
+      const afterType = typeof typeDiff.afterValue === "string" ? typeDiff.afterValue : undefined
+      const beforeIsPrimitive = isJsonSchemaPrimitiveValueType(beforeType)
+      const afterIsPrimitive = isJsonSchemaPrimitiveValueType(afterType)
+      if (beforeIsPrimitive !== afterIsPrimitive) {
+        return {
+          before: { increaseLevel: !beforeIsPrimitive },
+          after: { increaseLevel: !afterIsPrimitive },
+        }
+      }
+    }
+    return { before: { increaseLevel: true }, after: { increaseLevel: true } }
   }
 
   /** Raw-source keys that become this node's visible `childrenNodes()` (not `nestedNodes()`). */

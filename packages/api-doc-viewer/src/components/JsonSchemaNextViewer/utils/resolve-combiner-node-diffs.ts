@@ -143,6 +143,68 @@ function isNestedNodeWhollyAddedOrRemoved(node: JsonSchemaTreeNodeWithDiffs): bo
   return !!nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))
 }
 
+/**
+ * Every `nestedNodes()` variant was uniformly added, or uniformly removed - without the owner
+ * itself being wholly added/removed (that case is covered separately by
+ * `isNestedNodeWhollyAddedOrRemoved(combinerNode)`, reused as-is for a combiner owner node in
+ * {@link resolveCombinerSelectorLevelReductionAction}). No existing next-data-model signal covers
+ * this (`takeJsonSchemaNestingIndicatorRowColorizingDiff` only inspects structural
+ * properties/items children, never `nestedNodes()`), so it's computed here, view-layer only.
+ */
+function resolveUniformNestedNodesAction(
+  combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
+): typeof DiffAction.add | typeof DiffAction.remove | undefined {
+  const nestedNodes = combinerNode.nestedNodes()
+  if (nestedNodes.length === 0) {
+    return undefined
+  }
+
+  let action: typeof DiffAction.add | typeof DiffAction.remove | undefined
+  for (const nestedNode of nestedNodes) {
+    if (!isJsonSchemaTreeNodeWithDiffs(nestedNode)) {
+      return undefined
+    }
+    const nestedDiff = nestedNode.diffs[NODE_LEVEL_DIFF_KEY]
+    const nestedAction = nestedDiff && isDiffAdd(nestedDiff.data)
+      ? DiffAction.add
+      : nestedDiff && isDiffRemove(nestedDiff.data)
+        ? DiffAction.remove
+        : undefined
+    if (!nestedAction) {
+      return undefined
+    }
+    if (!action) {
+      action = nestedAction
+      continue
+    }
+    if (action !== nestedAction) {
+      return undefined
+    }
+  }
+  return action
+}
+
+/**
+ * Level-reduction action for one `CombinerSelectorRow` instance (one `selectorLevels` entry,
+ * evaluated independently per level - so a nested combiner-in-combiner chain gets its own correct
+ * answer per level). `undefined` means no reduction: either nothing qualifies, or
+ * `CombinerNodeViewer`'s outer level-freeze wrap (case 1 applied to this same owner node, via
+ * `takeJsonSchemaNestingIndicatorRowColorizingDiff`) already pins the ambient level at the owner's
+ * own level, so an additional reduction here would go one level too low - hence the
+ * `isNestedNodeWhollyAddedOrRemoved` guard below.
+ */
+export function resolveCombinerSelectorLevelReductionAction(
+  combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
+): typeof DiffAction.add | typeof DiffAction.remove | undefined {
+  if (!isJsonSchemaTreeNodeWithDiffs(combinerNode)) {
+    return undefined
+  }
+  if (isNestedNodeWhollyAddedOrRemoved(combinerNode)) {
+    return undefined
+  }
+  return resolveUniformNestedNodesAction(combinerNode)
+}
+
 function nestedNodeHasDiffSignals(node: JsonSchemaTreeNodeWithDiffs): boolean {
   if (node.diffsSummary.size > 0) {
     return true

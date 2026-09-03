@@ -816,6 +816,8 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     expect(rowDiff?.styles.before.isContentVisible).toBe(false)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
 
     const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
     expect(severity?.type).toBe(rowDiff?.data.type)
@@ -836,6 +838,8 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     expect(rowDiff?.styles.before.isContentVisible).toBe(true)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
 
     const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
     expect(severity?.type).toBe(rowDiff?.data.type)
@@ -861,9 +865,31 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(prop1Node!)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
 
     const severity = prop1Node!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
     expect(severity?.type).toBe(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.type)
+  })
+
+  it("does not freeze either side's level for a type/format/title replace (row stays yellow, both sides keep incrementing)", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: { prop0: { type: "string" } },
+      },
+      {
+        type: "object",
+        title: "Renamed object",
+        properties: { prop0: { type: "string" } },
+      },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
   })
 
   it("leaves the row uncolored when a node was itself neither added/removed nor its children uniformly changed", () => {
@@ -952,6 +978,12 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       const typeSegment = originDisplay.segments.find((segment) => segment.text === "array")
       expect(typeSegment?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     }
+
+    // Complex (array) origin keeps incrementing; primitive (string) changed side freezes -
+    // its children are inherited-add "ghosts" that should pin at the parent's own level.
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
   })
 
   it("shows the correct origin-side type and hides the primitive changed side (027-object-to-number)", () => {
@@ -962,6 +994,55 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
     expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
     expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
+  })
+
+  it("freezes the primitive changed side for a root-level primitive<->complex change (004-string-to-array)", () => {
+    const tree = buildTreeFromFixture("004-string-to-array")
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
+  })
+
+  it("freezes the primitive changed side for a root-level primitive<->complex change (026-object-to-string)", () => {
+    const tree = buildTreeFromFixture("026-object-to-string")
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("string")
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
+  })
+
+  it("freezes the primitive side for a non-root property's primitive<->complex change too", () => {
+    const tree = buildTree(
+      { type: "object", properties: { foo: { type: "string" } } },
+      {
+        type: "object",
+        properties: {
+          foo: { type: "object", properties: { bar: { type: "string" } } },
+        },
+      },
+    )
+    const fooNode = tree.root!.childrenNodes().find((node) => node.key === "foo")!
+    expect(isJsonSchemaTreeNodeWithDiffs(fooNode)).toBe(true)
+
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(fooNode!)
+    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
   })
 
   it("keeps both sides visible with yellow highlighting and colors the row for a complex-to-complex change (030-object-to-array)", () => {
@@ -987,6 +1068,9 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     expect(rowDiff?.data.action).toBe(DiffAction.replace)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    // Complex<->complex change: both sides have their own real children, neither freezes.
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
 
     const severity = root.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
     expect(severity?.type).toBe(rowDiff?.data.type)

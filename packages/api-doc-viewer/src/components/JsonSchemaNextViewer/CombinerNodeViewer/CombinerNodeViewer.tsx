@@ -14,6 +14,8 @@ import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next
 import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
@@ -38,7 +40,9 @@ import {
 import {
   buildCombinerSelectorOption,
   buildCombinerSelectorRowPresentation,
+  resolveCombinerSelectorLevelReductionAction,
 } from "../utils/resolve-combiner-node-diffs"
+import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
@@ -183,6 +187,23 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     [activeLeafWithDiffs],
   )
 
+  const asyncLevel = useAsyncLevelContext()
+  const currentBeforeLevel = asyncLevel?.beforeLevel ?? level
+  const currentAfterLevel = asyncLevel?.afterLevel ?? level
+
+  const ownerNestingIndicatorRowColorizingDiff = useMemo(
+    () => nodeWithDiffs ? takeJsonSchemaNestingIndicatorRowColorizingDiff(nodeWithDiffs) : undefined,
+    [nodeWithDiffs],
+  )
+  const { beforeLevel: selectorBeforeLevel, afterLevel: selectorAfterLevel } = useMemo(
+    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, ownerNestingIndicatorRowColorizingDiff),
+    [currentBeforeLevel, currentAfterLevel, ownerNestingIndicatorRowColorizingDiff],
+  )
+  const { beforeLevel: leafBeforeLevel, afterLevel: leafAfterLevel } = useMemo(
+    () => resolveNextLevelPair(selectorBeforeLevel, selectorAfterLevel, nestingIndicatorRowColorizingDiff),
+    [selectorBeforeLevel, selectorAfterLevel, nestingIndicatorRowColorizingDiff],
+  )
+
   const onSelectOption = useCallback((
     combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
     option: SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs>,
@@ -243,57 +264,61 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
       />
 
       <LevelContext.Provider value={level + 1}>
-        {selectorLevels.map((selectorLevel) => {
-          const options = selectorLevel.nestedNodes.map((nestedNode, index) => (
-            buildCombinerSelectorOption(nestedNode, index)
-          ))
+        <AsyncLevelContextProvider beforeLevel={selectorBeforeLevel} afterLevel={selectorAfterLevel}>
+          {selectorLevels.map((selectorLevel) => {
+            const options = selectorLevel.nestedNodes.map((nestedNode, index) => (
+              buildCombinerSelectorOption(nestedNode, index)
+            ))
 
-          const selectedOption = options.find(
-            (option) => option.node.id === selectorLevel.selectedNestedNode.id,
-          ) ?? options[0] ?? null
+            const selectedOption = options.find(
+              (option) => option.node.id === selectorLevel.selectedNestedNode.id,
+            ) ?? options[0] ?? null
 
-          const selectorRowPresentation = buildCombinerSelectorRowPresentation(selectorLevel.combinerNode)
+            const selectorRowPresentation = buildCombinerSelectorRowPresentation(selectorLevel.combinerNode)
+            const levelReductionAction = resolveCombinerSelectorLevelReductionAction(selectorLevel.combinerNode)
 
-          return (
-            <CombinerSelectorRow
-              key={selectorLevel.combinerNode.id}
-              combinerKindLabel={selectorLevel.combinerKindLabel}
-              showSelector={selectorLevel.showSelector}
-              options={options}
-              selectedOption={selectedOption}
-              onSelectOption={(option) => onSelectOption(selectorLevel.combinerNode, option)}
-              selectorRowDiff={selectorRowPresentation.selectorRowDiff}
-              diffsSeverities={selectorRowPresentation.diffsSeverities}
-            />
-          )
-        })}
-
-        {showLeafChildren && (
-          <>
-            <NestingIndicatorTitleRow
-              title={propertyNestingIndicatorTitle}
-              usage={NestingIndicatorTitleRowUsage.JsonSchema}
-              lastInvisible
-              diff={nestingIndicatorRowColorizingDiff}
-              diffsSeverities={activeLeafWithDiffs?.diffsSeverities}
-              diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
-            />
-            {useHideUnchangedLeafChildren ? (
-              <SchemaNodeChildrenListWithDiffs
-                children={leafChildren as JsonSchemaTreeNodeWithDiffs[]}
+            return (
+              <CombinerSelectorRow
+                key={selectorLevel.combinerNode.id}
+                combinerKindLabel={selectorLevel.combinerKindLabel}
+                showSelector={selectorLevel.showSelector}
+                options={options}
+                selectedOption={selectedOption}
+                onSelectOption={(option) => onSelectOption(selectorLevel.combinerNode, option)}
+                selectorRowDiff={selectorRowPresentation.selectorRowDiff}
+                diffsSeverities={selectorRowPresentation.diffsSeverities}
+                levelReductionAction={levelReductionAction}
               />
-            ) : (
-              leafChildren.map((child, index) => (
-                <ChildNodeViewer
-                  key={child.id}
-                  data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
-                  node={child as never}
-                  isLastInList={index === leafChildren.length - 1}
+            )
+          })}
+
+          {showLeafChildren && (
+            <AsyncLevelContextProvider beforeLevel={leafBeforeLevel} afterLevel={leafAfterLevel}>
+              <NestingIndicatorTitleRow
+                title={propertyNestingIndicatorTitle}
+                usage={NestingIndicatorTitleRowUsage.JsonSchema}
+                lastInvisible
+                diff={nestingIndicatorRowColorizingDiff}
+                diffsSeverities={activeLeafWithDiffs?.diffsSeverities}
+                diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
+              />
+              {useHideUnchangedLeafChildren ? (
+                <SchemaNodeChildrenListWithDiffs
+                  children={leafChildren as JsonSchemaTreeNodeWithDiffs[]}
                 />
-              ))
-            )}
-          </>
-        )}
+              ) : (
+                leafChildren.map((child, index) => (
+                  <ChildNodeViewer
+                    key={child.id}
+                    data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
+                    node={child as never}
+                    isLastInList={index === leafChildren.length - 1}
+                  />
+                ))
+              )}
+            </AsyncLevelContextProvider>
+          )}
+        </AsyncLevelContextProvider>
       </LevelContext.Provider>
     </div>
   )

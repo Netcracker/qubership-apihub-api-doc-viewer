@@ -1,5 +1,5 @@
 import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
-import { useLevelContext } from "@apihub/contexts/LevelContext"
+import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDdlPropertyRowContentVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
@@ -55,7 +55,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
 
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
-  const level = useLevelContext()
+  const level = useEffectiveLevel(layoutSide)
   const isDdlApiPropertyRow = usage === TextRowUsage.DdlApiProperty
   const showsLevelIndentForUsage = isDdlApiPropertyRow || usage === TextRowUsage.JsonSchemaDescription
   const isSideContentVisible = useMemo(
