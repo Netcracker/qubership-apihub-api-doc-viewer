@@ -1,1 +1,0 @@
-import{t as e}from"./rolldown-runtime-DkW27tQK.js";import*as t from"react-dom";var n=e(((e,n)=>{n.exports={...t}})),r=e((e=>{var t=n();e.createRoot=t.createRoot,e.hydrateRoot=t.hydrateRoot}));export{r as t};
