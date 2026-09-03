@@ -1,4 +1,13 @@
+import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, apiDiff } from "@netcracker/qubership-apihub-api-diff"
+import fs from "fs"
+import path from "path"
+import yaml from "yaml"
 import { JsonSchemaTreeBuilder } from "../../src/building-service/json-schema/tree/builder"
+import {
+  resolvePlainPropertyInitiallyExpanded,
+  resolvePlainPropertyIsExpandable,
+} from "../../src/building-service/json-schema/tree/node-visibility-data/kind-property"
+import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { TreeNodeComplexityTypes } from "../../src/model/abstract/tree/tree-node.interface"
 import { jsonSchemaHasOwnChildren } from "../../src/shared/json-schema/has-own-children"
@@ -90,6 +99,44 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(childNode).toBeDefined()
     expect(childNode!.key).toBe("child")
     expect(childNode!.isCycle).toBe(true)
+  })
+
+  it("lets a cycle two hops deep expand: the isCycle clone shares its matched ancestor's children array and is expandable but starts collapsed", () => {
+    // Mirrors the real circular sample shape (root wraps a property that $refs a self-referencing
+    // schema): the FIRST "child" is a real, non-cyclic materialization (own children: label,
+    // child); the SECOND "child" (nested one hop deeper) re-resolves the same raw schema object
+    // and becomes the isCycle clone - sharing the first child's `_childrenNodes` array by
+    // reference (per `createCycledClone`), not lazily re-materialized.
+    const selfObject: { type: string; properties: Record<string, unknown> } = {
+      type: "object",
+      properties: {
+        label: { type: "string" },
+      },
+    }
+    selfObject.properties.child = selfObject
+
+    const rootSchema = {
+      type: "object",
+      properties: {
+        child: selfObject,
+      },
+    }
+
+    const tree = new JsonSchemaTreeBuilder({ source: rootSchema }).build()
+    const firstChild = tree.root!.childrenNodes().find((node: any) => node.key === "child")!
+
+    expect(firstChild).toBeDefined()
+    expect(firstChild.isCycle).toBe(false)
+    expect(firstChild.childrenNodes().map((node: any) => node.key)).toEqual(["label", "child"])
+
+    const secondChild = firstChild.childrenNodes().find((node: any) => node.key === "child")!
+    expect(secondChild).toBeDefined()
+    expect(secondChild.isCycle).toBe(true)
+    // Same array reference, not merely equal content - proves the shared-reference mechanism.
+    expect(secondChild.childrenNodes()).toBe(firstChild.childrenNodes())
+
+    expect(resolvePlainPropertyIsExpandable(secondChild)).toBe(true)
+    expect(resolvePlainPropertyInitiallyExpanded(secondChild, { expandedDepth: 10, level: 0 })).toBe(false)
   })
 
   it("creates complex nodes for combiner schemas", () => {
@@ -292,5 +339,104 @@ describe("JsonSchemaTreeBuilder", () => {
     expect(additionalPropertiesNode).toBeDefined()
     expect(additionalPropertiesNode!.value()).toEqual({ type: "any" })
     expect(additionalPropertiesNode!.meta()?._fragment).toBe(true)
+  })
+})
+
+describe("JsonSchemaTreeBuilder circular combiner variants (with diffs)", () => {
+  simplifyConsole()
+
+  const DIFF_META_KEYS = {
+    diffsMetaKey: DIFF_META_KEY,
+    aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY,
+  }
+
+  function buildTreeFromCircularFixture(fixtureDirName: string) {
+    const fixtureDir = path.resolve(
+      __dirname,
+      `../../../samples/json-schema-diffs/type-changes/circular/${fixtureDirName}`,
+    )
+    const before = yaml.parse(fs.readFileSync(path.join(fixtureDir, "before.yaml"), "utf8"))
+    const after = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
+
+    const beforeDocument = {
+      openapi: "3.0.0",
+      info: { title: "Test", version: "1.0.0" },
+      paths: {},
+      components: {
+        schemas: {
+          __Substitution__: before.beforeSchema,
+          ...(before.beforeAdditionalComponents?.schemas ?? {}),
+        },
+      },
+    }
+    const afterDocument = {
+      openapi: "3.0.0",
+      info: { title: "Test", version: "1.0.0" },
+      paths: {},
+      components: {
+        schemas: {
+          __Substitution__: after.afterSchema,
+          ...(after.afterAdditionalComponents?.schemas ?? {}),
+        },
+      },
+    }
+
+    const result = apiDiff(beforeDocument, afterDocument, {
+      beforeSource: beforeDocument,
+      afterSource: afterDocument,
+      metaKey: DIFF_META_KEY,
+    }) as { merged: { components: { schemas: { __Substitution__: object } } } }
+    const merged = result.merged.components.schemas.__Substitution__
+
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  function findFirstCyclicNode(node: any, visited = new Set<unknown>()): any {
+    if (visited.has(node)) {
+      return undefined
+    }
+    visited.add(node)
+    if (node.isCycle) {
+      return node
+    }
+    for (const child of node.childrenNodes()) {
+      const found = findFirstCyclicNode(child, visited)
+      if (found) {
+        return found
+      }
+    }
+    for (const nested of node.nestedNodes()) {
+      const found = findFirstCyclicNode(nested, visited)
+      if (found) {
+        return found
+      }
+    }
+    return undefined
+  }
+
+  it("gives a cyclic combiner variant a populated, non-empty childrenNodes() (010-combiner-variant-cycle-description-updated)", () => {
+    const tree = buildTreeFromCircularFixture("010-combiner-variant-cycle-description-updated")
+
+    const valueProperty = tree.root!.childrenNodes().find((node: any) => node.key === "value")!
+    expect(valueProperty).toBeDefined()
+    expect(valueProperty.isCycle).toBe(false)
+    expect(valueProperty.nestedNodes().length).toBeGreaterThan(0)
+
+    // The cycle is detected one hop deeper than the combiner-owner property: it's the recurring
+    // object *variant* (`oneOf` branch, not the `value`/`nested` property wrapping it) whose raw
+    // fragment identity repeats - matching how `createCycledClone` shares `_childrenNodes` with
+    // whichever ancestor node holds that same fragment.
+    const cyclicNode = findFirstCyclicNode(tree.root!)
+    expect(cyclicNode).toBeDefined()
+    expect(cyclicNode.kind).toBe(JsonSchemaTreeNodeKinds.ONE_OF)
+
+    // Shared-reference mechanism: the cyclic clone's own childrenNodes() is already populated
+    // (same array reference as the ancestor object-variant node it matched), not lazily deferred.
+    expect(cyclicNode.childrenNodes().length).toBeGreaterThan(0)
+    const nestedProperty = cyclicNode.childrenNodes().find((node: any) => node.key === "nested")
+    expect(nestedProperty).toBeDefined()
   })
 })

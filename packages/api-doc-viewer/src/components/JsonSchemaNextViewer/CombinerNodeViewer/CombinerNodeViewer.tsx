@@ -122,12 +122,15 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
   )
 
   const expandable = useMemo(
-    () => !node.isCycle && leafChildren.length > 0,
-    [leafChildren.length, node.isCycle],
+    () => leafChildren.length > 0,
+    [leafChildren.length],
   )
 
   const initiallyExpanded = useMemo(
     () => {
+      if (node.isCycle) {
+        return false
+      }
       if (leafChildren.length === 0) {
         return false
       }
@@ -141,6 +144,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
       return resolvePlainPropertyInitiallyExpanded(activeLeaf, { expandedDepth, level })
     },
     [
+      node.isCycle,
       activeLeaf,
       activeLeafWithDiffs,
       unchangedBlocksContext?.hideUnchangedNodes,
@@ -216,11 +220,11 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     ))
   }, [node])
 
-  if (node.isCycle || nestedNodes.length === 0) {
+  if (nestedNodes.length === 0) {
     return null
   }
 
-  const showLeafChildren = expanded && !activeLeaf.isCycle && leafChildren.length > 0
+  const showLeafChildren = expanded && leafChildren.length > 0
   const useHideUnchangedLeafChildren = Boolean(nodeWithDiffs && unchangedBlocksContext)
   const ChildNodeViewer = nodeWithDiffs
     ? JsonSchemaNodeViewerWithDiffs

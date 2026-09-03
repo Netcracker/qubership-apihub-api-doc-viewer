@@ -191,7 +191,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
             isLastInList={isLastInList && children.length === 0}
           />
 
-          {!node.isCycle && children.length > 0 && (
+          {children.length > 0 && (
             <LevelContext.Provider value={level + 1}>
               <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
                 <NestingIndicatorTitleRow

@@ -103,9 +103,6 @@ export class PlainPropertyNodeVisibilityManager {
   }
 
   public resolveIsExpandable(node: JsonSchemaTreeNode): boolean {
-    if (node.isCycle) {
-      return false
-    }
     if (node.childrenNodes().length > 0) {
       return true
     }
