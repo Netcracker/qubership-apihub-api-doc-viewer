@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-string-validation-value-length-samples";
+const META_ID = "json-schema-diffs-suite-string-validation-value-length";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/String Validation Value Length Samples", () => {
+describe("JSON Schema Diffs Suite/String Validation Value Length", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,112 +25,112 @@ describe("JSON Schema Diffs Suite/String Validation Value Length Samples", () =>
   });
 
   it("001-min-length-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-001-min-length-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-001-min-length-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-min-length-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-002-min-length-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-002-min-length-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-min-length-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-003-min-length-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-003-min-length-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-max-length-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-004-max-length-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-004-max-length-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-max-length-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-005-max-length-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-005-max-length-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-max-length-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-006-max-length-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-006-max-length-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-min-max-length-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-007-min-max-length-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-007-min-max-length-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-min-max-length-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-008-min-max-length-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-008-min-max-length-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-min-length-added-max-length-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-009-min-length-added-max-length-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-009-min-length-added-max-length-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-min-length-removed-max-length-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-010-min-length-removed-max-length-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-010-min-length-removed-max-length-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-both-lengths-replace-min", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-011-both-lengths-replace-min`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-011-both-lengths-replace-min`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-both-lengths-replace-max", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-012-both-lengths-replace-max`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-012-both-lengths-replace-max`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-both-lengths-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-013-both-lengths-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-013-both-lengths-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-unchanged-min-length", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-014-unchanged-min-length`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-014-unchanged-min-length`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-unchanged-max-length", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-015-unchanged-max-length`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-015-unchanged-max-length`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-unchanged-min-max-length", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length-samples--case-016-unchanged-min-max-length`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-value-length--case-016-unchanged-min-max-length`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

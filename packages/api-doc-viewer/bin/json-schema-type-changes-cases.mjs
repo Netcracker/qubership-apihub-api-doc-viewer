@@ -1,4 +1,4 @@
-/** @typedef {{ sampleDir: string, caseId: string, before: object, after: object, summary: string }} TypeChangeCase */
+/** @typedef {{ sampleDir: string, caseId: string, before: object, after: object, summary: string, displayName?: string }} TypeChangeCase */
 
 const clone = (value) => structuredClone(value);
 
@@ -84,17 +84,21 @@ const dirCounters = {};
  * @param {object} before
  * @param {object} after
  * @param {string} summary
+ * @param {string} [displayNameTag] human-readable tag rendered as "Case NNN - <tag>" in Storybook;
+ *   when omitted, the story falls back to the default auto-derived display name
  */
-const pushCase = (cases, sampleDir, slug, before, after, summary) => {
+const pushCase = (cases, sampleDir, slug, before, after, summary, displayNameTag) => {
   dirCounters[sampleDir] = (dirCounters[sampleDir] ?? 0) + 1;
   const index = dirCounters[sampleDir];
   const width = 3;
+  const paddedIndex = String(index).padStart(width, "0");
   cases.push({
     sampleDir,
-    caseId: `${String(index).padStart(width, "0")}-${slug}`,
+    caseId: `${paddedIndex}-${slug}`,
     before,
     after,
     summary,
+    displayName: displayNameTag ? `Case ${paddedIndex} - ${displayNameTag}` : undefined,
   });
 };
 
@@ -1261,8 +1265,9 @@ const buildOneOfArrayVariantRoot = (variantSchema, includeOneOfProp = true) => {
  * @param {object} before
  * @param {object} after
  * @param {string} summary
+ * @param {string} [displayNameTag]
  */
-const pushRule1Case = (cases, sampleDir, slug, schemaType, before, after, summary) => {
+const pushRule1Case = (cases, sampleDir, slug, schemaType, before, after, summary, displayNameTag) => {
   pushCase(
     cases,
     sampleDir,
@@ -1270,6 +1275,7 @@ const pushRule1Case = (cases, sampleDir, slug, schemaType, before, after, summar
     before,
     after,
     `${summary} (${schemaType})`,
+    displayNameTag,
   );
 };
 
@@ -1528,6 +1534,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithOneProp),
       buildOneOfObjectVariantRoot(buildRule1ObjectWithProperties(["prop0", "prop1"], schemaType)),
       "Object variant with 1 property: add 1 property",
+      `[Object Variant] - Added 1 property with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1537,6 +1544,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
       buildOneOfObjectVariantRoot(objectVariantWithOneProp),
       "Object variant with 2 properties: remove 1 property",
+      `[Object Variant] - Removed 1 property with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1546,6 +1554,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantEmpty),
       buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
       "Object variant with 0 properties: add 2 properties",
+      `[Object Variant] - Added 2 properties with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1555,6 +1564,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithTwoProps),
       buildOneOfObjectVariantRoot(objectVariantEmpty),
       "Object variant with 2 properties: remove 2 properties",
+      `[Object Variant] - Removed 2 properties with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1564,6 +1574,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(undefined),
       buildOneOfObjectVariantRoot(objectVariantWithOneProp),
       "Added object oneOf variant",
+      `[Object Variant] - Added, property = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1573,6 +1584,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithOneProp),
       buildOneOfObjectVariantRoot(undefined),
       "Removed object oneOf variant",
+      `[Object Variant] - Removed, property = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1582,6 +1594,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithOneProp, false),
       buildOneOfObjectVariantRoot(objectVariantWithOneProp, true),
       "Added oneOf property on root",
+      `[Whole OneOf] - Added with Object Variant, property = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1591,6 +1604,7 @@ const collectOneOfObjectVariantCases = (cases) => {
       buildOneOfObjectVariantRoot(objectVariantWithOneProp, true),
       buildOneOfObjectVariantRoot(objectVariantWithOneProp, false),
       "Removed oneOf property from root",
+      `[Whole OneOf] - Removed with Object Variant, property = ${schemaType}`,
     );
   }
 };
@@ -1612,6 +1626,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
       buildOneOfArrayVariantRoot(buildRule1TupleArray(2, schemaType)),
       "Array variant with 1 indexed item: add 1 indexed item",
+      `[Array Variant] - Added 1 indexed item with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1621,6 +1636,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
       "Array variant with 2 indexed items: remove 1 indexed item",
+      `[Array Variant] - Removed 1 indexed item with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1630,6 +1646,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(buildRule1EmptyTupleArray(schemaType)),
       buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
       "Array variant with no indexed items: add 2 indexed items",
+      `[Array Variant] - Added 2 indexed items with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1639,6 +1656,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithTwoItems),
       buildOneOfArrayVariantRoot(arrayVariantWithoutIndexedItems),
       "Array variant with 2 indexed items: remove 2 indexed items",
+      `[Array Variant] - Removed 2 indexed items with type = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1648,6 +1666,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(undefined),
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
       "Added array oneOf variant",
+      `[Array Variant] - Added, items = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1657,6 +1676,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem),
       buildOneOfArrayVariantRoot(undefined),
       "Removed array oneOf variant",
+      `[Array Variant] - Removed, items = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1666,6 +1686,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem, false),
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem, true),
       "Added oneOf property on root",
+      `[Whole OneOf] - Added with Array Variant, items = ${schemaType}`,
     );
     pushRule1Case(
       cases,
@@ -1675,6 +1696,7 @@ const collectOneOfArrayVariantCases = (cases) => {
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem, true),
       buildOneOfArrayVariantRoot(arrayVariantWithOneItem, false),
       "Removed oneOf property from root",
+      `[Whole OneOf] - Removed with Array Variant, items = ${schemaType}`,
     );
   }
 };
@@ -1892,96 +1914,96 @@ const collectTypeAnnotationsChangeCases = (cases) => {
 export const STORY_SUITES = [
   {
     suiteKey: "type-flags",
-    title: "JSON Schema Diffs Suite/Type Flags Samples",
-    metaKebab: "json-schema-diffs-suite-type-flags-samples",
+    title: "JSON Schema Diffs Suite/Type Flags",
+    metaKebab: "json-schema-diffs-suite-type-flags",
     globPath: "type-flags",
     storyFileName: "type-flags.stories.tsx",
     testFileName: "type-flags.it-test.ts",
   },
   {
     suiteKey: "description-changes",
-    title: "JSON Schema Diffs Suite/Description Changes Samples",
-    metaKebab: "json-schema-diffs-suite-description-changes-samples",
+    title: "JSON Schema Diffs Suite/Description Changes",
+    metaKebab: "json-schema-diffs-suite-description-changes",
     globPath: "description-changes",
     storyFileName: "description-changes.stories.tsx",
     testFileName: "description-changes.it-test.ts",
   },
   {
     suiteKey: "string-validation-enum",
-    title: "JSON Schema Diffs Suite/String Validation Enum Samples",
-    metaKebab: "json-schema-diffs-suite-string-validation-enum-samples",
+    title: "JSON Schema Diffs Suite/String Validation Enum",
+    metaKebab: "json-schema-diffs-suite-string-validation-enum",
     globPath: "string-validation/enum",
     storyFileName: "string-validation-enum.stories.tsx",
     testFileName: "string-validation-enum.it-test.ts",
   },
   {
     suiteKey: "string-validation-examples",
-    title: "JSON Schema Diffs Suite/String Validation Examples Samples",
-    metaKebab: "json-schema-diffs-suite-string-validation-examples-samples",
+    title: "JSON Schema Diffs Suite/String Validation Examples",
+    metaKebab: "json-schema-diffs-suite-string-validation-examples",
     globPath: "string-validation/examples",
     storyFileName: "string-validation-examples.stories.tsx",
     testFileName: "string-validation-examples.it-test.ts",
   },
   {
     suiteKey: "string-validation-value-length",
-    title: "JSON Schema Diffs Suite/String Validation Value Length Samples",
-    metaKebab: "json-schema-diffs-suite-string-validation-value-length-samples",
+    title: "JSON Schema Diffs Suite/String Validation Value Length",
+    metaKebab: "json-schema-diffs-suite-string-validation-value-length",
     globPath: "string-validation/value-length",
     storyFileName: "string-validation-value-length.stories.tsx",
     testFileName: "string-validation-value-length.it-test.ts",
   },
   {
     suiteKey: "extended-default",
-    title: "JSON Schema Diffs Suite/Extended Default Samples",
-    metaKebab: "json-schema-diffs-suite-extended-default-samples",
+    title: "JSON Schema Diffs Suite/Extended Default",
+    metaKebab: "json-schema-diffs-suite-extended-default",
     globPath: "extended/default",
     storyFileName: "extended-default.stories.tsx",
     testFileName: "extended-default.it-test.ts",
   },
   {
     suiteKey: "extended-object",
-    title: "JSON Schema Diffs Suite/Extended Object Samples",
-    metaKebab: "json-schema-diffs-suite-extended-object-samples",
+    title: "JSON Schema Diffs Suite/Extended Object",
+    metaKebab: "json-schema-diffs-suite-extended-object",
     globPath: "extended/object",
     storyFileName: "extended-object.stories.tsx",
     testFileName: "extended-object.it-test.ts",
   },
   {
     suiteKey: "extended-array",
-    title: "JSON Schema Diffs Suite/Extended Array Samples",
-    metaKebab: "json-schema-diffs-suite-extended-array-samples",
+    title: "JSON Schema Diffs Suite/Extended Array",
+    metaKebab: "json-schema-diffs-suite-extended-array",
     globPath: "extended/array",
     storyFileName: "extended-array.stories.tsx",
     testFileName: "extended-array.it-test.ts",
   },
   {
     suiteKey: "extended-misc",
-    title: "JSON Schema Diffs Suite/Extended Misc Samples",
-    metaKebab: "json-schema-diffs-suite-extended-misc-samples",
+    title: "JSON Schema Diffs Suite/Extended Misc",
+    metaKebab: "json-schema-diffs-suite-extended-misc",
     globPath: "extended/misc",
     storyFileName: "extended-misc.stories.tsx",
     testFileName: "extended-misc.it-test.ts",
   },
   {
     suiteKey: "extended-combiners-one-level",
-    title: "JSON Schema Diffs Suite/Extended Combiners One Level Samples",
-    metaKebab: "json-schema-diffs-suite-extended-combiners-one-level-samples",
+    title: "JSON Schema Diffs Suite/Extended Combiners One Level",
+    metaKebab: "json-schema-diffs-suite-extended-combiners-one-level",
     globPath: "extended/combiners-one-level",
     storyFileName: "extended-combiners-one-level.stories.tsx",
     testFileName: "extended-combiners-one-level.it-test.ts",
   },
   {
     suiteKey: "extended-combiners-two-level",
-    title: "JSON Schema Diffs Suite/Extended Combiners Two Level Samples",
-    metaKebab: "json-schema-diffs-suite-extended-combiners-two-level-samples",
+    title: "JSON Schema Diffs Suite/Extended Combiners Two Level",
+    metaKebab: "json-schema-diffs-suite-extended-combiners-two-level",
     globPath: "extended/combiners-two-level",
     storyFileName: "extended-combiners-two-level.stories.tsx",
     testFileName: "extended-combiners-two-level.it-test.ts",
   },
   {
     suiteKey: "circular",
-    title: "JSON Schema Diffs Suite/Circular Samples",
-    metaKebab: "json-schema-diffs-suite-circular-samples",
+    title: "JSON Schema Diffs Suite/Circular",
+    metaKebab: "json-schema-diffs-suite-circular",
     globPath: "circular",
     storyFileName: "circular.stories.tsx",
     testFileName: "circular.it-test.ts",
@@ -1989,16 +2011,16 @@ export const STORY_SUITES = [
   },
   {
     suiteKey: "type-value-changes",
-    title: "JSON Schema Diffs Suite/Type Value Changes Samples",
-    metaKebab: "json-schema-diffs-suite-type-value-changes-samples",
+    title: "JSON Schema Diffs Suite/Type Value Changes",
+    metaKebab: "json-schema-diffs-suite-type-value-changes",
     globPath: "type-value-changes",
     storyFileName: "type-value-changes.stories.tsx",
     testFileName: "type-value-changes.it-test.ts",
   },
   {
     suiteKey: "type-annotations-changes",
-    title: "JSON Schema Diffs Suite/Type Annotations Changes Samples",
-    metaKebab: "json-schema-diffs-suite-type-annotations-changes-samples",
+    title: "JSON Schema Diffs Suite/Type Annotations Changes",
+    metaKebab: "json-schema-diffs-suite-type-annotations-changes",
     globPath: "type-annotations-changes",
     storyFileName: "type-annotations-changes.stories.tsx",
     testFileName: "type-annotations-changes.it-test.ts",
@@ -2006,32 +2028,32 @@ export const STORY_SUITES = [
   },
   {
     suiteKey: "object-properties",
-    title: "JSON Schema Diffs Suite/Object Properties Samples",
-    metaKebab: "json-schema-diffs-suite-object-properties-samples",
+    title: "JSON Schema Diffs Suite/Object Properties",
+    metaKebab: "json-schema-diffs-suite-object-properties",
     globPath: "object-properties",
     storyFileName: "object-properties.stories.tsx",
     testFileName: "object-properties.it-test.ts",
   },
   {
     suiteKey: "array-indexed-items",
-    title: "JSON Schema Diffs Suite/Array Indexed Items Samples",
-    metaKebab: "json-schema-diffs-suite-array-indexed-items-samples",
+    title: "JSON Schema Diffs Suite/Array Indexed Items",
+    metaKebab: "json-schema-diffs-suite-array-indexed-items",
     globPath: "array-indexed-items",
     storyFileName: "array-indexed-items.stories.tsx",
     testFileName: "array-indexed-items.it-test.ts",
   },
   {
     suiteKey: "one-of-object-variant",
-    title: "JSON Schema Diffs Suite/OneOf Object Variant Samples",
-    metaKebab: "json-schema-diffs-suite-oneof-object-variant-samples",
+    title: "JSON Schema Diffs Suite/OneOf Object Variant",
+    metaKebab: "json-schema-diffs-suite-oneof-object-variant",
     globPath: "one-of-object-variant",
     storyFileName: "one-of-object-variant.stories.tsx",
     testFileName: "one-of-object-variant.it-test.ts",
   },
   {
     suiteKey: "one-of-array-variant",
-    title: "JSON Schema Diffs Suite/OneOf Array Variant Samples",
-    metaKebab: "json-schema-diffs-suite-oneof-array-variant-samples",
+    title: "JSON Schema Diffs Suite/OneOf Array Variant",
+    metaKebab: "json-schema-diffs-suite-oneof-array-variant",
     globPath: "one-of-array-variant",
     storyFileName: "one-of-array-variant.stories.tsx",
     testFileName: "one-of-array-variant.it-test.ts",

@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-extended-default-samples";
+const META_ID = "json-schema-diffs-suite-extended-default";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Extended Default Samples", () => {
+describe("JSON Schema Diffs Suite/Extended Default", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,28 +25,28 @@ describe("JSON Schema Diffs Suite/Extended Default Samples", () => {
   });
 
   it("001-default-added-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-default-samples--case-001-default-added-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-default--case-001-default-added-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-default-removed-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-default-samples--case-002-default-removed-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-default--case-002-default-removed-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-default-replaced-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-default-samples--case-003-default-replaced-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-default--case-003-default-replaced-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-default-replaced-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-default-samples--case-004-default-replaced-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-default--case-004-default-replaced-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

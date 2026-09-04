@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-description-changes-samples";
+const META_ID = "json-schema-diffs-suite-description-changes";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Description Changes Samples", () => {
+describe("JSON Schema Diffs Suite/Description Changes", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,56 +25,56 @@ describe("JSON Schema Diffs Suite/Description Changes Samples", () => {
   });
 
   it("001-description-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-001-description-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-001-description-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-description-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-002-description-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-002-description-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-description-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-003-description-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-003-description-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-description-with-enum-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-004-description-with-enum-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-004-description-with-enum-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-description-with-enum-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-005-description-with-enum-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-005-description-with-enum-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-description-with-enum-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-006-description-with-enum-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-006-description-with-enum-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-unchanged-description-short", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-007-unchanged-description-short`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-007-unchanged-description-short`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-unchanged-description-long", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-description-changes-samples--case-008-unchanged-description-long`);
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-008-unchanged-description-long`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

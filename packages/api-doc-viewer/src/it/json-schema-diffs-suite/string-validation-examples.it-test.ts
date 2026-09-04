@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-string-validation-examples-samples";
+const META_ID = "json-schema-diffs-suite-string-validation-examples";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/String Validation Examples Samples", () => {
+describe("JSON Schema Diffs Suite/String Validation Examples", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,35 +25,35 @@ describe("JSON Schema Diffs Suite/String Validation Examples Samples", () => {
   });
 
   it("001-examples-two-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples-samples--case-001-examples-two-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples--case-001-examples-two-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-examples-two-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples-samples--case-002-examples-two-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples--case-002-examples-two-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-examples-one-appended", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples-samples--case-003-examples-one-appended`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples--case-003-examples-one-appended`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-examples-one-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples-samples--case-004-examples-one-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples--case-004-examples-one-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-examples-two-unchanged", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples-samples--case-005-examples-two-unchanged`);
+    story = await storyPage(page, `json-schema-diffs-suite-string-validation-examples--case-005-examples-two-unchanged`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

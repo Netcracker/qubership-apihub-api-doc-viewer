@@ -9,7 +9,7 @@ JSON Schema documents.
 
 ## Sub-suites
 
-### Type Flags Samples
+### Type Flags
 
 Path: `type-changes/type-flags/` (13 cases)
 
@@ -29,7 +29,7 @@ Path: `type-changes/type-flags/` (13 cases)
 | `012-unchanged-required-field` | Unchanged required property |
 | `013-unchanged-required-optional` | Unchanged optional property |
 
-### Description Changes Samples
+### Description Changes
 
 Path: `type-changes/description-changes/` (8 cases)
 
@@ -44,7 +44,7 @@ Path: `type-changes/description-changes/` (8 cases)
 | `007-unchanged-description-short` | Unchanged short description |
 | `008-unchanged-description-long` | Unchanged long description (>600 chars) |
 
-### String Validation Enum Samples
+### String Validation Enum
 
 Path: `type-changes/string-validation/enum/` (5 cases)
 
@@ -56,7 +56,7 @@ Path: `type-changes/string-validation/enum/` (5 cases)
 | `004-enum-value-removed` | Removed one enum value from existing 3 values |
 | `005-enum-two-values-unchanged` | Unchanged enum with 2 values |
 
-### String Validation Examples Samples
+### String Validation Examples
 
 Path: `type-changes/string-validation/examples/` (5 cases)
 
@@ -68,7 +68,7 @@ Path: `type-changes/string-validation/examples/` (5 cases)
 | `004-examples-one-removed` | Removed one example from existing 3 values |
 | `005-examples-two-unchanged` | Unchanged 2 examples |
 
-### String Validation Value Length Samples
+### String Validation Value Length
 
 Path: `type-changes/string-validation/value-length/` (16 cases)
 
@@ -91,7 +91,7 @@ Path: `type-changes/string-validation/value-length/` (16 cases)
 | `015-unchanged-max-length` | Unchanged maxLength only |
 | `016-unchanged-min-max-length` | Unchanged minLength, maxLength |
 
-### Extended Default Samples
+### Extended Default
 
 Path: `type-changes/extended/default/` (4 cases)
 
@@ -102,7 +102,7 @@ Path: `type-changes/extended/default/` (4 cases)
 | `003-default-replaced-string` | Replaced default (string) |
 | `004-default-replaced-boolean` | Replaced default (boolean) |
 
-### Extended Object Samples
+### Extended Object
 
 Path: `type-changes/extended/object/` (9 cases)
 
@@ -118,7 +118,7 @@ Path: `type-changes/extended/object/` (9 cases)
 | `008-property-count-bounds-removed` | minProperties and maxProperties removed |
 | `009-property-count-bounds-replaced` | minProperties and maxProperties replaced |
 
-### Extended Array Samples
+### Extended Array
 
 Path: `type-changes/extended/array/` (9 cases)
 
@@ -134,7 +134,7 @@ Path: `type-changes/extended/array/` (9 cases)
 | `008-unique-items-added` | uniqueItems added |
 | `009-unique-items-removed` | uniqueItems removed |
 
-### Extended Misc Samples
+### Extended Misc
 
 Path: `type-changes/extended/misc/` (6 cases)
 
@@ -147,7 +147,7 @@ Path: `type-changes/extended/misc/` (6 cases)
 | `005-multiple-of-removed` | multipleOf removed |
 | `006-multiple-of-replaced` | multipleOf replaced |
 
-### Extended Combiners One Level Samples
+### Extended Combiners One Level
 
 Path: `type-changes/extended/combiners-one-level/` (11 cases)
 
@@ -165,7 +165,7 @@ Path: `type-changes/extended/combiners-one-level/` (11 cases)
 | `010-append-variant-nested-combiner` | Append nested combiner variant |
 | `011-remove-variant-nested-combiner` | Remove nested combiner variant |
 
-### Extended Combiners Two Level Samples
+### Extended Combiners Two Level
 
 Path: `type-changes/extended/combiners-two-level/` (11 cases)
 
@@ -183,7 +183,7 @@ Path: `type-changes/extended/combiners-two-level/` (11 cases)
 | `010-two-level-append-variant-nested-combiner` | Append nested combiner variant |
 | `011-two-level-remove-variant-nested-combiner` | Remove nested combiner variant |
 
-### Circular Samples
+### Circular
 
 Path: `type-changes/circular/` (12 cases)
 
@@ -202,7 +202,7 @@ Path: `type-changes/circular/` (12 cases)
 | `011-combiner-variant-cycle-cycle-removed` | Combiner variant cycle: cyclic link removed |
 | `012-combiner-variant-cycle-cycle-added` | Combiner variant cycle: cyclic link added |
 
-### Type Value Changes Samples
+### Type Value Changes
 
 Path: `type-changes/type-value-changes/` (30 cases)
 
@@ -239,7 +239,7 @@ Path: `type-changes/type-value-changes/` (30 cases)
 | `029-object-to-boolean` | Root type change: object → boolean |
 | `030-object-to-array` | Root type change: object → array |
 
-### Type Annotations Changes Samples
+### Type Annotations Changes
 
 Path: `type-changes/type-annotations-changes/` (18 cases)
 
@@ -264,7 +264,7 @@ Path: `type-changes/type-annotations-changes/` (18 cases)
 | `017-type-title-replaced` | Type and title replaced; format unchanged |
 | `018-type-format-replaced` | Type and format replaced; title unchanged |
 
-### Object Properties Samples
+### Object Properties
 
 Path: `type-changes/object-properties/` (108 cases)
 
@@ -379,7 +379,7 @@ Path: `type-changes/object-properties/` (108 cases)
 | `107-one-of-variant2-change-additional-properties-rule1-to-false-object` | OneOf variant: changed additionalProperties: Rule1 schema → false (object) |
 | `108-one-of-variant2-change-additional-properties-false-to-rule1-object` | OneOf variant: changed additionalProperties: false → Rule1 schema (object) |
 
-### Array Indexed Items Samples
+### Array Indexed Items
 
 Path: `type-changes/array-indexed-items/` (24 cases)
 
@@ -410,7 +410,7 @@ Path: `type-changes/array-indexed-items/` (24 cases)
 | `023-add-two-indexed-items-object` | Array with no indexed items: add 2 indexed items (object) |
 | `024-remove-two-indexed-items-object` | Array with 2 indexed items: remove 2 indexed items (object) |
 
-### OneOf Object Variant Samples
+### OneOf Object Variant
 
 Path: `type-changes/one-of-object-variant/` (48 cases)
 
@@ -465,7 +465,7 @@ Path: `type-changes/one-of-object-variant/` (48 cases)
 | `047-one-of-prop-added-object` | Added oneOf property on root (object) |
 | `048-one-of-prop-removed-object` | Removed oneOf property from root (object) |
 
-### OneOf Array Variant Samples
+### OneOf Array Variant
 
 Path: `type-changes/one-of-array-variant/` (48 cases)
 

@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-type-flags-samples";
+const META_ID = "json-schema-diffs-suite-type-flags";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Type Flags Samples", () => {
+describe("JSON Schema Diffs Suite/Type Flags", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,91 +25,91 @@ describe("JSON Schema Diffs Suite/Type Flags Samples", () => {
   });
 
   it("001-read-only-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-001-read-only-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-001-read-only-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-read-only-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-002-read-only-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-002-read-only-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-write-only-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-003-write-only-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-003-write-only-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-write-only-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-004-write-only-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-004-write-only-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-deprecated-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-005-deprecated-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-005-deprecated-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-deprecated-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-006-deprecated-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-006-deprecated-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-required-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-007-required-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-007-required-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-required-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-008-required-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-008-required-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-unchanged-read-only", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-009-unchanged-read-only`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-009-unchanged-read-only`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-unchanged-write-only", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-010-unchanged-write-only`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-010-unchanged-write-only`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-unchanged-deprecated", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-011-unchanged-deprecated`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-011-unchanged-deprecated`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-unchanged-required-field", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-012-unchanged-required-field`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-012-unchanged-required-field`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-unchanged-required-optional", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-flags-samples--case-013-unchanged-required-optional`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-flags--case-013-unchanged-required-optional`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

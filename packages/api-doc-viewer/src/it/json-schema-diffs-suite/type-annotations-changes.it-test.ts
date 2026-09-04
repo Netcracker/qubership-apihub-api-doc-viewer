@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-type-annotations-changes-samples";
+const META_ID = "json-schema-diffs-suite-type-annotations-changes";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Type Annotations Changes Samples", () => {
+describe("JSON Schema Diffs Suite/Type Annotations Changes", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,126 +25,126 @@ describe("JSON Schema Diffs Suite/Type Annotations Changes Samples", () => {
   });
 
   it("001-title-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-001-title-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-001-title-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-title-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-002-title-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-002-title-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-title-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-003-title-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-003-title-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-format-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-004-format-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-004-format-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-format-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-005-format-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-005-format-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-006-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-006-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-title-added-format-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-007-title-added-format-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-007-title-added-format-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-title-added-format-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-008-title-added-format-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-008-title-added-format-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-title-added-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-009-title-added-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-009-title-added-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-title-removed-format-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-010-title-removed-format-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-010-title-removed-format-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-title-removed-format-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-011-title-removed-format-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-011-title-removed-format-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-title-removed-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-012-title-removed-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-012-title-removed-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-title-replaced-format-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-013-title-replaced-format-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-013-title-replaced-format-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-title-replaced-format-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-014-title-replaced-format-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-014-title-replaced-format-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-title-replaced-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-015-title-replaced-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-015-title-replaced-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-monolithic-type-title-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-016-monolithic-type-title-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-016-monolithic-type-title-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-type-title-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-017-type-title-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-017-type-title-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-type-format-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes-samples--case-018-type-format-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-annotations-changes--case-018-type-format-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

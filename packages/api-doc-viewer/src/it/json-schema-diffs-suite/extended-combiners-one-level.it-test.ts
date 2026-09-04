@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-extended-combiners-one-level-samples";
+const META_ID = "json-schema-diffs-suite-extended-combiners-one-level";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Extended Combiners One Level Samples", () => {
+describe("JSON Schema Diffs Suite/Extended Combiners One Level", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,77 +25,77 @@ describe("JSON Schema Diffs Suite/Extended Combiners One Level Samples", () => {
   });
 
   it("001-append-variant-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-001-append-variant-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-001-append-variant-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-append-variant-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-002-append-variant-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-002-append-variant-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-append-variant-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-003-append-variant-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-003-append-variant-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-remove-variant-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-004-remove-variant-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-004-remove-variant-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-remove-variant-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-005-remove-variant-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-005-remove-variant-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-remove-variant-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-006-remove-variant-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-006-remove-variant-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-change-variant-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-007-change-variant-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-007-change-variant-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-change-variant-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-008-change-variant-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-008-change-variant-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-change-variant-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-009-change-variant-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-009-change-variant-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-append-variant-nested-combiner", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-010-append-variant-nested-combiner`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-010-append-variant-nested-combiner`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-remove-variant-nested-combiner", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level-samples--case-011-remove-variant-nested-combiner`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-combiners-one-level--case-011-remove-variant-nested-combiner`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

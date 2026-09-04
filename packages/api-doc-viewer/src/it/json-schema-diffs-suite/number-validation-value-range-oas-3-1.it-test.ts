@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples";
+const META_ID = "json-schema-diffs-suite-number-validation-value-range-oas-3-1";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1 Samples", () => {
+describe("JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,399 +25,399 @@ describe("JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1 Samples"
   });
 
   it("001-minimum-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-001-minimum-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-001-minimum-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-minimum-added-with-exclusive-minimum-true", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-002-minimum-added-with-exclusive-minimum-true`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-002-minimum-added-with-exclusive-minimum-true`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-minimum-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-003-minimum-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-003-minimum-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-minimum-with-exclusive-minimum-true-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-004-minimum-with-exclusive-minimum-true-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-004-minimum-with-exclusive-minimum-true-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-exclusive-minimum-false-to-true", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-005-exclusive-minimum-false-to-true`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-005-exclusive-minimum-false-to-true`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-exclusive-minimum-true-to-false", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-006-exclusive-minimum-true-to-false`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-006-exclusive-minimum-true-to-false`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-maximum-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-007-maximum-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-007-maximum-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-maximum-added-with-exclusive-maximum-true", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-008-maximum-added-with-exclusive-maximum-true`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-008-maximum-added-with-exclusive-maximum-true`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-maximum-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-009-maximum-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-009-maximum-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-maximum-with-exclusive-maximum-true-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-010-maximum-with-exclusive-maximum-true-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-010-maximum-with-exclusive-maximum-true-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-exclusive-maximum-false-to-true", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-011-exclusive-maximum-false-to-true`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-011-exclusive-maximum-false-to-true`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-exclusive-maximum-true-to-false", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-012-exclusive-maximum-true-to-false`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-012-exclusive-maximum-true-to-false`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-minimum-maximum-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-013-minimum-maximum-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-013-minimum-maximum-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-minimum-inclusive-maximum-exclusive-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-014-minimum-inclusive-maximum-exclusive-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-014-minimum-inclusive-maximum-exclusive-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-minimum-exclusive-maximum-inclusive-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-015-minimum-exclusive-maximum-inclusive-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-015-minimum-exclusive-maximum-inclusive-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-minimum-maximum-both-exclusive-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-016-minimum-maximum-both-exclusive-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-016-minimum-maximum-both-exclusive-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-minimum-maximum-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-017-minimum-maximum-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-017-minimum-maximum-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-minimum-inclusive-maximum-exclusive-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-018-minimum-inclusive-maximum-exclusive-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-018-minimum-inclusive-maximum-exclusive-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-minimum-exclusive-maximum-inclusive-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-019-minimum-exclusive-maximum-inclusive-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-019-minimum-exclusive-maximum-inclusive-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-minimum-maximum-both-exclusive-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-020-minimum-maximum-both-exclusive-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-020-minimum-maximum-both-exclusive-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-min-ex-max-in-min-ex-to-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-021-min-ex-max-in-min-ex-to-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-021-min-ex-max-in-min-ex-to-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("022-min-ex-max-in-max-in-to-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-022-min-ex-max-in-max-in-to-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-022-min-ex-max-in-max-in-to-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("023-min-in-max-ex-min-in-to-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-023-min-in-max-ex-min-in-to-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-023-min-in-max-ex-min-in-to-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("024-min-in-max-ex-max-ex-to-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-024-min-in-max-ex-max-ex-to-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-024-min-in-max-ex-max-ex-to-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("025-min-in-max-in-min-in-to-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-025-min-in-max-in-min-in-to-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-025-min-in-max-in-min-in-to-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("026-min-in-max-in-max-in-to-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-026-min-in-max-in-max-in-to-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-026-min-in-max-in-max-in-to-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("027-min-in-max-in-both-to-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-027-min-in-max-in-both-to-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-027-min-in-max-in-both-to-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("028-min-ex-max-ex-min-ex-to-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-028-min-ex-max-ex-min-ex-to-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-028-min-ex-max-ex-min-ex-to-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("029-min-ex-max-ex-max-ex-to-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-029-min-ex-max-ex-max-ex-to-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-029-min-ex-max-ex-max-ex-to-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("030-min-ex-max-ex-both-to-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-030-min-ex-max-ex-both-to-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-030-min-ex-max-ex-both-to-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("031-unchanged-minimum-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-031-unchanged-minimum-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-031-unchanged-minimum-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("032-unchanged-minimum-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-032-unchanged-minimum-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-032-unchanged-minimum-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("033-unchanged-maximum-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-033-unchanged-maximum-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-033-unchanged-maximum-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("034-unchanged-maximum-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-034-unchanged-maximum-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-034-unchanged-maximum-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("035-unchanged-min-max-inclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-035-unchanged-min-max-inclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-035-unchanged-min-max-inclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("036-unchanged-min-inclusive-max-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-036-unchanged-min-inclusive-max-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-036-unchanged-min-inclusive-max-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("037-unchanged-min-max-both-exclusive", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-037-unchanged-min-max-both-exclusive`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-037-unchanged-min-max-both-exclusive`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("038-min-in-add-max-in", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-038-min-in-add-max-in`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-038-min-in-add-max-in`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("039-min-in-add-max-ex", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-039-min-in-add-max-ex`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-039-min-in-add-max-ex`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("040-min-ex-add-max-in", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-040-min-ex-add-max-in`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-040-min-ex-add-max-in`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("041-min-ex-add-max-ex", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-041-min-ex-add-max-ex`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-041-min-ex-add-max-ex`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("042-max-in-add-min-in", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-042-max-in-add-min-in`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-042-max-in-add-min-in`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("043-max-in-add-min-ex", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-043-max-in-add-min-ex`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-043-max-in-add-min-ex`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("044-max-ex-add-min-in", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-044-max-ex-add-min-in`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-044-max-ex-add-min-in`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("045-max-ex-add-min-ex", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-045-max-ex-add-min-ex`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-045-max-ex-add-min-ex`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("046-min-in-max-in-remove-minimum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-046-min-in-max-in-remove-minimum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-046-min-in-max-in-remove-minimum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("047-min-in-max-in-remove-maximum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-047-min-in-max-in-remove-maximum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-047-min-in-max-in-remove-maximum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("048-min-ex-max-ex-remove-minimum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-048-min-ex-max-ex-remove-minimum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-048-min-ex-max-ex-remove-minimum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("049-min-ex-max-ex-remove-maximum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-049-min-ex-max-ex-remove-maximum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-049-min-ex-max-ex-remove-maximum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("050-min-in-max-ex-remove-minimum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-050-min-in-max-ex-remove-minimum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-050-min-in-max-ex-remove-minimum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("051-min-in-max-ex-remove-maximum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-051-min-in-max-ex-remove-maximum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-051-min-in-max-ex-remove-maximum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("052-min-ex-max-in-remove-minimum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-052-min-ex-max-in-remove-minimum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-052-min-ex-max-in-remove-minimum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("053-min-ex-max-in-remove-maximum", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-053-min-ex-max-in-remove-maximum`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-053-min-ex-max-in-remove-maximum`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("054-exclusive-minimum-numeric-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-054-exclusive-minimum-numeric-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-054-exclusive-minimum-numeric-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("055-exclusive-minimum-numeric-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-055-exclusive-minimum-numeric-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-055-exclusive-minimum-numeric-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("056-exclusive-maximum-numeric-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-056-exclusive-maximum-numeric-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-056-exclusive-maximum-numeric-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("057-exclusive-maximum-numeric-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples--case-057-exclusive-maximum-numeric-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-number-validation-value-range-oas-3-1--case-057-exclusive-maximum-numeric-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

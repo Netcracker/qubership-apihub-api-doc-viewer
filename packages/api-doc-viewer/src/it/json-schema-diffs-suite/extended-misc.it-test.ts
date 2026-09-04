@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-extended-misc-samples";
+const META_ID = "json-schema-diffs-suite-extended-misc";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Extended Misc Samples", () => {
+describe("JSON Schema Diffs Suite/Extended Misc", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,42 +25,42 @@ describe("JSON Schema Diffs Suite/Extended Misc Samples", () => {
   });
 
   it("001-pattern-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-001-pattern-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-001-pattern-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-pattern-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-002-pattern-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-002-pattern-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-pattern-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-003-pattern-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-003-pattern-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-multiple-of-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-004-multiple-of-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-004-multiple-of-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-multiple-of-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-005-multiple-of-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-005-multiple-of-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-multiple-of-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-misc-samples--case-006-multiple-of-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-extended-misc--case-006-multiple-of-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

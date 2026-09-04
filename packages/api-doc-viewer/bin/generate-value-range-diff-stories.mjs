@@ -15,8 +15,8 @@ const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 const VALUE_RANGE_STORY_SUITES = [
   {
     suiteKey: "number-validation-value-range",
-    title: "JSON Schema Diffs Suite/Number Validation Value Range Samples",
-    metaKebab: "json-schema-diffs-suite-number-validation-value-range-samples",
+    title: "JSON Schema Diffs Suite/Number Validation Value Range",
+    metaKebab: "json-schema-diffs-suite-number-validation-value-range",
     storyFileName: "number-validation-value-range.stories.tsx",
     testFileName: "number-validation-value-range.it-test.ts",
     diffUtilsModule: "./json-schema-diffs-utils",
@@ -26,8 +26,8 @@ const VALUE_RANGE_STORY_SUITES = [
   },
   {
     suiteKey: "number-validation-value-range-oas-3-1",
-    title: "JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1 Samples",
-    metaKebab: "json-schema-diffs-suite-number-validation-value-range-oas-3-1-samples",
+    title: "JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1",
+    metaKebab: "json-schema-diffs-suite-number-validation-value-range-oas-3-1",
     storyFileName: "number-validation-value-range-oas-3-1.stories.tsx",
     testFileName: "number-validation-value-range-oas-3-1.it-test.ts",
     diffUtilsModule: "./json-schema-diffs-oas-3-1-utils",

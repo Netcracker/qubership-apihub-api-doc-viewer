@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-circular-samples";
+const META_ID = "json-schema-diffs-suite-circular";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Circular Samples", () => {
+describe("JSON Schema Diffs Suite/Circular", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,84 +25,84 @@ describe("JSON Schema Diffs Suite/Circular Samples", () => {
   });
 
   it("001-self-object-description-updated", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-001-self-object-description-updated`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-001-self-object-description-updated`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-self-object-cycle-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-002-self-object-cycle-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-002-self-object-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-self-object-cycle-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-003-self-object-cycle-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-003-self-object-cycle-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-self-array-description-updated", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-004-self-array-description-updated`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-004-self-array-description-updated`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-self-array-cycle-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-005-self-array-cycle-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-005-self-array-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-self-array-cycle-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-006-self-array-cycle-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-006-self-array-cycle-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-chain-three-hop-description-updated", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-007-chain-three-hop-description-updated`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-007-chain-three-hop-description-updated`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-chain-three-hop-cycle-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-008-chain-three-hop-cycle-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-008-chain-three-hop-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-chain-three-hop-cycle-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-009-chain-three-hop-cycle-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-009-chain-three-hop-cycle-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-combiner-variant-cycle-description-updated", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-010-combiner-variant-cycle-description-updated`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-010-combiner-variant-cycle-description-updated`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-combiner-variant-cycle-cycle-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-011-combiner-variant-cycle-cycle-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-011-combiner-variant-cycle-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-combiner-variant-cycle-cycle-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-circular-samples--case-012-combiner-variant-cycle-cycle-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-circular--case-012-combiner-variant-cycle-cycle-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
