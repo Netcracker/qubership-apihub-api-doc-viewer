@@ -14,33 +14,33 @@ const SUITES = [
   {
     suiteId: "column-constraints",
     title: "DDL API Suite/Column Constraints",
-    storyFileName: "column-constraints-samples.stories.tsx",
+    storyFileName: "column-constraints.stories.tsx",
   },
   {
     suiteId: "column-types",
     title: "DDL API Suite/Column Types",
-    storyFileName: "column-types-samples.stories.tsx",
+    storyFileName: "column-types.stories.tsx",
   },
   {
     suiteId: "indexes",
     title: "DDL API Suite/Indexes",
-    storyFileName: "indexes-samples.stories.tsx",
+    storyFileName: "indexes.stories.tsx",
   },
   {
     suiteId: "escaping-spec-chars",
     title: "DDL API Suite/Escaping Spec Chars",
-    storyFileName: "escaping-spec-chars-samples.stories.tsx",
+    storyFileName: "escaping-spec-chars.stories.tsx",
   },
   {
     suiteId: "display-mode-simple",
     title: "DDL API Suite/Display Mode Simple",
-    storyFileName: "display-mode-simple-samples.stories.tsx",
+    storyFileName: "display-mode-simple.stories.tsx",
     displayMode: "simple",
   },
   {
     suiteId: "table-descriptions",
     title: "DDL API Suite/Table Descriptions",
-    storyFileName: "table-descriptions-samples.stories.tsx",
+    storyFileName: "table-descriptions.stories.tsx",
   },
 ];
 
