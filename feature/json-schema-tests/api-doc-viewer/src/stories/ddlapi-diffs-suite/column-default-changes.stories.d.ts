@@ -106,6 +106,3 @@ export declare const Case_323_replace_default_varchar: Story;
 export declare const Case_124_add_default_enum: Story;
 export declare const Case_224_remove_default_enum: Story;
 export declare const Case_324_replace_default_enum: Story;
-export declare const Case_125_add_default_varchar_raw_expr: Story;
-export declare const Case_225_remove_default_varchar_raw_expr: Story;
-export declare const Case_325_replace_default_varchar_raw_expr: Story;
