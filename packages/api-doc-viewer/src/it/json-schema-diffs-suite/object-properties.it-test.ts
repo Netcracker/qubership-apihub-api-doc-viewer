@@ -192,589 +192,85 @@ describe("JSON Schema Diffs Suite/Object Properties", () => {
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("025-add-additional-properties-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-025-add-additional-properties-rule-1-string`);
+  it("025-one-of-variant2-added-string", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-025-one-of-variant-2-added-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("026-remove-additional-properties-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-026-remove-additional-properties-rule-1-string`);
+  it("026-one-of-variant2-removed-string", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-026-one-of-variant-2-removed-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("027-add-additional-properties-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-027-add-additional-properties-false-string`);
+  it("027-one-of-variant2-added-number", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-027-one-of-variant-2-added-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("028-remove-additional-properties-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-028-remove-additional-properties-false-string`);
+  it("028-one-of-variant2-removed-number", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-028-one-of-variant-2-removed-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("029-change-additional-properties-rule1-to-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-029-change-additional-properties-rule-1-to-false-string`);
+  it("029-one-of-variant2-added-integer", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-029-one-of-variant-2-added-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("030-change-additional-properties-false-to-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-030-change-additional-properties-false-to-rule-1-string`);
+  it("030-one-of-variant2-removed-integer", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-030-one-of-variant-2-removed-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("031-add-additional-properties-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-031-add-additional-properties-rule-1-number`);
+  it("031-one-of-variant2-added-boolean", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-031-one-of-variant-2-added-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("032-remove-additional-properties-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-032-remove-additional-properties-rule-1-number`);
+  it("032-one-of-variant2-removed-boolean", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-032-one-of-variant-2-removed-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("033-add-additional-properties-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-033-add-additional-properties-false-number`);
+  it("033-one-of-variant2-added-array", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-033-one-of-variant-2-added-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("034-remove-additional-properties-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-034-remove-additional-properties-false-number`);
+  it("034-one-of-variant2-removed-array", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-034-one-of-variant-2-removed-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("035-change-additional-properties-rule1-to-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-035-change-additional-properties-rule-1-to-false-number`);
+  it("035-one-of-variant2-added-object", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-035-one-of-variant-2-added-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
-  it("036-change-additional-properties-false-to-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-036-change-additional-properties-false-to-rule-1-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("037-add-additional-properties-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-037-add-additional-properties-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("038-remove-additional-properties-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-038-remove-additional-properties-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("039-add-additional-properties-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-039-add-additional-properties-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("040-remove-additional-properties-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-040-remove-additional-properties-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("041-change-additional-properties-rule1-to-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-041-change-additional-properties-rule-1-to-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("042-change-additional-properties-false-to-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-042-change-additional-properties-false-to-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("043-add-additional-properties-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-043-add-additional-properties-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("044-remove-additional-properties-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-044-remove-additional-properties-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("045-add-additional-properties-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-045-add-additional-properties-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("046-remove-additional-properties-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-046-remove-additional-properties-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("047-change-additional-properties-rule1-to-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-047-change-additional-properties-rule-1-to-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("048-change-additional-properties-false-to-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-048-change-additional-properties-false-to-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("049-add-additional-properties-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-049-add-additional-properties-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("050-remove-additional-properties-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-050-remove-additional-properties-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("051-add-additional-properties-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-051-add-additional-properties-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("052-remove-additional-properties-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-052-remove-additional-properties-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("053-change-additional-properties-rule1-to-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-053-change-additional-properties-rule-1-to-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("054-change-additional-properties-false-to-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-054-change-additional-properties-false-to-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("055-add-additional-properties-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-055-add-additional-properties-rule-1-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("056-remove-additional-properties-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-056-remove-additional-properties-rule-1-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("057-add-additional-properties-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-057-add-additional-properties-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("058-remove-additional-properties-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-058-remove-additional-properties-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("059-change-additional-properties-rule1-to-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-059-change-additional-properties-rule-1-to-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("060-change-additional-properties-false-to-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-060-change-additional-properties-false-to-rule-1-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("061-one-of-variant2-added-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-061-one-of-variant-2-added-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("062-one-of-variant2-removed-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-062-one-of-variant-2-removed-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("063-one-of-variant2-add-additional-properties-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-063-one-of-variant-2-add-additional-properties-rule-1-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("064-one-of-variant2-remove-additional-properties-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-064-one-of-variant-2-remove-additional-properties-rule-1-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("065-one-of-variant2-add-additional-properties-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-065-one-of-variant-2-add-additional-properties-false-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("066-one-of-variant2-remove-additional-properties-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-066-one-of-variant-2-remove-additional-properties-false-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("067-one-of-variant2-change-additional-properties-rule1-to-false-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-067-one-of-variant-2-change-additional-properties-rule-1-to-false-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("068-one-of-variant2-change-additional-properties-false-to-rule1-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-068-one-of-variant-2-change-additional-properties-false-to-rule-1-string`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("069-one-of-variant2-added-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-069-one-of-variant-2-added-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("070-one-of-variant2-removed-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-070-one-of-variant-2-removed-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("071-one-of-variant2-add-additional-properties-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-071-one-of-variant-2-add-additional-properties-rule-1-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("072-one-of-variant2-remove-additional-properties-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-072-one-of-variant-2-remove-additional-properties-rule-1-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("073-one-of-variant2-add-additional-properties-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-073-one-of-variant-2-add-additional-properties-false-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("074-one-of-variant2-remove-additional-properties-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-074-one-of-variant-2-remove-additional-properties-false-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("075-one-of-variant2-change-additional-properties-rule1-to-false-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-075-one-of-variant-2-change-additional-properties-rule-1-to-false-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("076-one-of-variant2-change-additional-properties-false-to-rule1-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-076-one-of-variant-2-change-additional-properties-false-to-rule-1-number`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("077-one-of-variant2-added-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-077-one-of-variant-2-added-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("078-one-of-variant2-removed-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-078-one-of-variant-2-removed-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("079-one-of-variant2-add-additional-properties-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-079-one-of-variant-2-add-additional-properties-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("080-one-of-variant2-remove-additional-properties-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-080-one-of-variant-2-remove-additional-properties-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("081-one-of-variant2-add-additional-properties-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-081-one-of-variant-2-add-additional-properties-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("082-one-of-variant2-remove-additional-properties-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-082-one-of-variant-2-remove-additional-properties-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("083-one-of-variant2-change-additional-properties-rule1-to-false-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-083-one-of-variant-2-change-additional-properties-rule-1-to-false-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("084-one-of-variant2-change-additional-properties-false-to-rule1-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-084-one-of-variant-2-change-additional-properties-false-to-rule-1-integer`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("085-one-of-variant2-added-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-085-one-of-variant-2-added-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("086-one-of-variant2-removed-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-086-one-of-variant-2-removed-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("087-one-of-variant2-add-additional-properties-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-087-one-of-variant-2-add-additional-properties-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("088-one-of-variant2-remove-additional-properties-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-088-one-of-variant-2-remove-additional-properties-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("089-one-of-variant2-add-additional-properties-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-089-one-of-variant-2-add-additional-properties-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("090-one-of-variant2-remove-additional-properties-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-090-one-of-variant-2-remove-additional-properties-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("091-one-of-variant2-change-additional-properties-rule1-to-false-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-091-one-of-variant-2-change-additional-properties-rule-1-to-false-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("092-one-of-variant2-change-additional-properties-false-to-rule1-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-092-one-of-variant-2-change-additional-properties-false-to-rule-1-boolean`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("093-one-of-variant2-added-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-093-one-of-variant-2-added-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("094-one-of-variant2-removed-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-094-one-of-variant-2-removed-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("095-one-of-variant2-add-additional-properties-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-095-one-of-variant-2-add-additional-properties-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("096-one-of-variant2-remove-additional-properties-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-096-one-of-variant-2-remove-additional-properties-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("097-one-of-variant2-add-additional-properties-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-097-one-of-variant-2-add-additional-properties-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("098-one-of-variant2-remove-additional-properties-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-098-one-of-variant-2-remove-additional-properties-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("099-one-of-variant2-change-additional-properties-rule1-to-false-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-099-one-of-variant-2-change-additional-properties-rule-1-to-false-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("100-one-of-variant2-change-additional-properties-false-to-rule1-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-100-one-of-variant-2-change-additional-properties-false-to-rule-1-array`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("101-one-of-variant2-added-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-101-one-of-variant-2-added-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("102-one-of-variant2-removed-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-102-one-of-variant-2-removed-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("103-one-of-variant2-add-additional-properties-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-103-one-of-variant-2-add-additional-properties-rule-1-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("104-one-of-variant2-remove-additional-properties-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-104-one-of-variant-2-remove-additional-properties-rule-1-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("105-one-of-variant2-add-additional-properties-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-105-one-of-variant-2-add-additional-properties-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("106-one-of-variant2-remove-additional-properties-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-106-one-of-variant-2-remove-additional-properties-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("107-one-of-variant2-change-additional-properties-rule1-to-false-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-107-one-of-variant-2-change-additional-properties-rule-1-to-false-object`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("108-one-of-variant2-change-additional-properties-false-to-rule1-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-108-one-of-variant-2-change-additional-properties-false-to-rule-1-object`);
+  it("036-one-of-variant2-removed-object", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties--case-036-one-of-variant-2-removed-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

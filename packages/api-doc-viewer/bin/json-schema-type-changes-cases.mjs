@@ -1324,8 +1324,8 @@ const collectObjectPropertyChangeCases = (cases) => {
 };
 
 /** @param {TypeChangeCase[]} cases */
-const collectObjectPropertiesAdditionalPropertiesCases = (cases) => {
-  const dir = "object-properties";
+const collectObjectAdditionalPropertiesCases = (cases) => {
+  const dir = "object-additional-properties";
 
   for (const schemaType of RULE1_SCHEMA_TYPES) {
     const base = buildRule1ObjectVariantBase(schemaType);
@@ -1390,13 +1390,11 @@ const collectObjectPropertiesAdditionalPropertiesCases = (cases) => {
 };
 
 /** @param {TypeChangeCase[]} cases */
-const collectObjectPropertiesOneOfVariantAdditionalPropertiesCases = (cases) => {
+const collectObjectPropertiesOneOfVariantCases = (cases) => {
   const dir = "object-properties";
 
   for (const schemaType of RULE1_SCHEMA_TYPES) {
     const variantBase = buildRule1ObjectVariantBase(schemaType);
-    const variantWithRule1Ap = withRule1AdditionalProperties(variantBase, schemaType);
-    const variantWithFalseAp = withAdditionalPropertiesFalseOnObject(variantBase);
 
     pushRule1Case(
       cases,
@@ -1416,6 +1414,18 @@ const collectObjectPropertiesOneOfVariantAdditionalPropertiesCases = (cases) => 
       buildOneOfObjectVariantRoot(undefined),
       "Removed oneOf object variant (OneOfVariant2, Rule1)",
     );
+  }
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectOneOfVariantAdditionalPropertiesCases = (cases) => {
+  const dir = "object-additional-properties";
+
+  for (const schemaType of RULE1_SCHEMA_TYPES) {
+    const variantBase = buildRule1ObjectVariantBase(schemaType);
+    const variantWithRule1Ap = withRule1AdditionalProperties(variantBase, schemaType);
+    const variantWithFalseAp = withAdditionalPropertiesFalseOnObject(variantBase);
+
     pushRule1Case(
       cases,
       dir,
@@ -2035,6 +2045,14 @@ export const STORY_SUITES = [
     testFileName: "object-properties.it-test.ts",
   },
   {
+    suiteKey: "object-additional-properties",
+    title: "JSON Schema Diffs Suite/Object Additional Properties",
+    metaKebab: "json-schema-diffs-suite-object-additional-properties",
+    globPath: "object-additional-properties",
+    storyFileName: "object-additional-properties.stories.tsx",
+    testFileName: "object-additional-properties.it-test.ts",
+  },
+  {
     suiteKey: "array-indexed-items",
     title: "JSON Schema Diffs Suite/Array Indexed Items",
     metaKebab: "json-schema-diffs-suite-array-indexed-items",
@@ -2080,8 +2098,9 @@ export const collectTypeChangeCases = () => {
   collectTypeValueChangeCases(cases);
   collectTypeAnnotationsChangeCases(cases);
   collectObjectPropertyChangeCases(cases);
-  collectObjectPropertiesAdditionalPropertiesCases(cases);
-  collectObjectPropertiesOneOfVariantAdditionalPropertiesCases(cases);
+  collectObjectPropertiesOneOfVariantCases(cases);
+  collectObjectAdditionalPropertiesCases(cases);
+  collectOneOfVariantAdditionalPropertiesCases(cases);
   collectArrayIndexedItemChangeCases(cases);
   collectOneOfObjectVariantCases(cases);
   collectOneOfArrayVariantCases(cases);
