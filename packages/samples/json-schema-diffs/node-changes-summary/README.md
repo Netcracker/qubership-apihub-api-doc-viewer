@@ -53,7 +53,7 @@ carry a stable `data-testid="legacy-combiner-option-<nodeId>"`, and `ExpandingCa
 non-functional (Storybook `play` functions do not fire when these stories are loaded directly via
 `iframe.html` in the screenshot-test harness, so the case 6/7 IT test files click these testids
 directly with Puppeteer, mirroring `switchToChannelSection()` in
-`async-api-diffs-suite.channel-samples.it-test.ts`). Cases 6-7's "chosen variant" stories all use
+`async-api-diffs-suite.channel.it-test.ts`). Cases 6-7's "chosen variant" stories all use
 the same string-first fixture as their sibling stories; the IT test clicks the `object`/`array`
 option to select it.
 

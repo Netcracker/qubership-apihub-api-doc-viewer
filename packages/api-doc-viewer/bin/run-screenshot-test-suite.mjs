@@ -25,6 +25,25 @@ const itRoot = path.resolve(packageRoot, 'src/it');
 
 const WHOLE_SUITE_VALUE = '__whole__';
 const SAMPLES_DIR_IGNORE = new Set(['fixtures', 'src']);
+// Strips the file extension, plus an optional legacy "-samples" suffix some suites still use
+// (kept only so existing suite names / CLI invocations stay stable — it is not required).
+const IT_TEST_SUFFIX_RE = /(-samples)?\.it-test\.ts$/;
+
+/**
+ * Finds the on-disk IT test filename for a suite id, trying the plain name first and
+ * falling back to the legacy "-samples" suffixed name.
+ *
+ * @param {string} dir
+ * @param {string} base
+ * @returns {string}
+ */
+function resolveItTestFileName(dir, base) {
+  const plain = `${base}.it-test.ts`;
+  if (fs.existsSync(path.join(dir, plain))) {
+    return plain;
+  }
+  return `${base}-samples.it-test.ts`;
+}
 
 /** @type {string | undefined} */
 let uiModeOverride = process.env.SCREENSHOT_SUITE_UI;
@@ -116,7 +135,7 @@ function discoverTestRuns() {
       && entry.name !== '__image_snapshots__'
     ) {
       const itDir = path.join(itRoot, entry.name);
-      const hasSamples = fs.readdirSync(itDir).some((file) => file.endsWith('-samples.it-test.ts'));
+      const hasSamples = fs.readdirSync(itDir).some((file) => file.endsWith('.it-test.ts'));
       if (hasSamples) {
         testRuns.push({
           samplesDir: entry.name,
@@ -130,7 +149,7 @@ function discoverTestRuns() {
   }
 
   for (const entry of itEntries) {
-    if (!entry.isFile() || !entry.name.endsWith('-samples.it-test.ts')) {
+    if (!entry.isFile() || !entry.name.endsWith('.it-test.ts')) {
       continue;
     }
     const separatorIndex = entry.name.indexOf('.');
@@ -160,14 +179,14 @@ function discoverTestRuns() {
 function discoverSuites(testRun) {
   if (testRun.layout === 'folder') {
     return fs.readdirSync(testRun.itDir)
-      .filter((file) => file.endsWith('-samples.it-test.ts'))
-      .map((file) => file.replace(/-samples\.it-test\.ts$/, ''))
+      .filter((file) => file.endsWith('.it-test.ts'))
+      .map((file) => file.replace(IT_TEST_SUFFIX_RE, ''))
       .sort();
   }
 
   return fs.readdirSync(itRoot)
-    .filter((file) => file.startsWith(testRun.prefix) && file.endsWith('-samples.it-test.ts'))
-    .map((file) => file.slice(testRun.prefix.length).replace(/-samples\.it-test\.ts$/, ''))
+    .filter((file) => file.startsWith(testRun.prefix) && file.endsWith('.it-test.ts'))
+    .map((file) => file.slice(testRun.prefix.length).replace(IT_TEST_SUFFIX_RE, ''))
     .sort();
 }
 
@@ -181,14 +200,14 @@ function resolveJestTarget(testRun, suiteChoice) {
     if (testRun.layout === 'folder') {
       return `src/it/${testRun.itSuiteId}`;
     }
-    return `--testPathPattern=${testRun.prefix.replace('.', '\\.')}.+-samples\\.it-test\\.ts$`;
+    return `--testPathPattern=${testRun.prefix.replace('.', '\\.')}.+\\.it-test\\.ts$`;
   }
 
   if (testRun.layout === 'folder') {
-    return `src/it/${testRun.itSuiteId}/${suiteChoice}-samples.it-test.ts`;
+    return `src/it/${testRun.itSuiteId}/${resolveItTestFileName(testRun.itDir, suiteChoice)}`;
   }
 
-  return `src/it/${testRun.prefix}${suiteChoice}-samples.it-test.ts`;
+  return `src/it/${resolveItTestFileName(itRoot, `${testRun.prefix}${suiteChoice}`)}`;
 }
 
 /**

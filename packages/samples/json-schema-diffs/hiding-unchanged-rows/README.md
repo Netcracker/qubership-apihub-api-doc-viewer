@@ -63,9 +63,9 @@ and `packages/api-doc-viewer/src/it/`. Shared helpers are in `json-schema-diffs-
 
 | Suite | Story title | Story / IT files |
 | --- | --- | --- |
-| Simple object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Simple Object Samples` | `simple-object-samples.*` |
-| Complex object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Complex Object Samples` | `complex-object-samples.*` |
-| Combiners | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Combiners Samples` | `combiners-samples.*` |
+| Simple object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Simple Object Samples` | `simple-object.*` |
+| Complex object | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Complex Object Samples` | `complex-object.*` |
+| Combiners | `JSON Schema Diffs Suite (Hiding Unchanged Nodes)/Combiners Samples` | `combiners.*` |
 
 Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples--case-1-1-two-added-three-removed`).

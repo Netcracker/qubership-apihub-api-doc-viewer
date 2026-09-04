@@ -46,14 +46,14 @@ npm run regenerate-screenshots
 
 | Suite | Stories | ITs |
 | --- | --- | --- |
-| Array Validations | `array-validations-samples.stories.tsx` | `array-validations-samples.it-test.ts` |
-| Boolean Validations | `boolean-validations-samples.stories.tsx` | `boolean-validations-samples.it-test.ts` |
-| Integer Validations | `integer-validations-samples.stories.tsx` | `integer-validations-samples.it-test.ts` |
-| Object Validations | `object-validations-samples.stories.tsx` | `object-validations-samples.it-test.ts` |
-| String Validations | `string-validations-samples.stories.tsx` | `string-validations-samples.it-test.ts` |
-| Integer value range (OAS 3.0) | `integer-validations-value-range-samples.stories.tsx` | paired IT |
-| Integer value range (OAS 3.1) | `integer-validations-value-range-oas-3-1-samples.stories.tsx` | paired IT |
-| Number value range (OAS 3.0) | `number-validations-value-range-samples.stories.tsx` | paired IT |
-| Number value range (OAS 3.1) | `number-validations-value-range-oas-3-1-samples.stories.tsx` | paired IT |
+| Array Validations | `array-validations.stories.tsx` | `array-validations.it-test.ts` |
+| Boolean Validations | `boolean-validations.stories.tsx` | `boolean-validations.it-test.ts` |
+| Integer Validations | `integer-validations.stories.tsx` | `integer-validations.it-test.ts` |
+| Object Validations | `object-validations.stories.tsx` | `object-validations.it-test.ts` |
+| String Validations | `string-validations.stories.tsx` | `string-validations.it-test.ts` |
+| Integer value range (OAS 3.0) | `integer-validations-value-range.stories.tsx` | paired IT |
+| Integer value range (OAS 3.1) | `integer-validations-value-range-oas-3-1.stories.tsx` | paired IT |
+| Number value range (OAS 3.0) | `number-validations-value-range.stories.tsx` | paired IT |
+| Number value range (OAS 3.1) | `number-validations-value-range-oas-3-1.stories.tsx` | paired IT |
 
 Storybook root title prefix: **JSON Schema Next/**.

@@ -44,15 +44,15 @@ Hand-written suites live under `packages/api-doc-viewer/src/stories/ddlapi-diffs
 
 | Group | Story title | Story / IT files |
 | --- | --- | --- |
-| `whole-table-changes` | `DDL API Diffs Suite/Whole Table Changes Samples` | `whole-table-changes-samples.*` |
-| `whole-columns-changes` | `DDL API Diffs Suite/Whole Columns Changes Samples` | `whole-columns-changes-samples.*` |
-| `whole-indexes-changes` | `DDL API Diffs Suite/Whole Indexes Changes Samples` | `whole-indexes-changes-samples.*` |
-| `column-changes-except-types` | `DDL API Diffs Suite/Column Changes Except Types Samples` | `column-changes-except-types-samples.*` |
-| `foreign-key-reference-changes` | `DDL API Diffs Suite/Foreign Key Reference Changes Samples` | `foreign-key-reference-changes-samples.*` |
-| `index-changes` | `DDL API Diffs Suite/Index Changes Samples` | `index-changes-samples.*` |
-| `column-type-changes` | `DDL API Diffs Suite/Column Type Changes Samples` | `column-type-changes-samples.*` |
-| `column-default-changes` | `DDL API Diffs Suite/Column Default Changes Samples` | `column-default-changes-samples.*` |
-| `table-description-changes` | `DDL API Diffs Suite/Table Description Changes Samples` | `table-description-changes-samples.*` |
+| `whole-table-changes` | `DDL API Diffs Suite/Whole Table Changes Samples` | `whole-table-changes.*` |
+| `whole-columns-changes` | `DDL API Diffs Suite/Whole Columns Changes Samples` | `whole-columns-changes.*` |
+| `whole-indexes-changes` | `DDL API Diffs Suite/Whole Indexes Changes Samples` | `whole-indexes-changes.*` |
+| `column-changes-except-types` | `DDL API Diffs Suite/Column Changes Except Types Samples` | `column-changes-except-types.*` |
+| `foreign-key-reference-changes` | `DDL API Diffs Suite/Foreign Key Reference Changes Samples` | `foreign-key-reference-changes.*` |
+| `index-changes` | `DDL API Diffs Suite/Index Changes Samples` | `index-changes.*` |
+| `column-type-changes` | `DDL API Diffs Suite/Column Type Changes Samples` | `column-type-changes.*` |
+| `column-default-changes` | `DDL API Diffs Suite/Column Default Changes Samples` | `column-default-changes.*` |
+| `table-description-changes` | `DDL API Diffs Suite/Table Description Changes Samples` | `table-description-changes.*` |
 
 Story id pattern: `{meta-id}--case-{case-id}` (for example
 `ddl-api-diffs-suite-whole-table-changes-samples--case-01-wholly-added-table`). When adding a

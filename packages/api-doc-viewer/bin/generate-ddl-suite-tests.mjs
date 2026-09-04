@@ -14,32 +14,32 @@ const SUITES = [
   {
     suiteId: "column-constraints",
     title: "DDL API Suite/Column Constraints",
-    testFileName: "column-constraints-samples.it-test.ts",
+    testFileName: "column-constraints.it-test.ts",
   },
   {
     suiteId: "column-types",
     title: "DDL API Suite/Column Types",
-    testFileName: "column-types-samples.it-test.ts",
+    testFileName: "column-types.it-test.ts",
   },
   {
     suiteId: "indexes",
     title: "DDL API Suite/Indexes",
-    testFileName: "indexes-samples.it-test.ts",
+    testFileName: "indexes.it-test.ts",
   },
   {
     suiteId: "escaping-spec-chars",
     title: "DDL API Suite/Escaping Spec Chars",
-    testFileName: "escaping-spec-chars-samples.it-test.ts",
+    testFileName: "escaping-spec-chars.it-test.ts",
   },
   {
     suiteId: "display-mode-simple",
     title: "DDL API Suite/Display Mode Simple",
-    testFileName: "display-mode-simple-samples.it-test.ts",
+    testFileName: "display-mode-simple.it-test.ts",
   },
   {
     suiteId: "table-descriptions",
     title: "DDL API Suite/Table Descriptions",
-    testFileName: "table-descriptions-samples.it-test.ts",
+    testFileName: "table-descriptions.it-test.ts",
   },
 ];
 
