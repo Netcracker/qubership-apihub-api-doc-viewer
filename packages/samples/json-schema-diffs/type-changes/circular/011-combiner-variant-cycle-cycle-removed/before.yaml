@@ -1,12 +1,17 @@
-type: object
-description: Combiner with cyclic object variant
-properties:
-  value:
-    oneOf:
-      - type: string
-      - type: object
-        description: Cyclic object variant
-        properties:
-          nested:
-            $ref: "#/properties/value"
+beforeSchema:
+  type: object
+  description: Combiner with cyclic object variant
+  properties:
+    value:
+      $ref: "#/components/schemas/CyclicValue"
+beforeAdditionalComponents:
+  schemas:
+    CyclicValue:
+      oneOf:
+        - type: string
+        - type: object
+          description: Cyclic object variant
+          properties:
+            nested:
+              $ref: "#/components/schemas/CyclicValue"
 

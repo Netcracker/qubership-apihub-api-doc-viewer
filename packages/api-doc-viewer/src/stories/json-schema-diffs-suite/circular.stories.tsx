@@ -9,7 +9,7 @@ import {
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./json-schema-diffs-utils";
+} from "./circular-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/circular/*/before.yaml",

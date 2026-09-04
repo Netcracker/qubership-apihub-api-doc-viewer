@@ -1,20 +1,24 @@
-$schema: http://json-schema.org/draft-07/schema#
-type: object
-description: Root of A→B→root chain
-properties:
-  name:
-    type: string
-definitions:
-  A:
-    type: object
-    description: Entity A
-    properties:
-      nodeB:
-        $ref: "#/definitions/B"
-  B:
-    type: object
-    description: Entity B
-    properties:
-      backToRoot:
-        $ref: "#"
+afterSchema:
+  $ref: "#/components/schemas/ChainRoot"
+afterAdditionalComponents:
+  schemas:
+    ChainRoot:
+      $schema: http://json-schema.org/draft-07/schema#
+      type: object
+      description: Root of A→B→root chain
+      properties:
+        name:
+          type: string
+    ChainA:
+      type: object
+      description: Entity A
+      properties:
+        nodeB:
+          $ref: "#/components/schemas/ChainB"
+    ChainB:
+      type: object
+      description: Entity B
+      properties:
+        backToRoot:
+          $ref: "#/components/schemas/ChainRoot"
 
