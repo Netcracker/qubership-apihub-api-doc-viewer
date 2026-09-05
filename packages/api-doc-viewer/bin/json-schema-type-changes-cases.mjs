@@ -1411,7 +1411,7 @@ const collectObjectPropertiesOneOfVariantCases = (cases) => {
     pushRule1Case(
       cases,
       dir,
-      "one-of-variant2-added",
+      "one-of-add-object-variant-with-prop-type",
       schemaType,
       buildOneOfObjectVariantRoot(undefined),
       buildOneOfObjectVariantRoot(variantBase),
@@ -1420,7 +1420,7 @@ const collectObjectPropertiesOneOfVariantCases = (cases) => {
     pushRule1Case(
       cases,
       dir,
-      "one-of-variant2-removed",
+      "one-of-remove-object-variant-with-prop-type",
       schemaType,
       buildOneOfObjectVariantRoot(variantBase),
       buildOneOfObjectVariantRoot(undefined),

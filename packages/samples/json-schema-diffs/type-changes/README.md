@@ -294,18 +294,18 @@ Path: `type-changes/object-properties/` (36 cases)
 | `022-remove-one-property-object` | Object with 2 properties: remove 1 property (object) |
 | `023-add-two-properties-object` | Object with 0 properties: add 2 properties (object) |
 | `024-remove-two-properties-object` | Object with 2 properties: remove 2 properties (object) |
-| `025-one-of-variant2-added-string` | Added oneOf object variant (OneOfVariant2, Rule1) (string) |
-| `026-one-of-variant2-removed-string` | Removed oneOf object variant (OneOfVariant2, Rule1) (string) |
-| `027-one-of-variant2-added-number` | Added oneOf object variant (OneOfVariant2, Rule1) (number) |
-| `028-one-of-variant2-removed-number` | Removed oneOf object variant (OneOfVariant2, Rule1) (number) |
-| `029-one-of-variant2-added-integer` | Added oneOf object variant (OneOfVariant2, Rule1) (integer) |
-| `030-one-of-variant2-removed-integer` | Removed oneOf object variant (OneOfVariant2, Rule1) (integer) |
-| `031-one-of-variant2-added-boolean` | Added oneOf object variant (OneOfVariant2, Rule1) (boolean) |
-| `032-one-of-variant2-removed-boolean` | Removed oneOf object variant (OneOfVariant2, Rule1) (boolean) |
-| `033-one-of-variant2-added-array` | Added oneOf object variant (OneOfVariant2, Rule1) (array) |
-| `034-one-of-variant2-removed-array` | Removed oneOf object variant (OneOfVariant2, Rule1) (array) |
-| `035-one-of-variant2-added-object` | Added oneOf object variant (OneOfVariant2, Rule1) (object) |
-| `036-one-of-variant2-removed-object` | Removed oneOf object variant (OneOfVariant2, Rule1) (object) |
+| `025-one-of-add-object-variant-with-prop-type-string` | Added oneOf object variant (OneOfVariant2, Rule1) (string) |
+| `026-one-of-remove-object-variant-with-prop-type-string` | Removed oneOf object variant (OneOfVariant2, Rule1) (string) |
+| `027-one-of-add-object-variant-with-prop-type-number` | Added oneOf object variant (OneOfVariant2, Rule1) (number) |
+| `028-one-of-remove-object-variant-with-prop-type-number` | Removed oneOf object variant (OneOfVariant2, Rule1) (number) |
+| `029-one-of-add-object-variant-with-prop-type-integer` | Added oneOf object variant (OneOfVariant2, Rule1) (integer) |
+| `030-one-of-remove-object-variant-with-prop-type-integer` | Removed oneOf object variant (OneOfVariant2, Rule1) (integer) |
+| `031-one-of-add-object-variant-with-prop-type-boolean` | Added oneOf object variant (OneOfVariant2, Rule1) (boolean) |
+| `032-one-of-remove-object-variant-with-prop-type-boolean` | Removed oneOf object variant (OneOfVariant2, Rule1) (boolean) |
+| `033-one-of-add-object-variant-with-prop-type-array` | Added oneOf object variant (OneOfVariant2, Rule1) (array) |
+| `034-one-of-remove-object-variant-with-prop-type-array` | Removed oneOf object variant (OneOfVariant2, Rule1) (array) |
+| `035-one-of-add-object-variant-with-prop-type-object` | Added oneOf object variant (OneOfVariant2, Rule1) (object) |
+| `036-one-of-remove-object-variant-with-prop-type-object` | Removed oneOf object variant (OneOfVariant2, Rule1) (object) |
 
 ### Object Additional Properties
 
