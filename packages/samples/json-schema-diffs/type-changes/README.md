@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 385
+- Total cases: 365
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -309,82 +309,62 @@ Path: `type-changes/object-properties/` (36 cases)
 
 ### Object Additional Properties
 
-Path: `type-changes/object-additional-properties/` (72 cases)
+Path: `type-changes/object-additional-properties/` (52 cases)
 
 | Case id | Change |
 | --- | --- |
-| `001-add-additional-properties-rule1-string` | Added additionalProperties (Rule1 schema) (string) |
-| `002-remove-additional-properties-rule1-string` | Removed additionalProperties (Rule1 schema) (string) |
-| `003-add-additional-properties-false-string` | Added additionalProperties: false (string) |
-| `004-remove-additional-properties-false-string` | Removed additionalProperties: false (string) |
-| `005-change-additional-properties-rule1-to-false-string` | Changed additionalProperties: Rule1 schema → false (string) |
-| `006-change-additional-properties-false-to-rule1-string` | Changed additionalProperties: false → Rule1 schema (string) |
-| `007-add-additional-properties-rule1-number` | Added additionalProperties (Rule1 schema) (number) |
-| `008-remove-additional-properties-rule1-number` | Removed additionalProperties (Rule1 schema) (number) |
-| `009-add-additional-properties-false-number` | Added additionalProperties: false (number) |
-| `010-remove-additional-properties-false-number` | Removed additionalProperties: false (number) |
-| `011-change-additional-properties-rule1-to-false-number` | Changed additionalProperties: Rule1 schema → false (number) |
-| `012-change-additional-properties-false-to-rule1-number` | Changed additionalProperties: false → Rule1 schema (number) |
-| `013-add-additional-properties-rule1-integer` | Added additionalProperties (Rule1 schema) (integer) |
-| `014-remove-additional-properties-rule1-integer` | Removed additionalProperties (Rule1 schema) (integer) |
-| `015-add-additional-properties-false-integer` | Added additionalProperties: false (integer) |
-| `016-remove-additional-properties-false-integer` | Removed additionalProperties: false (integer) |
-| `017-change-additional-properties-rule1-to-false-integer` | Changed additionalProperties: Rule1 schema → false (integer) |
-| `018-change-additional-properties-false-to-rule1-integer` | Changed additionalProperties: false → Rule1 schema (integer) |
-| `019-add-additional-properties-rule1-boolean` | Added additionalProperties (Rule1 schema) (boolean) |
-| `020-remove-additional-properties-rule1-boolean` | Removed additionalProperties (Rule1 schema) (boolean) |
-| `021-add-additional-properties-false-boolean` | Added additionalProperties: false (boolean) |
-| `022-remove-additional-properties-false-boolean` | Removed additionalProperties: false (boolean) |
-| `023-change-additional-properties-rule1-to-false-boolean` | Changed additionalProperties: Rule1 schema → false (boolean) |
-| `024-change-additional-properties-false-to-rule1-boolean` | Changed additionalProperties: false → Rule1 schema (boolean) |
-| `025-add-additional-properties-rule1-array` | Added additionalProperties (Rule1 schema) (array) |
-| `026-remove-additional-properties-rule1-array` | Removed additionalProperties (Rule1 schema) (array) |
-| `027-add-additional-properties-false-array` | Added additionalProperties: false (array) |
-| `028-remove-additional-properties-false-array` | Removed additionalProperties: false (array) |
-| `029-change-additional-properties-rule1-to-false-array` | Changed additionalProperties: Rule1 schema → false (array) |
-| `030-change-additional-properties-false-to-rule1-array` | Changed additionalProperties: false → Rule1 schema (array) |
-| `031-add-additional-properties-rule1-object` | Added additionalProperties (Rule1 schema) (object) |
-| `032-remove-additional-properties-rule1-object` | Removed additionalProperties (Rule1 schema) (object) |
-| `033-add-additional-properties-false-object` | Added additionalProperties: false (object) |
-| `034-remove-additional-properties-false-object` | Removed additionalProperties: false (object) |
-| `035-change-additional-properties-rule1-to-false-object` | Changed additionalProperties: Rule1 schema → false (object) |
-| `036-change-additional-properties-false-to-rule1-object` | Changed additionalProperties: false → Rule1 schema (object) |
-| `037-one-of-variant2-add-additional-properties-rule1-string` | OneOf variant: added additionalProperties (Rule1 schema) (string) |
-| `038-one-of-variant2-remove-additional-properties-rule1-string` | OneOf variant: removed additionalProperties (Rule1 schema) (string) |
-| `039-one-of-variant2-add-additional-properties-false-string` | OneOf variant: added additionalProperties: false (string) |
-| `040-one-of-variant2-remove-additional-properties-false-string` | OneOf variant: removed additionalProperties: false (string) |
-| `041-one-of-variant2-change-additional-properties-rule1-to-false-string` | OneOf variant: changed additionalProperties: Rule1 schema → false (string) |
-| `042-one-of-variant2-change-additional-properties-false-to-rule1-string` | OneOf variant: changed additionalProperties: false → Rule1 schema (string) |
-| `043-one-of-variant2-add-additional-properties-rule1-number` | OneOf variant: added additionalProperties (Rule1 schema) (number) |
-| `044-one-of-variant2-remove-additional-properties-rule1-number` | OneOf variant: removed additionalProperties (Rule1 schema) (number) |
-| `045-one-of-variant2-add-additional-properties-false-number` | OneOf variant: added additionalProperties: false (number) |
-| `046-one-of-variant2-remove-additional-properties-false-number` | OneOf variant: removed additionalProperties: false (number) |
-| `047-one-of-variant2-change-additional-properties-rule1-to-false-number` | OneOf variant: changed additionalProperties: Rule1 schema → false (number) |
-| `048-one-of-variant2-change-additional-properties-false-to-rule1-number` | OneOf variant: changed additionalProperties: false → Rule1 schema (number) |
-| `049-one-of-variant2-add-additional-properties-rule1-integer` | OneOf variant: added additionalProperties (Rule1 schema) (integer) |
-| `050-one-of-variant2-remove-additional-properties-rule1-integer` | OneOf variant: removed additionalProperties (Rule1 schema) (integer) |
-| `051-one-of-variant2-add-additional-properties-false-integer` | OneOf variant: added additionalProperties: false (integer) |
-| `052-one-of-variant2-remove-additional-properties-false-integer` | OneOf variant: removed additionalProperties: false (integer) |
-| `053-one-of-variant2-change-additional-properties-rule1-to-false-integer` | OneOf variant: changed additionalProperties: Rule1 schema → false (integer) |
-| `054-one-of-variant2-change-additional-properties-false-to-rule1-integer` | OneOf variant: changed additionalProperties: false → Rule1 schema (integer) |
-| `055-one-of-variant2-add-additional-properties-rule1-boolean` | OneOf variant: added additionalProperties (Rule1 schema) (boolean) |
-| `056-one-of-variant2-remove-additional-properties-rule1-boolean` | OneOf variant: removed additionalProperties (Rule1 schema) (boolean) |
-| `057-one-of-variant2-add-additional-properties-false-boolean` | OneOf variant: added additionalProperties: false (boolean) |
-| `058-one-of-variant2-remove-additional-properties-false-boolean` | OneOf variant: removed additionalProperties: false (boolean) |
-| `059-one-of-variant2-change-additional-properties-rule1-to-false-boolean` | OneOf variant: changed additionalProperties: Rule1 schema → false (boolean) |
-| `060-one-of-variant2-change-additional-properties-false-to-rule1-boolean` | OneOf variant: changed additionalProperties: false → Rule1 schema (boolean) |
-| `061-one-of-variant2-add-additional-properties-rule1-array` | OneOf variant: added additionalProperties (Rule1 schema) (array) |
-| `062-one-of-variant2-remove-additional-properties-rule1-array` | OneOf variant: removed additionalProperties (Rule1 schema) (array) |
-| `063-one-of-variant2-add-additional-properties-false-array` | OneOf variant: added additionalProperties: false (array) |
-| `064-one-of-variant2-remove-additional-properties-false-array` | OneOf variant: removed additionalProperties: false (array) |
-| `065-one-of-variant2-change-additional-properties-rule1-to-false-array` | OneOf variant: changed additionalProperties: Rule1 schema → false (array) |
-| `066-one-of-variant2-change-additional-properties-false-to-rule1-array` | OneOf variant: changed additionalProperties: false → Rule1 schema (array) |
-| `067-one-of-variant2-add-additional-properties-rule1-object` | OneOf variant: added additionalProperties (Rule1 schema) (object) |
-| `068-one-of-variant2-remove-additional-properties-rule1-object` | OneOf variant: removed additionalProperties (Rule1 schema) (object) |
-| `069-one-of-variant2-add-additional-properties-false-object` | OneOf variant: added additionalProperties: false (object) |
-| `070-one-of-variant2-remove-additional-properties-false-object` | OneOf variant: removed additionalProperties: false (object) |
-| `071-one-of-variant2-change-additional-properties-rule1-to-false-object` | OneOf variant: changed additionalProperties: Rule1 schema → false (object) |
-| `072-one-of-variant2-change-additional-properties-false-to-rule1-object` | OneOf variant: changed additionalProperties: false → Rule1 schema (object) |
+| `001-add-additional-properties-false` | Added additionalProperties: false |
+| `002-remove-additional-properties-false` | Removed additionalProperties: false |
+| `003-add-additional-properties-type-string` | Added additionalProperties (string) |
+| `004-remove-additional-properties-type-string` | Removed additionalProperties (string) |
+| `005-change-additional-properties-string-to-false` | Changed additionalProperties: string schema → false |
+| `006-change-additional-properties-false-to-string` | Changed additionalProperties: false → string schema |
+| `007-add-additional-properties-type-number` | Added additionalProperties (number) |
+| `008-remove-additional-properties-type-number` | Removed additionalProperties (number) |
+| `009-change-additional-properties-number-to-false` | Changed additionalProperties: number schema → false |
+| `010-change-additional-properties-false-to-number` | Changed additionalProperties: false → number schema |
+| `011-add-additional-properties-type-integer` | Added additionalProperties (integer) |
+| `012-remove-additional-properties-type-integer` | Removed additionalProperties (integer) |
+| `013-change-additional-properties-integer-to-false` | Changed additionalProperties: integer schema → false |
+| `014-change-additional-properties-false-to-integer` | Changed additionalProperties: false → integer schema |
+| `015-add-additional-properties-type-boolean` | Added additionalProperties (boolean) |
+| `016-remove-additional-properties-type-boolean` | Removed additionalProperties (boolean) |
+| `017-change-additional-properties-boolean-to-false` | Changed additionalProperties: boolean schema → false |
+| `018-change-additional-properties-false-to-boolean` | Changed additionalProperties: false → boolean schema |
+| `019-add-additional-properties-type-array` | Added additionalProperties (array) |
+| `020-remove-additional-properties-type-array` | Removed additionalProperties (array) |
+| `021-change-additional-properties-array-to-false` | Changed additionalProperties: array schema → false |
+| `022-change-additional-properties-false-to-array` | Changed additionalProperties: false → array schema |
+| `023-add-additional-properties-type-object` | Added additionalProperties (object) |
+| `024-remove-additional-properties-type-object` | Removed additionalProperties (object) |
+| `025-change-additional-properties-object-to-false` | Changed additionalProperties: object schema → false |
+| `026-change-additional-properties-false-to-object` | Changed additionalProperties: false → object schema |
+| `027-one-of-object-variant-add-additional-properties-false` | OneOf variant: added additionalProperties: false |
+| `028-one-of-object-variant-remove-additional-properties-false` | OneOf variant: removed additionalProperties: false |
+| `029-one-of-object-variant-add-additional-properties-type-string` | OneOf variant: added additionalProperties (string) |
+| `030-one-of-object-variant-remove-additional-properties-type-string` | OneOf variant: removed additionalProperties (string) |
+| `031-one-of-object-variant-change-additional-properties-string-to-false` | OneOf variant: changed additionalProperties: string schema → false |
+| `032-one-of-object-variant-change-additional-properties-false-to-string` | OneOf variant: changed additionalProperties: false → string schema |
+| `033-one-of-object-variant-add-additional-properties-type-number` | OneOf variant: added additionalProperties (number) |
+| `034-one-of-object-variant-remove-additional-properties-type-number` | OneOf variant: removed additionalProperties (number) |
+| `035-one-of-object-variant-change-additional-properties-number-to-false` | OneOf variant: changed additionalProperties: number schema → false |
+| `036-one-of-object-variant-change-additional-properties-false-to-number` | OneOf variant: changed additionalProperties: false → number schema |
+| `037-one-of-object-variant-add-additional-properties-type-integer` | OneOf variant: added additionalProperties (integer) |
+| `038-one-of-object-variant-remove-additional-properties-type-integer` | OneOf variant: removed additionalProperties (integer) |
+| `039-one-of-object-variant-change-additional-properties-integer-to-false` | OneOf variant: changed additionalProperties: integer schema → false |
+| `040-one-of-object-variant-change-additional-properties-false-to-integer` | OneOf variant: changed additionalProperties: false → integer schema |
+| `041-one-of-object-variant-add-additional-properties-type-boolean` | OneOf variant: added additionalProperties (boolean) |
+| `042-one-of-object-variant-remove-additional-properties-type-boolean` | OneOf variant: removed additionalProperties (boolean) |
+| `043-one-of-object-variant-change-additional-properties-boolean-to-false` | OneOf variant: changed additionalProperties: boolean schema → false |
+| `044-one-of-object-variant-change-additional-properties-false-to-boolean` | OneOf variant: changed additionalProperties: false → boolean schema |
+| `045-one-of-object-variant-add-additional-properties-type-array` | OneOf variant: added additionalProperties (array) |
+| `046-one-of-object-variant-remove-additional-properties-type-array` | OneOf variant: removed additionalProperties (array) |
+| `047-one-of-object-variant-change-additional-properties-array-to-false` | OneOf variant: changed additionalProperties: array schema → false |
+| `048-one-of-object-variant-change-additional-properties-false-to-array` | OneOf variant: changed additionalProperties: false → array schema |
+| `049-one-of-object-variant-add-additional-properties-type-object` | OneOf variant: added additionalProperties (object) |
+| `050-one-of-object-variant-remove-additional-properties-type-object` | OneOf variant: removed additionalProperties (object) |
+| `051-one-of-object-variant-change-additional-properties-object-to-false` | OneOf variant: changed additionalProperties: object schema → false |
+| `052-one-of-object-variant-change-additional-properties-false-to-object` | OneOf variant: changed additionalProperties: false → object schema |
 
 ### Array Indexed Items
 
