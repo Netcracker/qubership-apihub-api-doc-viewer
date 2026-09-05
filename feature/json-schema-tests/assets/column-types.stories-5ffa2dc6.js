@@ -1,4 +1,4 @@
-import{c as Ca,a as Sa,d as Aa,b as ba}from"./ddl-samples-common-be7a3b05.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d47ea043.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-4ad47093.js";import"./iframe-b00a0b5b.js";import"../sb-preview/runtime.js";const va=`CREATE TABLE t (
+import{c as Ca,a as Sa,d as Aa,b as ba}from"./ddl-samples-common-ef400323.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d47ea043.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-9a210f66.js";import"./iframe-3d24a9ff.js";import"../sb-preview/runtime.js";const va=`CREATE TABLE t (
   c bigint
 );
 `,Ba=`CREATE TABLE t (
