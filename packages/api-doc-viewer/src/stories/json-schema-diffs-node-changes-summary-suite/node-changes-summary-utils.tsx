@@ -6,40 +6,40 @@
  * the file's own `meta.title` (see the per-case files) keeps each story's own `name` down to just
  * the variant (e.g. "Expanded root"), instead of repeating the case identity in every story name.
  */
-import { JsonSchemaDiffViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaDiffViewer";
 import {
-  createJsonSchemaDiffViewerArgs,
+  createJsonSchemaDiffsViewerArgs,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "../json-schema-diffs-suite/json-schema-diffs-utils";
+} from '../json-schema-diffs-suite/json-schema-diffs-utils'
+import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
 
 const beforeFiles = import.meta.glob(
-  "../../../../samples/json-schema-diffs/node-changes-summary/*/before.yaml",
-  { as: "raw", eager: true },
-) as Record<string, string>;
+  '../../../../samples/json-schema-diffs/node-changes-summary/*/before.yaml',
+  { as: 'raw', eager: true },
+) as Record<string, string>
 
 const afterFiles = import.meta.glob(
-  "../../../../samples/json-schema-diffs/node-changes-summary/*/after.yaml",
-  { as: "raw", eager: true },
-) as Record<string, string>;
+  '../../../../samples/json-schema-diffs/node-changes-summary/*/after.yaml',
+  { as: 'raw', eager: true },
+) as Record<string, string>
 
-const CASE_SLUG_PATTERN = /node-changes-summary\/case-([^/]+)\//;
+const CASE_SLUG_PATTERN = /node-changes-summary\/case-([^/]+)\//
 
 const extractCaseSlug = (path: string): string => {
-  const match = path.match(CASE_SLUG_PATTERN);
+  const match = path.match(CASE_SLUG_PATTERN)
   if (!match) {
-    throw new Error(`Cannot resolve node-changes-summary case slug from path: ${path}`);
+    throw new Error(`Cannot resolve node-changes-summary case slug from path: ${path}`)
   }
-  return match[1];
-};
+  return match[1]
+}
 
 const indexBySlug = (files: Record<string, string>): Record<string, string> =>
   Object.entries(files).reduce<Record<string, string>>((accumulator, [path, content]) => {
-    accumulator[extractCaseSlug(path)] = content;
-    return accumulator;
-  }, {});
+    accumulator[extractCaseSlug(path)] = content
+    return accumulator
+  }, {})
 
-const beforeBySlug = indexBySlug(beforeFiles);
-const afterBySlug = indexBySlug(afterFiles);
+const beforeBySlug = indexBySlug(beforeFiles)
+const afterBySlug = indexBySlug(afterFiles)
 
 type NodeChangesSummaryStoryArgs = {
   beforeYaml: string;
@@ -48,8 +48,8 @@ type NodeChangesSummaryStoryArgs = {
 
 /** `meta.component` for the per-case files; every story overrides `render` with its own depth. */
 export const NodeChangesSummarySampleStory = ({ beforeYaml, afterYaml }: NodeChangesSummaryStoryArgs) => (
-  <JsonSchemaDiffViewer {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)} />
-);
+  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} />
+)
 
 type NodeChangesSummaryCaseStoryResult = {
   name: string;
@@ -64,10 +64,10 @@ export const createNodeChangesSummaryCaseStory = (
   variantName: string,
   expandedDepth: number,
 ): NodeChangesSummaryCaseStoryResult => {
-  const beforeYaml = beforeBySlug[caseSlug];
-  const afterYaml = afterBySlug[caseSlug];
+  const beforeYaml = beforeBySlug[caseSlug]
+  const afterYaml = afterBySlug[caseSlug]
   if (!beforeYaml || !afterYaml) {
-    throw new Error(`Sample case not found: ${caseSlug}`);
+    throw new Error(`Sample case not found: ${caseSlug}`)
   }
 
   return {
@@ -75,8 +75,8 @@ export const createNodeChangesSummaryCaseStory = (
     args: { beforeYaml, afterYaml },
     argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
     render: (args) => {
-      const viewerArgs = createJsonSchemaDiffViewerArgs(args.beforeYaml, args.afterYaml);
-      return <JsonSchemaDiffViewer {...viewerArgs} expandedDepth={expandedDepth} />;
+      const viewerArgs = createJsonSchemaDiffsViewerArgs(args.beforeYaml, args.afterYaml)
+      return <JsonSchemaNextDiffsViewer {...viewerArgs} expandedDepth={expandedDepth}/>
     },
-  };
-};
+  }
+}

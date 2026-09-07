@@ -36,7 +36,7 @@ export const jsonSchemaDiffSampleReadonlyArgTypes = {
   },
 } satisfies Partial<ArgTypes<JsonSchemaDiffCaseStoryComponentProps>>;
 
-type JsonSchemaNextDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
 
 type JsonSchemaDiffCaseStoryArgs = {
   name: string;
@@ -53,7 +53,7 @@ const createSchemaFromYaml = (sourceText: string): Record<string, unknown> =>
 export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
   beforeSchema: Record<string, unknown>,
   afterSchema: Record<string, unknown>,
-): JsonSchemaNextDiffsViewerProps => ({
+): JsonSchemaDiffsViewerProps => ({
   schema: prepareJsonDiffSchema({
     beforeSchema,
     afterSchema,
@@ -64,10 +64,10 @@ export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
   hideUnchangedNodes: false,
 });
 
-export const createJsonSchemaNextDiffsViewerArgs = (
+export const createJsonSchemaDiffsViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-): JsonSchemaNextDiffsViewerProps => ({
+): JsonSchemaDiffsViewerProps => ({
   schema: prepareJsonDiffSchema({
     beforeSchema: createSchemaFromYaml(beforeSourceText),
     afterSchema: createSchemaFromYaml(afterSourceText),
@@ -120,5 +120,5 @@ export const JsonSchemaDiffSamplesStory = ({
   beforeYaml,
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaNextDiffsViewerArgs(beforeYaml, afterYaml)} />
+  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} />
 );

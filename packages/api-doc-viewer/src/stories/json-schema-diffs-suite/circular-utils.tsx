@@ -1,9 +1,9 @@
-import { JsonSchemaNextDiffsViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer";
-import type { ArgTypes } from "@storybook/react";
-import type { ComponentProps } from "react";
-import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
-import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from "../preprocess";
-import { parseYamlSource } from "../utils/parse-yaml-source";
+import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
+import type { ArgTypes } from '@storybook/react'
+import type { ComponentProps } from 'react'
+import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
+import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from '../preprocess'
+import { parseYamlSource } from '../utils/parse-yaml-source'
 
 export const JSON_SCHEMA_DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
@@ -36,7 +36,7 @@ export const jsonSchemaDiffSampleReadonlyArgTypes = {
   },
 } satisfies Partial<ArgTypes<JsonSchemaDiffCaseStoryComponentProps>>;
 
-type JsonSchemaNextDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
 
 type JsonSchemaDiffCaseStoryArgs = {
   name: string;
@@ -63,17 +63,16 @@ type CircularSampleFileShape = {
 
 const createJsonSchemaDiffViewerBaseArgs = (
   schema: unknown,
-): JsonSchemaDiffViewerProps => ({
+): JsonSchemaDiffsViewerProps => ({
   schema,
   expandedDepth: JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH,
-  layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
-  metaKeys: JSON_SCHEMA_DIFF_META_KEYS,
+  diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
 });
 
 export const createJsonSchemaDiffViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-): JsonSchemaDiffViewerProps => {
+): JsonSchemaDiffsViewerProps => {
   const before = parseYamlSource(beforeSourceText) as CircularSampleFileShape;
   const after = parseYamlSource(afterSourceText) as CircularSampleFileShape;
 
