@@ -26,6 +26,7 @@ export type HeaderRowState = {
     onToggleSort: () => void;
 };
 export type HeaderRowProps = {
+    nodeId: string;
     nodeTitleData: NodeTitleData;
     nodeTypeData: NodeTypeData | null;
     isCircularRef: boolean;

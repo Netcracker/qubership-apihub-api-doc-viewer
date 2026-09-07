@@ -31,15 +31,15 @@ export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
         description: string;
     };
 };
-type JsonSchemaNextDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
 type JsonSchemaDiffCaseStoryArgs = {
     name: string;
     args: JsonSchemaDiffCaseStoryComponentProps;
     argTypes: typeof jsonSchemaDiffSampleReadonlyArgTypes;
     render: (args: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element;
 };
-export declare const createJsonSchemaNextDiffsViewerArgsFromSchemas: (beforeSchema: Record<string, unknown>, afterSchema: Record<string, unknown>) => JsonSchemaNextDiffsViewerProps;
-export declare const createJsonSchemaNextDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsonSchemaNextDiffsViewerProps;
+export declare const createJsonSchemaNextDiffsViewerArgsFromSchemas: (beforeSchema: Record<string, unknown>, afterSchema: Record<string, unknown>) => JsonSchemaDiffsViewerProps;
+export declare const createJsonSchemaDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
 export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
