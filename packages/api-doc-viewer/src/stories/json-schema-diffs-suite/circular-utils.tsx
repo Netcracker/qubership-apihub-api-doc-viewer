@@ -61,15 +61,24 @@ type CircularSampleFileShape = {
   afterAdditionalComponents?: Record<PropertyKey, unknown>;
 };
 
-export const createJsonSchemaNextDiffsViewerArgs = (
+const createJsonSchemaDiffViewerBaseArgs = (
+  schema: unknown,
+): JsonSchemaDiffViewerProps => ({
+  schema,
+  expandedDepth: JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH,
+  layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
+  metaKeys: JSON_SCHEMA_DIFF_META_KEYS,
+});
+
+export const createJsonSchemaDiffViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-): JsonSchemaNextDiffsViewerProps => {
+): JsonSchemaDiffViewerProps => {
   const before = parseYamlSource(beforeSourceText) as CircularSampleFileShape;
   const after = parseYamlSource(afterSourceText) as CircularSampleFileShape;
 
-  return {
-    schema: prepareJsonDiffSchema({
+  return createJsonSchemaDiffViewerBaseArgs(
+    prepareJsonDiffSchema({
       beforeSchema: before.beforeSchema,
       afterSchema: after.afterSchema,
       beforeAdditionalComponents: before.beforeAdditionalComponents,
@@ -77,10 +86,7 @@ export const createJsonSchemaNextDiffsViewerArgs = (
       target: RESPONSE_200_BODY_TARGET,
       circular: true,
     }),
-    expandedDepth: JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH,
-    diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
-    hideUnchangedNodes: false,
-  };
+  );
 };
 
 export const createJsonSchemaDiffSampleById = <TSample extends JsonSchemaDiffSampleCase>(
@@ -125,5 +131,5 @@ export const JsonSchemaDiffSamplesStory = ({
   beforeYaml,
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaNextDiffsViewerArgs(beforeYaml, afterYaml)} />
+  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)} />
 );

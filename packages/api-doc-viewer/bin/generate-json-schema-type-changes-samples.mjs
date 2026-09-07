@@ -34,9 +34,14 @@ const writeSampleCase = (sampleCase) => {
   writeFileSync(path.join(caseDir, "after.yaml"), serializeSchema(sampleCase.after));
 };
 
-const printStoryFile = (suite, caseIds) => {
-  const exports = caseIds
-    .map((caseId) => `export const ${toExportName(caseId)}: Story = createCaseStory("${caseId}");`)
+const printStoryFile = (suite, suiteCases) => {
+  const exports = suiteCases
+    .map(({ caseId, displayName }) => {
+      const factoryCall = `createCaseStory("${caseId}")`;
+      return displayName
+        ? `export const ${toExportName(caseId)}: Story = { ...${factoryCall}, name: ${JSON.stringify(displayName)} };`
+        : `export const ${toExportName(caseId)}: Story = ${factoryCall};`;
+    })
     .join("\n");
   const diffUtilsModule = suite.diffUtilsModule ?? "./json-schema-diffs-utils";
 
@@ -207,8 +212,8 @@ if (!testsOnly) {
 for (const suite of STORY_SUITES) {
   const caseIds = cases
     .filter((sampleCase) => sampleCase.sampleDir === suite.globPath)
+    .sort((left, right) => left.caseId.localeCompare(right.caseId, undefined, { numeric: true }))
     .map((sampleCase) => sampleCase.caseId)
-    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }));
 
   const storyPath = path.join(storiesOutDir, suite.storyFileName);
   const testPath = path.join(testsOutDir, suite.testFileName);

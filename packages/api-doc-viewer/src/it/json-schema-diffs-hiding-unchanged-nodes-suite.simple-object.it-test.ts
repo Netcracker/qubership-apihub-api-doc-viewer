@@ -5,7 +5,7 @@ import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples";
+const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-simple-object";
 
 async function waitForJsonSchemaNextDiffsViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
