@@ -47,5 +47,3 @@ export const Case_004_items_schema_to_array: Story = createCaseStory("004-items-
 export const Case_005_tuple_item_appended: Story = createCaseStory("005-tuple-item-appended");
 export const Case_006_tuple_item_removed: Story = createCaseStory("006-tuple-item-removed");
 export const Case_007_items_schema_description_changed: Story = createCaseStory("007-items-schema-description-changed");
-export const Case_008_unique_items_added: Story = createCaseStory("008-unique-items-added");
-export const Case_009_unique_items_removed: Story = createCaseStory("009-unique-items-removed");

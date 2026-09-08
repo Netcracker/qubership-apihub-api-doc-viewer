@@ -65,25 +65,4 @@ describe("JSON Schema Diffs Suite/Extended Object", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
-
-  it("007-property-count-bounds-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-007-property-count-bounds-added`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("008-property-count-bounds-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-008-property-count-bounds-removed`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("009-property-count-bounds-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-009-property-count-bounds-replaced`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
 });

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-05T00:42:20.717Z",
-  "totalCases": 365,
+  "generatedAt": "2026-09-08T22:48:27.754Z",
+  "totalCases": 478,
   "suites": [
     {
       "globPath": "type-flags",
@@ -28,11 +28,43 @@
     },
     {
       "globPath": "extended/object",
-      "caseCount": 9
+      "caseCount": 6
     },
     {
       "globPath": "extended/array",
-      "caseCount": 9
+      "caseCount": 7
+    },
+    {
+      "globPath": "object-validations/default",
+      "caseCount": 5
+    },
+    {
+      "globPath": "object-validations/example",
+      "caseCount": 7
+    },
+    {
+      "globPath": "object-validations/examples",
+      "caseCount": 23
+    },
+    {
+      "globPath": "object-validations/properties-count",
+      "caseCount": 21
+    },
+    {
+      "globPath": "array-validations/default",
+      "caseCount": 5
+    },
+    {
+      "globPath": "array-validations/example",
+      "caseCount": 7
+    },
+    {
+      "globPath": "array-validations/examples",
+      "caseCount": 23
+    },
+    {
+      "globPath": "array-validations/items-count",
+      "caseCount": 27
     },
     {
       "globPath": "extended/misc",
