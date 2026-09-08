@@ -9,3 +9,10 @@
   border-radius: 4px;
   border: 1px solid #D5DCE3;
 }
+
+/* Legacy parity: object/array default/example/enum values are pretty-printed
+   (JSON.stringify(value, null, 2)) — preserve the resulting whitespace/newlines
+   instead of collapsing them. Scoped to JSON Schema validation chips only. */
+.additional-info-piece_json-schema-validation {
+  white-space: pre-wrap;
+}

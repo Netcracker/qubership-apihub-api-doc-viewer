@@ -28,6 +28,7 @@ export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStyles
       'additional-info-piece',
       'subheader',
       'block',
+      usage === AdditionalInfoPieceUsage.JsonSchemaValidation ? 'additional-info-piece_json-schema-validation' : '',
       DiffsClassesBuilder.borderShadow(borderShadowColor),
     ].filter(Boolean).join(' '),
     valueClassName: [

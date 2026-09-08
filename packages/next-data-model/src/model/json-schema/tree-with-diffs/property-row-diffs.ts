@@ -329,6 +329,9 @@ export function formatJsonSchemaListDisplayValue(value: unknown): string {
   if (typeof value === "string") {
     return value
   }
+  if (typeof value === "object" && value !== null) {
+    return JSON.stringify(value, null, 2)
+  }
   return JSON.stringify(value)
 }
 
