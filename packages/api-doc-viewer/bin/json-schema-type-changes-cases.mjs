@@ -74,6 +74,44 @@ const stringLength = ({ minLength, maxLength } = {}) => {
   return schema;
 };
 
+const OBJECT_PLAIN = () => ({ type: "object" });
+const ARRAY_PLAIN = () => ({ type: "array" });
+
+// Object payload literals used as default/example/examples values.
+const OBJECT_A = () => ({ id: "alpha", count: 1 }); // 2 props
+const OBJECT_B = () => ({ id: "beta", count: 2, active: true }); // 3 props
+const OBJECT_WIDE = () => ({ id: "beta", count: 2, active: true, label: "gamma" }); // 4 props
+
+// Array payload literals used as default/example/examples values.
+const ARRAY_A = () => ["alpha", "beta"]; // 2 items
+const ARRAY_B = () => ["alpha", "beta", "gamma"]; // 3 items
+const ARRAY_WIDE = () => ["alpha", "beta", "gamma", "delta"]; // 4 items
+
+const propertiesCount = ({ minProperties, maxProperties } = {}) => {
+  const schema = OBJECT_PLAIN();
+  if (minProperties !== undefined) {
+    schema.minProperties = minProperties;
+  }
+  if (maxProperties !== undefined) {
+    schema.maxProperties = maxProperties;
+  }
+  return schema;
+};
+
+const itemsCount = ({ minItems, maxItems, uniqueItems } = {}) => {
+  const schema = ARRAY_PLAIN();
+  if (minItems !== undefined) {
+    schema.minItems = minItems;
+  }
+  if (maxItems !== undefined) {
+    schema.maxItems = maxItems;
+  }
+  if (uniqueItems !== undefined) {
+    schema.uniqueItems = uniqueItems;
+  }
+  return schema;
+};
+
 /** @type {Record<string, number>} */
 const dirCounters = {};
 
@@ -542,30 +580,6 @@ const collectExtendedObjectCases = (cases) => {
     merge(objectBase, { patternProperties: { "^y": { type: "integer" } } }),
     "patternProperties replaced",
   );
-  pushCase(
-    cases,
-    dir,
-    "property-count-bounds-added",
-    objectBase,
-    merge(objectBase, { minProperties: 1, maxProperties: 5 }),
-    "minProperties and maxProperties added",
-  );
-  pushCase(
-    cases,
-    dir,
-    "property-count-bounds-removed",
-    merge(objectBase, { minProperties: 1, maxProperties: 5 }),
-    objectBase,
-    "minProperties and maxProperties removed",
-  );
-  pushCase(
-    cases,
-    dir,
-    "property-count-bounds-replaced",
-    merge(objectBase, { minProperties: 1, maxProperties: 5 }),
-    merge(objectBase, { minProperties: 2, maxProperties: 10 }),
-    "minProperties and maxProperties replaced",
-  );
 };
 
 /** @param {TypeChangeCase[]} cases */
@@ -651,21 +665,677 @@ const collectExtendedArrayCases = (cases) => {
     merge(arrayItemsSchema, { items: { type: "string", description: "Updated item schema" } }),
     "Change inside items schema",
   );
-  pushCase(
-    cases,
-    dir,
-    "unique-items-added",
-    arrayItemsSchema,
-    merge(arrayItemsSchema, { uniqueItems: true }),
-    "uniqueItems added",
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectValidationsDefaultCases = (cases) => {
+  const dir = "object-validations/default";
+  const base = OBJECT_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("default-added-empty-object", base, merge(base, { default: {} }), "Added default: {}");
+  add("default-removed-empty-object", merge(base, { default: {} }), base, "Removed default: {}");
+  add(
+    "default-replaced-empty-to-object",
+    merge(base, { default: {} }),
+    merge(base, { default: OBJECT_A() }),
+    "Replaced default: {} → object with 2 properties",
   );
-  pushCase(
-    cases,
-    dir,
-    "unique-items-removed",
-    merge(arrayItemsSchema, { uniqueItems: true }),
-    arrayItemsSchema,
-    "uniqueItems removed",
+  add(
+    "default-replaced-object-to-empty",
+    merge(base, { default: OBJECT_A() }),
+    merge(base, { default: {} }),
+    "Replaced default: object with 2 properties → {}",
+  );
+  add(
+    "default-replaced-object-to-object",
+    merge(base, { default: OBJECT_A() }),
+    merge(base, { default: OBJECT_WIDE() }),
+    "Replaced default: object with 2 properties → object with 4 properties",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectValidationsExampleCases = (cases) => {
+  const dir = "object-validations/example";
+  const base = OBJECT_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("example-added-empty-object", base, merge(base, { example: {} }), "Added example: {}");
+  add(
+    "example-added-object",
+    base,
+    merge(base, { example: OBJECT_A() }),
+    "Added example: object with 2 properties",
+  );
+  add("example-removed-empty-object", merge(base, { example: {} }), base, "Removed example: {}");
+  add(
+    "example-removed-object",
+    merge(base, { example: OBJECT_A() }),
+    base,
+    "Removed example: object with 2 properties",
+  );
+  add(
+    "example-replaced-empty-to-object",
+    merge(base, { example: {} }),
+    merge(base, { example: OBJECT_A() }),
+    "Replaced example: {} → object with 2 properties",
+  );
+  add(
+    "example-replaced-object-to-empty",
+    merge(base, { example: OBJECT_A() }),
+    merge(base, { example: {} }),
+    "Replaced example: object with 2 properties → {}",
+  );
+  add(
+    "example-replaced-object-to-object",
+    merge(base, { example: OBJECT_A() }),
+    merge(base, { example: OBJECT_B() }),
+    "Replaced example: object with 2 properties → object with 3 properties",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectValidationsExamplesCases = (cases) => {
+  const dir = "object-validations/examples";
+  const base = OBJECT_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("examples-added-empty-object", base, merge(base, { examples: [{}] }), "Added examples: [{}]");
+  add(
+    "examples-added-object",
+    base,
+    merge(base, { examples: [OBJECT_A()] }),
+    "Added examples: [object with 2 properties]",
+  );
+  add("examples-removed-empty-object", merge(base, { examples: [{}] }), base, "Removed examples: [{}]");
+  add(
+    "examples-removed-object",
+    merge(base, { examples: [OBJECT_A()] }),
+    base,
+    "Removed examples: [object with 2 properties]",
+  );
+  add(
+    "examples-replaced-empty-to-object",
+    merge(base, { examples: [{}] }),
+    merge(base, { examples: [OBJECT_A()] }),
+    "Replaced examples: [{}] → [object with 2 properties]",
+  );
+  add(
+    "examples-replaced-object-to-empty",
+    merge(base, { examples: [OBJECT_A()] }),
+    merge(base, { examples: [{}] }),
+    "Replaced examples: [object with 2 properties] → [{}]",
+  );
+  add(
+    "examples-replaced-object-to-object",
+    merge(base, { examples: [OBJECT_A()] }),
+    merge(base, { examples: [OBJECT_B()] }),
+    "Replaced examples: [object with 2 properties] → [object with 3 properties]",
+  );
+  add(
+    "examples-two-added-both-empty",
+    base,
+    merge(base, { examples: [{}, {}] }),
+    "Added examples: [{}, {}]",
+  );
+  add(
+    "examples-two-added-empty-and-object",
+    base,
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    "Added examples: [{}, object with 2 properties]",
+  );
+  add(
+    "examples-two-added-both-objects",
+    base,
+    merge(base, { examples: [OBJECT_A(), OBJECT_B()] }),
+    "Added examples: [object 1, object 2]",
+  );
+  add(
+    "examples-two-removed-both-empty",
+    merge(base, { examples: [{}, {}] }),
+    base,
+    "Removed examples: [{}, {}]",
+  );
+  add(
+    "examples-two-removed-empty-and-object",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    base,
+    "Removed examples: [{}, object with 2 properties]",
+  );
+  add(
+    "examples-two-removed-both-objects",
+    merge(base, { examples: [OBJECT_A(), OBJECT_B()] }),
+    base,
+    "Removed examples: [object 1, object 2]",
+  );
+  add(
+    "examples-append-empty-to-empty",
+    merge(base, { examples: [{}] }),
+    merge(base, { examples: [{}, {}] }),
+    "Appended {} to examples: [{}] → [{}, {}]",
+  );
+  add(
+    "examples-append-object-to-empty",
+    merge(base, { examples: [{}] }),
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    "Appended object to examples: [{}] → [{}, object]",
+  );
+  add(
+    "examples-append-object-to-object",
+    merge(base, { examples: [OBJECT_A()] }),
+    merge(base, { examples: [OBJECT_A(), OBJECT_B()] }),
+    "Appended object 2 to examples: [object 1] → [object 1, object 2]",
+  );
+  add(
+    "examples-remove-empty-keep-object",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    merge(base, { examples: [OBJECT_A()] }),
+    "Removed {} from examples: [{}, object] → [object]",
+  );
+  add(
+    "examples-remove-object-keep-empty",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    merge(base, { examples: [{}] }),
+    "Removed object from examples: [{}, object] → [{}]",
+  );
+  add(
+    "examples-remove-first-of-two-empty",
+    merge(base, { examples: [{}, {}] }),
+    merge(base, { examples: [{}] }),
+    "Removed first element from examples: [{}, {}] → [{}]",
+  );
+  add(
+    "examples-remove-first-of-two-objects",
+    merge(base, { examples: [OBJECT_A(), OBJECT_B()] }),
+    merge(base, { examples: [OBJECT_B()] }),
+    "Removed first element from examples: [object 1, object 2] → [object 2]",
+  );
+  add(
+    "examples-replace-empty-with-object",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    merge(base, { examples: [OBJECT_B(), OBJECT_A()] }),
+    "Replaced {} with object 2 in examples: [{}, object 1] → [object 2, object 1]",
+  );
+  add(
+    "examples-replace-object-with-empty",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    merge(base, { examples: [{}, {}] }),
+    "Replaced object 1 with {} in examples: [{}, object 1] → [{}, {}]",
+  );
+  add(
+    "examples-replace-object-with-object",
+    merge(base, { examples: [{}, OBJECT_A()] }),
+    merge(base, { examples: [{}, OBJECT_B()] }),
+    "Replaced object 1 with object 2 in examples: [{}, object 1] → [{}, object 2]",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectValidationsPropertiesCountCases = (cases) => {
+  const dir = "object-validations/properties-count";
+  const base = OBJECT_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("min-properties-added", base, propertiesCount({ minProperties: 1 }), "Added minProperties");
+  add("min-properties-removed", propertiesCount({ minProperties: 1 }), base, "Removed minProperties");
+  add(
+    "min-properties-replaced",
+    propertiesCount({ minProperties: 1 }),
+    propertiesCount({ minProperties: 3 }),
+    "Replaced minProperties",
+  );
+  add("max-properties-added", base, propertiesCount({ maxProperties: 5 }), "Added maxProperties");
+  add("max-properties-removed", propertiesCount({ maxProperties: 5 }), base, "Removed maxProperties");
+  add(
+    "max-properties-replaced",
+    propertiesCount({ maxProperties: 5 }),
+    propertiesCount({ maxProperties: 10 }),
+    "Replaced maxProperties",
+  );
+  add(
+    "max-properties-added-to-min",
+    propertiesCount({ minProperties: 1 }),
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    "Added maxProperties to existing minProperties",
+  );
+  add(
+    "min-properties-added-to-max",
+    propertiesCount({ maxProperties: 5 }),
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    "Added minProperties to existing maxProperties",
+  );
+  add(
+    "properties-count-both-added",
+    base,
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    "Added minProperties, maxProperties",
+  );
+  add(
+    "max-properties-removed-keep-min",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ minProperties: 1 }),
+    "Removed maxProperties (minProperties unchanged)",
+  );
+  add(
+    "min-properties-removed-keep-max",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ maxProperties: 5 }),
+    "Removed minProperties (maxProperties unchanged)",
+  );
+  add(
+    "properties-count-both-removed",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    base,
+    "Removed minProperties, maxProperties",
+  );
+  add(
+    "properties-count-replace-min",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ minProperties: 3, maxProperties: 5 }),
+    "Replaced minProperties (maxProperties unchanged)",
+  );
+  add(
+    "properties-count-replace-max",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ minProperties: 1, maxProperties: 10 }),
+    "Replaced maxProperties (minProperties unchanged)",
+  );
+  add(
+    "properties-count-replace-both",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ minProperties: 3, maxProperties: 10 }),
+    "Replaced minProperties, maxProperties",
+  );
+  add(
+    "min-properties-added-max-properties-removed",
+    propertiesCount({ maxProperties: 5 }),
+    propertiesCount({ minProperties: 1 }),
+    "Added minProperties, removed maxProperties",
+  );
+  add(
+    "max-properties-added-min-properties-removed",
+    propertiesCount({ minProperties: 1 }),
+    propertiesCount({ maxProperties: 5 }),
+    "Added maxProperties, removed minProperties",
+  );
+  add(
+    "min-properties-added-max-properties-replaced",
+    propertiesCount({ maxProperties: 5 }),
+    propertiesCount({ minProperties: 1, maxProperties: 10 }),
+    "Added minProperties, replaced maxProperties",
+  );
+  add(
+    "min-properties-removed-max-properties-replaced",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ maxProperties: 10 }),
+    "Removed minProperties, replaced maxProperties",
+  );
+  add(
+    "max-properties-added-min-properties-replaced",
+    propertiesCount({ minProperties: 1 }),
+    propertiesCount({ minProperties: 3, maxProperties: 5 }),
+    "Added maxProperties, replaced minProperties",
+  );
+  add(
+    "max-properties-removed-min-properties-replaced",
+    propertiesCount({ minProperties: 1, maxProperties: 5 }),
+    propertiesCount({ minProperties: 3 }),
+    "Removed maxProperties, replaced minProperties",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectArrayValidationsDefaultCases = (cases) => {
+  const dir = "array-validations/default";
+  const base = ARRAY_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("default-added-empty-array", base, merge(base, { default: [] }), "Added default: []");
+  add("default-removed-empty-array", merge(base, { default: [] }), base, "Removed default: []");
+  add(
+    "default-replaced-empty-to-array",
+    merge(base, { default: [] }),
+    merge(base, { default: ARRAY_A() }),
+    "Replaced default: [] → array with 2 items",
+  );
+  add(
+    "default-replaced-array-to-empty",
+    merge(base, { default: ARRAY_A() }),
+    merge(base, { default: [] }),
+    "Replaced default: array with 2 items → []",
+  );
+  add(
+    "default-replaced-array-to-array",
+    merge(base, { default: ARRAY_A() }),
+    merge(base, { default: ARRAY_WIDE() }),
+    "Replaced default: array with 2 items → array with 4 items",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectArrayValidationsExampleCases = (cases) => {
+  const dir = "array-validations/example";
+  const base = ARRAY_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("example-added-empty-array", base, merge(base, { example: [] }), "Added example: []");
+  add(
+    "example-added-array",
+    base,
+    merge(base, { example: ARRAY_A() }),
+    "Added example: array with 2 items",
+  );
+  add("example-removed-empty-array", merge(base, { example: [] }), base, "Removed example: []");
+  add(
+    "example-removed-array",
+    merge(base, { example: ARRAY_A() }),
+    base,
+    "Removed example: array with 2 items",
+  );
+  add(
+    "example-replaced-empty-to-array",
+    merge(base, { example: [] }),
+    merge(base, { example: ARRAY_A() }),
+    "Replaced example: [] → array with 2 items",
+  );
+  add(
+    "example-replaced-array-to-empty",
+    merge(base, { example: ARRAY_A() }),
+    merge(base, { example: [] }),
+    "Replaced example: array with 2 items → []",
+  );
+  add(
+    "example-replaced-array-to-array",
+    merge(base, { example: ARRAY_A() }),
+    merge(base, { example: ARRAY_B() }),
+    "Replaced example: array with 2 items → array with 3 items",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectArrayValidationsExamplesCases = (cases) => {
+  const dir = "array-validations/examples";
+  const base = ARRAY_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("examples-added-empty-array", base, merge(base, { examples: [[]] }), "Added examples: [[]]");
+  add(
+    "examples-added-array",
+    base,
+    merge(base, { examples: [ARRAY_A()] }),
+    "Added examples: [array with 2 items]",
+  );
+  add("examples-removed-empty-array", merge(base, { examples: [[]] }), base, "Removed examples: [[]]");
+  add(
+    "examples-removed-array",
+    merge(base, { examples: [ARRAY_A()] }),
+    base,
+    "Removed examples: [array with 2 items]",
+  );
+  add(
+    "examples-replaced-empty-to-array",
+    merge(base, { examples: [[]] }),
+    merge(base, { examples: [ARRAY_A()] }),
+    "Replaced examples: [[]] → [array with 2 items]",
+  );
+  add(
+    "examples-replaced-array-to-empty",
+    merge(base, { examples: [ARRAY_A()] }),
+    merge(base, { examples: [[]] }),
+    "Replaced examples: [array with 2 items] → [[]]",
+  );
+  add(
+    "examples-replaced-array-to-array",
+    merge(base, { examples: [ARRAY_A()] }),
+    merge(base, { examples: [ARRAY_B()] }),
+    "Replaced examples: [array with 2 items] → [array with 3 items]",
+  );
+  add(
+    "examples-two-added-both-empty",
+    base,
+    merge(base, { examples: [[], []] }),
+    "Added examples: [[], []]",
+  );
+  add(
+    "examples-two-added-empty-and-array",
+    base,
+    merge(base, { examples: [[], ARRAY_A()] }),
+    "Added examples: [[], array with 2 items]",
+  );
+  add(
+    "examples-two-added-both-arrays",
+    base,
+    merge(base, { examples: [ARRAY_A(), ARRAY_B()] }),
+    "Added examples: [array 1, array 2]",
+  );
+  add(
+    "examples-two-removed-both-empty",
+    merge(base, { examples: [[], []] }),
+    base,
+    "Removed examples: [[], []]",
+  );
+  add(
+    "examples-two-removed-empty-and-array",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    base,
+    "Removed examples: [[], array with 2 items]",
+  );
+  add(
+    "examples-two-removed-both-arrays",
+    merge(base, { examples: [ARRAY_A(), ARRAY_B()] }),
+    base,
+    "Removed examples: [array 1, array 2]",
+  );
+  add(
+    "examples-append-empty-to-empty",
+    merge(base, { examples: [[]] }),
+    merge(base, { examples: [[], []] }),
+    "Appended [] to examples: [[]] → [[], []]",
+  );
+  add(
+    "examples-append-array-to-empty",
+    merge(base, { examples: [[]] }),
+    merge(base, { examples: [[], ARRAY_A()] }),
+    "Appended array to examples: [[]] → [[], array]",
+  );
+  add(
+    "examples-append-array-to-array",
+    merge(base, { examples: [ARRAY_A()] }),
+    merge(base, { examples: [ARRAY_A(), ARRAY_B()] }),
+    "Appended array 2 to examples: [array 1] → [array 1, array 2]",
+  );
+  add(
+    "examples-remove-empty-keep-array",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    merge(base, { examples: [ARRAY_A()] }),
+    "Removed [] from examples: [[], array] → [array]",
+  );
+  add(
+    "examples-remove-array-keep-empty",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    merge(base, { examples: [[]] }),
+    "Removed array from examples: [[], array] → [[]]",
+  );
+  add(
+    "examples-remove-first-of-two-empty",
+    merge(base, { examples: [[], []] }),
+    merge(base, { examples: [[]] }),
+    "Removed first element from examples: [[], []] → [[]]",
+  );
+  add(
+    "examples-remove-first-of-two-arrays",
+    merge(base, { examples: [ARRAY_A(), ARRAY_B()] }),
+    merge(base, { examples: [ARRAY_B()] }),
+    "Removed first element from examples: [array 1, array 2] → [array 2]",
+  );
+  add(
+    "examples-replace-empty-with-array",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    merge(base, { examples: [ARRAY_B(), ARRAY_A()] }),
+    "Replaced [] with array 2 in examples: [[], array 1] → [array 2, array 1]",
+  );
+  add(
+    "examples-replace-array-with-empty",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    merge(base, { examples: [[], []] }),
+    "Replaced array 1 with [] in examples: [[], array 1] → [[], []]",
+  );
+  add(
+    "examples-replace-array-with-array",
+    merge(base, { examples: [[], ARRAY_A()] }),
+    merge(base, { examples: [[], ARRAY_B()] }),
+    "Replaced array 1 with array 2 in examples: [[], array 1] → [[], array 2]",
+  );
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectArrayValidationsItemsCountCases = (cases) => {
+  const dir = "array-validations/items-count";
+  const base = ARRAY_PLAIN();
+  const add = (slug, before, after, summary) => pushCase(cases, dir, slug, before, after, summary);
+
+  add("min-items-added", base, itemsCount({ minItems: 1 }), "Added minItems");
+  add("min-items-removed", itemsCount({ minItems: 1 }), base, "Removed minItems");
+  add(
+    "min-items-replaced",
+    itemsCount({ minItems: 1 }),
+    itemsCount({ minItems: 3 }),
+    "Replaced minItems",
+  );
+  add("max-items-added", base, itemsCount({ maxItems: 5 }), "Added maxItems");
+  add("max-items-removed", itemsCount({ maxItems: 5 }), base, "Removed maxItems");
+  add(
+    "max-items-replaced",
+    itemsCount({ maxItems: 5 }),
+    itemsCount({ maxItems: 10 }),
+    "Replaced maxItems",
+  );
+  add(
+    "max-items-added-to-min",
+    itemsCount({ minItems: 1 }),
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    "Added maxItems to existing minItems",
+  );
+  add(
+    "min-items-added-to-max",
+    itemsCount({ maxItems: 5 }),
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    "Added minItems to existing maxItems",
+  );
+  add(
+    "items-count-both-added",
+    base,
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    "Added minItems, maxItems",
+  );
+  add(
+    "max-items-removed-keep-min",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ minItems: 1 }),
+    "Removed maxItems (minItems unchanged)",
+  );
+  add(
+    "min-items-removed-keep-max",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ maxItems: 5 }),
+    "Removed minItems (maxItems unchanged)",
+  );
+  add(
+    "items-count-both-removed",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    base,
+    "Removed minItems, maxItems",
+  );
+  add(
+    "items-count-replace-min",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ minItems: 3, maxItems: 5 }),
+    "Replaced minItems (maxItems unchanged)",
+  );
+  add(
+    "items-count-replace-max",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ minItems: 1, maxItems: 10 }),
+    "Replaced maxItems (minItems unchanged)",
+  );
+  add(
+    "items-count-replace-both",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ minItems: 3, maxItems: 10 }),
+    "Replaced minItems, maxItems",
+  );
+  add(
+    "min-items-added-max-items-removed",
+    itemsCount({ maxItems: 5 }),
+    itemsCount({ minItems: 1 }),
+    "Added minItems, removed maxItems",
+  );
+  add(
+    "max-items-added-min-items-removed",
+    itemsCount({ minItems: 1 }),
+    itemsCount({ maxItems: 5 }),
+    "Added maxItems, removed minItems",
+  );
+  add(
+    "min-items-added-max-items-replaced",
+    itemsCount({ maxItems: 5 }),
+    itemsCount({ minItems: 1, maxItems: 10 }),
+    "Added minItems, replaced maxItems",
+  );
+  add(
+    "min-items-removed-max-items-replaced",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ maxItems: 10 }),
+    "Removed minItems, replaced maxItems",
+  );
+  add(
+    "max-items-added-min-items-replaced",
+    itemsCount({ minItems: 1 }),
+    itemsCount({ minItems: 3, maxItems: 5 }),
+    "Added maxItems, replaced minItems",
+  );
+  add(
+    "max-items-removed-min-items-replaced",
+    itemsCount({ minItems: 1, maxItems: 5 }),
+    itemsCount({ minItems: 3 }),
+    "Removed maxItems, replaced minItems",
+  );
+  add(
+    "unique-items-true-added",
+    base,
+    itemsCount({ uniqueItems: true }),
+    "Added uniqueItems: true",
+  );
+  add(
+    "unique-items-false-added",
+    base,
+    itemsCount({ uniqueItems: false }),
+    "Added uniqueItems: false",
+  );
+  add(
+    "unique-items-true-removed",
+    itemsCount({ uniqueItems: true }),
+    base,
+    "Removed uniqueItems: true",
+  );
+  add(
+    "unique-items-false-removed",
+    itemsCount({ uniqueItems: false }),
+    base,
+    "Removed uniqueItems: false",
+  );
+  add(
+    "unique-items-true-to-false",
+    itemsCount({ uniqueItems: true }),
+    itemsCount({ uniqueItems: false }),
+    "Replaced uniqueItems: true → false",
+  );
+  add(
+    "unique-items-false-to-true",
+    itemsCount({ uniqueItems: false }),
+    itemsCount({ uniqueItems: true }),
+    "Replaced uniqueItems: false → true",
   );
 };
 
@@ -1999,6 +2669,70 @@ export const STORY_SUITES = [
     testFileName: "extended-array.it-test.ts",
   },
   {
+    suiteKey: "object-validations-default",
+    title: "JSON Schema Diffs Suite/Object Validations Default",
+    metaKebab: "json-schema-diffs-suite-object-validations-default",
+    globPath: "object-validations/default",
+    storyFileName: "object-validations-default.stories.tsx",
+    testFileName: "object-validations-default.it-test.ts",
+  },
+  {
+    suiteKey: "object-validations-example",
+    title: "JSON Schema Diffs Suite/Object Validations Example",
+    metaKebab: "json-schema-diffs-suite-object-validations-example",
+    globPath: "object-validations/example",
+    storyFileName: "object-validations-example.stories.tsx",
+    testFileName: "object-validations-example.it-test.ts",
+  },
+  {
+    suiteKey: "object-validations-examples",
+    title: "JSON Schema Diffs Suite/Object Validations Examples",
+    metaKebab: "json-schema-diffs-suite-object-validations-examples",
+    globPath: "object-validations/examples",
+    storyFileName: "object-validations-examples.stories.tsx",
+    testFileName: "object-validations-examples.it-test.ts",
+  },
+  {
+    suiteKey: "object-validations-properties-count",
+    title: "JSON Schema Diffs Suite/Object Validations Properties Count",
+    metaKebab: "json-schema-diffs-suite-object-validations-properties-count",
+    globPath: "object-validations/properties-count",
+    storyFileName: "object-validations-properties-count.stories.tsx",
+    testFileName: "object-validations-properties-count.it-test.ts",
+  },
+  {
+    suiteKey: "array-validations-default",
+    title: "JSON Schema Diffs Suite/Array Validations Default",
+    metaKebab: "json-schema-diffs-suite-array-validations-default",
+    globPath: "array-validations/default",
+    storyFileName: "array-validations-default.stories.tsx",
+    testFileName: "array-validations-default.it-test.ts",
+  },
+  {
+    suiteKey: "array-validations-example",
+    title: "JSON Schema Diffs Suite/Array Validations Example",
+    metaKebab: "json-schema-diffs-suite-array-validations-example",
+    globPath: "array-validations/example",
+    storyFileName: "array-validations-example.stories.tsx",
+    testFileName: "array-validations-example.it-test.ts",
+  },
+  {
+    suiteKey: "array-validations-examples",
+    title: "JSON Schema Diffs Suite/Array Validations Examples",
+    metaKebab: "json-schema-diffs-suite-array-validations-examples",
+    globPath: "array-validations/examples",
+    storyFileName: "array-validations-examples.stories.tsx",
+    testFileName: "array-validations-examples.it-test.ts",
+  },
+  {
+    suiteKey: "array-validations-items-count",
+    title: "JSON Schema Diffs Suite/Array Validations Items Count",
+    metaKebab: "json-schema-diffs-suite-array-validations-items-count",
+    globPath: "array-validations/items-count",
+    storyFileName: "array-validations-items-count.stories.tsx",
+    testFileName: "array-validations-items-count.it-test.ts",
+  },
+  {
     suiteKey: "extended-misc",
     title: "JSON Schema Diffs Suite/Extended Misc",
     metaKebab: "json-schema-diffs-suite-extended-misc",
@@ -2104,6 +2838,14 @@ export const collectTypeChangeCases = () => {
   collectExtendedDefaultCases(cases);
   collectExtendedObjectCases(cases);
   collectExtendedArrayCases(cases);
+  collectObjectValidationsDefaultCases(cases);
+  collectObjectValidationsExampleCases(cases);
+  collectObjectValidationsExamplesCases(cases);
+  collectObjectValidationsPropertiesCountCases(cases);
+  collectArrayValidationsDefaultCases(cases);
+  collectArrayValidationsExampleCases(cases);
+  collectArrayValidationsExamplesCases(cases);
+  collectArrayValidationsItemsCountCases(cases);
   collectExtendedPatternAndNumberCases(cases);
   collectCombinerCases(cases);
   collectCircularCases(cases);

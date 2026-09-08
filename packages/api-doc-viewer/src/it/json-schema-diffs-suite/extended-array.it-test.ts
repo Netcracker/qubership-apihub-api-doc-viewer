@@ -85,18 +85,4 @@ describe("JSON Schema Diffs Suite/Extended Array", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
-
-  it("008-unique-items-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-008-unique-items-added`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
-
-  it("009-unique-items-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-009-unique-items-removed`);
-    await waitForJsonSchemaDiffViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot();
-  });
 });

@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 365
+- Total cases: 478
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -104,7 +104,7 @@ Path: `type-changes/extended/default/` (4 cases)
 
 ### Extended Object
 
-Path: `type-changes/extended/object/` (9 cases)
+Path: `type-changes/extended/object/` (6 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -114,13 +114,10 @@ Path: `type-changes/extended/object/` (9 cases)
 | `004-pattern-properties-added` | patternProperties added |
 | `005-pattern-properties-removed` | patternProperties removed |
 | `006-pattern-properties-replaced` | patternProperties replaced |
-| `007-property-count-bounds-added` | minProperties and maxProperties added |
-| `008-property-count-bounds-removed` | minProperties and maxProperties removed |
-| `009-property-count-bounds-replaced` | minProperties and maxProperties replaced |
 
 ### Extended Array
 
-Path: `type-changes/extended/array/` (9 cases)
+Path: `type-changes/extended/array/` (7 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -131,8 +128,180 @@ Path: `type-changes/extended/array/` (9 cases)
 | `005-tuple-item-appended` | Append tuple item |
 | `006-tuple-item-removed` | Pop tuple item |
 | `007-items-schema-description-changed` | Change inside items schema |
-| `008-unique-items-added` | uniqueItems added |
-| `009-unique-items-removed` | uniqueItems removed |
+
+### Object Validations Default
+
+Path: `type-changes/object-validations/default/` (5 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-default-added-empty-object` | Added default: {} |
+| `002-default-removed-empty-object` | Removed default: {} |
+| `003-default-replaced-empty-to-object` | Replaced default: {} → object with 2 properties |
+| `004-default-replaced-object-to-empty` | Replaced default: object with 2 properties → {} |
+| `005-default-replaced-object-to-object` | Replaced default: object with 2 properties → object with 4 properties |
+
+### Object Validations Example
+
+Path: `type-changes/object-validations/example/` (7 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-example-added-empty-object` | Added example: {} |
+| `002-example-added-object` | Added example: object with 2 properties |
+| `003-example-removed-empty-object` | Removed example: {} |
+| `004-example-removed-object` | Removed example: object with 2 properties |
+| `005-example-replaced-empty-to-object` | Replaced example: {} → object with 2 properties |
+| `006-example-replaced-object-to-empty` | Replaced example: object with 2 properties → {} |
+| `007-example-replaced-object-to-object` | Replaced example: object with 2 properties → object with 3 properties |
+
+### Object Validations Examples
+
+Path: `type-changes/object-validations/examples/` (23 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-examples-added-empty-object` | Added examples: [{}] |
+| `002-examples-added-object` | Added examples: [object with 2 properties] |
+| `003-examples-removed-empty-object` | Removed examples: [{}] |
+| `004-examples-removed-object` | Removed examples: [object with 2 properties] |
+| `005-examples-replaced-empty-to-object` | Replaced examples: [{}] → [object with 2 properties] |
+| `006-examples-replaced-object-to-empty` | Replaced examples: [object with 2 properties] → [{}] |
+| `007-examples-replaced-object-to-object` | Replaced examples: [object with 2 properties] → [object with 3 properties] |
+| `008-examples-two-added-both-empty` | Added examples: [{}, {}] |
+| `009-examples-two-added-empty-and-object` | Added examples: [{}, object with 2 properties] |
+| `010-examples-two-added-both-objects` | Added examples: [object 1, object 2] |
+| `011-examples-two-removed-both-empty` | Removed examples: [{}, {}] |
+| `012-examples-two-removed-empty-and-object` | Removed examples: [{}, object with 2 properties] |
+| `013-examples-two-removed-both-objects` | Removed examples: [object 1, object 2] |
+| `014-examples-append-empty-to-empty` | Appended {} to examples: [{}] → [{}, {}] |
+| `015-examples-append-object-to-empty` | Appended object to examples: [{}] → [{}, object] |
+| `016-examples-append-object-to-object` | Appended object 2 to examples: [object 1] → [object 1, object 2] |
+| `017-examples-remove-empty-keep-object` | Removed {} from examples: [{}, object] → [object] |
+| `018-examples-remove-object-keep-empty` | Removed object from examples: [{}, object] → [{}] |
+| `019-examples-remove-first-of-two-empty` | Removed first element from examples: [{}, {}] → [{}] |
+| `020-examples-remove-first-of-two-objects` | Removed first element from examples: [object 1, object 2] → [object 2] |
+| `021-examples-replace-empty-with-object` | Replaced {} with object 2 in examples: [{}, object 1] → [object 2, object 1] |
+| `022-examples-replace-object-with-empty` | Replaced object 1 with {} in examples: [{}, object 1] → [{}, {}] |
+| `023-examples-replace-object-with-object` | Replaced object 1 with object 2 in examples: [{}, object 1] → [{}, object 2] |
+
+### Object Validations Properties Count
+
+Path: `type-changes/object-validations/properties-count/` (21 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-min-properties-added` | Added minProperties |
+| `002-min-properties-removed` | Removed minProperties |
+| `003-min-properties-replaced` | Replaced minProperties |
+| `004-max-properties-added` | Added maxProperties |
+| `005-max-properties-removed` | Removed maxProperties |
+| `006-max-properties-replaced` | Replaced maxProperties |
+| `007-max-properties-added-to-min` | Added maxProperties to existing minProperties |
+| `008-min-properties-added-to-max` | Added minProperties to existing maxProperties |
+| `009-properties-count-both-added` | Added minProperties, maxProperties |
+| `010-max-properties-removed-keep-min` | Removed maxProperties (minProperties unchanged) |
+| `011-min-properties-removed-keep-max` | Removed minProperties (maxProperties unchanged) |
+| `012-properties-count-both-removed` | Removed minProperties, maxProperties |
+| `013-properties-count-replace-min` | Replaced minProperties (maxProperties unchanged) |
+| `014-properties-count-replace-max` | Replaced maxProperties (minProperties unchanged) |
+| `015-properties-count-replace-both` | Replaced minProperties, maxProperties |
+| `016-min-properties-added-max-properties-removed` | Added minProperties, removed maxProperties |
+| `017-max-properties-added-min-properties-removed` | Added maxProperties, removed minProperties |
+| `018-min-properties-added-max-properties-replaced` | Added minProperties, replaced maxProperties |
+| `019-min-properties-removed-max-properties-replaced` | Removed minProperties, replaced maxProperties |
+| `020-max-properties-added-min-properties-replaced` | Added maxProperties, replaced minProperties |
+| `021-max-properties-removed-min-properties-replaced` | Removed maxProperties, replaced minProperties |
+
+### Array Validations Default
+
+Path: `type-changes/array-validations/default/` (5 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-default-added-empty-array` | Added default: [] |
+| `002-default-removed-empty-array` | Removed default: [] |
+| `003-default-replaced-empty-to-array` | Replaced default: [] → array with 2 items |
+| `004-default-replaced-array-to-empty` | Replaced default: array with 2 items → [] |
+| `005-default-replaced-array-to-array` | Replaced default: array with 2 items → array with 4 items |
+
+### Array Validations Example
+
+Path: `type-changes/array-validations/example/` (7 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-example-added-empty-array` | Added example: [] |
+| `002-example-added-array` | Added example: array with 2 items |
+| `003-example-removed-empty-array` | Removed example: [] |
+| `004-example-removed-array` | Removed example: array with 2 items |
+| `005-example-replaced-empty-to-array` | Replaced example: [] → array with 2 items |
+| `006-example-replaced-array-to-empty` | Replaced example: array with 2 items → [] |
+| `007-example-replaced-array-to-array` | Replaced example: array with 2 items → array with 3 items |
+
+### Array Validations Examples
+
+Path: `type-changes/array-validations/examples/` (23 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-examples-added-empty-array` | Added examples: [[]] |
+| `002-examples-added-array` | Added examples: [array with 2 items] |
+| `003-examples-removed-empty-array` | Removed examples: [[]] |
+| `004-examples-removed-array` | Removed examples: [array with 2 items] |
+| `005-examples-replaced-empty-to-array` | Replaced examples: [[]] → [array with 2 items] |
+| `006-examples-replaced-array-to-empty` | Replaced examples: [array with 2 items] → [[]] |
+| `007-examples-replaced-array-to-array` | Replaced examples: [array with 2 items] → [array with 3 items] |
+| `008-examples-two-added-both-empty` | Added examples: [[], []] |
+| `009-examples-two-added-empty-and-array` | Added examples: [[], array with 2 items] |
+| `010-examples-two-added-both-arrays` | Added examples: [array 1, array 2] |
+| `011-examples-two-removed-both-empty` | Removed examples: [[], []] |
+| `012-examples-two-removed-empty-and-array` | Removed examples: [[], array with 2 items] |
+| `013-examples-two-removed-both-arrays` | Removed examples: [array 1, array 2] |
+| `014-examples-append-empty-to-empty` | Appended [] to examples: [[]] → [[], []] |
+| `015-examples-append-array-to-empty` | Appended array to examples: [[]] → [[], array] |
+| `016-examples-append-array-to-array` | Appended array 2 to examples: [array 1] → [array 1, array 2] |
+| `017-examples-remove-empty-keep-array` | Removed [] from examples: [[], array] → [array] |
+| `018-examples-remove-array-keep-empty` | Removed array from examples: [[], array] → [[]] |
+| `019-examples-remove-first-of-two-empty` | Removed first element from examples: [[], []] → [[]] |
+| `020-examples-remove-first-of-two-arrays` | Removed first element from examples: [array 1, array 2] → [array 2] |
+| `021-examples-replace-empty-with-array` | Replaced [] with array 2 in examples: [[], array 1] → [array 2, array 1] |
+| `022-examples-replace-array-with-empty` | Replaced array 1 with [] in examples: [[], array 1] → [[], []] |
+| `023-examples-replace-array-with-array` | Replaced array 1 with array 2 in examples: [[], array 1] → [[], array 2] |
+
+### Array Validations Items Count
+
+Path: `type-changes/array-validations/items-count/` (27 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-min-items-added` | Added minItems |
+| `002-min-items-removed` | Removed minItems |
+| `003-min-items-replaced` | Replaced minItems |
+| `004-max-items-added` | Added maxItems |
+| `005-max-items-removed` | Removed maxItems |
+| `006-max-items-replaced` | Replaced maxItems |
+| `007-max-items-added-to-min` | Added maxItems to existing minItems |
+| `008-min-items-added-to-max` | Added minItems to existing maxItems |
+| `009-items-count-both-added` | Added minItems, maxItems |
+| `010-max-items-removed-keep-min` | Removed maxItems (minItems unchanged) |
+| `011-min-items-removed-keep-max` | Removed minItems (maxItems unchanged) |
+| `012-items-count-both-removed` | Removed minItems, maxItems |
+| `013-items-count-replace-min` | Replaced minItems (maxItems unchanged) |
+| `014-items-count-replace-max` | Replaced maxItems (minItems unchanged) |
+| `015-items-count-replace-both` | Replaced minItems, maxItems |
+| `016-min-items-added-max-items-removed` | Added minItems, removed maxItems |
+| `017-max-items-added-min-items-removed` | Added maxItems, removed minItems |
+| `018-min-items-added-max-items-replaced` | Added minItems, replaced maxItems |
+| `019-min-items-removed-max-items-replaced` | Removed minItems, replaced maxItems |
+| `020-max-items-added-min-items-replaced` | Added maxItems, replaced minItems |
+| `021-max-items-removed-min-items-replaced` | Removed maxItems, replaced minItems |
+| `022-unique-items-true-added` | Added uniqueItems: true |
+| `023-unique-items-false-added` | Added uniqueItems: false |
+| `024-unique-items-true-removed` | Removed uniqueItems: true |
+| `025-unique-items-false-removed` | Removed uniqueItems: false |
+| `026-unique-items-true-to-false` | Replaced uniqueItems: true → false |
+| `027-unique-items-false-to-true` | Replaced uniqueItems: false → true |
 
 ### Extended Misc
 

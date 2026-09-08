@@ -46,6 +46,3 @@ export const Case_003_additional_properties_schema_added: Story = createCaseStor
 export const Case_004_pattern_properties_added: Story = createCaseStory("004-pattern-properties-added");
 export const Case_005_pattern_properties_removed: Story = createCaseStory("005-pattern-properties-removed");
 export const Case_006_pattern_properties_replaced: Story = createCaseStory("006-pattern-properties-replaced");
-export const Case_007_property_count_bounds_added: Story = createCaseStory("007-property-count-bounds-added");
-export const Case_008_property_count_bounds_removed: Story = createCaseStory("008-property-count-bounds-removed");
-export const Case_009_property_count_bounds_replaced: Story = createCaseStory("009-property-count-bounds-replaced");

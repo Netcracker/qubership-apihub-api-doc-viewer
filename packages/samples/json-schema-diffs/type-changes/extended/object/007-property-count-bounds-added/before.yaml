@@ -1,6 +1,0 @@
-type: object
-description: Sample object
-properties:
-  name:
-    type: string
-
