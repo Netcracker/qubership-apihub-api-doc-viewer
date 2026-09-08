@@ -326,6 +326,68 @@ await page.evaluate(() => new Promise<void>(resolve =>
 
 Reuse this pattern when new stories show timing-related snapshot drift.
 
+## Pixel-diff blind spot for near-white diff colors (session lesson)
+
+**A screenshot test can pass cleanly against a correct baseline while the code
+it captured is visibly broken.** This is not a staleness or environment issue —
+it is a property of `pixelmatch`'s perceptual color-distance threshold versus
+this repo's diff row-background colors, which are deliberately very pale:
+
+```
+--diffs-background-yellow: rgb(254, 252, 232)
+--diffs-background-red:    rgb(254, 242, 242)
+--diffs-background-green:  rgb(240, 253, 244)
+--diffs-background-gray:   rgb(243, 244, 246)
+```
+
+`.jest/setup.tests.ts` configures `customDiffConfig: { threshold: 0.1 }` (pixelmatch's
+own default — not overridden here) and a separate `failureThreshold: 20` (an absolute
+*count* of mismatched pixels tolerated, `failureThresholdType` defaults to `'pixel'`).
+The `threshold: 0.1` setting is a **per-pixel perceptual color-distance** cutoff, checked
+*before* `failureThreshold` ever comes into play. Verified directly with `pixelmatch`:
+
+```js
+pixelmatch(paleYellowImg, whiteImg, diffOut, w, h, { threshold: 0.1 })
+// -> 0 mismatched pixels, for EVERY one of the four colors above
+```
+
+All four diff row-background colors are perceptually indistinguishable from
+plain white at this threshold. A regression that makes a row's background
+**disappear entirely** (as opposed to changing which color it is) produces
+**zero** pixelmatch-detected mismatches, regardless of how large the affected
+area is — `failureThreshold: 20` never even gets exercised, because the
+per-pixel comparison already reports no difference.
+
+**How this was found:** a real regression in `SideBySideLayout` (see the
+`api-doc-viewer-authoring` skill's *`SideBySideLayout`/`OneSideLayout` width
+contract* section) made `AddressRow`/`ServerAddressRow`'s diff background
+collapse to content width instead of filling the row. The committed baseline
+PNGs were correct (captured before the regression); the regression code ran
+through the exact same Docker/Podman Jest+Puppeteer pipeline the IT suite
+uses, in real terminal runs, and the suite reported **169/169 passed, no
+diffs** every time — confirmed by deliberately re-running the real IT test
+(not a substitute script) against the reverted, known-buggy code, both with
+the pristine baseline (PASS) and by forcing a fresh write and pixel-sampling
+the raw PNG bytes (which showed the row background was in fact missing).
+
+**Practical implications:**
+
+- Do **not** trust a passing screenshot test as proof that a row-background
+  diff (or any near-white/near-background color) is actually rendering. This
+  applies to all four `diffs-background_*` colors, anywhere they're used as a
+  full-row/full-column background (not just AsyncAPI's `AddressRow`/
+  `ServerAddressRow` — the same colors back `TextRowContent`, `TitleRowContent`,
+  DDL's `AdditionalInfoRow`, and others).
+- When changing a shared layout primitive that many row components render
+  into (`SideBySideLayout`, `OneSideLayout`), do not rely on the existing
+  screenshot suites to catch a width/sizing regression for consumers using
+  these background colors — verify with a DOM/computed-style check
+  (`getBoundingClientRect().width` against the column width) instead of, or
+  in addition to, the screenshot diff.
+- Lowering `customDiffConfig.threshold` to catch this reliably trades away
+  tolerance for anti-aliasing and font-rendering noise elsewhere in the
+  ~900+ existing snapshots — not a decision to make locally per-suite.
+
 ## Snapshots
 
 Images land in `src/it/__image_snapshots__/`. Snapshot identifiers follow

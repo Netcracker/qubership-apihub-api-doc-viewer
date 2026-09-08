@@ -658,6 +658,59 @@ colours although only the row transitioned.
 Do **not** thread `nodeLevelDiff` into badge renderers for this — the data layer owns the
 contract.
 
+## `SideBySideLayout` / `OneSideLayout` width contract (session lesson)
+
+Symptom: in side-by-side diffs, a row's diff background (`ServerAddressRow` /
+`AddressRow`) only wrapped the small chip/text produced by `renderAddress`
+instead of filling the whole row from left to right of the column. Screenshot
+tests for the affected suite (`async-api-diffs-suite-channel-server`,
+`async-api-diffs-suite-channel-parameters`) kept passing throughout — see the
+`api-doc-viewer-testing` skill's **pixel-diff blind spot for near-white diff
+colors** section for why the screenshots never caught it.
+
+**Root cause:** `SideBySideLayout` (`shared-components/Layout/SideBySideLayout.tsx`)
+used to wrap each side in a **plain block** `<div className="w-1/2">`. A block
+child with no explicit width naturally fills a block parent, so any consumer's
+row content filled the column *by default* — no `w-full` needed.
+
+A later, unrelated change (DDL diff viewer work, needing `items-stretch` row
+height behaviour) turned that wrapper into a **flex container**:
+
+```diff
+- <div className="flex flex-row w-full">
+-   <div className='w-1/2'>
++ <div className="flex w-full flex-row items-stretch">
++   <div className="flex w-1/2">
+      {left}
+```
+
+That silently changed the sizing contract for *every* consumer from "block
+child auto-fills" to "flex child shrinks to its own content unless it opts in
+with `w-full`/`flex-1`". `AddressRow`'s `AddressRowContent` and
+`MessageChannelServerNodeViewer`'s `renderAddressContent` never needed
+`w-full` before, so they broke as an unnoticed side effect of a shared-layout
+change made for a different feature. `TextRowContent` and `TitleRowContent`
+happened to already use `flex w-full h-full` for their outer row divs, so they
+were unaffected — that is the pattern to copy.
+
+**Fix:** add `w-full` (and `flex`, if the div isn't already a flex container)
+to the row's outer div, matching the `TextRowContent` shape:
+
+```tsx
+className={`... flex w-full h-full ${diffStyles.join(' ')}`}
+```
+
+**Rule for `SideBySideLayout`/`OneSideLayout` consumers:** the element you
+return as `left`/`right`/`content` is a **flex item** of a `flex` wrapper —
+it must carry `w-full` (or `flex-1`) itself; nothing in the layout primitives
+stretches it for you along the main axis. `items-stretch` on the outer flex
+row only stretches the **cross axis** (height when direction is row), never
+width. When adding a new row-shaped component that plugs into either layout
+primitive, verify in the DOM (`getBoundingClientRect().width`) that it
+actually matches the column's width — do not rely on a screenshot looking
+visually plausible for near-white diff-background colors (see the testing
+skill section referenced above).
+
 ## Monorepo paths
 
 Source imports use the `@apihub/` alias (maps to `packages/api-doc-viewer/src`).
