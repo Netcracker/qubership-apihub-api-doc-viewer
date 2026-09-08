@@ -85,13 +85,7 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
       <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
         <LevelIndicator level={level} lastInvisible={lastInvisible && isLabelVisible} />
       </div>
-      {isJsonSchemaUsage ? (
-        <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center">
-          {isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />}
-        </div>
-      ) : (
-        isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />
-      )}
+      {isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />}
     </div>
   )
 })
