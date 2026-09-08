@@ -35,6 +35,3 @@ export declare const Case_003_additional_properties_schema_added: Story;
 export declare const Case_004_pattern_properties_added: Story;
 export declare const Case_005_pattern_properties_removed: Story;
 export declare const Case_006_pattern_properties_replaced: Story;
-export declare const Case_007_property_count_bounds_added: Story;
-export declare const Case_008_property_count_bounds_removed: Story;
-export declare const Case_009_property_count_bounds_replaced: Story;
