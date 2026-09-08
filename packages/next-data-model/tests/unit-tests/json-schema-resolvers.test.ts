@@ -16,7 +16,19 @@ describe("JSON Schema model resolvers", () => {
 
   it("resolves type label with format and nullable suffix", () => {
     expect(resolveJsonSchemaTypeLabel({ type: "string", format: "uuid", nullable: true }, null))
-      .toBe("string uuid or null")
+      .toBe("string(uuid) or null")
+  })
+
+  it("resolves type label with title", () => {
+    expect(resolveJsonSchemaTypeLabel({ type: "object", title: "Sample Object" }, null))
+      .toBe("object<Sample Object>")
+  })
+
+  it("resolves type label with format, title, and nullable suffix", () => {
+    expect(resolveJsonSchemaTypeLabel(
+      { type: "string", format: "date-time", title: "MyTitle", nullable: true },
+      null,
+    )).toBe("string(date-time)<MyTitle> or null")
   })
 
   it("resolves validation keys for string constraints", () => {

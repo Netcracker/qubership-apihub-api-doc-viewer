@@ -7,8 +7,12 @@ import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schem
 import { isJsonSchemaPrimitiveNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 
 const NULLABLE_SUFFIX = " or null"
-const SEPARATOR = " "
 
+/**
+ * Rendered as `<type>[(<format>)][<<title>>][ or null]`, e.g. `string(date-time)<MyTitle> or null`
+ * — format and title are direct suffixes (no separating space); only the nullable suffix is
+ * space-separated. Mirrors legacy `NodeType.tsx`.
+ */
 export function resolveJsonSchemaTypeLabel(
   value: JsonSchemaTreeNodeStoredValue | null | undefined,
   meta: JsonSchemaTreeNodeMeta | null | undefined,
@@ -26,15 +30,17 @@ export function resolveJsonSchemaTypeLabel(
   const format = typedValue && typeof typedValue === "object" && "format" in typedValue
     ? typedValue.format
     : undefined
+  const title = typedValue?.title
   const nullableSuffix = typedValue?.nullable ? NULLABLE_SUFFIX : ""
 
-  const parts: string[] = [String(type)]
+  let label = String(type)
   if (format) {
-    parts.push(String(format))
+    label += `(${format})`
   }
-  if (nullableSuffix) {
-    parts.push(nullableSuffix.trim())
+  if (title) {
+    label += `<${title}>`
   }
+  label += nullableSuffix
 
-  return parts.join(SEPARATOR)
+  return label
 }

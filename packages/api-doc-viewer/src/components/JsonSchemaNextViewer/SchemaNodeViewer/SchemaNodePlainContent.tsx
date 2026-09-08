@@ -312,21 +312,6 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )}
 
-      {visibility.showEnumValuesRow && (
-        <AdditionalInfoRow
-          label="Allowed values"
-          usage={AdditionalInfoRowUsage.JsonSchemaValidation}
-          subheader={enumValuesAdditionalInfoSubheader}
-          diff={enumDiff}
-          colorizingDiff={enumRowColorizingDiff}
-          diffsSeverities={enumDiff || enumValueDiffs || enumRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
-          {...resolvePlainPropertyListLastRowFlags(
-            isLastInList,
-            { ...visibility, showDefaultRow: false, showExamplesRow: false },
-          )}
-        />
-      )}
-
       {visibility.showDefaultRow && (
         <AdditionalInfoRow
           label="Default"
@@ -345,6 +330,21 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           diff={examplesDiff}
           colorizingDiff={examplesRowColorizingDiff}
           diffsSeverities={examplesDiff || examplesValueDiffs || examplesRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
+        />
+      )}
+
+      {visibility.showEnumValuesRow && (
+        <AdditionalInfoRow
+          label="Allowed values"
+          usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+          subheader={enumValuesAdditionalInfoSubheader}
+          diff={enumDiff}
+          colorizingDiff={enumRowColorizingDiff}
+          diffsSeverities={enumDiff || enumValueDiffs || enumRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
+          {...resolvePlainPropertyListLastRowFlags(
+            isLastInList,
+            { ...visibility, showDefaultRow: false, showExamplesRow: false },
+          )}
         />
       )}
 

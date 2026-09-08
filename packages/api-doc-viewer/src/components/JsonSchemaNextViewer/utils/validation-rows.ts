@@ -79,6 +79,19 @@ export function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | un
     })
   }
 
+  const valueRange = formatValueRangeChips(numberValue)
+  if (valueRange.length) {
+    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_RANGE, label: VALUE_RANGE_LABEL, values: valueRange })
+  }
+
+  if (numberValue.multipleOf !== undefined) {
+    rows.push({
+      key: JsonSchemaValidationRowKeys.VALUE_MULTIPLE_OF,
+      label: VALUE_MULTIPLE_OF_LABEL,
+      values: [String(numberValue.multipleOf)],
+    })
+  }
+
   const propertiesCount = formatBoundRangeChips(objectValue.minProperties, objectValue.maxProperties)
   if (propertiesCount.length) {
     rows.push({
@@ -99,19 +112,6 @@ export function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | un
   const itemsCount = formatBoundRangeChips(arrayValue.minItems, arrayValue.maxItems)
   if (itemsCount.length) {
     rows.push({ key: JsonSchemaValidationRowKeys.ITEMS_COUNT, label: ITEMS_COUNT_LABEL, values: itemsCount })
-  }
-
-  if (numberValue.multipleOf !== undefined) {
-    rows.push({
-      key: JsonSchemaValidationRowKeys.VALUE_MULTIPLE_OF,
-      label: VALUE_MULTIPLE_OF_LABEL,
-      values: [String(numberValue.multipleOf)],
-    })
-  }
-
-  const valueRange = formatValueRangeChips(numberValue)
-  if (valueRange.length) {
-    rows.push({ key: JsonSchemaValidationRowKeys.VALUE_RANGE, label: VALUE_RANGE_LABEL, values: valueRange })
   }
 
   return rows
