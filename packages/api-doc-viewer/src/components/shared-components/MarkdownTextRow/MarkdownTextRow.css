@@ -77,6 +77,10 @@
   font-size: 12px;
   font-weight: 400;
   color: rgb(51 65 85);
+  /* Legacy parity: legacy's .markdown wrapper uses Tailwind text-xs (line-height: 1rem),
+     inherited by its <p> child. `.markdown-text-row .markdown > * { all: revert }` above can
+     drop that inherited line-height on the <p>, so restore it explicitly here. */
+  line-height: 1rem;
 }
 
 .markdown-text-row__json-schema-expander {
