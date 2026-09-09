@@ -5,6 +5,7 @@
 .title-row-subheader-value.text {
   font-size: 12px;
   color: rgb(100 116 139);
+  line-height: 1; /* TEMP fix to match with legacy layout */
 }
 
 .title-row-subheader-value.block {
