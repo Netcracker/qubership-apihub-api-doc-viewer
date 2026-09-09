@@ -8,5 +8,6 @@ export type AdditionalInfoPieceProps = {
     textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>;
     borderShadowColor?: HighlightVariant;
     isFontMuted?: boolean;
+    isEmptyStringPlaceholder?: boolean;
 };
 export declare const AdditionalInfoPiece: FC<AdditionalInfoPieceProps>;
