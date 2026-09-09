@@ -15,10 +15,13 @@ export const AdditionalInfoPieceBase: FC<AdditionalInfoPieceBaseProps> = memo<Ad
   }
 
   return (
-    <span className={blockClassName}>
-      <span className={valueClassName || undefined}>
+    <div className={blockClassName}>
+      {/* TEMPORARY: legacy parity — UxBadge.tsx renders values in a <pre> (whitespace/newlines
+          preserved natively, no wrap), not a <span>. fontFamily override matches UxBadge.tsx's
+          own inline style, since <pre> defaults to the browser's monospace font otherwise. */}
+      <pre className={valueClassName || undefined} style={{ fontFamily: 'Inter' }}>
         {`${value}`}
-      </span>
-    </span>
+      </pre>
+    </div>
   )
 })

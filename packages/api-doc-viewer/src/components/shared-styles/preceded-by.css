@@ -194,7 +194,7 @@
 }
 
 .json-schema-property .additional-info-row-content .additional-info-row-label {
-  padding-top: 1px;
+  padding-top: 3px;
   /* Legacy parity: label uses Tailwind text-xs (line-height: 1rem); .additional-info-row-label
      only sets font-size, so it fell back to inherited/default line-height, drifting row height. */
   line-height: 1rem;
