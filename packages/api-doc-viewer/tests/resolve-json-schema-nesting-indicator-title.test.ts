@@ -12,7 +12,7 @@ describe("resolve-json-schema-nesting-indicator-title", () => {
       meta: () => ({}),
     } as unknown as JsonSchemaTreeNode
 
-    expect(resolveJsonSchemaPropertyNestingIndicatorTitle(node)).toBe("string uuid")
+    expect(resolveJsonSchemaPropertyNestingIndicatorTitle(node)).toBe("string(uuid)")
   })
 
   it("resolves combiner nesting title from first nested branch kind", () => {

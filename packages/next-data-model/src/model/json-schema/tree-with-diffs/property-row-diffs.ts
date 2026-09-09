@@ -325,14 +325,35 @@ export function hasJsonSchemaValidationRowSemanticDiffs(
   return Object.values(valueDiffs).some((diff) => diff !== undefined)
 }
 
+/** Legacy parity: `DEFAULT_SERIES_ITEM` in `consts/configuration.ts`. */
+export const JSON_SCHEMA_EMPTY_STRING_DISPLAY_VALUE = "<empty string>"
+
+/**
+ * Mirrors legacy `stringifyItem` (`utils/common/rows.ts`): round-tripping through
+ * `JSON.stringify` and stripping the surrounding quotes turns control characters
+ * (`\r`, `\n`, `\t`, ...) into visible backslash escapes instead of collapsing or
+ * disappearing when rendered — plain spaces are left untouched.
+ */
+function escapeJsonSchemaStringDisplayValue(value: string): string {
+  return JSON.stringify(value).slice(1, -1)
+}
+
 export function formatJsonSchemaListDisplayValue(value: unknown): string {
   if (typeof value === "string") {
-    return value
+    if (value === "") {
+      return JSON_SCHEMA_EMPTY_STRING_DISPLAY_VALUE
+    }
+    return escapeJsonSchemaStringDisplayValue(value)
   }
   if (typeof value === "object" && value !== null) {
     return JSON.stringify(value, null, 2)
   }
   return JSON.stringify(value)
+}
+
+/** Whether a resolved chip's display text is the empty-string placeholder (needs muted styling). */
+export function isJsonSchemaEmptyStringDisplayValue(text: string): boolean {
+  return text === JSON_SCHEMA_EMPTY_STRING_DISPLAY_VALUE
 }
 
 export function resolveJsonSchemaDefaultSideEntries(

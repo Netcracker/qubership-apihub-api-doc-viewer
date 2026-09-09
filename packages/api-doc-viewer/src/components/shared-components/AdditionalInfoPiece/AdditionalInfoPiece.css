@@ -16,3 +16,9 @@
 .additional-info-piece_json-schema-validation {
   white-space: pre-wrap;
 }
+
+/* Legacy parity (DEFAULT_SERIES_ITEM_TEXT_COLOR = 'text-gray-400/[.8]'): the `<empty string>`
+   placeholder is shown in muted text, distinct from the diff-replace "font muted" color. */
+.additional-info-piece_empty-string-placeholder {
+  color: rgb(156 163 175 / 0.8);
+}

@@ -13,6 +13,12 @@ export type UseAdditionalInfoPieceStylesInput = {
   textHighlighterColor?: Exclude<HighlightVariant, HighlightVariant.Gray>
   borderShadowColor?: HighlightVariant
   isFontMuted?: boolean
+  /**
+   * Legacy parity (`DEFAULT_SERIES_ITEM_TEXT_COLOR`): the `<empty string>` placeholder gets its
+   * own muted color, distinct from `isFontMuted` (diff-replace muting) — different concept,
+   * different color.
+   */
+  isEmptyStringPlaceholder?: boolean
 }
 
 export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStylesInput = {}): AdditionalInfoPieceStyles {
@@ -21,6 +27,7 @@ export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStyles
     textHighlighterColor,
     borderShadowColor,
     isFontMuted,
+    isEmptyStringPlaceholder,
   } = input
 
   return useMemo(() => ({
@@ -34,6 +41,7 @@ export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStyles
     valueClassName: [
       DiffsClassesBuilder.highlighter(textHighlighterColor),
       isFontMuted ? DiffsClassesBuilder.fontMuted() : '',
+      isEmptyStringPlaceholder ? 'additional-info-piece_empty-string-placeholder' : '',
     ].filter(Boolean).join(' '),
-  }), [borderShadowColor, isFontMuted, textHighlighterColor, usage])
+  }), [borderShadowColor, isEmptyStringPlaceholder, isFontMuted, textHighlighterColor, usage])
 }
