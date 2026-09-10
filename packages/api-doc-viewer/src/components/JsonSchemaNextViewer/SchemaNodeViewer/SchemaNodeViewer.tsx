@@ -15,7 +15,6 @@ import {
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
 import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property-expand"
-import { isJsonSchemaPrimitiveValueType } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
@@ -25,15 +24,14 @@ import {
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
-import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
-import { resolveJsonSchemaPropertyNestingIndicatorTitle } from "../utils/resolve-json-schema-nesting-indicator-title"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
-import { NestingIndicatorTypeLabelWithDiffs } from "./NestingIndicatorTypeLabelWithDiffs"
+import { JsonSchemaNestingIndicatorTypeValue } from "./TypeValue/JsonSchemaNestingIndicatorTypeValue"
+import { JsonSchemaNestingIndicatorTypeValueWithDiffs } from "./TypeValue/JsonSchemaNestingIndicatorTypeValueWithDiffs"
 import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
 import { SchemaNodeChildrenListWithDiffs } from "./SchemaNodeChildrenListWithDiffs"
 import { SchemaNodePlainContent } from "./SchemaNodePlainContent"
@@ -129,18 +127,14 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   const nestingIndicatorTitle = useCallback((layoutSide: LayoutSide): ReactNode => {
     if (nodeWithDiffs) {
       return (
-        <NestingIndicatorTypeLabelWithDiffs
+        <JsonSchemaNestingIndicatorTypeValueWithDiffs
           node={nodeWithDiffs}
           meta={nodeWithDiffs.meta()}
           layoutSide={layoutSide}
         />
       )
     }
-    const typedValue = asJsonSchemaTypedNodeValue(node.value())
-    if (isJsonSchemaPrimitiveValueType(typedValue?.type)) {
-      return null
-    }
-    return resolveJsonSchemaPropertyNestingIndicatorTitle(node)
+    return <JsonSchemaNestingIndicatorTypeValue node={node} />
   }, [node, nodeWithDiffs])
 
   const nestingIndicatorRowColorizingDiff = useMemo(

@@ -1,18 +1,19 @@
 import { CIRCULAR_REF_TOOLTIP } from "../../../consts/tooltips"
 import { CircularRefIcon } from "@apihub/components/kit/icons/CircularRefIcon"
 import { DiffTags } from "@apihub/components/common/diffs/DiffTags"
-import { SubheaderValue } from "@apihub/components/shared-components/SubheaderValue/SubheaderValue"
-import { SubheaderValueAppearance } from "@apihub/components/shared-components/SubheaderValue/types"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
-import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { FC } from "react"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { buildJsonSchemaDiffTagsProps } from "../utils/json-schema-diff-tags-props"
-import { JsonSchemaTypeLabelWithDiffs } from "./JsonSchemaTypeLabelWithDiffs"
+// NOTE: type-value rendering below deliberately does not reuse SubheaderValue/
+// SubheaderValueWithDiffs (see ./TypeValue) - to be reconciled with the shared subheader
+// stack later; not part of this change.
+import { JsonSchemaTitleRowTypeValue } from "./TypeValue/JsonSchemaTitleRowTypeValue"
+import { JsonSchemaTitleRowTypeValueWithDiffs } from "./TypeValue/JsonSchemaTitleRowTypeValueWithDiffs"
 
 export type JsonSchemaTitleSubheaderProps = {
   value: JsonSchemaTreeNodeValue | null | undefined
@@ -35,13 +36,7 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {showTypeLabel && (
-        <SubheaderValue
-          isVisible={true}
-          value={resolveJsonSchemaTypeLabel(value, meta)}
-          appearance={SubheaderValueAppearance.Text}
-        />
-      )}
+      {showTypeLabel && <JsonSchemaTitleRowTypeValue value={value} meta={meta} />}
       {isCycle && (
         <UxTooltip text={CIRCULAR_REF_TOOLTIP}>
           <CircularRefIcon />
@@ -67,7 +62,7 @@ export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithD
   return (
     <div className="flex flex-row items-center gap-2">
       {showTypeLabel && (
-        <JsonSchemaTypeLabelWithDiffs
+        <JsonSchemaTitleRowTypeValueWithDiffs
           node={node}
           meta={meta}
           layoutSide={layoutSide}

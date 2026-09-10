@@ -1,12 +1,5 @@
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { isJsonSchemaCombinerNestedKind } from "./node-type-checkers"
-
-export function resolveJsonSchemaPropertyNestingIndicatorTitle(
-  node: JsonSchemaTreeNode,
-): string {
-  return resolveJsonSchemaTypeLabel(node.value(), node.meta())
-}
 
 export function resolveJsonSchemaCombinerNestingIndicatorTitle(
   node: JsonSchemaTreeNode,
