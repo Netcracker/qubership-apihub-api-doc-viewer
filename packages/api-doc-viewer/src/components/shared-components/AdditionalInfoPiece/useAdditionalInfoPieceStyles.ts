@@ -39,6 +39,7 @@ export function useAdditionalInfoPieceStyles(input: UseAdditionalInfoPieceStyles
       DiffsClassesBuilder.borderShadow(borderShadowColor),
     ].filter(Boolean).join(' '),
     valueClassName: [
+      'inline',
       DiffsClassesBuilder.highlighter(textHighlighterColor),
       isFontMuted ? DiffsClassesBuilder.fontMuted() : '',
       isEmptyStringPlaceholder ? 'additional-info-piece_empty-string-placeholder' : '',
