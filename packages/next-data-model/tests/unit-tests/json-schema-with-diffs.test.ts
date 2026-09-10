@@ -980,9 +980,14 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       expect(typeSegment?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     }
 
+    // Non-primitive (array) is on the origin/before side, so it disappears after the change -
+    // the row colorizes as remove (red before, hidden after), not a symmetric replace.
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
     // Complex (array) origin keeps incrementing; primitive (string) changed side freezes -
     // its children are inherited-add "ghosts" that should pin at the parent's own level.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.flags.before.increaseLevel).toBe(true)
     expect(rowDiff?.flags.after.increaseLevel).toBe(false)
   })
@@ -997,37 +1002,48 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
 
     const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.flags.before.increaseLevel).toBe(true)
     expect(rowDiff?.flags.after.increaseLevel).toBe(false)
   })
 
-  it("freezes the primitive changed side for a root-level primitive<->complex change (004-string-to-array)", () => {
+  it("colors the row as add (not replace) and freezes the primitive origin side for a root-level primitive<->complex change (004-string-to-array)", () => {
     const tree = buildTreeFromFixture("004-string-to-array")
     const root = tree.root!
 
     expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
     expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
 
+    // Non-primitive (array) lands on the changed/after side, so children newly appear there -
+    // the row colorizes as add (green after, hidden before), not a symmetric yellow replace.
     const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
-    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     expect(rowDiff?.flags.before.increaseLevel).toBe(false)
     expect(rowDiff?.flags.after.increaseLevel).toBe(true)
   })
 
-  it("freezes the primitive changed side for a root-level primitive<->complex change (026-object-to-string)", () => {
+  it("colors the row as remove (not replace) and freezes the primitive changed side for a root-level primitive<->complex change (026-object-to-string)", () => {
     const tree = buildTreeFromFixture("026-object-to-string")
     const root = tree.root!
 
     expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
     expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("string")
 
+    // Non-primitive (object) is on the origin/before side, so its children disappear after the
+    // change - the row colorizes as remove (red before, hidden after), not a symmetric replace.
     const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
-    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.flags.before.increaseLevel).toBe(true)
     expect(rowDiff?.flags.after.increaseLevel).toBe(false)
   })
 
-  it("freezes the primitive side for a non-root property's primitive<->complex change too", () => {
+  it("colors the row as add (not replace) and freezes the primitive side for a non-root property's primitive<->complex change too", () => {
     const tree = buildTree(
       { type: "object", properties: { foo: { type: "string" } } },
       {
@@ -1041,7 +1057,9 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     expect(isJsonSchemaTreeNodeWithDiffs(fooNode)).toBe(true)
 
     const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(fooNode!)
-    expect(rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     expect(rowDiff?.flags.before.increaseLevel).toBe(false)
     expect(rowDiff?.flags.after.increaseLevel).toBe(true)
   })

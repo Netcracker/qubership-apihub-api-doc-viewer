@@ -255,8 +255,12 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         ...Object.values(typeLabelFieldDiffs),
       )
       if (representativeDiff) {
+        const crossing = this.resolveTypePrimitivenessCrossing(typeLabelFieldDiffs)
+        const colorizedDiff = crossing && typeLabelFieldDiffs.type
+          ? this.buildTypePrimitivenessCrossingRowColorizingDiff(typeLabelFieldDiffs.type, crossing)
+          : this.asReplaceRowColorizingDiff(representativeDiff)
         nodeDiffs.nestingIndicatorRowColorizingDiff = {
-          ...this.asReplaceRowColorizingDiff(representativeDiff),
+          ...colorizedDiff,
           flags: this.resolveTypeLabelNestingLevelFlags(typeLabelFieldDiffs),
         }
         return
@@ -331,20 +335,80 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   private resolveTypeLabelNestingLevelFlags(
     typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs,
   ): { before: { increaseLevel: boolean }; after: { increaseLevel: boolean } } {
-    const typeDiff = typeLabelFieldDiffs.type?.data
-    if (typeDiff && isDiffReplace(typeDiff)) {
-      const beforeType = typeof typeDiff.beforeValue === "string" ? typeDiff.beforeValue : undefined
-      const afterType = typeof typeDiff.afterValue === "string" ? typeDiff.afterValue : undefined
-      const beforeIsPrimitive = isJsonSchemaPrimitiveValueType(beforeType)
-      const afterIsPrimitive = isJsonSchemaPrimitiveValueType(afterType)
-      if (beforeIsPrimitive !== afterIsPrimitive) {
-        return {
-          before: { increaseLevel: !beforeIsPrimitive },
-          after: { increaseLevel: !afterIsPrimitive },
-        }
+    const crossing = this.resolveTypePrimitivenessCrossing(typeLabelFieldDiffs)
+    if (crossing) {
+      return {
+        before: { increaseLevel: !crossing.beforeIsPrimitive },
+        after: { increaseLevel: !crossing.afterIsPrimitive },
       }
     }
     return { before: { increaseLevel: true }, after: { increaseLevel: true } }
+  }
+
+  /**
+   * Detects whether the `type` field diff (if present and a replace) crosses the
+   * primitive<->non-primitive boundary (string/number/integer/boolean vs. object/array).
+   * Shared by {@link resolveTypeLabelNestingLevelFlags} (nesting-depth flags) and
+   * {@link aggregateNestingIndicatorRowColorizingDiff} (row background) - both need to know
+   * which side, if either, gained/lost the ability to have children.
+   */
+  private resolveTypePrimitivenessCrossing(
+    typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs,
+  ): { beforeIsPrimitive: boolean; afterIsPrimitive: boolean } | undefined {
+    const typeDiff = typeLabelFieldDiffs.type?.data
+    if (!typeDiff || !isDiffReplace(typeDiff)) {
+      return undefined
+    }
+    const beforeType = typeof typeDiff.beforeValue === "string" ? typeDiff.beforeValue : undefined
+    const afterType = typeof typeDiff.afterValue === "string" ? typeDiff.afterValue : undefined
+    const beforeIsPrimitive = isJsonSchemaPrimitiveValueType(beforeType)
+    const afterIsPrimitive = isJsonSchemaPrimitiveValueType(afterType)
+    if (beforeIsPrimitive === afterIsPrimitive) {
+      return undefined
+    }
+    return { beforeIsPrimitive, afterIsPrimitive }
+  }
+
+  /**
+   * Single-side add/remove colorizing for the nesting-indicator row when the `type` keyword
+   * itself crosses the primitive<->non-primitive boundary (e.g. `string` -> `array`) - the
+   * children row only exists on the non-primitive side, so the default symmetric yellow
+   * replace background (see {@link asReplaceRowColorizingDiff}) is wrong. Mirrors
+   * {@link buildWholeNodeInheritedRowColorizingDiff}'s single-side shape. Built from the `type`
+   * field diff specifically (its declaration paths identify which side introduced/removed the
+   * children) - not necessarily whichever field diff `maxChangedPropertyMetaDataByDiffType`
+   * picked as the highest-severity "representative" across type/format/title.
+   */
+  private buildTypePrimitivenessCrossingRowColorizingDiff(
+    typeDiff: ChangedPropertyMetaData,
+    crossing: { beforeIsPrimitive: boolean; afterIsPrimitive: boolean },
+  ): ChangedPropertyMetaData {
+    const { data } = typeDiff
+    if (!isDiffReplace(data)) {
+      // Unreachable in practice - resolveTypePrimitivenessCrossing only returns a value when
+      // isDiffReplace(typeDiff) already holds. Kept for TS narrowing to declarationPaths below.
+      return this.asReplaceRowColorizingDiff(typeDiff)
+    }
+    if (!crossing.afterIsPrimitive) {
+      // Non-primitive lands on the changed/after side -> children newly appear -> add.
+      return this.buildChangedPropertyMetaDataFromDiff({
+        type: data.type,
+        scope: data.scope,
+        description: data.description,
+        action: DiffAction.add,
+        afterValue: true,
+        afterDeclarationPaths: data.afterDeclarationPaths,
+      })
+    }
+    // Non-primitive was on the origin/before side -> children disappear -> remove.
+    return this.buildChangedPropertyMetaDataFromDiff({
+      type: data.type,
+      scope: data.scope,
+      description: data.description,
+      action: DiffAction.remove,
+      beforeValue: true,
+      beforeDeclarationPaths: data.beforeDeclarationPaths,
+    })
   }
 
   /** Raw-source keys that become this node's visible `childrenNodes()` (not `nestedNodes()`). */

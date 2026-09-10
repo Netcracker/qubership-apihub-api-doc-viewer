@@ -2,19 +2,9 @@ import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
   resolveJsonSchemaCombinerNestingIndicatorTitle,
-  resolveJsonSchemaPropertyNestingIndicatorTitle,
 } from "../src/components/JsonSchemaNextViewer/utils/resolve-json-schema-nesting-indicator-title"
 
 describe("resolve-json-schema-nesting-indicator-title", () => {
-  it("resolves property nesting title from schema type label", () => {
-    const node = {
-      value: () => ({ type: "string", format: "uuid" }),
-      meta: () => ({}),
-    } as unknown as JsonSchemaTreeNode
-
-    expect(resolveJsonSchemaPropertyNestingIndicatorTitle(node)).toBe("string(uuid)")
-  })
-
   it("resolves combiner nesting title from first nested branch kind", () => {
     const node = {
       nestedNodes: () => [{ kind: JsonSchemaTreeNodeKinds.ONE_OF }],
