@@ -85,6 +85,19 @@ export function resolveActiveLeafNode<N extends JsonSchemaTreeNode>(
   return current
 }
 
+const EMPTY_COMBINER_SELECTIONS: CombinerSelections = new Map()
+
+/**
+ * The leaf reached from `node` by always taking the first nested-combiner variant at every
+ * level (ignoring any live user selection) - i.e. what an as-yet-unselected combiner option's
+ * own type value would resolve to, recursively through nested combiners. Reuses
+ * {@link resolveActiveLeafNode} with an empty selections map, since `resolveSelectedNestedNode`
+ * already falls back to `nestedNodes[0]` when no selection is recorded for a given combiner id.
+ */
+export function resolveCombinerOptionLeafNode<N extends JsonSchemaTreeNode>(node: N): N {
+  return resolveActiveLeafNode(node, EMPTY_COMBINER_SELECTIONS)
+}
+
 export function applyCombinerSelection(
   complexNode: JsonSchemaTreeNode,
   selections: CombinerSelections,

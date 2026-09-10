@@ -7,7 +7,7 @@ import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
 export type JsonSchemaTypeValueSideDisplayProps = {
   display: SideListDisplay
   layoutSide: LayoutSide
-  color?: string
+  color?: string | null
 }
 
 /**

@@ -382,7 +382,7 @@ export function buildCombinerSelectorRowPresentation(
  * selector. Applies recursively at any nesting depth - each option only reports its own
  * immediate nested-combiner kind, not the kind of combiners further down.
  */
-function resolveCombinerOptionTitleSuffix(
+export function resolveCombinerOptionTitleSuffix(
   nestedNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
 ): string {
   if (!isJsonSchemaCombinerOwnerNode(nestedNode)) {
@@ -392,15 +392,24 @@ function resolveCombinerOptionTitleSuffix(
   return nestedCombinerKind ? ` (${nestedCombinerKind})` : ""
 }
 
+/**
+ * `title` defaults to the plain type-label + combiner-kind-suffix string (used as-is by tests
+ * and any non-UI caller); the view layer overrides it with a rich, diff-aware render function
+ * built from the shared TypeValue component stack - see `CombinerNodeViewer.tsx` and
+ * `TypeValue/JsonSchemaCombinerOptionTypeValue[WithDiffs].tsx`.
+ */
 export function buildCombinerSelectorOption(
   nestedNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
   index: number,
-): SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs> {
-  const baseOption: SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs> = {
-    title: resolveJsonSchemaTypeLabel(
+  title: SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs>["title"] = (
+    resolveJsonSchemaTypeLabel(
       resolveCombinerBranchDisplayValue(nestedNode),
       nestedNode.meta(),
-    ) + resolveCombinerOptionTitleSuffix(nestedNode),
+    ) + resolveCombinerOptionTitleSuffix(nestedNode)
+  ),
+): SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs> {
+  const baseOption: SelectorOption<JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs> = {
+    title,
     node: nestedNode,
     testId: `json-schema-combiner-option-${index}`,
   }

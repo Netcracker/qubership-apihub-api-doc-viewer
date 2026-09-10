@@ -177,9 +177,21 @@ Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `Di
 `DiffFloatingBadgeWrapper`) from `takeJsonSchemaNestingIndicatorRowColorizingDiff` /
 `node.diffsSeverities` — passing only `diff` leaves `diffType`/`diffTypeCause` undefined and the
 badge silently never renders. If a row must hide content on one side, keep the element mounted
-and toggle `visibility` on its content, not conditional unmounting — see session lessons:
+and toggle `visibility` on its content, not conditional unmounting. A `type`-field replace that
+crosses the primitive/non-primitive boundary (`string`→`array`, …) needs single-sided add/remove
+colorizing, not the default symmetric replace — see session lessons:
 
 `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+
+**Shared type-value rendering:** the title row, the nesting-indicator row, and combiner-selector
+option buttons (`CombinerNodeViewer.tsx` → `CombinerSelectorRow` → `shared-components/Selector`)
+all render JSON Schema's type/format/title text through one shared leaf/wrapper/orchestrator stack
+under `JsonSchemaNextViewer/SchemaNodeViewer/TypeValue/` (`JsonSchemaTypeValueText` leaf,
+`JsonSchemaTypeValueDiffSegment` diff wrapper, `JsonSchemaTypeValueSideDisplay` side-display
+renderer, six plain/with-diffs orchestrators) — deliberately independent of `SubheaderValue`/
+`CommaSeparatedListWithDiffs`. Reuse this stack for any new JSON Schema row or control rendering a
+type/title/format-style value; see "Shared type-value rendering architecture" in the same doc
+above.
 
 ## DDL viewer notes
 

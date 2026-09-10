@@ -4,7 +4,12 @@ import { JSON_SCHEMA_TYPE_VALUE_DEFAULT_COLOR } from "./json-schema-type-value-c
 
 export type JsonSchemaTypeValueTextProps = {
   text: string
-  color?: string
+  /**
+   * Omitted -> defaults to {@link JSON_SCHEMA_TYPE_VALUE_DEFAULT_COLOR} (title row's color).
+   * `null` -> no inline color is set, so an ambient CSS color (e.g. a combiner-selector
+   * button's own selected/unselected text color) applies instead. A string -> used as-is.
+   */
+  color?: string | null
   className?: string
 }
 
@@ -13,12 +18,13 @@ export type JsonSchemaTypeValueTextProps = {
  * whether to render it at all.
  */
 export const JsonSchemaTypeValueText: FC<JsonSchemaTypeValueTextProps> = memo<JsonSchemaTypeValueTextProps>((props) => {
-  const { text, color = JSON_SCHEMA_TYPE_VALUE_DEFAULT_COLOR, className } = props
+  const { text, color: colorProp, className } = props
+  const color = colorProp === undefined ? JSON_SCHEMA_TYPE_VALUE_DEFAULT_COLOR : colorProp
 
   return (
     <span
       className={["json-schema-type-value-text", className].filter(Boolean).join(" ")}
-      style={{ color }}
+      style={color ? { color } : undefined}
     >
       {text}
     </span>

@@ -17,6 +17,7 @@ import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
@@ -50,6 +51,8 @@ import { SchemaNodeChildrenListWithDiffs } from "../SchemaNodeViewer/SchemaNodeC
 import { SchemaNodePlainContent } from "../SchemaNodeViewer/SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "../SchemaNodeViewer/SchemaNodeTitleRow"
 import { SchemaNodeTitleRowWithDiffs } from "../SchemaNodeViewer/SchemaNodeTitleRowWithDiffs"
+import { JsonSchemaCombinerOptionTypeValue } from "../SchemaNodeViewer/TypeValue/JsonSchemaCombinerOptionTypeValue"
+import { JsonSchemaCombinerOptionTypeValueWithDiffs } from "../SchemaNodeViewer/TypeValue/JsonSchemaCombinerOptionTypeValueWithDiffs"
 import { CombinerSelectorRow } from "./CombinerSelectorRow"
 
 function isJsonSchemaPropertyNodeWithDiffs(
@@ -271,7 +274,15 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
         <AsyncLevelContextProvider beforeLevel={selectorBeforeLevel} afterLevel={selectorAfterLevel}>
           {selectorLevels.map((selectorLevel) => {
             const options = selectorLevel.nestedNodes.map((nestedNode, index) => (
-              buildCombinerSelectorOption(nestedNode, index)
+              buildCombinerSelectorOption(
+                nestedNode,
+                index,
+                isJsonSchemaTreeNodeWithDiffs(nestedNode)
+                  ? (layoutSide: LayoutSide) => (
+                    <JsonSchemaCombinerOptionTypeValueWithDiffs node={nestedNode} layoutSide={layoutSide} />
+                  )
+                  : () => <JsonSchemaCombinerOptionTypeValue node={nestedNode} />,
+              )
             ))
 
             const selectedOption = options.find(

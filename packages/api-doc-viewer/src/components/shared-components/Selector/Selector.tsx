@@ -4,6 +4,7 @@ import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { ReactNode } from "react"
 import { SelectorVariant } from "./types"
 import "./Selector.css"
 
@@ -13,7 +14,8 @@ export type SelectorOption<
   N extends ITreeNode,
   V extends object | null = object | null,
 > = {
-  title: string
+  /** Plain content, or a `(layoutSide) => ReactNode` for content that differs per diff side (see `NestingIndicatorTitleRow`'s `title` prop for the same pattern). */
+  title: ReactNode | ((layoutSide: LayoutSide) => ReactNode)
   node: N
   testId?: string
   diffs?: NodeDiffs<V>
@@ -55,6 +57,7 @@ export function Selector<
           return null
         }
         const diffsRelatedClasses = diffsRelatedClassesList.join(' ')
+        const resolvedTitle = typeof option.title === "function" ? option.title(layoutSide) : option.title
         return (
           <button
             key={option.node.id}
@@ -66,7 +69,7 @@ export function Selector<
               onSelectOption(option)
             }}
           >
-            {option.title}
+            {resolvedTitle}
           </button>
         )
       })}

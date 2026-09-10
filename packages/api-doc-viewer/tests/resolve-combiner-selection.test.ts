@@ -1,13 +1,22 @@
 import { JsonSchemaTreeBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/builder"
 import { TreeNodeComplexityTypes } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
+import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import {
   applyCombinerSelection,
   resolveActiveLeafNode,
+  resolveCombinerOptionLeafNode,
   resolveCombinerSelectorLevels,
 } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-selection"
-import { resolveCombinerLeafStructuralChildren } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-display"
+import { resolveCombinerBranchDisplayValue, resolveCombinerLeafStructuralChildren } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-display"
+import { resolveCombinerOptionTitleSuffix } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-node-diffs"
 import { isJsonSchemaCombinerOwnerNode } from "../src/components/JsonSchemaNextViewer/utils/node-type-checkers"
+
+function buildCombinerOptionText(node: Parameters<typeof resolveCombinerOptionLeafNode>[0]): string {
+  const leaf = resolveCombinerOptionLeafNode(node)
+  return resolveJsonSchemaTypeLabel(resolveCombinerBranchDisplayValue(leaf), leaf.meta())
+    + resolveCombinerOptionTitleSuffix(node)
+}
 
 describe("resolve-combiner-selection", () => {
   const schema = {
@@ -68,5 +77,37 @@ describe("resolve-combiner-selection", () => {
     selections = applyCombinerSelection(root, selections, root.id, objectBranch.id)
     expect(selections.has(nestedAnyOfBranch.id)).toBe(false)
     expect(resolveActiveLeafNode(root, selections).id).toBe(objectBranch.id)
+  })
+
+  it("resolves a combiner option's leaf via the first variant recursively, with a trailing combiner-kind suffix per level", () => {
+    // Example 1 from the task: anyOf whose first variant is a simple leaf.
+    const oneLevelSchema = {
+      anyOf: [
+        { type: "number", title: "MyNumber", format: "Money" },
+        { type: "boolean" },
+      ],
+    }
+    const oneLevelRoot = new JsonSchemaTreeBuilder({ source: oneLevelSchema, materializeDepth: 5 }).build().root!
+    expect(buildCombinerOptionText(oneLevelRoot)).toBe("number(Money)<MyNumber> (anyOf)")
+
+    // Example 2 from the task: anyOf -> first variant is a complex allOf -> first variant is the leaf.
+    const twoLevelSchema = {
+      anyOf: [
+        {
+          allOf: [
+            { type: "string", title: "MyString", format: "ID" },
+          ],
+        },
+        { type: "number" },
+      ],
+    }
+    const twoLevelRoot = new JsonSchemaTreeBuilder({ source: twoLevelSchema, materializeDepth: 5 }).build().root!
+    const allOfBranch = twoLevelRoot.nestedNodes()[0]!
+    expect(isJsonSchemaCombinerOwnerNode(allOfBranch)).toBe(true)
+
+    // First-level option (points to anyOf) - suffix reflects its own immediate combiner kind.
+    expect(buildCombinerOptionText(twoLevelRoot)).toBe("string(ID)<MyString> (anyOf)")
+    // Second-level option (the allOf variant itself) - same resolved leaf, different suffix.
+    expect(buildCombinerOptionText(allOfBranch)).toBe("string(ID)<MyString> (allOf)")
   })
 })

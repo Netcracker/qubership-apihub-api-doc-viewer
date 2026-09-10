@@ -10,7 +10,7 @@ export type JsonSchemaTypeValueDiffSegmentProps = {
   text: string
   diff?: ChangedPropertyMetaData
   layoutSide: LayoutSide
-  color?: string
+  color?: string | null
 }
 
 /**
