@@ -12,6 +12,15 @@ declare const meta: {
                 disable: true;
             };
         };
+        sampleYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
     };
 };
 export default meta;

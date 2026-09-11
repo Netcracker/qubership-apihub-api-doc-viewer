@@ -1,15 +1,28 @@
-import type { StoryObj } from "@storybook/react";
+import { type JsonSchemaSamplesStoryObj } from "./json-schema-samples-common";
 declare const meta: {
     id: string;
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../../components/JsonSchemaViewer/JsonSchemaViewer').JsonSchemaViewerProps>;
-    parameters: {};
-    argTypes: {};
-    args: {
-        schema: unknown;
-        expandedDepth: number;
+    component: (_props: import("./json-schema-samples-common").JsonSchemaCaseStoryComponentProps) => null;
+    argTypes: {
+        caseId: {
+            control: {
+                disable: true;
+            };
+            table: {
+                disable: true;
+            };
+        };
+        sampleYaml: {
+            control: {
+                type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
     };
 };
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = JsonSchemaSamplesStoryObj;
 export declare const Cycled: Story;
