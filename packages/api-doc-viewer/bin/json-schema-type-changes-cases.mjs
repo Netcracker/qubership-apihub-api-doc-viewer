@@ -309,6 +309,215 @@ const collectDescriptionCases = (cases) => {
     clone(unchangedLong),
     "Unchanged long description (>600 chars)",
   );
+
+  // Description length/line-count shape matrix: short-line (100-200 chars, 1 line),
+  // short-lines (3 lines, ~50-100 chars/line), long-line (1000 chars, 1 line),
+  // long-lines (10 lines, ~10-50 chars/line). Two text variants per shape allow
+  // same-shape "text changed" cases; variant 1 of each shape is reused verbatim
+  // as the plain json-schema/description/* sample content for visual consistency.
+  const shortLine1 =
+    "Returns the current status of the requested resource, including any associated metadata that downstream consumers may find useful.";
+  const shortLine2 =
+    "Provides a concise summary of the resource state along with timestamps indicating when it was last created, modified, or accessed.";
+
+  const shortLines1 = [
+    "Represents a single resource returned by the API server.",
+    "Includes core identifying fields and status flags.",
+    "Additional metadata may be attached when available.",
+  ].join("\n");
+  const shortLines2 = [
+    "Describes the resource state at the time of the request.",
+    "Captures ownership, visibility, and lifecycle information.",
+    "Consumers should treat unknown fields as reserved.",
+  ].join("\n");
+
+  const longLineBase1 =
+    "This field documents the resource in extensive detail, covering its identity, lifecycle, ownership, and the relationships it maintains with other resources in the system, so that API consumers can build reliable integrations without needing to consult external documentation for basic structural questions. ";
+  const longLine1 = longLineBase1.repeat(Math.ceil(1000 / longLineBase1.length)).slice(0, 1000);
+  const longLineBase2 =
+    "This description elaborates on the semantics of the field, including validation constraints, default behavior when omitted, backward-compatibility guarantees across API versions, and guidance for client implementations that need to interpret the value correctly under all supported configurations. ";
+  const longLine2 = longLineBase2.repeat(Math.ceil(1000 / longLineBase2.length)).slice(0, 1000);
+
+  const longLines1 = [
+    "Overview of the resource.",
+    "Identifies unique attributes.",
+    "Tracks creation timestamps.",
+    "Tracks update timestamps.",
+    "Lists related resource links.",
+    "Notes deprecated fields.",
+    "Flags experimental features.",
+    "Describes access permissions.",
+    "Summarizes validation rules.",
+    "Ends with usage notes.",
+  ].join("\n");
+  const longLines2 = [
+    "Summary of the endpoint.",
+    "Explains request parameters.",
+    "Explains response fields.",
+    "Lists possible error codes.",
+    "Documents rate limits.",
+    "Notes pagination behavior.",
+    "Covers authentication scope.",
+    "Describes caching behavior.",
+    "Mentions versioning notes.",
+    "Closes with support links.",
+  ].join("\n");
+
+  const shortLineSchema1 = merge(STRING_PLAIN(), { description: shortLine1 });
+  const shortLineSchema2 = merge(STRING_PLAIN(), { description: shortLine2 });
+  const shortLinesSchema1 = merge(STRING_PLAIN(), { description: shortLines1 });
+  const shortLinesSchema2 = merge(STRING_PLAIN(), { description: shortLines2 });
+  const longLineSchema1 = merge(STRING_PLAIN(), { description: longLine1 });
+  const longLineSchema2 = merge(STRING_PLAIN(), { description: longLine2 });
+  const longLinesSchema1 = merge(STRING_PLAIN(), { description: longLines1 });
+  const longLinesSchema2 = merge(STRING_PLAIN(), { description: longLines2 });
+
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-line-text-changed",
+    shortLineSchema1,
+    shortLineSchema2,
+    "Short single-line description: text changed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-lines-text-changed",
+    shortLinesSchema1,
+    shortLinesSchema2,
+    "Short multi-line description (3 lines): text changed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-line-text-changed",
+    longLineSchema1,
+    longLineSchema2,
+    "Long single-line description (1000 chars): text changed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-lines-text-changed",
+    longLinesSchema1,
+    longLinesSchema2,
+    "Long multi-line description (10 lines): text changed",
+  );
+
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-line-to-short-lines",
+    shortLineSchema1,
+    shortLinesSchema1,
+    "Description changed: short single-line to short multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-line-to-long-line",
+    shortLineSchema1,
+    longLineSchema1,
+    "Description changed: short single-line to long single-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-line-to-long-lines",
+    shortLineSchema1,
+    longLinesSchema1,
+    "Description changed: short single-line to long multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-lines-to-short-line",
+    shortLinesSchema1,
+    shortLineSchema1,
+    "Description changed: short multi-line to short single-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-lines-to-long-line",
+    shortLinesSchema1,
+    longLineSchema1,
+    "Description changed: short multi-line to long single-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-short-lines-to-long-lines",
+    shortLinesSchema1,
+    longLinesSchema1,
+    "Description changed: short multi-line to long multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-line-to-short-line",
+    longLineSchema1,
+    shortLineSchema1,
+    "Description changed: long single-line to short single-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-line-to-short-lines",
+    longLineSchema1,
+    shortLinesSchema1,
+    "Description changed: long single-line to short multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-line-to-long-lines",
+    longLineSchema1,
+    longLinesSchema1,
+    "Description changed: long single-line to long multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-lines-to-short-line",
+    longLinesSchema1,
+    shortLineSchema1,
+    "Description changed: long multi-line to short single-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-lines-to-short-lines",
+    longLinesSchema1,
+    shortLinesSchema1,
+    "Description changed: long multi-line to short multi-line",
+  );
+  pushCase(
+    cases,
+    dir,
+    "description-changed-long-lines-to-long-line",
+    longLinesSchema1,
+    longLineSchema1,
+    "Description changed: long multi-line to long single-line",
+  );
+
+  pushCase(
+    cases,
+    dir,
+    "unchanged-description-short-multiline",
+    shortLinesSchema1,
+    clone(shortLinesSchema1),
+    "Unchanged short multi-line description (3 lines)",
+  );
+  pushCase(
+    cases,
+    dir,
+    "unchanged-description-long-multiline",
+    longLinesSchema1,
+    clone(longLinesSchema1),
+    "Unchanged long multi-line description (10 lines)",
+  );
 };
 
 /** @param {TypeChangeCase[]} cases */
