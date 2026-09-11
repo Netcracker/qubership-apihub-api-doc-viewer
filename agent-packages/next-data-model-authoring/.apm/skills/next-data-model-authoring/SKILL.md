@@ -509,6 +509,29 @@ When aggregating or resolving **constraint rows** (`validationRowDiffs`,
 Fix diff metadata in `kind-property.ts` and `value-range-diff-side-display.ts`; do not patch viewer
 components to compensate.
 
+**Session lessons (read before changing row aggregation or aggregator dispatch):**
+
+- **Boolean-valued replace chips** (`uniqueItems`, boolean `default`, boolean enum/examples
+  literals) need `borderShadowColor`, not `textHighlighterColor` — but the check must be
+  `typeof diff.beforeValue/afterValue === "boolean"` on the diff's own value, **not** the owning
+  node's `type` keyword (`uniqueItems` is boolean-valued on an `array`-typed node, so a node-type
+  check silently never fires). See `buildBooleanAwareChipReplaceDiffMetadata` in `kind-any.ts`.
+- **Whole add/remove vs partial replace:** a row is only a whole-row add/remove when **none** of
+  its other source keys already carry unchanged content (`rowHasOtherUnchangedContent` guard in
+  `aggregateValidationRowDiffs`) — generic across every bound-range row, not row-key-specific.
+- **Aggregator dispatch:** `JsonSchemaNodeDiffsAggregatorFactory` returns `KindProperty` (which
+  extends `KindAny`, calling `super.aggregate()` first) for **every** node kind, not just
+  PROPERTY/ROOT — `KindProperty`'s default/enum/examples/required aggregation is a strict
+  superset, not PROPERTY/ROOT-specific. A per-kind switch that hands out a "lesser" aggregator to
+  other kinds silently drops default/enum/examples/validation diffs for them (e.g.
+  `additionalProperties`, `items`, combiner variants).
+- **Row ordering:** combining "present" rows with diff-only rows (rows whose type was fully
+  removed/not-yet-added but still carry semantic diffs) needs a **sort** by canonical
+  type-group order after combining — concatenation alone flips group order between a type change
+  and its reverse (`string→number` vs `number→string`).
+
+Full detail: `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`.
+
 **Meta flags and parent `required`:** `resolveRequiredMetaDiff` in `kind-property.ts` reads parent
 crawl fragments — not picked `parent.value().required`. See
 `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`.

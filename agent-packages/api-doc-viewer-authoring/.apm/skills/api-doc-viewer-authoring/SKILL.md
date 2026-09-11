@@ -160,6 +160,14 @@ length`, …) consume precomputed diffs from next-data-model. Display and diff-s
 Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
 rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
 
+Rows render in a **canonical type-grouped order** (String → Number [covers integer] → Object →
+Array), re-sorted via `sortValidationRowsByType` after combining present rows with diff-only rows
+— see "Row ordering" and "Boolean-valued replace diffs" session lessons in the doc above before
+changing `validationRows` composition in `SchemaNodePlainContent`. When adding a unit test for
+logic defined inside that file (or any component with a transitive `.css` import), extract it to
+a CSS-free `utils/*.ts` file first — see the `api-doc-viewer-testing` skill's **Viewer-side unit
+tests and CSS imports** section.
+
 ## JSON Schema meta flags and `required` (Next viewer)
 
 Type-flag diffs (`readOnly`, `writeOnly`, `deprecated`, parent **`required`**) use title-row and

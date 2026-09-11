@@ -288,6 +288,106 @@ Same aggregation pattern as **value pattern** / **value multiple of**.
 
 ---
 
+## Row ordering (canonical type-grouped order) — session lesson
+
+Rows are not rendered in `resolveValidationRows` push order alone. `SchemaNodePlainContent`
+appends **diff-only rows** (a row whose source keys have no *current* value — the owning type
+was fully removed, or not yet added — but still carries semantic diffs per
+`hasJsonSchemaValidationRowSemanticDiffs`) **after** the base rows, then sorts the combined list
+through `sortValidationRowsByType` (`JsonSchemaNextViewer/utils/sort-validation-rows-by-type.ts`)
+before rendering.
+
+**Why a sort, not just careful push order:** concatenating `[...baseRows, ...diffOnlyRows]`
+without a final sort is order-**unstable** — which group ends up first flips depending on
+whether the changed type is gaining or losing rows. Example: `string → number` puts String rows
+in `baseRows` (present) and Number rows in `diffOnlyRows` (diff-only), landing String-then-Number;
+the reverse case `number → string` puts Number in `baseRows` and String in `diffOnlyRows`, which
+without a final sort would land Number-then-String — same type pair, opposite group order. The
+canonical order must be re-imposed after combining, not preserved by the order rows happen to be
+pushed in.
+
+**Canonical order** (`VALIDATION_ROW_ORDER` in that file), mirrors legacy `Validations.tsx`:
+
+1. `valueLength`, `valuePattern` — **String**
+2. `valueRange`, `valueMultipleOf` — **Number** (covers `integer` too — legacy has no separate
+   Integer group; do not invent one)
+3. `propertiesCount` — **Object**
+4. `uniqueItems`, `itemsCount` — **Array**
+
+The shared/common rows (`default`, `enum`/"Allowed values", `examples`) are **not** validation
+rows and are not part of this sort — they render as separate `AdditionalInfoRow`s before the
+validation-rows block, unconditionally ordered by JSX position in `SchemaNodePlainContent`.
+
+The sort function lives in a standalone **CSS-free** `.ts` file specifically so it can be unit
+tested directly — see **Testability trap** below.
+
+## Boolean-valued replace diffs use `borderShadowColor` — session lesson
+
+Every REPLACE diff on a validation-row chip, `default`, or an enum/examples list item used to get
+`textHighlighterColor: Yellow` unconditionally. When the value being replaced is a JS boolean
+(`uniqueItems: true → false`, a boolean `default`, a boolean enum/examples literal), the correct
+chrome is `borderShadowColor: Yellow` instead — DDL already had this rule for column defaults
+(`columnType.kind === TypeKind.BoolType`, see `next-data-model-authoring` skill).
+
+**Do not port the check as-is.** DDL checks the **node's declared type**
+(`columnType.kind === TypeKind.BoolType`) because a DDL column's default value type always
+matches its column type. JSON Schema has a keyword that breaks that assumption: `uniqueItems` is
+a validation-row chip whose value is **always** a JS boolean, but it lives on an **`array`**-typed
+node (`node.type` is `"array"`, never `"boolean"`) — a node-type check silently never highlights
+it. The fix checks `typeof diff.beforeValue / diff.afterValue === "boolean"` on the **diff's own
+value**, per side, independently — `buildBooleanAwareChipReplaceDiffMetadata` in `kind-any.ts`,
+used by `buildListValueDiffMetadata` (validation-row chips, enum/examples items) and
+`buildDefaultValueDiffMetadata` (`kind-property.ts`). Per-side independence also matters: if
+`default` changes `true → "foo"` alongside `type: boolean → string`, only the boolean side (the
+`before` side here) gets `borderShadowColor` — the other side keeps `textHighlighterColor`.
+
+When adding a new chip-shaped value diff in this stack, reuse
+`buildBooleanAwareChipReplaceDiffMetadata` rather than re-deriving the boolean check from a
+node's `type` field.
+
+## Partial vs whole row add/remove — generic guard (session lesson)
+
+`aggregateValidationRowDiffs` (private, `kind-any.ts`) used to treat "every diff on this row's
+active source keys is `add`" as sufficient for a whole-row green add (symmetrically for remove).
+That is wrong whenever the row has **other source keys with unchanged, pre-existing content** —
+e.g. `maxItems` newly added while `minItems` already existed and is untouched: the row already
+existed, so this must be a **yellow partial replace** (with only the `maxItems` chip highlighted
+via add/remove `borderShadowColor`), not a whole-row green add.
+
+Fix: `rowHasOtherUnchangedContent` — `sourceKeys.some(sourceKey => !activeSourceKeys.includes(sourceKey)
+&& Reflect.get(crawlValue, sourceKey) !== undefined)` — gates `allAdd`/`allRemove` before the
+whole-row branch runs. This is deliberately **generic across every bound-range row**
+(`itemsCount`, `propertiesCount`, `valueLength`, …), not special-cased per row key — a row key
+listed as one of your reported examples is a symptom, not the fix's scope.
+
+**Separately:** rows on non-`PROPERTY`/`ROOT` nodes (`additionalProperties`, `items`, combiner
+variants, …) used to show as unchanged on both sides with no diff highlighting at all, even when
+the underlying field genuinely appeared/disappeared. Root cause was **not** in row aggregation —
+`JsonSchemaNodeDiffsAggregatorFactory` dispatched a plain `KindAny` aggregator (validation rows
+only) to every kind except `PROPERTY`/`ROOT`, which alone got `KindProperty` (adds
+default/enum/examples/required aggregation). `KindProperty extends KindAny` and calls
+`super.aggregate()` first, so it is a **strict superset** — nothing in it is actually
+PROPERTY/ROOT-specific (default/enum/examples read a node's own crawl fields generically;
+`required` resolution safely no-ops when a node isn't a named property of a parent object). Fix:
+the factory now always returns the `KindProperty` instance for every kind. When adding a new kind
+to this stack, do not assume a "lesser" aggregator is needed for kinds that aren't PROPERTY/ROOT —
+verify the specialised aggregator's logic is actually kind-gated before forking dispatch.
+
+## Testability trap: CSS imports break Jest unit tests (session lesson)
+
+`SchemaNodePlainContent.tsx` transitively imports `.css` (via `AdditionalInfoRow` →
+`DiffFloatingBadgeWrapper` → `UxDiffFloatingBadge` → `UxDiffFloatingBadge.css`). Jest's default
+transform does not parse CSS, so importing **any** symbol from that file in a unit test — even a
+pure, non-React helper defined at the top of the file — fails with
+`SyntaxError: Unexpected token '.'` pointing at the `.css` file, not the actual import.
+
+When logic in a viewer `.tsx` component needs a direct unit test (not a screenshot IT), extract it
+to a sibling **CSS-free** `.ts` file under `utils/` first (e.g.
+`JsonSchemaNextViewer/utils/sort-validation-rows-by-type.ts`), import it back into the component,
+and write the test against the utils file. Do not try to work around the Jest failure with mocks
+or moduleNameMapper for CSS — extraction is simpler and keeps the logic reusable/testable
+independent of the component tree.
+
 ## Troubleshooting checklist
 
 | Symptom | Likely layer | Check |
@@ -298,6 +398,11 @@ Same aggregation pattern as **value pattern** / **value multiple of**.
 | Row missing in diff view but field changed | Data | `hasJsonSchemaValidationRowSemanticDiffs`; diff-only row injection in viewer |
 | Plain chips wrong | Viewer util | `resolveValidationRows` only — no diff fields involved |
 | Side column shows wrong before/after text | Data | `resolveJsonSchemaValidationRowSideEntries` + crawl diffs for value range |
+| Row group order flips depending on add- vs remove-direction of a type change | Viewer | `sortValidationRowsByType` must run on the **combined** `[...baseRows, ...diffOnlyRows]` list, not rely on push order |
+| Boolean value (e.g. `uniqueItems`) replace shows yellow text fill instead of border | Data | `buildBooleanAwareChipReplaceDiffMetadata` — check must be `typeof diff.value === "boolean"`, not `node.type` |
+| Row wholly green/red when only one bound of an existing row changed | Data | `rowHasOtherUnchangedContent` guard in `aggregateValidationRowDiffs` |
+| `additionalProperties` / `items` / combiner-variant rows show no diff at all | Data | `JsonSchemaNodeDiffsAggregatorFactory` must dispatch `KindProperty` (superset of `KindAny`) for every kind, not just PROPERTY/ROOT |
+| Unit test importing from a viewer `.tsx` fails with `SyntaxError: Unexpected token '.'` in a `.css` file | Test | Extract the pure logic to a CSS-free `utils/*.ts` file and import the test from there |
 
 ---
 

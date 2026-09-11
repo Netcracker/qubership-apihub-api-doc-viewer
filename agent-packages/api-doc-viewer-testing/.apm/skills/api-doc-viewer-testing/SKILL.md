@@ -447,3 +447,21 @@ regressions.
 Builder and aggregator unit tests belong in
 `packages/next-data-model/tests/`, not in screenshot IT files. Keep view
 and data test boundaries separate.
+
+## Viewer-side unit tests and CSS imports (session lesson)
+
+`packages/api-doc-viewer/tests/*.test.ts` runs plain Jest (`npm test`), not the IT/Puppeteer
+config — and Jest's default transform does not parse `.css`. Many viewer `.tsx` components
+transitively import CSS several hops away from the file you're testing (e.g.
+`SchemaNodePlainContent.tsx` → `AdditionalInfoRow` → `DiffFloatingBadgeWrapper` →
+`UxDiffFloatingBadge` → `UxDiffFloatingBadge.css`). Importing **any** symbol — even a pure,
+non-React helper function defined at the top of that file — from such a `.tsx` in a unit test
+fails with `SyntaxError: Unexpected token '.'`, with the stack pointing at the `.css` file, not
+the helper you're actually testing.
+
+**Fix:** when a piece of view-layer logic needs a direct unit test, extract it into a sibling
+**CSS-free** `.ts` file (e.g. a `utils/` module) before writing the test, import it back into the
+component, and point the test at the extracted file. Do not attempt a CSS mock or
+`moduleNameMapper` workaround for one test file — extraction is simpler, keeps the logic reusable
+outside the component, and matches how pure JSON Schema Next viewer logic is already organized
+(see `JsonSchemaNextViewer/utils/`).
