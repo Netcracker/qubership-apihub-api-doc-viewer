@@ -50,33 +50,42 @@ const JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH = 5;
 const createSchemaFromYaml = (sourceText: string): Record<string, unknown> =>
   parseYamlSource(sourceText);
 
-export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
-  beforeSchema: Record<string, unknown>,
-  afterSchema: Record<string, unknown>,
+const createJsonSchemaDiffViewerBaseArgs = (
+  schema: unknown,
 ): JsonSchemaDiffsViewerProps => ({
-  schema: prepareJsonDiffSchema({
-    beforeSchema,
-    afterSchema,
-    target: RESPONSE_200_BODY_TARGET,
-  }),
+  schema,
   expandedDepth: JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH,
   diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
-  hideUnchangedNodes: false,
 });
 
-export const createJsonSchemaDiffsViewerArgs = (
+export type JsonSchemaDiffViewerArgsOptions = {
+  disableSubstitutionTitle?: boolean;
+};
+
+export const createJsonSchemaDiffViewerArgsFromSchemas = (
+  beforeSchema: Record<string, unknown>,
+  afterSchema: Record<string, unknown>,
+  options: JsonSchemaDiffViewerArgsOptions = {},
+): JsonSchemaDiffsViewerProps =>
+  createJsonSchemaDiffViewerBaseArgs(
+    prepareJsonDiffSchema({
+      beforeSchema,
+      afterSchema,
+      target: RESPONSE_200_BODY_TARGET,
+      disableSubstitutionTitle: options.disableSubstitutionTitle,
+    }),
+  );
+
+export const createJsonSchemaDiffViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-): JsonSchemaDiffsViewerProps => ({
-  schema: prepareJsonDiffSchema({
-    beforeSchema: createSchemaFromYaml(beforeSourceText),
-    afterSchema: createSchemaFromYaml(afterSourceText),
-    target: RESPONSE_200_BODY_TARGET,
-  }),
-  expandedDepth: JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH,
-  diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
-  hideUnchangedNodes: false,
-});
+  options: JsonSchemaDiffViewerArgsOptions = {},
+): JsonSchemaDiffsViewerProps =>
+  createJsonSchemaDiffViewerArgsFromSchemas(
+    createSchemaFromYaml(beforeSourceText),
+    createSchemaFromYaml(afterSourceText),
+    options,
+  );
 
 export const createJsonSchemaDiffSampleById = <TSample extends JsonSchemaDiffSampleCase>(
   sampleCases: readonly TSample[],
@@ -120,5 +129,19 @@ export const JsonSchemaDiffSamplesStory = ({
   beforeYaml,
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} />
+  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)} />
+);
+
+/**
+ * Same as JsonSchemaDiffSamplesStory, but inlines schemas in the OAS template instead of $ref-ing
+ * to __Substitution__ (disableSubstitutionTitle) -- needed for combiner suites, where the
+ * substitution $ref would otherwise be the thing labeled at the diff root instead of the combiner.
+ */
+export const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle = ({
+  beforeYaml,
+  afterYaml,
+}: JsonSchemaDiffCaseStoryComponentProps) => (
+  <JsonSchemaNextDiffsViewer
+    {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
+  />
 );

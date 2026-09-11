@@ -86,6 +86,7 @@ import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/Js
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,
+  toSampleYaml,
   type JsonSchemaSamplesStoryObj,
 } from "./json-schema-samples-common";
 import {
@@ -110,7 +111,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
 
   return {
     name: caseId,
-    args: { caseId },
+    args: { caseId, sampleYaml: toSampleYaml(sampleCase.schema) },
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
