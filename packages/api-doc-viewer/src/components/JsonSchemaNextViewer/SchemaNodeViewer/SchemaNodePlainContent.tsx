@@ -41,6 +41,7 @@ import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTe
 import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types"
 import { resolveValidationRows } from "../utils/validation-rows"
 import { JsonSchemaValidationRowKey as ViewerValidationRowKey } from "../utils/validation-row-keys"
+import { sortValidationRowsByType } from "../utils/sort-validation-rows-by-type"
 import {
   ITEMS_COUNT_LABEL,
   PROPERTIES_COUNT_LABEL,
@@ -175,7 +176,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         values: [] as string[],
       }))
 
-    return [...baseRows, ...diffOnlyRows]
+    return sortValidationRowsByType([...baseRows, ...diffOnlyRows])
   }, [validationDiffsNode, typedValue])
 
   const enumValuesAdditionalInfoSubheader = useCallback(
