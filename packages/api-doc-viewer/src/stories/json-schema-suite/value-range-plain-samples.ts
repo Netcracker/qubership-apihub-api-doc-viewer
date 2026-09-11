@@ -48,7 +48,7 @@ export const resolveValueRangePlainSchemaOas31 = (
   convertValueRangeSchemaToOas31(resolveValueRangePlainSchema(caseId, options));
 
 export const buildValueRangePlainOas31ProgrammaticSampleCases = (
-  options: ValueRangePlainSampleListOptions = {},
+  options: ValueRangePlainSampleResolveOptions = {},
 ): ValueRangePlainProgrammaticSampleCase[] =>
   listValueRangePlainCases({ ...options, includeOas31Only: true }).map((sampleCase) => ({
     caseId: sampleCase.caseId,
