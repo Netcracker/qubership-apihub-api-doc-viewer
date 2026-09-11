@@ -9,7 +9,7 @@ import {
   wrapInCombiner,
   type CombinerKind,
   type CombinerSchemaType,
-} from "../shared/combiner-schema-builder.ts";
+} from "../shared/combiner-schema-builder";
 
 export type CombinerDiffCaseDefinition = {
   slug: string;

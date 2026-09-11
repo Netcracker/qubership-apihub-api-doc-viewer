@@ -58,14 +58,14 @@ const createJsonSchemaDiffViewerBaseArgs = (
   diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
 });
 
-export type JsonSchemaDiffViewerArgsOptions = {
+export type JsonSchemaDiffsViewerArgsOptions = {
   disableSubstitutionTitle?: boolean;
 };
 
-export const createJsonSchemaDiffViewerArgsFromSchemas = (
+export const createJsonSchemaDiffsViewerArgsFromSchemas = (
   beforeSchema: Record<string, unknown>,
   afterSchema: Record<string, unknown>,
-  options: JsonSchemaDiffViewerArgsOptions = {},
+  options: JsonSchemaDiffsViewerArgsOptions = {},
 ): JsonSchemaDiffsViewerProps =>
   createJsonSchemaDiffViewerBaseArgs(
     prepareJsonDiffSchema({
@@ -76,12 +76,12 @@ export const createJsonSchemaDiffViewerArgsFromSchemas = (
     }),
   );
 
-export const createJsonSchemaDiffViewerArgs = (
+export const createJsonSchemaDiffsViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-  options: JsonSchemaDiffViewerArgsOptions = {},
+  options: JsonSchemaDiffsViewerArgsOptions = {},
 ): JsonSchemaDiffsViewerProps =>
-  createJsonSchemaDiffViewerArgsFromSchemas(
+  createJsonSchemaDiffsViewerArgsFromSchemas(
     createSchemaFromYaml(beforeSourceText),
     createSchemaFromYaml(afterSourceText),
     options,
@@ -129,7 +129,7 @@ export const JsonSchemaDiffSamplesStory = ({
   beforeYaml,
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)} />
+  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} />
 );
 
 /**
@@ -142,6 +142,6 @@ export const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle = ({
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
   <JsonSchemaNextDiffsViewer
-    {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
+    {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
   />
 );
