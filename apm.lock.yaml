@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-09-11T21:30:53.326693+00:00'
+generated_at: '2026-09-11T21:42:57.828374+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -39,17 +39,35 @@ dependencies:
   - .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-repo.md: sha256:e304c663e255278c2102aae76dcb8e4dd9d826281924d0c7caa49353e52ca17f
-    .claude/skills/api-doc-viewer-repo/SKILL.md: sha256:996ea105c47106473d92d0146f02232c160a69c1dbb5284f41db6d37760f4682
+    .claude/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .claude/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
     .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
     .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:668e2ba7563eacfaff589f1344ac0d27737a8f78f8f078fc2ab0a0b4fbf94eff
     .cursor/rules/api-doc-viewer-repo.mdc: sha256:120f751737421c77ae356eeda8e40ea6f00248d607148eb5f9a6ee037d0a64b7
-    .cursor/skills/api-doc-viewer-repo/SKILL.md: sha256:996ea105c47106473d92d0146f02232c160a69c1dbb5284f41db6d37760f4682
+    .cursor/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .cursor/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
     .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
     .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:668e2ba7563eacfaff589f1344ac0d27737a8f78f8f078fc2ab0a0b4fbf94eff
   source: local
   local_path: ./agent-packages/api-doc-viewer-repo
+- repo_url: _local/api-doc-viewer-review-session
+  name: api-doc-viewer-review-session
+  version: 1.0.0
+  package_type: apm_package
+  deployed_files:
+  - .claude/rules/api-doc-viewer-review-session.md
+  - .claude/skills/api-doc-viewer-review-session
+  - .claude/skills/api-doc-viewer-review-session/SKILL.md
+  - .cursor/rules/api-doc-viewer-review-session.mdc
+  - .cursor/skills/api-doc-viewer-review-session
+  - .cursor/skills/api-doc-viewer-review-session/SKILL.md
+  deployed_file_hashes:
+    .claude/rules/api-doc-viewer-review-session.md: sha256:893681c604740d3320b219b41b5ed390a8ef408f3a0a36f0df59841aad69f3fd
+    .claude/skills/api-doc-viewer-review-session/SKILL.md: sha256:b42931d96512431524413d8e0e296809b0347c7cfddfdd356e8c90cd443d25ef
+    .cursor/rules/api-doc-viewer-review-session.mdc: sha256:ccd9e96f8449a21636b6ddfb94c878bae64cdd118e15c168652edc8ec6d24fa1
+    .cursor/skills/api-doc-viewer-review-session/SKILL.md: sha256:b42931d96512431524413d8e0e296809b0347c7cfddfdd356e8c90cd443d25ef
+  source: local
+  local_path: ./agent-packages/api-doc-viewer-review-session
 - repo_url: _local/api-doc-viewer-testing
   name: api-doc-viewer-testing
   version: 1.0.0
@@ -63,9 +81,9 @@ dependencies:
   - .cursor/skills/api-doc-viewer-testing/SKILL.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-testing.md: sha256:9754dea129ac33d8ea028b990761a79feb56aefac3dc620a7be325911aa3eaf1
-    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:bd1a8ed332bb820f53a65c384e6740caae0df813ccb89ff8bb7844d587503129
+    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:2537d45e13bc231713c28a2ca2949c7048f59be34b7c59808b84cdde52ca2781
     .cursor/rules/api-doc-viewer-testing.mdc: sha256:8468b19496e2b1340a495472365b3161590716c1e6515ab17f6637a90e0b6bed
-    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:bd1a8ed332bb820f53a65c384e6740caae0df813ccb89ff8bb7844d587503129
+    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:2537d45e13bc231713c28a2ca2949c7048f59be34b7c59808b84cdde52ca2781
   source: local
   local_path: ./agent-packages/api-doc-viewer-testing
 - repo_url: _local/api-doc-viewer-using
@@ -197,6 +215,15 @@ deployments:
   content_hash: sha256:e304c663e255278c2102aae76dcb8e4dd9d826281924d0c7caa49353e52ca17f
 - kind: project-relative
   target: claude
+  value: .claude/rules/api-doc-viewer-review-session.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: sha256:893681c604740d3320b219b41b5ed390a8ef408f3a0a36f0df59841aad69f3fd
+- kind: project-relative
+  target: claude
   value: .claude/rules/api-doc-viewer-testing.md
   runtime: null
   scope: project
@@ -284,7 +311,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:996ea105c47106473d92d0146f02232c160a69c1dbb5284f41db6d37760f4682
+  content_hash: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md
@@ -314,6 +341,24 @@ deployments:
   content_hash: sha256:668e2ba7563eacfaff589f1344ac0d27737a8f78f8f078fc2ab0a0b4fbf94eff
 - kind: project-relative
   target: claude
+  value: .claude/skills/api-doc-viewer-review-session
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/api-doc-viewer-review-session/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: sha256:b42931d96512431524413d8e0e296809b0347c7cfddfdd356e8c90cd443d25ef
+- kind: project-relative
+  target: claude
   value: .claude/skills/api-doc-viewer-testing
   runtime: null
   scope: project
@@ -329,7 +374,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:bd1a8ed332bb820f53a65c384e6740caae0df813ccb89ff8bb7844d587503129
+  content_hash: sha256:2537d45e13bc231713c28a2ca2949c7048f59be34b7c59808b84cdde52ca2781
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-using
@@ -467,6 +512,15 @@ deployments:
   content_hash: sha256:120f751737421c77ae356eeda8e40ea6f00248d607148eb5f9a6ee037d0a64b7
 - kind: project-relative
   target: cursor
+  value: .cursor/rules/api-doc-viewer-review-session.mdc
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: sha256:ccd9e96f8449a21636b6ddfb94c878bae64cdd118e15c168652edc8ec6d24fa1
+- kind: project-relative
+  target: cursor
   value: .cursor/rules/api-doc-viewer-testing.mdc
   runtime: null
   scope: project
@@ -554,7 +608,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:996ea105c47106473d92d0146f02232c160a69c1dbb5284f41db6d37760f4682
+  content_hash: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md
@@ -584,6 +638,24 @@ deployments:
   content_hash: sha256:668e2ba7563eacfaff589f1344ac0d27737a8f78f8f078fc2ab0a0b4fbf94eff
 - kind: project-relative
   target: cursor
+  value: .cursor/skills/api-doc-viewer-review-session
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: null
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-review-session/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-review-session
+  active_owner: ./agent-packages/api-doc-viewer-review-session
+  content_hash: sha256:b42931d96512431524413d8e0e296809b0347c7cfddfdd356e8c90cd443d25ef
+- kind: project-relative
+  target: cursor
   value: .cursor/skills/api-doc-viewer-testing
   runtime: null
   scope: project
@@ -599,7 +671,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:bd1a8ed332bb820f53a65c384e6740caae0df813ccb89ff8bb7844d587503129
+  content_hash: sha256:2537d45e13bc231713c28a2ca2949c7048f59be34b7c59808b84cdde52ca2781
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-using

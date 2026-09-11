@@ -37,6 +37,25 @@ Chrome). Setup and snapshot tuning are in `.jest/setup.tests.ts`
 (`failureThreshold: 20`, custom diff threshold). Per-test timeout:
 `TEST_TIMEOUT = 300_000` in `.config/it/constants.cjs`.
 
+**Both** `.config/it/it-test-docker.jest.config.cjs` and the "legacy"
+`.config/it/it-test.jest.config.cjs` build their Puppeteer connection via
+`prepareJestConfig` from `@netcracker/qubership-apihub-jest-chrome-in-docker-environment` —
+**"legacy" does not mean "no Docker required"**; there is no non-Docker IT config in this repo.
+When Docker isn't available in the current environment, you cannot run the real screenshot
+suite or generate baseline PNGs. Fall back to: `npm run build:showcase` (or
+`node bin/generate-json-schema-…` + `storybook build`), serve `dist-showcase/` on port 9009
+(`npx ws -p 9009 -d ../../dist-showcase --spa index.html`), and visually check the new/changed
+story ids in a browser — this verifies the story renders and the fixture content displays
+correctly, but it is **not** a substitute for the real IT run; say so explicitly and leave
+actual snapshot generation for an environment with Docker.
+
+**Targeted single-suite runner:** `node bin/run-screenshot-test-suite.mjs test|regenerate
+[test-run] [suite]` (e.g. `regenerate json-schema-diffs-suite description-changes`) wraps the
+build-showcase → start-static-server → jest pipeline for one suite, so you don't have to
+hand-build a `--testPathPattern`/file-path Jest target. Prefer it over constructing the
+`npx jest … src/it/…` invocation by hand for a single suite; drop to raw Jest only when you
+need flags it doesn't expose (e.g. `--maxWorkers 1 --verbose` against a suite already running).
+
 ## Screenshot test troubleshooting (read first)
 
 When screenshot tests hang, time out, fail mysteriously, or drift — **start here**
@@ -78,11 +97,30 @@ inserts hyphens at letter↔digit boundaries when slugging export names — comm
 | `1st` | `1-st` |
 
 Example: export `Case_001_type_change_int4_to_bigint` →
-`ddlapi-diffs-suite-column-type-changes-samples--case-001-type-change-int-4-to-bigint`,
+`ddl-api-diffs-suite-column-type-changes-samples--case-001-type-change-int-4-to-bigint`,
 not `…-int4-to-bigint`.
 
 When adding hand-written diff cases, copy the slug from a freshly built **index.json** or
 from the dev sidebar URL path segment — do not guess from the fixture folder name alone.
+
+### Meta id prefix vs. folder name, and stale "Samples" in titles (session lesson)
+
+Two more traps beyond the digit-boundary one above, both found by diffing this skill's own
+examples against a freshly built `index.json` — **do not trust either from memory, always
+verify against the build**:
+
+- **`ddlapi-diffs-suite` (folder) vs. `ddl-api-diffs-suite` (meta id).** The on-disk directories
+  are `src/stories/ddlapi-diffs-suite/` and `src/it/ddlapi-diffs-suite/` (one word, no hyphen).
+  But their Storybook `title` starts with `"DDL API Diffs Suite/…"` — two words — so the
+  **auto-derived meta id** kebab-cases to `ddl-api-diffs-suite-…` (with a hyphen). Folder name
+  and meta id prefix are spelled differently; do not assume one from the other.
+- **Filenames dropped `-samples`, some titles didn't.** `column-type-changes.stories.tsx` and
+  `column-changes-except-types.stories.tsx` (both under `ddlapi-diffs-suite/`) were renamed to
+  drop the `-samples` suffix, but their `title` fields still read `"… Samples"` (e.g. `"DDL API
+  Diffs Suite/Column Type Changes Samples"`). The **meta id and every story id under it still
+  carry `-samples`**, even though the filename does not. Other suites (`e2e-scenarios.*`,
+  `simple-object.*`, `complex-object.*`, `combiners.*`, `number-validation-value-range.*`) have
+  neither the filename nor the title suffix — don't generalize from one suite to the others.
 
 Generated compatibility-suite tests use an explicit `kebabCase()` helper — hand-written
 DDL diff suites do **not**; that is the main source of ID drift.
@@ -108,7 +146,7 @@ entries with the same meta prefix and numeric case prefix.
 ### Long suites and “hang” watchdogs
 
 Jest IT output is **suite-level** by default — individual `it(...)` names do not stream
-while the suite runs. `column-type-changes-samples.it-test.ts` (127 cases) can take
+while the suite runs. `column-type-changes.it-test.ts` (127 cases) can take
 **~3 minutes** with no log lines until `PASS`/`FAIL`.
 
 - Idle watchdogs shorter than **~300s** may kill a healthy full `screenshot-test` run.
@@ -119,7 +157,7 @@ while the suite runs. `column-type-changes-samples.it-test.ts` (127 cases) can t
 ```bash
 cd packages/api-doc-viewer
 npx jest --maxWorkers 1 --verbose -c .config/it/it-test-docker.jest.config.cjs \
-  src/it/ddlapi-diffs-suite/column-type-changes-samples.it-test.ts
+  src/it/ddlapi-diffs-suite/column-type-changes.it-test.ts
 ```
 
 (Requires static showcase on 9009 — e.g. run `npm run development:local-server:static`
@@ -181,7 +219,7 @@ repo (compatibility-suite `*.generated.stories.tsx` /
 **In-repo** bin scripts and utilities must **not** emit `.generated.ts`,
 `.generated.stories.tsx`, or `.generated.it-test.ts` — those names are gitignored and
 the output is internal, not external. Write normal committed filenames instead (e.g.
-`value-range-diff-case-definitions.ts`, `number-validation-value-range-samples.stories.tsx`).
+`value-range-diff-case-definitions.ts`, `number-validation-value-range.stories.tsx`).
 See `api-doc-viewer-repo` skill — **Generated filenames**.
 
 Local fixture suites (JSO, AsyncAPI, DDL, JSON Schema diffs under `packages/samples/`)
@@ -207,7 +245,47 @@ the generator is wrong):
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
 - Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
-  `number-validation-value-range-samples.stories.tsx` and paired ITs.
+  `number-validation-value-range.stories.tsx` and paired ITs.
+
+**`generate-json-schema-samples.mjs` only covers 6 hard-coded types** (`boolean`, `string`,
+`number`, `integer`, `object`, `array` — its `SCHEMA_TYPES` list) under
+`packages/samples/json-schema/`. A sibling directory outside that list (e.g. `combiner/`,
+`description/`) is **not** touched by this generator or by `packages/samples/json-schema/
+manifest.json` — it must be hand-authored (`sample.yaml` per case dir) with a **hand-written**
+`*.stories.tsx`/`*.it-test.ts` pair that copies the generated-suite template (`import.meta.glob`
++ `collectJsonSchemaSampleCases` + `createCaseStoryFactory`), the same way `combiner.stories.tsx`
+already does. Do not assume every `packages/samples/json-schema/*` subdirectory is generated.
+
+**`packages/samples/json-schema-diffs/type-changes/` is a fully generated tree** — every
+sub-suite under it (including `description-changes/`), its `manifest.json`, its `README.md`,
+and the paired stories/IT files are written by
+`node bin/generate-json-schema-type-changes-samples.mjs` from case definitions in
+`bin/json-schema-type-changes-cases.mjs`. Hand-editing a `before.yaml`/`after.yaml` here is
+**lost on the next regen** — add or change cases by editing the relevant `collectXxxCases`
+function (`pushCase(cases, sampleDir, slug, before, after, summary)`) and rerunning the
+generator. Case ids are assigned by **call order** via a shared `dirCounters` map per
+`sampleDir` — inserting a new `pushCase` call in the middle of a suite renumbers every case
+after it; append new cases at the **end** of the function to keep existing case ids stable.
+The generator wipes and rewrites the **entire** `type-changes/` tree on every run (not just the
+suite you touched) — after regenerating, `git diff --stat` should show changes limited to the
+suite(s) you actually edited; anything else changing means a `collectXxxCases` function
+produced different output than before, which is worth investigating before committing.
+
+### Designing case matrices for diff suites (session lesson)
+
+When a request lists several before→after transformations among **more than two** named
+shapes/variants (e.g. "short single-line", "short multi-line", "long single-line", "long
+multi-line" descriptions), don't assume the request wants only the transformations it spelled
+out — it may implicitly want the **full directed N×N combination matrix**: every ordered pair
+of shapes, both directions, not just the ones anchored to a single "starting" shape. A request
+enumerating "A→B, A→C, A→D" is easy to read as "the 3 cases I listed" when what's actually
+wanted is all 12 ordered pairs among {A, B, C, D} (A→B, B→A, A→C, C→A, …) plus the same-shape
+"content changed" cases (A→A, B→B, …). Both directions matter for a diff viewer specifically
+because growing and shrinking content can render differently (truncation, expand/collapse
+affordances, layout reflow) — a pair tested in only one direction can hide a regression that
+only shows up the other way. When a case list names 3+ shapes/variants and the transformations
+between them, sketch the full matrix and confirm scope with the requester before implementing,
+rather than assuming the literal list is the complete requirement.
 
 **Hand-written** (edit stories and matching IT files together):
 
@@ -216,8 +294,8 @@ the generator is wrong):
 - JSON Schema Next diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
   `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
-- DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios-samples.stories.tsx`
-  and `src/it/ddlapi-suite/e2e-scenarios-samples.it-test.ts`.
+- DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios.stories.tsx`
+  and `src/it/ddlapi-suite/e2e-scenarios.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under
   `packages/samples/`, export a story, and append a matching `it(...)` with
   the correct story ID.
@@ -245,9 +323,9 @@ adding or renaming cases.
 
 **E2E scenarios** — realistic table layouts used by the E2E Scenarios suite.
 Each case directory name is the sample id (e.g. `e2e-scenarios/users/`).
-`e2e-scenarios-samples.stories.tsx` maps sample ids to `TableKey` values and
+`e2e-scenarios.stories.tsx` maps sample ids to `TableKey` values and
 exports one story per case; append the Storybook kebab-case story id to
-`e2e-scenarios-samples.it-test.ts` when adding a scenario.
+`e2e-scenarios.it-test.ts` when adding a scenario.
 
 ### DDL foreign-key links in screenshot tests
 
@@ -316,8 +394,8 @@ Example pairs in `column-changes-except-types` (26 cases):
 After adding a case, update:
 
 1. Sample directory under `packages/samples/ddlapi-diffs/column-changes-except-types/`.
-2. Story export in `column-changes-except-types-samples.stories.tsx`.
-3. Matching `it(...)` in `column-changes-except-types-samples.it-test.ts`.
+2. Story export in `column-changes-except-types.stories.tsx`.
+3. Matching `it(...)` in `column-changes-except-types.it-test.ts`.
 4. Group case count in `packages/samples/ddlapi-diffs/README.md` if the total changed.
 5. Screenshot snapshots via `npm run regenerate-screenshots`.
 
@@ -343,9 +421,9 @@ contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (no
 
 | Path | Purpose | Stories / tests |
 | --- | --- | --- |
-| `hiding-unchanged-rows/simple-object/` | Changed-only row hiding — flat object, primitive props | `simple-object-samples.*` |
-| `hiding-unchanged-rows/complex-object/` | Changed-only row hiding — nested object props | `complex-object-samples.*` |
-| `hiding-unchanged-rows/combiners/` | Changed-only row hiding — combiners (oneOf, etc.) | `combiners-samples.*` |
+| `hiding-unchanged-rows/simple-object/` | Changed-only row hiding — flat object, primitive props | `simple-object.*` |
+| `hiding-unchanged-rows/complex-object/` | Changed-only row hiding — nested object props | `complex-object.*` |
+| `hiding-unchanged-rows/combiners/` | Changed-only row hiding — combiners (oneOf, etc.) | `combiners.*` |
 
 Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 
@@ -353,7 +431,7 @@ Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
 **`JsonSchemaNextDiffsViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
 
 1. YAML pair under the appropriate suite subdirectory.
-2. Story export in the matching `*-samples.stories.tsx`.
+2. Story export in the matching `*.stories.tsx`.
 3. Matching `it(...)` in the paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`.
 4. Screenshot snapshots via `npm run regenerate-screenshots`.
 

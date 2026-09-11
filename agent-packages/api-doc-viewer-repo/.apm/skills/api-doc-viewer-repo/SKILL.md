@@ -40,6 +40,7 @@ apm install --target cursor,claude --legacy-skill-paths
 | `api-doc-viewer-authoring` | React viewers, rows, diff chrome, Storybook |
 | `next-data-model-authoring` | Builders, aggregators, crawl rules |
 | `api-doc-viewer-testing` | Screenshot ITs, fixtures, snapshot regeneration |
+| `api-doc-viewer-review-session` | End-of-session retrospective — surface findings, update skills |
 | `api-doc-viewer-using` | Integrator-facing consumption patterns |
 | `next-data-model-using` | Consuming tree builders from another TypeScript project |
 | `ddlapi-using` | ddlapi Realm / merged diff documents (external package) |
@@ -76,7 +77,7 @@ be **committed** under normal filenames.
 | Correct (committed, in-repo) | Wrong (gitignored, do not use) |
 | --- | --- |
 | `value-range-diff-case-definitions.ts` | `value-range-diff-case-definitions.generated.ts` |
-| `number-validation-value-range-samples.stories.tsx` | `…samples.generated.stories.tsx` |
+| `number-validation-value-range.stories.tsx` | `…value-range.generated.stories.tsx` |
 | `src/it/ddlapi-suite/*.it-test.ts` (DDL generator) | `*.generated.it-test.ts` for local suites |
 
 Regenerated local suites (DDL API, JSON Schema type-changes YAML, value-range programmatic
