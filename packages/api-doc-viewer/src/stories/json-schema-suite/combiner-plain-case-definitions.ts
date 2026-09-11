@@ -83,33 +83,45 @@ export function getCombinerPlainCaseDefinitions(
     );
   }
 
-  // Suite 2, case 1 (term 6, type-schema-combinerKind): single-level, named with this directory's
-  // own combiner kind as suffix (structurally identical to Suite 1 case 1, kept as its own case per
-  // the requested matrix so the Suite 2 story/test set is self-contained).
-  const selfSlug = combinerKindSlug(combinerKind);
-  for (const type of COMBINER_SCHEMA_TYPES) {
-    pushCase(
-      definitions,
-      `${type}-schema-${selfSlug}`,
-      wrapInCombiner(combinerKind, [buildComprehensiveTypeSchema(type)]),
-      `Complex combiner: single ${type} option (1 level, ${combinerKind})`,
-    );
-  }
-
-  // Suite 2, cases 2-4 (term 7, type-schema-combinerKind1-combinerKind2): 1st-combiner (this
-  // directory's kind) has 1 option, itself a nested combiner (oneOf/anyOf/allOf) wrapping the
-  // type-schema.
-  for (const nestedKind of COMBINER_KINDS) {
-    const nestedSlug = combinerKindSlug(nestedKind);
+  // Suite 2, case 1 (term 6, type-schema-combinerKind): 1st-combiner (D, this directory's own kind)
+  // has 1 option which is itself a 2nd-combiner whose kind is named by the suffix -- independently of
+  // D, so all 3 kinds (including D itself, i.e. D nested inside D) are exercised. First variant of
+  // the 2nd-combiner is the type-schema. Two combiner levels total.
+  for (const secondLevelKind of COMBINER_KINDS) {
+    const secondLevelSlug = combinerKindSlug(secondLevelKind);
     for (const type of COMBINER_SCHEMA_TYPES) {
       pushCase(
         definitions,
-        `${type}-schema-${selfSlug}-${nestedSlug}`,
+        `${type}-schema-${secondLevelSlug}`,
         wrapInCombiner(combinerKind, [
-          wrapInCombiner(nestedKind, [buildComprehensiveTypeSchema(type)]),
+          wrapInCombiner(secondLevelKind, [buildComprehensiveTypeSchema(type)]),
         ]),
-        `Complex combiner: single ${type} option nested one level deeper inside ${nestedKind}`,
+        `Complex combiner: single ${type} option, 2nd-combiner (${secondLevelKind}) nested inside 1st-combiner (${combinerKind})`,
       );
+    }
+  }
+
+  // Suite 2, cases 2-4 (term 7, type-schema-combinerKind1-combinerKind2): 1st-combiner (D) ->
+  // 2nd-combiner (combinerKind1) -> 3rd-combiner (combinerKind2) -> first variant = type-schema.
+  // Both nested-combiner kinds vary independently over all 3 kinds (9 combinations), matching the
+  // same "all possible 2nd-level combiners" iteration as the single-suffix cases above, recursively
+  // applied one level deeper. Three combiner levels total.
+  for (const secondLevelKind of COMBINER_KINDS) {
+    const secondLevelSlug = combinerKindSlug(secondLevelKind);
+    for (const thirdLevelKind of COMBINER_KINDS) {
+      const thirdLevelSlug = combinerKindSlug(thirdLevelKind);
+      for (const type of COMBINER_SCHEMA_TYPES) {
+        pushCase(
+          definitions,
+          `${type}-schema-${secondLevelSlug}-${thirdLevelSlug}`,
+          wrapInCombiner(combinerKind, [
+            wrapInCombiner(secondLevelKind, [
+              wrapInCombiner(thirdLevelKind, [buildComprehensiveTypeSchema(type)]),
+            ]),
+          ]),
+          `Complex combiner: single ${type} option, 3rd-combiner (${thirdLevelKind}) nested inside 2nd-combiner (${secondLevelKind}) inside 1st-combiner (${combinerKind})`,
+        );
+      }
     }
   }
 
