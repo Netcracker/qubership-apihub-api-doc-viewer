@@ -60,25 +60,33 @@ const createJsonSchemaDiffViewerBaseArgs = (
   metaKeys: JSON_SCHEMA_DIFF_META_KEYS,
 });
 
+export type JsonSchemaDiffViewerArgsOptions = {
+  disableSubstitutionTitle?: boolean;
+};
+
 export const createJsonSchemaDiffViewerArgsFromSchemas = (
   beforeSchema: Record<string, unknown>,
   afterSchema: Record<string, unknown>,
+  options: JsonSchemaDiffViewerArgsOptions = {},
 ): JsonSchemaDiffViewerProps =>
   createJsonSchemaDiffViewerBaseArgs(
     prepareJsonDiffSchema({
       beforeSchema,
       afterSchema,
       target: RESPONSE_200_BODY_TARGET,
+      disableSubstitutionTitle: options.disableSubstitutionTitle,
     }),
   );
 
 export const createJsonSchemaDiffViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
+  options: JsonSchemaDiffViewerArgsOptions = {},
 ): JsonSchemaDiffViewerProps =>
   createJsonSchemaDiffViewerArgsFromSchemas(
     createSchemaFromYaml(beforeSourceText),
     createSchemaFromYaml(afterSourceText),
+    options,
   );
 
 export const createJsonSchemaDiffSampleById = <TSample extends JsonSchemaDiffSampleCase>(
@@ -124,4 +132,18 @@ export const JsonSchemaDiffSamplesStory = ({
   afterYaml,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
   <JsonSchemaDiffViewer {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)} />
+);
+
+/**
+ * Same as JsonSchemaDiffSamplesStory, but inlines schemas in the OAS template instead of $ref-ing
+ * to __Substitution__ (disableSubstitutionTitle) -- needed for combiner suites, where the
+ * substitution $ref would otherwise be the thing labeled at the diff root instead of the combiner.
+ */
+export const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle = ({
+  beforeYaml,
+  afterYaml,
+}: JsonSchemaDiffCaseStoryComponentProps) => (
+  <JsonSchemaDiffViewer
+    {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
+  />
 );

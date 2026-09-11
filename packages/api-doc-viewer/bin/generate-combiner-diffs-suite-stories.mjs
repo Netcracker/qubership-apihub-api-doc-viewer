@@ -45,7 +45,7 @@ const printStoryFile = (suite, cases) => {
  */
 import type { Meta, StoryObj } from "@storybook/react";
 import {
-  JsonSchemaDiffSamplesStory,
+  JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
@@ -58,16 +58,16 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: "${suite.title}",
-  component: JsonSchemaDiffSamplesStory,
+  component: JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
-} satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
+} satisfies Meta<typeof JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
-  JsonSchemaDiffSamplesStory,
+  JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   sampleById,
 );
 
