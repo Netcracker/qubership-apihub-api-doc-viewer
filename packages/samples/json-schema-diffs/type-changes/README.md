@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 478
+- Total cases: 496
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -31,7 +31,7 @@ Path: `type-changes/type-flags/` (13 cases)
 
 ### Description Changes
 
-Path: `type-changes/description-changes/` (8 cases)
+Path: `type-changes/description-changes/` (26 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -43,6 +43,24 @@ Path: `type-changes/description-changes/` (8 cases)
 | `006-description-with-enum-replaced` | String with description and enum: description replaced |
 | `007-unchanged-description-short` | Unchanged short description |
 | `008-unchanged-description-long` | Unchanged long description (>600 chars) |
+| `009-description-changed-short-line-text-changed` | Short single-line description: text changed |
+| `010-description-changed-short-lines-text-changed` | Short multi-line description (3 lines): text changed |
+| `011-description-changed-long-line-text-changed` | Long single-line description (1000 chars): text changed |
+| `012-description-changed-long-lines-text-changed` | Long multi-line description (10 lines): text changed |
+| `013-description-changed-short-line-to-short-lines` | Description changed: short single-line to short multi-line |
+| `014-description-changed-short-line-to-long-line` | Description changed: short single-line to long single-line |
+| `015-description-changed-short-line-to-long-lines` | Description changed: short single-line to long multi-line |
+| `016-description-changed-short-lines-to-short-line` | Description changed: short multi-line to short single-line |
+| `017-description-changed-short-lines-to-long-line` | Description changed: short multi-line to long single-line |
+| `018-description-changed-short-lines-to-long-lines` | Description changed: short multi-line to long multi-line |
+| `019-description-changed-long-line-to-short-line` | Description changed: long single-line to short single-line |
+| `020-description-changed-long-line-to-short-lines` | Description changed: long single-line to short multi-line |
+| `021-description-changed-long-line-to-long-lines` | Description changed: long single-line to long multi-line |
+| `022-description-changed-long-lines-to-short-line` | Description changed: long multi-line to short single-line |
+| `023-description-changed-long-lines-to-short-lines` | Description changed: long multi-line to short multi-line |
+| `024-description-changed-long-lines-to-long-line` | Description changed: long multi-line to long single-line |
+| `025-unchanged-description-short-multiline` | Unchanged short multi-line description (3 lines) |
+| `026-unchanged-description-long-multiline` | Unchanged long multi-line description (10 lines) |
 
 ### String Validation Enum
 

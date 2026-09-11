@@ -92,4 +92,130 @@ describe("JSON Schema Diffs Suite/Description Changes", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("009-description-changed-short-line-text-changed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-009-description-changed-short-line-text-changed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("010-description-changed-short-lines-text-changed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-010-description-changed-short-lines-text-changed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("011-description-changed-long-line-text-changed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-011-description-changed-long-line-text-changed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("012-description-changed-long-lines-text-changed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-012-description-changed-long-lines-text-changed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("013-description-changed-short-line-to-short-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-013-description-changed-short-line-to-short-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("014-description-changed-short-line-to-long-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-014-description-changed-short-line-to-long-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("015-description-changed-short-line-to-long-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-015-description-changed-short-line-to-long-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("016-description-changed-short-lines-to-short-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-016-description-changed-short-lines-to-short-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("017-description-changed-short-lines-to-long-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-017-description-changed-short-lines-to-long-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("018-description-changed-short-lines-to-long-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-018-description-changed-short-lines-to-long-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("019-description-changed-long-line-to-short-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-019-description-changed-long-line-to-short-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("020-description-changed-long-line-to-short-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-020-description-changed-long-line-to-short-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("021-description-changed-long-line-to-long-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-021-description-changed-long-line-to-long-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("022-description-changed-long-lines-to-short-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-022-description-changed-long-lines-to-short-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("023-description-changed-long-lines-to-short-lines", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-023-description-changed-long-lines-to-short-lines`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("024-description-changed-long-lines-to-long-line", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-024-description-changed-long-lines-to-long-line`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("025-unchanged-description-short-multiline", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-025-unchanged-description-short-multiline`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("026-unchanged-description-long-multiline", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-026-unchanged-description-long-multiline`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });

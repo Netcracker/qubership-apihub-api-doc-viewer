@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-08T22:48:27.754Z",
-  "totalCases": 478,
+  "generatedAt": "2026-09-11T15:37:55.495Z",
+  "totalCases": 496,
   "suites": [
     {
       "globPath": "type-flags",
@@ -8,7 +8,7 @@
     },
     {
       "globPath": "description-changes",
-      "caseCount": 8
+      "caseCount": 26
     },
     {
       "globPath": "string-validation/enum",
