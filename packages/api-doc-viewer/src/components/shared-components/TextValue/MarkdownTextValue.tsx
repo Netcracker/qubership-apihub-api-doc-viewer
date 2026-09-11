@@ -6,9 +6,9 @@ import { FC, memo, useCallback, useMemo, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { TextRowUsage } from "../TextRow/types"
-import { TextValueVariant } from "../TextValue/types"
-import { isMarkdownExpandable, shortenMarkdownValue } from "./shorten-markdown-value"
-import "./MarkdownTextRow.css"
+import { getExpanderFontSizeClass, isExpandable, shortenValue } from "./shorten-text-value"
+import { TextValueVariant } from "./types"
+import "../MarkdownTextRow/MarkdownTextRow.css"
 
 const JSON_SCHEMA_DESCRIPTION_MARKDOWN_CLASS = "markdown-text-row__json-schema-description"
 const JSON_SCHEMA_DESCRIPTION_EXPANDER_CLASS = "markdown-text-row__json-schema-expander"
@@ -106,28 +106,6 @@ function getMarkdownFontSizeClass(variant: TextValueVariant): string {
   }
 }
 
-function getExpanderFontSizeClass(variant: TextValueVariant): string {
-  switch (variant) {
-    case TextValueVariant.h1:
-      return "text-value-expander--h1"
-    case TextValueVariant.h2:
-      return "text-value-expander--h2"
-    case TextValueVariant.h3:
-      return "text-value-expander--h3"
-    case TextValueVariant.h4:
-      return "text-value-expander--h4"
-    case TextValueVariant.h5:
-      return "text-value-expander--h5"
-    case TextValueVariant.h6:
-      return "text-value-expander--h6"
-    case TextValueVariant.body1:
-      return "text-value-expander--body1"
-    case TextValueVariant.body2:
-    default:
-      return "text-value-expander--body2"
-  }
-}
-
 function resolveMarkdownTypography(
   usage: TextRowUsage | undefined,
   variant: TextValueVariant,
@@ -155,12 +133,12 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
   )
 
   const displayValue = useMemo(
-    () => shortenMarkdownValue(resolvedValue, expanded),
+    () => expanded ? resolvedValue : shortenValue(resolvedValue),
     [expanded, resolvedValue],
   )
 
-  const isExpandable = useMemo(
-    () => isMarkdownExpandable(resolvedValue),
+  const isValueExpandable = useMemo(
+    () => isExpandable(resolvedValue),
     [resolvedValue],
   )
 
@@ -203,7 +181,7 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
         {displayValue}
       </ReactMarkdown>
       <MarkdownExpander
-        isExpandable={isExpandable}
+        isExpandable={isValueExpandable}
         expanded={expanded}
         onToggle={onToggleExpanded}
         expanderClassName={typography.expanderClassName}

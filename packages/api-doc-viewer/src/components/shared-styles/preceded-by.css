@@ -187,8 +187,10 @@
 /* Legacy parity (AdditionalInfoArrayRow.tsx / AdditionalInfoObjectRow.tsx): the label
    ("Default:", "Examples:", ...) is top-aligned against the value chip(s), not vertically
    centered — matters once a chip can be multi-line (pretty-printed object/array default).
-   Scoped to the additional-info row's own row-body only — title/description/nesting-indicator
-   rows reuse the same .json-schema-property-row-body class and need to stay items-center. */
+   Scoped to the additional-info row's own row-body only — title/nesting-indicator rows reuse
+   the same .json-schema-property-row-body class and stay items-center (short, single-line
+   content). The description row (MarkdownTextRowContent) also reuses this class but sets its
+   own items-start directly in its JSX instead, since markdown content is often multi-line. */
 .json-schema-property .additional-info-row-content .json-schema-property-row-body {
   align-items: flex-start;
 }

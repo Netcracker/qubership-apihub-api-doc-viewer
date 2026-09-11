@@ -10,7 +10,7 @@ import { JsonSchemaRootExpanderOffset } from "../JsonSchemaExpanderColumn/JsonSc
 import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
-import { MarkdownTextValue } from "./MarkdownTextValue"
+import { MarkdownTextValue } from "../TextValue/MarkdownTextValue"
 import type { MarkdownTextRowContentProps } from "./types"
 
 const MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TextRowUsage, string>> = {
@@ -116,7 +116,11 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
           {markdownValue}
         </div>
       ) : usage === TextRowUsage.JsonSchemaDescription ? (
-        <div className="json-schema-property-row-body flex min-w-0 flex-1 items-center gap-2">
+        // items-start (not items-center): markdown content is often multi-line / expandable,
+        // so it must hug the top of the row, not float centered - see TextRow for contrast
+        // (plain text values are never used for JSON Schema descriptions, so it never had
+        // this wrapper/class at all).
+        <div className="json-schema-property-row-body flex min-w-0 flex-1 items-start gap-2">
           {markdownValue}
         </div>
       ) : (

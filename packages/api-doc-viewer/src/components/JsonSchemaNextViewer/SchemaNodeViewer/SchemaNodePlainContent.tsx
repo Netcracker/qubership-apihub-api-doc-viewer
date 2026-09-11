@@ -247,7 +247,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [defaultValueDiff, propertyNodeWithDiffs, value],
+    [defaultValueDiff, propertyNodeWithDiffs, typedValue?.default],
   )
 
   const buildValidationRowSubheader = useCallback(
