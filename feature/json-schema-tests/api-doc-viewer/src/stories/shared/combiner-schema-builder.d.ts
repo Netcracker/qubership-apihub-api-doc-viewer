@@ -1,6 +1,6 @@
 export declare const COMBINER_SCHEMA_TYPES: readonly ["string", "number", "integer", "boolean", "array", "object"];
 export type CombinerSchemaType = (typeof COMBINER_SCHEMA_TYPES)[number];
-export type CombinerKind = "oneOf" | "anyOf" | "allOf";
+export type CombinerKind = 'oneOf' | 'anyOf' | 'allOf';
 export declare const COMBINER_KINDS: CombinerKind[];
 /** Human-readable "One Of" / "Any Of" / "All Of" label, for Storybook titles and summaries. */
 export declare const combinerKindLabel: (kind: CombinerKind) => string;

@@ -1,4 +1,4 @@
-import { type JsonSchemaSamplesStoryObj } from "./json-schema-samples-common";
+import { type JsonSchemaSamplesStoryObj } from './json-schema-samples-common';
 declare const meta: {
     id: string;
     title: string;

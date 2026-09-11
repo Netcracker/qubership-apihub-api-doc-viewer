@@ -1,4 +1,4 @@
-import { type CombinerKind } from "../shared/combiner-schema-builder.ts";
+import { type CombinerKind } from '../shared/combiner-schema-builder';
 export type CombinerPlainCaseDefinition = {
     slug: string;
     schema: Record<string, unknown>;

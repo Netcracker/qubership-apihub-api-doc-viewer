@@ -1,4 +1,4 @@
-import{c as N,a as W,d as Y,b as j}from"./ddl-samples-common-ac07fa20.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d47ea043.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-12a6d42e.js";import"./iframe-cebc2e55.js";import"../sb-preview/runtime.js";const M=`CREATE TABLE t (
+import{c as N,a as W,d as Y,b as j}from"./ddl-samples-common-756def98.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-d47ea043.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-fb7668b1.js";import"./iframe-0110b1a6.js";import"../sb-preview/runtime.js";const M=`CREATE TABLE t (
   label text DEFAULT E'path\\\\to\\\\file'
 );
 `,P=`CREATE TABLE t (

@@ -1,4 +1,4 @@
-import { type ValueRangeBounds } from "../shared/value-range-schema-builder.ts";
+import { type ValueRangeBounds } from '../shared/value-range-schema-builder';
 export type ValueRangePlainCaseDefinition = {
     slug: string;
     bounds: ValueRangeBounds;
@@ -12,7 +12,7 @@ export type ValueRangePlainSampleListOptions = {
     includeOas31Only?: boolean;
 };
 export type ValueRangePlainSampleResolveOptions = ValueRangePlainSampleListOptions & {
-    type?: "integer" | "number";
+    type?: 'integer' | 'number';
 };
 export declare function getValueRangePlainCaseDefinitions(): ValueRangePlainCaseDefinition[];
 export declare function listValueRangePlainCases(options?: ValueRangePlainSampleListOptions): ValueRangePlainCase[];
