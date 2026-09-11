@@ -5,7 +5,7 @@ export type JsonSchemaTypeValueDiffSegmentProps = {
     text: string;
     diff?: ChangedPropertyMetaData;
     layoutSide: LayoutSide;
-    color?: string;
+    color?: string | null;
 };
 /**
  * Diff-wrapper layer: computes highlighter/background chrome for one text segment and hands

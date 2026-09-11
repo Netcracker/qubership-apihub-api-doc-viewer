@@ -4,7 +4,7 @@ import { FC } from '../../../../../../../node_modules/react';
 export type JsonSchemaTypeValueSideDisplayProps = {
     display: SideListDisplay;
     layoutSide: LayoutSide;
-    color?: string;
+    color?: string | null;
 };
 /**
  * Local SideListDisplay renderer for JSON Schema type-value text, independent of
