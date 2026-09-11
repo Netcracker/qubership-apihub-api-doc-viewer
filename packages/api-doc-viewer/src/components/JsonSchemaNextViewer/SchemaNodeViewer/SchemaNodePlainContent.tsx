@@ -109,37 +109,42 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     [displayMode, displayValue, node, propertyNodeWithDiffs],
   )
 
+  // Default/enum/examples are not PROPERTY/ROOT-specific either - any schema-bearing node
+  // (additionalProperties, items, combiner variants, ...) can carry its own, and the data layer
+  // now aggregates them for every kind (see JsonSchemaNodeDiffsAggregatorFactory). Gate on the
+  // same generic `validationDiffsNode` the validation-constraint rows already use below, not the
+  // PROPERTY/ROOT-only `propertyNodeWithDiffs` (kept only for visibility resolution above).
   const enumDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaEnumDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaEnumDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const enumValueDiffs = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaEnumValueDiffs(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaEnumValueDiffs(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const enumRowColorizingDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaEnumRowColorizingDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaEnumRowColorizingDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const examplesDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaExamplesDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaExamplesDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const examplesValueDiffs = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaExamplesValueDiffs(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaExamplesValueDiffs(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const examplesRowColorizingDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaExamplesRowColorizingDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaExamplesRowColorizingDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const defaultValueDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaDefaultDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaDefaultDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
   const defaultValueRowColorizingDiff = useMemo(
-    () => (propertyNodeWithDiffs ? takeJsonSchemaDefaultRowColorizingDiff(propertyNodeWithDiffs) : undefined),
-    [propertyNodeWithDiffs],
+    () => (validationDiffsNode ? takeJsonSchemaDefaultRowColorizingDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
   )
 
   const nodeDiffState = useNodeDiffState(node, isJsonSchemaTreeNodeWithDiffs)
@@ -226,13 +231,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   const defaultAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
       const mergedDefault = typedValue?.default
-      const sideEntries = propertyNodeWithDiffs
-        ? resolveJsonSchemaDefaultSideEntries(
-          mergedDefault,
-          takeJsonSchemaDefaultDiff(propertyNodeWithDiffs),
-          layoutSide,
-        )
-        : resolveJsonSchemaDefaultSideEntries(mergedDefault, undefined, layoutSide)
+      const sideEntries = resolveJsonSchemaDefaultSideEntries(mergedDefault, defaultValueDiff, layoutSide)
       if (sideEntries.length === 0) {
         return <></>
       }
@@ -247,7 +246,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         />
       )
     },
-    [defaultValueDiff, propertyNodeWithDiffs, typedValue?.default],
+    [defaultValueDiff, typedValue?.default],
   )
 
   const buildValidationRowSubheader = useCallback(

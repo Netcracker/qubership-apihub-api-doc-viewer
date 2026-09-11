@@ -1426,3 +1426,63 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
     expect(removeRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
   })
 })
+
+describe("JsonSchema default/enum/examples diffs on non-PROPERTY/ROOT nodes (additionalProperties, ...)", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/003-add-additional-properties-type-string
+  it("colors Default/Allowed values as wholly added, hidden on origin, when additionalProperties is added as a whole schema", () => {
+    const tree = buildTree(
+      { type: "object" },
+      {
+        type: "object",
+        additionalProperties: { type: "string", default: "alpha", enum: ["alpha", "beta", "gamma"] },
+      },
+    )
+    const additionalPropertiesNode = tree.root!.childrenNodes()
+      .find((node) => node.key === "additionalProperties")!
+    expect(isJsonSchemaTreeNodeWithDiffs(additionalPropertiesNode)).toBe(true)
+
+    const defaultDiff = takeJsonSchemaDefaultRowColorizingDiff(additionalPropertiesNode)
+    expect(defaultDiff?.data.action).toBe(DiffAction.add)
+    expect(defaultDiff?.styles.before.isContentVisible).toBe(false)
+    expect(defaultDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const enumDiff = takeJsonSchemaEnumRowColorizingDiff(additionalPropertiesNode)
+    expect(enumDiff?.data.action).toBe(DiffAction.add)
+    expect(enumDiff?.styles.before.isContentVisible).toBe(false)
+    expect(enumDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/004-remove-additional-properties-type-string
+  it("colors Default/Allowed values as wholly removed, hidden on changed, when additionalProperties is removed as a whole schema", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        additionalProperties: { type: "string", default: "alpha", enum: ["alpha", "beta", "gamma"] },
+      },
+      { type: "object" },
+    )
+    const additionalPropertiesNode = tree.root!.childrenNodes()
+      .find((node) => node.key === "additionalProperties")!
+    expect(isJsonSchemaTreeNodeWithDiffs(additionalPropertiesNode)).toBe(true)
+
+    const defaultDiff = takeJsonSchemaDefaultRowColorizingDiff(additionalPropertiesNode)
+    expect(defaultDiff?.data.action).toBe(DiffAction.remove)
+    expect(defaultDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(defaultDiff?.styles.after.isContentVisible).toBe(false)
+
+    const enumDiff = takeJsonSchemaEnumRowColorizingDiff(additionalPropertiesNode)
+    expect(enumDiff?.data.action).toBe(DiffAction.remove)
+    expect(enumDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(enumDiff?.styles.after.isContentVisible).toBe(false)
+  })
+})

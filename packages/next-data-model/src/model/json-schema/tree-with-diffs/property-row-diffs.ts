@@ -227,56 +227,65 @@ export function resolveJsonSchemaTypeLabelSideDisplayForNode(
   return resolveJsonSchemaTypeLabelSideDisplay(node, node.meta(), layoutSide)
 }
 
+/**
+ * `default`/`enum`/`examples` diffs used to be keyed off `JsonSchemaPropertyNodeWithDiffs`
+ * (kind PROPERTY/ROOT only) because the aggregator that computes them
+ * (`JsonSchemaNodeDiffsAggregatorKindProperty`) only used to run for those kinds. Any
+ * schema-bearing node (`additionalProperties`, `items`, combiner variants, ...) can carry its
+ * own `default`/`enum`/`examples`, and the aggregator now runs for all of them (see
+ * `JsonSchemaNodeDiffsAggregatorFactory`) - so these accessors take the unconstrained
+ * `JsonSchemaNodeWithDiffs`, matching the validation-row accessors below.
+ */
 function takePropertyRowDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): JsonSchemaKindPropertyNodeDiffs {
   return node.diffs as JsonSchemaKindPropertyNodeDiffs
 }
 
 export function takeJsonSchemaDefaultDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).default
 }
 
 export function takeJsonSchemaDefaultRowColorizingDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).defaultRowColorizingDiff
 }
 
 export function takeJsonSchemaEnumDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).enumDiff
 }
 
 export function takeJsonSchemaEnumValueDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): JsonSchemaListValueDiffs | undefined {
   return takePropertyRowDiffs(node).enumValueDiffs
 }
 
 export function takeJsonSchemaEnumRowColorizingDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).enumRowColorizingDiff
 }
 
 export function takeJsonSchemaExamplesDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).examplesDiff
 }
 
 export function takeJsonSchemaExamplesValueDiffs(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): JsonSchemaListValueDiffs | undefined {
   return takePropertyRowDiffs(node).examplesValueDiffs
 }
 
 export function takeJsonSchemaExamplesRowColorizingDiff(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): ChangedPropertyMetaData | undefined {
   return takePropertyRowDiffs(node).examplesRowColorizingDiff
 }
@@ -397,7 +406,7 @@ export function resolveJsonSchemaDefaultSideEntries(
 }
 
 export function resolveJsonSchemaDefaultSideDisplay(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
   layoutSide: LayoutSide,
 ): string | undefined {
   const sideEntries = resolveJsonSchemaDefaultSideEntries(
@@ -808,7 +817,7 @@ export function resolveJsonSchemaListValueSideItems(
 }
 
 export function isJsonSchemaWholePropertyAddOrRemove(
-  node: JsonSchemaPropertyNodeWithDiffs,
+  node: JsonSchemaNodeWithDiffs,
 ): boolean {
   const nodeLevelDiff = node.diffs[NODE_LEVEL_DIFF_KEY]
   if (!nodeLevelDiff) {
