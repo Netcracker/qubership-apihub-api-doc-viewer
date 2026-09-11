@@ -14,5 +14,7 @@ export type SchemaNodeTitleRowWithDiffsProps = WithPrecededByProps & {
     expanded?: boolean;
     onClickExpander?: () => void;
     titleRowDiffProps?: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities">;
+    /** See JsonSchemaTitleSubheaderProps's `typeValueSuffix` - only combiner owners pass this. */
+    typeValueSuffix?: string;
 };
 export declare const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps>;

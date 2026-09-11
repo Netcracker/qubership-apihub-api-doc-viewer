@@ -9,6 +9,8 @@ export type JsonSchemaTitleSubheaderProps = {
     isCycle: boolean;
     layoutSide: LayoutSide;
     showTypeLabel?: boolean;
+    /** See JsonSchemaTitleRowTypeValue's `suffix` prop - combiner-kind suffix, e.g. " (anyOf)". */
+    typeValueSuffix?: string;
 };
 export type JsonSchemaTitleSubheaderWithDiffsProps = {
     meta: JsonSchemaTreeNodeMeta | null | undefined;
@@ -16,6 +18,7 @@ export type JsonSchemaTitleSubheaderWithDiffsProps = {
     isCycle: boolean;
     layoutSide: LayoutSide;
     showTypeLabel?: boolean;
+    typeValueSuffix?: string;
 };
 export declare const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps>;
 export declare const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithDiffsProps>;

@@ -12,5 +12,7 @@ export type SchemaNodeTitleRowProps = WithPrecededByProps & {
     expandable?: boolean;
     expanded?: boolean;
     onClickExpander?: () => void;
+    /** See JsonSchemaTitleSubheaderProps's `typeValueSuffix` - only combiner owners pass this. */
+    typeValueSuffix?: string;
 };
 export declare const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps>;

@@ -6,6 +6,8 @@ export type JsonSchemaTitleRowTypeValueWithDiffsProps = {
     node: JsonSchemaTreeNodeWithDiffs;
     meta: JsonSchemaTreeNodeMeta | null | undefined;
     layoutSide: LayoutSide;
+    /** See the plain sibling's `suffix` prop (JsonSchemaTitleRowTypeValue) - same contract. */
+    suffix?: string;
 };
 /**
  * Title-row type-value orchestrator, with diffs. Never hides on primitiveness (see plain

@@ -4,6 +4,12 @@ import { FC } from '../../../../../../../node_modules/react';
 export type JsonSchemaTitleRowTypeValueProps = {
     value: JsonSchemaTreeNodeValue | null | undefined;
     meta: JsonSchemaTreeNodeMeta | null | undefined;
+    /**
+     * Plain, non-diff-highlighted trailing text (e.g. `resolveCombinerOptionTitleSuffix`'s
+     * `" (anyOf)"`) appended after the type value - used when this title row belongs to a
+     * combiner-owning property, matching legacy's `NodeType.tsx` `{type} ({combiner})` display.
+     */
+    suffix?: string;
 };
 /**
  * Title-row type-value orchestrator, plain (no diffs). Never hides on primitiveness - the
