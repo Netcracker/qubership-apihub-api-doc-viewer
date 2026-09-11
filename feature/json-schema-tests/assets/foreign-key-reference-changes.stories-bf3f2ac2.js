@@ -1,4 +1,4 @@
-import{c as V,a as W,d as X,b as Z}from"./ddlapi-diffs-utils-3245b946.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-d78f4219.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";/* empty css              */import"./build-from-ddl-browser-4f83badc.js";import"./iframe-c704d4a9.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const $=`CREATE TABLE public.target (
+import{c as V,a as W,d as X,b as Z}from"./ddlapi-diffs-utils-d8922e0f.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableDiffsViewer-d78f4219.js";import"./DiffBadge-4d4a1c37.js";import"./IndexesNodeViewer-6fcd5e03.js";/* empty css              */import"./build-from-ddl-browser-12a6d42e.js";import"./iframe-cebc2e55.js";import"../sb-preview/runtime.js";import"./index-8cf80a84.js";import"./ddl-story-realm-utils-c0692776.js";const $=`CREATE TABLE public.target (
   id integer PRIMARY KEY
 );
 

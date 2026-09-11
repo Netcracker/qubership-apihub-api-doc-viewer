@@ -1,4 +1,4 @@
-import{r as _}from"./DiffBadge-4d4a1c37.js";import{c as L,a as A,d as T,b as y}from"./ddl-samples-common-31eaae63.js";import"./index-f46741a2.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./DdlTableViewer-d47ea043.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-4f83badc.js";import"./iframe-c704d4a9.js";import"../sb-preview/runtime.js";const v=`CREATE TABLE t (
+import{r as _}from"./DiffBadge-4d4a1c37.js";import{c as L,a as A,d as T,b as y}from"./ddl-samples-common-ac07fa20.js";import"./index-f46741a2.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./DdlTableViewer-d47ea043.js";import"./IndexesNodeViewer-6fcd5e03.js";import"./build-from-ddl-browser-12a6d42e.js";import"./iframe-cebc2e55.js";import"../sb-preview/runtime.js";const v=`CREATE TABLE t (
   status text NOT NULL DEFAULT 'active'
 );
 `,C=`CREATE TYPE mood AS ENUM ('happy', 'sad', 'neutral');
