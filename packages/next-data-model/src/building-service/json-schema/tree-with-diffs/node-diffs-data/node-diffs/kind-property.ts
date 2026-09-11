@@ -3,7 +3,6 @@ import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-se
 import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import {
   ChangedPropertyMetaData,
-  HighlightVariant,
   ITreeNodeWithDiffs,
   NODE_LEVEL_DIFF_KEY,
   NodeDiffs,
@@ -313,9 +312,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
 
   private buildDefaultValueDiffMetadata(diff: Diff<DiffType>): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      return this.buildChipReplaceDiffMetadata(diff, {
-        textHighlighterColor: HighlightVariant.Yellow,
-      })
+      return this.buildBooleanAwareChipReplaceDiffMetadata(diff)
     }
 
     return this.buildChangedPropertyMetaDataFromDiff(diff)

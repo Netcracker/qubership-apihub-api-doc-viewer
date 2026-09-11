@@ -1236,3 +1236,78 @@ describe("JsonSchema node changes summary", () => {
     expect(takeJsonSchemaNodeChangesSummary(objectVariant)?.size).toBe(1)
   })
 })
+
+describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors a boolean default value replace with borderShadowColor, not textHighlighterColor", () => {
+    const tree = buildTree(
+      { type: "boolean", default: true },
+      { type: "boolean", default: false },
+    )
+    const root = tree.root!
+
+    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    expect(defaultDiff?.data.action).toBe(DiffAction.replace)
+    expect(defaultDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(defaultDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it("colors each side independently when the default value crosses from boolean to non-boolean (type also changes)", () => {
+    const tree = buildTree(
+      { type: "boolean", default: true },
+      { type: "string", default: "foo" },
+    )
+    const root = tree.root!
+
+    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    expect(defaultDiff?.data.action).toBe(DiffAction.replace)
+    // Origin side (boolean `true`) -> borderShadowColor.
+    expect(defaultDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    // Changed side (string "foo") -> textHighlighterColor, as for every other type.
+    expect(defaultDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.after.borderShadowColor).toBeUndefined()
+  })
+
+  it("keeps textHighlighterColor for a non-boolean default value replace (regression guard)", () => {
+    const tree = buildTree(
+      { type: "string", default: "a" },
+      { type: "string", default: "b" },
+    )
+    const root = tree.root!
+
+    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    expect(defaultDiff?.data.action).toBe(DiffAction.replace)
+    expect(defaultDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.before.borderShadowColor).toBeUndefined()
+    expect(defaultDiff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
+    expect(defaultDiff?.styles.after.borderShadowColor).toBeUndefined()
+  })
+
+  it("colors a boolean uniqueItems validation-row value replace with borderShadowColor, even though the owning node's type is array (not boolean)", () => {
+    const tree = buildTree(
+      { type: "array", items: { type: "string" }, uniqueItems: true },
+      { type: "array", items: { type: "string" }, uniqueItems: false },
+    )
+    const root = tree.root!
+
+    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.UNIQUE_ITEMS)
+    const uniqueItemsDiff = valueDiffs?.["uniqueItems"]
+    expect(uniqueItemsDiff?.data.action).toBe(DiffAction.replace)
+    expect(uniqueItemsDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(uniqueItemsDiff?.styles.before.textHighlighterColor).toBeUndefined()
+    expect(uniqueItemsDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Yellow)
+    expect(uniqueItemsDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+})

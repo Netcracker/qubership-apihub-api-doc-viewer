@@ -730,6 +730,40 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
   }
 
+  /**
+   * Chip replace-diff styling for a value that may itself be a JS boolean (Default, Enum/
+   * Examples items, scalar validation-row values like `uniqueItems`) - per side, a boolean
+   * value gets `borderShadowColor` instead of `textHighlighterColor` (matches DDL's
+   * `TypeKind.BoolType` column-default rule and JSO's predefined-value-set rule). Checking the
+   * diff's own before/after value (not the owning node's `type` keyword) is what lets this
+   * correctly cover `uniqueItems`-style keywords whose value is always boolean regardless of
+   * the owning node's own type.
+   */
+  protected buildBooleanAwareChipReplaceDiffMetadata(
+    diff: DiffReplace<DiffType>,
+  ): ChangedPropertyMetaData {
+    const metadata = this.buildChangedPropertyMetaDataFromDiff(diff)
+    const beforeIsBoolean = typeof diff.beforeValue === "boolean"
+    const afterIsBoolean = typeof diff.afterValue === "boolean"
+    return {
+      ...metadata,
+      styles: {
+        before: {
+          ...metadata.styles.before,
+          backgroundColor: undefined,
+          textHighlighterColor: beforeIsBoolean ? undefined : HighlightVariant.Yellow,
+          borderShadowColor: beforeIsBoolean ? HighlightVariant.Yellow : undefined,
+        },
+        after: {
+          ...metadata.styles.after,
+          backgroundColor: undefined,
+          textHighlighterColor: afterIsBoolean ? undefined : HighlightVariant.Yellow,
+          borderShadowColor: afterIsBoolean ? HighlightVariant.Yellow : undefined,
+        },
+      },
+    }
+  }
+
   protected buildWholeNodeInheritedRowColorizingDiff(
     nodeLevelDiff: ChangedPropertyMetaData,
   ): ChangedPropertyMetaData {
@@ -1132,9 +1166,8 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     diff: DiffAdd | DiffRemove | DiffReplace,
   ): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      return this.buildChipReplaceDiffMetadata(diff, {
-        textHighlighterColor: HighlightVariant.Yellow,
-      })
+      // Legacy draft-04 schemas can express exclusiveMinimum/exclusiveMaximum as booleans.
+      return this.buildBooleanAwareChipReplaceDiffMetadata(diff)
     }
     return this.buildChipAddRemoveDiffMetadata(diff, {
       addAfter: { borderShadowColor: HighlightVariant.Green },
@@ -1227,9 +1260,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   /** Shared by validation-row and enum/examples list-item chip diffing (kind-property). */
   protected buildListValueDiffMetadata(diff: Diff<DiffType>): ChangedPropertyMetaData {
     if (isDiffReplace(diff)) {
-      return this.buildChipReplaceDiffMetadata(diff, {
-        textHighlighterColor: HighlightVariant.Yellow,
-      })
+      return this.buildBooleanAwareChipReplaceDiffMetadata(diff)
     }
 
     return this.buildChipAddRemoveDiffMetadata(diff, {
