@@ -156,11 +156,18 @@ describe("plain JSON Schema combiner node visibility", () => {
     })
   })
 
-  it("hides selector for a single nested option", () => {
+  it("shows selector even for a single nested option (matches legacy)", () => {
     const node = makeCombinerNode(JsonSchemaTreeNodeKinds.ANY_OF, [{ id: "a" }])
 
-    expect(resolvePlainCombinerNodeVisibility(node as never).showSelector).toBe(false)
+    expect(resolvePlainCombinerNodeVisibility(node as never).showSelector).toBe(true)
     expect(resolvePlainCombinerNodeVisibility(node as never).showSubheader).toBe(true)
+  })
+
+  it("hides selector when there are no nested options", () => {
+    const node = makeCombinerNode(JsonSchemaTreeNodeKinds.ANY_OF, [])
+
+    expect(resolvePlainCombinerNodeVisibility(node as never).showSelector).toBe(false)
+    expect(resolvePlainCombinerNodeVisibility(node as never).showSubheader).toBe(false)
   })
 
   it("recognises combiner node kinds", () => {

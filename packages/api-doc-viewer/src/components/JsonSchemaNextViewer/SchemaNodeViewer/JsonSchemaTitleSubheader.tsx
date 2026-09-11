@@ -21,6 +21,8 @@ export type JsonSchemaTitleSubheaderProps = {
   isCycle: boolean
   layoutSide: LayoutSide
   showTypeLabel?: boolean
+  /** See JsonSchemaTitleRowTypeValue's `suffix` prop - combiner-kind suffix, e.g. " (anyOf)". */
+  typeValueSuffix?: string
 }
 
 export type JsonSchemaTitleSubheaderWithDiffsProps = {
@@ -29,14 +31,15 @@ export type JsonSchemaTitleSubheaderWithDiffsProps = {
   isCycle: boolean
   layoutSide: LayoutSide
   showTypeLabel?: boolean
+  typeValueSuffix?: string
 }
 
 export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (props) => {
-  const { value, meta, isCycle, layoutSide, showTypeLabel = true } = props
+  const { value, meta, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix } = props
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {showTypeLabel && <JsonSchemaTitleRowTypeValue value={value} meta={meta} />}
+      {showTypeLabel && <JsonSchemaTitleRowTypeValue value={value} meta={meta} suffix={typeValueSuffix} />}
       {isCycle && (
         <UxTooltip text={CIRCULAR_REF_TOOLTIP}>
           <CircularRefIcon />
@@ -55,7 +58,7 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
 }
 
 export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithDiffsProps> = (props) => {
-  const { meta, node, isCycle, layoutSide, showTypeLabel = true } = props
+  const { meta, node, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix } = props
   const layoutMode = useLayoutMode()
   const diffTagsProps = buildJsonSchemaDiffTagsProps(node, layoutMode)
 
@@ -66,6 +69,7 @@ export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithD
           node={node}
           meta={meta}
           layoutSide={layoutSide}
+          suffix={typeValueSuffix}
         />
       )}
       {isCycle && (

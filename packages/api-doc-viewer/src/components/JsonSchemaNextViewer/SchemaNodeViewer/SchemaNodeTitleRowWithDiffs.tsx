@@ -29,6 +29,8 @@ export type SchemaNodeTitleRowWithDiffsProps = WithPrecededByProps & {
   expanded?: boolean
   onClickExpander?: () => void
   titleRowDiffProps?: Pick<TitleRowProps, "diff" | "descendantDiffs" | "diffsSeverities">
+  /** See JsonSchemaTitleSubheaderProps's `typeValueSuffix` - only combiner owners pass this. */
+  typeValueSuffix?: string
 }
 
 export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> = (props) => {
@@ -42,6 +44,7 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
     expanded = false,
     onClickExpander,
     titleRowDiffProps: titleRowDiffPropsOverride,
+    typeValueSuffix,
     ...precededByProps
   } = props
 
@@ -98,6 +101,7 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
               isCycle={subheaderDisplayNode.isCycle}
               layoutSide={layoutSide}
               showTypeLabel={showTypeSubheader}
+              typeValueSuffix={typeValueSuffix}
             />
             {showNodeChangesSummary && (
               <UxMarkerPanel values={Array.from(nodeChangesSummary!)} />

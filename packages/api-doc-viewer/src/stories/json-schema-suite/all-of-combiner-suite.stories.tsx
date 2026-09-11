@@ -3,18 +3,18 @@
  * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and ../../../samples/combiners-cases.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
-import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
+import type { Meta } from '@storybook/react'
 import {
-  JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,
-  toSampleYaml,
   type JsonSchemaSamplesStoryObj,
-} from "./json-schema-samples-common";
+  JsonSchemaSampleStory,
+  toSampleYaml,
+} from './json-schema-samples-common'
 import {
   buildCombinerPlainProgrammaticSampleCases,
   type CombinerPlainProgrammaticSampleCase,
-} from "./combiner-plain-samples";
+} from './combiner-plain-samples'
+import { JsonSchemaNextViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer'
 
 const sampleCases = buildCombinerPlainProgrammaticSampleCases("allOf");
 const sampleById = sampleCases.reduce<Record<string, CombinerPlainProgrammaticSampleCase>>(
@@ -37,7 +37,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
-        <JsonSchemaViewer schema={resolvedSample.schema} expandedDepth={5} />
+        <JsonSchemaNextViewer schema={resolvedSample.schema} expandedDepth={5} />
       );
     },
   };

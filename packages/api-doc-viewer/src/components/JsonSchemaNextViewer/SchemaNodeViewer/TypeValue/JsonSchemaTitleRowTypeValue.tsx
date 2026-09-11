@@ -7,6 +7,12 @@ import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
 export type JsonSchemaTitleRowTypeValueProps = {
   value: JsonSchemaTreeNodeValue | null | undefined
   meta: JsonSchemaTreeNodeMeta | null | undefined
+  /**
+   * Plain, non-diff-highlighted trailing text (e.g. `resolveCombinerOptionTitleSuffix`'s
+   * `" (anyOf)"`) appended after the type value - used when this title row belongs to a
+   * combiner-owning property, matching legacy's `NodeType.tsx` `{type} ({combiner})` display.
+   */
+  suffix?: string
 }
 
 /**
@@ -15,6 +21,11 @@ export type JsonSchemaTitleRowTypeValueProps = {
  * `additionalProperties`) is decided by the caller's `showTypeLabel` gate.
  */
 export const JsonSchemaTitleRowTypeValue: FC<JsonSchemaTitleRowTypeValueProps> = memo<JsonSchemaTitleRowTypeValueProps>((props) => {
-  const { value, meta } = props
-  return <JsonSchemaTypeValueText text={resolveJsonSchemaTypeLabel(value, meta)} />
+  const { value, meta, suffix } = props
+  return (
+    <>
+      <JsonSchemaTypeValueText text={resolveJsonSchemaTypeLabel(value, meta)} />
+      {suffix && <JsonSchemaTypeValueText text={suffix} />}
+    </>
+  )
 })

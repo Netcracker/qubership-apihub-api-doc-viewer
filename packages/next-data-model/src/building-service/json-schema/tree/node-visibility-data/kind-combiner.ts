@@ -11,7 +11,9 @@ const COMBINER_KINDS: ReadonlySet<JsonSchemaTreeNodeKind> = new Set([
 export class PlainCombinerNodeVisibilityManager {
   public resolveNodeVisibility(node: JsonSchemaTreeNode): JsonSchemaCombinerRowVisibility {
     const nestedNodes = node.nestedNodes()
-    const showSelector = nestedNodes.length > 1
+    // Matches legacy: the selector renders even for a single variant (nothing to switch to,
+    // but the option is still shown) - do not special-case "only one option" as hidden.
+    const showSelector = nestedNodes.length > 0
     const showSubheader = nestedNodes.length > 0
     const isExpandable = !node.isCycle && nestedNodes.length > 0
 

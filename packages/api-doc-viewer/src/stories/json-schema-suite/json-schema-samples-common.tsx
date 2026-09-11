@@ -10,6 +10,7 @@ export type JsonSchemaCaseStoryComponentProps = {
   sampleYaml: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const JsonSchemaSampleStory = (_props: JsonSchemaCaseStoryComponentProps) => null;
 
 export type JsonSchemaSamplesStoryMeta = Meta<typeof JsonSchemaSampleStory>;

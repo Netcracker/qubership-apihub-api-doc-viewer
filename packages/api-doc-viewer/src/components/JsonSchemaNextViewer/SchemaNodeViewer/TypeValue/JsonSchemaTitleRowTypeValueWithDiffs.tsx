@@ -4,11 +4,14 @@ import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-d
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { FC, memo } from "react"
 import { JsonSchemaTypeValueSideDisplay } from "./JsonSchemaTypeValueSideDisplay"
+import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
 
 export type JsonSchemaTitleRowTypeValueWithDiffsProps = {
   node: JsonSchemaTreeNodeWithDiffs
   meta: JsonSchemaTreeNodeMeta | null | undefined
   layoutSide: LayoutSide
+  /** See the plain sibling's `suffix` prop (JsonSchemaTitleRowTypeValue) - same contract. */
+  suffix?: string
 }
 
 /**
@@ -16,7 +19,12 @@ export type JsonSchemaTitleRowTypeValueWithDiffsProps = {
  * sibling JsonSchemaTitleRowTypeValue).
  */
 export const JsonSchemaTitleRowTypeValueWithDiffs: FC<JsonSchemaTitleRowTypeValueWithDiffsProps> = memo<JsonSchemaTitleRowTypeValueWithDiffsProps>((props) => {
-  const { node, meta, layoutSide } = props
+  const { node, meta, layoutSide, suffix } = props
   const display = resolveJsonSchemaTypeLabelSideDisplay(node, meta, layoutSide)
-  return <JsonSchemaTypeValueSideDisplay display={display} layoutSide={layoutSide} />
+  return (
+    <>
+      <JsonSchemaTypeValueSideDisplay display={display} layoutSide={layoutSide} />
+      {suffix && <JsonSchemaTypeValueText text={suffix} />}
+    </>
+  )
 })

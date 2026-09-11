@@ -41,6 +41,7 @@ import {
 import {
   buildCombinerSelectorOption,
   buildCombinerSelectorRowPresentation,
+  resolveCombinerOptionTitleSuffix,
   resolveCombinerSelectorLevelReductionAction,
 } from "../utils/resolve-combiner-node-diffs"
 import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
@@ -189,6 +190,18 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     [activeLeaf, activeLeafDisplayValue],
   )
 
+  /**
+   * Title row's own combiner-kind suffix (e.g. " (anyOf)"), matching legacy's `NodeType.tsx`
+   * `{type} ({combiner})` display - `node` here is always a combiner owner (guarded below by
+   * `nestedNodes.length === 0` returning null), so this mirrors legacy's non-recursive
+   * "check only the immediate owning node's own kind" rule; reused as-is from the combiner
+   * option-button suffix logic since the check is identical.
+   */
+  const titleRowTypeValueSuffix = useMemo(
+    () => resolveCombinerOptionTitleSuffix(node),
+    [node],
+  )
+
   const nestingIndicatorRowColorizingDiff = useMemo(
     () => activeLeafWithDiffs ? takeJsonSchemaNestingIndicatorRowColorizingDiff(activeLeafWithDiffs) : undefined,
     [activeLeafWithDiffs],
@@ -249,6 +262,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
           expandable={expandable}
           expanded={expanded}
           onClickExpander={onClickExpander}
+          typeValueSuffix={titleRowTypeValueSuffix}
         />
       ) : (
         <SchemaNodeTitleRow
@@ -260,6 +274,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
           isLastInList={isLastInList && !contentVisibility.showContentSection && !expandable}
           expandable={expandable}
           expanded={expanded}
+          typeValueSuffix={titleRowTypeValueSuffix}
           onClickExpander={onClickExpander}
         />
       )}
