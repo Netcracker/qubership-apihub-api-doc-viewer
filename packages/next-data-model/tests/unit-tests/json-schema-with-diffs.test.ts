@@ -1311,3 +1311,118 @@ describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
     expect(uniqueItemsDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 })
+
+describe("JsonSchema min/max validation rows - partial add/remove is not a whole-row add/remove", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/array-validations/items-count/007-max-items-added-to-min
+  it("colors the Items count row as replace (not whole-row add) when maxItems is added alongside a pre-existing, unchanged minItems", () => {
+    const tree = buildTree(
+      { type: "array", minItems: 1 },
+      { type: "array", minItems: 1, maxItems: 5 },
+    )
+    const root = tree.root!
+
+    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+
+    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const maxItemsDiff = valueDiffs?.["maxItems"]
+    expect(maxItemsDiff?.data.action).toBe(DiffAction.add)
+    expect(maxItemsDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Green)
+    expect(maxItemsDiff?.styles.before.isContentVisible).toBe(false)
+    // minItems never changed, so it carries no diff of its own.
+    expect(valueDiffs?.["minItems"]).toBeUndefined()
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/array-validations/items-count/010-max-items-removed-keep-min
+  it("colors the Items count row as replace (not whole-row remove) when maxItems is removed while minItems is kept unchanged", () => {
+    const tree = buildTree(
+      { type: "array", minItems: 1, maxItems: 5 },
+      { type: "array", minItems: 1 },
+    )
+    const root = tree.root!
+
+    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
+    expect(rowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+
+    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const maxItemsDiff = valueDiffs?.["maxItems"]
+    expect(maxItemsDiff?.data.action).toBe(DiffAction.remove)
+    expect(maxItemsDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Red)
+    expect(maxItemsDiff?.styles.after.isContentVisible).toBe(false)
+    expect(valueDiffs?.["minItems"]).toBeUndefined()
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-validations/properties-count/007-max-properties-added-to-min
+  it("colors the Properties count row as replace (not whole-row add) when maxProperties is added alongside a pre-existing, unchanged minProperties", () => {
+    const tree = buildTree(
+      { type: "object", minProperties: 1 },
+      { type: "object", minProperties: 1, maxProperties: 5 },
+    )
+    const root = tree.root!
+
+    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
+
+    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const maxPropertiesDiff = valueDiffs?.["maxProperties"]
+    expect(maxPropertiesDiff?.data.action).toBe(DiffAction.add)
+    expect(maxPropertiesDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Green)
+    expect(valueDiffs?.["minProperties"]).toBeUndefined()
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-validations/properties-count/010-max-properties-removed-keep-min
+  it("colors the Properties count row as replace (not whole-row remove) when maxProperties is removed while minProperties is kept unchanged", () => {
+    const tree = buildTree(
+      { type: "object", minProperties: 1, maxProperties: 5 },
+      { type: "object", minProperties: 1 },
+    )
+    const root = tree.root!
+
+    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
+
+    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const maxPropertiesDiff = valueDiffs?.["maxProperties"]
+    expect(maxPropertiesDiff?.data.action).toBe(DiffAction.remove)
+    expect(maxPropertiesDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Red)
+    expect(valueDiffs?.["minProperties"]).toBeUndefined()
+  })
+
+  it("keeps whole-row add/remove for a genuinely new/removed Items count row (regression guard)", () => {
+    const addTree = buildTree(
+      { type: "array" },
+      { type: "array", minItems: 1, maxItems: 5 },
+    )
+    const addRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+      addTree.root!,
+      JsonSchemaValidationRowKeys.ITEMS_COUNT,
+    )
+    expect(addRowColorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(addRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const removeTree = buildTree(
+      { type: "array", minItems: 1, maxItems: 5 },
+      { type: "array" },
+    )
+    const removeRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+      removeTree.root!,
+      JsonSchemaValidationRowKeys.ITEMS_COUNT,
+    )
+    expect(removeRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(removeRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+  })
+})

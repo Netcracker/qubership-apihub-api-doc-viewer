@@ -988,8 +988,18 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         continue
       }
 
-      const allAdd = rowDiffs.every(isDiffAdd)
-      const allRemove = rowDiffs.every(isDiffRemove)
+      // A row is only genuinely wholly added/removed if none of its OTHER source keys already
+      // carry unchanged content - e.g. `maxItems` added while `minItems` is pre-existing and
+      // untouched is a partial row change (should fall through to the replace path below,
+      // with `maxItems`'s own chip highlighted via add/remove borderShadowColor), not a
+      // whole-row add. Without this guard, `rowDiffs.every(isDiffAdd)` trivially passes for a
+      // single newly-active key even though the row already existed.
+      const rowHasOtherUnchangedContent = sourceKeys.some((sourceKey) => (
+        !activeSourceKeys.includes(sourceKey) && Reflect.get(crawlValue, sourceKey) !== undefined
+      ))
+
+      const allAdd = !rowHasOtherUnchangedContent && rowDiffs.every(isDiffAdd)
+      const allRemove = !rowHasOtherUnchangedContent && rowDiffs.every(isDiffRemove)
 
       if (allAdd) {
         const displayValues = this.resolveWholeRowDisplayValues(
