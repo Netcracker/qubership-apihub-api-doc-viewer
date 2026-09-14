@@ -9,7 +9,14 @@ import { storyPage } from "../service/storybook-service";
 const META_ID = "json-schema-diffs-suite-any-of-combiner-diffs-suite";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  // A combiner nested directly under another combiner (no plain-type sibling option) renders its
+  // root through CombinerNodeViewer, which never emits a [data-name="JsonNode"] element - only
+  // its own [data-testid="json-schema-combiner-node-viewer"] wrapper. Waiting on JsonNode alone
+  // hangs every such case for the full Puppeteer default timeout (~30s each).
+  await page.waitForSelector(
+    '[data-name="JsonNode"], [data-testid="json-schema-combiner-node-viewer"]',
+    { visible: true },
+  );
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
