@@ -26,7 +26,10 @@ import {
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
 import { SideListDisplayKinds } from "../../src/model/abstract/tree-with-diffs/list-side-display"
 import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guards/tree-node"
-import { isJsonSchemaPrimitiveValueType } from "../../src/shared/json-schema/guards/schema-value"
+import {
+  isJsonSchemaPrimitiveValueType,
+  isJsonSchemaSpecialValueType,
+} from "../../src/shared/json-schema/guards/schema-value"
 import { createBuildingServiceLogger } from "../../src/loggers"
 import { simplifyConsole } from "../helpers/simplify-console"
 import {
@@ -1140,6 +1143,128 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       const titleSegment = changedDisplay.segments.find((segment) => segment.text === "<My Schema>")
       expect(titleSegment).toBeDefined()
     }
+  })
+
+  // The special `any`/`nothing` pseudo-types (JsonSchemaNodeValueTypes.ANY/NOTHING) are synthesized
+  // onto a node's merged `type` field by the unify/liftCombiners allOf-merge pipeline - not by our
+  // own diff aggregation - so these fixtures build the tree through `apiDiff` with those options
+  // enabled directly, the same way `all-of-combiner-diffs-suite` stories do (see
+  // `stories/preprocess.ts`'s `DEFAULT_NORMALIZE_OPTIONS`), instead of via a hand-written
+  // before/after `type` value like the fixtures above.
+  function buildAllOfTypeCrossingTree(beforeSchema: object, afterSchema: object) {
+    const syntheticTitleFlag = Symbol("syntheticTitle")
+    const template = (schema: unknown) => ({
+      openapi: "3.0.0",
+      info: { title: "Test", version: "1.0.0" },
+      paths: {
+        "/test": {
+          post: {
+            responses: {
+              200: { description: "ok", content: { "application/json": { schema } } },
+            },
+          },
+        },
+      },
+    })
+    const beforeDocument = template(beforeSchema)
+    const afterDocument = template(afterSchema)
+    const merged = apiDiff(beforeDocument, afterDocument, {
+      syntheticTitleFlag,
+      unify: true,
+      validate: true,
+      liftCombiners: true,
+      allowNotValidSyntheticChanges: true,
+      beforeSource: beforeDocument,
+      afterSource: afterDocument,
+      metaKey: DIFF_META_KEY,
+    }).merged as any
+    const mergedSchema = merged.paths["/test"].post.responses[200].content["application/json"].schema
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: mergedSchema,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the row as remove for an allOf-combiner type crossing to the special `nothing` pseudo-type (mirrors all-of-combiner-diffs-suite case 041-array-add-option-string)", () => {
+    const arrayOption = { type: "array", items: { type: "string" } }
+    const stringOption = { type: "string" }
+    // Before: allOf holding only the array option (real type: array). After: a string option is
+    // added - array and string are mutually exclusive, so the allOf merge reduces to `nothing`.
+    const tree = buildAllOfTypeCrossingTree(
+      { allOf: [arrayOption] },
+      { allOf: [arrayOption, stringOption] },
+    )
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("array")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("nothing")
+    // `nothing` is a special synthesized pseudo-type, not a real JSON Schema primitive - but like
+    // a primitive, it has no real children.
+    expect(isJsonSchemaPrimitiveValueType("nothing")).toBe(false)
+    expect(isJsonSchemaSpecialValueType("nothing")).toBe(true)
+
+    // Origin (array) has real children; changed (nothing) has none - the row must colorize as a
+    // single-sided remove, not the default symmetric yellow replace both sides used to get.
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
+  })
+
+  it("colors the row as add for the reverse allOf-combiner crossing away from `nothing` (mirrors case 042-array-remove-option-string)", () => {
+    const arrayOption = { type: "array", items: { type: "string" } }
+    const stringOption = { type: "string" }
+    const tree = buildAllOfTypeCrossingTree(
+      { allOf: [arrayOption, stringOption] },
+      { allOf: [arrayOption] },
+    )
+    const root = tree.root!
+
+    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("nothing")
+    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
+
+    // Origin (nothing) has no children; changed (array) gains real children - add, not replace.
+    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
+  })
+
+  it("treats the special `any` pseudo-type as childless too for an allOf-combiner crossing to/from `array`", () => {
+    const arrayOption = { type: "array", items: { type: "string" } }
+    const unconstrainedOption = {}
+
+    const treeToArray = buildAllOfTypeCrossingTree(
+      { allOf: [unconstrainedOption] },
+      { allOf: [unconstrainedOption, arrayOption] },
+    )
+    const rootToArray = treeToArray.root!
+    expect(resolveJsonSchemaTypeSideValue(rootToArray, ORIGIN_LAYOUT_SIDE)).toBe("any")
+    expect(resolveJsonSchemaTypeSideValue(rootToArray, CHANGED_LAYOUT_SIDE)).toBe("array")
+    expect(isJsonSchemaPrimitiveValueType("any")).toBe(false)
+    expect(isJsonSchemaSpecialValueType("any")).toBe(true)
+
+    const rowDiffToArray = takeJsonSchemaNestingIndicatorRowColorizingDiff(rootToArray)
+    expect(rowDiffToArray?.data.action).toBe(DiffAction.add)
+    expect(rowDiffToArray?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
+    expect(rowDiffToArray?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const treeFromArray = buildAllOfTypeCrossingTree(
+      { allOf: [unconstrainedOption, arrayOption] },
+      { allOf: [unconstrainedOption] },
+    )
+    const rootFromArray = treeFromArray.root!
+    expect(resolveJsonSchemaTypeSideValue(rootFromArray, ORIGIN_LAYOUT_SIDE)).toBe("array")
+    expect(resolveJsonSchemaTypeSideValue(rootFromArray, CHANGED_LAYOUT_SIDE)).toBe("any")
+
+    const rowDiffFromArray = takeJsonSchemaNestingIndicatorRowColorizingDiff(rootFromArray)
+    expect(rowDiffFromArray?.data.action).toBe(DiffAction.remove)
+    expect(rowDiffFromArray?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(rowDiffFromArray?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
   })
 })
 

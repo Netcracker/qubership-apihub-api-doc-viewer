@@ -61,6 +61,33 @@ export function isJsonSchemaPrimitiveValueType(type: string | undefined): boolea
   return !!type && JSON_SCHEMA_PRIMITIVE_VALUE_TYPES.includes(type)
 }
 
+const JSON_SCHEMA_SPECIAL_VALUE_TYPES: readonly string[] = [
+  JsonSchemaNodeValueTypes.ANY,
+  JsonSchemaNodeValueTypes.NOTHING,
+]
+
+/**
+ * True when `type` is one of the schema-merge pipeline's special `any`/`nothing` pseudo-`type`
+ * values, rather than a real JSON Schema `type` keyword. These are synthesized onto a node's
+ * merged `type` field by the underlying unify/`liftCombiners` merge (e.g. an `allOf` branch that
+ * adds no real constraint reduces to `any`; an `allOf` intersecting mutually-exclusive branches,
+ * such as an `array` option and a `string` option, reduces to `nothing`) - see
+ * `additional-properties-node-value.ts` for the other place `any` is synthesized
+ * (`additionalProperties: true`).
+ *
+ * Deliberately **not** folded into {@link isJsonSchemaPrimitiveValueType}: `any`/`nothing` are not
+ * primitive JSON Schema `type` keyword values, they are special synthesized values. They do share
+ * one consequence with real primitives that some callers care about - a node whose merged type is
+ * `any` or `nothing` has no genuine nested children either, so a `type` transition to/from
+ * `object`/`array` needs the same single-sided add/remove handling as a primitive<->complex
+ * transition (see `resolveTypePrimitivenessCrossing` in
+ * `building-service/json-schema/tree-with-diffs/node-diffs-data/node-diffs/kind-any.ts`, which
+ * combines this guard with {@link isJsonSchemaPrimitiveValueType} for that purpose).
+ */
+export function isJsonSchemaSpecialValueType(type: string | undefined): boolean {
+  return !!type && JSON_SCHEMA_SPECIAL_VALUE_TYPES.includes(type)
+}
+
 export function isJsonSchemaComplexValue(value: unknown): boolean {
   if (!isObject(value) || isArray(value)) {
     return false

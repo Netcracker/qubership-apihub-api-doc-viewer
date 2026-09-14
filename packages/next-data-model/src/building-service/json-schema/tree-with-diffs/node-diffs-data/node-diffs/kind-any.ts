@@ -44,7 +44,10 @@ import {
   VALUE_RANGE_UPPER_CHIP_DIFF_KEY,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import { formatJsonSchemaValidationRowChipDisplay } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-chip-display"
-import { isJsonSchemaPrimitiveValueType } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
+import {
+  isJsonSchemaPrimitiveValueType,
+  isJsonSchemaSpecialValueType,
+} from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import {
@@ -325,12 +328,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   /**
    * `flags.before/after.increaseLevel` for the type/format/title-replace nesting-indicator branch.
    * Normally both sides increment (a metadata-only rename never changes what children exist). But
-   * when the `type` keyword itself flips between a primitive (string/number/integer/boolean) and a
-   * complex type (object/array), the primitive side has no real children while the complex side's
-   * children only exist because of the type change - treat that exactly like Case 1's add/remove
-   * freeze: pin the primitive side, increment the complex side. A primitive<->primitive or
-   * complex<->complex change (e.g. object->array) leaves both sides incrementing normally, since
-   * both genuinely have their own nested content.
+   * when the `type` keyword itself flips between a childless value (a primitive - string/number/
+   * integer/boolean - or the special `any`/`nothing` pseudo-types, see
+   * {@link isChildlessTypeValue}) and a complex type (object/array), the childless side has no
+   * real children while the complex side's children only exist because of the type change - treat
+   * that exactly like Case 1's add/remove freeze: pin the childless side, increment the complex
+   * side. A childless<->childless or complex<->complex change (e.g. object->array, or
+   * `any`->`nothing`) leaves both sides incrementing normally, since neither side gained or lost
+   * real nested content because of this change.
    */
   private resolveTypeLabelNestingLevelFlags(
     typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs,
@@ -346,11 +351,29 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   }
 
   /**
-   * Detects whether the `type` field diff (if present and a replace) crosses the
-   * primitive<->non-primitive boundary (string/number/integer/boolean vs. object/array).
-   * Shared by {@link resolveTypeLabelNestingLevelFlags} (nesting-depth flags) and
+   * True for any `type` keyword value with no real nested children: JSON Schema's actual
+   * primitive types (string/number/integer/boolean) PLUS the schema-merge pipeline's special
+   * `any`/`nothing` pseudo-types (see {@link isJsonSchemaSpecialValueType}) - an `allOf`-combiner
+   * node whose merged type resolves to `any` (no real constraint) or `nothing` (mutually
+   * exclusive branches, e.g. an `array` option intersected with a `string` option) has no genuine
+   * children either. Kept as its own helper - not folded into
+   * {@link isJsonSchemaPrimitiveValueType} itself - because `any`/`nothing` are not primitive
+   * JSON Schema value types, only childless like primitives are; conflating the two would make
+   * `isJsonSchemaPrimitiveValueType`'s own name misleading for its other callers.
+   */
+  private isChildlessTypeValue(type: string | undefined): boolean {
+    return isJsonSchemaPrimitiveValueType(type) || isJsonSchemaSpecialValueType(type)
+  }
+
+  /**
+   * Detects whether the `type` field diff (if present and a replace) crosses the childless
+   * (primitive, or the special `any`/`nothing` pseudo-types)<->non-primitive boundary (vs.
+   * object/array, the only types with real nested children). Shared by
+   * {@link resolveTypeLabelNestingLevelFlags} (nesting-depth flags) and
    * {@link aggregateNestingIndicatorRowColorizingDiff} (row background) - both need to know
-   * which side, if either, gained/lost the ability to have children.
+   * which side, if either, gained/lost the ability to have children. The returned field names
+   * keep the historical "IsPrimitive" spelling for callers already checking it, but the boolean
+   * they carry means "has no children" - true for a real primitive AND for `any`/`nothing`.
    */
   private resolveTypePrimitivenessCrossing(
     typeLabelFieldDiffs: JsonSchemaTypeLabelFieldDiffs,
@@ -361,8 +384,8 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
     const beforeType = typeof typeDiff.beforeValue === "string" ? typeDiff.beforeValue : undefined
     const afterType = typeof typeDiff.afterValue === "string" ? typeDiff.afterValue : undefined
-    const beforeIsPrimitive = isJsonSchemaPrimitiveValueType(beforeType)
-    const afterIsPrimitive = isJsonSchemaPrimitiveValueType(afterType)
+    const beforeIsPrimitive = this.isChildlessTypeValue(beforeType)
+    const afterIsPrimitive = this.isChildlessTypeValue(afterType)
     if (beforeIsPrimitive === afterIsPrimitive) {
       return undefined
     }
@@ -371,12 +394,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
   /**
    * Single-side add/remove colorizing for the nesting-indicator row when the `type` keyword
-   * itself crosses the primitive<->non-primitive boundary (e.g. `string` -> `array`) - the
-   * children row only exists on the non-primitive side, so the default symmetric yellow
-   * replace background (see {@link asReplaceRowColorizingDiff}) is wrong. Mirrors
-   * {@link buildWholeNodeInheritedRowColorizingDiff}'s single-side shape. Built from the `type`
-   * field diff specifically (its declaration paths identify which side introduced/removed the
-   * children) - not necessarily whichever field diff `maxChangedPropertyMetaDataByDiffType`
+   * itself crosses the childless<->non-primitive boundary (e.g. `string` -> `array`, or an
+   * `allOf`-combiner's merged type flipping between the special `any`/`nothing` pseudo-types and
+   * `object`/`array` - e.g. `array` -> `nothing` when an incompatible `string` option is added to
+   * an `allOf`) - the children row only exists on the non-primitive side, so the default
+   * symmetric yellow replace background (see {@link asReplaceRowColorizingDiff}) is wrong.
+   * Mirrors {@link buildWholeNodeInheritedRowColorizingDiff}'s single-side shape. Built from the
+   * `type` field diff specifically (its declaration paths identify which side introduced/removed
+   * the children) - not necessarily whichever field diff `maxChangedPropertyMetaDataByDiffType`
    * picked as the highest-severity "representative" across type/format/title.
    */
   private buildTypePrimitivenessCrossingRowColorizingDiff(

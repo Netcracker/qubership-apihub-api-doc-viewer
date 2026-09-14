@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-09-14T06:58:25.736524+00:00'
+generated_at: '2026-09-14T07:31:01.086380+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -41,12 +41,12 @@ dependencies:
     .claude/rules/api-doc-viewer-repo.md: sha256:e304c663e255278c2102aae76dcb8e4dd9d826281924d0c7caa49353e52ca17f
     .claude/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .claude/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
-    .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
+    .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
     .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
     .cursor/rules/api-doc-viewer-repo.mdc: sha256:120f751737421c77ae356eeda8e40ea6f00248d607148eb5f9a6ee037d0a64b7
     .cursor/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .cursor/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
-    .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
+    .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
     .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
   source: local
   local_path: ./agent-packages/api-doc-viewer-repo
@@ -329,7 +329,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
+  content_hash: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md
@@ -626,7 +626,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:b9a4848b65aa8b1ebf810fba74ee439b9fbfc70587e9cf5e5862de6aa069c1e7
+  content_hash: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md

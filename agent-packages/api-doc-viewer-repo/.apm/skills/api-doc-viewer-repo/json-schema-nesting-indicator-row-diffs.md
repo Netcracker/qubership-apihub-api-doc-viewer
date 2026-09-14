@@ -16,7 +16,8 @@ the shared component stack this row's (and the title row's) type-value text now 
 | Layer | Role | Path |
 | --- | --- | --- |
 | Row colorizing diff | `aggregateNestingIndicatorRowColorizingDiff`, `collectJsonSchemaChildKeys` | `next-data-model/.../node-diffs/kind-any.ts` (`aggregateByDescendantDiffs` override) |
-| Primitive-crossing colorizing | `resolveTypePrimitivenessCrossing`, `buildTypePrimitivenessCrossingRowColorizingDiff` | `next-data-model/.../node-diffs/kind-any.ts` (same file, `typeLabelFieldDiffs` branch) |
+| Primitive-crossing colorizing | `resolveTypePrimitivenessCrossing`, `buildTypePrimitivenessCrossingRowColorizingDiff`, `isChildlessTypeValue` | `next-data-model/.../node-diffs/kind-any.ts` (same file, `typeLabelFieldDiffs` branch) |
+| Special `any`/`nothing` pseudo-type guard | `isJsonSchemaSpecialValueType` | `next-data-model/.../shared/json-schema/guards/schema-value.ts` (kept separate from `isJsonSchemaPrimitiveValueType` — see lesson 9) |
 | Row diff field | `nestingIndicatorRowColorizingDiff` | `next-data-model/.../property-row-diffs.types.ts` (`JsonSchemaKindAnyNodeDiffs`) |
 | Row diff accessor | `takeJsonSchemaNestingIndicatorRowColorizingDiff` | `next-data-model/.../property-row-diffs.ts` |
 | Row severity | `NodeDiffsSeverityPlacemennt.NestingIndicatorRow` | `next-data-model/.../node-diffs-severities/kind-any.ts` |
@@ -34,6 +35,7 @@ the shared component stack this row's (and the title row's) type-value text now 
 | Storybook (case 1 — uniform children) | `packages/samples/json-schema-diffs/type-changes/object-properties/003…008` |
 | Storybook (case 2 — whole node) | `packages/samples/json-schema-diffs/hiding-unchanged-rows/complex-object/2.6`, `2.7` |
 | Storybook (case 3 — primitive/non-primitive `type` crossing) | `packages/samples/json-schema-diffs/type-changes/type-value-changes/` — any `*-to-array`/`*-to-object` or `array-to-*`/`object-to-*` pair (e.g. `004-string-to-array`, `021-array-to-string`, `026-object-to-string`, `027-object-to-number`); `030-object-to-array` (complex↔complex, non-crossing) is the regression guard that must stay yellow/replace |
+| Storybook (case 3b — special `any`/`nothing` pseudo-type crossing) | `all-of-combiner-diffs-suite` cases `041-array-add-option-string` / `042-array-remove-option-string` / `053-object-add-option-number` / `054-object-remove-option-number` (array/object option intersected with an incompatible option via `allOf` reduces the merged `type` to `nothing`) — no YAML fixtures, built programmatically, see `combiner-diff-case-definitions.ts` |
 
 ---
 
@@ -165,6 +167,76 @@ add/remove split — do not assume "the diff action was `replace`" implies "the 
 should be `replace`". Look for a sibling method in the same aggregator that already encodes the
 relevant per-side distinction (here, nesting-level `flags`) before writing a new check from
 scratch.
+
+### 9. The crossing check needed a third, non-primitive "childless" category — the special `any`/`nothing` pseudo-types
+
+Lesson 8's fix only checked `isJsonSchemaPrimitiveValueType` (string/number/integer/boolean vs.
+object/array). It missed a class of node whose merged `type` becomes one of two **special
+pseudo-types** the schema-merge pipeline can synthesize onto a node's `type` field: `any` (no real
+constraint — e.g. an `allOf` branch that adds nothing, or `additionalProperties: true`, see
+`additional-properties-node-value.ts`) and `nothing` (a self-contradictory `allOf` intersection —
+e.g. an `array` option combined with an incompatible `string` option). Both have no genuine
+children, same as a real primitive, so a `type` replace crossing to/from `object`/`array` on either
+of them hit the exact same symmetric-yellow bug lesson 8 fixed for real primitives — reported via
+`all-of-combiner-diffs-suite` cases `041`/`042` (`array` ↔ `nothing`) and `053`/`054` (`object` ↔
+`nothing`), all four showing every validation row's floating badge pointing at an unrelated field
+(e.g. `minLength`) because the row background fell through to the symmetric-replace default.
+
+**Root cause was a missing category, not a wrong check:** `isJsonSchemaPrimitiveValueType("any")`
+and `isJsonSchemaPrimitiveValueType("nothing")` both correctly return `false` (they are genuinely
+not primitive JSON Schema `type` keyword values) — but the crossing check
+(`resolveTypePrimitivenessCrossing`) only treats a transition as a "crossing" when exactly one side
+is primitive. `nothing` → `array` had `beforeIsPrimitive === false` and `afterIsPrimitive === false`
+(both "not primitive"), so the function returned `undefined` (no crossing) and fell through to the
+symmetric-replace default — the same failure shape as if `object` → `array` were miscategorized as
+a crossing, just from the opposite direction.
+
+**Fix — a new, deliberately separate guard, not a merge into the primitive list:**
+`isJsonSchemaSpecialValueType` (`shared/json-schema/guards/schema-value.ts`) recognizes only `any`/
+`nothing`; a new private `isChildlessTypeValue` in `kind-any.ts` composes
+`isJsonSchemaPrimitiveValueType(type) || isJsonSchemaSpecialValueType(type)` and is what
+`resolveTypePrimitivenessCrossing` now calls instead of `isJsonSchemaPrimitiveValueType` directly.
+Do **not** just add `'any'`/`'nothing'` into `JSON_SCHEMA_PRIMITIVE_VALUE_TYPES` — that list is
+reused elsewhere (viewer nesting-indicator visibility, the unit test literally titled "classifies
+primitive vs complex type keyword values") where "primitive" means the real JSON-Schema-standard
+four types; blurring that would make `isJsonSchemaPrimitiveValueType`'s own name misleading for
+those other callers. The returned crossing object's field names (`beforeIsPrimitive`/
+`afterIsPrimitive`) keep their historical spelling for the two existing call sites, but the boolean
+they now carry means "has no children" (primitive **or** special), not literally "is a primitive
+type" — read the JSDoc on `resolveTypePrimitivenessCrossing`/`isChildlessTypeValue`, don't infer
+meaning from the field name alone.
+
+**Reproducing `any`/`nothing` in a test requires the real merge options — a plain `apiDiff` call
+won't produce them.** The `any`/`nothing` synthesis happens inside `@netcracker/qubership-apihub-api-unifier`'s
+schema-merge logic, gated behind `apiDiff`'s `unify: true` + `liftCombiners: true` options (plus
+`validate: true`, `allowNotValidSyntheticChanges: true`, a `syntheticTitleFlag`) — exactly
+`DEFAULT_NORMALIZE_OPTIONS` in `api-doc-viewer/src/stories/preprocess.ts`, which every combiner
+diff story goes through. A test (or a manual repro) that calls `apiDiff(before, after, { beforeSource,
+afterSource, metaKey })` **without** those options — the shape the plain `mergeSchemas` test helper
+in `json-schema-with-diffs.test.ts` already used for every other fixture in this file — merges an
+`allOf` of `array` + `string` into a document that keeps `type: "array"` and appends a `not:
+{anyOf: [...]}` guard instead of ever writing `type: "nothing"`. Discovering this took building a
+scratch repro with each option added back one at a time; don't assume the default `mergeSchemas`
+helper covers every merge scenario in this file — check which options a given Storybook pipeline
+(`prepareJsonDiffSchema`/`prepareJsonDiffSchemaWithInlineTemplate` for combiner suites) actually
+passes before writing a fixture that's supposed to mirror it.
+
+**What this fix deliberately did NOT touch — `node-type-checkers.ts`'s content-hiding guards are a
+different question with a different answer.** `isJsonSchemaNestingIndicatorHiddenForPlainNode` /
+`isJsonSchemaNestingIndicatorHiddenForSide` (`api-doc-viewer/.../JsonSchemaNextViewer/utils/`) also
+call `isJsonSchemaPrimitiveValueType` and look superficially like they need the same `any`/`nothing`
+treatment. They do **not**: those guards hide the nesting-indicator row's content when a side has
+**no real crawled children at all**, but a `nothing`-typed merged node can still carry a genuine
+structural child. Verified directly: merging `allOf: [array]` → `allOf: [array, string]` (the case
+041 shape) produces a root node whose **value** is stripped down to `{ type: "nothing" }` (the
+`NOTHING` case in `builder.ts`'s `getJsonSchemaTreeNodeValueProps` only picks the common props —
+`items`/`minItems`/etc. are dropped), but whose **`childrenNodes()`** still contains a real `items`
+child — because tree crawling walks the raw JSON structure (an `items` key is still physically
+present in the merged document from whichever `allOf` branch contributed it) independently of what
+the resolved `type` value picks into the node's own stored value. Hiding that side's content
+because the type is "childless" would hide a child node that's actually there. If this guard ever
+needs a similar fix, verify with the same kind of structural check first — do not port lesson 9's
+guard reuse here without re-testing the premise.
 
 ---
 
