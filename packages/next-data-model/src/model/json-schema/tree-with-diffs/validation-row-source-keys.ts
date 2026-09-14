@@ -1,4 +1,5 @@
 import { JsonSchemaValidationKeys } from "@apihub/next-data-model/model/json-schema/types/validation-key"
+import { NodeDiffsSeverityPlacemennt } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 
 export const JsonSchemaValidationRowKeys = {
   VALUE_LENGTH: "valueLength",
@@ -25,6 +26,18 @@ export const JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS: Record<JsonSchemaValidation
   [JsonSchemaValidationRowKeys.PROPERTIES_COUNT]: ["minProperties", "maxProperties"],
   [JsonSchemaValidationRowKeys.ITEMS_COUNT]: ["minItems", "maxItems"],
   [JsonSchemaValidationRowKeys.UNIQUE_ITEMS]: ["uniqueItems"],
+}
+
+/** Per-row floating-badge placement - each validation row needs its own severity slot so a
+ * change in one constraint (e.g. `minLength`) does not paint the badge on unrelated rows. */
+export const JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS: Record<JsonSchemaValidationRowKey, NodeDiffsSeverityPlacemennt> = {
+  [JsonSchemaValidationRowKeys.VALUE_LENGTH]: NodeDiffsSeverityPlacemennt.ValueLengthRow,
+  [JsonSchemaValidationRowKeys.VALUE_PATTERN]: NodeDiffsSeverityPlacemennt.ValuePatternRow,
+  [JsonSchemaValidationRowKeys.VALUE_RANGE]: NodeDiffsSeverityPlacemennt.ValueRangeRow,
+  [JsonSchemaValidationRowKeys.VALUE_MULTIPLE_OF]: NodeDiffsSeverityPlacemennt.ValueMultipleOfRow,
+  [JsonSchemaValidationRowKeys.PROPERTIES_COUNT]: NodeDiffsSeverityPlacemennt.PropertiesCountRow,
+  [JsonSchemaValidationRowKeys.ITEMS_COUNT]: NodeDiffsSeverityPlacemennt.ItemsCountRow,
+  [JsonSchemaValidationRowKeys.UNIQUE_ITEMS]: NodeDiffsSeverityPlacemennt.UniqueItemsRow,
 }
 
 /** Logical lower/upper slot per source key (not display index when only one bound is present). */

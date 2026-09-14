@@ -13,6 +13,10 @@ import {
   JsonSchemaSharedRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import {
+  JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS,
+  JsonSchemaValidationRowKeys,
+} from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
@@ -39,34 +43,37 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
       )
     }
 
-    this.applyMaxAdditionalInfoRowSeverityFromValidationRowDiffs(nodeDiffs, diffsSeverities)
+    this.applyValidationRowSeverities(nodeDiffs, diffsSeverities)
 
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
   }
 
   /**
-   * Floating diff badge for validation-constraint rows (`AdditionalInfoRow` placement), computed
+   * Floating diff badge for each validation-constraint row, computed independently per row key
    * for every node kind - not just property/root - so combiner-variant nodes get the same
-   * severity indicator as a top-level property. Property/root nodes extend this with
-   * default/enum/examples severities in {@link JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty}.
+   * severity indicators as a top-level property. A change to one constraint (e.g. `minLength`)
+   * must not paint the badge on unrelated rows (e.g. `Value range`), so each row key gets its
+   * own {@link NodeDiffsSeverityPlacemennt} slot instead of one shared max across every row.
+   * Property/root nodes extend this with default/enum/examples severities in
+   * {@link JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty}.
    */
-  private applyMaxAdditionalInfoRowSeverityFromValidationRowDiffs(
+  private applyValidationRowSeverities(
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     diffsSeverities: NodeDiffsSeverities,
   ): void {
     const validationDiffs = nodeDiffs as JsonSchemaKindAnyNodeDiffs
-    const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
-      ...Object.values(validationDiffs.validationRowDiffs ?? {}),
-      ...Object.values(validationDiffs.validationRowValueDiffs ?? {}).flatMap((rowValueDiffs) => (
-        Object.values(rowValueDiffs ?? {})
-      )),
-      ...Object.values(validationDiffs.validationRowColorizingDiffs ?? {}),
-    )
-    if (!maxPropertyDiff) {
-      return
-    }
+    for (const rowKey of Object.values(JsonSchemaValidationRowKeys)) {
+      const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+        validationDiffs.validationRowDiffs?.[rowKey],
+        validationDiffs.validationRowColorizingDiffs?.[rowKey],
+        ...Object.values(validationDiffs.validationRowValueDiffs?.[rowKey] ?? {}),
+      )
+      if (!maxRowDiff) {
+        continue
+      }
 
-    diffsSeverities[NodeDiffsSeverityPlacemennt.AdditionalInfoRow] = this.buildNodeDiffsSeverity(maxPropertyDiff)
+      diffsSeverities[JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS[rowKey]] = this.buildNodeDiffsSeverity(maxRowDiff)
+    }
   }
 
   private applyMaxRowSeverityFromTypeLabelDiffs(

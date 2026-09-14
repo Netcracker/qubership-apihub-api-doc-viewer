@@ -167,7 +167,7 @@ describe("JsonSchema with-diffs stack", () => {
       expect(
         rootDiffs.enumRowColorizingDiff?.styles?.[testCase.expectedRowBackgroundSide]?.backgroundColor,
       ).toBe(testCase.expectedRowBackground)
-      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
+      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.EnumRow]?.type).toBeDefined()
     }
 
     const partialItemCases = [
@@ -217,7 +217,7 @@ describe("JsonSchema with-diffs stack", () => {
       expect(
         rootDiffs.enumRowColorizingDiff?.styles?.[testCase.expectedRowBackgroundSide]?.backgroundColor,
       ).toBe(testCase.expectedRowBackground)
-      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
+      expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.EnumRow]?.type).toBeDefined()
     }
   })
 
@@ -247,7 +247,7 @@ describe("JsonSchema with-diffs stack", () => {
     expect(prop2Diffs.enumValueDiffs?.["3"]?.data?.action).toBe(DiffAction.add)
     expect(prop2Diffs.enumRowColorizingDiff?.data?.action).toBe(DiffAction.replace)
     expect(prop2Diffs.enumRowColorizingDiff?.styles?.before?.backgroundColor).toBe(HighlightVariant.Yellow)
-    expect(prop2!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]?.type).toBeDefined()
+    expect(prop2!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.EnumRow]?.type).toBeDefined()
 
     const prop3Diffs = prop3!.diffs as Record<string, {
       data?: { action?: string }
@@ -262,11 +262,22 @@ describe("JsonSchema with-diffs stack", () => {
       .toBe(DiffAction.add)
     expect(prop3Diffs.validationRowColorizingDiffs?.[JsonSchemaValidationRowKeys.VALUE_RANGE]?.styles?.after?.backgroundColor)
       .toBe(HighlightVariant.Green)
+    // The `Value range` change must only surface on its own row - not on unrelated
+    // validation rows (`Value length`, `Unique items`, ...) that happen to be visible
+    // on the same node with no diff of their own.
+    expect(prop3!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.ValueRangeRow]?.type).toBeDefined()
+    expect(prop3!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.ValueLengthRow]).toBeUndefined()
+    expect(prop3!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.UniqueItemsRow]).toBeUndefined()
 
     const prop4Diffs = prop4!.diffs as Record<string, { data?: { action?: string }, styles?: { before?: { backgroundColor?: string } } }>
     expect(prop4Diffs.default?.data?.action).toBe(DiffAction.remove)
     expect(prop4Diffs.defaultRowColorizingDiff?.data?.action).toBe(DiffAction.remove)
     expect(prop4Diffs.defaultRowColorizingDiff?.styles?.before?.backgroundColor).toBe(HighlightVariant.Red)
+    // The `Default` change must only surface on the `Default` row, not on `Allowed values`,
+    // `Examples`, or any validation row rendered alongside it for the same property.
+    expect(prop4!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.DefaultRow]?.type).toBeDefined()
+    expect(prop4!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.EnumRow]).toBeUndefined()
+    expect(prop4!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.ExamplesRow]).toBeUndefined()
   })
 
   it("formats validation-row chip display in diff side entries", () => {

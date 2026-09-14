@@ -13,7 +13,8 @@ import { AdditionalInfoRowProps } from "./types"
 
 export const AdditionalInfoRow: FC<AdditionalInfoRowProps> = memo<AdditionalInfoRowProps>((props) => {
   const layoutMode = useLayoutMode()
-  const diffSeverityRecord = props.diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]
+  const diffsSeverityPlacement = props.diffsSeverityPlacement ?? NodeDiffsSeverityPlacemennt.AdditionalInfoRow
+  const diffSeverityRecord = props.diffsSeverities?.[diffsSeverityPlacement]
   const diffTypeCause = useMemo(
     () => buildDiffCauseByPathCausedAt(diffSeverityRecord?.causedAt),
     [diffSeverityRecord?.causedAt],

@@ -99,12 +99,33 @@ export type NodeDiffs<V extends object | boolean | null = object | boolean | nul
 export enum NodeDiffsSeverityPlacemennt {
   TitleRow = 'title-row',
   DescriptionRow = 'description-row',
+  /** @deprecated Shared placement used when a node renders at most one `AdditionalInfoRow`. Nodes with several such rows (e.g. JSON Schema's Default/Examples/Allowed values/validation-constraint rows) must use a dedicated placement per row instead - see the `*Row` members below. */
   AdditionalInfoRow = 'additional-info-row',
   SummaryRow = 'summary-row',
   AddressRow = 'address-row',
   BindingVersionRow = 'binding-version-row',
   ServerAddressRow = 'server-address-row',
   NestingIndicatorRow = 'nesting-indicator-row',
+  /** JSON Schema `Default` additional-info row. */
+  DefaultRow = 'default-row',
+  /** JSON Schema `Allowed values` (enum) additional-info row. */
+  EnumRow = 'enum-row',
+  /** JSON Schema `Examples` additional-info row. */
+  ExamplesRow = 'examples-row',
+  /** JSON Schema `Value length` validation row. */
+  ValueLengthRow = 'value-length-row',
+  /** JSON Schema `Value pattern` validation row. */
+  ValuePatternRow = 'value-pattern-row',
+  /** JSON Schema `Value range` validation row. */
+  ValueRangeRow = 'value-range-row',
+  /** JSON Schema `Multiple of` validation row. */
+  ValueMultipleOfRow = 'value-multiple-of-row',
+  /** JSON Schema `Properties count` validation row. */
+  PropertiesCountRow = 'properties-count-row',
+  /** JSON Schema `Items count` validation row. */
+  ItemsCountRow = 'items-count-row',
+  /** JSON Schema `Unique items` validation row. */
+  UniqueItemsRow = 'unique-items-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType

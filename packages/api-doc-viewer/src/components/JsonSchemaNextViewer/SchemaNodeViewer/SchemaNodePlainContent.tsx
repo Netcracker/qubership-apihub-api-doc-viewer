@@ -31,7 +31,11 @@ import {
   takeJsonSchemaValidationRowValueDiffs,
   takeJsonSchemaValueRangeCrawlDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
-import { JsonSchemaValidationRowKey, JsonSchemaValidationRowKeys } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import {
+  JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS,
+  JsonSchemaValidationRowKey,
+  JsonSchemaValidationRowKeys,
+} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { FC, useCallback, useMemo } from "react"
@@ -319,6 +323,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           subheader={defaultAdditionalInfoSubheader}
           colorizingDiff={defaultValueRowColorizingDiff}
           diffsSeverities={defaultValueDiff || defaultValueRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
+          diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.DefaultRow}
         />
       )}
 
@@ -330,6 +335,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           diff={examplesDiff}
           colorizingDiff={examplesRowColorizingDiff}
           diffsSeverities={examplesDiff || examplesValueDiffs || examplesRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
+          diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.ExamplesRow}
         />
       )}
 
@@ -341,6 +347,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           diff={enumDiff}
           colorizingDiff={enumRowColorizingDiff}
           diffsSeverities={enumDiff || enumValueDiffs || enumRowColorizingDiff ? nodeDiffState?.nodeDiffsSeverities : undefined}
+          diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.EnumRow}
           {...resolvePlainPropertyListLastRowFlags(
             isLastInList,
             { ...visibility, showDefaultRow: false, showExamplesRow: false },
@@ -369,6 +376,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
               validationDiffsNode,
               validationRowKey,
             ) ? nodeDiffState?.nodeDiffsSeverities : undefined}
+            diffsSeverityPlacement={JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS[validationRowKey]}
           />
         )
       })}

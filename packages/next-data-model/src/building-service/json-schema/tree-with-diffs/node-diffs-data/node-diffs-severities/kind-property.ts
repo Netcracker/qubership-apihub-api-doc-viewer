@@ -15,35 +15,62 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): NodeDiffsSeverities | undefined {
     const diffsSeverities = super.aggregate(nodeDiffs) ?? {}
-    this.applyMaxAdditionalInfoRowSeverity(nodeDiffs, diffsSeverities)
+    this.applyDefaultRowSeverity(nodeDiffs, diffsSeverities)
+    this.applyEnumRowSeverity(nodeDiffs, diffsSeverities)
+    this.applyExamplesRowSeverity(nodeDiffs, diffsSeverities)
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
   }
 
-  private applyMaxAdditionalInfoRowSeverity(
+  /** `Default` row severity is independent of `Allowed values` / `Examples` / validation rows. */
+  private applyDefaultRowSeverity(
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
     diffsSeverities: NodeDiffsSeverities,
   ): void {
     const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs
-    const maxPropertyDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+    const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
       propertyDiffs.default,
       propertyDiffs.defaultRowColorizingDiff,
-      propertyDiffs.enumDiff,
-      propertyDiffs.enumRowColorizingDiff,
-      propertyDiffs.examplesDiff,
-      propertyDiffs.examplesRowColorizingDiff,
-      ...Object.values(propertyDiffs.enumValueDiffs ?? {}),
-      ...Object.values(propertyDiffs.examplesValueDiffs ?? {}),
-      ...Object.values(propertyDiffs.validationRowDiffs ?? {}),
-      ...Object.values(propertyDiffs.validationRowValueDiffs ?? {}).flatMap((rowValueDiffs) => (
-        Object.values(rowValueDiffs ?? {})
-      )),
-      ...Object.values(propertyDiffs.validationRowColorizingDiffs ?? {}),
     )
-    if (!maxPropertyDiff) {
+    if (!maxRowDiff) {
       return
     }
 
-    diffsSeverities[NodeDiffsSeverityPlacemennt.AdditionalInfoRow] =
-      this.buildNodeDiffsSeverity(maxPropertyDiff)
+    diffsSeverities[NodeDiffsSeverityPlacemennt.DefaultRow] = this.buildNodeDiffsSeverity(maxRowDiff)
+  }
+
+  /** `Allowed values` row severity is independent of `Default` / `Examples` / validation rows. */
+  private applyEnumRowSeverity(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs
+    const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      propertyDiffs.enumDiff,
+      propertyDiffs.enumRowColorizingDiff,
+      ...Object.values(propertyDiffs.enumValueDiffs ?? {}),
+    )
+    if (!maxRowDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.EnumRow] = this.buildNodeDiffsSeverity(maxRowDiff)
+  }
+
+  /** `Examples` row severity is independent of `Default` / `Allowed values` / validation rows. */
+  private applyExamplesRowSeverity(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs
+    const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      propertyDiffs.examplesDiff,
+      propertyDiffs.examplesRowColorizingDiff,
+      ...Object.values(propertyDiffs.examplesValueDiffs ?? {}),
+    )
+    if (!maxRowDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.ExamplesRow] = this.buildNodeDiffsSeverity(maxRowDiff)
   }
 }
