@@ -201,6 +201,17 @@ renderer, six plain/with-diffs orchestrators) — deliberately independent of `S
 type/title/format-style value; see "Shared type-value rendering architecture" in the same doc
 above.
 
+**Combiner children nesting level:** in `CombinerNodeViewer.tsx`, independently of how many nested
+combiner levels a schema has, all of `CombinerSelectorRow`'s `selectorLevels` collapse onto **one
+shared level**, and the active leaf's structural children (rendered below the selector, via
+`NestingIndicatorTitleRow` + `ChildNodeViewer`) render at **that same level** — not one level
+deeper. Do not wrap the leaf's children in a second, independently-computed
+`AsyncLevelContextProvider`/`resolveNextLevelPair` call keyed off the leaf's own
+`nestingIndicatorRowColorizingDiff`: the selector row already **is** the leaf's visual
+representation (its option buttons render the leaf's type/format/title), so there is no separate
+"leaf title row" to originate a second nesting step from. See session lesson 10 in the same doc
+above.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in

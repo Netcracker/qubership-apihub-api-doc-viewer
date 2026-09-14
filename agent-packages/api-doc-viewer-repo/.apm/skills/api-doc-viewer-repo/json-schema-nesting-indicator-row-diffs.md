@@ -9,7 +9,9 @@ non-primitive boundary (e.g. `string` → `array`), which must colorize as a sin
 — not the default symmetric replace — since only one side actually gains/loses children. Includes
 session learnings from wiring row background, label visibility, and the diff floating badge, plus
 the shared component stack this row's (and the title row's) type-value text now renders through
-(see "Shared type-value rendering architecture" below).
+(see "Shared type-value rendering architecture" below). Also covers a fourth, orthogonal concern —
+this row's own **nesting level/indentation** inside `CombinerNodeViewer` (see lesson 10) — which is
+about level computation, not diff colorizing, but touches the same row.
 
 **Primary code paths**
 
@@ -24,6 +26,7 @@ the shared component stack this row's (and the title row's) type-value text now 
 | Viewer wiring | `diff` + `diffsSeverities` + `diffsSeverityPlacement` props | `api-doc-viewer/.../SchemaNodeViewer/SchemaNodeViewer.tsx` |
 | Row rendering (chrome) | background, label visibility, floating badge | `shared-components/NestingIndicatorTitleRow/{NestingIndicatorTitleRow,NestingIndicatorTitleRowContent,NestingIndicatorTitleLabel}.tsx` |
 | Row rendering (type-value text) | leaf/wrapper/orchestrator stack, both title row and nesting-indicator row | `api-doc-viewer/.../SchemaNodeViewer/TypeValue/` — see "Shared type-value rendering architecture" below |
+| Combiner nesting **level** (indentation, not diff colorizing) | `resolveNextLevelPair`, `CombinerNodeViewer`'s `selectorBeforeLevel`/`selectorAfterLevel` | `api-doc-viewer/.../JsonSchemaNextViewer/utils/resolve-nesting-level.ts` + `CombinerNodeViewer/CombinerNodeViewer.tsx` — see lesson 10 |
 | Reference pattern (async-api) | row diff + matching severity, same source diff | `AsyncApiOperationViewer/MessageChannelServerNodeViewer/MessageChannelServerNodeViewer.tsx` + `AsyncApiNodeDiffsSeveritiesAggregatorKindAny` |
 | Reference pattern (ddlapi) | uniform-descendant-diff detection (different storage target — see lesson 1) | `next-data-model/.../ddlapi/tree-with-diffs/node-diffs-data/shared/property-list-section-diff-utils.ts` (`aggregateUniformWholeNodeDescendantDiff`) |
 
@@ -36,6 +39,7 @@ the shared component stack this row's (and the title row's) type-value text now 
 | Storybook (case 2 — whole node) | `packages/samples/json-schema-diffs/hiding-unchanged-rows/complex-object/2.6`, `2.7` |
 | Storybook (case 3 — primitive/non-primitive `type` crossing) | `packages/samples/json-schema-diffs/type-changes/type-value-changes/` — any `*-to-array`/`*-to-object` or `array-to-*`/`object-to-*` pair (e.g. `004-string-to-array`, `021-array-to-string`, `026-object-to-string`, `027-object-to-number`); `030-object-to-array` (complex↔complex, non-crossing) is the regression guard that must stay yellow/replace |
 | Storybook (case 3b — special `any`/`nothing` pseudo-type crossing) | `all-of-combiner-diffs-suite` cases `041-array-add-option-string` / `042-array-remove-option-string` / `053-object-add-option-number` / `054-object-remove-option-number` (array/object option intersected with an incompatible option via `allOf` reduces the merged `type` to `nothing`) — no YAML fixtures, built programmatically, see `combiner-diff-case-definitions.ts` |
+| Storybook/manual (lesson 10 — combiner children level) | `json-schema` (plain) `one-of-combiner-suite` case `049-object-schema-one-of-one-of` (3-level nested combiner, object leaf); `json-schema-diffs` `one-of-combiner-diffs-suite`/`any-of-combiner-diffs-suite` cases `009`/`010`/`017`/`018` (single-level, object/array leaf) — no YAML fixtures, see `packages/samples/combiners-cases.md` for the full case matrix |
 
 ---
 
@@ -237,6 +241,62 @@ the resolved `type` value picks into the node's own stored value. Hiding that si
 because the type is "childless" would hide a child node that's actually there. If this guard ever
 needs a similar fix, verify with the same kind of structural check first — do not port lesson 9's
 guard reuse here without re-testing the premise.
+
+### 10. `CombinerNodeViewer` double-incremented the leaf's children level — selector row and its children must share one level
+
+This bug is about **nesting level / indentation** (`resolveNextLevelPair`, `LevelIndicator`), a
+separate axis from the diff-colorizing lessons above (1–9) — but it lives in the same viewer
+(`CombinerNodeViewer.tsx`) and above the same `NestingIndicatorTitleRow` the rest of this doc
+covers, so the fix is recorded here.
+
+**The rule (product intent, stated explicitly by the user who reported this):** independently of
+how many levels of combiner nesting a schema has (`oneOf` → `anyOf` → `allOf`, three deep, say),
+`CombinerNodeViewer` always collapses every nested combiner's own `CombinerSelectorRow` onto **one
+shared level** (`selectorBeforeLevel`/`selectorAfterLevel` — all `selectorLevels.map(...)` entries
+render inside the same single `AsyncLevelContextProvider`). The active/selected leaf's own
+**structural children** (e.g. an `object` option's `properties`, an `array` option's `items`) must
+render at **that same level** — not one level deeper.
+
+**The bug:** the leaf's children were wrapped in a *second*, independently-computed
+`AsyncLevelContextProvider` (`leafBeforeLevel`/`leafAfterLevel`), produced by calling
+`resolveNextLevelPair` **again** — this time seeded with the selector's own level pair and the
+active leaf's own `nestingIndicatorRowColorizingDiff` (`takeJsonSchemaNestingIndicatorRowColorizingDiff(activeLeafWithDiffs)`).
+Since `resolveNextLevelPair` increments by default whenever no diff is present (`increaseLevel ??
+true` — see `resolve-nesting-level.ts`), this always produced `selectorLevel + 1`, one level too
+deep, on both plain and with-diffs cases with no active flag/reduction. Reported against
+`json-schema-diffs/{oneOf,anyOf}` cases `009`/`010`/`017`/`018` (single-level combiner, object/array
+leaf) but the double-increment is structural, not diff-specific — it also affected the plain
+(non-diff) `json-schema` combiner suite and every nesting depth.
+
+**Why the second `resolveNextLevelPair` call looked plausible but was wrong:** it mirrors
+`SchemaNodeViewer.tsx`'s own pattern almost exactly — a node's title row is at level `L`, and
+`resolveNextLevelPair(currentLevel, ..., nestingIndicatorRowColorizingDiff)` places that node's own
+children at `L + 1`. `CombinerNodeViewer` already does this once, correctly, going from the
+**owner** node's level to the **selector**'s level (`ownerNestingIndicatorRowColorizingDiff`,
+unchanged by this fix). The mistake was applying the *same* per-node "my own children go one level
+deeper" step a *second* time for the **active leaf**, treating the leaf as if it were a distinct
+node with its own title row at the selector's level. It isn't: the `CombinerSelectorRow` **is**
+the leaf's visual representation (its option buttons render the leaf's type/format/title — see
+"Shared type-value rendering architecture" below) — there is no separate "leaf title row" for a
+second nesting step to originate from. The leaf's children are the selector row's own children,
+one conceptual step, already spent going from owner to selector.
+
+**Fix:** delete the second `resolveNextLevelPair` call (`leafBeforeLevel`/`leafAfterLevel`) and the
+inner `AsyncLevelContextProvider` wrapping the leaf's `NestingIndicatorTitleRow` + children —
+render them as plain siblings of the `CombinerSelectorRow` list, still inside the **outer**
+`AsyncLevelContextProvider beforeLevel={selectorBeforeLevel} afterLevel={selectorAfterLevel}` that
+already wraps `selectorLevels.map(...)`. `nestingIndicatorRowColorizingDiff` itself is **not**
+removed — it is still read and still passed as the `diff`/`diffsSeverities` prop to that
+`NestingIndicatorTitleRow` for its background/floating-badge chrome (lessons 1–9 above); only its
+use for computing a *second* level increment was wrong.
+
+**Lesson:** when a node's own visual representation is folded into another row (here: the leaf's
+title-row-equivalent **is** the combiner selector row, not a separate row), do not mechanically
+copy a "compute my children's level from my own level" step that assumes a standalone node with
+its own title row. Check what level the *visible* anchor row actually renders at before adding
+another `resolveNextLevelPair` hop beneath it — verify visually (e.g. Storybook, zoomed
+screenshot) that a row's label and its children column line up, rather than trusting that mirroring
+an existing per-node pattern one level lower is automatically correct.
 
 ---
 

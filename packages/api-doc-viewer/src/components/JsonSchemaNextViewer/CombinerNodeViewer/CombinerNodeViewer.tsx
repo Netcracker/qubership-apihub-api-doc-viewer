@@ -215,13 +215,17 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     () => nodeWithDiffs ? takeJsonSchemaNestingIndicatorRowColorizingDiff(nodeWithDiffs) : undefined,
     [nodeWithDiffs],
   )
+  /**
+   * Independently of how many nested combiner levels `selectorLevels` collapses into one
+   * shared selector-row level, the active leaf's structural children render at that SAME
+   * level - the selector row already represents the one nesting step from the owner into the
+   * combiner's content; there is no separate step from "selector" to "leaf". Do not resolve a
+   * further level pair here from `nestingIndicatorRowColorizingDiff` - that would double the
+   * increment or reduction (see CombinerNodeViewer session lesson).
+   */
   const { beforeLevel: selectorBeforeLevel, afterLevel: selectorAfterLevel } = useMemo(
     () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, ownerNestingIndicatorRowColorizingDiff),
     [currentBeforeLevel, currentAfterLevel, ownerNestingIndicatorRowColorizingDiff],
-  )
-  const { beforeLevel: leafBeforeLevel, afterLevel: leafAfterLevel } = useMemo(
-    () => resolveNextLevelPair(selectorBeforeLevel, selectorAfterLevel, nestingIndicatorRowColorizingDiff),
-    [selectorBeforeLevel, selectorAfterLevel, nestingIndicatorRowColorizingDiff],
   )
 
   const onSelectOption = useCallback((
@@ -323,7 +327,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
           })}
 
           {showLeafChildren && (
-            <AsyncLevelContextProvider beforeLevel={leafBeforeLevel} afterLevel={leafAfterLevel}>
+            <>
               <NestingIndicatorTitleRow
                 title={propertyNestingIndicatorTitle}
                 usage={NestingIndicatorTitleRowUsage.JsonSchema}
@@ -346,7 +350,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
                   />
                 ))
               )}
-            </AsyncLevelContextProvider>
+            </>
           )}
         </AsyncLevelContextProvider>
       </LevelContext.Provider>
