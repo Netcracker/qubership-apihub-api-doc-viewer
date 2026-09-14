@@ -326,6 +326,19 @@ spacer (same horizontal footprint as the expander column). This is not
 - **Enum literals** (`Values` row): pass `textHighlighterColor`, `borderShadowColor`, and
   `isFontMuted` per side item — mirror `resolveColumnEnumValueSideItems` orchestration.
 
+**Known gap — floating-badge severity shared across DDL's three `AdditionalInfoRow`s:**
+`ColumnNodeViewerWithDiffs` renders three `AdditionalInfoRow`s per column (enum `Values`,
+`Default`, generated `As`), all still passing `diffsSeverities={node.diffsSeverities}` with no
+placement override, so they all read the same `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` key
+and can show the same wrong badge on rows that didn't actually change — the same bug JSON Schema's
+validation rows had (see `json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
+It has not been fixed here. `AdditionalInfoRow` now accepts an optional `diffsSeverityPlacement`
+prop (defaults to the legacy `AdditionalInfoRow` member, so existing DDL callers are unaffected) —
+fixing this means adding dedicated `NodeDiffsSeverityPlacemennt` members (e.g. a DDL `DefaultRow` /
+`EnumRow` / generated-`As` row) in `next-data-model`'s ddlapi severities aggregators
+(`node-diffs-severities/kind-column.ts`) and wiring `diffsSeverityPlacement` on each of the three
+`AdditionalInfoRow`s here, mirroring the JSON Schema fix.
+
 ### Column default value diffs (`ColumnNodeViewerWithDiffs`)
 
 Follow the **enum Values row** split: row background vs chip chrome are separate diffs.

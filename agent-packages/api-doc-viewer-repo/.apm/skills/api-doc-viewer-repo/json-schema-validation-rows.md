@@ -14,7 +14,9 @@ Grouped by **plain (without diffs)** vs **with-diffs**, then by validation row k
 | Diff aggregation | `aggregateValidationRowDiffs` | `next-data-model/.../node-diffs/kind-property.ts` |
 | Value-range dialect / partial logic | `isValueRangePartialBoundChange`, side entries | `next-data-model/.../value-range-diff-side-display.ts` |
 | Side-entry resolution | `resolveJsonSchemaValidationRowSideEntries` | `next-data-model/.../property-row-diffs.ts` |
-| Viewer | `AdditionalInfoRow` + `AdditionalInfoPiece` chips | `SchemaNodePlainContent.tsx` |
+| Floating-badge severities | `JsonSchemaNodeDiffsSeveritiesAggregatorKindAny` / `KindProperty` | `next-data-model/.../node-diffs-severities/kind-any.ts`, `kind-property.ts` |
+| Row → placement mapping | `JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS` | `next-data-model/.../validation-row-source-keys.ts` |
+| Viewer | `AdditionalInfoRow` (+ `diffsSeverityPlacement` prop) + `AdditionalInfoPiece` chips | `SchemaNodePlainContent.tsx`, `shared-components/AdditionalInfoRow/` |
 
 **Regression**
 
@@ -373,6 +375,67 @@ the factory now always returns the `KindProperty` instance for every kind. When 
 to this stack, do not assume a "lesser" aggregator is needed for kinds that aren't PROPERTY/ROOT —
 verify the specialised aggregator's logic is actually kind-gated before forking dispatch.
 
+## Per-row floating-badge severity — do not share one placement across rows (session lesson)
+
+`AdditionalInfoRow`'s floating diff badge (`DiffFloatingBadgeWrapper`) reads its type/cause from
+`diffsSeverities[placement]`, a flat `Partial<Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>>`
+on the node (see `tree-node.interface.ts`). `SchemaNodePlainContent` renders **up to ten**
+`AdditionalInfoRow`s per node — `Default`, `Examples`, `Allowed values`, and one per validation-row
+key — all from the same node's `diffsSeverities`.
+
+The original implementation computed **one** combined severity — the max `DiffType` across every
+`default`/`enum`/`examples`/`validationRow*` diff on the node — and stored it under the single
+shared `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` key. Every row read that same key, so
+whichever diff happened to win the max-severity comparison painted its badge (type + `causedAt`
+path) onto **every** visible row, including rows with no diff of their own. Symptom: in
+`all-of-combiner-diffs-suite` case `001` (adding a `number` option to an `allOf` combiner that
+already had a `string` option — see `combiner-schema-builder.ts` `buildComprehensiveTypeSchema`),
+every validation row's badge pointed at `minLength`, even on rows whose actual content (`Value
+range`, `Value multiple of` — the genuinely added `number` fields) had nothing to do with
+`minLength`.
+
+**Fix:** one dedicated `NodeDiffsSeverityPlacemennt` member per row —
+`DefaultRow`, `EnumRow`, `ExamplesRow`, and `ValueLengthRow` / `ValuePatternRow` / `ValueRangeRow`
+/ `ValueMultipleOfRow` / `PropertiesCountRow` / `ItemsCountRow` / `UniqueItemsRow` (mapped from
+`JsonSchemaValidationRowKey` via `JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS` in
+`validation-row-source-keys.ts`). Each severities aggregator method now builds its severity from
+**only that row's own diff objects**:
+
+- `JsonSchemaNodeDiffsSeveritiesAggregatorKindAny.applyValidationRowSeverities` — loops the 7
+  validation-row keys independently (every node kind, not just PROPERTY/ROOT — combiner variants
+  get the same per-row badges).
+- `JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty` — three separate methods
+  (`applyDefaultRowSeverity` / `applyEnumRowSeverity` / `applyExamplesRowSeverity`), each scoped to
+  its own diff fields only (no more combined `maxChangedPropertyMetaDataByDiffType` call spanning
+  all three).
+
+**Viewer wiring:** `AdditionalInfoRow` previously **hardcoded**
+`diffsSeverities?.[NodeDiffsSeverityPlacemennt.AdditionalInfoRow]` — it now accepts an optional
+`diffsSeverityPlacement` prop (default: the old `AdditionalInfoRow` member, for DDL's callers —
+see below) and reads `diffsSeverities?.[diffsSeverityPlacement]`, matching the existing pattern
+already used by `TextRow` / `MarkdownTextRow` / `NestingIndicatorTitleRow`.
+`SchemaNodePlainContent` passes the matching placement on every `AdditionalInfoRow` it renders.
+
+**Generalize this rule:** any node that renders **more than one** `AdditionalInfoRow` (or any
+other row component sharing one `NodeDiffsSeverityPlacemennt` value) needs one dedicated placement
+per row instance, not one placement per row *component type*. A single shared enum member can only
+ever hold one severity at a time on a given node — reusing it across sibling rows silently
+collapses their badges into whichever diff has the highest severity, with no type error and no
+visible symptom other than a badge with a suspicious/wrong `causedAt` path. **DDL has this same
+latent gap as of this writing**: `ColumnNodeViewerWithDiffs` renders three `AdditionalInfoRow`s
+(enum `Values`, `Default`, generated `As`) that all still pass `node.diffsSeverities` with no
+`diffsSeverityPlacement` override, so they still share the one `AdditionalInfoRow` placement — it
+has not been fixed, only the shared component capability (`diffsSeverityPlacement`) now exists to
+fix it the same way if/when asked.
+
+Unit-test pattern for this class of bug: assert the "leak" doesn't happen, not just that the
+correct placement is set — e.g. after a `Value range` add, assert `ValueRangeRow` is defined
+**and** `ValueLengthRow` / `UniqueItemsRow` are `undefined` on the same node (see
+`json-schema-with-diffs.test.ts`, case "aggregates property metadata and constraint diffs for case
+1.4"). A test that only checks the correct placement is set would have passed even with the old
+shared-placement bug, since the shared key would coincidentally equal the right value whenever
+only one row actually changed.
+
 ## Testability trap: CSS imports break Jest unit tests (session lesson)
 
 `SchemaNodePlainContent.tsx` transitively imports `.css` (via `AdditionalInfoRow` →
@@ -403,6 +466,7 @@ independent of the component tree.
 | Row wholly green/red when only one bound of an existing row changed | Data | `rowHasOtherUnchangedContent` guard in `aggregateValidationRowDiffs` |
 | `additionalProperties` / `items` / combiner-variant rows show no diff at all | Data | `JsonSchemaNodeDiffsAggregatorFactory` must dispatch `KindProperty` (superset of `KindAny`) for every kind, not just PROPERTY/ROOT |
 | Unit test importing from a viewer `.tsx` fails with `SyntaxError: Unexpected token '.'` in a `.css` file | Test | Extract the pure logic to a CSS-free `utils/*.ts` file and import the test from there |
+| Floating diff badge on a validation/`Default`/`Examples`/`Allowed values` row points at the wrong field (e.g. always `minLength`) | Data + viewer | Missing dedicated `NodeDiffsSeverityPlacemennt` for that row, or `AdditionalInfoRow` not passed a `diffsSeverityPlacement` — see "Per-row floating-badge severity" below |
 
 ---
 

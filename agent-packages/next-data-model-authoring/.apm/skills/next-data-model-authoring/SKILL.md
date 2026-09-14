@@ -246,6 +246,20 @@ from the identical diff object already used for colorizing (see async-api's `Ser
 pattern in `AsyncApiNodeDiffsSeveritiesAggregatorKindAny`). Do not treat severities as an optional
 follow-up; a missing severity silently drops the floating diff badge with no error.
 
+**One placement per row *instance*, not per row *component type*.** `NodeDiffsSeverities` is a
+flat `Partial<Record<NodeDiffsSeverityPlacemennt, NodeDiffsSeverity>>` on the node — a single enum
+member can hold only one severity at a time. If a node renders **several** rows built from the
+same shared row component (e.g. api-doc-viewer's `AdditionalInfoRow`, reused for JSON Schema's
+`Default` / `Examples` / `Allowed values` / each of 7 validation-constraint rows on one node), each
+row still needs its **own** dedicated placement — reusing one generic member (there is a legacy
+`NodeDiffsSeverityPlacemennt.AdditionalInfoRow` kept only for single-row callers, e.g. DDL) across
+several sibling rows silently collapses all their badges into whichever row's diff has the highest
+severity, with no type error and a badge whose `causedAt` path points at an unrelated field. See
+`api-doc-viewer-repo` skill, **"Per-row floating-badge severity"** in
+`json-schema-validation-rows.md` for the concrete bug and fix (per-validation-row-key placements
+via `JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS`, and the viewer-side `AdditionalInfoRow`
+`diffsSeverityPlacement` prop that makes the placement caller-selectable instead of hardcoded).
+
 ## Crawl rules
 
 Document traversal rules live in
