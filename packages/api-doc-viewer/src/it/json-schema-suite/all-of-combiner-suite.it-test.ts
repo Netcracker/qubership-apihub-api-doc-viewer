@@ -109,7 +109,15 @@ const TEST_IDS: string[] = [
 ]
 
 async function waitForJsonSchemaViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
+  await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
+  // A combiner-suite root renders through CombinerNodeViewer, not SchemaNodeViewer: when the
+  // active/default leaf option is a scalar type (string/number/integer/boolean) it has no
+  // structural children, so [data-name="JsonNode"] never appears anywhere in the DOM and a
+  // selector waiting on it alone hangs until timeout. Accept the combiner root's own testid too.
+  await page.waitForSelector(
+    '[data-name="JsonNode"], [data-testid="json-schema-combiner-node-viewer"]',
+    { visible: true },
+  )
   await page.waitForFunction(() => document.readyState === 'complete')
   await page.evaluate(() => new Promise<void>(resolve =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
