@@ -37,7 +37,8 @@ import {
   ValueRangeCrawlDiffData,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
-import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { OpenApiExtensionKey } from "@apihub/next-data-model/shared/json-schema/types/extension-key"
+import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 /** Side-visible list item without diff styling — use {@link valueDiffKey} for chip highlight lookup. */
 export type JsonSchemaListSideEntry = {
@@ -116,6 +117,18 @@ export function takeJsonSchemaNodeChangesSummary(
   node: JsonSchemaTreeNodeWithDiffs,
 ): NodeDiffsSummary | undefined {
   return takeKindAnyNodeDiffs(node).nodeChangesSummary
+}
+
+/**
+ * Raw per-key diffs for specification-extension (`x-*`) properties on this node, ready to embed
+ * onto the merged `extensions` value under the tree's `diffsMetaKey` for `JsoDiffsViewer` (an
+ * independent JSON diff engine) to render. Computed for every node kind, like `default`/`enum`/
+ * `examples` above - any schema-bearing node can carry its own extensions.
+ */
+export function takeJsonSchemaExtensionsDiffs(
+  node: JsonSchemaNodeWithDiffs,
+): Partial<Record<OpenApiExtensionKey, Diff<DiffType>>> | undefined {
+  return takeKindAnyNodeDiffs(node).extensionsDiffs
 }
 
 export function takeJsonSchemaRequiredMetaDiff(

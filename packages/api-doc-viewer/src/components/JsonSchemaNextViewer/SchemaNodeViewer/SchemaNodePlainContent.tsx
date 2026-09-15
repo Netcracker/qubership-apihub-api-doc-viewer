@@ -33,6 +33,7 @@ import {
   takeJsonSchemaExamplesDiff,
   takeJsonSchemaExamplesRowColorizingDiff,
   takeJsonSchemaExamplesValueDiffs,
+  takeJsonSchemaExtensionsDiffs,
   takeJsonSchemaListValueDiffAtKey,
   hasJsonSchemaValidationRowSemanticDiffs,
   takeJsonSchemaValidationRowColorizingDiff,
@@ -160,6 +161,10 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   )
   const defaultValueRowColorizingDiff = useMemo(
     () => (validationDiffsNode ? takeJsonSchemaDefaultRowColorizingDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
+  )
+  const extensionsDiffs = useMemo(
+    () => (validationDiffsNode ? takeJsonSchemaExtensionsDiffs(validationDiffsNode) : undefined),
     [validationDiffsNode],
   )
 
@@ -467,7 +472,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
       })}
 
       {visibility.showExtensionsRow && typedValue?.extensions && (
-        <JsonSchemaExtensionsSection extensions={typedValue.extensions} />
+        <JsonSchemaExtensionsSection extensions={typedValue.extensions} extensionsDiffs={extensionsDiffs} />
       )}
     </>
   )

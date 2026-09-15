@@ -51,6 +51,10 @@ import {
 import { isObject } from "@apihub/next-data-model/utilities"
 import { NodeKey } from "@apihub/next-data-model/utility-types"
 import {
+  isOpenApiExtensionKey,
+  OpenApiExtensionKey,
+} from "@apihub/next-data-model/shared/json-schema/types/extension-key"
+import {
   Diff,
   DiffAction,
   DiffAdd,
@@ -106,12 +110,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...containerNodeDiff, inherited: true }
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
       const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
       if (maybeNodeDiffs) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
     } else if (parentNode) {
@@ -119,12 +125,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       if (parentNodeDiff && (isDiffAdd(parentNodeDiff.data) || isDiffRemove(parentNodeDiff.data))) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...parentNodeDiff, inherited: true }
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
       const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
       if (maybeNodeDiffs) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
     }
@@ -161,6 +169,8 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     if (isObject(crawlValue)) {
       this.aggregateValidationRowDiffs(crawlValue, diffs, nodeDiffs)
     }
+
+    this.aggregateExtensionsDiffs(diffs, nodeDiffs)
 
     this.stripMetaFlagDiffsWhenWholeNode(nodeDiffs)
     this.aggregateTitleRowDiff(nodeDiffs)
@@ -929,6 +939,90 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         nodeDiffs.validationRowColorizingDiffs[validationRowKey] =
           this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff)
       }
+    }
+  }
+
+  /**
+   * Background/content for the "Extensions" section when the whole node is inherited-added/
+   * removed from an ancestor container/parent - the node's own crawl fragment carries no
+   * per-field diffs in that case, so synthesize a uniform add/remove diff (keeping each
+   * extension's real value, not a placeholder) for every extension key present on the merged
+   * fragment. Mirrors {@link aggregateWholeNodeInheritedValidationRowDiffs}.
+   */
+  private aggregateWholeNodeInheritedExtensionsDiffs(
+    crawlValue: JsonSchemaTreeNodeStoredValue | null,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff || !(isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      return
+    }
+    if (!isObject(crawlValue)) {
+      return
+    }
+
+    const extensions = Reflect.get(crawlValue, "extensions")
+    if (!isObject(extensions)) {
+      return
+    }
+
+    const extensionKeys = Object.keys(extensions).filter(isOpenApiExtensionKey)
+    if (extensionKeys.length === 0) {
+      return
+    }
+
+    const { data } = nodeLevelDiff
+    const extensionValues = extensions as Record<OpenApiExtensionKey, unknown>
+    const extensionsDiffs: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>> = {}
+
+    if (isDiffAdd(data)) {
+      for (const key of extensionKeys) {
+        extensionsDiffs[key] = {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.add,
+          afterValue: extensionValues[key],
+          afterDeclarationPaths: data.afterDeclarationPaths ?? [],
+        }
+      }
+    } else if (isDiffRemove(data)) {
+      for (const key of extensionKeys) {
+        extensionsDiffs[key] = {
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.remove,
+          beforeValue: extensionValues[key],
+          beforeDeclarationPaths: data.beforeDeclarationPaths ?? [],
+        }
+      }
+    }
+
+    nodeDiffs.extensionsDiffs = extensionsDiffs
+  }
+
+  /**
+   * Per-key diffs for specification-extension (`x-*`) properties, read directly off the raw
+   * crawl diffs record (keyed by the ORIGINAL property name, same as `title`/`type`/etc. above -
+   * `transformJsonSchemaExtensions` preserves the symbol-keyed diffs record verbatim when it
+   * reshapes extension keys into the flattened `extensions` value). Kept as raw `Diff` objects for
+   * the view layer to re-embed onto `extensions` under the tree's `diffsMetaKey`, so `JsoDiffsViewer`
+   * (an independent JSON diff engine) can render add/remove/replace for each extension itself.
+   */
+  private aggregateExtensionsDiffs(
+    diffs: Partial<Record<string, Diff<DiffType>>>,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+  ): void {
+    const extensionsDiffs: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>> = {}
+    for (const [key, diff] of Object.entries(diffs)) {
+      if (!isOpenApiExtensionKey(key) || !AbstractNodeDiffsAggregator.isDiff(diff)) {
+        continue
+      }
+      extensionsDiffs[key] = diff
+    }
+    if (Object.keys(extensionsDiffs).length > 0) {
+      nodeDiffs.extensionsDiffs = extensionsDiffs
     }
   }
 

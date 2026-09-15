@@ -6,6 +6,8 @@ import {
 import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaValidationRowKey } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import { ValueRangeCrawlDiffData } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
+import { OpenApiExtensionKey } from "@apihub/next-data-model/shared/json-schema/types/extension-key"
+import { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff"
 
 /** Synthetic diff slot: resolved title-row background diff for type-label field changes. */
 export const JSON_SCHEMA_TITLE_ROW_DIFF_KEY = "titleRow" as const
@@ -71,6 +73,14 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
   validationRowColorizingDiffs?: Partial<Record<JsonSchemaValidationRowKey, ChangedPropertyMetaData>>
   /** Raw crawl diffs for value-range chip side resolution (includes boolean exclusive flag changes). */
   valueRangeCrawlDiffs?: ValueRangeCrawlDiffData
+  /**
+   * Raw per-key diffs for specification-extension (`x-*`) properties, keyed by extension name.
+   * Extensions render through `JsoDiffsViewer` (an independent JSON diff engine that interprets
+   * its own `mergedSource[diffsMetaKey]` convention), so these are kept as raw `Diff` objects -
+   * not `ChangedPropertyMetaData` - ready for the view layer to re-embed onto the merged
+   * extensions record under the tree's `diffsMetaKey` symbol.
+   */
+  extensionsDiffs?: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>>
 }
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {

@@ -20,6 +20,7 @@ import {
   takeJsonSchemaDefaultRowColorizingDiff,
   takeJsonSchemaEnumDiff,
   takeJsonSchemaEnumRowColorizingDiff,
+  takeJsonSchemaExtensionsDiffs,
   takeJsonSchemaNestingIndicatorRowColorizingDiff,
   takeJsonSchemaNodeChangesSummary,
   takeJsonSchemaValidationRowColorizingDiff,
@@ -1886,5 +1887,99 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
     ]
     expect(severity).toBeDefined()
     expect(additionalPropertiesNode.diffsSeverities[NodeDiffsSeverityPlacemennt.DefaultRow]).toBeUndefined()
+  })
+})
+
+describe("JsonSchema specification-extension (x-*) diffs", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("captures a per-key add diff for a new extension, leaving an unchanged sibling extension out", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true },
+      { type: "string", "x-a": true, "x-b": "new" },
+    )
+
+    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    expect(extensionsDiffs?.["x-a"]).toBeUndefined()
+    expect(extensionsDiffs?.["x-b"]?.action).toBe(DiffAction.add)
+    expect(extensionsDiffs?.["x-b"] && "afterValue" in extensionsDiffs["x-b"] ? extensionsDiffs["x-b"].afterValue : undefined)
+      .toBe("new")
+  })
+
+  it("captures a per-key replace diff, keyed by the same extension name, when its value's type changes", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": { team: "core" } },
+      { type: "string", "x-a": ["beta", "internal"] },
+    )
+
+    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    const aDiff = extensionsDiffs?.["x-a"]
+    expect(aDiff?.action).toBe(DiffAction.replace)
+    expect(aDiff && "beforeValue" in aDiff ? aDiff.beforeValue : undefined).toEqual({ team: "core" })
+    expect(aDiff && "afterValue" in aDiff ? aDiff.afterValue : undefined).toEqual(["beta", "internal"])
+  })
+
+  it("captures a per-key remove diff when one of two extensions is dropped", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+      { type: "string", "x-a": true },
+    )
+
+    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    expect(extensionsDiffs?.["x-a"]).toBeUndefined()
+    const bDiff = extensionsDiffs?.["x-b"]
+    expect(bDiff?.action).toBe(DiffAction.remove)
+    expect(bDiff && "beforeValue" in bDiff ? bDiff.beforeValue : undefined).toBe("1.0.0")
+  })
+
+  it("synthesizes per-key add diffs, with real values, for every extension on a wholly-added property", () => {
+    const tree = buildTree(
+      { type: "object", properties: {} },
+      {
+        type: "object",
+        properties: {
+          prop1: { type: "string", "x-a": true, "x-b": { team: "core" } },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+
+    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(prop1Node)
+    const aDiff = extensionsDiffs?.["x-a"]
+    const bDiff = extensionsDiffs?.["x-b"]
+    expect(aDiff?.action).toBe(DiffAction.add)
+    expect(aDiff && "afterValue" in aDiff ? aDiff.afterValue : undefined).toBe(true)
+    expect(bDiff?.action).toBe(DiffAction.add)
+    expect(bDiff && "afterValue" in bDiff ? bDiff.afterValue : undefined).toEqual({ team: "core" })
+  })
+
+  it("synthesizes per-key remove diffs, with real values, for every extension on a wholly-removed property", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: {
+          prop1: { type: "string", "x-a": true },
+        },
+      },
+      { type: "object", properties: {} },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+
+    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(prop1Node)
+    const aDiff = extensionsDiffs?.["x-a"]
+    expect(aDiff?.action).toBe(DiffAction.remove)
+    expect(aDiff && "beforeValue" in aDiff ? aDiff.beforeValue : undefined).toBe(true)
   })
 })
