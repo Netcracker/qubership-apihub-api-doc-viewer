@@ -10,7 +10,10 @@ export type JsonSchemaDiffSampleCase = {
     beforeYaml: string;
     afterYaml: string;
 };
-export type JsonSchemaDiffCaseStoryComponentProps = Pick<JsonSchemaDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml">;
+export type JsonSchemaDiffCaseStoryComponentProps = Pick<JsonSchemaDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml"> & {
+    hideUnchangedNodes: boolean;
+};
+export declare const JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES = false;
 export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
     beforeYaml: {
         control: {
@@ -30,6 +33,15 @@ export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
         };
         description: string;
     };
+    hideUnchangedNodes: {
+        control: {
+            type: "boolean";
+        };
+        table: {
+            category: string;
+        };
+        description: string;
+    };
 };
 type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
 type JsonSchemaDiffCaseStoryArgs = {
@@ -41,5 +53,5 @@ type JsonSchemaDiffCaseStoryArgs = {
 export declare const createJsonSchemaDiffViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
-export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export {};

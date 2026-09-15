@@ -10,7 +10,10 @@ export type JsonSchemaDiffSampleCase = {
     beforeYaml: string;
     afterYaml: string;
 };
-export type JsonSchemaDiffCaseStoryComponentProps = Pick<JsonSchemaDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml">;
+export type JsonSchemaDiffCaseStoryComponentProps = Pick<JsonSchemaDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml"> & {
+    hideUnchangedNodes: boolean;
+};
+export declare const JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES = false;
 export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
     beforeYaml: {
         control: {
@@ -24,6 +27,15 @@ export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
     afterYaml: {
         control: {
             type: "text";
+        };
+        table: {
+            category: string;
+        };
+        description: string;
+    };
+    hideUnchangedNodes: {
+        control: {
+            type: "boolean";
         };
         table: {
             category: string;
@@ -45,11 +57,11 @@ export declare const createJsonSchemaDiffsViewerArgsFromSchemas: (beforeSchema: 
 export declare const createJsonSchemaDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string, options?: JsonSchemaDiffsViewerArgsOptions) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
-export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 /**
  * Same as JsonSchemaDiffSamplesStory, but inlines schemas in the OAS template instead of $ref-ing
  * to __Substitution__ (disableSubstitutionTitle) -- needed for combiner suites, where the
  * substitution $ref would otherwise be the thing labeled at the diff root instead of the combiner.
  */
-export declare const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle: ({ beforeYaml, afterYaml, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export {};

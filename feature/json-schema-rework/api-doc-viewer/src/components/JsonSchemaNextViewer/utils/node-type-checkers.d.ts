@@ -2,6 +2,8 @@ import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
 import { JsonSchemaTreeNodeKind } from '../../../../../next-data-model/src/model/json-schema/types/node-kind';
 export declare function isJsonSchemaRootNode(node: JsonSchemaTreeNode): boolean;
+/** `additionalProperties`'s own schema node - the one whose parent `propertyNames` constrains it. */
+export declare function isJsonSchemaAdditionalPropertiesNode(node: JsonSchemaTreeNode): boolean;
 export declare function isJsonSchemaCombinerOwnerNode(node: JsonSchemaTreeNode): boolean;
 export declare function isJsonSchemaCombinerNestedKind(kind: JsonSchemaTreeNodeKind): boolean;
 /**
