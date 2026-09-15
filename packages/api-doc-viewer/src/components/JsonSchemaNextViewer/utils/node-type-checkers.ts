@@ -10,6 +10,11 @@ export function isJsonSchemaRootNode(node: JsonSchemaTreeNode): boolean {
   return node.kind === JsonSchemaTreeNodeKinds.ROOT
 }
 
+/** `additionalProperties`'s own schema node - the one whose parent `propertyNames` constrains it. */
+export function isJsonSchemaAdditionalPropertiesNode(node: JsonSchemaTreeNode): boolean {
+  return node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES
+}
+
 export function isJsonSchemaCombinerOwnerNode(node: JsonSchemaTreeNode): boolean {
   if (node.type !== TreeNodeComplexityTypes.COMPLEX) {
     return false

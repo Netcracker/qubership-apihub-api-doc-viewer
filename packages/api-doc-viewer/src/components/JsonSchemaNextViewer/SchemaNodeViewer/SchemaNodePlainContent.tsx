@@ -1,7 +1,12 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { DETAILED_DISPLAY_MODE } from "@apihub/types/DisplayMode"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import {
+  JsonSchemaTreeNodeStoredValue,
+  JsonSchemaTreeNodeValue,
+  JsonSchemaTreeNodeValueTypeObject,
+} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import {
@@ -46,7 +51,9 @@ import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types
 import { resolveValidationRows } from "../utils/validation-rows"
 import { JsonSchemaValidationRowKey as ViewerValidationRowKey } from "../utils/validation-row-keys"
 import { sortValidationRowsByType } from "../utils/sort-validation-rows-by-type"
+import { isJsonSchemaAdditionalPropertiesNode } from "../utils/node-type-checkers"
 import {
+  ALLOWED_ADDITIONAL_PROPERTY_NAMES_LABEL,
   ITEMS_COUNT_LABEL,
   PROPERTIES_COUNT_LABEL,
   UNIQUE_ITEMS_LABEL,
@@ -182,6 +189,34 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
     return sortValidationRowsByType([...baseRows, ...diffOnlyRows])
   }, [validationDiffsNode, typedValue])
+
+  // `propertyNames` constrains the containing object's property names, so legacy sources it from
+  // the *parent* object schema and displays it only on the `additionalProperties` child node - not
+  // as a validation of this node's own value. Not yet wired into the diff-aware validation-row
+  // pipeline (no colorizing/severity), matching this row's plain-only scope for now.
+  const allowedAdditionalPropertyNames = useMemo(() => {
+    if (!isJsonSchemaAdditionalPropertiesNode(node)) {
+      return undefined
+    }
+    // ITreeNode.parent is typed as the generic base ITreeNode, losing the JsonSchemaTreeNode
+    // value/meta type params - narrow it back, mirroring how legacy reads `node.parent.value()`.
+    const parentNode = node.parent as JsonSchemaTreeNode | null
+    const parentValue = asJsonSchemaTypedNodeValue(parentNode?.value() ?? null)
+    return (parentValue as JsonSchemaTreeNodeValueTypeObject | undefined)?.propertyNames?.enum
+  }, [node])
+
+  const showAllowedAdditionalPropertyNamesRow = displayMode === DETAILED_DISPLAY_MODE
+    && Boolean(allowedAdditionalPropertyNames?.length)
+
+  const allowedAdditionalPropertyNamesSubheader = useCallback(
+    (layoutSide: LayoutSide) => (
+      <JsonSchemaValidationChips
+        layoutSide={layoutSide}
+        sideItems={(allowedAdditionalPropertyNames ?? []).map((name) => ({ text: String(name) }))}
+      />
+    ),
+    [allowedAdditionalPropertyNames],
+  )
 
   const enumValuesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
@@ -352,6 +387,14 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
             isLastInList,
             { ...visibility, showDefaultRow: false, showExamplesRow: false },
           )}
+        />
+      )}
+
+      {showAllowedAdditionalPropertyNamesRow && (
+        <AdditionalInfoRow
+          label={ALLOWED_ADDITIONAL_PROPERTY_NAMES_LABEL}
+          usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+          subheader={allowedAdditionalPropertyNamesSubheader}
         />
       )}
 
