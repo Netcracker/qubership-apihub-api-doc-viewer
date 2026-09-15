@@ -112,6 +112,8 @@ export enum NodeDiffsSeverityPlacemennt {
   EnumRow = 'enum-row',
   /** JSON Schema `Examples` additional-info row. */
   ExamplesRow = 'examples-row',
+  /** JSON Schema `Allowed additional property names` row (parent `propertyNames`, shown on the `additionalProperties` child). */
+  AllowedAdditionalPropertyNamesRow = 'allowed-additional-property-names-row',
   /** JSON Schema `Value length` validation row. */
   ValueLengthRow = 'value-length-row',
   /** JSON Schema `Value pattern` validation row. */

@@ -18,6 +18,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
     this.applyDefaultRowSeverity(nodeDiffs, diffsSeverities)
     this.applyEnumRowSeverity(nodeDiffs, diffsSeverities)
     this.applyExamplesRowSeverity(nodeDiffs, diffsSeverities)
+    this.applyAllowedAdditionalPropertyNamesRowSeverity(nodeDiffs, diffsSeverities)
     return Object.keys(diffsSeverities).length > 0 ? diffsSeverities : undefined
   }
 
@@ -72,5 +73,26 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindProperty
     }
 
     diffsSeverities[NodeDiffsSeverityPlacemennt.ExamplesRow] = this.buildNodeDiffsSeverity(maxRowDiff)
+  }
+
+  /**
+   * `Allowed additional property names` row severity is independent of `Default` / `Allowed
+   * values` / `Examples` / validation rows - only ever set on the `additionalProperties` child.
+   */
+  private applyAllowedAdditionalPropertyNamesRowSeverity(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const propertyDiffs = nodeDiffs as JsonSchemaKindPropertyNodeDiffs
+    const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      propertyDiffs.allowedAdditionalPropertyNamesDiff,
+      propertyDiffs.allowedAdditionalPropertyNamesRowColorizingDiff,
+      ...Object.values(propertyDiffs.allowedAdditionalPropertyNamesValueDiffs ?? {}),
+    )
+    if (!maxRowDiff) {
+      return
+    }
+
+    diffsSeverities[NodeDiffsSeverityPlacemennt.AllowedAdditionalPropertyNamesRow] = this.buildNodeDiffsSeverity(maxRowDiff)
   }
 }

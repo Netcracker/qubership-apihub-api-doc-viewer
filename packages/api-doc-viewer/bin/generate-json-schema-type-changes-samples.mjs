@@ -27,6 +27,13 @@ const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 
 const serializeSchema = (schema) => `${stringifyYaml(schema, { lineWidth: 0 })}\n`;
 
+// Suites normally own their whole `globPath` directory 1:1. `caseFilter` lets two suites share one
+// glob path (e.g. an OAS-3.1-only sibling suite for a keyword the default OAS-3.0 preprocessing
+// pipeline can't carry through `apiDiff`'s `validate: true`) - default (no filter) keeps every
+// case in that directory, matching prior behavior for every suite that doesn't opt in.
+const matchesSuite = (suite, sampleCase) =>
+  sampleCase.sampleDir === suite.globPath && (!suite.caseFilter || suite.caseFilter(sampleCase.caseId));
+
 const writeSampleCase = (sampleCase) => {
   const caseDir = path.join(samplesRoot, sampleCase.sampleDir, sampleCase.caseId);
   mkdirSync(caseDir, { recursive: true });
@@ -148,7 +155,7 @@ const buildReadme = (cases) => {
   ];
 
   for (const suite of STORY_SUITES) {
-    const suiteCases = cases.filter((sampleCase) => sampleCase.sampleDir === suite.globPath);
+    const suiteCases = cases.filter((sampleCase) => matchesSuite(suite, sampleCase));
     lines.push(`### ${suite.title.replace("JSON Schema Diffs Suite/", "")}`, "");
     lines.push(`Path: \`type-changes/${suite.globPath}/\` (${suiteCases.length} cases)`, "");
     lines.push("| Case id | Change |");
@@ -198,7 +205,7 @@ if (!testsOnly) {
         totalCases: cases.length,
         suites: STORY_SUITES.map((suite) => ({
           globPath: suite.globPath,
-          caseCount: cases.filter((sampleCase) => sampleCase.sampleDir === suite.globPath).length,
+          caseCount: cases.filter((sampleCase) => matchesSuite(suite, sampleCase)).length,
         })),
       },
       null,
@@ -211,7 +218,7 @@ if (!testsOnly) {
 
 for (const suite of STORY_SUITES) {
   const suiteCases = cases
-    .filter((sampleCase) => sampleCase.sampleDir === suite.globPath)
+    .filter((sampleCase) => matchesSuite(suite, sampleCase))
     .sort((left, right) => left.caseId.localeCompare(right.caseId, undefined, { numeric: true }));
   const caseIds = suiteCases.map((sampleCase) => sampleCase.caseId);
 

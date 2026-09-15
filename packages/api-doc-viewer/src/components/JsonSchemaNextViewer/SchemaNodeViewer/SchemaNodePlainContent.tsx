@@ -17,10 +17,14 @@ import {
   resolveJsonSchemaPropertyNodeVisibility,
 } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/node-visibility-data/kind-property"
 import {
+  resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries,
   resolveJsonSchemaDefaultSideEntries,
   resolveJsonSchemaEnumSideEntries,
   resolveJsonSchemaExamplesSideEntries,
   resolveJsonSchemaValidationRowSideEntries,
+  takeJsonSchemaAllowedAdditionalPropertyNamesDiff,
+  takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff,
+  takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs,
   takeJsonSchemaDefaultDiff,
   takeJsonSchemaDefaultRowColorizingDiff,
   takeJsonSchemaEnumDiff,
@@ -192,8 +196,8 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
 
   // `propertyNames` constrains the containing object's property names, so legacy sources it from
   // the *parent* object schema and displays it only on the `additionalProperties` child node - not
-  // as a validation of this node's own value. Not yet wired into the diff-aware validation-row
-  // pipeline (no colorizing/severity), matching this row's plain-only scope for now.
+  // as a validation of this node's own value. Diffs mirror `required`: parent-derived, taken from
+  // the aggregated node.diffs of *this* (additionalProperties) node, not the parent's own diffs.
   const allowedAdditionalPropertyNames = useMemo(() => {
     if (!isJsonSchemaAdditionalPropertiesNode(node)) {
       return undefined
@@ -205,17 +209,45 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     return (parentValue as JsonSchemaTreeNodeValueTypeObject | undefined)?.propertyNames?.enum
   }, [node])
 
+  const allowedAdditionalPropertyNamesDiff = useMemo(
+    () => (validationDiffsNode ? takeJsonSchemaAllowedAdditionalPropertyNamesDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
+  )
+  const allowedAdditionalPropertyNamesValueDiffs = useMemo(
+    () => (validationDiffsNode ? takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(validationDiffsNode) : undefined),
+    [validationDiffsNode],
+  )
+  const allowedAdditionalPropertyNamesRowColorizingDiff = useMemo(
+    () => (validationDiffsNode ? takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(validationDiffsNode) : undefined),
+    [validationDiffsNode],
+  )
+
   const showAllowedAdditionalPropertyNamesRow = displayMode === DETAILED_DISPLAY_MODE
     && Boolean(allowedAdditionalPropertyNames?.length)
 
   const allowedAdditionalPropertyNamesSubheader = useCallback(
-    (layoutSide: LayoutSide) => (
-      <JsonSchemaValidationChips
-        layoutSide={layoutSide}
-        sideItems={(allowedAdditionalPropertyNames ?? []).map((name) => ({ text: String(name) }))}
-      />
-    ),
-    [allowedAdditionalPropertyNames],
+    (layoutSide: LayoutSide) => {
+      const sideEntries = resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+        allowedAdditionalPropertyNames ?? [],
+        allowedAdditionalPropertyNamesDiff,
+        allowedAdditionalPropertyNamesValueDiffs,
+        layoutSide,
+      )
+      if (sideEntries.length === 0) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaValidationChips
+          layoutSide={layoutSide}
+          sideItems={sideEntries.map(({ text, valueDiffKey }) => ({
+            text,
+            diff: takeJsonSchemaListValueDiffAtKey(allowedAdditionalPropertyNamesValueDiffs, valueDiffKey),
+          }))}
+        />
+      )
+    },
+    [allowedAdditionalPropertyNames, allowedAdditionalPropertyNamesDiff, allowedAdditionalPropertyNamesValueDiffs],
   )
 
   const enumValuesAdditionalInfoSubheader = useCallback(
@@ -395,6 +427,16 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           label={ALLOWED_ADDITIONAL_PROPERTY_NAMES_LABEL}
           usage={AdditionalInfoRowUsage.JsonSchemaValidation}
           subheader={allowedAdditionalPropertyNamesSubheader}
+          diff={allowedAdditionalPropertyNamesDiff}
+          colorizingDiff={allowedAdditionalPropertyNamesRowColorizingDiff}
+          diffsSeverities={
+            allowedAdditionalPropertyNamesDiff
+              || allowedAdditionalPropertyNamesValueDiffs
+              || allowedAdditionalPropertyNamesRowColorizingDiff
+              ? nodeDiffState?.nodeDiffsSeverities
+              : undefined
+          }
+          diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.AllowedAdditionalPropertyNamesRow}
         />
       )}
 

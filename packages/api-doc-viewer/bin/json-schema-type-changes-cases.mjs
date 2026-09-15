@@ -3136,6 +3136,23 @@ export const STORY_SUITES = [
     globPath: "object-additional-properties",
     storyFileName: "object-additional-properties.stories.tsx",
     testFileName: "object-additional-properties.it-test.ts",
+    // `propertyNames` cases below need the OAS 3.1 sibling suite instead - OAS 3.0's Schema
+    // Object dialect does not include `propertyNames` at all (added in OAS 3.1 with full JSON
+    // Schema 2020-12 support), so `apiDiff`'s `validate: true` under an OAS 3.0 document silently
+    // strips it from the merged schema before it ever reaches the tree builder. Confirmed
+    // empirically: identical `unify`/`liftCombiners` options keep `propertyNames` intact when the
+    // document is wrapped as OAS 3.1 (or not wrapped at all), but drop it under OAS 3.0 + validate.
+    caseFilter: (caseId) => !caseId.includes("property-names"),
+  },
+  {
+    suiteKey: "object-additional-properties-oas-3-1",
+    title: "JSON Schema Diffs Suite/Object Additional Properties OAS 3.1",
+    metaKebab: "json-schema-diffs-suite-object-additional-properties-oas-3-1",
+    globPath: "object-additional-properties",
+    storyFileName: "object-additional-properties-oas-3-1.stories.tsx",
+    testFileName: "object-additional-properties-oas-3-1.it-test.ts",
+    diffUtilsModule: "./json-schema-diffs-oas-3-1-utils",
+    caseFilter: (caseId) => caseId.includes("property-names"),
   },
   {
     suiteKey: "array-indexed-items",

@@ -290,6 +290,25 @@ export function takeJsonSchemaExamplesRowColorizingDiff(
   return takePropertyRowDiffs(node).examplesRowColorizingDiff
 }
 
+/** Parent-derived `propertyNames.enum` diff - only ever set on the `additionalProperties` child. */
+export function takeJsonSchemaAllowedAdditionalPropertyNamesDiff(
+  node: JsonSchemaNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takePropertyRowDiffs(node).allowedAdditionalPropertyNamesDiff
+}
+
+export function takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(
+  node: JsonSchemaNodeWithDiffs,
+): JsonSchemaListValueDiffs | undefined {
+  return takePropertyRowDiffs(node).allowedAdditionalPropertyNamesValueDiffs
+}
+
+export function takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(
+  node: JsonSchemaNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takePropertyRowDiffs(node).allowedAdditionalPropertyNamesRowColorizingDiff
+}
+
 export function takeJsonSchemaValidationRowDiff(
   node: JsonSchemaNodeWithDiffs,
   rowKey: JsonSchemaValidationRowKey,
@@ -679,6 +698,18 @@ export function resolveJsonSchemaEnumSideEntries(
     return resolveJsonSchemaWholeListSideEntries(mergedValues, enumDiff, layoutSide)
   }
   return resolveJsonSchemaPartialListSideEntries(mergedValues, enumValueDiffs, layoutSide)
+}
+
+export function resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+  mergedValues: readonly unknown[],
+  allowedAdditionalPropertyNamesDiff: ChangedPropertyMetaData | undefined,
+  allowedAdditionalPropertyNamesValueDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  if (allowedAdditionalPropertyNamesDiff) {
+    return resolveJsonSchemaWholeListSideEntries(mergedValues, allowedAdditionalPropertyNamesDiff, layoutSide)
+  }
+  return resolveJsonSchemaPartialListSideEntries(mergedValues, allowedAdditionalPropertyNamesValueDiffs, layoutSide)
 }
 
 export function resolveJsonSchemaExamplesSideEntries(

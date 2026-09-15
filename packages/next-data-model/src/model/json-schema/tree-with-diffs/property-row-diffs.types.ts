@@ -88,4 +88,15 @@ export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
   /** Per-index diffs under `examples`; keys match the source array diffs record. */
   examplesValueDiffs?: JsonSchemaListValueDiffs
   examplesRowColorizingDiff?: ChangedPropertyMetaData
+  /**
+   * Parent-derived `propertyNames.enum` diff (not this node's own value field) - shown only on
+   * the `additionalProperties` child node, mirroring {@link required}. Covers both the whole
+   * `propertyNames` sub-schema being added/removed and per-index changes within an existing
+   * `propertyNames.enum` array. Mutually exclusive with
+   * {@link allowedAdditionalPropertyNamesValueDiffs}.
+   */
+  allowedAdditionalPropertyNamesDiff?: ChangedPropertyMetaData
+  /** Per-index diffs under the parent's `propertyNames.enum`; keys match the source array diffs record. */
+  allowedAdditionalPropertyNamesValueDiffs?: JsonSchemaListValueDiffs
+  allowedAdditionalPropertyNamesRowColorizingDiff?: ChangedPropertyMetaData
 }

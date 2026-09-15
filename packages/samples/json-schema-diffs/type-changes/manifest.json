@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T06:46:21.965Z",
+  "generatedAt": "2026-09-15T07:30:36.743Z",
   "totalCases": 507,
   "suites": [
     {
@@ -96,7 +96,11 @@
     },
     {
       "globPath": "object-additional-properties",
-      "caseCount": 63
+      "caseCount": 52
+    },
+    {
+      "globPath": "object-additional-properties",
+      "caseCount": 11
     },
     {
       "globPath": "array-indexed-items",

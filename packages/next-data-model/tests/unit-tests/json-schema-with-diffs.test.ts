@@ -7,11 +7,15 @@ import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-wi
 import { formatJsonSchemaValidationRowChipDisplay } from "../../src/model/json-schema/tree-with-diffs/validation-row-chip-display"
 import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 import {
+  resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries,
   resolveJsonSchemaDefaultSideEntries,
   resolveJsonSchemaEnumSideEntries,
   resolveJsonSchemaTypeLabelSideDisplay,
   resolveJsonSchemaTypeSideValue,
   resolveJsonSchemaValidationRowSideEntries,
+  takeJsonSchemaAllowedAdditionalPropertyNamesDiff,
+  takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff,
+  takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs,
   takeJsonSchemaDefaultDiff,
   takeJsonSchemaDefaultRowColorizingDiff,
   takeJsonSchemaEnumDiff,
@@ -1620,5 +1624,267 @@ describe("JsonSchema default/enum/examples diffs on non-PROPERTY/ROOT nodes (add
     expect(enumDiff?.data.action).toBe(DiffAction.remove)
     expect(enumDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(enumDiff?.styles.after.isContentVisible).toBe(false)
+  })
+})
+
+describe("JsonSchema parent propertyNames.enum diff on the additionalProperties child", () => {
+  simplifyConsole()
+
+  function buildAdditionalPropertiesNode(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+    const additionalPropertiesNode = tree.root!.childrenNodes()
+      .find((node) => node.key === "additionalProperties")!
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(isJsonSchemaTreeNodeWithDiffs(additionalPropertiesNode)).toBe(true)
+    return additionalPropertiesNode
+  }
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/053-add-property-names
+  it("colors the row as wholly added when propertyNames is added as a whole sub-schema", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      { type: "object", additionalProperties: { type: "string" } },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+    )
+
+    const wholeDiff = takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)
+    expect(wholeDiff?.data.action).toBe(DiffAction.add)
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
+
+    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    expect(colorizingDiff?.data.action).toBe(DiffAction.add)
+    expect(colorizingDiff?.styles.before.isContentVisible).toBe(false)
+    expect(colorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      wholeDiff,
+      undefined,
+      CHANGED_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      wholeDiff,
+      undefined,
+      ORIGIN_LAYOUT_SIDE,
+    )).toEqual([])
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/054-remove-property-names
+  it("colors the row as wholly removed when propertyNames is removed as a whole sub-schema", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      { type: "object", additionalProperties: { type: "string" } },
+    )
+
+    const wholeDiff = takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)
+    expect(wholeDiff?.data.action).toBe(DiffAction.remove)
+
+    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    expect(colorizingDiff?.data.action).toBe(DiffAction.remove)
+    expect(colorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
+    expect(colorizingDiff?.styles.after.isContentVisible).toBe(false)
+
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      wholeDiff,
+      undefined,
+      ORIGIN_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      wholeDiff,
+      undefined,
+      CHANGED_LAYOUT_SIDE,
+    )).toEqual([])
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/055-property-names-enum-value-added
+  it("tracks a per-index add when a value is appended to an existing propertyNames.enum", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta", "gamma"] },
+      },
+    )
+
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
+    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    expect(Object.keys(valueDiffs ?? {})).toEqual(["2"])
+    expect(valueDiffs?.["2"]?.data.action).toBe(DiffAction.add)
+
+    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    expect(colorizingDiff?.data.action).toBe(DiffAction.replace)
+
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta", "gamma"],
+      undefined,
+      valueDiffs,
+      CHANGED_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta", "gamma"],
+      undefined,
+      valueDiffs,
+      ORIGIN_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/056-property-names-enum-value-removed
+  it("tracks a per-index remove when a value is dropped from an existing propertyNames.enum", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha"] },
+      },
+    )
+
+    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    expect(Object.keys(valueDiffs ?? {})).toEqual(["1"])
+    expect(valueDiffs?.["1"]?.data.action).toBe(DiffAction.remove)
+
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      undefined,
+      valueDiffs,
+      ORIGIN_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
+    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+      ["alpha", "beta"],
+      undefined,
+      valueDiffs,
+      CHANGED_LAYOUT_SIDE,
+    ).map((entry) => entry.text)).toEqual(["alpha"])
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/057-property-names-enum-value-replaced
+  it("tracks a remove+add pair when a value is replaced in propertyNames.enum", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "gamma"] },
+      },
+    )
+
+    // A "replace" decomposes into a remove at the old index plus an add at the new index -
+    // list diffing is index-based add/remove, not a true same-index replace (matches plain enum).
+    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    expect(Object.keys(valueDiffs ?? {}).sort()).toEqual(["1", "2"])
+    expect(valueDiffs?.["1"]?.data.action).toBe(DiffAction.remove)
+    expect(valueDiffs?.["2"]?.data.action).toBe(DiffAction.add)
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/062-property-names-enum-values-swapped
+  it("shows no diff when propertyNames.enum values are only reordered (same set)", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["beta", "alpha"] },
+      },
+    )
+
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
+  })
+
+  // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/063-property-names-unchanged
+  it("shows no diff when propertyNames.enum is unchanged", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+    )
+
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
+  })
+
+  it("does not attach the row diff to unrelated node kinds (e.g. a named property)", () => {
+    const merged = mergeSchemas(
+      {
+        type: "object",
+        properties: { name: { type: "string" } },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        properties: { name: { type: "string" } },
+        propertyNames: { enum: ["alpha", "beta", "gamma"] },
+      },
+    )
+    const tree = new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+    const nameNode = tree.root!.childrenNodes().find((node) => node.key === "name")!
+    expect(nameNode).toBeDefined()
+
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(nameNode as never)).toBeUndefined()
+    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(nameNode as never)).toBeUndefined()
+  })
+
+  it("populates the AllowedAdditionalPropertyNamesRow severity independently of other rows", () => {
+    const additionalPropertiesNode = buildAdditionalPropertiesNode(
+      {
+        type: "object",
+        additionalProperties: { type: "string", default: "alpha" },
+        propertyNames: { enum: ["alpha", "beta"] },
+      },
+      {
+        type: "object",
+        additionalProperties: { type: "string", default: "alpha" },
+        propertyNames: { enum: ["alpha", "beta", "gamma"] },
+      },
+    )
+
+    const severity = additionalPropertiesNode.diffsSeverities[
+      NodeDiffsSeverityPlacemennt.AllowedAdditionalPropertyNamesRow
+    ]
+    expect(severity).toBeDefined()
+    expect(additionalPropertiesNode.diffsSeverities[NodeDiffsSeverityPlacemennt.DefaultRow]).toBeUndefined()
   })
 })

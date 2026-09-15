@@ -496,7 +496,7 @@ Path: `type-changes/object-properties/` (36 cases)
 
 ### Object Additional Properties
 
-Path: `type-changes/object-additional-properties/` (63 cases)
+Path: `type-changes/object-additional-properties/` (52 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -552,6 +552,13 @@ Path: `type-changes/object-additional-properties/` (63 cases)
 | `050-one-of-object-variant-remove-additional-properties-type-object` | OneOf variant: removed additionalProperties (object) |
 | `051-one-of-object-variant-change-additional-properties-object-to-false` | OneOf variant: changed additionalProperties: object schema → false |
 | `052-one-of-object-variant-change-additional-properties-false-to-object` | OneOf variant: changed additionalProperties: false → object schema |
+
+### Object Additional Properties OAS 3.1
+
+Path: `type-changes/object-additional-properties/` (11 cases)
+
+| Case id | Change |
+| --- | --- |
 | `053-add-property-names` | Added propertyNames enum with 2 values |
 | `054-remove-property-names` | Removed propertyNames enum with 2 values |
 | `055-property-names-enum-value-added` | propertyNames enum: added 1 value to existing 2 values |

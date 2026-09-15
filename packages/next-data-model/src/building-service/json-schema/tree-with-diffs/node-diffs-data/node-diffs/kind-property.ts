@@ -13,7 +13,7 @@ import {
   JsonSchemaKindPropertyNodeDiffs,
   JsonSchemaListValueDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs.types"
-import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schema/types/node-kind"
+import { JsonSchemaTreeNodeKind, JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { isObject } from "@apihub/next-data-model/utilities"
@@ -65,9 +65,15 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const examplesDiff = this.resolveWholeListFieldDiff(crawlValue, "examples", diffsMetaKey)
     const enumValueDiffs = this.resolveListFieldItemDiffs(crawlValue, "enum", diffsMetaKey)
     const examplesValueDiffs = this.resolveListFieldItemDiffs(crawlValue, "examples", diffsMetaKey)
+    const allowedAdditionalPropertyNamesResult = this.resolveAllowedAdditionalPropertyNamesDiff(
+      nodeKey,
+      parentNode,
+      diffsMetaKey,
+    )
     const hasListDiffs = !!enumDiff || !!examplesDiff
       || Object.keys(enumValueDiffs).length > 0
       || Object.keys(examplesValueDiffs).length > 0
+      || !!allowedAdditionalPropertyNamesResult
 
     if (!superNodeDiffs && !hasCrawlDiffs && !hasListDiffs) {
       const requiredMetaDiff = this.resolveRequiredMetaDiff(nodeKey, parentNode, diffsMetaKey)
@@ -100,10 +106,20 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     if (Object.keys(examplesValueDiffs).length > 0) {
       nodeDiffs.examplesValueDiffs = examplesValueDiffs
     }
+    if (allowedAdditionalPropertyNamesResult?.diff) {
+      nodeDiffs.allowedAdditionalPropertyNamesDiff = allowedAdditionalPropertyNamesResult.diff
+    }
+    if (Object.keys(allowedAdditionalPropertyNamesResult?.valueDiffs ?? {}).length > 0) {
+      nodeDiffs.allowedAdditionalPropertyNamesValueDiffs = allowedAdditionalPropertyNamesResult!.valueDiffs
+    }
 
     this.aggregateEnumRowColorizingDiff(crawlValue, nodeDiffs)
     this.aggregateExamplesRowColorizingDiff(crawlValue, nodeDiffs)
     this.aggregateDefaultRowColorizingDiff(crawlValue, nodeDiffs)
+    this.aggregateAllowedAdditionalPropertyNamesRowColorizingDiff(
+      allowedAdditionalPropertyNamesResult?.mergedValues,
+      nodeDiffs,
+    )
 
     if (!this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       const requiredMetaDiff = this.resolveRequiredMetaDiff(nodeKey, parentNode, diffsMetaKey)
@@ -376,14 +392,113 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     }
   }
 
+  /**
+   * `propertyNames` constrains the containing object's property names - like `required`, it is
+   * read from the *parent* object's crawl fragment, not from this node's own value, and only
+   * applies to the `additionalProperties` child (mirrors legacy's `node.parent.value().propertyNames`).
+   * Two independent shapes, confirmed empirically against `apiDiff`'s merged output (see session
+   * notes - `propertyNames` is a genuine nested sub-schema, diffed recursively like any other):
+   *
+   * 1. Whole `propertyNames` sub-schema added/removed: `parentCrawlDiffs.propertyNames` is a
+   *    single `Diff` whose `before`/`afterValue` is the *entire* sub-schema object (not an array) -
+   *    extract `.enum` from it, same idea as a whole-node add/remove cascading to every field.
+   * 2. `propertyNames` present on both sides, only its `enum` changed: reuses
+   *    {@link resolveWholeListFieldDiff}/{@link resolveListFieldItemDiffs} verbatim against the
+   *    parent's `propertyNames` crawl value instead of this node's own - those helpers only ever
+   *    needed an object with a `[diffsMetaKey]` record and a list field, never assumed it was
+   *    *this* node's crawl value.
+   */
+  private resolveAllowedAdditionalPropertyNamesDiff(
+    nodeKey: NodeKey,
+    parentNode: ITreeNodeWithDiffs<
+      JsonSchemaTreeNodeStoredValue | null,
+      JsonSchemaTreeNodeKind,
+      JsonSchemaTreeNodeMeta,
+      JsonSchemaTreeNodeStoredValue | null
+    > | undefined,
+    diffsMetaKey: symbol,
+  ): {
+    diff?: ChangedPropertyMetaData
+    valueDiffs?: JsonSchemaListValueDiffs
+    mergedValues?: unknown[]
+  } | undefined {
+    if (nodeKey !== JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES || !parentNode) {
+      return undefined
+    }
+
+    const parentCrawlValue = parentNode.meta()?._fragment
+    if (!isObject(parentCrawlValue)) {
+      return undefined
+    }
+
+    const propertyNamesCrawlValue = Reflect.get(parentCrawlValue, "propertyNames")
+    const parentCrawlDiffs = Reflect.get(parentCrawlValue, diffsMetaKey)
+    const propertyNamesFieldDiff = AbstractNodeDiffsAggregator.isDiffsRecord(parentCrawlDiffs)
+      ? parentCrawlDiffs.propertyNames
+      : undefined
+
+    if (AbstractNodeDiffsAggregator.isDiff(propertyNamesFieldDiff)) {
+      const wholeSchemaDiff = this.resolveAllowedAdditionalPropertyNamesWholeFieldDiff(propertyNamesFieldDiff)
+      if (wholeSchemaDiff) {
+        return wholeSchemaDiff
+      }
+    }
+
+    if (!isObject(propertyNamesCrawlValue)) {
+      return undefined
+    }
+
+    const mergedValues = Reflect.get(propertyNamesCrawlValue, "enum")
+    if (!Array.isArray(mergedValues) || mergedValues.length === 0) {
+      return undefined
+    }
+
+    const wholeEnumDiff = this.resolveWholeListFieldDiff(propertyNamesCrawlValue, "enum", diffsMetaKey)
+    const enumValueDiffs = this.resolveListFieldItemDiffs(propertyNamesCrawlValue, "enum", diffsMetaKey)
+    if (!wholeEnumDiff && Object.keys(enumValueDiffs).length === 0) {
+      return undefined
+    }
+
+    return {
+      diff: wholeEnumDiff,
+      valueDiffs: Object.keys(enumValueDiffs).length > 0 ? enumValueDiffs : undefined,
+      mergedValues,
+    }
+  }
+
+  private resolveAllowedAdditionalPropertyNamesWholeFieldDiff(
+    propertyNamesFieldDiff: Diff<DiffType>,
+  ): { diff: ChangedPropertyMetaData; mergedValues: unknown[] } | undefined {
+    if (isDiffAdd(propertyNamesFieldDiff) && isObject(propertyNamesFieldDiff.afterValue)) {
+      const afterEnum = Reflect.get(propertyNamesFieldDiff.afterValue, "enum")
+      if (Array.isArray(afterEnum) && afterEnum.length > 0) {
+        return {
+          diff: this.buildChangedPropertyMetaDataFromDiff(propertyNamesFieldDiff),
+          mergedValues: afterEnum,
+        }
+      }
+    }
+
+    if (isDiffRemove(propertyNamesFieldDiff) && isObject(propertyNamesFieldDiff.beforeValue)) {
+      const beforeEnum = Reflect.get(propertyNamesFieldDiff.beforeValue, "enum")
+      if (Array.isArray(beforeEnum) && beforeEnum.length > 0) {
+        return {
+          diff: this.buildChangedPropertyMetaDataFromDiff(propertyNamesFieldDiff),
+          mergedValues: beforeEnum,
+        }
+      }
+    }
+
+    return undefined
+  }
+
   private aggregateEnumRowColorizingDiff(
     crawlValue: object,
     nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     this.aggregateListRowColorizingDiff(
-      crawlValue,
+      Reflect.get(crawlValue, "enum"),
       nodeDiffs,
-      "enum",
       "enumDiff",
       "enumValueDiffs",
       "enumRowColorizingDiff",
@@ -395,24 +510,42 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
   ): void {
     this.aggregateListRowColorizingDiff(
-      crawlValue,
+      Reflect.get(crawlValue, "examples"),
       nodeDiffs,
-      "examples",
       "examplesDiff",
       "examplesValueDiffs",
       "examplesRowColorizingDiff",
     )
   }
 
-  private aggregateListRowColorizingDiff(
-    crawlValue: object,
+  private aggregateAllowedAdditionalPropertyNamesRowColorizingDiff(
+    mergedValues: unknown,
     nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
-    listFieldKey: "enum" | "examples",
-    wholeFieldDiffKey: "enumDiff" | "examplesDiff",
-    itemDiffsKey: "enumValueDiffs" | "examplesValueDiffs",
-    colorizingDiffKey: "enumRowColorizingDiff" | "examplesRowColorizingDiff",
   ): void {
-    const listValue = Reflect.get(crawlValue, listFieldKey)
+    this.aggregateListRowColorizingDiff(
+      mergedValues,
+      nodeDiffs,
+      "allowedAdditionalPropertyNamesDiff",
+      "allowedAdditionalPropertyNamesValueDiffs",
+      "allowedAdditionalPropertyNamesRowColorizingDiff",
+    )
+  }
+
+  /**
+   * Shared by every `AdditionalInfoRow` backed by a merged list (`enum`, `examples`, the parent
+   * `propertyNames.enum` constraint): whole-node inherited coloring wins first, then a whole-list
+   * add/remove, then a representative per-item diff for a partial change. Takes the already-
+   * resolved list value directly (not `crawlValue` + a field key) so callers whose list doesn't
+   * live on this node's own crawl value (e.g. the parent-derived `propertyNames.enum`) can reuse
+   * it without a fake intermediate object.
+   */
+  private aggregateListRowColorizingDiff(
+    listValue: unknown,
+    nodeDiffs: JsonSchemaKindPropertyNodeDiffs,
+    wholeFieldDiffKey: "enumDiff" | "examplesDiff" | "allowedAdditionalPropertyNamesDiff",
+    itemDiffsKey: "enumValueDiffs" | "examplesValueDiffs" | "allowedAdditionalPropertyNamesValueDiffs",
+    colorizingDiffKey: "enumRowColorizingDiff" | "examplesRowColorizingDiff" | "allowedAdditionalPropertyNamesRowColorizingDiff",
+  ): void {
     if (!Array.isArray(listValue) || listValue.length === 0) {
       return
     }
