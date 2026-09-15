@@ -18,6 +18,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import "../shared-styles/diffs/index.css"
 import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
 import { JsonSchemaNodeViewerWithDiffs } from "./JsonSchemaNodeViewerWithDiffs"
+import { resolveJsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode"
 import {
   UnchangedBlocksContext,
   useUnchangedBlocksContextValue,
@@ -32,6 +33,13 @@ export type JsonSchemaNextDiffsViewerProps = {
   customizationOptions?: CustomizationOptions
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
+  /**
+   * Toggles the "showing/hiding unchanged nodes" feature as a whole: `true` (default) collapses
+   * runs of unchanged nodes behind a "Show unchanged" reveal control, `false` shows everything.
+   * Modeled internally as `JsonSchemaDiffsNodesVisibilityMode` (see that file) because a third
+   * mode - hide nodes whose only diffs fall outside `diffTypes` - is already planned; see
+   * refactoring-notes.md (agent-packages/api-doc-viewer-repo) for the design analysis.
+   */
   hideUnchangedNodes?: boolean
 }
 
@@ -60,7 +68,11 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
     hideUnchangedNodes = true,
   } = props
 
-  const unchangedBlocksContext = useUnchangedBlocksContextValue(hideUnchangedNodes)
+  const visibilityMode = useMemo(
+    () => resolveJsonSchemaDiffsNodesVisibilityMode(hideUnchangedNodes),
+    [hideUnchangedNodes],
+  )
+  const unchangedBlocksContext = useUnchangedBlocksContextValue(visibilityMode)
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
 
