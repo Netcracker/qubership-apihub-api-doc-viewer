@@ -4,7 +4,7 @@ Hand-written YAML pairs (generated from case definitions) for the **JSON Schema 
 Storybook group. Each case directory contains `before.yaml` and `after.yaml` as standalone
 JSON Schema documents.
 
-- Total cases: 496
+- Total cases: 507
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
 ## Sub-suites
@@ -496,7 +496,7 @@ Path: `type-changes/object-properties/` (36 cases)
 
 ### Object Additional Properties
 
-Path: `type-changes/object-additional-properties/` (52 cases)
+Path: `type-changes/object-additional-properties/` (63 cases)
 
 | Case id | Change |
 | --- | --- |
@@ -552,6 +552,17 @@ Path: `type-changes/object-additional-properties/` (52 cases)
 | `050-one-of-object-variant-remove-additional-properties-type-object` | OneOf variant: removed additionalProperties (object) |
 | `051-one-of-object-variant-change-additional-properties-object-to-false` | OneOf variant: changed additionalProperties: object schema → false |
 | `052-one-of-object-variant-change-additional-properties-false-to-object` | OneOf variant: changed additionalProperties: false → object schema |
+| `053-add-property-names` | Added propertyNames enum with 2 values |
+| `054-remove-property-names` | Removed propertyNames enum with 2 values |
+| `055-property-names-enum-value-added` | propertyNames enum: added 1 value to existing 2 values |
+| `056-property-names-enum-value-removed` | propertyNames enum: removed 1 of 2 values |
+| `057-property-names-enum-value-replaced` | propertyNames enum: replaced 1 of 2 values |
+| `058-property-names-enum-value-added-and-replaced` | propertyNames enum: added 1 value and replaced another |
+| `059-property-names-enum-value-removed-and-replaced` | propertyNames enum: removed 1 value and replaced another |
+| `060-property-names-enum-value-added-and-removed` | propertyNames enum: added 1 value and removed another |
+| `061-property-names-enum-values-both-replaced` | propertyNames enum: both values replaced |
+| `062-property-names-enum-values-swapped` | propertyNames enum: swapped order of 2 values |
+| `063-property-names-unchanged` | propertyNames enum: unchanged with 2 values |
 
 ### Array Indexed Items
 

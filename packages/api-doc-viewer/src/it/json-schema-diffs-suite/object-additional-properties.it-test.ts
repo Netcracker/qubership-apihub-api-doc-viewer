@@ -9,7 +9,20 @@ import { storyPage } from "../service/storybook-service";
 const META_ID = "json-schema-diffs-suite-object-additional-properties";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForFunction(() => {
+    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
+      const element = document.querySelector(selector);
+      if (!element) {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        return true;
+      }
+    }
+    return false;
+  });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
@@ -383,6 +396,83 @@ describe("JSON Schema Diffs Suite/Object Additional Properties", () => {
 
   it("052-one-of-object-variant-change-additional-properties-false-to-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-052-one-of-object-variant-change-additional-properties-false-to-object`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("053-add-property-names", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-053-add-property-names`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("054-remove-property-names", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-054-remove-property-names`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("055-property-names-enum-value-added", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-055-property-names-enum-value-added`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("056-property-names-enum-value-removed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-056-property-names-enum-value-removed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("057-property-names-enum-value-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-057-property-names-enum-value-replaced`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("058-property-names-enum-value-added-and-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-058-property-names-enum-value-added-and-replaced`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("059-property-names-enum-value-removed-and-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-059-property-names-enum-value-removed-and-replaced`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("060-property-names-enum-value-added-and-removed", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-060-property-names-enum-value-added-and-removed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("061-property-names-enum-values-both-replaced", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-061-property-names-enum-values-both-replaced`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("062-property-names-enum-values-swapped", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-062-property-names-enum-values-swapped`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("063-property-names-unchanged", async () => {
+    story = await storyPage(page, `json-schema-diffs-suite-object-additional-properties--case-063-property-names-unchanged`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

@@ -2374,6 +2374,136 @@ const collectOneOfVariantAdditionalPropertiesCases = (cases) => {
   }
 };
 
+/**
+ * Anchor object with a simple `additionalProperties` schema and, optionally, a
+ * `propertyNames` restriction. Used by the `propertyNames` change cases — `additionalProperties`
+ * itself never changes across these cases, only `propertyNames`.
+ * @param {string[] | undefined} enumValues
+ */
+const buildPropertyNamesBase = (enumValues) => {
+  const schema = {
+    type: "object",
+    description: "Object with additionalProperties schema and propertyNames restriction",
+    additionalProperties: {
+      type: "string",
+      description: "Simple additional property schema",
+    },
+  };
+  if (enumValues) {
+    schema.propertyNames = { enum: [...enumValues] };
+  }
+  return schema;
+};
+
+/** @param {TypeChangeCase[]} cases */
+const collectObjectPropertyNamesCases = (cases) => {
+  const dir = "object-additional-properties";
+
+  const withoutPropertyNames = buildPropertyNamesBase(undefined);
+  const withTwoValues = buildPropertyNamesBase(["alpha", "beta"]);
+
+  pushCase(
+    cases,
+    dir,
+    "add-property-names",
+    withoutPropertyNames,
+    withTwoValues,
+    "Added propertyNames enum with 2 values",
+    "propertyNames: added",
+  );
+  pushCase(
+    cases,
+    dir,
+    "remove-property-names",
+    withTwoValues,
+    withoutPropertyNames,
+    "Removed propertyNames enum with 2 values",
+    "propertyNames: removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-added",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["alpha", "beta", "gamma"]),
+    "propertyNames enum: added 1 value to existing 2 values",
+    "propertyNames: enum value added",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-removed",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["alpha"]),
+    "propertyNames enum: removed 1 of 2 values",
+    "propertyNames: enum value removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-replaced",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["alpha", "gamma"]),
+    "propertyNames enum: replaced 1 of 2 values",
+    "propertyNames: enum value replaced",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-added-and-replaced",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["alpha", "gamma", "delta"]),
+    "propertyNames enum: added 1 value and replaced another",
+    "propertyNames: enum value added and replaced",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-removed-and-replaced",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["gamma"]),
+    "propertyNames enum: removed 1 value and replaced another",
+    "propertyNames: enum value removed and replaced",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-value-added-and-removed",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["beta", "gamma"]),
+    "propertyNames enum: added 1 value and removed another",
+    "propertyNames: enum value added and removed",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-values-both-replaced",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["gamma", "delta"]),
+    "propertyNames enum: both values replaced",
+    "propertyNames: both enum values replaced",
+  );
+  pushCase(
+    cases,
+    dir,
+    "property-names-enum-values-swapped",
+    buildPropertyNamesBase(["alpha", "beta"]),
+    buildPropertyNamesBase(["beta", "alpha"]),
+    "propertyNames enum: swapped order of 2 values",
+    "propertyNames: enum values swapped",
+  );
+  const unchanged = buildPropertyNamesBase(["alpha", "beta"]);
+  pushCase(
+    cases,
+    dir,
+    "property-names-unchanged",
+    unchanged,
+    clone(unchanged),
+    "propertyNames enum: unchanged with 2 values",
+    "propertyNames: unchanged",
+  );
+};
+
 /** @param {TypeChangeCase[]} cases */
 const collectArrayIndexedItemChangeCases = (cases) => {
   const dir = "array-indexed-items";
@@ -3064,6 +3194,7 @@ export const collectTypeChangeCases = () => {
   collectObjectPropertiesOneOfVariantCases(cases);
   collectObjectAdditionalPropertiesCases(cases);
   collectOneOfVariantAdditionalPropertiesCases(cases);
+  collectObjectPropertyNamesCases(cases);
   collectArrayIndexedItemChangeCases(cases);
   collectOneOfObjectVariantCases(cases);
   collectOneOfArrayVariantCases(cases);

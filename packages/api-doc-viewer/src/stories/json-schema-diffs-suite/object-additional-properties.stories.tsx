@@ -92,3 +92,14 @@ export const Case_049_one_of_object_variant_add_additional_properties_type_objec
 export const Case_050_one_of_object_variant_remove_additional_properties_type_object: Story = createCaseStory("050-one-of-object-variant-remove-additional-properties-type-object");
 export const Case_051_one_of_object_variant_change_additional_properties_object_to_false: Story = createCaseStory("051-one-of-object-variant-change-additional-properties-object-to-false");
 export const Case_052_one_of_object_variant_change_additional_properties_false_to_object: Story = createCaseStory("052-one-of-object-variant-change-additional-properties-false-to-object");
+export const Case_053_add_property_names: Story = { ...createCaseStory("053-add-property-names"), name: "Case 053 - propertyNames: added" };
+export const Case_054_remove_property_names: Story = { ...createCaseStory("054-remove-property-names"), name: "Case 054 - propertyNames: removed" };
+export const Case_055_property_names_enum_value_added: Story = { ...createCaseStory("055-property-names-enum-value-added"), name: "Case 055 - propertyNames: enum value added" };
+export const Case_056_property_names_enum_value_removed: Story = { ...createCaseStory("056-property-names-enum-value-removed"), name: "Case 056 - propertyNames: enum value removed" };
+export const Case_057_property_names_enum_value_replaced: Story = { ...createCaseStory("057-property-names-enum-value-replaced"), name: "Case 057 - propertyNames: enum value replaced" };
+export const Case_058_property_names_enum_value_added_and_replaced: Story = { ...createCaseStory("058-property-names-enum-value-added-and-replaced"), name: "Case 058 - propertyNames: enum value added and replaced" };
+export const Case_059_property_names_enum_value_removed_and_replaced: Story = { ...createCaseStory("059-property-names-enum-value-removed-and-replaced"), name: "Case 059 - propertyNames: enum value removed and replaced" };
+export const Case_060_property_names_enum_value_added_and_removed: Story = { ...createCaseStory("060-property-names-enum-value-added-and-removed"), name: "Case 060 - propertyNames: enum value added and removed" };
+export const Case_061_property_names_enum_values_both_replaced: Story = { ...createCaseStory("061-property-names-enum-values-both-replaced"), name: "Case 061 - propertyNames: both enum values replaced" };
+export const Case_062_property_names_enum_values_swapped: Story = { ...createCaseStory("062-property-names-enum-values-swapped"), name: "Case 062 - propertyNames: enum values swapped" };
+export const Case_063_property_names_unchanged: Story = { ...createCaseStory("063-property-names-unchanged"), name: "Case 063 - propertyNames: unchanged" };

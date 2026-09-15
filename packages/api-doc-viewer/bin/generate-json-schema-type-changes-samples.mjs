@@ -210,15 +210,15 @@ if (!testsOnly) {
 }
 
 for (const suite of STORY_SUITES) {
-  const caseIds = cases
+  const suiteCases = cases
     .filter((sampleCase) => sampleCase.sampleDir === suite.globPath)
-    .sort((left, right) => left.caseId.localeCompare(right.caseId, undefined, { numeric: true }))
-    .map((sampleCase) => sampleCase.caseId)
+    .sort((left, right) => left.caseId.localeCompare(right.caseId, undefined, { numeric: true }));
+  const caseIds = suiteCases.map((sampleCase) => sampleCase.caseId);
 
   const storyPath = path.join(storiesOutDir, suite.storyFileName);
   const testPath = path.join(testsOutDir, suite.testFileName);
   if (!testsOnly) {
-    writeFileSync(storyPath, printStoryFile(suite, caseIds));
+    writeFileSync(storyPath, printStoryFile(suite, suiteCases));
   }
   writeFileSync(testPath, printTestFile(suite, caseIds));
   console.log(`Generated ${caseIds.length} ${testsOnly ? "tests" : "cases"} -> ${suite.testFileName}`);
