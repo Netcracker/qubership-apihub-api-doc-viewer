@@ -212,6 +212,18 @@ representation (its option buttons render the leaf's type/format/title), so ther
 "leaf title row" to originate a second nesting step from. See session lesson 10 in the same doc
 above.
 
+**Overriding a shared row-padding rule without `!important` or inline styles:** shared vertical
+padding for `.json-schema-property-row-body` lives in `shared-styles/preceded-by.css` as a
+two-class compound selector (specificity `(0,2,0)`) — a plain Tailwind utility class (`(0,1,0)`)
+can never beat it, cascade layers/`!important` aren't in play anywhere in this package. To override
+for one call site, add a rule scoped through an ancestor class that call site already renders (e.g.
+`.json-schema-property .json-schema-combiner-selector-row-content > .json-schema-property-row-body`,
+`(0,3,0)`) — mirror the existing `.title-row-content > .json-schema-property-row-body` precedent a
+few lines above the base rule, don't reach for `!important` or an inline `style`. A more scalable
+CSS-custom-property-based alternative was analyzed but deliberately deferred — see
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/refactoring-notes.md` (entry 1)
+for the trade-off and when to reconsider it.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in
