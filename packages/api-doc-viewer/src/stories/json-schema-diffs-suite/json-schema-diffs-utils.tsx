@@ -19,7 +19,11 @@ export type JsonSchemaDiffSampleCase = {
 export type JsonSchemaDiffCaseStoryComponentProps = Pick<
   JsonSchemaDiffSampleCase,
   "caseId" | "beforeYaml" | "afterYaml"
->;
+> & {
+  hideUnchangedNodes: boolean;
+};
+
+export const JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES = false;
 
 export const jsonSchemaDiffSampleReadonlyArgTypes = {
   beforeYaml: {
@@ -33,6 +37,11 @@ export const jsonSchemaDiffSampleReadonlyArgTypes = {
     table: { category: "Sample" },
     description:
       "After sample YAML for reference. The viewer always uses the bundled fixture for the selected case.",
+  },
+  hideUnchangedNodes: {
+    control: { type: "boolean" },
+    table: { category: "Display" },
+    description: "Forwarded to JsonSchemaNextDiffsViewer's hideUnchangedNodes prop.",
   },
 } satisfies Partial<ArgTypes<JsonSchemaDiffCaseStoryComponentProps>>;
 
@@ -110,6 +119,7 @@ export const createJsonSchemaDiffCaseStoryFactory = (
       caseId,
       beforeYaml: sample.beforeYaml,
       afterYaml: sample.afterYaml,
+      hideUnchangedNodes: JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES,
     },
     argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
     render: (args) => {
@@ -119,6 +129,7 @@ export const createJsonSchemaDiffCaseStoryFactory = (
           caseId={args.caseId}
           beforeYaml={resolvedSample.beforeYaml}
           afterYaml={resolvedSample.afterYaml}
+          hideUnchangedNodes={args.hideUnchangedNodes}
         />
       );
     },
@@ -128,8 +139,12 @@ export const createJsonSchemaDiffCaseStoryFactory = (
 export const JsonSchemaDiffSamplesStory = ({
   beforeYaml,
   afterYaml,
+  hideUnchangedNodes,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} />
+  <JsonSchemaNextDiffsViewer
+    {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)}
+    hideUnchangedNodes={hideUnchangedNodes}
+  />
 );
 
 /**
@@ -140,8 +155,10 @@ export const JsonSchemaDiffSamplesStory = ({
 export const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle = ({
   beforeYaml,
   afterYaml,
+  hideUnchangedNodes,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
   <JsonSchemaNextDiffsViewer
     {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
+    hideUnchangedNodes={hideUnchangedNodes}
   />
 );
