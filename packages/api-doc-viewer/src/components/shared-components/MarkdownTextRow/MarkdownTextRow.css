@@ -2,6 +2,18 @@
   all: revert;
 }
 
+.markdown-text-row .markdown p {
+  /* `anywhere` (not `break-word`): an unbroken run of characters (no spaces/hyphens, e.g. a
+     long token) has no break opportunity under the default `overflow-wrap: normal`, so the
+     browser lets it overflow visually instead of wrapping. `break-word` only affects actual
+     line-breaking and is ignored when browsers compute this flex item's min-content size, so
+     the overflow persists even though lines visually looked wrapped; `anywhere` is counted in
+     that min-content calculation (paired with the `min-w-0` Tailwind class on the
+     `.markdown-text-row` wrapper in MarkdownTextValue.tsx) and still prefers breaking at
+     spaces first, so normal prose is unaffected. */
+  overflow-wrap: anywhere;
+}
+
 .markdown-text-row .markdown > p:first-of-type {
   margin-top: 0;
 }

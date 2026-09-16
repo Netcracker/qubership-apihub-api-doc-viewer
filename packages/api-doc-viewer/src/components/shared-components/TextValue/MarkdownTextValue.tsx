@@ -206,7 +206,7 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
   }
 
   return (
-    <div className="markdown-text-row flex flex-col items-start gap-1">
+    <div className="markdown-text-row flex min-w-0 flex-col items-start gap-1">
       <ReactMarkdown className={markdownClassName} remarkPlugins={[remarkGfm]} components={markdownComponents}>
         {displayValue}
       </ReactMarkdown>
