@@ -5,8 +5,17 @@ import { NestingHorizontalIndicator } from "../../common/NestingHorizontalIndica
 export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-4 min-w-[16px] shrink-0 flex-none"
 // export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-3 min-w-[12px] shrink-0 flex-none"
 
+// TEMPORARY (legacy pixel-parity bridge — see json-schema-legacy-vs-next-layout-diff.md §A):
+// legacy JsonSchemaViewer reserves a flat 20px (`w-5`) at the root with NO extra row gap.
+// Here the row's own `gap-2` (8px, TitleRowContent.tsx / MarkdownTextRowContent.tsx /
+// AdditionalInfoRowContent.tsx) is always applied on top of this offset, so 12px + 8px = 20px
+// reproduces the legacy total. Root-only; does not affect JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS
+// (non-root rows already match legacy at 16px). Remove/revert once legacy JsonSchemaViewer is
+// retired or these snapshots are intentionally regenerated against the current Next layout.
+const JSON_SCHEMA_ROOT_EXPANDER_OFFSET_WIDTH_CLASS = "w-3 min-w-[12px] shrink-0 flex-none"
+
 export const JsonSchemaRootExpanderOffset: FC = () => (
-  <div className={JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS} aria-hidden="true" />
+  <div className={JSON_SCHEMA_ROOT_EXPANDER_OFFSET_WIDTH_CLASS} aria-hidden="true" />
 )
 
 export type JsonSchemaExpanderColumnProps = {
