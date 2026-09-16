@@ -248,6 +248,11 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
    * - otherwise, every visible child was uniformly added, or uniformly removed -> synthesize
    *   the same single-side-only styling from that uniform child diff.
    * Mixed or partially-unchanged children leave the row uncolored.
+   *
+   * Also seeds {@link JsonSchemaKindAnyNodeDiffs.extensionsRowColorizingDiff} for the
+   * `Extensions` nesting-indicator row, but **only** from the first (whole-node add/remove)
+   * branch - see that field's doc comment for why the type-label-replace and uniform-children
+   * branches below are deliberately excluded.
    */
   protected aggregateNestingIndicatorRowColorizingDiff(
     crawlValue: object | boolean | null,
@@ -256,9 +261,11 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   ): void {
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
-      nodeDiffs.nestingIndicatorRowColorizingDiff = this.withNestingLevelFlags(
+      const wholeNodeRowColorizingDiff = this.withNestingLevelFlags(
         this.buildWholeNodeInheritedRowColorizingDiff(nodeLevelDiff),
       )
+      nodeDiffs.nestingIndicatorRowColorizingDiff = wholeNodeRowColorizingDiff
+      nodeDiffs.extensionsRowColorizingDiff = wholeNodeRowColorizingDiff
       return
     }
 

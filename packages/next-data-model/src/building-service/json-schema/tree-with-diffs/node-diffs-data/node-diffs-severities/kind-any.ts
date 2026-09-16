@@ -32,6 +32,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
       diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] = this.buildNodeDiffsSeverity(diffNode)
       diffsSeverities[NodeDiffsSeverityPlacemennt.DescriptionRow] = this.buildNodeDiffsSeverity(diffNode)
       diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow] = this.buildNodeDiffsSeverity(diffNode)
+      diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow] = this.buildNodeDiffsSeverity(diffNode)
     } else {
       this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
       this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)

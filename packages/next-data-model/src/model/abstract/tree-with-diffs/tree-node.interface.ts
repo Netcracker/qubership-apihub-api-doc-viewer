@@ -106,6 +106,8 @@ export enum NodeDiffsSeverityPlacemennt {
   BindingVersionRow = 'binding-version-row',
   ServerAddressRow = 'server-address-row',
   NestingIndicatorRow = 'nesting-indicator-row',
+  /** JSON Schema `Extensions` nesting-indicator row (the `x-*` sub-tree header). */
+  ExtensionsRow = 'extensions-row',
   /** JSON Schema `Default` additional-info row. */
   DefaultRow = 'default-row',
   /** JSON Schema `Allowed values` (enum) additional-info row. */

@@ -2,24 +2,49 @@ import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
+import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
+import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff"
+import {
+  ChangedPropertyMetaData,
+  NodeDiffsSeverities,
+  NodeDiffsSeverityPlacemennt,
+} from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiExtensionKey } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/types/extension-key"
 import { FC, useMemo } from "react"
+import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
 
 export type JsonSchemaExtensionsSectionProps = {
   extensions: Record<OpenApiExtensionKey, unknown>
   extensionsDiffs?: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>>
+  /** Background/badge for the `Extensions` row itself - set only when the owning node (the
+   * property/root this `x-*` sub-tree is attached to) was wholly added/removed. See
+   * `JsonSchemaKindAnyNodeDiffs.extensionsRowColorizingDiff` for scope. */
+  extensionsRowColorizingDiff?: ChangedPropertyMetaData
+  diffsSeverities?: NodeDiffsSeverities
 }
 
 export const JsonSchemaExtensionsSection: FC<JsonSchemaExtensionsSectionProps> = (props) => {
-  const { extensions, extensionsDiffs } = props
+  const { extensions, extensionsDiffs, extensionsRowColorizingDiff, diffsSeverities } = props
   const level = useLevelContext()
   const nestedLevel = level + 1
   const displayMode = useDisplayMode()
   const diffMetaKeys = useDiffMetaKeys()
+
+  // Mirrors SchemaNodeViewer's own children nesting-indicator row: when the owning node was
+  // wholly added/removed, one side has no content at all, so the Extensions row's nesting level
+  // must track that asymmetry per side instead of always incrementing the ambient (parent)
+  // level symmetrically - otherwise the row renders at the same level regardless of add/remove.
+  const asyncLevel = useAsyncLevelContext()
+  const currentBeforeLevel = asyncLevel?.beforeLevel ?? level
+  const currentAfterLevel = asyncLevel?.afterLevel ?? level
+  const { beforeLevel: nextBeforeLevel, afterLevel: nextAfterLevel } = useMemo(
+    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, extensionsRowColorizingDiff),
+    [currentBeforeLevel, currentAfterLevel, extensionsRowColorizingDiff],
+  )
 
   const hasExtensionsDiffs = !!extensionsDiffs && Object.keys(extensionsDiffs).length > 0
 
@@ -42,26 +67,31 @@ export const JsonSchemaExtensionsSection: FC<JsonSchemaExtensionsSectionProps> =
 
   return (
     <LevelContext.Provider value={nestedLevel}>
-      <div className="flex flex-col">
-        <NestingIndicatorTitleRow
-          title="Extensions"
-          usage={NestingIndicatorTitleRowUsage.JsonSchema}
-          lastInvisible
-        />
-        {diffMetaKeys ? (
-          <JsoDiffsViewer
-            mergedSource={mergedSource}
-            initialLevel={nestedLevel}
-            displayMode={displayMode}
-            diffMetaKeys={diffMetaKeys}
+      <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
+        <div className="flex flex-col">
+          <NestingIndicatorTitleRow
+            title="Extensions"
+            usage={NestingIndicatorTitleRowUsage.JsonSchema}
+            lastInvisible
+            diff={extensionsRowColorizingDiff}
+            diffsSeverities={diffsSeverities}
+            diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.ExtensionsRow}
           />
-        ) : (
-          <JsoViewer
-            source={extensions}
-            initialLevel={nestedLevel}
-          />
-        )}
-      </div>
+          {diffMetaKeys ? (
+            <JsoDiffsViewer
+              mergedSource={mergedSource}
+              initialLevel={nestedLevel}
+              displayMode={displayMode}
+              diffMetaKeys={diffMetaKeys}
+            />
+          ) : (
+            <JsoViewer
+              source={extensions}
+              initialLevel={nestedLevel}
+            />
+          )}
+        </div>
+      </AsyncLevelContextProvider>
     </LevelContext.Provider>
   )
 }

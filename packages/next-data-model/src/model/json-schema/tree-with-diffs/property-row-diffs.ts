@@ -113,6 +113,12 @@ export function takeJsonSchemaNestingIndicatorRowColorizingDiff(
   return takeKindAnyNodeDiffs(node).nestingIndicatorRowColorizingDiff
 }
 
+export function takeJsonSchemaExtensionsRowColorizingDiff(
+  node: JsonSchemaTreeNodeWithDiffs,
+): ChangedPropertyMetaData | undefined {
+  return takeKindAnyNodeDiffs(node).extensionsRowColorizingDiff
+}
+
 export function takeJsonSchemaNodeChangesSummary(
   node: JsonSchemaTreeNodeWithDiffs,
 ): NodeDiffsSummary | undefined {

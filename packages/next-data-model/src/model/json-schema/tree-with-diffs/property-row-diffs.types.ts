@@ -54,6 +54,14 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
    */
   nestingIndicatorRowColorizingDiff?: ChangedPropertyMetaData
   /**
+   * Row background for the `Extensions` nesting-indicator header row shown above a node's
+   * `x-*` sub-tree. Unlike {@link nestingIndicatorRowColorizingDiff}, scoped to **only** the
+   * "this node was wholly added/removed" case - a type/format/title replace or a uniform
+   * add/remove across the node's *schema* children (properties/items) says nothing about
+   * whether the node's own extensions changed, so those branches do not populate this field.
+   */
+  extensionsRowColorizingDiff?: ChangedPropertyMetaData
+  /**
    * Merged diff-type set for this node's whole subtree (own diffs + every descendant's, any
    * depth) - excluding this node's OWN `type`/`title`/`format` diffs (already shown via the
    * always-visible type label). Drives the collapsed-node `UxMarkerPanel` summary in the view
