@@ -63,7 +63,7 @@ const ExtensionsSubheader: FC<ExtensionsSubheaderProps> = memo<ExtensionsSubhead
   }, [diff, layoutSide])
 
   return (
-    <div className={`flex flex-row h-full ${diffStylesClasses.join(' ')}`}>
+    <div className={`flex flex-row w-full h-full ${diffStylesClasses.join(' ')}`}>
       <LevelIndicator level={level + 1} lastInvisible />
       {isVisible && (
         <NestingIndicatorTitle>
