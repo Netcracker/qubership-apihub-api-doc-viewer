@@ -34,7 +34,10 @@ export const JsonSchemaTypeValueSideDisplay: FC<JsonSchemaTypeValueSideDisplayPr
   }
 
   return (
-    <span className="json-schema-type-value-segments inline-flex items-center gap-1">
+    // No gap: legacy's NodeType.tsx concatenates type/qualifier/title as adjacent tokens with
+    // zero space (`{actualType}{actualQualifier}{actualTitle}`, all inside one `.inline` div) -
+    // matching that means segments here must abut, not sit `gap-1` apart.
+    <span className="json-schema-type-value-segments inline-flex items-center">
       {display.segments.map((segment, index) => (
         <JsonSchemaTypeValueDiffSegment
           key={`${segment.text}-${index}`}
