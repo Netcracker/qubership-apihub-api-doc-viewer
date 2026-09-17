@@ -1,5 +1,9 @@
 .additional-info-piece {
   font-size: 12px;
+  /* Legacy parity: .ux-badge pre { line-height: 1.5 }. Row content height is padding-driven
+     rhythm plus this line-height — dropping it silently shrinks the chip's natural height and
+     drifts the gap to adjacent rows even though padding numbers match. */
+  line-height: 1.5;
 }
 
 .additional-info-piece.block {
