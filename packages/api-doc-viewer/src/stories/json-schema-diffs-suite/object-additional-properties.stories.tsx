@@ -26,7 +26,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Object Additional Properties",
+  title: "JSON Schema Diffs Suite/Object Properties And Additional Properties/Object Additional Properties",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;

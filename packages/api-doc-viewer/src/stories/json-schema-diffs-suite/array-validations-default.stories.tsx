@@ -26,7 +26,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Array Validations Default",
+  title: "JSON Schema Diffs Suite/Array Validation/Array Validations Default",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;

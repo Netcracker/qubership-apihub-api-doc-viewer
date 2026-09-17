@@ -1,5 +1,5 @@
 /**
- * Auto-generated screenshot tests for JSON Schema Suite/Object stories.
+ * Auto-generated screenshot tests for JSON Schema Suite/Object And Validations/Object stories.
  * Regenerate: node bin/generate-json-schema-suite-tests.mjs (from packages/api-doc-viewer).
  */
 import path from 'path'

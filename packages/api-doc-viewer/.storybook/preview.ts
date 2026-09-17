@@ -73,6 +73,14 @@ const preview: Preview = {
           [
             'E2E Scenarios',
           ],
+          'DDL API Diffs Suite',
+          'JSON Schema Suite',
+          'JSON Schema Suite (Extensions)',
+          'JSON Schema Suite (Performance)',
+          'JSON Schema Diffs Suite',
+          'JSON Schema Diffs Suite (Extensions)',
+          'JSON Schema Diffs Suite (Hiding Unchanged Nodes)',
+          'JSON Schema Diffs Suite (Node Changes Summary)',
           '*'
         ]
       }

@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-object-validations-examples";
+const META_ID = "json-schema-diffs-suite-object-validation-object-validations-examples";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Object Validations Examples", () => {
+describe("JSON Schema Diffs Suite/Object Validation/Object Validations Examples", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,161 +25,161 @@ describe("JSON Schema Diffs Suite/Object Validations Examples", () => {
   });
 
   it("001-examples-added-empty-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-001-examples-added-empty-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-001-examples-added-empty-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-examples-added-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-002-examples-added-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-002-examples-added-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-examples-removed-empty-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-003-examples-removed-empty-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-003-examples-removed-empty-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-examples-removed-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-004-examples-removed-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-004-examples-removed-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-examples-replaced-empty-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-005-examples-replaced-empty-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-005-examples-replaced-empty-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-examples-replaced-object-to-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-006-examples-replaced-object-to-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-006-examples-replaced-object-to-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-examples-replaced-object-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-007-examples-replaced-object-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-007-examples-replaced-object-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-examples-two-added-both-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-008-examples-two-added-both-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-008-examples-two-added-both-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-examples-two-added-empty-and-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-009-examples-two-added-empty-and-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-009-examples-two-added-empty-and-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-examples-two-added-both-objects", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-010-examples-two-added-both-objects`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-010-examples-two-added-both-objects`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-examples-two-removed-both-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-011-examples-two-removed-both-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-011-examples-two-removed-both-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-examples-two-removed-empty-and-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-012-examples-two-removed-empty-and-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-012-examples-two-removed-empty-and-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-examples-two-removed-both-objects", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-013-examples-two-removed-both-objects`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-013-examples-two-removed-both-objects`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-examples-append-empty-to-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-014-examples-append-empty-to-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-014-examples-append-empty-to-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-examples-append-object-to-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-015-examples-append-object-to-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-015-examples-append-object-to-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-examples-append-object-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-016-examples-append-object-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-016-examples-append-object-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-examples-remove-empty-keep-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-017-examples-remove-empty-keep-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-017-examples-remove-empty-keep-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-examples-remove-object-keep-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-018-examples-remove-object-keep-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-018-examples-remove-object-keep-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-examples-remove-first-of-two-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-019-examples-remove-first-of-two-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-019-examples-remove-first-of-two-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-examples-remove-first-of-two-objects", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-020-examples-remove-first-of-two-objects`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-020-examples-remove-first-of-two-objects`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-examples-replace-empty-with-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-021-examples-replace-empty-with-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-021-examples-replace-empty-with-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("022-examples-replace-object-with-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-022-examples-replace-object-with-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-022-examples-replace-object-with-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("023-examples-replace-object-with-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-examples--case-023-examples-replace-object-with-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-examples--case-023-examples-replace-object-with-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

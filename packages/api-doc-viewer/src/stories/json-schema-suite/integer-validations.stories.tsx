@@ -27,7 +27,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: "json-schema-suite-integer-validations",
-  title: "JSON Schema Suite/Integer  Validations",
+  title: "JSON Schema Suite/Integer And Validations/Integer  Validations",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

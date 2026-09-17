@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T15:37:55.495Z",
+  "generatedAt": "2026-09-17T12:57:49.476Z",
   "totalCases": 496,
   "suites": [
     {
@@ -21,6 +21,14 @@
     {
       "globPath": "string-validation/value-length",
       "caseCount": 16
+    },
+    {
+      "globPath": "string-validation/pattern",
+      "caseCount": 3
+    },
+    {
+      "globPath": "number-validation/multiple-of",
+      "caseCount": 3
     },
     {
       "globPath": "extended/default",
@@ -65,10 +73,6 @@
     {
       "globPath": "array-validations/items-count",
       "caseCount": 27
-    },
-    {
-      "globPath": "extended/misc",
-      "caseCount": 6
     },
     {
       "globPath": "extended/combiners-one-level",

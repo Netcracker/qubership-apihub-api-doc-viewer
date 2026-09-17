@@ -23,7 +23,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: "json-schema-suite-boolean",
-  title: "JSON Schema Suite/Boolean",
+  title: "JSON Schema Suite/Boolean And Validations/Boolean",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

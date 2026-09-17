@@ -6,7 +6,7 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-object-validations-default";
+const META_ID = "json-schema-diffs-suite-object-validation-object-validations-default";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
@@ -16,7 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   ));
 }
 
-describe("JSON Schema Diffs Suite/Object Validations Default", () => {
+describe("JSON Schema Diffs Suite/Object Validation/Object Validations Default", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -25,35 +25,35 @@ describe("JSON Schema Diffs Suite/Object Validations Default", () => {
   });
 
   it("001-default-added-empty-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-default--case-001-default-added-empty-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-default--case-001-default-added-empty-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-default-removed-empty-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-default--case-002-default-removed-empty-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-default--case-002-default-removed-empty-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-default-replaced-empty-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-default--case-003-default-replaced-empty-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-default--case-003-default-replaced-empty-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-default-replaced-object-to-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-default--case-004-default-replaced-object-to-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-default--case-004-default-replaced-object-to-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-default-replaced-object-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-object-validations-default--case-005-default-replaced-object-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-default--case-005-default-replaced-object-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

@@ -46,7 +46,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: 'json-schema-suite-integer-validations-value-range-oas-3-1',
-  title: 'JSON Schema Suite/Integer Validations Value Range OAS 3.1',
+  title: 'JSON Schema Suite/Integer And Validations/Integer Validations Value Range OAS 3.1',
 } satisfies Meta<typeof JsonSchemaSampleStory>
 
 export default meta

@@ -17,7 +17,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/One Of Combiner Diffs Suite",
+  title: "JSON Schema Diffs Suite/Combiners/One Of Combiner Diffs Suite",
   component: JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle>;

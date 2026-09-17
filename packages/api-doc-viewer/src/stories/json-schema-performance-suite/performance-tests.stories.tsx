@@ -8,7 +8,7 @@ import {
   createCaseStoryFactory,
   jsonSchemaSamplesStoryMetaBase,
   type JsonSchemaSamplesStoryObj,
-} from "./json-schema-samples-common";
+} from "../json-schema-suite/json-schema-samples-common";
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/performance-tests/*/sample.yaml",
@@ -22,8 +22,8 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
-  id: "json-schema-suite-performance-tests",
-  title: "JSON Schema Suite/Performance Tests",
+  id: "json-schema-performance-suite-performance-tests",
+  title: "JSON Schema Suite (Performance)/Performance Tests",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

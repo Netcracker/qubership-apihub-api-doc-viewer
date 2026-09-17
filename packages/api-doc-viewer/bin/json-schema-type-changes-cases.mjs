@@ -1549,10 +1549,9 @@ const collectArrayValidationsItemsCountCases = (cases) => {
 };
 
 /** @param {TypeChangeCase[]} cases */
-const collectExtendedPatternAndNumberCases = (cases) => {
-  const dir = "extended/misc";
+const collectStringValidationPatternCases = (cases) => {
+  const dir = "string-validation/pattern";
   const stringBase = STRING_PLAIN();
-  const numberBase = { type: "number", description: "Sample number" };
 
   pushCase(
     cases,
@@ -1578,6 +1577,12 @@ const collectExtendedPatternAndNumberCases = (cases) => {
     merge(stringBase, { pattern: "^[0-9]+$" }),
     "pattern replaced",
   );
+};
+
+const collectNumberValidationMultipleOfCases = (cases) => {
+  const dir = "number-validation/multiple-of";
+  const numberBase = { type: "number", description: "Sample number" };
+
   pushCase(
     cases,
     dir,
@@ -2815,8 +2820,7 @@ const collectTypeAnnotationsChangeCases = (cases) => {
 export const STORY_SUITES = [
   {
     suiteKey: "type-flags",
-    title: "JSON Schema Diffs Suite/Type Flags",
-    metaKebab: "json-schema-diffs-suite-type-flags",
+    title: "JSON Schema Diffs Suite/Type Changes/Type Flags",
     globPath: "type-flags",
     storyFileName: "type-flags.stories.tsx",
     testFileName: "type-flags.it-test.ts",
@@ -2824,143 +2828,132 @@ export const STORY_SUITES = [
   {
     suiteKey: "description-changes",
     title: "JSON Schema Diffs Suite/Description Changes",
-    metaKebab: "json-schema-diffs-suite-description-changes",
     globPath: "description-changes",
     storyFileName: "description-changes.stories.tsx",
     testFileName: "description-changes.it-test.ts",
   },
   {
     suiteKey: "string-validation-enum",
-    title: "JSON Schema Diffs Suite/String Validation Enum",
-    metaKebab: "json-schema-diffs-suite-string-validation-enum",
+    title: "JSON Schema Diffs Suite/String Validation/String Validation Enum",
     globPath: "string-validation/enum",
     storyFileName: "string-validation-enum.stories.tsx",
     testFileName: "string-validation-enum.it-test.ts",
   },
   {
     suiteKey: "string-validation-examples",
-    title: "JSON Schema Diffs Suite/String Validation Examples",
-    metaKebab: "json-schema-diffs-suite-string-validation-examples",
+    title: "JSON Schema Diffs Suite/String Validation/String Validation Examples",
     globPath: "string-validation/examples",
     storyFileName: "string-validation-examples.stories.tsx",
     testFileName: "string-validation-examples.it-test.ts",
   },
   {
     suiteKey: "string-validation-value-length",
-    title: "JSON Schema Diffs Suite/String Validation Value Length",
-    metaKebab: "json-schema-diffs-suite-string-validation-value-length",
+    title: "JSON Schema Diffs Suite/String Validation/String Validation Value Length",
     globPath: "string-validation/value-length",
     storyFileName: "string-validation-value-length.stories.tsx",
     testFileName: "string-validation-value-length.it-test.ts",
   },
   {
+    suiteKey: "string-validation-pattern",
+    title: "JSON Schema Diffs Suite/String Validation/Pattern",
+    globPath: "string-validation/pattern",
+    storyFileName: "string-validation-pattern.stories.tsx",
+    testFileName: "string-validation-pattern.it-test.ts",
+  },
+  {
+    suiteKey: "number-validation-multiple-of",
+    title: "JSON Schema Diffs Suite/Number Validation/Multiple Of",
+    globPath: "number-validation/multiple-of",
+    storyFileName: "number-validation-multiple-of.stories.tsx",
+    testFileName: "number-validation-multiple-of.it-test.ts",
+  },
+  {
     suiteKey: "extended-default",
     title: "JSON Schema Diffs Suite/Extended Default",
-    metaKebab: "json-schema-diffs-suite-extended-default",
     globPath: "extended/default",
     storyFileName: "extended-default.stories.tsx",
     testFileName: "extended-default.it-test.ts",
   },
   {
     suiteKey: "extended-object",
-    title: "JSON Schema Diffs Suite/Extended Object",
-    metaKebab: "json-schema-diffs-suite-extended-object",
+    title: "JSON Schema Diffs Suite/Object Properties And Additional Properties/Extended Object",
     globPath: "extended/object",
     storyFileName: "extended-object.stories.tsx",
     testFileName: "extended-object.it-test.ts",
   },
   {
     suiteKey: "extended-array",
-    title: "JSON Schema Diffs Suite/Extended Array",
-    metaKebab: "json-schema-diffs-suite-extended-array",
+    title: "JSON Schema Diffs Suite/Array Items And Additional Items/Extended Array",
     globPath: "extended/array",
     storyFileName: "extended-array.stories.tsx",
     testFileName: "extended-array.it-test.ts",
   },
   {
     suiteKey: "object-validations-default",
-    title: "JSON Schema Diffs Suite/Object Validations Default",
-    metaKebab: "json-schema-diffs-suite-object-validations-default",
+    title: "JSON Schema Diffs Suite/Object Validation/Object Validations Default",
     globPath: "object-validations/default",
     storyFileName: "object-validations-default.stories.tsx",
     testFileName: "object-validations-default.it-test.ts",
   },
   {
     suiteKey: "object-validations-example",
-    title: "JSON Schema Diffs Suite/Object Validations Example",
-    metaKebab: "json-schema-diffs-suite-object-validations-example",
+    title: "JSON Schema Diffs Suite/Object Validation/Object Validations Example",
     globPath: "object-validations/example",
     storyFileName: "object-validations-example.stories.tsx",
     testFileName: "object-validations-example.it-test.ts",
   },
   {
     suiteKey: "object-validations-examples",
-    title: "JSON Schema Diffs Suite/Object Validations Examples",
-    metaKebab: "json-schema-diffs-suite-object-validations-examples",
+    title: "JSON Schema Diffs Suite/Object Validation/Object Validations Examples",
     globPath: "object-validations/examples",
     storyFileName: "object-validations-examples.stories.tsx",
     testFileName: "object-validations-examples.it-test.ts",
   },
   {
     suiteKey: "object-validations-properties-count",
-    title: "JSON Schema Diffs Suite/Object Validations Properties Count",
-    metaKebab: "json-schema-diffs-suite-object-validations-properties-count",
+    title: "JSON Schema Diffs Suite/Object Validation/Object Validations Properties Count",
     globPath: "object-validations/properties-count",
     storyFileName: "object-validations-properties-count.stories.tsx",
     testFileName: "object-validations-properties-count.it-test.ts",
   },
   {
     suiteKey: "array-validations-default",
-    title: "JSON Schema Diffs Suite/Array Validations Default",
-    metaKebab: "json-schema-diffs-suite-array-validations-default",
+    title: "JSON Schema Diffs Suite/Array Validation/Array Validations Default",
     globPath: "array-validations/default",
     storyFileName: "array-validations-default.stories.tsx",
     testFileName: "array-validations-default.it-test.ts",
   },
   {
     suiteKey: "array-validations-example",
-    title: "JSON Schema Diffs Suite/Array Validations Example",
-    metaKebab: "json-schema-diffs-suite-array-validations-example",
+    title: "JSON Schema Diffs Suite/Array Validation/Array Validations Example",
     globPath: "array-validations/example",
     storyFileName: "array-validations-example.stories.tsx",
     testFileName: "array-validations-example.it-test.ts",
   },
   {
     suiteKey: "array-validations-examples",
-    title: "JSON Schema Diffs Suite/Array Validations Examples",
-    metaKebab: "json-schema-diffs-suite-array-validations-examples",
+    title: "JSON Schema Diffs Suite/Array Validation/Array Validations Examples",
     globPath: "array-validations/examples",
     storyFileName: "array-validations-examples.stories.tsx",
     testFileName: "array-validations-examples.it-test.ts",
   },
   {
     suiteKey: "array-validations-items-count",
-    title: "JSON Schema Diffs Suite/Array Validations Items Count",
-    metaKebab: "json-schema-diffs-suite-array-validations-items-count",
+    title: "JSON Schema Diffs Suite/Array Validation/Array Validations Items Count",
     globPath: "array-validations/items-count",
     storyFileName: "array-validations-items-count.stories.tsx",
     testFileName: "array-validations-items-count.it-test.ts",
   },
   {
-    suiteKey: "extended-misc",
-    title: "JSON Schema Diffs Suite/Extended Misc",
-    metaKebab: "json-schema-diffs-suite-extended-misc",
-    globPath: "extended/misc",
-    storyFileName: "extended-misc.stories.tsx",
-    testFileName: "extended-misc.it-test.ts",
-  },
-  {
     suiteKey: "extended-combiners-one-level",
-    title: "JSON Schema Diffs Suite/Extended Combiners One Level",
-    metaKebab: "json-schema-diffs-suite-extended-combiners-one-level",
+    title: "JSON Schema Diffs Suite/Combiners/Extended Combiners One Level",
     globPath: "extended/combiners-one-level",
     storyFileName: "extended-combiners-one-level.stories.tsx",
     testFileName: "extended-combiners-one-level.it-test.ts",
   },
   {
     suiteKey: "extended-combiners-two-level",
-    title: "JSON Schema Diffs Suite/Extended Combiners Two Level",
-    metaKebab: "json-schema-diffs-suite-extended-combiners-two-level",
+    title: "JSON Schema Diffs Suite/Combiners/Extended Combiners Two Level",
     globPath: "extended/combiners-two-level",
     storyFileName: "extended-combiners-two-level.stories.tsx",
     testFileName: "extended-combiners-two-level.it-test.ts",
@@ -2968,7 +2961,6 @@ export const STORY_SUITES = [
   {
     suiteKey: "circular",
     title: "JSON Schema Diffs Suite/Circular",
-    metaKebab: "json-schema-diffs-suite-circular",
     globPath: "circular",
     storyFileName: "circular.stories.tsx",
     testFileName: "circular.it-test.ts",
@@ -2976,16 +2968,14 @@ export const STORY_SUITES = [
   },
   {
     suiteKey: "type-value-changes",
-    title: "JSON Schema Diffs Suite/Type Value Changes",
-    metaKebab: "json-schema-diffs-suite-type-value-changes",
+    title: "JSON Schema Diffs Suite/Type Changes/Type Value Changes",
     globPath: "type-value-changes",
     storyFileName: "type-value-changes.stories.tsx",
     testFileName: "type-value-changes.it-test.ts",
   },
   {
     suiteKey: "type-annotations-changes",
-    title: "JSON Schema Diffs Suite/Type Annotations Changes",
-    metaKebab: "json-schema-diffs-suite-type-annotations-changes",
+    title: "JSON Schema Diffs Suite/Type Changes/Type Annotations Changes",
     globPath: "type-annotations-changes",
     storyFileName: "type-annotations-changes.stories.tsx",
     testFileName: "type-annotations-changes.it-test.ts",
@@ -2993,40 +2983,35 @@ export const STORY_SUITES = [
   },
   {
     suiteKey: "object-properties",
-    title: "JSON Schema Diffs Suite/Object Properties",
-    metaKebab: "json-schema-diffs-suite-object-properties",
+    title: "JSON Schema Diffs Suite/Object Properties And Additional Properties/Object Properties",
     globPath: "object-properties",
     storyFileName: "object-properties.stories.tsx",
     testFileName: "object-properties.it-test.ts",
   },
   {
     suiteKey: "object-additional-properties",
-    title: "JSON Schema Diffs Suite/Object Additional Properties",
-    metaKebab: "json-schema-diffs-suite-object-additional-properties",
+    title: "JSON Schema Diffs Suite/Object Properties And Additional Properties/Object Additional Properties",
     globPath: "object-additional-properties",
     storyFileName: "object-additional-properties.stories.tsx",
     testFileName: "object-additional-properties.it-test.ts",
   },
   {
     suiteKey: "array-indexed-items",
-    title: "JSON Schema Diffs Suite/Array Indexed Items",
-    metaKebab: "json-schema-diffs-suite-array-indexed-items",
+    title: "JSON Schema Diffs Suite/Array Items And Additional Items/Array Indexed Items",
     globPath: "array-indexed-items",
     storyFileName: "array-indexed-items.stories.tsx",
     testFileName: "array-indexed-items.it-test.ts",
   },
   {
     suiteKey: "one-of-object-variant",
-    title: "JSON Schema Diffs Suite/OneOf Object Variant",
-    metaKebab: "json-schema-diffs-suite-oneof-object-variant",
+    title: "JSON Schema Diffs Suite/Combiners/OneOf Object Variant",
     globPath: "one-of-object-variant",
     storyFileName: "one-of-object-variant.stories.tsx",
     testFileName: "one-of-object-variant.it-test.ts",
   },
   {
     suiteKey: "one-of-array-variant",
-    title: "JSON Schema Diffs Suite/OneOf Array Variant",
-    metaKebab: "json-schema-diffs-suite-oneof-array-variant",
+    title: "JSON Schema Diffs Suite/Combiners/OneOf Array Variant",
     globPath: "one-of-array-variant",
     storyFileName: "one-of-array-variant.stories.tsx",
     testFileName: "one-of-array-variant.it-test.ts",
@@ -3055,7 +3040,8 @@ export const collectTypeChangeCases = () => {
   collectArrayValidationsExampleCases(cases);
   collectArrayValidationsExamplesCases(cases);
   collectArrayValidationsItemsCountCases(cases);
-  collectExtendedPatternAndNumberCases(cases);
+  collectStringValidationPatternCases(cases);
+  collectNumberValidationMultipleOfCases(cases);
   collectCombinerCases(cases);
   collectCircularCases(cases);
   collectTypeValueChangeCases(cases);

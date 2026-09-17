@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { exitIfInsideNodeModules } from "./compatibility-suite-generation-utils.mjs";
 import { COMBINER_KINDS, combinerKindLabel, combinerKindSlug } from "./combiner-schema-builder.mjs";
 import { listCombinerDiffCases } from "./combiner-diff-case-definitions.mjs";
+import { toStorybookMetaId } from "./storybook-story-id-utils.mjs";
 
 exitIfInsideNodeModules(import.meta.url);
 
@@ -15,12 +16,13 @@ const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 const COMBINER_DIFF_STORY_SUITES = COMBINER_KINDS.map((combinerKind) => {
   const slug = combinerKindSlug(combinerKind);
   const label = combinerKindLabel(combinerKind);
+  const title = `JSON Schema Diffs Suite/Combiners/${label} Combiner Diffs Suite`;
   return {
     combinerKind,
     storyFileName: `${slug}-combiner-diffs-suite.stories.tsx`,
     testFileName: `${slug}-combiner-diffs-suite.it-test.ts`,
-    metaKebab: `json-schema-diffs-suite-${slug}-combiner-diffs-suite`,
-    title: `JSON Schema Diffs Suite/${label} Combiner Diffs Suite`,
+    metaKebab: toStorybookMetaId(title),
+    title,
   };
 });
 
