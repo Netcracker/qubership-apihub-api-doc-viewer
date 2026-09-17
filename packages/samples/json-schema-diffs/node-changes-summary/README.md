@@ -46,25 +46,31 @@ dotted suite prefix (matching `json-schema-diffs-hiding-unchanged-nodes-suite.*.
 `json-schema-diffs-node-changes-summary-suite.case-N-<slug>.it-test.ts`.
 
 **Combiner variant selection is scripted in the paired IT test, not baked into the fixture.**
-`SelectNestedNodeRow`'s option buttons (`packages/api-doc-viewer/src/components/common/SelectNestedNodeRow/SelectNestedNodeRow.tsx`)
-carry a stable `data-testid="legacy-combiner-option-<nodeId>"`, and `ExpandingCaret`
-(`packages/api-doc-viewer/src/components/common/layout/Expander/ExpandingCaret.tsx`) carries
-`data-testid="legacy-node-expander-<nodeId>"` on its expand/collapse chevron - both additions are
-non-functional (Storybook `play` functions do not fire when these stories are loaded directly via
+Cases 6-7's stories render through `JsonSchemaNextDiffsViewer`
+(`packages/api-doc-viewer/src/stories/json-schema-diffs-node-changes-summary-suite/node-changes-summary-utils.tsx`),
+whose combiner picker (`CombinerSelectorRow`,
+`packages/api-doc-viewer/src/components/JsonSchemaNextViewer/CombinerNodeViewer/CombinerSelectorRow.tsx`)
+carries `data-testid="json-schema-combiner-option-<index>"` on each option button - index-based,
+not keyed by JSON pointer, and the same index repeats once per combiner property AND once per
+diff side (`SideBySideLayout` renders both sides from one shared selection state, so either side's
+button works). Storybook `play` functions do not fire when these stories are loaded directly via
 `iframe.html` in the screenshot-test harness, so the case 6/7 IT test files click these testids
-directly with Puppeteer, mirroring `switchToChannelSection()` in
-`async-api-diffs-suite.channel.it-test.ts`). Cases 6-7's "chosen variant" stories all use
-the same string-first fixture as their sibling stories; the IT test clicks the `object`/`array`
-option to select it.
+directly with Puppeteer (mirroring `switchToChannelSection()` in
+`async-api-diffs-suite.channel.it-test.ts`), scoped to the right property via its enclosing
+`json-schema-combiner-node-viewer` container (see the IT test files' `selectCombinerOption()`
+helper). Cases 6-7's "chosen variant" stories all use the same string-first fixture as their
+sibling stories; the IT test clicks the `object`/`array` option to select it.
 
-Case 6 has only 2 stories (not the originally-planned 4): the legacy viewer's state model flattens
-a combiner's selected variant's own structural children into the same single expand toggle as the
-combiner's selector row (`JsonSchemaStatePropNode.children` = `[...combinaryNodes,
-...selectedVariant'sOwnChildren]`, gated together) whenever the variant is a plain object - so
-there is no way to independently show "object chosen, but its properties collapsed" the way case 4
-independently toggles its `items` node. Case 7 keeps 4 stories because its chosen variant is an
-array, whose `items` child *is* independently expandable - selecting a combiner variant rebuilds
-that variant's own child state nodes from scratch (always collapsed, regardless of the story's
-`expandedDepth`), so the "expanded items" story additionally clicks `items`' own expander testid.
+Case 6 has only 2 stories (not the originally-planned 4): selecting the `object` variant already
+renders its properties without a further expand step needed at this suite's `expandedDepth`
+values, so there is no independently-toggleable "object chosen, but its properties collapsed"
+state to give a 3rd/4th story. Case 7 also has no working "expanded items" story despite keeping
+4 stories for historical reasons: a combiner-leaf array does not currently get an expandable
+`items` child in `JsonSchemaNextViewer` at all (no structural children, no expander control) -
+the same "root-level array renders as a summary only" limitation documented in
+`packages/samples/json-schema-diffs/extensions/README.md`, here shown to also apply to a plain
+single-schema `items:` once the array is a combiner leaf, not the schema root. The IT test no
+longer attempts an items-expand click; "expanded items" and "collapsed items" currently render
+identically.
 
 Regenerate screenshots: `cd packages/api-doc-viewer && npm run regenerate-screenshots`.
