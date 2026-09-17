@@ -9,6 +9,18 @@
  *   node bin/run-screenshot-test-suite.mjs regenerate json-schema-diffs-suite combiners
  *   node bin/run-screenshot-test-suite.mjs regenerate --ui=select
  *
+ * The test-run argument also accepts a name prefix that matches several test runs at once,
+ * e.g. `json-schema` matches `json-schema-suite`, `json-schema-diffs-suite`,
+ * `json-schema-diffs-extensions-suite`, etc. All matched test runs run together as their
+ * whole suites in a single Jest invocation — a specific suite (3rd argument) cannot be
+ * combined with a prefix that matches more than one test run.
+ *
+ *   node bin/run-screenshot-test-suite.mjs regenerate json-schema
+ *   node bin/run-screenshot-test-suite.mjs regenerate json-schema-diffs
+ *
+ * The interactive "which test run" prompt supports the same prefix matching: type a prefix
+ * instead of a number/exact name (in `--ui=select` mode, pick "Search by name prefix…" first).
+ *
  * Default UI uses Clack note + text (static option list, then type a number or name).
  * Arrow-key select (--ui=select) is available in terminals with full TTY support.
  */
@@ -191,6 +203,56 @@ function discoverSuites(testRun) {
 }
 
 /**
+ * Regex path segment that Jest's `--testPathPattern` needs to select every IT file
+ * belonging to one test run, regardless of its on-disk layout.
+ *
+ * @param {{ layout: 'folder' | 'flat', itSuiteId: string, prefix?: string }} testRun
+ * @returns {string}
+ */
+function testRunPatternSegment(testRun) {
+  return testRun.layout === 'folder'
+    ? `src/it/${testRun.itSuiteId}/`
+    : `src/it/${testRun.prefix.replace('.', '\\.')}`;
+}
+
+/**
+ * Resolves a typed answer against the list of test runs: a 1-based index, an exact
+ * `itSuiteId`, or a name prefix. A prefix matching exactly one test run behaves like an
+ * exact match; a prefix matching several is returned as a `'multiple'` selection so the
+ * caller can run them together.
+ *
+ * @param {string} raw
+ * @param {Array<{ itSuiteId: string }>} testRuns
+ * @returns {{ type: 'single', testRun: object } | { type: 'multiple', testRuns: object[] } | undefined}
+ */
+function resolveTestRunSelection(raw, testRuns) {
+  const answer = raw.trim();
+  if (!answer) {
+    return undefined;
+  }
+
+  const asNumber = Number.parseInt(answer, 10);
+  if (Number.isInteger(asNumber) && asNumber >= 1 && asNumber <= testRuns.length) {
+    return { type: 'single', testRun: testRuns[asNumber - 1] };
+  }
+
+  const exactMatch = testRuns.find((testRun) => testRun.itSuiteId === answer);
+  if (exactMatch) {
+    return { type: 'single', testRun: exactMatch };
+  }
+
+  const prefixMatches = testRuns.filter((testRun) => testRun.itSuiteId.startsWith(answer));
+  if (prefixMatches.length === 1) {
+    return { type: 'single', testRun: prefixMatches[0] };
+  }
+  if (prefixMatches.length > 1) {
+    return { type: 'multiple', testRuns: prefixMatches };
+  }
+
+  return undefined;
+}
+
+/**
  * @param {{ layout: 'folder' | 'flat', itSuiteId: string, prefix?: string }} testRun
  * @param {string} suiteChoice
  * @returns {string}
@@ -235,6 +297,42 @@ function runScreenshotCommand(jestTarget) {
   });
 
   return result.status ?? 1;
+}
+
+/**
+ * Runs every matched test run's whole suite together, as a single Jest invocation.
+ * Each matched test run is passed as its own positional path pattern — Jest ORs multiple
+ * positional patterns together internally (see `buildTestPathPattern` in `jest-config`), so
+ * this needs no `|`/`()` alternation on the command line. That matters on Windows, where
+ * `spawnSync(..., { shell: true })` runs through `cmd.exe`, which treats `|` and `()` as
+ * shell metacharacters even inside quotes and would otherwise split the command apart.
+ * Exits the process with the Jest exit code.
+ *
+ * @param {object[]} matchedTestRuns
+ * @returns {never}
+ */
+function runMultipleTestRuns(matchedTestRuns) {
+  const jestTarget = matchedTestRuns.map(testRunPatternSegment).join(' ');
+  const runLabel = `${matchedTestRuns.length} test runs (${matchedTestRuns.map((testRun) => testRun.itSuiteId).join(', ')})`;
+
+  console.log('');
+  console.log('Matched test runs:');
+  for (const testRun of matchedTestRuns) {
+    console.log(`  - ${testRun.itSuiteId}`);
+  }
+
+  const runSpinner = spinner();
+  runSpinner.start(`Starting ${runLabel}`);
+
+  const exitCode = runScreenshotCommand(jestTarget);
+
+  if (exitCode === 0) {
+    runSpinner.stop(`Finished ${runLabel}`);
+    outro('Done.');
+  } else {
+    runSpinner.stop(`Failed ${runLabel}`);
+  }
+  process.exit(exitCode);
 }
 
 /**
@@ -335,6 +433,97 @@ async function promptChoice(message, options) {
   return promptChoiceListed(message, options);
 }
 
+/**
+ * Static list + typed answer for the test-run step. Accepts a number, an exact
+ * `itSuiteId`, or a name prefix — a prefix matching several test runs selects all of them.
+ *
+ * @param {object[]} testRuns
+ * @returns {Promise<{ type: 'single', testRun: object } | { type: 'multiple', testRuns: object[] }>}
+ */
+async function promptTestRunSelectionListed(testRuns) {
+  const listing = testRuns
+    .map((testRun, index) => `${index + 1}. ${testRun.itSuiteId}  samples/${testRun.samplesDir}`)
+    .join('\n');
+
+  note(listing, 'Which test run do you want to execute?');
+
+  const answer = await text({
+    message: 'Your choice (number, exact name, or a name prefix to match several)',
+    placeholder: '1',
+    validate(raw) {
+      if (!resolveTestRunSelection(raw, testRuns)) {
+        return `Enter a number 1–${testRuns.length}, an exact name, or a prefix that matches at least one test run`;
+      }
+    },
+  });
+  exitIfCancelled(answer);
+
+  const resolved = resolveTestRunSelection(answer, testRuns);
+  if (!resolved) {
+    throw new Error('Unexpected empty choice after validation.');
+  }
+  return resolved;
+}
+
+/**
+ * Arrow-key picker for the test-run step. A dedicated "Search by name prefix…" entry
+ * switches to a typed prefix, since arrow-key selects can't filter by typing here.
+ *
+ * @param {object[]} testRuns
+ * @returns {Promise<{ type: 'single', testRun: object } | { type: 'multiple', testRuns: object[] }>}
+ */
+async function promptTestRunSelectionSelect(testRuns) {
+  const PREFIX_SEARCH_VALUE = '__prefix_search__';
+
+  const value = await select({
+    message: 'Which test run do you want to execute?',
+    options: [
+      {
+        value: PREFIX_SEARCH_VALUE,
+        label: 'Search by name prefix…',
+        hint: 'e.g. "json-schema" to match several test runs',
+      },
+      ...testRuns.map((testRun) => ({
+        value: testRun.itSuiteId,
+        label: testRun.itSuiteId,
+        hint: `samples/${testRun.samplesDir}`,
+      })),
+    ],
+  });
+  exitIfCancelled(value);
+
+  if (value !== PREFIX_SEARCH_VALUE) {
+    return { type: 'single', testRun: testRuns.find((testRun) => testRun.itSuiteId === value) };
+  }
+
+  const prefixAnswer = await text({
+    message: 'Enter a test run name prefix',
+    placeholder: 'json-schema',
+    validate(raw) {
+      if (testRuns.filter((testRun) => testRun.itSuiteId.startsWith(raw.trim())).length === 0) {
+        return 'No test run ids start with that prefix';
+      }
+    },
+  });
+  exitIfCancelled(prefixAnswer);
+
+  const prefixMatches = testRuns.filter((testRun) => testRun.itSuiteId.startsWith(prefixAnswer.trim()));
+  return prefixMatches.length === 1
+    ? { type: 'single', testRun: prefixMatches[0] }
+    : { type: 'multiple', testRuns: prefixMatches };
+}
+
+/**
+ * @param {object[]} testRuns
+ * @returns {Promise<{ type: 'single', testRun: object } | { type: 'multiple', testRuns: object[] }>}
+ */
+async function promptTestRunSelection(testRuns) {
+  if (uiMode === 'select') {
+    return promptTestRunSelectionSelect(testRuns);
+  }
+  return promptTestRunSelectionListed(testRuns);
+}
+
 const testRuns = discoverTestRuns();
 if (testRuns.length === 0) {
   console.error('No screenshot test runs found under packages/samples/.');
@@ -343,26 +532,41 @@ if (testRuns.length === 0) {
 
 intro(mode === 'test' ? 'Screenshot test — single suite' : 'Regenerate screenshots — single suite');
 
-let selectedTestRunId = cliTestRunId;
-if (selectedTestRunId) {
+/** @type {{ type: 'single', testRun: object } | { type: 'multiple', testRuns: object[] }} */
+let testRunSelection;
+
+if (cliTestRunId) {
   const knownIds = testRuns.map((testRun) => testRun.itSuiteId);
-  if (!knownIds.includes(selectedTestRunId)) {
-    console.error(`Unknown test run: ${selectedTestRunId}`);
-    console.error(`Known test runs: ${knownIds.join(', ')}`);
-    process.exit(1);
+  if (knownIds.includes(cliTestRunId)) {
+    testRunSelection = { type: 'single', testRun: testRuns.find((testRun) => testRun.itSuiteId === cliTestRunId) };
+  } else {
+    const prefixMatches = testRuns.filter((testRun) => testRun.itSuiteId.startsWith(cliTestRunId));
+    if (prefixMatches.length === 0) {
+      console.error(`Unknown test run: ${cliTestRunId}`);
+      console.error(`Known test runs: ${knownIds.join(', ')}`);
+      process.exit(1);
+    }
+    testRunSelection = prefixMatches.length === 1
+      ? { type: 'single', testRun: prefixMatches[0] }
+      : { type: 'multiple', testRuns: prefixMatches };
   }
 } else {
-  selectedTestRunId = await promptChoice(
-    'Which test run do you want to execute?',
-    testRuns.map((testRun) => ({
-      value: testRun.itSuiteId,
-      label: testRun.itSuiteId,
-      hint: `samples/${testRun.samplesDir}`,
-    })),
-  );
+  testRunSelection = await promptTestRunSelection(testRuns);
 }
 
-const testRun = testRuns.find((entry) => entry.itSuiteId === selectedTestRunId);
+if (testRunSelection.type === 'multiple' && cliSuite) {
+  console.error(
+    `"${cliTestRunId}" matches multiple test runs (${testRunSelection.testRuns.map((testRun) => testRun.itSuiteId).join(', ')}); `
+    + 'pass an exact test run id to target a specific suite.',
+  );
+  process.exit(1);
+}
+
+if (testRunSelection.type === 'multiple') {
+  runMultipleTestRuns(testRunSelection.testRuns);
+}
+
+const testRun = testRunSelection.testRun;
 const suites = discoverSuites(testRun);
 
 if (suites.length === 0) {
