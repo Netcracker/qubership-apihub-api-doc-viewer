@@ -5,7 +5,8 @@
  * packages/samples/json-schema-diffs/node-changes-summary/README.md. `string` is the combiner's
  * default selection; the "chosen object" story's variant selection is scripted in the paired IT
  * test (case-6-one-level-object-with-object-combiner-variant.it-test.ts) via `page.click()` on
- * the `data-testid` added to `SelectNestedNodeRow`'s option buttons - see the README.
+ * the Next viewer's `json-schema-combiner-option-{index}` testid (CombinerSelectorRow), scoped
+ * to the right property's `json-schema-combiner-node-viewer` container - see the README.
  */
 import type { StoryObj } from "@storybook/react";
 declare const meta: {
