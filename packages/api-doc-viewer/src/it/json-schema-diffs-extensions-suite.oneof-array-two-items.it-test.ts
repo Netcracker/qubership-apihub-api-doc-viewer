@@ -8,8 +8,16 @@ import { storyPage } from "./service/storybook-service";
 
 const META_ID = "json-schema-diffs-suite-extensions-node-diff-to-extension-inheritance-oneof-array-two-items";
 
+// This suite's root is `oneOf` wrapping a tuple array (`items: [...]`). Per the known gap
+// documented in packages/samples/json-schema-diffs/extensions/README.md, a root-level tuple
+// array never gets structural child nodes, so the combiner's array option never expands into
+// a `[data-name="JsonNode"]` element - only the combiner option-picker itself mounts. Wait for
+// either, so this stays correct if tuple-item rendering is added later.
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForSelector(
+    '[data-name="JsonNode"], [data-testid="json-schema-combiner-node-viewer"]',
+    { visible: true },
+  );
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
