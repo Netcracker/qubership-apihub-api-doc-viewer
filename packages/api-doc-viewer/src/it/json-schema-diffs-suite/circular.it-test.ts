@@ -5,6 +5,7 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-circular";
 
@@ -27,6 +28,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("001-self-object-description-updated", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-001-self-object-description-updated`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -34,6 +36,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("002-self-object-cycle-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-002-self-object-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -41,6 +44,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("003-self-object-cycle-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-003-self-object-cycle-added`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -48,6 +52,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("004-self-array-description-updated", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-004-self-array-description-updated`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -55,6 +60,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("005-self-array-cycle-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-005-self-array-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -62,6 +68,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("006-self-array-cycle-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-006-self-array-cycle-added`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -69,6 +76,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("007-chain-three-hop-description-updated", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-007-chain-three-hop-description-updated`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -76,6 +84,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("008-chain-three-hop-cycle-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-008-chain-three-hop-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -83,6 +92,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("009-chain-three-hop-cycle-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-009-chain-three-hop-cycle-added`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -90,6 +100,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("010-combiner-variant-cycle-description-updated", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-010-combiner-variant-cycle-description-updated`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -97,6 +108,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("011-combiner-variant-cycle-cycle-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-011-combiner-variant-cycle-cycle-removed`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -104,6 +116,7 @@ describe("JSON Schema Diffs Suite/Circular", () => {
   it("012-combiner-variant-cycle-cycle-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-circular--case-012-combiner-variant-cycle-cycle-added`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

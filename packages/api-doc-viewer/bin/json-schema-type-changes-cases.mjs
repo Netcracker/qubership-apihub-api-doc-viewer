@@ -2950,6 +2950,7 @@ export const STORY_SUITES = [
     globPath: "extended/combiners-one-level",
     storyFileName: "extended-combiners-one-level.stories.tsx",
     testFileName: "extended-combiners-one-level.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "extended-combiners-two-level",
@@ -2957,6 +2958,7 @@ export const STORY_SUITES = [
     globPath: "extended/combiners-two-level",
     storyFileName: "extended-combiners-two-level.stories.tsx",
     testFileName: "extended-combiners-two-level.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "circular",
@@ -2965,6 +2967,7 @@ export const STORY_SUITES = [
     storyFileName: "circular.stories.tsx",
     testFileName: "circular.it-test.ts",
     diffUtilsModule: "./circular-utils",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "type-value-changes",
@@ -2987,6 +2990,7 @@ export const STORY_SUITES = [
     globPath: "object-properties",
     storyFileName: "object-properties.stories.tsx",
     testFileName: "object-properties.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "object-additional-properties",
@@ -2994,6 +2998,7 @@ export const STORY_SUITES = [
     globPath: "object-additional-properties",
     storyFileName: "object-additional-properties.stories.tsx",
     testFileName: "object-additional-properties.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "array-indexed-items",
@@ -3008,6 +3013,7 @@ export const STORY_SUITES = [
     globPath: "one-of-object-variant",
     storyFileName: "one-of-object-variant.stories.tsx",
     testFileName: "one-of-object-variant.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
   {
     suiteKey: "one-of-array-variant",
@@ -3015,6 +3021,7 @@ export const STORY_SUITES = [
     globPath: "one-of-array-variant",
     storyFileName: "one-of-array-variant.stories.tsx",
     testFileName: "one-of-array-variant.it-test.ts",
+    includesOneOfOrAnyOfCombiner: true,
   },
 ];
 

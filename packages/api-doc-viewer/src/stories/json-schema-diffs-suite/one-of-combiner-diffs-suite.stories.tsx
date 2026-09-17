@@ -6,7 +6,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
-  createJsonSchemaDiffCaseStoryFactory,
+  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
@@ -26,7 +26,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   sampleById,
 );

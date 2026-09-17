@@ -5,6 +5,7 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties";
 
@@ -27,6 +28,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("001-add-additional-properties-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-001-add-additional-properties-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -34,6 +36,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("002-remove-additional-properties-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-002-remove-additional-properties-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -41,6 +44,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("003-add-additional-properties-type-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-003-add-additional-properties-type-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -48,6 +52,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("004-remove-additional-properties-type-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-004-remove-additional-properties-type-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -55,6 +60,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("005-change-additional-properties-string-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-005-change-additional-properties-string-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -62,6 +68,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("006-change-additional-properties-false-to-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-006-change-additional-properties-false-to-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -69,6 +76,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("007-add-additional-properties-type-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-007-add-additional-properties-type-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -76,6 +84,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("008-remove-additional-properties-type-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-008-remove-additional-properties-type-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -83,6 +92,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("009-change-additional-properties-number-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-009-change-additional-properties-number-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -90,6 +100,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("010-change-additional-properties-false-to-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-010-change-additional-properties-false-to-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -97,6 +108,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("011-add-additional-properties-type-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-011-add-additional-properties-type-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -104,6 +116,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("012-remove-additional-properties-type-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-012-remove-additional-properties-type-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -111,6 +124,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("013-change-additional-properties-integer-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-013-change-additional-properties-integer-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -118,6 +132,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("014-change-additional-properties-false-to-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-014-change-additional-properties-false-to-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -125,6 +140,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("015-add-additional-properties-type-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-015-add-additional-properties-type-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -132,6 +148,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("016-remove-additional-properties-type-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-016-remove-additional-properties-type-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -139,6 +156,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("017-change-additional-properties-boolean-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-017-change-additional-properties-boolean-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -146,6 +164,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("018-change-additional-properties-false-to-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-018-change-additional-properties-false-to-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -153,6 +172,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("019-add-additional-properties-type-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-019-add-additional-properties-type-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -160,6 +180,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("020-remove-additional-properties-type-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-020-remove-additional-properties-type-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -167,6 +188,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("021-change-additional-properties-array-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-021-change-additional-properties-array-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -174,6 +196,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("022-change-additional-properties-false-to-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-022-change-additional-properties-false-to-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -181,6 +204,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("023-add-additional-properties-type-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-023-add-additional-properties-type-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -188,6 +212,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("024-remove-additional-properties-type-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-024-remove-additional-properties-type-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -195,6 +220,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("025-change-additional-properties-object-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-025-change-additional-properties-object-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -202,6 +228,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("026-change-additional-properties-false-to-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-026-change-additional-properties-false-to-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -209,6 +236,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("027-one-of-object-variant-add-additional-properties-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-027-one-of-object-variant-add-additional-properties-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -216,6 +244,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("028-one-of-object-variant-remove-additional-properties-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-028-one-of-object-variant-remove-additional-properties-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -223,6 +252,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("029-one-of-object-variant-add-additional-properties-type-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-029-one-of-object-variant-add-additional-properties-type-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -230,6 +260,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("030-one-of-object-variant-remove-additional-properties-type-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-030-one-of-object-variant-remove-additional-properties-type-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -237,6 +268,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("031-one-of-object-variant-change-additional-properties-string-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-031-one-of-object-variant-change-additional-properties-string-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -244,6 +276,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("032-one-of-object-variant-change-additional-properties-false-to-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-032-one-of-object-variant-change-additional-properties-false-to-string`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -251,6 +284,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("033-one-of-object-variant-add-additional-properties-type-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-033-one-of-object-variant-add-additional-properties-type-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -258,6 +292,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("034-one-of-object-variant-remove-additional-properties-type-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-034-one-of-object-variant-remove-additional-properties-type-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -265,6 +300,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("035-one-of-object-variant-change-additional-properties-number-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-035-one-of-object-variant-change-additional-properties-number-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -272,6 +308,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("036-one-of-object-variant-change-additional-properties-false-to-number", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-036-one-of-object-variant-change-additional-properties-false-to-number`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -279,6 +316,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("037-one-of-object-variant-add-additional-properties-type-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-037-one-of-object-variant-add-additional-properties-type-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -286,6 +324,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("038-one-of-object-variant-remove-additional-properties-type-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-038-one-of-object-variant-remove-additional-properties-type-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -293,6 +332,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("039-one-of-object-variant-change-additional-properties-integer-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-039-one-of-object-variant-change-additional-properties-integer-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -300,6 +340,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("040-one-of-object-variant-change-additional-properties-false-to-integer", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-040-one-of-object-variant-change-additional-properties-false-to-integer`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -307,6 +348,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("041-one-of-object-variant-add-additional-properties-type-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-041-one-of-object-variant-add-additional-properties-type-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -314,6 +356,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("042-one-of-object-variant-remove-additional-properties-type-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-042-one-of-object-variant-remove-additional-properties-type-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -321,6 +364,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("043-one-of-object-variant-change-additional-properties-boolean-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-043-one-of-object-variant-change-additional-properties-boolean-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -328,6 +372,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("044-one-of-object-variant-change-additional-properties-false-to-boolean", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-044-one-of-object-variant-change-additional-properties-false-to-boolean`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -335,6 +380,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("045-one-of-object-variant-add-additional-properties-type-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-045-one-of-object-variant-add-additional-properties-type-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -342,6 +388,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("046-one-of-object-variant-remove-additional-properties-type-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-046-one-of-object-variant-remove-additional-properties-type-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -349,6 +396,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("047-one-of-object-variant-change-additional-properties-array-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-047-one-of-object-variant-change-additional-properties-array-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -356,6 +404,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("048-one-of-object-variant-change-additional-properties-false-to-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-048-one-of-object-variant-change-additional-properties-false-to-array`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -363,6 +412,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("049-one-of-object-variant-add-additional-properties-type-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-049-one-of-object-variant-add-additional-properties-type-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -370,6 +420,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("050-one-of-object-variant-remove-additional-properties-type-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-050-one-of-object-variant-remove-additional-properties-type-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -377,6 +428,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("051-one-of-object-variant-change-additional-properties-object-to-false", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-051-one-of-object-variant-change-additional-properties-object-to-false`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -384,6 +436,7 @@ describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Ob
   it("052-one-of-object-variant-change-additional-properties-false-to-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties--case-052-one-of-object-variant-change-additional-properties-false-to-object`);
     await waitForJsonSchemaDiffViewer();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
