@@ -192,10 +192,11 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
   const markdownComponents = useMemo<Components>(() => ({
     p: ({ children }: { children?: ReactNode }) => (
       <p>
-        <span className={diffsStyleClasses.join(" ")}>{children}</span>
+        {/* <span className={diffsStyleClasses.join(" ")}>{children}</span> */}
+        {children}
       </p>
     ),
-  }), [diffsStyleClasses])
+  }), [])
 
   const onToggleExpanded = useCallback(() => {
     setExpanded(prev => !prev)
@@ -206,7 +207,7 @@ export const MarkdownTextValue: FC<MarkdownTextValueProps> = memo<MarkdownTextVa
   }
 
   return (
-    <div className="markdown-text-row flex min-w-0 flex-col items-start gap-1">
+    <div className={`markdown-text-row flex min-w-0 flex-col items-start gap-1 ${diffsStyleClasses.join(" ")}`}>
       <ReactMarkdown className={markdownClassName} remarkPlugins={[remarkGfm]} components={markdownComponents}>
         {displayValue}
       </ReactMarkdown>
