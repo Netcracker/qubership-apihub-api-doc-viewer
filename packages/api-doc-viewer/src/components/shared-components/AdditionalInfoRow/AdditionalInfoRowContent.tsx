@@ -82,7 +82,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       )}
       {isContentVisible && (
         <div className={`${layout.bodyClass} flex min-w-0 flex-1 items-center gap-2`}>
-          <span className="additional-info-row-label">{`${label}:`}</span>
+          <div className="additional-info-row-label">{`${label}:`}</div>
           {subheader?.(layoutSide)}
         </div>
       )}
