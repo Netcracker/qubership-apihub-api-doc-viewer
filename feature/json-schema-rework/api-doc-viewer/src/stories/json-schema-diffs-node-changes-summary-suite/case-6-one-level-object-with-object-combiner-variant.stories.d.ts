@@ -3,10 +3,11 @@
  * Object with 2 `oneOf(string, object)` properties, where the object variant is Case 1's schema
  * (first property) and Case 2's schema (second property) - see
  * packages/samples/json-schema-diffs/node-changes-summary/README.md. `string` is the combiner's
- * default selection; the "chosen object" story's variant selection is scripted in the paired IT
- * test (case-6-one-level-object-with-object-combiner-variant.it-test.ts) via `page.click()` on
- * the Next viewer's `json-schema-combiner-option-{index}` testid (CombinerSelectorRow), scoped
- * to the right property's `json-schema-combiner-node-viewer` container - see the README.
+ * default selection; the "chosen object" story uses `createNodeChangesSummaryCaseStoryWithChangedVariant`
+ * so both properties' combiners auto-switch to their changed (object) variant on mount, via the
+ * shared `switchCombinerNodesToChangedVariant`. "Collapsed root" intentionally keeps the plain
+ * `createNodeChangesSummaryCaseStory` (no switch) - it doesn't expand far enough to show any
+ * combiner anyway.
  */
 import type { StoryObj } from "@storybook/react";
 declare const meta: {

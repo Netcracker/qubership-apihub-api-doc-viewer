@@ -54,5 +54,19 @@ export declare const createJsonSchemaNextDiffsViewerArgsFromSchemas: (beforeSche
 export declare const createJsonSchemaNextDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsonSchemaNextDiffsViewerProps;
 export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
+type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs & {
+    play: (context: {
+        canvasElement: HTMLElement;
+    }) => Promise<void>;
+};
+/**
+ * Same as `createJsonSchemaDiffCaseStoryFactory`, but also switches oneOf/anyOf combiner nodes
+ * to their changed variant on mount (recursing into nested combiners until a leaf is reached),
+ * so the story opens accented on the change instead of the combiner's default first option. A
+ * safe no-op for suites with no combiner content. Screenshot ITs do not rely on this `play`
+ * function (it does not run under the Puppeteer iframe.html harness); they call
+ * `switchCombinerNodesToChangedVariant` directly via `page.evaluate`.
+ */
+export declare const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgsWithChangedVariant;
 export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export {};
