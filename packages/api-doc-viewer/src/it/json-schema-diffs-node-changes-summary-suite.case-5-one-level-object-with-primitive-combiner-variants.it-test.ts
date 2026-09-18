@@ -6,6 +6,7 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
+import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-node-changes-summary-case-5-one-level-object-with-primitive-combiner-variants";
 
@@ -15,6 +16,7 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
 describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 5 — One Level Object With Primitive Combiner Variants", () => {

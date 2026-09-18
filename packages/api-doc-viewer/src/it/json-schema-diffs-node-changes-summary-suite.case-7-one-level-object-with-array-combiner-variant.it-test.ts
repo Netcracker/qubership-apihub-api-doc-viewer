@@ -6,6 +6,7 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
+import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-node-changes-summary-case-7-one-level-object-with-array-combiner-variant";
 
@@ -15,34 +16,6 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
-}
-
-// Case 7's two oneOf properties (variantWithCaseThree / variantWithCaseFour) default to their
-// `string` variant; "chosen array" stories click the `array` option on both. The Next viewer's
-// combiner picker (CombinerSelectorRow) uses index-based testids
-// (`json-schema-combiner-option-{index}`, not the legacy path-based combiner-node-id scheme),
-// and the same testid repeats once per property AND once per diff side (SideBySideLayout), so
-// a plain `page.click(selector)` would hit the wrong element - scope the query to the
-// `json-schema-combiner-node-viewer` whose own text starts with the target property name. Either
-// side's button works: both sides of one property share a single selection state.
-async function selectCombinerOption(propertyName: string, optionIndex: number) {
-  await page.evaluate((name, index) => {
-    const viewers = document.querySelectorAll('[data-testid="json-schema-combiner-node-viewer"]');
-    const target = Array.from(viewers).find((viewer) => viewer.textContent?.trim().startsWith(name));
-    if (!target) {
-      throw new Error(`No combiner node viewer found for property: ${name}`);
-    }
-    const button = target.querySelector(`[data-testid="json-schema-combiner-option-${index}"]`);
-    if (!button) {
-      throw new Error(`No combiner option button found: json-schema-combiner-option-${index}`);
-    }
-    (button as HTMLElement).click();
-  }, propertyName, optionIndex);
-}
-
-async function selectArrayVariants() {
-  await selectCombinerOption("variantWithCaseThree", 1);
-  await selectCombinerOption("variantWithCaseFour", 1);
 }
 
 // There is no `expandItems()` step anymore: once the `array` variant is selected, its `items`
@@ -68,7 +41,7 @@ describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 7 — One Level Ob
     story = await storyPage(page, `${META_ID}--expanded-root-chosen-array-expanded-items`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
-    await selectArrayVariants();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     await waitForJsonSchemaDiffViewer();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -77,7 +50,7 @@ describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 7 — One Level Ob
     story = await storyPage(page, `${META_ID}--expanded-root-chosen-array-collapsed-items`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
-    await selectArrayVariants();
+    await page.evaluate(switchCombinerNodesToChangedVariant);
     await waitForJsonSchemaDiffViewer();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

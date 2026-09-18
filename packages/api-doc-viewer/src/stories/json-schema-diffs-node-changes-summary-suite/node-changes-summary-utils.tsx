@@ -11,6 +11,7 @@ import {
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from '../json-schema-diffs-suite/json-schema-diffs-utils'
 import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
+import { switchCombinerNodesToChangedVariant } from '@apihub/utils/combiner-changed-variant'
 
 const beforeFiles = import.meta.glob(
   '../../../../samples/json-schema-diffs/node-changes-summary/*/before.yaml',
@@ -80,3 +81,26 @@ export const createNodeChangesSummaryCaseStory = (
     },
   }
 }
+
+type NodeChangesSummaryCaseStoryResultWithChangedVariant = NodeChangesSummaryCaseStoryResult & {
+  play: (context: { canvasElement: HTMLElement }) => Promise<void>;
+};
+
+/**
+ * Same as `createNodeChangesSummaryCaseStory`, but also switches oneOf/anyOf combiner nodes to
+ * their changed variant on mount (recursing into nested combiners until a leaf is reached), so
+ * the story opens accented on the change instead of the combiner's default first option. Use
+ * for cases that contain a oneOf/anyOf combiner (cases 5-7) — a safe no-op otherwise. Screenshot
+ * ITs do not rely on this `play` function (it does not run under the Puppeteer iframe.html
+ * harness); they call `switchCombinerNodesToChangedVariant` directly via `page.evaluate`.
+ */
+export const createNodeChangesSummaryCaseStoryWithChangedVariant = (
+  caseSlug: string,
+  variantName: string,
+  expandedDepth: number,
+): NodeChangesSummaryCaseStoryResultWithChangedVariant => ({
+  ...createNodeChangesSummaryCaseStory(caseSlug, variantName, expandedDepth),
+  play: async ({ canvasElement }) => {
+    await switchCombinerNodesToChangedVariant(canvasElement)
+  },
+})

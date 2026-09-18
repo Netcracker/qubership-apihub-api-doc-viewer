@@ -5,7 +5,10 @@
  * packages/samples/json-schema-diffs/node-changes-summary/README.md.
  */
 import type { Meta, StoryObj } from "@storybook/react";
-import { NodeChangesSummarySampleStory, createNodeChangesSummaryCaseStory } from "./node-changes-summary-utils";
+import {
+  NodeChangesSummarySampleStory,
+  createNodeChangesSummaryCaseStoryWithChangedVariant,
+} from "./node-changes-summary-utils";
 
 const CASE_SLUG = "5-oneof-properties";
 
@@ -19,5 +22,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Expanded_root: Story = createNodeChangesSummaryCaseStory(CASE_SLUG, "Expanded root", 1);
-export const Collapsed_root: Story = createNodeChangesSummaryCaseStory(CASE_SLUG, "Collapsed root", 0);
+// Unlike cases 6/7, neither story here exists specifically to demonstrate the combiner's
+// default/unswitched selection -- both are plain expand-depth variants -- so both safely use
+// the changed-variant factory (a no-op wherever a case's diff isn't combiner-option-level).
+export const Expanded_root: Story = createNodeChangesSummaryCaseStoryWithChangedVariant(CASE_SLUG, "Expanded root", 1);
+export const Collapsed_root: Story = createNodeChangesSummaryCaseStoryWithChangedVariant(CASE_SLUG, "Collapsed root", 0);

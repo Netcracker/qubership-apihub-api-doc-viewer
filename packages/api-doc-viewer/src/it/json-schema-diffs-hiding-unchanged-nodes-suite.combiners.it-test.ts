@@ -4,6 +4,7 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
+import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-combiners";
 
@@ -14,6 +15,7 @@ async function waitForJsonSchemaNextDiffsViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
 describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
