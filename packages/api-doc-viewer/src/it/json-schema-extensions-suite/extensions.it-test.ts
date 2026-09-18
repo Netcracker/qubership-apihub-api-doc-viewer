@@ -4,7 +4,7 @@
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
 
-const META_ID = 'json-schema-suite-extensions'
+const META_ID = 'json-schema-extensions-suite-extensions'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 const TEST_IDS: string[] = [
