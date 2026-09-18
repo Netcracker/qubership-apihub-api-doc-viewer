@@ -46,7 +46,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: "json-schema-suite-number-validations-value-range",
-  title: "JSON Schema Suite/Number Validations Value Range",
+  title: "JSON Schema Suite/Number And Validations/Number Validations Value Range",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

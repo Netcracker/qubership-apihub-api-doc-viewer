@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { exitIfInsideNodeModules } from "./compatibility-suite-generation-utils.mjs";
 import { COMBINER_KINDS, combinerKindLabel, combinerKindSlug } from "./combiner-schema-builder.mjs";
 import { listCombinerDiffCases } from "./combiner-diff-case-definitions.mjs";
+import { toStorybookMetaId } from "./storybook-story-id-utils.mjs";
 
 exitIfInsideNodeModules(import.meta.url);
 
@@ -15,12 +16,13 @@ const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 const COMBINER_DIFF_STORY_SUITES = COMBINER_KINDS.map((combinerKind) => {
   const slug = combinerKindSlug(combinerKind);
   const label = combinerKindLabel(combinerKind);
+  const title = `JSON Schema Diffs Suite/Combiners/${label} Combiner Diffs Suite`;
   return {
     combinerKind,
     storyFileName: `${slug}-combiner-diffs-suite.stories.tsx`,
     testFileName: `${slug}-combiner-diffs-suite.it-test.ts`,
-    metaKebab: `json-schema-diffs-suite-${slug}-combiner-diffs-suite`,
-    title: `JSON Schema Diffs Suite/${label} Combiner Diffs Suite`,
+    metaKebab: toStorybookMetaId(title),
+    title,
   };
 });
 
@@ -31,6 +33,14 @@ mkdirSync(testsOutDir, { recursive: true });
  * @param {ReturnType<typeof listCombinerDiffCases>} cases
  */
 const printTestFile = (suite, cases) => {
+  // allOf has no variant selector (all sub-schemas apply simultaneously) -- nothing to switch.
+  const includesChangedVariantSwitch = suite.combinerKind !== "allOf";
+  const combinerImport = includesChangedVariantSwitch
+    ? `\nimport { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";`
+    : "";
+  const combinerSwitchLine = includesChangedVariantSwitch
+    ? "\n  await page.evaluate(switchCombinerNodesToChangedVariant);"
+    : "";
   const tests = cases
     .map(
       (sampleCase) => `
@@ -49,7 +59,7 @@ const printTestFile = (suite, cases) => {
  */
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
-import { storyPage } from "../service/storybook-service";
+import { storyPage } from "../service/storybook-service";${combinerImport}
 
 const META_ID = "${suite.metaKebab}";
 
@@ -65,7 +75,7 @@ async function waitForJsonSchemaDiffViewer() {
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
+  ));${combinerSwitchLine}
 }
 
 describe("${suite.title}", () => {

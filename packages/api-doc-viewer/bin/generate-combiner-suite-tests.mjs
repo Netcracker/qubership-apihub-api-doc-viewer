@@ -21,7 +21,7 @@ const COMBINER_STORY_SUITES = COMBINER_KINDS.map((combinerKind) => {
     storyFileName: `${slug}-combiner-suite.stories.tsx`,
     testFileName: `${slug}-combiner-suite.it-test.ts`,
     metaId: `json-schema-suite-${slug}-combiner-suite`,
-    title: `JSON Schema Suite/${label} Combiner Suite`,
+    title: `JSON Schema Suite/Combiners/${label} Combiner Suite`,
   };
 });
 

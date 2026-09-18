@@ -23,7 +23,7 @@ const createCaseStory = createCaseStoryFactory(sampleById);
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: "json-schema-suite-object",
-  title: "JSON Schema Suite/Object",
+  title: "JSON Schema Suite/Object And Validations/Object",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

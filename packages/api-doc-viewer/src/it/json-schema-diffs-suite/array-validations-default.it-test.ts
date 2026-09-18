@@ -6,7 +6,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-array-validations-default";
+const META_ID = "json-schema-diffs-suite-array-validation-array-validations-default";
+
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -27,9 +29,10 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
-describe("JSON Schema Diffs Suite/Array Validations Default", () => {
+describe("JSON Schema Diffs Suite/Array Validation/Array Validations Default", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -38,35 +41,35 @@ describe("JSON Schema Diffs Suite/Array Validations Default", () => {
   });
 
   it("001-default-added-empty-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-validations-default--case-001-default-added-empty-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-validation-array-validations-default--case-001-default-added-empty-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-default-removed-empty-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-validations-default--case-002-default-removed-empty-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-validation-array-validations-default--case-002-default-removed-empty-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-default-replaced-empty-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-validations-default--case-003-default-replaced-empty-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-validation-array-validations-default--case-003-default-replaced-empty-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-default-replaced-array-to-empty", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-validations-default--case-004-default-replaced-array-to-empty`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-validation-array-validations-default--case-004-default-replaced-array-to-empty`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-default-replaced-array-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-validations-default--case-005-default-replaced-array-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-validation-array-validations-default--case-005-default-replaced-array-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

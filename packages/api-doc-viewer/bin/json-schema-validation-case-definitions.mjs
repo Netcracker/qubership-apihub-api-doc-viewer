@@ -453,15 +453,28 @@ export const collectJsonSchemaValidationYamlCasesForGroup = (group) =>
 
 export const toValidationCaseExportName = (caseId) => `Case_${caseId.replaceAll("-", "_")}`;
 
+/** Group folder Storybook titles get nested under; groups not listed here stay ungrouped. */
+const VALIDATION_GROUP_TITLE_PREFIX = {
+  "array-validations": "Array And Validations",
+  "boolean-validations": "Boolean And Validations",
+  "integer-validations": "Integer And Validations",
+  "object-validations": "Object And Validations",
+  "string-validations": "String And Validations",
+};
+
 /** @type {Array<{ group: string, title: string, metaId: string, storyFileName: string, testFileName: string, programmatic?: boolean }>} */
 export const JSON_SCHEMA_VALIDATION_YAML_SUITES = JSON_SCHEMA_VALIDATION_GROUPS.map(
-  ({ group }) => ({
-    group,
-    title: `JSON Schema Suite/${group.replaceAll("-", " ").replace(/\b\w/g, (char) => char.toUpperCase()).replace("Validations", " Validations")}`,
-    metaId: `json-schema-suite-${group}`,
-    storyFileName: `${group}.stories.tsx`,
-    testFileName: `${group}.it-test.ts`,
-  }),
+  ({ group }) => {
+    const leaf = group.replaceAll("-", " ").replace(/\b\w/g, (char) => char.toUpperCase()).replace("Validations", " Validations");
+    const groupPrefix = VALIDATION_GROUP_TITLE_PREFIX[group];
+    return {
+      group,
+      title: groupPrefix ? `JSON Schema Suite/${groupPrefix}/${leaf}` : `JSON Schema Suite/${leaf}`,
+      metaId: `json-schema-suite-${group}`,
+      storyFileName: `${group}.stories.tsx`,
+      testFileName: `${group}.it-test.ts`,
+    };
+  },
 );
 
 /** @type {Array<{ group: string, title: string, metaId: string, storyFileName: string, testFileName: string, schemaType: "integer" | "number", includeOas31Only: boolean, sampleBuilderName: string }>} */
@@ -469,7 +482,7 @@ export const JSON_SCHEMA_VALIDATION_VALUE_RANGE_SUITES = [
   {
     group: "integer-validations",
     schemaType: "integer",
-    title: "JSON Schema Suite/Integer Validations Value Range",
+    title: "JSON Schema Suite/Integer And Validations/Integer Validations Value Range",
     metaId: "json-schema-suite-integer-validations-value-range",
     storyFileName: "integer-validations-value-range.stories.tsx",
     testFileName: "integer-validations-value-range.it-test.ts",
@@ -479,7 +492,7 @@ export const JSON_SCHEMA_VALIDATION_VALUE_RANGE_SUITES = [
   {
     group: "integer-validations",
     schemaType: "integer",
-    title: "JSON Schema Suite/Integer Validations Value Range OAS 3.1",
+    title: "JSON Schema Suite/Integer And Validations/Integer Validations Value Range OAS 3.1",
     metaId: "json-schema-suite-integer-validations-value-range-oas-3-1",
     storyFileName: "integer-validations-value-range-oas-3-1.stories.tsx",
     testFileName: "integer-validations-value-range-oas-3-1.it-test.ts",
@@ -489,7 +502,7 @@ export const JSON_SCHEMA_VALIDATION_VALUE_RANGE_SUITES = [
   {
     group: "number-validations",
     schemaType: "number",
-    title: "JSON Schema Suite/Number Validations Value Range",
+    title: "JSON Schema Suite/Number And Validations/Number Validations Value Range",
     metaId: "json-schema-suite-number-validations-value-range",
     storyFileName: "number-validations-value-range.stories.tsx",
     testFileName: "number-validations-value-range.it-test.ts",
@@ -499,7 +512,7 @@ export const JSON_SCHEMA_VALIDATION_VALUE_RANGE_SUITES = [
   {
     group: "number-validations",
     schemaType: "number",
-    title: "JSON Schema Suite/Number Validations Value Range OAS 3.1",
+    title: "JSON Schema Suite/Number And Validations/Number Validations Value Range OAS 3.1",
     metaId: "json-schema-suite-number-validations-value-range-oas-3-1",
     storyFileName: "number-validations-value-range-oas-3-1.stories.tsx",
     testFileName: "number-validations-value-range-oas-3-1.it-test.ts",

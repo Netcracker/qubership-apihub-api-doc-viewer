@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { exitIfInsideNodeModules } from "./compatibility-suite-generation-utils.mjs";
 import { COMBINER_KINDS, combinerKindLabel, combinerKindSlug } from "./combiner-schema-builder.mjs";
 import { listCombinerDiffCases, toCombinerCaseExportName } from "./combiner-diff-case-definitions.mjs";
+import { toStorybookMetaId } from "./storybook-story-id-utils.mjs";
 
 exitIfInsideNodeModules(import.meta.url);
 
@@ -15,12 +16,13 @@ const storiesOutDir = path.resolve(packageRoot, "src/stories/json-schema-diffs-s
 const COMBINER_DIFF_STORY_SUITES = COMBINER_KINDS.map((combinerKind) => {
   const slug = combinerKindSlug(combinerKind);
   const label = combinerKindLabel(combinerKind);
+  const title = `JSON Schema Diffs Suite/Combiners/${label} Combiner Diffs Suite`;
   return {
     combinerKind,
     storyFileName: `${slug}-combiner-diffs-suite.stories.tsx`,
     testFileName: `${slug}-combiner-diffs-suite.it-test.ts`,
-    metaKebab: `json-schema-diffs-suite-${slug}-combiner-diffs-suite`,
-    title: `JSON Schema Diffs Suite/${label} Combiner Diffs Suite`,
+    metaKebab: toStorybookMetaId(title),
+    title,
   };
 });
 
@@ -31,6 +33,10 @@ mkdirSync(storiesOutDir, { recursive: true });
  * @param {ReturnType<typeof listCombinerDiffCases>} cases
  */
 const printStoryFile = (suite, cases) => {
+  // allOf has no variant selector (all sub-schemas apply simultaneously) -- nothing to switch.
+  const factoryName = suite.combinerKind !== "allOf"
+    ? "createJsonSchemaDiffCaseStoryFactoryWithChangedVariant"
+    : "createJsonSchemaDiffCaseStoryFactory";
   const exports = cases
     .map(
       (sampleCase) =>
@@ -46,7 +52,7 @@ const printStoryFile = (suite, cases) => {
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
-  createJsonSchemaDiffCaseStoryFactory,
+  ${factoryName},
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
@@ -66,7 +72,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = ${factoryName}(
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   sampleById,
 );

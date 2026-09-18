@@ -6,7 +6,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
-  createJsonSchemaDiffCaseStoryFactory,
+  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
@@ -17,7 +17,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/One Of Combiner Diffs Suite",
+  title: "JSON Schema Diffs Suite/Combiners/One Of Combiner Diffs Suite",
   component: JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle>;
@@ -26,7 +26,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   sampleById,
 );

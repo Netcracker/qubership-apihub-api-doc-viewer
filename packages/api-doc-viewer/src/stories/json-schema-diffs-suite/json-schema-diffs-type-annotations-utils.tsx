@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
 import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from "../preprocess";
 import { parseYamlSource } from "../utils/parse-yaml-source";
+import { switchCombinerNodesToChangedVariant } from "@apihub/utils/combiner-changed-variant";
 
 export const JSON_SCHEMA_DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
@@ -127,6 +128,31 @@ export const createJsonSchemaDiffCaseStoryFactory = (
       );
     },
   };
+};
+
+type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs & {
+  play: (context: { canvasElement: HTMLElement }) => Promise<void>;
+};
+
+/**
+ * Same as `createJsonSchemaDiffCaseStoryFactory`, but also switches oneOf/anyOf combiner nodes
+ * to their changed variant on mount (recursing into nested combiners until a leaf is reached),
+ * so the story opens accented on the change instead of the combiner's default first option. A
+ * safe no-op for suites with no combiner content. Screenshot ITs do not rely on this `play`
+ * function (it does not run under the Puppeteer iframe.html harness); they call
+ * `switchCombinerNodesToChangedVariant` directly via `page.evaluate`.
+ */
+export const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant = (
+  StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element,
+  sampleById: Record<string, JsonSchemaDiffSampleCase>,
+) => {
+  const createCaseStory = createJsonSchemaDiffCaseStoryFactory(StoryComponent, sampleById);
+  return (caseId: string): JsonSchemaDiffCaseStoryArgsWithChangedVariant => ({
+    ...createCaseStory(caseId),
+    play: async ({ canvasElement }) => {
+      await switchCombinerNodesToChangedVariant(canvasElement);
+    },
+  });
 };
 
 export const JsonSchemaDiffSamplesStory = ({

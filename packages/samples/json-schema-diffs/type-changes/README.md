@@ -9,7 +9,7 @@ JSON Schema documents.
 
 ## Sub-suites
 
-### Type Flags
+### Type Changes/Type Flags
 
 Path: `type-changes/type-flags/` (13 cases)
 
@@ -62,7 +62,7 @@ Path: `type-changes/description-changes/` (26 cases)
 | `025-unchanged-description-short-multiline` | Unchanged short multi-line description (3 lines) |
 | `026-unchanged-description-long-multiline` | Unchanged long multi-line description (10 lines) |
 
-### String Validation Enum
+### String Validation/String Validation Enum
 
 Path: `type-changes/string-validation/enum/` (5 cases)
 
@@ -74,7 +74,7 @@ Path: `type-changes/string-validation/enum/` (5 cases)
 | `004-enum-value-removed` | Removed one enum value from existing 3 values |
 | `005-enum-two-values-unchanged` | Unchanged enum with 2 values |
 
-### String Validation Examples
+### String Validation/String Validation Examples
 
 Path: `type-changes/string-validation/examples/` (5 cases)
 
@@ -86,7 +86,7 @@ Path: `type-changes/string-validation/examples/` (5 cases)
 | `004-examples-one-removed` | Removed one example from existing 3 values |
 | `005-examples-two-unchanged` | Unchanged 2 examples |
 
-### String Validation Value Length
+### String Validation/String Validation Value Length
 
 Path: `type-changes/string-validation/value-length/` (16 cases)
 
@@ -109,6 +109,26 @@ Path: `type-changes/string-validation/value-length/` (16 cases)
 | `015-unchanged-max-length` | Unchanged maxLength only |
 | `016-unchanged-min-max-length` | Unchanged minLength, maxLength |
 
+### String Validation/Pattern
+
+Path: `type-changes/string-validation/pattern/` (3 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-pattern-added` | pattern added |
+| `002-pattern-removed` | pattern removed |
+| `003-pattern-replaced` | pattern replaced |
+
+### Number Validation/Multiple Of
+
+Path: `type-changes/number-validation/multiple-of/` (3 cases)
+
+| Case id | Change |
+| --- | --- |
+| `001-multiple-of-added` | multipleOf added |
+| `002-multiple-of-removed` | multipleOf removed |
+| `003-multiple-of-replaced` | multipleOf replaced |
+
 ### Extended Default
 
 Path: `type-changes/extended/default/` (4 cases)
@@ -120,7 +140,7 @@ Path: `type-changes/extended/default/` (4 cases)
 | `003-default-replaced-string` | Replaced default (string) |
 | `004-default-replaced-boolean` | Replaced default (boolean) |
 
-### Extended Object
+### Object Properties And Additional Properties/Extended Object
 
 Path: `type-changes/extended/object/` (6 cases)
 
@@ -133,7 +153,7 @@ Path: `type-changes/extended/object/` (6 cases)
 | `005-pattern-properties-removed` | patternProperties removed |
 | `006-pattern-properties-replaced` | patternProperties replaced |
 
-### Extended Array
+### Array Items And Additional Items/Extended Array
 
 Path: `type-changes/extended/array/` (7 cases)
 
@@ -147,7 +167,7 @@ Path: `type-changes/extended/array/` (7 cases)
 | `006-tuple-item-removed` | Pop tuple item |
 | `007-items-schema-description-changed` | Change inside items schema |
 
-### Object Validations Default
+### Object Validation/Object Validations Default
 
 Path: `type-changes/object-validations/default/` (5 cases)
 
@@ -159,7 +179,7 @@ Path: `type-changes/object-validations/default/` (5 cases)
 | `004-default-replaced-object-to-empty` | Replaced default: object with 2 properties → {} |
 | `005-default-replaced-object-to-object` | Replaced default: object with 2 properties → object with 4 properties |
 
-### Object Validations Example
+### Object Validation/Object Validations Example
 
 Path: `type-changes/object-validations/example/` (7 cases)
 
@@ -173,7 +193,7 @@ Path: `type-changes/object-validations/example/` (7 cases)
 | `006-example-replaced-object-to-empty` | Replaced example: object with 2 properties → {} |
 | `007-example-replaced-object-to-object` | Replaced example: object with 2 properties → object with 3 properties |
 
-### Object Validations Examples
+### Object Validation/Object Validations Examples
 
 Path: `type-changes/object-validations/examples/` (23 cases)
 
@@ -203,7 +223,7 @@ Path: `type-changes/object-validations/examples/` (23 cases)
 | `022-examples-replace-object-with-empty` | Replaced object 1 with {} in examples: [{}, object 1] → [{}, {}] |
 | `023-examples-replace-object-with-object` | Replaced object 1 with object 2 in examples: [{}, object 1] → [{}, object 2] |
 
-### Object Validations Properties Count
+### Object Validation/Object Validations Properties Count
 
 Path: `type-changes/object-validations/properties-count/` (21 cases)
 
@@ -231,7 +251,7 @@ Path: `type-changes/object-validations/properties-count/` (21 cases)
 | `020-max-properties-added-min-properties-replaced` | Added maxProperties, replaced minProperties |
 | `021-max-properties-removed-min-properties-replaced` | Removed maxProperties, replaced minProperties |
 
-### Array Validations Default
+### Array Validation/Array Validations Default
 
 Path: `type-changes/array-validations/default/` (5 cases)
 
@@ -243,7 +263,7 @@ Path: `type-changes/array-validations/default/` (5 cases)
 | `004-default-replaced-array-to-empty` | Replaced default: array with 2 items → [] |
 | `005-default-replaced-array-to-array` | Replaced default: array with 2 items → array with 4 items |
 
-### Array Validations Example
+### Array Validation/Array Validations Example
 
 Path: `type-changes/array-validations/example/` (7 cases)
 
@@ -257,7 +277,7 @@ Path: `type-changes/array-validations/example/` (7 cases)
 | `006-example-replaced-array-to-empty` | Replaced example: array with 2 items → [] |
 | `007-example-replaced-array-to-array` | Replaced example: array with 2 items → array with 3 items |
 
-### Array Validations Examples
+### Array Validation/Array Validations Examples
 
 Path: `type-changes/array-validations/examples/` (23 cases)
 
@@ -287,7 +307,7 @@ Path: `type-changes/array-validations/examples/` (23 cases)
 | `022-examples-replace-array-with-empty` | Replaced array 1 with [] in examples: [[], array 1] → [[], []] |
 | `023-examples-replace-array-with-array` | Replaced array 1 with array 2 in examples: [[], array 1] → [[], array 2] |
 
-### Array Validations Items Count
+### Array Validation/Array Validations Items Count
 
 Path: `type-changes/array-validations/items-count/` (27 cases)
 
@@ -321,20 +341,7 @@ Path: `type-changes/array-validations/items-count/` (27 cases)
 | `026-unique-items-true-to-false` | Replaced uniqueItems: true → false |
 | `027-unique-items-false-to-true` | Replaced uniqueItems: false → true |
 
-### Extended Misc
-
-Path: `type-changes/extended/misc/` (6 cases)
-
-| Case id | Change |
-| --- | --- |
-| `001-pattern-added` | pattern added |
-| `002-pattern-removed` | pattern removed |
-| `003-pattern-replaced` | pattern replaced |
-| `004-multiple-of-added` | multipleOf added |
-| `005-multiple-of-removed` | multipleOf removed |
-| `006-multiple-of-replaced` | multipleOf replaced |
-
-### Extended Combiners One Level
+### Combiners/Extended Combiners One Level
 
 Path: `type-changes/extended/combiners-one-level/` (11 cases)
 
@@ -352,7 +359,7 @@ Path: `type-changes/extended/combiners-one-level/` (11 cases)
 | `010-append-variant-nested-combiner` | Append nested combiner variant |
 | `011-remove-variant-nested-combiner` | Remove nested combiner variant |
 
-### Extended Combiners Two Level
+### Combiners/Extended Combiners Two Level
 
 Path: `type-changes/extended/combiners-two-level/` (11 cases)
 
@@ -389,7 +396,7 @@ Path: `type-changes/circular/` (12 cases)
 | `011-combiner-variant-cycle-cycle-removed` | Combiner variant cycle: cyclic link removed |
 | `012-combiner-variant-cycle-cycle-added` | Combiner variant cycle: cyclic link added |
 
-### Type Value Changes
+### Type Changes/Type Value Changes
 
 Path: `type-changes/type-value-changes/` (30 cases)
 
@@ -426,7 +433,7 @@ Path: `type-changes/type-value-changes/` (30 cases)
 | `029-object-to-boolean` | Root type change: object → boolean |
 | `030-object-to-array` | Root type change: object → array |
 
-### Type Annotations Changes
+### Type Changes/Type Annotations Changes
 
 Path: `type-changes/type-annotations-changes/` (18 cases)
 
@@ -451,7 +458,7 @@ Path: `type-changes/type-annotations-changes/` (18 cases)
 | `017-type-title-replaced` | Type and title replaced; format unchanged |
 | `018-type-format-replaced` | Type and format replaced; title unchanged |
 
-### Object Properties
+### Object Properties And Additional Properties/Object Properties
 
 Path: `type-changes/object-properties/` (36 cases)
 
@@ -494,7 +501,7 @@ Path: `type-changes/object-properties/` (36 cases)
 | `035-one-of-add-object-variant-with-prop-type-object` | Added oneOf object variant (OneOfVariant2, Rule1) (object) |
 | `036-one-of-remove-object-variant-with-prop-type-object` | Removed oneOf object variant (OneOfVariant2, Rule1) (object) |
 
-### Object Additional Properties
+### Object Properties And Additional Properties/Object Additional Properties
 
 Path: `type-changes/object-additional-properties/` (52 cases)
 
@@ -571,7 +578,7 @@ Path: `type-changes/object-additional-properties/` (11 cases)
 | `062-property-names-enum-values-swapped` | propertyNames enum: swapped order of 2 values |
 | `063-property-names-unchanged` | propertyNames enum: unchanged with 2 values |
 
-### Array Indexed Items
+### Array Items And Additional Items/Array Indexed Items
 
 Path: `type-changes/array-indexed-items/` (24 cases)
 
@@ -602,7 +609,7 @@ Path: `type-changes/array-indexed-items/` (24 cases)
 | `023-add-two-indexed-items-object` | Array with no indexed items: add 2 indexed items (object) |
 | `024-remove-two-indexed-items-object` | Array with 2 indexed items: remove 2 indexed items (object) |
 
-### OneOf Object Variant
+### Combiners/OneOf Object Variant
 
 Path: `type-changes/one-of-object-variant/` (48 cases)
 
@@ -657,7 +664,7 @@ Path: `type-changes/one-of-object-variant/` (48 cases)
 | `047-one-of-prop-added-object` | Added oneOf property on root (object) |
 | `048-one-of-prop-removed-object` | Removed oneOf property from root (object) |
 
-### OneOf Array Variant
+### Combiners/OneOf Array Variant
 
 Path: `type-changes/one-of-array-variant/` (48 cases)
 

@@ -6,7 +6,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-extended-object";
+const META_ID = "json-schema-diffs-suite-object-properties-and-additional-properties-extended-object";
+
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -27,9 +29,10 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
-describe("JSON Schema Diffs Suite/Extended Object", () => {
+describe("JSON Schema Diffs Suite/Object Properties And Additional Properties/Extended Object", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -38,42 +41,42 @@ describe("JSON Schema Diffs Suite/Extended Object", () => {
   });
 
   it("001-additional-properties-false-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-001-additional-properties-false-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-001-additional-properties-false-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-additional-properties-true-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-002-additional-properties-true-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-002-additional-properties-true-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-additional-properties-schema-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-003-additional-properties-schema-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-003-additional-properties-schema-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-pattern-properties-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-004-pattern-properties-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-004-pattern-properties-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-pattern-properties-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-005-pattern-properties-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-005-pattern-properties-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-pattern-properties-replaced", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-object--case-006-pattern-properties-replaced`);
+    story = await storyPage(page, `json-schema-diffs-suite-object-properties-and-additional-properties-extended-object--case-006-pattern-properties-replaced`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

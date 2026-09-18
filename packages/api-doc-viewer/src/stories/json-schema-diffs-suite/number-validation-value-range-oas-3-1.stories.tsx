@@ -5,7 +5,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStory,
-  createJsonSchemaDiffCaseStoryFactory,
+  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-oas-3-1-utils";
@@ -16,7 +16,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1",
+  title: "JSON Schema Diffs Suite/Number Validation/Number Validation Value Range OAS 3.1",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
@@ -25,7 +25,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
   JsonSchemaDiffSamplesStory,
   sampleById,
 );

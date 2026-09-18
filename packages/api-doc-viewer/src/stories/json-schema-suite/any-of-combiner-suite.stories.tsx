@@ -47,7 +47,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
 const meta = {
   ...jsonSchemaSamplesStoryMetaBase,
   id: "json-schema-suite-any-of-combiner-suite",
-  title: "JSON Schema Suite/Any Of Combiner Suite",
+  title: "JSON Schema Suite/Combiners/Any Of Combiner Suite",
 } satisfies Meta<typeof JsonSchemaSampleStory>;
 
 export default meta;

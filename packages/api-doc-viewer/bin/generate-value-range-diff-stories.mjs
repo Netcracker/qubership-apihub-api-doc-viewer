@@ -20,8 +20,7 @@ const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 const VALUE_RANGE_STORY_SUITES = [
   {
     suiteKey: "number-validation-value-range",
-    title: "JSON Schema Diffs Suite/Number Validation Value Range",
-    metaKebab: "json-schema-diffs-suite-number-validation-value-range",
+    title: "JSON Schema Diffs Suite/Number Validation/Number Validation Value Range",
     storyFileName: "number-validation-value-range.stories.tsx",
     testFileName: "number-validation-value-range.it-test.ts",
     diffUtilsModule: "./json-schema-diffs-utils",
@@ -31,8 +30,7 @@ const VALUE_RANGE_STORY_SUITES = [
   },
   {
     suiteKey: "number-validation-value-range-oas-3-1",
-    title: "JSON Schema Diffs Suite/Number Validation Value Range OAS 3.1",
-    metaKebab: "json-schema-diffs-suite-number-validation-value-range-oas-3-1",
+    title: "JSON Schema Diffs Suite/Number Validation/Number Validation Value Range OAS 3.1",
     storyFileName: "number-validation-value-range-oas-3-1.stories.tsx",
     testFileName: "number-validation-value-range-oas-3-1.it-test.ts",
     diffUtilsModule: "./json-schema-diffs-oas-3-1-utils",
@@ -40,7 +38,7 @@ const VALUE_RANGE_STORY_SUITES = [
     sampleBuilderModule: "./value-range-diff-oas-31-samples",
     sampleBuilderName: "buildValueRangeDiffOas31ProgrammaticSampleCases",
   },
-];
+].map((suite) => ({ ...suite, metaKebab: toStorybookMetaId(suite.title) }));
 
 /**
  * @param {typeof VALUE_RANGE_STORY_SUITES[number]} suite
@@ -61,7 +59,7 @@ const printStoryFile = (suite, cases) => {
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStory,
-  createJsonSchemaDiffCaseStoryFactory,
+  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "${suite.diffUtilsModule}";
@@ -81,7 +79,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
   JsonSchemaDiffSamplesStory,
   sampleById,
 );

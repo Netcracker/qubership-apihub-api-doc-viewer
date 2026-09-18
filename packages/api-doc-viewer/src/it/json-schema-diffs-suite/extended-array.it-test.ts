@@ -6,7 +6,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-extended-array";
+const META_ID = "json-schema-diffs-suite-array-items-and-additional-items-extended-array";
+
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -27,9 +29,10 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
-describe("JSON Schema Diffs Suite/Extended Array", () => {
+describe("JSON Schema Diffs Suite/Array Items And Additional Items/Extended Array", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -38,49 +41,49 @@ describe("JSON Schema Diffs Suite/Extended Array", () => {
   });
 
   it("001-additional-items-added", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-001-additional-items-added`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-001-additional-items-added`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-additional-items-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-002-additional-items-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-002-additional-items-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-additional-items-type-changed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-003-additional-items-type-changed`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-003-additional-items-type-changed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-items-schema-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-004-items-schema-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-004-items-schema-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-tuple-item-appended", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-005-tuple-item-appended`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-005-tuple-item-appended`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-tuple-item-removed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-006-tuple-item-removed`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-006-tuple-item-removed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-items-schema-description-changed", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-extended-array--case-007-items-schema-description-changed`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-extended-array--case-007-items-schema-description-changed`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

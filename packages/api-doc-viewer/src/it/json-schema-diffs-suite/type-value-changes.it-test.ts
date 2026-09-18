@@ -6,7 +6,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-type-value-changes";
+const META_ID = "json-schema-diffs-suite-type-changes-type-value-changes";
+
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -27,9 +29,10 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
-describe("JSON Schema Diffs Suite/Type Value Changes", () => {
+describe("JSON Schema Diffs Suite/Type Changes/Type Value Changes", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -38,210 +41,210 @@ describe("JSON Schema Diffs Suite/Type Value Changes", () => {
   });
 
   it("001-string-to-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-001-string-to-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-001-string-to-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-string-to-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-002-string-to-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-002-string-to-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-string-to-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-003-string-to-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-003-string-to-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-string-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-004-string-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-004-string-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-string-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-005-string-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-005-string-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-number-to-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-006-number-to-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-006-number-to-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-number-to-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-007-number-to-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-007-number-to-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-number-to-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-008-number-to-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-008-number-to-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-number-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-009-number-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-009-number-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-number-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-010-number-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-010-number-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-integer-to-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-011-integer-to-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-011-integer-to-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-integer-to-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-012-integer-to-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-012-integer-to-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-integer-to-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-013-integer-to-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-013-integer-to-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-integer-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-014-integer-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-014-integer-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-integer-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-015-integer-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-015-integer-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-boolean-to-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-016-boolean-to-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-016-boolean-to-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-boolean-to-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-017-boolean-to-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-017-boolean-to-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-boolean-to-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-018-boolean-to-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-018-boolean-to-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-boolean-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-019-boolean-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-019-boolean-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-boolean-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-020-boolean-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-020-boolean-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-array-to-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-021-array-to-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-021-array-to-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("022-array-to-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-022-array-to-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-022-array-to-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("023-array-to-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-023-array-to-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-023-array-to-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("024-array-to-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-024-array-to-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-024-array-to-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("025-array-to-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-025-array-to-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-025-array-to-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("026-object-to-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-026-object-to-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-026-object-to-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("027-object-to-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-027-object-to-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-027-object-to-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("028-object-to-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-028-object-to-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-028-object-to-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("029-object-to-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-029-object-to-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-029-object-to-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("030-object-to-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-type-value-changes--case-030-object-to-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-type-changes-type-value-changes--case-030-object-to-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();

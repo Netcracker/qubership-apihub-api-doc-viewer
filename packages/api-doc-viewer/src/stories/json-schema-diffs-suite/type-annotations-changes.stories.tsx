@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {
   JsonSchemaDiffSamplesStory,
-  createJsonSchemaDiffCaseStoryFactory,
+  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-type-annotations-utils";
@@ -26,7 +26,7 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
-  title: "JSON Schema Diffs Suite/Type Annotations Changes",
+  title: "JSON Schema Diffs Suite/Type Changes/Type Annotations Changes",
   component: JsonSchemaDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
 } satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
@@ -35,7 +35,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
+const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
   JsonSchemaDiffSamplesStory,
   sampleById,
 );

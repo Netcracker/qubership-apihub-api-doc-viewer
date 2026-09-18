@@ -8,6 +8,8 @@ import { storyPage } from "../service/storybook-service";
 
 const META_ID = "json-schema-diffs-suite-description-changes";
 
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
+
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
   await page.waitForFunction(() => {
@@ -27,6 +29,7 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
 describe("JSON Schema Diffs Suite/Description Changes", () => {

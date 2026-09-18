@@ -6,7 +6,9 @@ import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
 
-const META_ID = "json-schema-diffs-suite-array-indexed-items";
+const META_ID = "json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items";
+
+import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
   await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
@@ -27,9 +29,10 @@ async function waitForJsonSchemaDiffViewer() {
   await page.evaluate(() => new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
   ));
+  await page.evaluate(switchCombinerNodesToChangedVariant);
 }
 
-describe("JSON Schema Diffs Suite/Array Indexed Items", () => {
+describe("JSON Schema Diffs Suite/Array Items And Additional Items/Array Indexed Items", () => {
   let story: StoryPage;
   let component: ViewComponent;
 
@@ -38,168 +41,168 @@ describe("JSON Schema Diffs Suite/Array Indexed Items", () => {
   });
 
   it("001-add-one-indexed-item-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-001-add-one-indexed-item-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-001-add-one-indexed-item-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-remove-one-indexed-item-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-002-remove-one-indexed-item-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-002-remove-one-indexed-item-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-add-two-indexed-items-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-003-add-two-indexed-items-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-003-add-two-indexed-items-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-remove-two-indexed-items-string", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-004-remove-two-indexed-items-string`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-004-remove-two-indexed-items-string`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-add-one-indexed-item-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-005-add-one-indexed-item-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-005-add-one-indexed-item-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-remove-one-indexed-item-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-006-remove-one-indexed-item-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-006-remove-one-indexed-item-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-add-two-indexed-items-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-007-add-two-indexed-items-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-007-add-two-indexed-items-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-remove-two-indexed-items-number", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-008-remove-two-indexed-items-number`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-008-remove-two-indexed-items-number`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-add-one-indexed-item-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-009-add-one-indexed-item-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-009-add-one-indexed-item-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-remove-one-indexed-item-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-010-remove-one-indexed-item-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-010-remove-one-indexed-item-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-add-two-indexed-items-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-011-add-two-indexed-items-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-011-add-two-indexed-items-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-remove-two-indexed-items-integer", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-012-remove-two-indexed-items-integer`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-012-remove-two-indexed-items-integer`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-add-one-indexed-item-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-013-add-one-indexed-item-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-013-add-one-indexed-item-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-remove-one-indexed-item-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-014-remove-one-indexed-item-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-014-remove-one-indexed-item-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-add-two-indexed-items-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-015-add-two-indexed-items-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-015-add-two-indexed-items-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-remove-two-indexed-items-boolean", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-016-remove-two-indexed-items-boolean`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-016-remove-two-indexed-items-boolean`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-add-one-indexed-item-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-017-add-one-indexed-item-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-017-add-one-indexed-item-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-remove-one-indexed-item-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-018-remove-one-indexed-item-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-018-remove-one-indexed-item-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-add-two-indexed-items-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-019-add-two-indexed-items-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-019-add-two-indexed-items-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-remove-two-indexed-items-array", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-020-remove-two-indexed-items-array`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-020-remove-two-indexed-items-array`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-add-one-indexed-item-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-021-add-one-indexed-item-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-021-add-one-indexed-item-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("022-remove-one-indexed-item-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-022-remove-one-indexed-item-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-022-remove-one-indexed-item-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("023-add-two-indexed-items-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-023-add-two-indexed-items-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-023-add-two-indexed-items-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("024-remove-two-indexed-items-object", async () => {
-    story = await storyPage(page, `json-schema-diffs-suite-array-indexed-items--case-024-remove-two-indexed-items-object`);
+    story = await storyPage(page, `json-schema-diffs-suite-array-items-and-additional-items-array-indexed-items--case-024-remove-two-indexed-items-object`);
     await waitForJsonSchemaDiffViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
