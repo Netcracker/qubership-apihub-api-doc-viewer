@@ -61,6 +61,7 @@ export interface TreeBuildingHooksFactoryParams<
     value: unknown,
     parent: N | null,
     container: N | null,
+    kind: K,
   ) => P
   createStateForSimpleNode: (
     state: S,
@@ -192,7 +193,7 @@ export function createTreeBuildingHooks<
     const nodeKey = resolveNodeKey(key, value);
     const { kind, complex = false } = rules;
 
-    const nodeParams = createNodeParams(value, parent, container);
+    const nodeParams = createNodeParams(value, parent, container, kind);
     const treeNode = createNodeFromRaw(nodeId, nodeKey, kind, complex, nodeParams);
     if (!treeNode) {
       return;
