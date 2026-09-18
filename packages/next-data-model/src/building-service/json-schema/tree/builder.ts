@@ -23,6 +23,7 @@ import {
 import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
 import { BuildingServiceLogger, createBuildingServiceLogger } from "../../../loggers"
 import { getJsonSchemaCrawlRules } from "../json-crawl-entities/rules/rules"
+import { isPlainCombinerNodeKind } from "./node-visibility-data/kind-combiner"
 import { JsonSchemaCrawlRule } from "../json-crawl-entities/rules/types"
 import { JsonSchemaTreeCrawlState } from "../json-crawl-entities/state/types"
 import { createJsonSchemaTreeBuildingHooks, JsonSchemaTreeBuildingNodeParams } from "./building-hooks"
@@ -92,13 +93,24 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
       tree: this.tree,
       supportedNodeKinds: JsonSchemaTreeNodeKindsList,
       createNodeFromRaw: (id, key, kind, complex, params) => this.createNodeFromRaw(id, key, kind, complex, params),
-      createNodeParams: (value, parent, container) => ({
+      createNodeParams: (value, parent, container, kind) => ({
         value: (isJsonSchemaPrimitiveNodeValue(value)
           ? value
           : isObject(value) && !Array.isArray(value)
             ? value
             : null) as JsonSchemaTreeNodeStoredValue | null,
-        newDataLevel: true,
+        // Combiner option nodes (oneOf/anyOf/allOf branches) do not represent their own UI
+        // nesting level - the viewer merges an option's title into its owning property's row
+        // and renders the option's own structural children one level below the OWNER (see
+        // CombinerNodeViewer: selector row and leaf children both render at `level + 1` from
+        // the owner, with no separate step for the option itself; nested/stacked combiners
+        // collapse onto that same single level too). If this crawl step counted as a data
+        // level like every other node, the lazy-materialization depth budget (`materializeDepth`
+        // passed by the viewer) would run one level short for anything below a combiner,
+        // forcing an "initially expanded" chosen variant to render collapsed because its
+        // children array came back empty (see JsonSchemaNextViewer.tsx for the matching
+        // `materializeDepth` derivation from `expandedDepth`).
+        newDataLevel: !isPlainCombinerNodeKind(kind),
         parent,
         container,
       }),

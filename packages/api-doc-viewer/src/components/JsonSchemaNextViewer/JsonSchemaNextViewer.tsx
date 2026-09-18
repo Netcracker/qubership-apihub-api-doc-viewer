@@ -50,10 +50,17 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
   const builder = useMemo(
     () => new JsonSchemaTreeBuilder({
       source: schema,
-      materializeDepth: expandedDepth,
+      // `materializeDepth` counts the crawled node's OWN 1-indexed depth (root = 1), while
+      // `expandedDepth`/`initialLevel` are 0-indexed UI levels (root level = `initialLevel`). A
+      // node at UI level L is expanded when L < expandedDepth, and its children (UI level L + 1)
+      // must exist for that expansion to render - i.e. materialized while crawl depth
+      // (L - initialLevel + 1) < expandedDepth - initialLevel + 1. Passing `expandedDepth` as-is
+      // here under-materializes by one level, forcing every initially-expanded node collapsed
+      // because its children array comes back empty.
+      materializeDepth: expandedDepth - initialLevel + 1,
       logger,
     }),
-    [schema, expandedDepth, logger],
+    [schema, expandedDepth, initialLevel, logger],
   )
 
   const tree = useMemo(() => builder.build(), [builder])

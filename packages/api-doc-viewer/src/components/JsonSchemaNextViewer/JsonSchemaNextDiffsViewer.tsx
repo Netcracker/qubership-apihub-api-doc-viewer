@@ -79,11 +79,16 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
   const builder = useMemo(
     () => new JsonSchemaTreeWithDiffsBuilder({
       source: schema,
-      materializeDepth: expandedDepth,
+      // See JsonSchemaNextViewer.tsx for why `expandedDepth` must be shifted by `initialLevel`
+      // and incremented by 1 before being passed as `materializeDepth`: the builder's depth is
+      // the crawled node's own 1-indexed depth, while `expandedDepth`/`initialLevel` are
+      // 0-indexed UI levels, so passing `expandedDepth` unchanged defers a node's children one
+      // level too early and forces it to render collapsed despite being "initially expanded".
+      materializeDepth: expandedDepth - initialLevel + 1,
       diffsMetaKeys: diffMetaKeys,
       logger,
     }),
-    [schema, expandedDepth, diffMetaKeys, logger],
+    [schema, expandedDepth, initialLevel, diffMetaKeys, logger],
   )
 
   const tree = useMemo(() => builder.build(), [builder])
