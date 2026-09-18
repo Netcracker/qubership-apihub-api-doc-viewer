@@ -5,7 +5,7 @@ import {
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "../json-schema-diffs-hiding-unchanged-nodes-suite/json-schema-diffs-utils";
+} from "../json-schema-diffs-suite/json-schema-diffs-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/extensions/anyof-object-two-properties/*/before.yaml",
