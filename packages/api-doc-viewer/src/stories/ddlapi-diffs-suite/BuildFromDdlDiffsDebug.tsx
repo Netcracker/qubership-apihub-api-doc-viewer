@@ -2,13 +2,18 @@ import { DdlTableDiffsViewer } from "@apihub/components/DdlTableViewer/DdlTableD
 import { DisplayMode } from "@apihub/types/DisplayMode";
 import { apiDiff } from "@netcracker/qubership-apihub-api-diff";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
-import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
+import type { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
 import { FC, useEffect, useState } from "react";
 import {
   buildFromDdlInBrowser,
   realmHasTables,
   resolveDdlDiffComparePair,
 } from "../ddlapi-suite/build-from-ddl-browser";
+import {
+  type DebugTableKeyControls,
+  resolveDebugTableKey,
+  resolveTableKeyFromRealm,
+} from "../ddlapi-suite/resolve-debug-table-key";
 import { TEST_DIFF_META_KEYS } from "./shared-test-data";
 
 export const DEFAULT_BEFORE_DDL = `CREATE SCHEMA IF NOT EXISTS public;
@@ -28,25 +33,11 @@ export type BuildFromDdlDiffsDebugProps = {
   beforeSql: string;
   afterSql: string;
   displayMode?: DisplayMode;
-};
+} & DebugTableKeyControls;
 
 const navigationLinkBuilder = (schema: string, table: string, column: string) => {
   console.log(`Navigating to ${schema}.${table}.${column}`);
   return `#${schema}.${table}.${column}`;
-};
-
-const resolveTableKeyFromRealm = (realm: Realm): TableKey | null => {
-  for (const schema of realm.schemas ?? []) {
-    const table = schema.tables?.[0];
-    if (table) {
-      return {
-        schemaName: schema.name,
-        name: table.name,
-      };
-    }
-  }
-
-  return null;
 };
 
 const prepareMergedSource = async (
@@ -84,6 +75,9 @@ export const BuildFromDdlDiffsDebug: FC<BuildFromDdlDiffsDebugProps> = ({
   beforeSql,
   afterSql,
   displayMode,
+  useCustomTableKey,
+  tableSchemaName,
+  tableName,
 }) => {
   const [mergedSource, setMergedSource] = useState<Realm | null>(null);
   const [tableKey, setTableKey] = useState<TableKey | null>(null);
@@ -102,7 +96,12 @@ export const BuildFromDdlDiffsDebug: FC<BuildFromDdlDiffsDebugProps> = ({
       .then((result) => {
         if (!cancelled) {
           setMergedSource(result.mergedSource);
-          setTableKey(result.tableKey);
+          setTableKey(
+            resolveDebugTableKey(
+              { useCustomTableKey, tableSchemaName, tableName },
+              result.tableKey,
+            ),
+          );
         }
       })
       .catch((cause: unknown) => {
@@ -119,7 +118,7 @@ export const BuildFromDdlDiffsDebug: FC<BuildFromDdlDiffsDebugProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [beforeSql, afterSql]);
+  }, [beforeSql, afterSql, useCustomTableKey, tableSchemaName, tableName]);
 
   if (loading) {
     return <p>Parsing before/after DDL and building merged diffs…</p>;

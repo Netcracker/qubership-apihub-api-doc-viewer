@@ -74,6 +74,7 @@ export type HeaderRowState = {
 }
 
 export type HeaderRowProps = {
+  nodeId: string
   nodeTitleData: NodeTitleData
   nodeTypeData: NodeTypeData | null
   isCircularRef: boolean
@@ -87,6 +88,7 @@ const TRACKED_KEYS_META_CHANGES: string[] = ['required', 'readOnly', 'writeOnly'
 
 export const HeaderRow: FC<HeaderRowProps> = (props) => {
   const {
+    nodeId,
     nodeTitleData,
     nodeTypeData,
     isCircularRef,
@@ -243,6 +245,7 @@ export const HeaderRow: FC<HeaderRowProps> = (props) => {
                 isExpandable={isExpandable}
                 expanded={expanded}
                 onToggleExpander={onToggleExpander}
+                testId={`legacy-node-expander-${nodeId}`}
               // onToggleContextMenu={onToggleContextMenu}
               />
             )}

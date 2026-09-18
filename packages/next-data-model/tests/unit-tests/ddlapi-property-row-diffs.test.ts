@@ -6,6 +6,7 @@ import {
   DiffHighlightingApplicationMode,
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { SideListDisplayKinds } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnDefaultValueSideDisplay, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, resolveIndexPartNamesSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { resolveColumnNodeVisibility } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/node-visibility/kind-column"
 import { DETAILED_DISPLAY_MODE } from "@apihub/next-data-model/model/ddlapi/tree/node-visibility/kind-column"
@@ -904,7 +905,7 @@ describe("DDL property row diff aggregators", () => {
     }
 
     expect(resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
-      kind: "monolithic",
+      kind: SideListDisplayKinds.WHOLE_DIFFS,
       text: "int4",
       diff: expect.objectContaining({
         styles: expect.objectContaining({
@@ -915,7 +916,7 @@ describe("DDL property row diff aggregators", () => {
       }),
     })
     expect(resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)).toEqual({
-      kind: "monolithic",
+      kind: SideListDisplayKinds.WHOLE_DIFFS,
       text: "bigint",
       diff: expect.objectContaining({
         styles: expect.objectContaining({
@@ -977,7 +978,7 @@ describe("DDL property row diff aggregators", () => {
     const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "varchar" },
         { text: " (" },
@@ -986,7 +987,7 @@ describe("DDL property row diff aggregators", () => {
       ],
     })
     expect(changedDisplay).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "varchar" },
         { text: " (" },
@@ -1008,7 +1009,7 @@ describe("DDL property row diff aggregators", () => {
     }
 
     expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "code" },
@@ -1029,7 +1030,7 @@ describe("DDL property row diff aggregators", () => {
     }
 
     expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "c1" },
@@ -1077,7 +1078,7 @@ describe("DDL property row diff aggregators", () => {
     }
 
     expect(resolveIndexPartNamesSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "c1" },
@@ -1087,7 +1088,7 @@ describe("DDL property row diff aggregators", () => {
       ],
     })
     expect(resolveIndexPartNamesSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "c1" },
@@ -1141,7 +1142,7 @@ describe("DDL property row diff aggregators", () => {
     }
 
     expect(resolveIndexPartNamesSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "c1" },
@@ -1151,7 +1152,7 @@ describe("DDL property row diff aggregators", () => {
       ],
     })
     expect(resolveIndexPartNamesSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
-      kind: "segmented",
+      kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
         { text: "c1" },
@@ -1235,8 +1236,8 @@ describe("DDL property row diff aggregators", () => {
     const originDisplay = resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
     const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
 
-    expect(originDisplay.kind).toBe("segmented")
-    if (originDisplay.kind === "segmented") {
+    expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       expect(originDisplay.segments.map(segment => segment.text)).toEqual([
         "varchar",
         " (",
@@ -1247,8 +1248,8 @@ describe("DDL property row diff aggregators", () => {
       expect(originDisplay.segments[2]?.diff).toBe(node.diffs.columnTypeFieldDiffs.size)
     }
 
-    expect(changedDisplay.kind).toBe("segmented")
-    if (changedDisplay.kind === "segmented") {
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
+    if (changedDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       expect(changedDisplay.segments.map(segment => segment.text)).toEqual(["text"])
       expect(changedDisplay.segments[0]?.diff).toBe(node.diffs.columnTypeFieldDiffs.typeName)
     }
@@ -1297,7 +1298,7 @@ describe("DDL property row diff aggregators", () => {
     const joinSegments = (
       display: ReturnType<typeof resolveColumnTypeLabelSideDisplay>,
     ): string | undefined => {
-      if (display.kind === "plain" || display.kind === "monolithic") {
+      if (display.kind === SideListDisplayKinds.NO_DIFFS || display.kind === SideListDisplayKinds.WHOLE_DIFFS) {
         return display.text
       }
       return display.segments.map(segment => segment.text).join("")
@@ -1351,8 +1352,8 @@ describe("DDL property row diff aggregators", () => {
 
     const changedDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
 
-    expect(changedDisplay.kind).toBe("monolithic")
-    if (changedDisplay.kind === "monolithic") {
+    expect(changedDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
+    if (changedDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
       expect(changedDisplay.text).toBe("bigint")
       expect(changedDisplay.diff.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
       expect(changedDisplay.diff.styles.after.backgroundColor).toBeUndefined()

@@ -142,9 +142,87 @@ Diff-suite stories typically:
    kebab-case story IDs (`metaId--story-name`).
 
 Compatibility-suite stories and tests are **generated** — run
-`npm run generate-stories` / `npm run generate-tests` inside
-`packages/api-doc-viewer` rather than hand-editing
-`src/stories/compatibility-suite/` or `src/it/compatibility-suite/`.
+`npm run generate-stories` / `npm run generate-tests` inside `packages/api-doc-viewer`
+rather than hand-editing `src/stories/compatibility-suite/` or
+`src/it/compatibility-suite/`.
+
+**Do not** add DDL, JSON Schema, or other generators to those npm scripts. Other suites are
+**persistent**; run `node bin/generate-<suite>-*.mjs` explicitly when fixtures change and
+commit the result.
+
+## JSON Schema validation rows (Next viewer)
+
+Constraint rows in `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` (`Value range`, `Value
+length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+
+Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
+rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
+
+Rows render in a **canonical type-grouped order** (String → Number [covers integer] → Object →
+Array), re-sorted via `sortValidationRowsByType` after combining present rows with diff-only rows
+— see "Row ordering" and "Boolean-valued replace diffs" session lessons in the doc above before
+changing `validationRows` composition in `SchemaNodePlainContent`. When adding a unit test for
+logic defined inside that file (or any component with a transitive `.css` import), extract it to
+a CSS-free `utils/*.ts` file first — see the `api-doc-viewer-testing` skill's **Viewer-side unit
+tests and CSS imports** section.
+
+## JSON Schema meta flags and `required` (Next viewer)
+
+Type-flag diffs (`readOnly`, `writeOnly`, `deprecated`, parent **`required`**) use title-row and
+subheader chrome — not validation rows. Parent-scoped `required` resolution and viewer wiring traps:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`
+
+Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `DiffTags` via
+`buildJsonSchemaDiffTagsProps` — not the type-label subheader alone.
+
+## JSON Schema nesting-indicator row diffs (Next viewer)
+
+`SchemaNodeViewer` renders `NestingIndicatorTitleRow` above a node's children list. Wire **both**
+`diff` (background) and `diffsSeverities` + `diffsSeverityPlacement` (floating badge via
+`DiffFloatingBadgeWrapper`) from `takeJsonSchemaNestingIndicatorRowColorizingDiff` /
+`node.diffsSeverities` — passing only `diff` leaves `diffType`/`diffTypeCause` undefined and the
+badge silently never renders. If a row must hide content on one side, keep the element mounted
+and toggle `visibility` on its content, not conditional unmounting. A `type`-field replace that
+crosses the primitive/non-primitive boundary (`string`→`array`, …) needs single-sided add/remove
+colorizing, not the default symmetric replace — see session lessons:
+
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+
+**Shared type-value rendering:** the title row, the nesting-indicator row, and combiner-selector
+option buttons (`CombinerNodeViewer.tsx` → `CombinerSelectorRow` → `shared-components/Selector`)
+all render JSON Schema's type/format/title text through one shared leaf/wrapper/orchestrator stack
+under `JsonSchemaNextViewer/SchemaNodeViewer/TypeValue/` (`JsonSchemaTypeValueText` leaf,
+`JsonSchemaTypeValueDiffSegment` diff wrapper, `JsonSchemaTypeValueSideDisplay` side-display
+renderer, six plain/with-diffs orchestrators) — deliberately independent of `SubheaderValue`/
+`CommaSeparatedListWithDiffs`. Reuse this stack for any new JSON Schema row or control rendering a
+type/title/format-style value; see "Shared type-value rendering architecture" in the same doc
+above.
+
+**Combiner children nesting level:** in `CombinerNodeViewer.tsx`, independently of how many nested
+combiner levels a schema has, all of `CombinerSelectorRow`'s `selectorLevels` collapse onto **one
+shared level**, and the active leaf's structural children (rendered below the selector, via
+`NestingIndicatorTitleRow` + `ChildNodeViewer`) render at **that same level** — not one level
+deeper. Do not wrap the leaf's children in a second, independently-computed
+`AsyncLevelContextProvider`/`resolveNextLevelPair` call keyed off the leaf's own
+`nestingIndicatorRowColorizingDiff`: the selector row already **is** the leaf's visual
+representation (its option buttons render the leaf's type/format/title), so there is no separate
+"leaf title row" to originate a second nesting step from. See session lesson 10 in the same doc
+above.
+
+**Overriding a shared row-padding rule without `!important` or inline styles:** shared vertical
+padding for `.json-schema-property-row-body` lives in `shared-styles/preceded-by.css` as a
+two-class compound selector (specificity `(0,2,0)`) — a plain Tailwind utility class (`(0,1,0)`)
+can never beat it, cascade layers/`!important` aren't in play anywhere in this package. To override
+for one call site, add a rule scoped through an ancestor class that call site already renders (e.g.
+`.json-schema-property .json-schema-combiner-selector-row-content > .json-schema-property-row-body`,
+`(0,3,0)`) — mirror the existing `.title-row-content > .json-schema-property-row-body` precedent a
+few lines above the base rule, don't reach for `!important` or an inline `style`. A more scalable
+CSS-custom-property-based alternative was analyzed but deliberately deferred — see
+`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/refactoring-notes.md` (entry 1)
+for the trade-off and when to reconsider it.
 
 ## DDL viewer notes
 
@@ -270,6 +348,19 @@ spacer (same horizontal footprint as the expander column). This is not
   shadow only (JSO predefined-value parity); scalar replace uses yellow text highlighter only.
 - **Enum literals** (`Values` row): pass `textHighlighterColor`, `borderShadowColor`, and
   `isFontMuted` per side item — mirror `resolveColumnEnumValueSideItems` orchestration.
+
+**Known gap — floating-badge severity shared across DDL's three `AdditionalInfoRow`s:**
+`ColumnNodeViewerWithDiffs` renders three `AdditionalInfoRow`s per column (enum `Values`,
+`Default`, generated `As`), all still passing `diffsSeverities={node.diffsSeverities}` with no
+placement override, so they all read the same `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` key
+and can show the same wrong badge on rows that didn't actually change — the same bug JSON Schema's
+validation rows had (see `json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
+It has not been fixed here. `AdditionalInfoRow` now accepts an optional `diffsSeverityPlacement`
+prop (defaults to the legacy `AdditionalInfoRow` member, so existing DDL callers are unaffected) —
+fixing this means adding dedicated `NodeDiffsSeverityPlacemennt` members (e.g. a DDL `DefaultRow` /
+`EnumRow` / generated-`As` row) in `next-data-model`'s ddlapi severities aggregators
+(`node-diffs-severities/kind-column.ts`) and wiring `diffsSeverityPlacement` on each of the three
+`AdditionalInfoRow`s here, mirroring the JSON Schema fix.
 
 ### Column default value diffs (`ColumnNodeViewerWithDiffs`)
 
@@ -653,6 +744,59 @@ colours although only the row transitioned.
 `ColumnRowBadgesContent` already reads side visibility from flag diff `styles.before/after`.
 Do **not** thread `nodeLevelDiff` into badge renderers for this — the data layer owns the
 contract.
+
+## `SideBySideLayout` / `OneSideLayout` width contract (session lesson)
+
+Symptom: in side-by-side diffs, a row's diff background (`ServerAddressRow` /
+`AddressRow`) only wrapped the small chip/text produced by `renderAddress`
+instead of filling the whole row from left to right of the column. Screenshot
+tests for the affected suite (`async-api-diffs-suite-channel-server`,
+`async-api-diffs-suite-channel-parameters`) kept passing throughout — see the
+`api-doc-viewer-testing` skill's **pixel-diff blind spot for near-white diff
+colors** section for why the screenshots never caught it.
+
+**Root cause:** `SideBySideLayout` (`shared-components/Layout/SideBySideLayout.tsx`)
+used to wrap each side in a **plain block** `<div className="w-1/2">`. A block
+child with no explicit width naturally fills a block parent, so any consumer's
+row content filled the column *by default* — no `w-full` needed.
+
+A later, unrelated change (DDL diff viewer work, needing `items-stretch` row
+height behaviour) turned that wrapper into a **flex container**:
+
+```diff
+- <div className="flex flex-row w-full">
+-   <div className='w-1/2'>
++ <div className="flex w-full flex-row items-stretch">
++   <div className="flex w-1/2">
+      {left}
+```
+
+That silently changed the sizing contract for *every* consumer from "block
+child auto-fills" to "flex child shrinks to its own content unless it opts in
+with `w-full`/`flex-1`". `AddressRow`'s `AddressRowContent` and
+`MessageChannelServerNodeViewer`'s `renderAddressContent` never needed
+`w-full` before, so they broke as an unnoticed side effect of a shared-layout
+change made for a different feature. `TextRowContent` and `TitleRowContent`
+happened to already use `flex w-full h-full` for their outer row divs, so they
+were unaffected — that is the pattern to copy.
+
+**Fix:** add `w-full` (and `flex`, if the div isn't already a flex container)
+to the row's outer div, matching the `TextRowContent` shape:
+
+```tsx
+className={`... flex w-full h-full ${diffStyles.join(' ')}`}
+```
+
+**Rule for `SideBySideLayout`/`OneSideLayout` consumers:** the element you
+return as `left`/`right`/`content` is a **flex item** of a `flex` wrapper —
+it must carry `w-full` (or `flex-1`) itself; nothing in the layout primitives
+stretches it for you along the main axis. `items-stretch` on the outer flex
+row only stretches the **cross axis** (height when direction is row), never
+width. When adding a new row-shaped component that plugs into either layout
+primitive, verify in the DOM (`getBoundingClientRect().width`) that it
+actually matches the column's width — do not rely on a screenshot looking
+visually plausible for near-white diff-background colors (see the testing
+skill section referenced above).
 
 ## Monorepo paths
 

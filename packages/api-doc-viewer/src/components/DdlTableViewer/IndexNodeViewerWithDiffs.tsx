@@ -25,7 +25,7 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { ColumnRowBadgesContent } from "./ColumnRowBadges/ColumnRowBadgesContent"
-import { DdlCommaSeparatedListWithDiffs } from "./DdlCommaSeparatedListWithDiffs/DdlCommaSeparatedListWithDiffs"
+import { CommaSeparatedListWithDiffs } from "../shared-components/CommaSeparatedList/CommaSeparatedListWithDiffs"
 
 type IndexNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>
@@ -70,7 +70,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
     (layoutSide: LayoutSide) => {
       const display = resolveIndexPartNamesSideDisplay(node, layoutSide)
       return (
-        <DdlCommaSeparatedListWithDiffs
+        <CommaSeparatedListWithDiffs
           layoutSide={layoutSide}
           display={display}
         />

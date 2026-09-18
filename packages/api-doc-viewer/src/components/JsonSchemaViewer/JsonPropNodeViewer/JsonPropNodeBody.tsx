@@ -103,6 +103,7 @@ export const JsonPropNodeBody: FC<JsonPropNodeBodyProps> = (props) => {
     <div className="flex flex-col">
       {!disableNestingHeader && (
         <HeaderRow
+          nodeId={node.id}
           nodeTitleData={buildNodeTitleData({ node, nodeValue, nodeMeta, customizationOptions })}
           nodeTypeData={buildNodeTypeData({ node, nodeValue, customizationOptions })}
           isCircularRef={node.isCycle}

@@ -5,23 +5,17 @@ import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import {
   buildCommaSeparatedListSideSegments,
-  DdlListSideSegment,
   resolveListSideItems,
-} from "./list-side-display"
+  SideListDisplay,
+  SideListDisplayKinds,
+} from "../../abstract/tree-with-diffs/list-side-display"
 import {
   DdlApiIndexPartNameDiffs,
   DdlApiIndexPropertyRowDiffs,
 } from "./property-row-diffs.types"
 
-export type DdlIndexPartNamesSideDisplay =
-  | {
-    readonly kind: "plain"
-    readonly text: string
-  }
-  | {
-    readonly kind: "segmented"
-    readonly segments: readonly DdlListSideSegment[]
-  }
+/** @deprecated Use {@link SideListDisplay} */
+export type DdlIndexPartNamesSideDisplay = SideListDisplay
 
 export function takeIndexPartNameDiffs(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
@@ -36,7 +30,7 @@ export function takeIndexPartNameDiffs(
 export function resolveIndexPartNamesSideDisplay(
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.INDEX>,
   layoutSide: LayoutSide,
-): DdlIndexPartNamesSideDisplay {
+): SideListDisplay {
   const mergedPartNames = node.value()?.partNames ?? []
   const partNameDiffs = takeIndexPartNameDiffs(node)
 
@@ -48,13 +42,13 @@ export function resolveIndexPartNamesSideDisplay(
 
   if (segments.length === 0) {
     return {
-      kind: "plain",
+      kind: SideListDisplayKinds.NO_DIFFS,
       text: "",
     }
   }
 
   return {
-    kind: "segmented",
+    kind: SideListDisplayKinds.PARTIAL_DIFFS,
     segments,
   }
 }
