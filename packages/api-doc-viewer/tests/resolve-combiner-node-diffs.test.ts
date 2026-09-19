@@ -3,15 +3,7 @@ import { HighlightVariant, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-api
 import { JsonSchemaSpecWithDiffsTransformer } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/shared/json-schema-spec-with-diffs-transformer"
 import { JsonSchemaTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/builder"
 import { createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model/loggers"
-import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
-import {
-  buildCombinerSelectorOption,
-  buildCombinerSelectorRowDiff,
-  buildCombinerSelectorRowDiffsSeverities,
-  buildCombinerSelectorRowPresentation,
-  hasCombinerOwnerChanges,
-} from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-node-diffs"
-import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { buildCombinerSelectorOption } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner-node-diffs"
 
 const DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
@@ -46,8 +38,8 @@ function buildTree(beforeSchema: object, afterSchema: object) {
   return new JsonSchemaTreeWithDiffsBuilder({ source: merged, diffsMetaKeys: DIFF_META_KEYS }).build()
 }
 
-describe("resolve-combiner-node-diffs", () => {
-  it("highlights selector row and styles wholly added variant without round marker", () => {
+describe("buildCombinerSelectorOption", () => {
+  it("exposes whole-node add diffs without a round-marker summary for a wholly added variant", () => {
     const beforeSchema = {
       type: "object",
       properties: {
@@ -75,21 +67,6 @@ describe("resolve-combiner-node-diffs", () => {
     const tree = buildTree(beforeSchema, afterSchema)
     const status = tree.root!.childrenNodes().find((node) => node.key === "status")!
 
-    expect(isJsonSchemaTreeNodeWithDiffs(status)).toBe(true)
-    expect(hasCombinerOwnerChanges(status)).toBe(true)
-
-    const selectorRowDiff = buildCombinerSelectorRowDiff(status)
-    expect(selectorRowDiff?.data.action).toBe(DiffAction.replace)
-    expect(selectorRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
-    expect(selectorRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
-
-    const selectorRowSeverities = buildCombinerSelectorRowDiffsSeverities(status)
-    expect(selectorRowSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBeDefined()
-
-    const selectorRowPresentation = buildCombinerSelectorRowPresentation(status)
-    expect(selectorRowPresentation.selectorRowDiff?.data.action).toBe(DiffAction.replace)
-    expect(selectorRowPresentation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBeDefined()
-
     const addedVariant = status.nestedNodes()[2]!
     const selectorOption = buildCombinerSelectorOption(addedVariant, 2)
     expect(selectorOption.diffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
@@ -99,7 +76,7 @@ describe("resolve-combiner-node-diffs", () => {
     expect(selectorOption.descendantDiffsSummary).toBeUndefined()
   })
 
-  it("highlights selector row for nested content edits and exposes round-marker summary on unchanged variant option", () => {
+  it("exposes a round-marker summary on an unchanged variant option next to a nested content edit", () => {
     const beforeSchema = {
       type: "object",
       properties: {
@@ -135,11 +112,6 @@ describe("resolve-combiner-node-diffs", () => {
 
     const tree = buildTree(beforeSchema, afterSchema)
     const value = tree.root!.childrenNodes().find((node) => node.key === "value")!
-
-    expect(hasCombinerOwnerChanges(value)).toBe(true)
-    expect(buildCombinerSelectorRowDiff(value)?.data.action).toBe(DiffAction.replace)
-    expect(buildCombinerSelectorRowDiffsSeverities(value)?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type)
-      .toBeDefined()
 
     const objectVariant = value.nestedNodes()[0]!
     const selectorOption = buildCombinerSelectorOption(objectVariant, 0)

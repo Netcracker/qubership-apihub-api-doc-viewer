@@ -54,7 +54,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
   ): JsonSchemaPropertyRowVisibility {
     const value = node.value()
     const typedValue = asJsonSchemaTypedNodeValue(value)
-    const plainVisibility = plainPropertyNodeVisibilityManager.resolveNodeVisibility(node, displayMode)
+    const plainVisibility = plainPropertyNodeVisibilityManager.resolveNodeVisibility(value, displayMode)
     const detailed = isDetailedDisplayMode(displayMode)
 
     const showDescription = detailed

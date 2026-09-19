@@ -32,8 +32,7 @@ import {
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
-  resolveValueRangeDiffSideEntries,
-  resolveValueRangeSideInputFromNodeValue,
+  JsonSchemaValueRangeDiffResolver,
   ValueRangeCrawlDiffData,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
 import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
@@ -193,6 +192,35 @@ export function takeJsonSchemaRequiredMetaDiffForDisplay(
   node: JsonSchemaTreeNodeWithDiffs,
 ): Diff | undefined {
   return normalizeJsonSchemaRequiredMetaDiffForDisplay(takeJsonSchemaRequiredMetaDiff(node))
+}
+
+/**
+ * Whether the title-row required asterisk should render on `layoutSide`, mirroring legacy
+ * `RequiredStar` side-exclusive behaviour: with no diff, both sides show the asterisk when the
+ * merged `required` is `true`; with a normalized boolean-valued diff (see
+ * {@link normalizeJsonSchemaRequiredMetaDiffForDisplay}), only the side the diff action affects.
+ */
+export function isJsonSchemaRequiredStarVisibleOnSide(
+  required: boolean,
+  requiredDiff: Diff | undefined,
+  layoutSide: LayoutSide,
+): boolean {
+  if (!requiredDiff) {
+    return required === true
+  }
+
+  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
+  if (isDiffAdd(requiredDiff)) {
+    return !isOrigin
+  }
+  if (isDiffRemove(requiredDiff)) {
+    return isOrigin
+  }
+  if (isDiffReplace(requiredDiff)) {
+    return isOrigin ? requiredDiff.beforeValue === true : requiredDiff.afterValue === true
+  }
+
+  return required === true
 }
 
 function takePropertyRowDiffsForRequired(
@@ -493,21 +521,49 @@ function resolveJsonSchemaWholeListSideEntries(
   return mergedValues.map((value) => ({ text: formatListDisplayValue(value) }))
 }
 
-function resolveJsonSchemaPartialListSideEntries(
+/** Shared shape produced by {@link resolveListDiffSideEntriesCore} - a superset of every
+ * per-item list-diff projection this module needs (`{text, valueDiffKey}`, `{text, diff}`, or
+ * both); callers project down to the fields they actually expose. */
+type ListDiffSideEntryCore = {
+  readonly text: string
+  readonly valueDiffKey?: string
+  readonly diff?: ChangedPropertyMetaData
+}
+
+/**
+ * One algorithm for "per-item list diffs → ordered side entries", shared by every JSON Schema
+ * list-valued row (`enum`, `examples`, `allowedAdditionalPropertyNames`, bound-range validation
+ * rows, and the generic chip-diff lookup) - encapsulated here rather than duplicated per row kind
+ * (each previously repeated the same add/remove/replace-per-index branching, trailing-removed-item
+ * handling, and final sort-by-original-position).
+ *
+ * @param resolveDiffKey Maps a display index to the key under which its diff (if any) is stored
+ * in `itemDiffs` - plain per-index lists use the index itself; rows whose diff keys are source
+ * field names (e.g. value-range's bound keys) resolve the key that lands on that display index.
+ * @param formatValue Formats a raw before/after/merged value into display text for one diff key -
+ * plain lists ignore the key; validation rows format per their row-specific chip rules.
+ * @param resolveSortIndex Maps a resolved entry back to its position in `mergedValues` for the
+ * final ordering - plain lists scan by formatted text; validation rows resolve directly from the
+ * diff key when present.
+ */
+function resolveListDiffSideEntriesCore(
   mergedValues: readonly unknown[],
   itemDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
-): readonly JsonSchemaListSideEntry[] {
+  resolveDiffKey: (displayIndex: number) => string | undefined,
+  formatValue: (valueDiffKey: string, rawValue: unknown, fallbackText: string) => string,
+  resolveSortIndex: (valueDiffKey: string | undefined, text: string) => number,
+): readonly ListDiffSideEntryCore[] {
   const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
   const processedDiffKeys = new Set<string>()
-  const entries: JsonSchemaListSideEntry[] = []
+  const entries: ListDiffSideEntryCore[] = []
 
-  for (let index = 0; index < mergedValues.length; index++) {
-    const valueDiffKey = String(index)
-    const diff = itemDiffs?.[valueDiffKey]
-    const mergedText = formatListDisplayValue(mergedValues[index])
+  for (let displayIndex = 0; displayIndex < mergedValues.length; displayIndex++) {
+    const valueDiffKey = resolveDiffKey(displayIndex)
+    const diff = valueDiffKey ? itemDiffs?.[valueDiffKey] : undefined
+    const mergedText = formatListDisplayValue(mergedValues[displayIndex])
 
-    if (!diff) {
+    if (!diff || !valueDiffKey) {
       entries.push({ text: mergedText })
       continue
     }
@@ -520,8 +576,9 @@ function resolveJsonSchemaPartialListSideEntries(
     if (isDiffAdd(data)) {
       if (!isOrigin) {
         entries.push({
-          text: formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+          text: formatValue(valueDiffKey, data.afterValue ?? mergedValues[displayIndex], mergedText),
           valueDiffKey,
+          diff,
         })
       }
       continue
@@ -529,8 +586,9 @@ function resolveJsonSchemaPartialListSideEntries(
     if (isDiffRemove(data)) {
       if (isOrigin) {
         entries.push({
-          text: formatListDisplayValue(data.beforeValue ?? mergedValues[index]),
+          text: formatValue(valueDiffKey, data.beforeValue ?? mergedValues[displayIndex], mergedText),
           valueDiffKey,
+          diff,
         })
       }
       continue
@@ -538,9 +596,10 @@ function resolveJsonSchemaPartialListSideEntries(
     if (isDiffReplace(data)) {
       entries.push({
         text: isOrigin
-          ? formatListDisplayValue(data.beforeValue ?? mergedValues[index])
-          : formatListDisplayValue(data.afterValue ?? mergedValues[index]),
+          ? formatValue(valueDiffKey, data.beforeValue ?? mergedValues[displayIndex], mergedText)
+          : formatValue(valueDiffKey, data.afterValue ?? mergedValues[displayIndex], mergedText),
         valueDiffKey,
+        diff,
       })
     }
   }
@@ -551,23 +610,41 @@ function resolveJsonSchemaPartialListSideEntries(
     }
     if (isDiffRemove(diff.data) && isOrigin) {
       entries.push({
-        text: formatListDisplayValue(diff.data.beforeValue),
+        text: formatValue(valueDiffKey, diff.data.beforeValue, formatListDisplayValue(diff.data.beforeValue)),
         valueDiffKey,
+        diff,
       })
       processedDiffKeys.add(valueDiffKey)
     }
   }
 
-  const indexOf = (text: string): number => {
-    for (let index = 0; index < mergedValues.length; index++) {
-      if (formatListDisplayValue(mergedValues[index]) === text) {
-        return index
-      }
-    }
-    return mergedValues.length
-  }
+  return entries.sort((left, right) => (
+    resolveSortIndex(left.valueDiffKey, left.text) - resolveSortIndex(right.valueDiffKey, right.text)
+  ))
+}
 
-  return entries.sort((left, right) => indexOf(left.text) - indexOf(right.text))
+function resolveMergedTextIndex(mergedValues: readonly unknown[], text: string): number {
+  for (let index = 0; index < mergedValues.length; index++) {
+    if (formatListDisplayValue(mergedValues[index]) === text) {
+      return index
+    }
+  }
+  return mergedValues.length
+}
+
+function resolveJsonSchemaPartialListSideEntries(
+  mergedValues: readonly unknown[],
+  itemDiffs: JsonSchemaListValueDiffs | undefined,
+  layoutSide: LayoutSide,
+): readonly JsonSchemaListSideEntry[] {
+  return resolveListDiffSideEntriesCore(
+    mergedValues,
+    itemDiffs,
+    layoutSide,
+    (displayIndex) => String(displayIndex),
+    (_valueDiffKey, rawValue) => formatListDisplayValue(rawValue),
+    (_valueDiffKey, text) => resolveMergedTextIndex(mergedValues, text),
+  ).map(({ text, valueDiffKey }) => ({ text, valueDiffKey }))
 }
 
 function resolveValidationRowChipDisplayText(
@@ -601,110 +678,20 @@ function resolveJsonSchemaValidationRowPartialSideEntries(
   itemDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
 ): readonly JsonSchemaListSideEntry[] {
-  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
-  const processedDiffKeys = new Set<string>()
-  const entries: JsonSchemaListSideEntry[] = []
-
-  for (let displayIndex = 0; displayIndex < mergedValues.length; displayIndex++) {
-    const valueDiffKey = findValidationRowSourceKeyDiffForDisplayIndex(
-      mergedValues,
-      itemDiffs,
-      displayIndex,
-    )
-    const diff = valueDiffKey ? itemDiffs?.[valueDiffKey] : undefined
-    const mergedText = formatListDisplayValue(mergedValues[displayIndex])
-
-    if (!diff || !valueDiffKey) {
-      entries.push({ text: mergedText })
-      continue
-    }
-    if (processedDiffKeys.has(valueDiffKey)) {
-      continue
-    }
-    processedDiffKeys.add(valueDiffKey)
-
-    const { data } = diff
-    if (isDiffAdd(data)) {
-      if (!isOrigin) {
-        entries.push({
-          text: resolveValidationRowChipDisplayText(
-            rowKey,
-            valueDiffKey,
-            data.afterValue ?? mergedValues[displayIndex],
-            mergedText,
-          ),
-          valueDiffKey,
-        })
-      }
-      continue
-    }
-    if (isDiffRemove(data)) {
-      if (isOrigin) {
-        entries.push({
-          text: resolveValidationRowChipDisplayText(
-            rowKey,
-            valueDiffKey,
-            data.beforeValue ?? mergedValues[displayIndex],
-            mergedText,
-          ),
-          valueDiffKey,
-        })
-      }
-      continue
-    }
-    if (isDiffReplace(data)) {
-      entries.push({
-        text: isOrigin
-          ? resolveValidationRowChipDisplayText(
-            rowKey,
-            valueDiffKey,
-            data.beforeValue ?? mergedValues[displayIndex],
-            mergedText,
-          )
-          : resolveValidationRowChipDisplayText(
-            rowKey,
-            valueDiffKey,
-            data.afterValue ?? mergedValues[displayIndex],
-            mergedText,
-          ),
-        valueDiffKey,
-      })
-    }
-  }
-
-  for (const [valueDiffKey, diff] of Object.entries(itemDiffs ?? {})) {
-    if (!diff || processedDiffKeys.has(valueDiffKey)) {
-      continue
-    }
-    if (isDiffRemove(diff.data) && isOrigin) {
-      entries.push({
-        text: resolveValidationRowChipDisplayText(
-          rowKey,
-          valueDiffKey,
-          diff.data.beforeValue,
-          formatListDisplayValue(diff.data.beforeValue),
-        ),
-        valueDiffKey,
-      })
-      processedDiffKeys.add(valueDiffKey)
-    }
-  }
-
-  const chipIndexOf = (valueDiffKey: string | undefined, text: string): number => {
-    if (valueDiffKey) {
-      return resolveValidationSourceKeyDisplayIndex(valueDiffKey, mergedValues)
-    }
-    for (let displayIndex = 0; displayIndex < mergedValues.length; displayIndex++) {
-      if (formatListDisplayValue(mergedValues[displayIndex]) === text) {
-        return displayIndex
-      }
-    }
-    return mergedValues.length
-  }
-
-  return entries.sort((left, right) => (
-    chipIndexOf(left.valueDiffKey, left.text) - chipIndexOf(right.valueDiffKey, right.text)
-  ))
+  return resolveListDiffSideEntriesCore(
+    mergedValues,
+    itemDiffs,
+    layoutSide,
+    (displayIndex) => findValidationRowSourceKeyDiffForDisplayIndex(mergedValues, itemDiffs, displayIndex),
+    (valueDiffKey, rawValue, fallbackText) => (
+      resolveValidationRowChipDisplayText(rowKey, valueDiffKey, rawValue, fallbackText)
+    ),
+    (valueDiffKey, text) => (
+      valueDiffKey !== undefined
+        ? resolveValidationSourceKeyDisplayIndex(valueDiffKey, mergedValues)
+        : resolveMergedTextIndex(mergedValues, text)
+    ),
+  ).map(({ text, valueDiffKey }) => ({ text, valueDiffKey }))
 }
 
 export function resolveJsonSchemaEnumSideEntries(
@@ -750,18 +737,16 @@ export function resolveJsonSchemaValidationRowSideEntries(
   validationRowValueDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
   valueRangeContext?: {
-    nodeValue: {
-      minimum?: number
-      maximum?: number
-      exclusiveMinimum?: number | boolean
-      exclusiveMaximum?: number | boolean
-    } | null | undefined
+    // Narrowed internally by `resolveValueRangeSideInputFromNodeValue` (via
+    // `readValueRangeBoundFields`), which safely reads only the allow-listed bound fields from
+    // any input - callers pass the raw merged node value as-is, no narrowing needed here.
+    nodeValue: unknown
     crawlDiffs: ValueRangeCrawlDiffData
   },
 ): readonly JsonSchemaListSideEntry[] {
   if (rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && valueRangeContext?.crawlDiffs) {
-    return resolveValueRangeDiffSideEntries(
-      resolveValueRangeSideInputFromNodeValue(valueRangeContext.nodeValue),
+    return JsonSchemaValueRangeDiffResolver.resolveValueRangeDiffSideEntries(
+      JsonSchemaValueRangeDiffResolver.resolveValueRangeSideInputFromNodeValue(valueRangeContext.nodeValue),
       valueRangeContext.crawlDiffs,
       layoutSide,
       validationRowDiff,
@@ -795,75 +780,14 @@ export function resolveJsonSchemaListValueSideItems(
   itemDiffs: JsonSchemaListValueDiffs | undefined,
   layoutSide: LayoutSide,
 ): readonly ListSideItem[] {
-  const isOrigin = layoutSide === ORIGIN_LAYOUT_SIDE
-  const processedDiffs = new Set<ChangedPropertyMetaData>()
-  const items: ListSideItem[] = []
-
-  for (let index = 0; index < mergedValues.length; index++) {
-    const diff = itemDiffs?.[String(index)]
-    const mergedText = formatListDisplayValue(mergedValues[index])
-
-    if (!diff) {
-      items.push({ text: mergedText })
-      continue
-    }
-    if (processedDiffs.has(diff)) {
-      continue
-    }
-    processedDiffs.add(diff)
-
-    const { data } = diff
-    if (isDiffAdd(data)) {
-      if (!isOrigin) {
-        items.push({
-          text: formatListDisplayValue(data.afterValue ?? mergedValues[index]),
-          diff,
-        })
-      }
-      continue
-    }
-    if (isDiffRemove(data)) {
-      if (isOrigin) {
-        items.push({
-          text: formatListDisplayValue(data.beforeValue ?? mergedValues[index]),
-          diff,
-        })
-      }
-      continue
-    }
-    if (isDiffReplace(data)) {
-      items.push({
-        text: isOrigin
-          ? formatListDisplayValue(data.beforeValue ?? mergedValues[index])
-          : formatListDisplayValue(data.afterValue ?? mergedValues[index]),
-        diff,
-      })
-    }
-  }
-
-  for (const [, diff] of Object.entries(itemDiffs ?? {})) {
-    if (!diff || processedDiffs.has(diff)) {
-      continue
-    }
-    if (isDiffRemove(diff.data) && isOrigin) {
-      items.push({
-        text: formatListDisplayValue(diff.data.beforeValue),
-        diff,
-      })
-      processedDiffs.add(diff)
-    }
-  }
-
-  const indexOf = (text: string): number => {
-    for (let index = 0; index < mergedValues.length; index++) {
-      if (formatListDisplayValue(mergedValues[index]) === text) {
-        return index
-      }
-    }
-    return mergedValues.length
-  }
-
-  return items.sort((left, right) => indexOf(left.text) - indexOf(right.text))
+  return resolveListDiffSideEntriesCore(
+    mergedValues,
+    itemDiffs,
+    layoutSide,
+    (displayIndex) => String(displayIndex),
+    (_valueDiffKey, rawValue) => formatListDisplayValue(rawValue),
+    (_valueDiffKey, text) => resolveMergedTextIndex(mergedValues, text),
+  ).map(({ text, diff }) => ({ text, diff }))
 }
 
 export function isJsonSchemaWholePropertyAddOrRemove(

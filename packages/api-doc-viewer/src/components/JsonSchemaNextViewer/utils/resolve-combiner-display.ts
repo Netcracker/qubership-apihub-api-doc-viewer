@@ -21,17 +21,23 @@ export function resolveCombinerBranchDisplayValue(
   return fragment as JsonSchemaTreeNodeValue
 }
 
-export function resolveCombinerLeafStructuralChildren(
-  node: JsonSchemaTreeNode,
-): JsonSchemaTreeNode[] {
+/**
+ * `N`'s own `childrenNodes()`/`nestedNodes()` always return nodes of that same concrete type at
+ * runtime (a same-kind tree), but `ITreeNode` cannot express "returns `this`'s own type" for these
+ * methods - same limitation `resolveActiveLeafNode` (this package's `resolve-combiner-selection.ts`)
+ * already bridges the same way, for the same reason.
+ */
+export function resolveCombinerLeafStructuralChildren<N extends JsonSchemaTreeNode>(
+  node: N,
+): N[] {
   if (node.type === TreeNodeComplexityTypes.SIMPLE) {
-    return node.childrenNodes()
+    return node.childrenNodes() as N[]
   }
 
-  const nestedNodes = node.nestedNodes()
+  const nestedNodes = node.nestedNodes() as N[]
   if (nestedNodes.length > 0 && nestedNodes.every((nestedNode) => !isPlainCombinerNodeKind(nestedNode.kind))) {
     return nestedNodes
   }
 
-  return node.childrenNodes()
+  return node.childrenNodes() as N[]
 }

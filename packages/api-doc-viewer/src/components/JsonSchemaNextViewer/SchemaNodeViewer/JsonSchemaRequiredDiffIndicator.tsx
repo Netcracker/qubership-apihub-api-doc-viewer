@@ -1,8 +1,8 @@
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { getLayoutModeFlags, getLayoutSideFlags } from "@apihub/utils/common/changes"
-import { isDefined } from "@apihub/utils/common/checkers"
-import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
+import { getLayoutModeFlags } from "@apihub/utils/common/changes"
+import { Diff } from "@netcracker/qubership-apihub-api-diff"
+import { isJsonSchemaRequiredStarVisibleOnSide } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { FC } from "react"
 
 export type JsonSchemaRequiredDiffIndicatorProps = {
@@ -11,34 +11,10 @@ export type JsonSchemaRequiredDiffIndicatorProps = {
   layoutSide?: LayoutSide
 }
 
-function shouldShowRequiredStar(
-  required: boolean,
-  requiredDiff: Diff | undefined,
-  isSideBySideDiffsLayoutMode: boolean,
-  originSide: boolean,
-  changedSide: boolean,
-): boolean {
-  const shouldDisplayInSideBySide = required === true && !isDefined(requiredDiff)
-    || !!requiredDiff && (
-      requiredDiff.action === DiffAction.remove && originSide
-      || requiredDiff.action === DiffAction.add && changedSide
-      || requiredDiff.action === DiffAction.replace && (
-        requiredDiff.beforeValue === true && originSide
-        || requiredDiff.afterValue === true && changedSide
-      )
-    )
-
-  if (isSideBySideDiffsLayoutMode) {
-    return shouldDisplayInSideBySide
-  }
-  return required
-}
-
 export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicatorProps> = (props) => {
   const { required, requiredDiff, layoutSide } = props
   const layoutMode = useLayoutMode()
   const { isDocumentLayoutMode, isSideBySideDiffsLayoutMode } = getLayoutModeFlags(layoutMode)
-  const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
   if (isDocumentLayoutMode) {
     return required ? <sup className="ml-0.5 text-red-500">*</sup> : null
@@ -48,13 +24,11 @@ export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicator
     return null
   }
 
-  if (!shouldShowRequiredStar(
-    required,
-    requiredDiff,
-    isSideBySideDiffsLayoutMode,
-    originSide,
-    changedSide,
-  )) {
+  const isVisible = isSideBySideDiffsLayoutMode
+    ? isJsonSchemaRequiredStarVisibleOnSide(required, requiredDiff, layoutSide)
+    : required
+
+  if (!isVisible) {
     return null
   }
 

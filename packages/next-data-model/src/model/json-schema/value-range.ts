@@ -9,7 +9,12 @@ export type JsonSchemaValueRangeLabel = JsonSchemaBoundRangeLabel
 
 export type JsonSchemaValueRangeResult = JsonSchemaBoundRangeResult
 
-export function resolveValueRangeLabel(value: JsonSchemaTreeNodeValueTypeNumber | null | undefined): JsonSchemaValueRangeResult {
+export type JsonSchemaValueRangeBoundsInput = Pick<
+  JsonSchemaTreeNodeValueTypeNumber,
+  "minimum" | "maximum" | "exclusiveMinimum" | "exclusiveMaximum"
+>
+
+export function resolveValueRangeLabel(value: JsonSchemaValueRangeBoundsInput | null | undefined): JsonSchemaValueRangeResult {
   if (!value) {
     return {
       data: {},

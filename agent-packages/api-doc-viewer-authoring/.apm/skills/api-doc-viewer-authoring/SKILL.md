@@ -457,7 +457,7 @@ screenshot ITs.
 | `packages/api-doc-viewer/src/components/DdlTableViewer/IndexesNodeViewer.tsx` | `Indexes` section `TitleRow` with `TitleRowUsage.DdlApiSection` |
 | `packages/api-doc-viewer/src/components/DdlTableViewer/TableNodeViewer.tsx` | `data-precededby` chain between table sections (e.g. Columns → Indexes) |
 | `packages/api-doc-viewer/src/components/shared-components/TitleRow/TitleRowContent.tsx` | `DdlApiProperty` row layout, `data-usage`, `min-h-*` on property rows |
-| `packages/api-doc-viewer/src/components/DdlTableViewer/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome |
+| `packages/api-doc-viewer/src/components/shared-components/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome (generalized from `DdlTableViewer/AdditionalInfoRow/`; now shared by DDL, AsyncAPI, and JSON Schema Next) |
 | `packages/api-doc-viewer/src/components/shared-components/TextRow/TextRowContent.tsx` | Description property row chrome |
 | `packages/api-doc-viewer/src/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper.tsx` | Side-by-side diff badge wrapper (must not be offset by row margins) |
 | `packages/api-doc-viewer/src/components/shared-components/Layout/SideBySideLayout.tsx` | Stretch behaviour for diff columns |

@@ -1,8 +1,10 @@
 import { DisplayMode } from "@apihub/next-data-model/model/abstract/display-mode"
 import { isDetailedDisplayMode } from "@apihub/next-data-model/model/abstract/guards/display-mode"
 import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import {
+  JsonSchemaTreeNodeStoredValue,
+  JsonSchemaTreeNodeValue,
+} from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { resolveValidationKeysForType } from "@apihub/next-data-model/model/json-schema/validation-keys"
 import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
@@ -34,10 +36,9 @@ function resolveDeprecationReason(value: JsonSchemaTreeNodeValue | null | undefi
 
 export class PlainPropertyNodeVisibilityManager {
   public resolveNodeVisibility(
-    node: JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>,
+    value: JsonSchemaTreeNodeStoredValue | null,
     displayMode: DisplayMode,
   ): JsonSchemaPropertyRowVisibility {
-    const value = node.value()
     const typedValue = asJsonSchemaTypedNodeValue(value)
     const detailed = isDetailedDisplayMode(displayMode)
 
@@ -141,10 +142,10 @@ export class PlainPropertyNodeVisibilityManager {
 const defaultInstance = new PlainPropertyNodeVisibilityManager()
 
 export function resolvePlainPropertyNodeVisibility(
-  node: JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>,
+  value: JsonSchemaTreeNodeStoredValue | null,
   displayMode: DisplayMode,
 ): JsonSchemaPropertyRowVisibility {
-  return defaultInstance.resolveNodeVisibility(node, displayMode)
+  return defaultInstance.resolveNodeVisibility(value, displayMode)
 }
 
 export function resolvePlainPropertyListLastRowFlags(

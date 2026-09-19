@@ -1,13 +1,10 @@
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, DiffAction, apiDiff } from "@netcracker/qubership-apihub-api-diff"
-import { JsonSchemaTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model"
-import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { isJsonSchemaCombinerOwnerNode } from "./node-type-checkers"
-import {
-  buildCombinerSelectorRowDiff,
-  buildCombinerSelectorRowDiffsSeverities,
-  buildCombinerSelectorRowPresentation,
-  resolveCombinerSelectorLevelReductionAction,
-} from "./resolve-combiner-node-diffs"
+import { HighlightVariant, NodeDiffsSeverityPlacemennt } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
+import { JsonSchemaSpecWithDiffsTransformer } from "../../src/building-service/json-schema/shared/json-schema-spec-with-diffs-transformer"
+import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
+import { createBuildingServiceLogger } from "../../src/loggers"
+import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "../../src/model/json-schema/types/aliases"
+import { JsonSchemaCombinerSelectorRowResolver } from "../../src/model/json-schema/tree-with-diffs/combiner-row-diffs"
 
 const DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,
@@ -65,11 +62,11 @@ function buildOneOfPropNode(
 
   const oneOfPropNode = tree.root!.childrenNodes().find((node) => node.key === "oneOfProp")
   expect(oneOfPropNode).toBeDefined()
-  expect(isJsonSchemaCombinerOwnerNode(oneOfPropNode!)).toBe(true)
+  expect(oneOfPropNode!.nestedNodes().length).toBeGreaterThan(0)
   return oneOfPropNode!
 }
 
-describe("resolve-combiner-node-diffs", () => {
+describe("JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation", () => {
   it("does not throw when a whole new array-typed oneOf variant is added alongside unchanged variants", () => {
     const oneOfPropNode = buildOneOfPropNode(
       [{ type: "string" }, { type: "number" }],
@@ -86,12 +83,12 @@ describe("resolve-combiner-node-diffs", () => {
       ],
     )
 
-    expect(() => buildCombinerSelectorRowDiff(oneOfPropNode)).not.toThrow()
-    expect(() => buildCombinerSelectorRowDiffsSeverities(oneOfPropNode)).not.toThrow()
-    expect(() => buildCombinerSelectorRowPresentation(oneOfPropNode)).not.toThrow()
+    expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(oneOfPropNode))
+      .not.toThrow()
 
     for (const nestedNode of oneOfPropNode.nestedNodes()) {
-      expect(() => buildCombinerSelectorRowPresentation(nestedNode)).not.toThrow()
+      expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(nestedNode))
+        .not.toThrow()
     }
   })
 
@@ -111,12 +108,12 @@ describe("resolve-combiner-node-diffs", () => {
       [{ type: "string" }, { type: "number" }],
     )
 
-    expect(() => buildCombinerSelectorRowDiff(oneOfPropNode)).not.toThrow()
-    expect(() => buildCombinerSelectorRowDiffsSeverities(oneOfPropNode)).not.toThrow()
-    expect(() => buildCombinerSelectorRowPresentation(oneOfPropNode)).not.toThrow()
+    expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(oneOfPropNode))
+      .not.toThrow()
 
     for (const nestedNode of oneOfPropNode.nestedNodes()) {
-      expect(() => buildCombinerSelectorRowPresentation(nestedNode)).not.toThrow()
+      expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(nestedNode))
+        .not.toThrow()
     }
   })
 
@@ -135,9 +132,9 @@ describe("resolve-combiner-node-diffs", () => {
       ],
     )
 
-    expect(() => buildCombinerSelectorRowDiffsSeverities(oneOfPropNode)).not.toThrow()
     for (const nestedNode of oneOfPropNode.nestedNodes()) {
-      expect(() => buildCombinerSelectorRowPresentation(nestedNode)).not.toThrow()
+      expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(nestedNode))
+        .not.toThrow()
     }
   })
 
@@ -155,20 +152,21 @@ describe("resolve-combiner-node-diffs", () => {
       undefined,
     )
 
-    expect(() => buildCombinerSelectorRowDiffsSeverities(oneOfPropNode)).not.toThrow()
     for (const nestedNode of oneOfPropNode.nestedNodes()) {
-      expect(() => buildCombinerSelectorRowPresentation(nestedNode)).not.toThrow()
+      expect(() => JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(nestedNode))
+        .not.toThrow()
     }
   })
 })
 
-describe("resolveCombinerSelectorLevelReductionAction", () => {
+describe("JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction", () => {
   it("returns undefined when the combiner owner itself was wholly added (case 2(a), handled upstream by CombinerNodeViewer's outer freeze)", () => {
     const oneOfPropNode = buildOneOfPropNode(
       undefined,
       [{ type: "string" }, { type: "number" }],
     )
-    expect(resolveCombinerSelectorLevelReductionAction(oneOfPropNode)).toBeUndefined()
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(oneOfPropNode))
+      .toBeUndefined()
   })
 
   it("returns undefined when the combiner owner itself was wholly removed (case 2(a), handled upstream by CombinerNodeViewer's outer freeze)", () => {
@@ -176,13 +174,15 @@ describe("resolveCombinerSelectorLevelReductionAction", () => {
       [{ type: "string" }, { type: "number" }],
       undefined,
     )
-    expect(resolveCombinerSelectorLevelReductionAction(oneOfPropNode)).toBeUndefined()
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(oneOfPropNode))
+      .toBeUndefined()
   })
 
   it("returns DiffAction.add when every nestedNodes() variant was uniformly added while the owner itself stayed untouched (case 2(b))", () => {
     const oneOfPropNode = buildOneOfPropNode([], [{ type: "string" }, { type: "number" }])
     expect(oneOfPropNode.nestedNodes()).toHaveLength(2)
-    expect(resolveCombinerSelectorLevelReductionAction(oneOfPropNode)).toBe(DiffAction.add)
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(oneOfPropNode))
+      .toBe(DiffAction.add)
   })
 
   it("returns undefined when nestedNodes() actions are mixed (one variant unchanged/replaced, one added)", () => {
@@ -190,7 +190,8 @@ describe("resolveCombinerSelectorLevelReductionAction", () => {
       [{ type: "string" }],
       [{ type: "boolean" }, { type: "array", items: [{ type: "string" }] }],
     )
-    expect(resolveCombinerSelectorLevelReductionAction(oneOfPropNode)).toBeUndefined()
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(oneOfPropNode))
+      .toBeUndefined()
   })
 
   it("returns undefined for an owner whose resultant variant list is empty (nothing to compare, not a real uniform-remove signal)", () => {
@@ -218,7 +219,8 @@ describe("resolveCombinerSelectorLevelReductionAction", () => {
     const oneOfPropNode = tree.root!.childrenNodes().find((node) => node.key === "oneOfProp")!
     expect(oneOfPropNode).toBeDefined()
     expect(oneOfPropNode.nestedNodes()).toHaveLength(0)
-    expect(resolveCombinerSelectorLevelReductionAction(oneOfPropNode)).toBeUndefined()
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(oneOfPropNode))
+      .toBeUndefined()
   })
 
   it("resolves a nested oneOf-in-oneOf independently per level: outer stays undefined (mixed), inner reduces (all its own variants uniformly added)", () => {
@@ -247,12 +249,102 @@ describe("resolveCombinerSelectorLevelReductionAction", () => {
       diffsMetaKeys: DIFF_META_KEYS,
     }).build()
     const outerCombinerNode = tree.root!.childrenNodes().find((node) => node.key === "oneOfProp")!
-    expect(isJsonSchemaCombinerOwnerNode(outerCombinerNode)).toBe(true)
-    expect(resolveCombinerSelectorLevelReductionAction(outerCombinerNode)).toBeUndefined()
+    expect(outerCombinerNode.nestedNodes().length).toBeGreaterThan(0)
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(outerCombinerNode))
+      .toBeUndefined()
 
     const innerCombinerNode = outerCombinerNode.nestedNodes()[1]
-    expect(isJsonSchemaCombinerOwnerNode(innerCombinerNode)).toBe(true)
     expect(innerCombinerNode.nestedNodes()).toHaveLength(2)
-    expect(resolveCombinerSelectorLevelReductionAction(innerCombinerNode)).toBe(DiffAction.add)
+    expect(JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorLevelReductionAction(innerCombinerNode))
+      .toBe(DiffAction.add)
+  })
+})
+
+function buildTreeWithSpecTransform(beforeSchema: object, afterSchema: object): {
+  root: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs
+} {
+  const merged = mergeSchemas(beforeSchema, afterSchema)
+  const transformer = new JsonSchemaSpecWithDiffsTransformer(createBuildingServiceLogger(), DIFF_META_KEYS)
+  transformer.transformSourceToSchemaWithDiffs(merged)
+  const tree = new JsonSchemaTreeWithDiffsBuilder({ source: merged, diffsMetaKeys: DIFF_META_KEYS }).build()
+  return { root: tree.root! }
+}
+
+describe("JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation - value assertions", () => {
+  it("highlights the selector row yellow-replace for a wholly added variant alongside unchanged ones", () => {
+    const { root } = buildTreeWithSpecTransform(
+      {
+        type: "object",
+        properties: {
+          status: {
+            oneOf: [
+              { type: "string" },
+              { type: "number" },
+            ],
+          },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          status: {
+            oneOf: [
+              { type: "string" },
+              { type: "number" },
+              { type: "boolean" },
+            ],
+          },
+        },
+      },
+    )
+    const status = root.childrenNodes().find((node) => node.key === "status")!
+
+    const presentation = JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(status)
+    expect(presentation.selectorRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(presentation.selectorRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(presentation.selectorRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(presentation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBeDefined()
+  })
+
+  it("highlights the selector row for a nested content edit inside one variant", () => {
+    const { root } = buildTreeWithSpecTransform(
+      {
+        type: "object",
+        properties: {
+          value: {
+            oneOf: [
+              {
+                type: "object",
+                properties: {
+                  nestedChanged: { type: "string", description: "Before" },
+                },
+              },
+              { type: "number" },
+            ],
+          },
+        },
+      },
+      {
+        type: "object",
+        properties: {
+          value: {
+            oneOf: [
+              {
+                type: "object",
+                properties: {
+                  nestedChanged: { type: "string", description: "After" },
+                },
+              },
+              { type: "number" },
+            ],
+          },
+        },
+      },
+    )
+    const value = root.childrenNodes().find((node) => node.key === "value")!
+
+    const presentation = JsonSchemaCombinerSelectorRowResolver.resolveCombinerSelectorRowPresentation(value)
+    expect(presentation.selectorRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(presentation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBeDefined()
   })
 })

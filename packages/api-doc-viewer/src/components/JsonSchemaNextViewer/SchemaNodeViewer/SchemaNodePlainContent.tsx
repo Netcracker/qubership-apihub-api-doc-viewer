@@ -118,13 +118,9 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         return resolveJsonSchemaPropertyNodeVisibility(propertyNodeWithDiffs, displayMode)
       }
 
-      const visibilityNode = displayValue !== undefined
-        ? { value: () => displayValue } as JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>
-        : node as JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>
-
-      return resolvePlainPropertyNodeVisibility(visibilityNode, displayMode)
+      return resolvePlainPropertyNodeVisibility(value, displayMode)
     },
-    [displayMode, displayValue, node, propertyNodeWithDiffs],
+    [displayMode, displayValue, propertyNodeWithDiffs, value],
   )
 
   // Default/enum/examples are not PROPERTY/ROOT-specific either - any schema-bearing node
@@ -349,12 +345,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         layoutSide,
         rowKey === JsonSchemaValidationRowKeys.VALUE_RANGE && validationDiffsNode
           ? {
-            nodeValue: value as {
-              minimum?: number
-              maximum?: number
-              exclusiveMinimum?: number | boolean
-              exclusiveMaximum?: number | boolean
-            },
+            nodeValue: value,
             crawlDiffs: takeJsonSchemaValueRangeCrawlDiffs(validationDiffsNode) ?? {},
           }
           : undefined,

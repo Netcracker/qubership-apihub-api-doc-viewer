@@ -45,7 +45,7 @@ describe("plain JSON Schema property node visibility", () => {
       examples: [1],
     })
 
-    expect(resolvePlainPropertyNodeVisibility(node as never, SIMPLE_DISPLAY_MODE)).toEqual({
+    expect(resolvePlainPropertyNodeVisibility(node.value(), SIMPLE_DISPLAY_MODE)).toEqual({
       showDescription: false,
       showDeprecationReasonRow: false,
       showDefaultRow: false,
@@ -67,7 +67,7 @@ describe("plain JSON Schema property node visibility", () => {
       minLength: 1,
     })
 
-    expect(resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)).toEqual({
+    expect(resolvePlainPropertyNodeVisibility(node.value(), DETAILED_DISPLAY_MODE)).toEqual({
       showDescription: true,
       showDeprecationReasonRow: false,
       showDefaultRow: true,
@@ -86,7 +86,7 @@ describe("plain JSON Schema property node visibility", () => {
       enum: ["a", "b"],
     })
 
-    const visibility = resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)
+    const visibility = resolvePlainPropertyNodeVisibility(node.value(), DETAILED_DISPLAY_MODE)
     expect(visibility.showEnumValuesRow).toBe(true)
     expect(visibility.showValidationsSection).toBe(false)
   })
@@ -100,7 +100,7 @@ describe("plain JSON Schema property node visibility", () => {
       },
     })
 
-    const visibility = resolvePlainPropertyNodeVisibility(node as never, DETAILED_DISPLAY_MODE)
+    const visibility = resolvePlainPropertyNodeVisibility(node.value(), DETAILED_DISPLAY_MODE)
     expect(visibility.showDeprecationReasonRow).toBe(true)
     expect(visibility.deprecationReason).toBe("Use otherField instead")
   })

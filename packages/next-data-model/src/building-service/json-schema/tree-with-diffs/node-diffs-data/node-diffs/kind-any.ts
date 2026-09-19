@@ -35,11 +35,7 @@ import { JsonSchemaTreeNodeKind } from "@apihub/next-data-model/model/json-schem
 import { JsonSchemaTreeNodeMeta } from "@apihub/next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 import {
-  buildValueRangeChipStringDiffs,
-  classifyValueRangeWholeRowAction,
-  filterValueRangeSemanticSourceKeys,
-  isValueRangePartialBoundChange,
-  resolveValueRangeSideInputFromNodeValue,
+  JsonSchemaValueRangeDiffResolver,
   VALUE_RANGE_LOWER_CHIP_DIFF_KEY,
   VALUE_RANGE_UPPER_CHIP_DIFF_KEY,
 } from "@apihub/next-data-model/model/json-schema/value-range-diff-side-display"
@@ -1059,7 +1055,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       }
 
       const semanticKeys = validationRowKey === JsonSchemaValidationRowKeys.VALUE_RANGE
-        ? filterValueRangeSemanticSourceKeys(activeSourceKeys, crawlDiffs)
+        ? JsonSchemaValueRangeDiffResolver.filterValueRangeSemanticSourceKeys(activeSourceKeys, crawlDiffs)
         : activeSourceKeys
 
       const rowDiffs = activeSourceKeys
@@ -1072,10 +1068,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
       nodeDiffs.validationRowColorizingDiffs ??= {}
 
-      const valueRangeSideInput = resolveValueRangeSideInputFromNodeValue(crawlValue)
+      const valueRangeSideInput = JsonSchemaValueRangeDiffResolver.resolveValueRangeSideInputFromNodeValue(crawlValue)
 
       const valueRangeWholeRowAction = valueRangeCrawlDiffs
-        ? classifyValueRangeWholeRowAction(valueRangeSideInput, valueRangeCrawlDiffs)
+        ? JsonSchemaValueRangeDiffResolver.classifyValueRangeWholeRowAction(valueRangeSideInput, valueRangeCrawlDiffs)
         : undefined
 
       if (
@@ -1102,7 +1098,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
       if (
         valueRangeCrawlDiffs
-        && isValueRangePartialBoundChange(valueRangeSideInput, valueRangeCrawlDiffs)
+        && JsonSchemaValueRangeDiffResolver.isValueRangePartialBoundChange(valueRangeSideInput, valueRangeCrawlDiffs)
       ) {
         this.mergeValueRangeLabelChipDiffs(crawlValue, valueRangeCrawlDiffs, nodeDiffs, validationRowKey)
         this.applyValueRangeFormattingRowColorizingDiff(
@@ -1210,8 +1206,8 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     nodeDiffs: JsonSchemaKindAnyNodeDiffs,
     validationRowKey: JsonSchemaValidationRowKey,
   ): void {
-    const chipStringDiffs = buildValueRangeChipStringDiffs(
-      resolveValueRangeSideInputFromNodeValue(crawlValue),
+    const chipStringDiffs = JsonSchemaValueRangeDiffResolver.buildValueRangeChipStringDiffs(
+      JsonSchemaValueRangeDiffResolver.resolveValueRangeSideInputFromNodeValue(crawlValue),
       valueRangeCrawlDiffs,
     )
     const chipDiffKeys = [VALUE_RANGE_LOWER_CHIP_DIFF_KEY, VALUE_RANGE_UPPER_CHIP_DIFF_KEY] as const

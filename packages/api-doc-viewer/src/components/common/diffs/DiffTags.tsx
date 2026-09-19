@@ -42,7 +42,10 @@ export type DiffTagsProps = {
   layoutSide: LayoutSide
   isNodeChanged: boolean
   isContentChanged: boolean
-  $nodeChange?: NodeChange
+  // Legacy callers (GraphSchemaViewer, legacy JsonSchemaViewer) pass a legacy `NodeChange`; the
+  // JSON Schema Next stack passes a next-data-model `Diff` (see json-schema-diff-tags-props.ts) -
+  // both shapes already flow through the same `as Diff` casts below, this type just says so.
+  $nodeChange?: NodeChange | Diff
   $metaChanges?: DiffNodeMeta['$metaChanges']
   $valueChanges?: DiffNodeValue['$changes']
 }

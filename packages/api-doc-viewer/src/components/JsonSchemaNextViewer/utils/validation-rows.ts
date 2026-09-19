@@ -1,12 +1,10 @@
-import {
-  JsonSchemaTreeNodeValueTypeArray,
-  JsonSchemaTreeNodeValueTypeNumber,
-  JsonSchemaTreeNodeValueTypeObject,
-  JsonSchemaTreeNodeValueTypeString,
-  JsonSchemaTreeNodeValue,
-} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
+import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { resolveBoundRangeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/bound-range"
 import { resolveValueRangeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/value-range"
+import {
+  JsonSchemaValidationFieldsView,
+  resolveJsonSchemaValidationFieldsView,
+} from "@netcracker/qubership-apihub-next-data-model/model/json-schema/validation-keys"
 import {
   ITEMS_COUNT_LABEL,
   PROPERTIES_COUNT_LABEL,
@@ -40,8 +38,8 @@ function formatBoundRangeChips(
   return [range.data.lower, range.data.upper].filter((chip): chip is string => Boolean(chip))
 }
 
-function formatValueRangeChips(value: JsonSchemaTreeNodeValueTypeNumber): string[] {
-  const range = resolveValueRangeLabel(value)
+function formatValueRangeChips(fields: JsonSchemaValidationFieldsView): string[] {
+  const range = resolveValueRangeLabel(fields)
   if (!range.visible) {
     return []
   }
@@ -61,38 +59,35 @@ export function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | un
   }
 
   const rows: JsonSchemaValidationRow[] = []
-  const stringValue = value as JsonSchemaTreeNodeValueTypeString
-  const numberValue = value as JsonSchemaTreeNodeValueTypeNumber
-  const objectValue = value as JsonSchemaTreeNodeValueTypeObject
-  const arrayValue = value as JsonSchemaTreeNodeValueTypeArray
+  const fields = resolveJsonSchemaValidationFieldsView(value)
 
-  const valueLength = formatBoundRangeChips(stringValue.minLength, stringValue.maxLength)
+  const valueLength = formatBoundRangeChips(fields.minLength, fields.maxLength)
   if (valueLength.length) {
     rows.push({ key: JsonSchemaValidationRowKeys.VALUE_LENGTH, label: VALUE_LENGTH_LABEL, values: valueLength })
   }
 
-  if (stringValue.pattern !== undefined) {
+  if (fields.pattern !== undefined) {
     rows.push({
       key: JsonSchemaValidationRowKeys.VALUE_PATTERN,
       label: VALUE_PATTERN_LABEL,
-      values: [String(stringValue.pattern)],
+      values: [String(fields.pattern)],
     })
   }
 
-  const valueRange = formatValueRangeChips(numberValue)
+  const valueRange = formatValueRangeChips(fields)
   if (valueRange.length) {
     rows.push({ key: JsonSchemaValidationRowKeys.VALUE_RANGE, label: VALUE_RANGE_LABEL, values: valueRange })
   }
 
-  if (numberValue.multipleOf !== undefined) {
+  if (fields.multipleOf !== undefined) {
     rows.push({
       key: JsonSchemaValidationRowKeys.VALUE_MULTIPLE_OF,
       label: VALUE_MULTIPLE_OF_LABEL,
-      values: [String(numberValue.multipleOf)],
+      values: [String(fields.multipleOf)],
     })
   }
 
-  const propertiesCount = formatBoundRangeChips(objectValue.minProperties, objectValue.maxProperties)
+  const propertiesCount = formatBoundRangeChips(fields.minProperties, fields.maxProperties)
   if (propertiesCount.length) {
     rows.push({
       key: JsonSchemaValidationRowKeys.PROPERTIES_COUNT,
@@ -101,15 +96,15 @@ export function resolveValidationRows(value: JsonSchemaTreeNodeValue | null | un
     })
   }
 
-  if (arrayValue.uniqueItems !== undefined) {
+  if (fields.uniqueItems !== undefined) {
     rows.push({
       key: JsonSchemaValidationRowKeys.UNIQUE_ITEMS,
       label: UNIQUE_ITEMS_LABEL,
-      values: [String(arrayValue.uniqueItems)],
+      values: [String(fields.uniqueItems)],
     })
   }
 
-  const itemsCount = formatBoundRangeChips(arrayValue.minItems, arrayValue.maxItems)
+  const itemsCount = formatBoundRangeChips(fields.minItems, fields.maxItems)
   if (itemsCount.length) {
     rows.push({ key: JsonSchemaValidationRowKeys.ITEMS_COUNT, label: ITEMS_COUNT_LABEL, values: itemsCount })
   }

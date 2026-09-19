@@ -51,6 +51,3 @@ export const JsonSchemaNodeTitleWithDiffs: FC<JsonSchemaNodeTitleProps> = (props
       )
   }
 }
-
-/** @deprecated Use {@link JsonSchemaNodeTitlePlain} or {@link JsonSchemaNodeTitleWithDiffs}. */
-export const JsonSchemaNodeTitle = JsonSchemaNodeTitleWithDiffs
