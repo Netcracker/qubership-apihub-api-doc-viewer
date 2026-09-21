@@ -1,4 +1,4 @@
-import { DiffBadge } from "@apihub/components/common/diffs/DiffBadge"
+import { BadgeWithDiffs } from "@apihub/components/shared-components/diffs/BadgeWithDiffs"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
@@ -70,20 +70,18 @@ function renderFlagBadge(options: {
     return emptyBadgePlaceholder()
   }
 
-  const $changes = DdlApiRowDiffs.Column.isFlagBadgeHighlighted(flagDiff)
+  const changes = DdlApiRowDiffs.Column.isFlagBadgeHighlighted(flagDiff)
     ? flagDiff?.data as Diff | undefined
     : undefined
 
   return (
-    <DiffBadge
+    <BadgeWithDiffs
       key={buildBadgeKey(columnId, label)}
       label={label}
       colorSchema={colorSchema}
       layoutMode={layoutMode}
       layoutSide={layoutSide}
-      isNodeChanged={false}
-      isContentChanged={!!$changes}
-      $changes={$changes}
+      diff={changes}
     />
   )
 }
@@ -107,18 +105,16 @@ function renderForeignKeyTargetBadge(options: {
     return <ForeignKey key={badgeKey} target={target} />
   }
 
-  const $changes = targetDiff.data as Diff
+  const diff = targetDiff.data
 
   return (
     <div key={badgeKey} className="ddlapi-foreign-key inline-flex flex-row items-center gap-1">
-      <DiffBadge
+      <BadgeWithDiffs
         label="FK"
         colorSchema={DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA}
         layoutMode={layoutMode}
         layoutSide={layoutSide}
-        isNodeChanged={false}
-        isContentChanged={true}
-        $changes={$changes}
+        diff={diff}
       />
       <ForeignKey target={target} hideBadge textHighlighterColor={textHighlighterColor} />
     </div>

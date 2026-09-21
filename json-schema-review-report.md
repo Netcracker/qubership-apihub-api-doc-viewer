@@ -10,6 +10,11 @@ constraint) and their full Jest suites were run directly (`node_modules/.bin/jes
 Current state: **0 TypeScript errors, 33 next-data-model suites / 548 tests passing, 10 api-doc-viewer suites / 81
 tests passing.**
 
+**Post-review follow-up (§10): F8 superseded.** You later decided `DiffTags`/`DiffBadge` should go back to being
+GraphQL/legacy-only, and that JSON Schema Next (and DDL) should get their own decoupled copies instead of reusing
+the legacy component. This reverses F8's approach (which kept `DiffTags` shared by widening its prop type) without
+reopening the underlying `@ts-expect-error` problem — see §10 for the new design and updated verification numbers.
+
 ---
 
 ## 1. Executive summary
@@ -41,7 +46,7 @@ screenshot-test changes were made or are recommended.
 
 Status icons: ✅ Fixed & verified · ⏳ Approved, not yet applied · 🚫 Rejected (per your decision, left as-is) ·
 ➖ No action needed (per your decision) · 📝 Doc updated (source fixed; compiled copies pending `apm install` —
-see §7).
+see §7) · 🔁 Superseded by a later decision (see §10).
 
 | ID | Status | Severity | Where | What | Resolution |
 |----|--------|----------|-------|------|------------|
@@ -52,7 +57,7 @@ see §7).
 | **F5** | ✅ | High | `CombinerNodeViewer.tsx:348` (`as never`) | Fully type-unsafe cast to dynamically select `JsonSchemaNodeViewer` vs `WithDiffs`. | Resolved by F2 (each split file only ever renders its own child-viewer variant, no runtime selection needed) — plus a real gap fix: `resolveCombinerLeafStructuralChildren` and `buildCombinerSelectorOption` are now properly generic (`<N extends JsonSchemaTreeNode>`), matching the pattern already used by their sibling `resolveActiveLeafNode`/`resolveCombinerSelectorLevels`, so children/options keep their concrete with-diffs type without a cast at the call site. |
 | **F6** | ✅ | High | `shared/json-schema/constants.ts` | ~80 lines of dead/duplicate node-kind and value-props tables. | File reduced to the one still-used export (`jsonSchemaNodeKind`); the six dead exports and their now-unused api-unifier/type imports were deleted. `jsonSchemaNodeKind` itself is kept (still consumed by `rules.ts` in next-data-model and by `api-doc-viewer/src/utils/nodes.ts`, outside review scope) rather than replaced at every call site, per your explicit scope instruction. |
 | **F7** | ✅ | Medium | `JsonSchemaRequiredDiffIndicator.tsx` | Re-derived diff-side-visibility semantics from raw `DiffAction` in the view. | New next-data-model accessor `isJsonSchemaRequiredStarVisibleOnSide` (`property-row-diffs.ts`) encapsulates the side-visibility decision; the component now only calls it and renders. |
-| **F8** | ✅ | Medium | `utils/json-schema-diff-tags-props.ts:46` | Live `@ts-expect-error` bridging a type mismatch between next-data-model's `Diff` and the legacy `DiffTags` component's `NodeChange`-typed prop. | Root cause was in the **reused** component, not the caller: `DiffTagsProps.$nodeChange` is now typed `NodeChange \| Diff` (the component already internally cast to `Diff` at its two use sites — the type was simply dishonest about what it accepted). Legacy consumers (`GraphSchemaViewer`, legacy `JsonSchemaViewer`) are unaffected — widening a type is backward compatible. Suppression removed; compiles clean without it. |
+| **F8** | 🔁 | Medium | `utils/json-schema-diff-tags-props.ts:46` | Live `@ts-expect-error` bridging a type mismatch between next-data-model's `Diff` and the legacy `DiffTags` component's `NodeChange`-typed prop. | **Original fix (superseded, see §10):** widened `DiffTagsProps.$nodeChange` to `NodeChange \| Diff` so JSON Schema Next could keep reusing the legacy `DiffTags`/`DiffBadge` pair. You later decided that was the wrong direction — `DiffTags`/`DiffBadge` should stay GraphQL/legacy-only, full stop. §10 reverts the widening and gives JSON Schema Next (and DDL) their own `TagsWithDiffs`/`BadgeWithDiffs` components, which removes the type mismatch a different way: the new components are typed against next-data-model's `ChangedPropertyMetaData`/`Diff` from the start, so there is nothing to bridge and no suppression of any kind. |
 | **F9** | ✅ | Medium | `value-range-diff-side-display.ts` | ~20 free functions implementing value-range diff-classification domain logic. | You explicitly prioritized OOP encapsulation over the testability trade-off I'd originally proposed. Rewrote the whole module as one `JsonSchemaValueRangeDiffResolver` static class (public methods = the old public API, private methods = the old internal helpers); the two call sites (`kind-any.ts`, `property-row-diffs.ts`) now call `JsonSchemaValueRangeDiffResolver.<method>(...)`. No behavior change — verified via the full next-data-model suite (536→still 536 passing at that point). |
 | **F10** | ✅ | Medium | `property-row-diffs.ts` (four near-identical list-side-resolution functions) | `resolveJsonSchemaWholeListSideEntries`/`resolveJsonSchemaPartialListSideEntries`/`resolveJsonSchemaValidationRowPartialSideEntries`/`resolveJsonSchemaListValueSideItems` repeated the same per-index diff-branching algorithm. | Extracted one shared `resolveListDiffSideEntriesCore` (parametrized by a diff-key resolver, a value formatter, and a sort-index resolver); the three per-item-diff functions (`WholeListSideEntries` is a genuinely different whole-row algorithm and was intentionally left separate) now project its output to their own return shape. |
 | **F11** | ⏳ | Medium | `SchemaNodePlainContent.tsx` (four near-identical `useCallback`s) | `allowedAdditionalPropertyNamesSubheader`/`enumValuesAdditionalInfoSubheader`/`examplesAdditionalInfoSubheader`/`defaultAdditionalInfoSubheader` repeated the same shape. | **Not yet applied.** Approved but not reached in this iteration; still open for a follow-up pass (see §9). |
@@ -246,7 +251,7 @@ flowchart TB
   ChildrenList["SchemaNodeChildrenListWithDiffs.tsx\n(hide-unchanged-nodes: ShowUnchangedRow +\nresolveJsonSchemaUnchangedBlocks)"]
   NestingRow["NestingIndicatorTitleRow\n(diff + diffsSeverities +\ndiffsSeverityPlacement=NestingIndicatorRow — verified wired)"]
   RequiredIndicator["JsonSchemaRequiredDiffIndicator.tsx\n(F7: now calls isJsonSchemaRequiredStarVisibleOnSide,\nno DiffAction logic left in the view)"]
-  DiffTags["JsonSchemaTitleSubheader.tsx → DiffTags\nvia buildJsonSchemaDiffTagsProps\n(F8: DiffTagsProps.$nodeChange widened to\nNodeChange | Diff — no suppression needed)"]
+  DiffTags["JsonSchemaTitleSubheader.tsx → TagsWithDiffs\n(shared-components/diffs/) via\nbuildJsonSchemaTagsWithDiffsProps\n(§10: decoupled from legacy DiffTags/DiffBadge -\nnext-data-model-typed from the start, no bridging cast)"]
   CombinerRowResolver["next-data-model:\nJsonSchemaCombinerSelectorRowResolver\n(F1 — moved out of the view entirely)"]
   NDMDiffs["next-data-model accessors:\ntakeJsonSchema*Diff, resolveJsonSchema*SideEntries,\ntakeJsonSchemaNestingIndicatorRowColorizingDiff"]
 
@@ -279,7 +284,9 @@ flowchart TB
   audit: all five diff-aggregator families use correct Factory + Strategy dispatch with no exceptions found.
 - **Container/Presentational.** F2 fixed the one real violation (`SchemaNodeViewer`/`CombinerNodeViewer`). Every
   other component in the tree was already correctly classified.
-- **Type safety (Strict Always).** The one live `@ts-expect-error` is gone (F8). Of the original six unjustified
+- **Type safety (Strict Always).** The one live `@ts-expect-error` is gone — not via F8's original type-widening
+  (superseded, §10) but via giving JSON Schema Next its own `TagsWithDiffs` component typed natively against
+  next-data-model, so there is no legacy/next type mismatch left to bridge at all. Of the original six unjustified
   `as` casts, all are now resolved: three by narrowing function signatures (F3, F12, F13) to not need a cast at
   all, three by genericizing sibling utility functions the same way their neighbors already were (F5). The two
   remaining `as N[]`/`as N[]` casts inside `resolveCombinerLeafStructuralChildren` are the same class of
@@ -346,3 +353,93 @@ before merging if you want visual confirmation.
 - **F11** (four near-identical `useCallback` subheader builders in `SchemaNodePlainContent.tsx`) was approved but
   not yet applied in this iteration. Recommend picking this up in the next pass — it's a self-contained,
   low-risk extraction (same shape as F10, applied to a different file).
+
+---
+
+## 10. Post-review follow-up — decouple `DiffTags`/`DiffBadge` from next viewers (supersedes F8)
+
+### 10.1 Decision
+
+`common/diffs/DiffTags.tsx` and `common/diffs/DiffBadge.tsx` were originally written for the legacy `GraphSchemaViewer`
+and legacy `JsonSchemaViewer`. F8 (§2) kept them shared by widening `DiffTagsProps.$nodeChange` to accept both the
+legacy `NodeChange` type and next-data-model's `Diff`. You decided this was the wrong direction:
+
+1. **`DiffTags` and `DiffBadge` go back to being GraphQL/legacy-only.** Their only remaining consumers are
+   `GraphSchemaViewer/internal/layout/HeaderRow/HeaderRow.tsx` and the legacy `JsonSchemaViewer/internal/layout/
+   HeaderRow.tsx`. The `$nodeChange` widening is reverted to `NodeChange` only.
+2. **Next components get their own copies**, decoupled from the legacy `@netcracker/qubership-apihub-api-data-model`
+   package entirely: `TagsWithDiffs` (replaces `DiffTags`, used by JSON Schema Next) and `BadgeWithDiffs` (replaces
+   `DiffBadge`, used by both JSON Schema Next's `TagsWithDiffs` and DDL's `ColumnRowBadgesContent`, which already
+   used `DiffBadge` directly for its PK/FK/unique/not-null/generated badges).
+
+This is a real architectural win, not just a rename-for-symmetry exercise: `DiffTagsProps` carried the legacy
+`$`-prefixed change-object convention (`$nodeChange`, `$metaChanges`, `$valueChanges`) that review rule 18 explicitly
+calls out as the bad `api-state-model` pattern to avoid repeating in next code. The new `TagsWithDiffsProps` takes
+plain, already-resolved `ChangedPropertyMetaData | undefined` per flag — no dollar-prefixed props, no alias
+resolution, no legacy `NodeChange`/`applyDiffReplaceAlias*`/`inverDiffAction` calls anywhere in the next stack.
+
+### 10.2 New components
+
+| Component | Location | Replaces | Notes |
+|---|---|---|---|
+| `BadgeWithDiffs` | `shared-components/diffs/BadgeWithDiffs.tsx` | `DiffBadge` for next consumers | Same rendering logic as `DiffBadge` (presentational; already had zero legacy-package coupling — it only ever took `Diff` from `@netcracker/qubership-apihub-api-diff`), duplicated into the next-only location per your explicit instruction so the two stacks never share a file again. Two props were dropped as dead weight (both flagged by you): `$changes` renamed to `diff`, and `isNodeChanged` removed outright — every next caller always passed `isNodeChanged={false}`, so `isNodeOrContentChanged` (= `isNodeChanged \|\| isContentChanged`) collapsed to plain `isContentChanged`. That collapse then exposed a second redundancy: every remaining caller always passed `isContentChanged={!!diff}` (or, for the FK badge, `isContentChanged={true}` with `diff` always truthy on that path) — the two props were never independent. `isContentChanged` is now gone too; `BadgeWithDiffs` derives it internally as `!!diff`, which is provably identical for every caller (`ChangedPropertyMetaData.data` is non-optional, so "has a diff" and "has a truthy `.data`" were always the same fact expressed twice). Net effect: `BadgeWithDiffsProps` shrank from 6 fields to 4, all algebraic simplification, zero behavior change. |
+| `TagsWithDiffs` | `shared-components/diffs/TagsWithDiffs.tsx` | `DiffTags` for JSON Schema Next | Renders the same 4 tags (required/read-only/write-only/deprecated) built on `BadgeWithDiffs`. Props are plain `ChangedPropertyMetaData` per flag instead of `$`-prefixed legacy change objects; visibility per tag is `!!value \|\| !!diff` (no `isDefined`/alias-resolution helpers needed — next-data-model diffs don't have the legacy format's aliasing quirks). Follows the same container-reads-precomputed-diffs pattern already used by DDL's `ColumnRowBadgesContent`. |
+
+`json-schema-diff-tags-props.ts` was replaced by `json-schema-tags-with-diffs-props.ts`, which builds
+`TagsWithDiffsProps` directly from `JsonSchemaRowDiffs.MetaFlags.take{ReadOnly,WriteOnly,Deprecated}Diff` and
+`JsonSchemaRowDiffs.RequiredStar.takeMetaDiff` — no intermediate `Diff`-shaped "raw" record, no cast, no suppression.
+
+### 10.3 A fallback that was tried and reverted — do not repeat
+
+An earlier pass of this change added a `?? node.diffs[NODE_LEVEL_DIFF_KEY]` fallback to `MetaFlags.takeReadOnlyDiff`/
+`takeWriteOnlyDiff`/`takeDeprecatedDiff`, reasoning that the with-diffs aggregator does not populate per-flag
+`readOnly`/`writeOnly`/`deprecated` diffs for a wholly-added/removed node (it only sets `NODE_LEVEL_DIFF_KEY` in that
+case), so a wholly-added property's `readOnly: true` would otherwise render as an undiffed grey badge instead of
+green. **This was wrong and has been reverted.** The fallback made all three accessors return the *same* node-level
+diff whenever the node was wholly added/removed, regardless of which flags actually changed — so `TagsWithDiffs`'
+visibility check (`!!value || !!diff`) would show and diff-highlight **every** tag (read-only, write-only,
+deprecated) together any time a property was wholly added or removed, even for flags that were `false`/absent on
+that property. A badge must only be highlighted when it has its own diff — never borrowed from a sibling flag's or
+the node's diff. `MetaFlags.takeReadOnlyDiff`/`takeWriteOnlyDiff`/`takeDeprecatedDiff` are back to reading only their
+own field (`this.takeKindAnyNodeDiffs(node).readOnly` etc., no fallback), matching their pre-this-task behavior.
+The remaining cosmetic gap this reopens (a wholly-added property's true flags render as plain, undiffed badges
+rather than green ones) is accepted as-is — it is the original, already-reviewed next-data-model behavior, not a
+regression introduced by this task.
+
+### 10.4 Files touched
+
+- `common/diffs/DiffTags.tsx` — `$nodeChange` type reverted to `NodeChange` only; doc comment about the JSON Schema
+  Next stack removed (no longer true).
+- `common/diffs/DiffBadge.tsx` — unchanged (still the legacy component; `BadgeWithDiffs` is a separate file).
+- `shared-components/diffs/BadgeWithDiffs.tsx` — new; `$changes` prop renamed to `diff`, `isNodeChanged` prop
+  dropped (always `false` at every call site — see §10.3's sibling note above the table).
+- `shared-components/diffs/TagsWithDiffs.tsx` — new.
+- `JsonSchemaNextViewer/utils/json-schema-diff-tags-props.ts` — deleted, replaced by
+  `JsonSchemaNextViewer/utils/json-schema-tags-with-diffs-props.ts`.
+- `JsonSchemaNextViewer/SchemaNodeViewer/JsonSchemaTitleSubheader.tsx` — both `JsonSchemaTitleSubheader` (plain) and
+  `JsonSchemaTitleSubheaderWithDiffs` now render `TagsWithDiffs` instead of `DiffTags`.
+- `DdlTableViewer/ColumnRowBadges/ColumnRowBadgesContent.tsx` — `DiffBadge` → `BadgeWithDiffs`; local `$changes`
+  variables renamed to `changes` (dollar-prefix dropped everywhere in the next stack, not just on the prop).
+- `next-data-model/src/model/json-schema/tree-with-diffs/property-row-diffs.ts` — `MetaFlags.takeReadOnlyDiff`/
+  `takeWriteOnlyDiff`/`takeDeprecatedDiff` tried and reverted a `NODE_LEVEL_DIFF_KEY` fallback; see §10.3.
+
+### 10.5 Verification
+
+`node_modules/.bin/tsc --noEmit` on both packages and the full Jest suite from both packages, same discipline as
+§8 — updated totals below (superseding the §8 table for the current state of the repo):
+
+| Package | tsc | Test suites | Tests |
+|---|---|---|---|
+| `next-data-model` | 0 errors | 33 passed | 548 passed |
+| `api-doc-viewer` | 0 errors | 10 passed | 81 passed |
+
+No test file imported `DiffTags`/`DiffBadge`/`json-schema-diff-tags-props` directly, so no test churn was needed;
+the full suites above are the same suites from §8, still green. Grepping both packages afterward confirmed
+`DiffTags`/`DiffBadge` now have exactly two consumers each outside their own definitions
+(`GraphSchemaViewer/internal/layout/HeaderRow/HeaderRow.tsx` and legacy `JsonSchemaViewer/internal/layout/
+HeaderRow.tsx` for `DiffTags`; the same two plus `common/AdditionalInfo{Array,Object}Row.tsx`, which are
+themselves legacy-only, for `DiffBadge`) — no next-viewer reference to either remains.
+
+No changes to `review-json-schema.md` were needed — none of its stated rules changed; this is an implementation
+decision within the existing rules (rule 17's "no diff logic in components" and rule 18's "no `api-state-model`
+abuse" are what motivated decoupling from `DiffTags` in the first place, not new rules).

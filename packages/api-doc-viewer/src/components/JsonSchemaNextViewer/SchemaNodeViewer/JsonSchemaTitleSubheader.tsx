@@ -1,14 +1,13 @@
 import { CIRCULAR_REF_TOOLTIP } from "../../../consts/tooltips"
 import { CircularRefIcon } from "@apihub/components/kit/icons/CircularRefIcon"
-import { DiffTags } from "@apihub/components/common/diffs/DiffTags"
+import { TagsWithDiffs } from "@apihub/components/shared-components/diffs/TagsWithDiffs"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { FC } from "react"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { buildJsonSchemaDiffTagsProps } from "../utils/json-schema-diff-tags-props"
+import { buildJsonSchemaTagsWithDiffsProps } from "../utils/json-schema-tags-with-diffs-props"
 // NOTE: type-value rendering below deliberately does not reuse SubheaderValue/
 // SubheaderValueWithDiffs (see ./TypeValue) - to be reconciled with the shared subheader
 // stack later; not part of this change.
@@ -45,13 +44,11 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
           <CircularRefIcon />
         </UxTooltip>
       )}
-      <DiffTags
+      <TagsWithDiffs
         readOnly={meta?.readOnly}
         writeOnly={meta?.writeOnly}
         deprecated={meta?.deprecated}
         layoutSide={layoutSide}
-        isNodeChanged={false}
-        isContentChanged={false}
       />
     </div>
   )
@@ -59,8 +56,7 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
 
 export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithDiffsProps> = (props) => {
   const { meta, node, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix } = props
-  const layoutMode = useLayoutMode()
-  const diffTagsProps = buildJsonSchemaDiffTagsProps(node, layoutMode)
+  const tagsWithDiffsProps = buildJsonSchemaTagsWithDiffsProps(node)
 
   return (
     <div className="flex flex-row items-center gap-2">
@@ -77,12 +73,12 @@ export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithD
           <CircularRefIcon />
         </UxTooltip>
       )}
-      <DiffTags
+      <TagsWithDiffs
         readOnly={meta?.readOnly}
         writeOnly={meta?.writeOnly}
         deprecated={meta?.deprecated}
         layoutSide={layoutSide}
-        {...diffTagsProps}
+        {...tagsWithDiffsProps}
       />
     </div>
   )
