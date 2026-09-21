@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffNodeMeta, DiffNodeValue, NodeChange } from '../../../../../api-data-model/src';
-import type { FC } from '../../../../../../node_modules/react';
+import { Diff } from "@netcracker/qubership-apihub-api-diff";
+import { FC } from '../../../../../../node_modules/react';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-export type DiffTagsProps = {
-    requiredChanged?: boolean;
-    nullableChanged?: boolean;
-    readOnly: boolean | undefined;
-    writeOnly: boolean | undefined;
-    deprecated?: boolean;
-    deprecationReason?: string;
+import { LayoutMode } from '../../../types/LayoutMode';
+export type BadgeWithDiffsProps = {
+    label: string;
+    colorSchema?: string;
+    layoutMode: LayoutMode;
     layoutSide: LayoutSide;
-    isNodeChanged: boolean;
-    isContentChanged: boolean;
-    $nodeChange?: NodeChange;
-    $metaChanges?: DiffNodeMeta['$metaChanges'];
-    $valueChanges?: DiffNodeValue['$changes'];
+    diff?: Diff;
 };
-export declare const DiffTags: FC<DiffTagsProps>;
+export declare const BadgeWithDiffs: FC<BadgeWithDiffsProps>;

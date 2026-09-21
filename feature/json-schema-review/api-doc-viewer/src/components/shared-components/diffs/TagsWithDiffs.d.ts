@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffNodeMeta, DiffNodeValue, NodeChange } from '../../../../../api-data-model/src';
+import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import type { FC } from '../../../../../../node_modules/react';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-export type DiffTagsProps = {
+export type TagsWithDiffsProps = {
     requiredChanged?: boolean;
-    nullableChanged?: boolean;
     readOnly: boolean | undefined;
+    readOnlyDiff?: ChangedPropertyMetaData;
     writeOnly: boolean | undefined;
+    writeOnlyDiff?: ChangedPropertyMetaData;
     deprecated?: boolean;
-    deprecationReason?: string;
+    deprecatedDiff?: ChangedPropertyMetaData;
+    requiredDiff?: ChangedPropertyMetaData;
     layoutSide: LayoutSide;
-    isNodeChanged: boolean;
-    isContentChanged: boolean;
-    $nodeChange?: NodeChange;
-    $metaChanges?: DiffNodeMeta['$metaChanges'];
-    $valueChanges?: DiffNodeValue['$changes'];
 };
-export declare const DiffTags: FC<DiffTagsProps>;
+export declare const TagsWithDiffs: FC<TagsWithDiffsProps>;
