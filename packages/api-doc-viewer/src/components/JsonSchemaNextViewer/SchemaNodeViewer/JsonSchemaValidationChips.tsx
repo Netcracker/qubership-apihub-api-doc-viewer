@@ -3,7 +3,7 @@ import { takeDiffSideIsFontMuted } from "@apihub/utils/diffs/take-diff-side-is-f
 import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { ListSideItem } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
-import { isJsonSchemaEmptyStringDisplayValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
 import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 import { FC, memo } from "react"
@@ -31,7 +31,7 @@ export const JsonSchemaValidationChips: FC<JsonSchemaValidationChipsProps> = mem
           textHighlighterColor={takeDiffSideTextHighlighterColor(sideItem.diff, layoutSide)}
           borderShadowColor={takeDiffSideBorderShadowColor(sideItem.diff, layoutSide)}
           isFontMuted={takeDiffSideIsFontMuted(sideItem.diff, layoutSide)}
-          isEmptyStringPlaceholder={isJsonSchemaEmptyStringDisplayValue(sideItem.text)}
+          isEmptyStringPlaceholder={JsonSchemaRowDiffs.Format.isEmptyStringDisplayValue(sideItem.text)}
         />
       ))}
     </div>

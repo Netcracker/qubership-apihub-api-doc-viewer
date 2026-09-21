@@ -1,8 +1,8 @@
 import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import {
+  DdlApiRowDiffs,
   DdlColumnTypeLabelSideSegment,
-  resolveColumnTypeLabelSideDisplay,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { SideListDisplayKinds } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { DdlApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
@@ -69,7 +69,7 @@ function renderColumnTypeLabelSegment(
 
 export const ColumnTypeLabelWithDiffs: FC<ColumnTypeLabelWithDiffsProps> = memo<ColumnTypeLabelWithDiffsProps>((props) => {
   const { node, layoutSide } = props
-  const display = resolveColumnTypeLabelSideDisplay(node, layoutSide)
+  const display = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node, layoutSide)
 
   if (display.kind === SideListDisplayKinds.NO_DIFFS || display.kind === SideListDisplayKinds.WHOLE_DIFFS) {
     return (

@@ -23,7 +23,7 @@ import {
   PrecededBy,
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
-import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
@@ -128,7 +128,7 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
   ), [node])
 
   const nestingIndicatorRowColorizingDiff = useMemo(
-    () => takeJsonSchemaNestingIndicatorRowColorizingDiff(node),
+    () => JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(node),
     [node],
   )
 

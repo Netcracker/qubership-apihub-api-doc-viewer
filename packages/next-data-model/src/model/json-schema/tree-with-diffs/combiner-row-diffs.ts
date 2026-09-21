@@ -1,4 +1,6 @@
-import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+import {
+  AbstractNodeDiffsSeveritiesAggregator,
+} from '@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator'
 import {
   ChangedPropertyMetaData,
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
@@ -7,15 +9,25 @@ import {
   NodeDiffsSeverities,
   NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
-} from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
-import { isJsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/shared/json-schema/guards/tree-node"
-import { isChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/changed-property-meta-data"
-import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+} from '@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface'
 import {
-  isJsonSchemaWholePropertyAddOrRemove,
-  takeJsonSchemaNestingIndicatorRowColorizingDiff,
-} from "./property-row-diffs"
+  JsonSchemaTreeNode,
+  JsonSchemaTreeNodeWithDiffs,
+} from '@apihub/next-data-model/model/json-schema/types/aliases'
+import { isJsonSchemaTreeNodeWithDiffs } from '@apihub/next-data-model/shared/json-schema/guards/tree-node'
+import {
+  isChangedPropertyMetaData,
+} from '@apihub/next-data-model/model/abstract/tree-with-diffs/changed-property-meta-data'
+import {
+  annotation,
+  Diff,
+  DiffAction,
+  DiffType,
+  isDiffAdd,
+  isDiffRemove,
+  isDiffReplace,
+} from '@netcracker/qubership-apihub-api-diff'
+import { JsonSchemaRowDiffs } from './property-row-diffs'
 
 export type CombinerSelectorRowPresentation = {
   selectorRowDiff?: ChangedPropertyMetaData
@@ -68,7 +80,7 @@ export class JsonSchemaCombinerSelectorRowResolver {
 
     return {
       data: {
-        type: "annotation" as DiffType,
+        type: annotation,
         action: DiffAction.replace,
         scope: "root",
         description: "",
@@ -158,9 +170,9 @@ export class JsonSchemaCombinerSelectorRowResolver {
   /**
    * Every `nestedNodes()` variant was uniformly added, or uniformly removed - without the owner
    * itself being wholly added/removed (that case is covered separately by
-   * `isNestedNodeWhollyAddedOrRemoved(combinerNode)`, reused as-is for a combiner owner node in
+   * `JsonSchemaRowDiffs.NodeLevel.isWholePropertyAddOrRemove(combinerNode)`, reused as-is for a combiner owner node in
    * {@link resolveCombinerSelectorLevelReductionAction}). No existing structural-child signal
-   * covers this (`takeJsonSchemaNestingIndicatorRowColorizingDiff` only inspects
+   * covers this (`JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff` only inspects
    * properties/items children, never `nestedNodes()`).
    */
   private static resolveUniformNestedNodesAction(
@@ -201,9 +213,9 @@ export class JsonSchemaCombinerSelectorRowResolver {
    * evaluated independently per level - so a nested combiner-in-combiner chain gets its own correct
    * answer per level). `undefined` means no reduction: either nothing qualifies, or the viewer's
    * outer level-freeze wrap (whole-node add/remove on this same owner node, via
-   * `takeJsonSchemaNestingIndicatorRowColorizingDiff`) already pins the ambient level at the owner's
+   * `JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff`) already pins the ambient level at the owner's
    * own level, so an additional reduction here would go one level too low - hence the
-   * `isNestedNodeWhollyAddedOrRemoved` guard below.
+   * `JsonSchemaRowDiffs.NodeLevel.isWholePropertyAddOrRemove` guard below.
    */
   public static resolveCombinerSelectorLevelReductionAction(
     combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
@@ -211,7 +223,7 @@ export class JsonSchemaCombinerSelectorRowResolver {
     if (!isJsonSchemaTreeNodeWithDiffs(combinerNode)) {
       return undefined
     }
-    if (isJsonSchemaWholePropertyAddOrRemove(combinerNode)) {
+    if (JsonSchemaRowDiffs.NodeLevel.isWholePropertyAddOrRemove(combinerNode)) {
       return undefined
     }
     return this.resolveUniformNestedNodesAction(combinerNode)
@@ -379,7 +391,7 @@ export class JsonSchemaCombinerSelectorRowResolver {
     combinerNode: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs,
   ): CombinerSelectorRowPresentation {
     if (isJsonSchemaTreeNodeWithDiffs(combinerNode)) {
-      const wholeNodeRowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(combinerNode)
+      const wholeNodeRowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(combinerNode)
       if (wholeNodeRowDiff) {
         const wholeNodeSeverity = combinerNode.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]
         return {

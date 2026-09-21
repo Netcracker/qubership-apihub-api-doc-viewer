@@ -1,6 +1,6 @@
 import { SelectorOption } from "@apihub/components/shared-components/Selector/Selector"
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
-import { isJsonSchemaWholePropertyAddOrRemove } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { resolveCombinerBranchDisplayValue } from "./resolve-combiner-display"
@@ -51,7 +51,7 @@ export function buildCombinerSelectorOption<N extends JsonSchemaTreeNode | JsonS
     return baseOption
   }
 
-  const whollyAddedOrRemoved = isJsonSchemaWholePropertyAddOrRemove(nestedNode)
+  const whollyAddedOrRemoved = JsonSchemaRowDiffs.NodeLevel.isWholePropertyAddOrRemove(nestedNode)
 
   return {
     ...baseOption,

@@ -2,7 +2,7 @@ import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, apiDiff } from "@netcracker/q
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-with-diffs/validation-row-source-keys"
 import {
-  takeJsonSchemaValidationRowValueDiffs,
+  JsonSchemaRowDiffs,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
   listValueRangeDiffFixtureCaseIds,
@@ -47,7 +47,7 @@ describe("value range exclusive flag scan", () => {
         diffsMetaKeys: DIFF_META_KEYS,
       }).build()
 
-      const valueDiffs = takeJsonSchemaValidationRowValueDiffs(tree.root!, rowKey)
+      const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(tree.root!, rowKey)
       const valueDiffKeys = Object.keys(valueDiffs ?? {})
 
       expect(valueDiffKeys.some((key) => key.startsWith("exclusive"))).toBe(false)

@@ -2,7 +2,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getLayoutModeFlags } from "@apihub/utils/common/changes"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
-import { isJsonSchemaRequiredStarVisibleOnSide } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { FC } from "react"
 
 export type JsonSchemaRequiredDiffIndicatorProps = {
@@ -25,7 +25,7 @@ export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicator
   }
 
   const isVisible = isSideBySideDiffsLayoutMode
-    ? isJsonSchemaRequiredStarVisibleOnSide(required, requiredDiff, layoutSide)
+    ? JsonSchemaRowDiffs.RequiredStar.isVisibleOnSide(required, requiredDiff, layoutSide)
     : required
 
   if (!isVisible) {

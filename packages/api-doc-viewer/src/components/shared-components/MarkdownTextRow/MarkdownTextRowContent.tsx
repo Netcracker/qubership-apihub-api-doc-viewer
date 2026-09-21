@@ -2,7 +2,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, 
 import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { isDdlPropertyRowContentVisible } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DdlApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { FC, memo, useMemo } from "react"
 import "../../shared-styles/preceded-by.css"
 import { LevelIndicator } from "../LevelIndicator"
@@ -34,7 +34,7 @@ function isMarkdownSideContentVisible(
   usage: TextRowUsage,
 ): boolean {
   if (usage === TextRowUsage.DdlApiProperty) {
-    return isDdlPropertyRowContentVisible(diff, layoutSide)
+    return DdlApiRowDiffs.PropertyRow.isContentVisible(diff, layoutSide)
   }
   if (!diff?.data) {
     return true

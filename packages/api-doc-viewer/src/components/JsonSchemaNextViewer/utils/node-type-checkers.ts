@@ -1,7 +1,7 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { TreeNodeComplexityTypes } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { isPlainCombinerNodeKind } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-combiner"
-import { resolveJsonSchemaTypeSideValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKind, JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import { asJsonSchemaTypedNodeValue, isJsonSchemaPrimitiveValueType } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
@@ -49,5 +49,5 @@ export function isJsonSchemaNestingIndicatorHiddenForSide(
   node: JsonSchemaTreeNodeWithDiffs,
   layoutSide: LayoutSide,
 ): boolean {
-  return isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(node, layoutSide))
+  return isJsonSchemaPrimitiveValueType(JsonSchemaRowDiffs.TypeLabel.resolveTypeSideValue(node, layoutSide))
 }

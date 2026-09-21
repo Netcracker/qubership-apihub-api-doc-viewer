@@ -4,9 +4,9 @@ import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSid
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { isDdlFlagBadgeDiffHighlighted } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DdlApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
-import { formatForeignKeyTargetKey } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { formatForeignKeyTargetKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/foreign-key-target-key"
 import { FC, memo, ReactNode, useMemo } from "react"
 import {
   DDL_API_FOREIGN_KEY_BADGE_COLOR_SCHEMA,
@@ -70,7 +70,7 @@ function renderFlagBadge(options: {
     return emptyBadgePlaceholder()
   }
 
-  const $changes = isDdlFlagBadgeDiffHighlighted(flagDiff)
+  const $changes = DdlApiRowDiffs.Column.isFlagBadgeHighlighted(flagDiff)
     ? flagDiff?.data as Diff | undefined
     : undefined
 

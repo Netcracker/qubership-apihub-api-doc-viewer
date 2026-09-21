@@ -6,15 +6,7 @@ import { isDiffSideHeaderVisible } from "../../src/model/abstract/tree-with-diff
 import { JSON_SCHEMA_TITLE_ROW_DIFF_KEY } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import {
-  hasJsonSchemaMetaFlagContentChange,
-  normalizeJsonSchemaRequiredMetaDiffForDisplay,
-  takeJsonSchemaDeprecatedDiff,
-  takeJsonSchemaMetaFlagRawDiffs,
-  takeJsonSchemaReadOnlyDiff,
-  takeJsonSchemaRequiredMetaDiff,
-  takeJsonSchemaRequiredMetaDiffForDisplay,
-  takeJsonSchemaTitleRowDiff,
-  takeJsonSchemaWriteOnlyDiff,
+  JsonSchemaRowDiffs,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guards/tree-node"
 import { createBuildingServiceLogger } from "../../src/loggers"
@@ -151,10 +143,10 @@ describe("JSON Schema meta flag diffs", () => {
     const root = tree.root!
     expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
 
-    const readOnlyDiff = takeJsonSchemaReadOnlyDiff(root)
+    const readOnlyDiff = JsonSchemaRowDiffs.MetaFlags.takeReadOnlyDiff(root)
     expect(readOnlyDiff?.data.action).toBe(DiffAction.add)
-    expect(hasJsonSchemaMetaFlagContentChange(root)).toBe(true)
-    expect(takeJsonSchemaMetaFlagRawDiffs(root).readOnly?.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.MetaFlags.hasContentChange(root)).toBe(true)
+    expect(JsonSchemaRowDiffs.MetaFlags.takeRawDiffs(root).readOnly?.action).toBe(DiffAction.add)
   })
 
   it("aggregates readOnly remove on root schema", () => {
@@ -166,7 +158,7 @@ describe("JSON Schema meta flag diffs", () => {
     const root = tree.root!
     expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
 
-    const readOnlyDiff = takeJsonSchemaReadOnlyDiff(root)
+    const readOnlyDiff = JsonSchemaRowDiffs.MetaFlags.takeReadOnlyDiff(root)
     expect(readOnlyDiff?.data.action).toBe(DiffAction.remove)
   })
 
@@ -178,7 +170,7 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const root = tree.root!
 
-    expect(takeJsonSchemaWriteOnlyDiff(root)?.data.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.MetaFlags.takeWriteOnlyDiff(root)?.data.action).toBe(DiffAction.add)
   })
 
   it("aggregates deprecated add on root schema", () => {
@@ -189,7 +181,7 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const root = tree.root!
 
-    expect(takeJsonSchemaDeprecatedDiff(root)?.data.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.MetaFlags.takeDeprecatedDiff(root)?.data.action).toBe(DiffAction.add)
   })
 
   it("aggregates required add on property node (case 007 shape)", () => {
@@ -213,10 +205,10 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
 
-    const requiredDiff = takeJsonSchemaRequiredMetaDiff(nameNode)
+    const requiredDiff = JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(nameNode)
     expect(requiredDiff?.data.action).toBe(DiffAction.add)
-    expect(takeJsonSchemaMetaFlagRawDiffs(nameNode).required?.action).toBe(DiffAction.add)
-    expect(hasJsonSchemaMetaFlagContentChange(nameNode)).toBe(true)
+    expect(JsonSchemaRowDiffs.MetaFlags.takeRawDiffs(nameNode).required?.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.MetaFlags.hasContentChange(nameNode)).toBe(true)
   })
 
   it("aggregates required remove on property node (case 008 shape)", () => {
@@ -240,9 +232,9 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
 
-    const requiredDiff = takeJsonSchemaRequiredMetaDiff(nameNode)
+    const requiredDiff = JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(nameNode)
     expect(requiredDiff?.data.action).toBe(DiffAction.remove)
-    expect(takeJsonSchemaMetaFlagRawDiffs(nameNode).required?.action).toBe(DiffAction.remove)
+    expect(JsonSchemaRowDiffs.MetaFlags.takeRawDiffs(nameNode).required?.action).toBe(DiffAction.remove)
   })
 
   it("normalizes required meta diff for display as boolean add/remove", () => {
@@ -263,11 +255,11 @@ describe("JSON Schema meta flag diffs", () => {
     )
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
-    const requiredMeta = takeJsonSchemaRequiredMetaDiff(nameNode)
+    const requiredMeta = JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(nameNode)
 
-    expect(normalizeJsonSchemaRequiredMetaDiffForDisplay(requiredMeta)?.action).toBe(DiffAction.add)
-    expect(normalizeJsonSchemaRequiredMetaDiffForDisplay(requiredMeta)?.afterValue).toBe(true)
-    expect(takeJsonSchemaRequiredMetaDiffForDisplay(nameNode)?.afterValue).toBe(true)
+    expect(JsonSchemaRowDiffs.RequiredStar.normalizeMetaDiffForDisplay(requiredMeta)?.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.RequiredStar.normalizeMetaDiffForDisplay(requiredMeta)?.afterValue).toBe(true)
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(nameNode)?.afterValue).toBe(true)
   })
 
   it("sets yellow replace title row diff for readOnly add on root schema", () => {
@@ -278,7 +270,7 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const root = tree.root!
 
-    const titleRowDiff = takeJsonSchemaTitleRowDiff(root)
+    const titleRowDiff = JsonSchemaRowDiffs.TitleRow.takeDiff(root)
     expect(titleRowDiff).toBeDefined()
     expect(titleRowDiff!.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff!.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -304,7 +296,7 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
 
-    const titleRowDiff = takeJsonSchemaTitleRowDiff(nameNode)
+    const titleRowDiff = JsonSchemaRowDiffs.TitleRow.takeDiff(nameNode)
     expect(titleRowDiff).toBeDefined()
     expect(titleRowDiff!.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff!.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -332,10 +324,10 @@ describe("JSON Schema meta flag diffs", () => {
 
     expect(prop2Node.diffs[NODE_LEVEL_DIFF_KEY]).toBeDefined()
     expect(prop2Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
-    expect(takeJsonSchemaRequiredMetaDiff(prop2Node)).toBeUndefined()
-    expect(takeJsonSchemaRequiredMetaDiffForDisplay(prop2Node)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(prop2Node)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(prop2Node)).toBeUndefined()
 
-    const titleRowDiff = takeJsonSchemaTitleRowDiff(prop2Node)
+    const titleRowDiff = JsonSchemaRowDiffs.TitleRow.takeDiff(prop2Node)
     expect(titleRowDiff?.data.action).toBe(DiffAction.add)
     expect(isDiffSideHeaderVisible(titleRowDiff, ORIGIN_LAYOUT_SIDE)).toBe(false)
     expect(isDiffSideHeaderVisible(titleRowDiff, CHANGED_LAYOUT_SIDE)).toBe(true)
@@ -359,7 +351,7 @@ describe("JSON Schema meta flag diffs", () => {
     )
     const tree = buildTree(merged)
     const prop2Node = findPropertyNode(tree, "prop2")
-    const titleRowDiff = takeJsonSchemaTitleRowDiff(prop2Node)
+    const titleRowDiff = JsonSchemaRowDiffs.TitleRow.takeDiff(prop2Node)
 
     expect(titleRowDiff?.data.action).toBe(DiffAction.remove)
     expect(isDiffSideHeaderVisible(titleRowDiff, ORIGIN_LAYOUT_SIDE)).toBe(true)
@@ -387,10 +379,10 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
 
-    expect(takeJsonSchemaRequiredMetaDiff(nameNode)?.data.action).toBe(DiffAction.add)
-    expect(takeJsonSchemaRequiredMetaDiffForDisplay(nameNode)?.afterValue).toBe(true)
-    expect(takeJsonSchemaTitleRowDiff(nameNode)?.data.action).toBe(DiffAction.replace)
-    expect(takeJsonSchemaTitleRowDiff(nameNode)?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(nameNode)?.data.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(nameNode)?.afterValue).toBe(true)
+    expect(JsonSchemaRowDiffs.TitleRow.takeDiff(nameNode)?.data.action).toBe(DiffAction.replace)
+    expect(JsonSchemaRowDiffs.TitleRow.takeDiff(nameNode)?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
   })
 
   it("aggregates required remove via OAS-normalized merge (storybook path, case 008 shape)", () => {
@@ -414,8 +406,8 @@ describe("JSON Schema meta flag diffs", () => {
     const tree = buildTree(merged)
     const nameNode = findPropertyNode(tree, "name")
 
-    expect(takeJsonSchemaRequiredMetaDiff(nameNode)?.data.action).toBe(DiffAction.remove)
-    expect(takeJsonSchemaRequiredMetaDiffForDisplay(nameNode)?.beforeValue).toBe(true)
-    expect(takeJsonSchemaTitleRowDiff(nameNode)?.data.action).toBe(DiffAction.replace)
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiff(nameNode)?.data.action).toBe(DiffAction.remove)
+    expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(nameNode)?.beforeValue).toBe(true)
+    expect(JsonSchemaRowDiffs.TitleRow.takeDiff(nameNode)?.data.action).toBe(DiffAction.replace)
   })
 })

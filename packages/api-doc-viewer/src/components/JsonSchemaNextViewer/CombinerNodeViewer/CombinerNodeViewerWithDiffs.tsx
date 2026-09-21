@@ -10,7 +10,7 @@ import { resolveJsonSchemaPropertyInitiallyExpandedWithDiffs } from "@netcracker
 import { resolvePlainPropertyNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/kind-property"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
-import { takeJsonSchemaNestingIndicatorRowColorizingDiff } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaCombinerSelectorRowResolver } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/combiner-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
@@ -189,7 +189,7 @@ export const CombinerNodeViewerWithDiffs: FC<CombinerNodeViewerWithDiffsProps> =
   )
 
   const nestingIndicatorRowColorizingDiff = useMemo(
-    () => takeJsonSchemaNestingIndicatorRowColorizingDiff(activeLeaf),
+    () => JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(activeLeaf),
     [activeLeaf],
   )
 
@@ -198,7 +198,7 @@ export const CombinerNodeViewerWithDiffs: FC<CombinerNodeViewerWithDiffsProps> =
   const currentAfterLevel = asyncLevel?.afterLevel ?? level
 
   const ownerNestingIndicatorRowColorizingDiff = useMemo(
-    () => takeJsonSchemaNestingIndicatorRowColorizingDiff(node),
+    () => JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(node),
     [node],
   )
   /**

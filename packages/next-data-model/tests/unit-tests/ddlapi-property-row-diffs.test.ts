@@ -7,7 +7,7 @@ import {
   DiffHiglightingApplicationArea,
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { SideListDisplayKinds } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
-import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, resolveColumnDefaultValueSideDisplay, resolveColumnEnumValueSideItems, resolveColumnTypeLabelSideDisplay, resolveIndexPartNamesSideDisplay, takeDdlPropertyTitleRowDiff } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
+import { DDL_PROPERTY_TITLE_ROW_DIFF_KEY, DdlApiRowDiffs } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { resolveColumnNodeVisibility } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/node-visibility/kind-column"
 import { DETAILED_DISPLAY_MODE } from "@apihub/next-data-model/model/ddlapi/tree/node-visibility/kind-column"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side"
@@ -718,9 +718,9 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveColumnEnumValueSideItems(node as never, "origin").map(item => item.literal))
+    expect(DdlApiRowDiffs.ColumnEnumValues.resolveSideItems(node as never, "origin").map(item => item.literal))
       .toEqual(["new", "active"])
-    expect(resolveColumnEnumValueSideItems(node as never, "changed").map(item => item.literal))
+    expect(DdlApiRowDiffs.ColumnEnumValues.resolveSideItems(node as never, "changed").map(item => item.literal))
       .toEqual(["new", "active", "suspended"])
   })
 
@@ -904,7 +904,7 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.WHOLE_DIFFS,
       text: "int4",
       diff: expect.objectContaining({
@@ -915,7 +915,7 @@ describe("DDL property row diff aggregators", () => {
         }),
       }),
     })
-    expect(resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, CHANGED_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.WHOLE_DIFFS,
       text: "bigint",
       diff: expect.objectContaining({
@@ -974,8 +974,8 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    const originDisplay = resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
-    const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
+    const originDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
@@ -1008,7 +1008,7 @@ describe("DDL property row diff aggregators", () => {
       diffs: {},
     }
 
-    expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1029,7 +1029,7 @@ describe("DDL property row diff aggregators", () => {
       diffs: {},
     }
 
-    expect(resolveIndexPartNamesSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1077,7 +1077,7 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveIndexPartNamesSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(appendNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1087,7 +1087,7 @@ describe("DDL property row diff aggregators", () => {
         { text: ")" },
       ],
     })
-    expect(resolveIndexPartNamesSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(appendNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1141,7 +1141,7 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(replaceNode as never, ORIGIN_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1151,7 +1151,7 @@ describe("DDL property row diff aggregators", () => {
         { text: ")" },
       ],
     })
-    expect(resolveIndexPartNamesSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
+    expect(DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(replaceNode as never, CHANGED_LAYOUT_SIDE)).toEqual({
       kind: SideListDisplayKinds.PARTIAL_DIFFS,
       segments: [
         { text: "(" },
@@ -1233,8 +1233,8 @@ describe("DDL property row diff aggregators", () => {
       },
     }
 
-    const originDisplay = resolveColumnTypeLabelSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
-    const changedDisplay = resolveColumnTypeLabelSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
+    const originDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(node as never, CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
@@ -1292,11 +1292,11 @@ describe("DDL property row diff aggregators", () => {
 
     expect(sampleColumn).toBeDefined()
 
-    const changedDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
-    const originDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
+    const originDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(sampleColumn as never, ORIGIN_LAYOUT_SIDE)
 
     const joinSegments = (
-      display: ReturnType<typeof resolveColumnTypeLabelSideDisplay>,
+      display: ReturnType<typeof DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay>,
     ): string | undefined => {
       if (display.kind === SideListDisplayKinds.NO_DIFFS || display.kind === SideListDisplayKinds.WHOLE_DIFFS) {
         return display.text
@@ -1307,7 +1307,7 @@ describe("DDL property row diff aggregators", () => {
     expect(joinSegments(originDisplay)).toBe("integer")
     expect(joinSegments(changedDisplay)).toBe("varchar (100)")
 
-    const titleRowDiff = takeDdlPropertyTitleRowDiff(sampleColumn as never)
+    const titleRowDiff = DdlApiRowDiffs.PropertyRow.takeTitleRowDiff(sampleColumn as never)
     expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(titleRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -1350,7 +1350,7 @@ describe("DDL property row diff aggregators", () => {
       node => node.kind === DdlApiTreeNodeKinds.COLUMN && node.key === "sample_col",
     )
 
-    const changedDisplay = resolveColumnTypeLabelSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
+    const changedDisplay = DdlApiRowDiffs.ColumnTypeLabel.resolveSideDisplay(sampleColumn as never, CHANGED_LAYOUT_SIDE)
 
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
     if (changedDisplay.kind === SideListDisplayKinds.WHOLE_DIFFS) {
@@ -1359,7 +1359,7 @@ describe("DDL property row diff aggregators", () => {
       expect(changedDisplay.diff.styles.after.backgroundColor).toBeUndefined()
     }
 
-    const titleRowDiff = takeDdlPropertyTitleRowDiff(sampleColumn as never)
+    const titleRowDiff = DdlApiRowDiffs.PropertyRow.takeTitleRowDiff(sampleColumn as never)
     expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(titleRowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -1498,8 +1498,8 @@ describe("DDL property row diff aggregators", () => {
       typeof DdlApiTreeNodeKinds.COLUMN
     >
 
-    expect(resolveColumnDefaultValueSideDisplay(node, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
-    expect(resolveColumnDefaultValueSideDisplay(node, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(node, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(node, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
   })
 
   it("aggregates default value remove diff with red row background and plain chip", () => {
@@ -1798,16 +1798,16 @@ describe("DDL property row diff aggregators", () => {
       "CREATE TABLE public.t (sample_col bigint DEFAULT 0);",
     )
     expect(addNode?.value()?.defaultValue).toBe("0")
-    expect(resolveColumnDefaultValueSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
-    expect(resolveColumnDefaultValueSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("0")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("0")
 
     const removeNode = await loadCase(
       "CREATE TABLE public.t (sample_col bigint DEFAULT 0);",
       "CREATE TABLE public.t (sample_col bigint);",
     )
     expect(removeNode?.value()?.defaultValue).toBe("0")
-    expect(resolveColumnDefaultValueSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("0")
-    expect(resolveColumnDefaultValueSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("0")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
 
     const rawExprAddNode = await loadCase(
       "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
@@ -1815,16 +1815,16 @@ describe("DDL property row diff aggregators", () => {
       "shareability_status",
     )
     expect(rawExprAddNode?.value()?.defaultValue).toBe("'unknown'::varchar")
-    expect(resolveColumnDefaultValueSideDisplay(rawExprAddNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
-    expect(resolveColumnDefaultValueSideDisplay(rawExprAddNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(rawExprAddNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(rawExprAddNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
 
     const rawExprRemoveNode = await loadCase(
       "CREATE TABLE public.t (shareability_status varchar NOT NULL DEFAULT 'unknown'::varchar);",
       "CREATE TABLE public.t (shareability_status varchar NOT NULL);",
       "shareability_status",
     )
-    expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
-    expect(resolveColumnDefaultValueSideDisplay(rawExprRemoveNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(rawExprRemoveNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(rawExprRemoveNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
   })
 
   it("loads raw-expression default on whole-column add/remove samples", async () => {
@@ -1859,8 +1859,8 @@ describe("DDL property row diff aggregators", () => {
     expect(addDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
     expect(addDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.add)
     expect(resolveColumnNodeVisibility(addNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
-    expect(resolveColumnDefaultValueSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
-    expect(resolveColumnDefaultValueSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(addNode!, ORIGIN_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(addNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown'::varchar")
 
     const removeNode = await loadCase("225-remove-default-varchar-raw-expr")
     const removeDiffs = removeNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
@@ -1868,8 +1868,8 @@ describe("DDL property row diff aggregators", () => {
     expect(removeDiffs?.[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
     expect(removeDiffs?.defaultValueRowColorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(resolveColumnNodeVisibility(removeNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
-    expect(resolveColumnDefaultValueSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
-    expect(resolveColumnDefaultValueSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(removeNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(removeNode!, CHANGED_LAYOUT_SIDE)).toBeUndefined()
 
     const replaceNode = await loadCase("325-replace-default-varchar-raw-expr")
     const replaceDiffs = replaceNode?.diffs as import("@apihub/next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs.types").DdlApiColumnPropertyRowDiffs
@@ -1881,7 +1881,7 @@ describe("DDL property row diff aggregators", () => {
     expect(replaceDiffs?.defaultValueRowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(replaceDiffs?.defaultValue?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     expect(resolveColumnNodeVisibility(replaceNode!, DETAILED_DISPLAY_MODE).showDefaultRow).toBe(true)
-    expect(resolveColumnDefaultValueSideDisplay(replaceNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown_1'::varchar")
-    expect(resolveColumnDefaultValueSideDisplay(replaceNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown_2'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(replaceNode!, ORIGIN_LAYOUT_SIDE)).toBe("'unknown_1'::varchar")
+    expect(DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(replaceNode!, CHANGED_LAYOUT_SIDE)).toBe("'unknown_2'::varchar")
   })
 })

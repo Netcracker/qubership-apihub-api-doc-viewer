@@ -1,5 +1,5 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { resolveJsonSchemaTypeLabelSideDisplay } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { FC, memo } from "react"
@@ -24,7 +24,7 @@ export const JsonSchemaNestingIndicatorTypeValueWithDiffs: FC<JsonSchemaNestingI
     return null
   }
 
-  const display = resolveJsonSchemaTypeLabelSideDisplay(node, meta, layoutSide)
+  const display = JsonSchemaRowDiffs.TypeLabel.resolveSideDisplay(node, meta, layoutSide)
   return (
     <JsonSchemaTypeValueSideDisplay
       display={display}

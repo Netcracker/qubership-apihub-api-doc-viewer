@@ -10,15 +10,7 @@ import {
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
-  isDdlPropertySubheaderVisible,
-  resolveColumnDefaultValueSideDisplay,
-  resolveColumnEnumValueSideItems,
-  takeColumnDescriptionDiff,
-  takeColumnEnumValueDiffs,
-  takeColumnEnumValuesRowColorizingDiff,
-  takeColumnDefaultValueDiff,
-  takeColumnDefaultValueRowColorizingDiff,
-  takeColumnGeneratedExpressionDiff,
+  DdlApiRowDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import {
   resolveColumnAdditionalInfoRowUsesAfterRowPrecededBy,
@@ -75,27 +67,27 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
   const flagDiffs = useMemo(() => takeColumnFlagDiffs(node), [node])
   const foreignKeyTargetDiffs = useMemo(() => takeColumnForeignKeyTargetDiffs(node), [node])
   const descriptionDiff = useMemo(
-    () => takeColumnDescriptionDiff(node),
+    () => DdlApiRowDiffs.Column.takeDescriptionDiff(node),
     [node],
   )
   const generatedExpressionDiff = useMemo(
-    () => takeColumnGeneratedExpressionDiff(node),
+    () => DdlApiRowDiffs.Column.takeGeneratedExpressionDiff(node),
     [node],
   )
   const enumValueDiffs = useMemo(
-    () => takeColumnEnumValueDiffs(node),
+    () => DdlApiRowDiffs.ColumnEnumValues.takeDiffs(node),
     [node],
   )
   const enumValuesRowColorizingDiff = useMemo(
-    () => takeColumnEnumValuesRowColorizingDiff(node),
+    () => DdlApiRowDiffs.ColumnEnumValues.takeRowColorizingDiff(node),
     [node],
   )
   const defaultValueDiff = useMemo(
-    () => takeColumnDefaultValueDiff(node),
+    () => DdlApiRowDiffs.ColumnDefaultValue.takeDiff(node),
     [node],
   )
   const defaultValueRowColorizingDiff = useMemo(
-    () => takeColumnDefaultValueRowColorizingDiff(node),
+    () => DdlApiRowDiffs.ColumnDefaultValue.takeRowColorizingDiff(node),
     [node],
   )
 
@@ -114,7 +106,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         return <></>
       }
 
-      if (!isDdlPropertySubheaderVisible(nodeDiff, layoutSide)) {
+      if (!DdlApiRowDiffs.PropertyRow.isSubheaderVisible(nodeDiff, layoutSide)) {
         return <></>
       }
 
@@ -139,7 +131,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
   const defaultAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
-      const defaultValue = resolveColumnDefaultValueSideDisplay(node, layoutSide)
+      const defaultValue = DdlApiRowDiffs.ColumnDefaultValue.resolveSideDisplay(node, layoutSide)
       if (defaultValue === undefined) {
         return <></>
       }
@@ -176,7 +168,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
   const enumValuesAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
-      const sideItems = resolveColumnEnumValueSideItems(node, layoutSide)
+      const sideItems = DdlApiRowDiffs.ColumnEnumValues.resolveSideItems(node, layoutSide)
       if (sideItems.length === 0) {
         return <></>
       }

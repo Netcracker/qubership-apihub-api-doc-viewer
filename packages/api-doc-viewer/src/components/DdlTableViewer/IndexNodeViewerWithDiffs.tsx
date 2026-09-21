@@ -5,9 +5,7 @@ import {
   takeNodeDiffIfPresent,
 } from "@apihub/utils/ddlapi/node-level-diff"
 import {
-  isDdlPropertySubheaderVisible,
-  resolveIndexPartNamesSideDisplay,
-  takeIndexDescriptionDiff,
+  DdlApiRowDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import {
   resolveIndexListLastRowFlags,
@@ -60,7 +58,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
 
   const flagDiffs = useMemo(() => takeIndexFlagDiffs(node), [node])
   const descriptionDiff = useMemo(
-    () => takeIndexDescriptionDiff(node),
+    () => DdlApiRowDiffs.Index.takeDescriptionDiff(node),
     [node],
   )
 
@@ -68,7 +66,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
 
   const renderPartNames = useCallback(
     (layoutSide: LayoutSide) => {
-      const display = resolveIndexPartNamesSideDisplay(node, layoutSide)
+      const display = DdlApiRowDiffs.IndexPartNames.resolveSideDisplay(node, layoutSide)
       return (
         <CommaSeparatedListWithDiffs
           layoutSide={layoutSide}
@@ -85,7 +83,7 @@ export const IndexNodeViewerWithDiffs: FC<IndexNodeViewerWithDiffsProps> = (prop
         return <></>
       }
 
-      if (!isDdlPropertySubheaderVisible(nodeDiff, layoutSide)) {
+      if (!DdlApiRowDiffs.PropertyRow.isSubheaderVisible(nodeDiff, layoutSide)) {
         return <></>
       }
 

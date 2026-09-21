@@ -4,14 +4,14 @@ import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-d
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import {
   JSON_SCHEMA_META_FLAG_DIFF_KEYS,
-  takeJsonSchemaMetaFlagRawDiffs,
+  JsonSchemaRowDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 
 function takeJsonSchemaSubheaderFlagRawDiffs(
   node: JsonSchemaTreeNodeWithDiffs,
-): Pick<ReturnType<typeof takeJsonSchemaMetaFlagRawDiffs>, "readOnly" | "writeOnly" | "deprecated"> {
-  const allMeta = takeJsonSchemaMetaFlagRawDiffs(node)
-  const flagDiffs: Pick<ReturnType<typeof takeJsonSchemaMetaFlagRawDiffs>, "readOnly" | "writeOnly" | "deprecated"> = {}
+): Pick<ReturnType<typeof JsonSchemaRowDiffs.MetaFlags.takeRawDiffs>, "readOnly" | "writeOnly" | "deprecated"> {
+  const allMeta = JsonSchemaRowDiffs.MetaFlags.takeRawDiffs(node)
+  const flagDiffs: Pick<ReturnType<typeof JsonSchemaRowDiffs.MetaFlags.takeRawDiffs>, "readOnly" | "writeOnly" | "deprecated"> = {}
 
   for (const key of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
     const diff = allMeta[key]
@@ -31,7 +31,7 @@ export function buildJsonSchemaDiffTagsProps(
   "isNodeChanged" | "isContentChanged" | "requiredChanged" | "$nodeChange" | "$metaChanges"
 > {
   const isNodeChanged = !!node.diffs[NODE_LEVEL_DIFF_KEY]
-  const allMeta = takeJsonSchemaMetaFlagRawDiffs(node)
+  const allMeta = JsonSchemaRowDiffs.MetaFlags.takeRawDiffs(node)
   const flagDiffs = takeJsonSchemaSubheaderFlagRawDiffs(node)
   const requiredDiff = allMeta.required
   const $metaChanges = requiredDiff
