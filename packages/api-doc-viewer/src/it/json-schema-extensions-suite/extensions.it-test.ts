@@ -1,48 +1,50 @@
 /**
- * Screenshot tests for JSON Schema Suite/Extensions stories.
+ * Screenshot tests for JSON Schema Suite (Extensions)/Extensions stories.
  */
-import path from 'path'
-import { storyPage } from '../service/storybook-service'
+import { StoryPage } from "../service/story-page";
+import { ViewComponent } from "../service/view-component";
+import { storyPage } from "../service/storybook-service";
 
-const META_ID = 'json-schema-extensions-suite-extensions'
-const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
-
-const TEST_IDS: string[] = [
-  'case-001-root-primitive',
-  'case-002-root-object',
-  'case-003-root-array',
-  'case-004-root-json-schema',
-  'case-005-property-primitive',
-  'case-006-property-object',
-  'case-007-property-array',
-  'case-008-property-json-schema',
-  'case-009-items-primitive',
-  'case-010-items-object',
-  'case-011-items-array',
-  'case-012-items-json-schema',
-  'case-013-root-mixed-set',
-]
+const META_ID = "json-schema-extensions-suite-extensions";
 
 async function waitForJsonSchemaViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true })
-  await page.waitForFunction(() => document.readyState === 'complete')
-  await page.evaluate(() => new Promise<void>(resolve =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-  ))
+  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
+  await page.waitForFunction(() => document.readyState === "complete");
+  await page.evaluate(() => new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+  ));
 }
 
-beforeEach(async () => {
-  await jestPuppeteer.resetPage()
-})
+describe("JSON Schema Suite (Extensions) - Extensions", () => {
+  let story: StoryPage;
+  let component: ViewComponent;
 
-for (const testId of TEST_IDS) {
-  it(testId, async () => {
-    const story = await storyPage(page, `${META_ID}--${testId}`)
-    await waitForJsonSchemaViewer()
-    const component = await story.viewComponent()
-    expect(await component.captureScreenshot()).toMatchImageSnapshot({
-      customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `${META_ID}-${testId}-${counter}`,
-    })
-  })
-}
+  beforeEach(async () => {
+    await jestPuppeteer.resetPage();
+  });
+
+  const TEST_IDS: string[] = [
+    "001-root-primitive",
+    "002-root-object",
+    "003-root-array",
+    "004-root-json-schema",
+    "005-property-primitive",
+    "006-property-object",
+    "007-property-array",
+    "008-property-json-schema",
+    "009-items-primitive",
+    "010-items-object",
+    "011-items-array",
+    "012-items-json-schema",
+    "013-root-mixed-set",
+  ];
+
+  for (const testId of TEST_IDS) {
+    it(testId, async () => {
+      story = await storyPage(page, `${META_ID}--case-${testId}`);
+      await waitForJsonSchemaViewer();
+      component = await story.viewComponent();
+      expect(await component.captureScreenshot()).toMatchImageSnapshot();
+    });
+  }
+});
