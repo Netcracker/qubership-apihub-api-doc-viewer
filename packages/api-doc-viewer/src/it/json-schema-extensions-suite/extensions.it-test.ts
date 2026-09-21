@@ -1,9 +1,9 @@
 /**
  * Screenshot tests for JSON Schema Suite (Extensions)/Extensions stories.
  */
-import { StoryPage } from "./service/story-page";
-import { ViewComponent } from "./service/view-component";
-import { storyPage } from "./service/storybook-service";
+import { StoryPage } from "../service/story-page";
+import { ViewComponent } from "../service/view-component";
+import { storyPage } from "../service/storybook-service";
 
 const META_ID = "json-schema-extensions-suite-extensions";
 
