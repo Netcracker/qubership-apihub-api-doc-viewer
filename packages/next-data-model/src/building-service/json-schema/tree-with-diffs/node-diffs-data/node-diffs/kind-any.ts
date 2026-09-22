@@ -185,6 +185,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       nodeDiffs as JsonSchemaKindAnyNodeDiffs,
       nodeDescendantDiffs,
     )
+    this.aggregateExtensionsUniformRowColorizingDiff(nodeDiffs as JsonSchemaKindAnyNodeDiffs)
     this.aggregateNodeChangesSummary(
       crawlValue,
       nodeDiffs as JsonSchemaKindAnyNodeDiffs,
@@ -246,9 +247,11 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
    * Mixed or partially-unchanged children leave the row uncolored.
    *
    * Also seeds {@link JsonSchemaKindAnyNodeDiffs.extensionsRowColorizingDiff} for the
-   * `Extensions` nesting-indicator row, but **only** from the first (whole-node add/remove)
-   * branch - see that field's doc comment for why the type-label-replace and uniform-children
-   * branches below are deliberately excluded.
+   * `Extensions` nesting-indicator row from the first (whole-node add/remove) branch - see that
+   * field's doc comment for why the type-label-replace and uniform-*schema*-children branches
+   * below are deliberately excluded. The `Extensions` row's *own* uniform-children case (every
+   * `x-*` extension uniformly added/removed) is a separate, narrower signal - handled by
+   * {@link aggregateExtensionsUniformRowColorizingDiff}, called right after this method.
    */
   protected aggregateNestingIndicatorRowColorizingDiff(
     crawlValue: object | boolean | null,
@@ -313,6 +316,46 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
     nodeDiffs.nestingIndicatorRowColorizingDiff = this.withNestingLevelFlags(
       this.buildChangedPropertyMetaDataFromDiff(firstDiff.data),
+    )
+  }
+
+  /**
+   * Background for the `Extensions` nesting-indicator header row, for the case the owning node
+   * itself was untouched but its `x-*` extensions were not: every extension present on this node
+   * was uniformly added, or uniformly removed - single-side visibility only, mirroring
+   * {@link aggregateNestingIndicatorRowColorizingDiff}'s uniform-children branch but scoped to
+   * `extensionsDiffs` (already populated by {@link aggregateExtensionsDiffs} earlier in
+   * `aggregate()`) instead of the node's schema children. No-op when the whole-node branch above
+   * already populated the field, when there are no extension diffs, or when they are mixed
+   * add/remove/replace.
+   */
+  protected aggregateExtensionsUniformRowColorizingDiff(
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+  ): void {
+    if (nodeDiffs.extensionsRowColorizingDiff) {
+      return
+    }
+
+    const extensionDiffs = Object.values(nodeDiffs.extensionsDiffs ?? {}) as Diff<DiffType>[]
+    if (extensionDiffs.length === 0) {
+      return
+    }
+
+    const [firstDiff, ...restDiffs] = extensionDiffs
+    if (!isDiffAdd(firstDiff) && !isDiffRemove(firstDiff)) {
+      return
+    }
+
+    const firstAction = firstDiff.action
+    const isUniform = restDiffs.every((diff) => (
+      diff.action === firstAction && (isDiffAdd(diff) || isDiffRemove(diff))
+    ))
+    if (!isUniform) {
+      return
+    }
+
+    nodeDiffs.extensionsRowColorizingDiff = this.withNestingLevelFlags(
+      this.buildChangedPropertyMetaDataFromDiff(firstDiff),
     )
   }
 

@@ -42,6 +42,12 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
         NodeDiffsSeverityPlacemennt.NestingIndicatorRow,
         diffsSeverities,
       )
+      this.applyRowSeverity(
+        nodeDiffs,
+        "extensionsRowColorizingDiff",
+        NodeDiffsSeverityPlacemennt.ExtensionsRow,
+        diffsSeverities,
+      )
     }
 
     this.applyValidationRowSeverities(nodeDiffs, diffsSeverities)

@@ -1964,4 +1964,51 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
     expect(aDiff?.action).toBe(DiffAction.remove)
     expect(aDiff && "beforeValue" in aDiff ? aDiff.beforeValue : undefined).toBe(true)
   })
+
+  it("colors the Extensions row green, changed-side-only, when every extension was added while the owning node itself was untouched", () => {
+    const tree = buildTree(
+      { type: "string" },
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(false)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the Extensions row red, origin-side-only, when every extension was removed while the owning node itself was untouched", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+      { type: "string" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(true)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("leaves the Extensions row uncolored when one extension was added and another removed (mixed)", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-c": "old" },
+      { type: "string", "x-a": true, "x-b": "new" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
 })
