@@ -6,7 +6,7 @@ draft-07 — in the JSON Schema Next diffs viewer. All cases are **root-only**
 (no property/`items`-location split, unlike the plain `json-schema/extensions/`
 suite).
 
-- Total cases: 96 (4 types × 8 "existing 1 extension" + 4 types × 12
+- Total cases: 104 (4 types × 8 "existing 1 extension" + 4 types × 14
   "existing 2 extensions" + 8 "node diff → extension inheritance" suites × 2 cases)
 - Layout: `json-schema-diffs/extensions/<suite>/<case-id>/before.yaml` and
   `.../after.yaml`
@@ -67,6 +67,8 @@ combinations.
 | `10-removed-and-replaced` | Secondary extension removed; primary extension's value replaced → auxiliary type 1 |
 | `11-added-and-replaced` | Secondary extension's value replaced → auxiliary type 1; a new extension (auxiliary type 2) added |
 | `12-both-replaced` | Primary extension's value replaced → auxiliary type 1; secondary → auxiliary type 2 |
+| `13-both-added` | Starting state has no extensions → both primary and secondary extensions added at once (wholly-added group) |
+| `14-both-removed` | Starting state is the same-type pair `{<type>, <type>}` → both extensions removed at once (wholly-removed group) |
 
 ## Suites 9–16 — Node diff → extension inheritance (JSON Schema Next Viewer ↔ JSO Viewer seam)
 
