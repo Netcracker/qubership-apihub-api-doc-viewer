@@ -4,6 +4,7 @@ import { JsonSchemaSpecWithDiffsTransformer } from "../../src/building-service/j
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { JsonSchemaKindPropertyNodeDiffs } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { formatJsonSchemaValidationRowChipDisplay } from "../../src/model/json-schema/tree-with-diffs/validation-row-chip-display"
 import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 import {
@@ -209,6 +210,57 @@ describe("JsonSchema with-diffs stack", () => {
       ).toBe(testCase.expectedRowBackground)
       expect(tree.root!.diffsSeverities?.[NodeDiffsSeverityPlacemennt.EnumRow]?.type).toBeDefined()
     }
+  })
+
+  // Reproduces the real AsyncAPI channel-parameters shape (packages/samples/async-api-diffs/
+  // channel-parameters/{6,7}-channel-parameters-fields-*): `enum` newly appearing on a property
+  // that already has other unchanged sibling fields (`location`) surfaces as per-index add/remove
+  // diffs attached directly to the `enum` array's OWN diffsMetaKey - not a single field-level diff
+  // on the property (see `resolveWholeListFieldDiff`'s doc comment) - so the crawl value is built
+  // by hand here rather than via `mergeSchemas`/`apiDiff`, which (without AsyncAPI's `unify: true`
+  // normalization) resolves this exact shape to the OTHER attachment tier instead.
+  describe("JsonSchema enum row: chip suppression when every item was uniformly added/removed", () => {
+    function buildEnumArrayDiffsSource(action: typeof DiffAction.add | typeof DiffAction.remove): object {
+      const isAdd = action === DiffAction.add
+      const enumArray: unknown[] = ["alpha", "beta"]
+      Reflect.set(enumArray, DIFF_META_KEY, {
+        "0": {
+          type: "unclassified", action, scope: "root",
+          ...(isAdd ? { afterValue: "alpha", afterDeclarationPaths: [["enum", 0]] } : { beforeValue: "alpha", beforeDeclarationPaths: [["enum", 0]] }),
+        },
+        "1": {
+          type: "unclassified", action, scope: "root",
+          ...(isAdd ? { afterValue: "beta", afterDeclarationPaths: [["enum", 1]] } : { beforeValue: "beta", beforeDeclarationPaths: [["enum", 1]] }),
+        },
+      })
+      return { type: "string", location: "$message.payload#/id", enum: enumArray }
+    }
+
+    it("colors the row green and leaves every chip plain when every enum item was uniformly added", () => {
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: buildEnumArrayDiffsSource(DiffAction.add),
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+      const diffs = tree.root!.diffs as JsonSchemaKindPropertyNodeDiffs
+
+      expect(diffs.enumRowColorizingDiff?.data.action).toBe(DiffAction.add)
+      expect(diffs.enumValueDiffs?.["0"]?.styles.after.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["1"]?.styles.after.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.after.isContentVisible).toBe(true)
+    })
+
+    it("colors the row red and leaves every chip plain when every enum item was uniformly removed", () => {
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: buildEnumArrayDiffsSource(DiffAction.remove),
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+      const diffs = tree.root!.diffs as JsonSchemaKindPropertyNodeDiffs
+
+      expect(diffs.enumRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.isFontMuted).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.isContentVisible).toBe(true)
+    })
   })
 
   it("aggregates property metadata and constraint diffs for case 1.4", () => {
@@ -2011,6 +2063,35 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
     expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
     expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
   })
+
+  // Mirrors the real regression shape: packages/samples/json-schema-diffs/extensions/
+  // existing-1-array/01-add-primitive (x-tags stays untouched, x-internal is added alongside it)
+  // and existing-2-object/01-primitive-removed (x-metadata stays untouched, x-internal is
+  // removed). A single extension changing while a SIBLING extension sits completely unchanged on
+  // both sides is a genuinely partial change - unlike the "mixed" case above (different actions),
+  // here every changed extension agrees on direction, which is exactly what could be mistaken for
+  // "every extension uniformly added/removed" if the check doesn't also require full coverage.
+  it("leaves the Extensions row uncolored when one extension was added but another sits unchanged alongside it", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true },
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
+
+  it("leaves the Extensions row uncolored when one extension was removed but another sits unchanged alongside it", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+      { type: "string", "x-a": true },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
 })
 
 describe("JsonSchema customAnnotations (generic extension point) diffs", () => {
@@ -2109,5 +2190,78 @@ describe("JsonSchema customAnnotations (generic extension point) diffs", () => {
     expect(JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")).toBeUndefined()
     expect(JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")).toBeUndefined()
     expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]).toBeUndefined()
+  })
+})
+
+// Regression for a boolean-vs-object blind spot in JsonSchemaNodeDiffsAggregatorKindAny.aggregate():
+// the whole-node container/parent-inherited branches used to run only after a
+// `!isObject(crawlValue) && !Array.isArray(crawlValue)` guard, so a node whose crawl value is a
+// raw primitive - the boolean `additionalProperties: false` (only `additionalProperties: true` is
+// pre-transformed into an object, `{type: 'any'}`) - bailed out before ever reaching inheritance,
+// leaving it uncolored even when its owning property was wholly added/removed while every other
+// sibling row/child correctly inherited that styling. Mirrors
+// packages/samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema /
+// 13.4-...-remove-complex-json-schema.
+describe("JsonSchema additionalProperties:false inherits whole-node styling from an ancestor add/remove", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the 'no additional properties' row green when the whole containing property was added", () => {
+    const tree = buildTree(
+      { type: "object", properties: {} },
+      {
+        type: "object",
+        properties: {
+          prop1: {
+            type: "object",
+            properties: { id: { type: "string" } },
+            additionalProperties: false,
+          },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+
+    const additionalPropertiesNode = prop1Node.childrenNodes()
+      .find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES)
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+  })
+
+  it("colors the 'no additional properties' row red when the whole containing property was removed", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: {
+          prop1: {
+            type: "object",
+            properties: { id: { type: "string" } },
+            additionalProperties: false,
+          },
+        },
+      },
+      { type: "object", properties: {} },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+
+    const additionalPropertiesNode = prop1Node.childrenNodes()
+      .find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES)
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
   })
 })

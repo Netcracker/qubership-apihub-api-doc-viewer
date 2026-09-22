@@ -91,6 +91,18 @@ function attachLocationCustomAnnotations(
       : paramValue
   }
 
+  // Per-property add/remove/rename diffs live on the ORIGINAL `properties` object's own
+  // `[diffsMetaKey]` (json-crawl's diffs record, keyed by property name) - rebuilding
+  // `transformedProperties` as a fresh object literal above does not carry it over, so it must
+  // be re-attached explicitly or every wholly added/removed/renamed parameter row loses its
+  // diff highlighting.
+  if (diffsMetaKey) {
+    const propertiesDiffs = Reflect.get(properties, diffsMetaKey)
+    if (propertiesDiffs !== undefined) {
+      Reflect.set(transformedProperties, diffsMetaKey, propertiesDiffs)
+    }
+  }
+
   return { ...addressParameters, properties: transformedProperties }
 }
 
@@ -155,6 +167,23 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
 
   const preparedAddressParameters = useMemo(() => {
     const withCustomAnnotations = attachLocationCustomAnnotations(addressParameters, diffMetaKeys?.diffsMetaKey)
+    // `node.diffs[NODE_LEVEL_DIFF_KEY]` is populated by TWO distinct sources that share this one
+    // field (see `AsyncApiNodeDiffsAggregatorKindParameters`, "descendant diffs === diff of whole
+    // node"): a genuine whole-node add/remove (the parameters map itself doesn't structurally
+    // exist on one side - e.g. an ancestor channel/operation/message was wholly added/removed),
+    // or a synthesized approximation whenever every parameter happens to carry its own diff (used
+    // only to color the "Address Parameters" title row above, not a real structural signal).
+    // `prepareJsonSchemaInCaseOfWhollyChanged` must fire only for the first case: when the
+    // synthesized approximation applies, `properties[diffsMetaKey]` already carries the real
+    // per-parameter add/remove/rename diffs, and the JSON Schema Next tree's own nesting-indicator
+    // "uniform children" detection already colors and levels param rows correctly on its own -
+    // wrapping it here instead stamps a synthetic add/remove onto every top-level schema key
+    // (`type`, `properties`, ...), which hijacks that detection via the type-label-diff branch and
+    // makes both origin and changed sides increment their nesting level symmetrically instead of
+    // freezing the side where the parameter doesn't exist.
+    if (hasNestedPropertiesDiffs(withCustomAnnotations, diffMetaKeys)) {
+      return withCustomAnnotations
+    }
     return prepareJsonSchemaInCaseOfWhollyChanged(
       withCustomAnnotations,
       node.diffs[NODE_LEVEL_DIFF_KEY],
@@ -186,6 +215,25 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       hideUnchangedNodes={false}
     />
   </>
+}
+
+/**
+ * True when the (already-merged) schema's own `properties` carries real per-property diffs
+ * (add/remove/rename), meaning the JSON Schema Next tree can already correctly detect and color a
+ * "children uniformly added/removed" nesting indicator on its own - see the caller's comment.
+ */
+function hasNestedPropertiesDiffs(
+  jsonSchema: Record<string, unknown> | undefined,
+  diffMetaKeys: DiffMetaKeys | undefined,
+): boolean {
+  if (!jsonSchema || !diffMetaKeys) {
+    return false
+  }
+  const properties = jsonSchema.properties
+  if (!isPlainRecord(properties)) {
+    return false
+  }
+  return Reflect.get(properties, diffMetaKeys.diffsMetaKey) !== undefined
 }
 
 function prepareJsonSchemaInCaseOfWhollyChanged(

@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-09-14T07:31:01.086380+00:00'
+generated_at: '2026-09-23T11:19:16.292870+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -15,9 +15,9 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/SKILL.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:7046aa973401a395ed913b8d5111b2c8b464a4baee041618e28c7936dc172af5
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:f36b47af3b3b5e849f9eeb784536300326c9bb719f6ad0e57fe4bb75023da3d8
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:7046aa973401a395ed913b8d5111b2c8b464a4baee041618e28c7936dc172af5
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:f36b47af3b3b5e849f9eeb784536300326c9bb719f6ad0e57fe4bb75023da3d8
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
 - repo_url: _local/api-doc-viewer-repo
@@ -31,23 +31,27 @@ dependencies:
   - .claude/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md
   - .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md
   - .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md
+  - .claude/skills/api-doc-viewer-repo/refactoring-notes.md
   - .cursor/rules/api-doc-viewer-repo.mdc
   - .cursor/skills/api-doc-viewer-repo
   - .cursor/skills/api-doc-viewer-repo/SKILL.md
   - .cursor/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md
   - .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md
   - .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md
+  - .cursor/skills/api-doc-viewer-repo/refactoring-notes.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-repo.md: sha256:e304c663e255278c2102aae76dcb8e4dd9d826281924d0c7caa49353e52ca17f
     .claude/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .claude/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
-    .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
-    .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
+    .claude/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:e76032c4bf95bd3a73a9b33bfcd46af1998984004be7325bf738142feba85c00
+    .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:905c588ea832076de1ed60b5eab727a917ed19a2492d9ab8182343a75db8c461
+    .claude/skills/api-doc-viewer-repo/refactoring-notes.md: sha256:debae207589c4276db5cc88f06c372be51d30df9ed8989a8d1e879c7285d4bab
     .cursor/rules/api-doc-viewer-repo.mdc: sha256:120f751737421c77ae356eeda8e40ea6f00248d607148eb5f9a6ee037d0a64b7
     .cursor/skills/api-doc-viewer-repo/SKILL.md: sha256:15103212cf239081143027cf54bdf1e22f904c50c409a03318f352530a5943c7
     .cursor/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md: sha256:c6583f88a12329e196fe456ac7fd085bd53192d7344abb724ae1d02ff4e1ad01
-    .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
-    .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
+    .cursor/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md: sha256:e76032c4bf95bd3a73a9b33bfcd46af1998984004be7325bf738142feba85c00
+    .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md: sha256:905c588ea832076de1ed60b5eab727a917ed19a2492d9ab8182343a75db8c461
+    .cursor/skills/api-doc-viewer-repo/refactoring-notes.md: sha256:debae207589c4276db5cc88f06c372be51d30df9ed8989a8d1e879c7285d4bab
   source: local
   local_path: ./agent-packages/api-doc-viewer-repo
 - repo_url: _local/api-doc-viewer-review-session
@@ -123,12 +127,12 @@ dependencies:
   - .cursor/skills/next-data-model-authoring/node-visibility/general-approach.md
   deployed_file_hashes:
     .claude/rules/next-data-model-authoring.md: sha256:70210952bfcea3f072bc9d806ac70c16ae9e147e54a3b9f2a05e06476d255926
-    .claude/skills/next-data-model-authoring/SKILL.md: sha256:5e66a0fbaea95c1d421df99a929ceae80bcac38722dfd074638b9ccb6707f23d
+    .claude/skills/next-data-model-authoring/SKILL.md: sha256:c1374249fd22c300bd03d7c6258694605734e4903179d328f462da1028cdf4d4
     .claude/skills/next-data-model-authoring/node-visibility/authoring.md: sha256:715c86a9ea31b91edd7caf625ce82411fdfc88a0175b3f748072d0fde847dad2
     .claude/skills/next-data-model-authoring/node-visibility/ddlapi.md: sha256:a8945401440060035907c66f79d124520351981a10d19544c951acf174c00400
     .claude/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
     .cursor/rules/next-data-model-authoring.mdc: sha256:fb7dab286ef502d05029953c39235ea585ebb75236a65d4509e13f82c3199b8d
-    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:5e66a0fbaea95c1d421df99a929ceae80bcac38722dfd074638b9ccb6707f23d
+    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:c1374249fd22c300bd03d7c6258694605734e4903179d328f462da1028cdf4d4
     .cursor/skills/next-data-model-authoring/node-visibility/authoring.md: sha256:715c86a9ea31b91edd7caf625ce82411fdfc88a0175b3f748072d0fde847dad2
     .cursor/skills/next-data-model-authoring/node-visibility/ddlapi.md: sha256:a8945401440060035907c66f79d124520351981a10d19544c951acf174c00400
     .cursor/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
@@ -293,7 +297,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:7046aa973401a395ed913b8d5111b2c8b464a4baee041618e28c7936dc172af5
+  content_hash: sha256:f36b47af3b3b5e849f9eeb784536300326c9bb719f6ad0e57fe4bb75023da3d8
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-repo
@@ -329,7 +333,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
+  content_hash: sha256:e76032c4bf95bd3a73a9b33bfcd46af1998984004be7325bf738142feba85c00
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-repo/json-schema-validation-rows.md
@@ -338,7 +342,16 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
+  content_hash: sha256:905c588ea832076de1ed60b5eab727a917ed19a2492d9ab8182343a75db8c461
+- kind: project-relative
+  target: claude
+  value: .claude/skills/api-doc-viewer-repo/refactoring-notes.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-repo
+  active_owner: ./agent-packages/api-doc-viewer-repo
+  content_hash: sha256:debae207589c4276db5cc88f06c372be51d30df9ed8989a8d1e879c7285d4bab
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-review-session
@@ -446,7 +459,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:5e66a0fbaea95c1d421df99a929ceae80bcac38722dfd074638b9ccb6707f23d
+  content_hash: sha256:c1374249fd22c300bd03d7c6258694605734e4903179d328f462da1028cdf4d4
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-authoring/node-visibility/authoring.md
@@ -590,7 +603,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:7046aa973401a395ed913b8d5111b2c8b464a4baee041618e28c7936dc172af5
+  content_hash: sha256:f36b47af3b3b5e849f9eeb784536300326c9bb719f6ad0e57fe4bb75023da3d8
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-repo
@@ -626,7 +639,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:2b8070a86fab1c101722c1ce224a50ee91353622ad78220c53e95ab2915e2b7c
+  content_hash: sha256:e76032c4bf95bd3a73a9b33bfcd46af1998984004be7325bf738142feba85c00
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-repo/json-schema-validation-rows.md
@@ -635,7 +648,16 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-repo
   active_owner: ./agent-packages/api-doc-viewer-repo
-  content_hash: sha256:50260c17103cc1db5051678d49c4ddb342818b3d37b018fb43c43193d295fe15
+  content_hash: sha256:905c588ea832076de1ed60b5eab727a917ed19a2492d9ab8182343a75db8c461
+- kind: project-relative
+  target: cursor
+  value: .cursor/skills/api-doc-viewer-repo/refactoring-notes.md
+  runtime: null
+  scope: project
+  owners:
+  - ./agent-packages/api-doc-viewer-repo
+  active_owner: ./agent-packages/api-doc-viewer-repo
+  content_hash: sha256:debae207589c4276db5cc88f06c372be51d30df9ed8989a8d1e879c7285d4bab
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-review-session
@@ -743,7 +765,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:5e66a0fbaea95c1d421df99a929ceae80bcac38722dfd074638b9ccb6707f23d
+  content_hash: sha256:c1374249fd22c300bd03d7c6258694605734e4903179d328f462da1028cdf4d4
 - kind: project-relative
   target: cursor
   value: .cursor/skills/next-data-model-authoring/node-visibility/authoring.md

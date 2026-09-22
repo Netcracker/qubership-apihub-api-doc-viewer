@@ -406,6 +406,28 @@ true.
 **Accessors:** `takeColumnFlagDiffs` / `takeIndexFlagDiffs` still return flag diffs when a
 whole-node add/remove is present — do **not** suppress them.
 
+**Same rule applies one level up, in JSON Schema's `enum`/`examples`/`allowedAdditionalPropertyNames`
+rows:** once a row's own background already says "every item here was added/removed", each item's
+own chip must go plain too (no colored border, no muted font) — the chip highlight would be
+redundant on top of the row color. See `api-doc-viewer-repo` skill,
+`json-schema-validation-rows.md` → "Whole-list add/remove: row color suppresses per-chip highlight"
+for the JSON Schema-side implementation (`aggregateListRowColorizingDiff` in
+`node-diffs/kind-property.ts`, reusing `buildChipAddRemoveDiffMetadata` without `chipHighlight` —
+the same "plain, side-visibility-only" idea as `DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY`
+above, just not routed through `highlightingMode` since JSON Schema chips read `.styles` directly).
+
+**One level up from that, the "whole section" analogue of this same DDL pattern is a separate,
+even more significant rule:** a children-list section's own nesting-indicator title (this section's
+own `aggregatePresentFlagDiffsFromWholeNodeAddOrRemove`/whole-row logic, and its equivalents for
+Columns/Indexes/Parameters/Extensions/etc. across every spec) may only be painted wholly-added/
+removed when the owning node itself was wholly changed, **or** every single one of its children
+changed the same direction — never on a partial/mixed set, and never by checking only the children
+that happen to have a diff (an unchanged child is invisible to that check and must be counted
+separately). See `api-doc-viewer-repo` skill, `json-schema-nesting-indicator-row-diffs.md` →
+"Cross-API-type rule: uniform-children colorizing requires full coverage" for the full rule
+statement and a verified table of every implementation of it across JSON Schema, JSO, DDL API, and
+AsyncAPI.
+
 **Descendant-diff trap:** array-element add/remove inherits `NODE_LEVEL_DIFF_KEY` from
 `node-descendant-diffs/kind-any.ts` where `styles.*.isContentVisible` is **false on both
 sides** (title row uses `isHeaderVisible` instead). Do **not** reuse node-level diff styles for

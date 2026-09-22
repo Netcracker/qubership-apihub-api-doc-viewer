@@ -94,13 +94,16 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   ): NodeDiffs<JsonSchemaTreeNodeStoredValue | null> | undefined {
     const { diffsMetaKey } = diffsMetaKeys
 
-    if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
-      return undefined
-    }
-
-    const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
     const nodeDiffs: JsonSchemaKindAnyNodeDiffs = {}
 
+    // Whole-node inheritance (container/parent wholly added/removed) must run for EVERY crawl
+    // value shape, including primitives like the boolean `additionalProperties: false` (only
+    // `additionalProperties: true` is pre-transformed into an object - see
+    // additional-properties-node-value.ts). The `aggregateWholeNodeInherited*` helpers below
+    // already guard internally with their own `isObject(crawlValue)` checks and safely no-op for
+    // a primitive, so it's safe to reach them before the object/array guard further down - moving
+    // that guard above this block would silently drop inherited whole-node styling for any
+    // primitive-valued node sitting under a wholly-added/removed ancestor.
     if (containerNode) {
       const containerNodeDiff = containerNode.diffs[NODE_LEVEL_DIFF_KEY]
       if (containerNodeDiff && (isDiffAdd(containerNodeDiff.data) || isDiffRemove(containerNodeDiff.data))) {
@@ -136,6 +139,15 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         return nodeDiffs
       }
     }
+
+    // No inherited whole-node diff applies - now it's safe to fall through to this node's OWN
+    // field diffs, which do need an object/array crawl value (a primitive like `false` never
+    // carries its own symbol-keyed diffs record).
+    if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
+      return undefined
+    }
+
+    const diffs = (crawlValue as Record<PropertyKey, unknown>)[diffsMetaKey]
 
     // `customAnnotations` diffs may live entirely inside a nested entry (see
     // `aggregateCustomAnnotationsDiffs`'s doc comment, Tiers 2/3) even when this node's OWN
@@ -197,7 +209,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       nodeDiffs as JsonSchemaKindAnyNodeDiffs,
       nodeDescendantDiffs,
     )
-    this.aggregateExtensionsUniformRowColorizingDiff(nodeDiffs as JsonSchemaKindAnyNodeDiffs)
+    this.aggregateExtensionsUniformRowColorizingDiff(crawlValue, nodeDiffs as JsonSchemaKindAnyNodeDiffs)
     this.aggregateNodeChangesSummary(
       crawlValue,
       nodeDiffs as JsonSchemaKindAnyNodeDiffs,
@@ -338,10 +350,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
    * {@link aggregateNestingIndicatorRowColorizingDiff}'s uniform-children branch but scoped to
    * `extensionsDiffs` (already populated by {@link aggregateExtensionsDiffs} earlier in
    * `aggregate()`) instead of the node's schema children. No-op when the whole-node branch above
-   * already populated the field, when there are no extension diffs, or when they are mixed
-   * add/remove/replace.
+   * already populated the field, when there are no extension diffs, when they are mixed
+   * add/remove/replace, or when they don't cover every extension present on the node (a genuinely
+   * partial change - e.g. one `x-*` extension added while another sits unchanged alongside it -
+   * must leave this row uncolored, not wholly-green/red; mirrors `kind-property.ts`'s
+   * `aggregateListRowColorizingDiff` full-coverage check for enum/examples).
    */
   protected aggregateExtensionsUniformRowColorizingDiff(
+    crawlValue: object | boolean | null,
     nodeDiffs: JsonSchemaKindAnyNodeDiffs,
   ): void {
     if (nodeDiffs.extensionsRowColorizingDiff) {
@@ -350,6 +366,12 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
 
     const extensionDiffs = Object.values(nodeDiffs.extensionsDiffs ?? {}) as Diff<DiffType>[]
     if (extensionDiffs.length === 0) {
+      return
+    }
+
+    const extensions = isObject(crawlValue) ? Reflect.get(crawlValue, "extensions") : undefined
+    const totalExtensionCount = isObject(extensions) ? Object.keys(extensions).length : 0
+    if (extensionDiffs.length !== totalExtensionCount) {
       return
     }
 
@@ -551,7 +573,45 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     key: JsonSchemaMetaFlagDiffKey,
     nodeDiffs: JsonSchemaKindAnyNodeDiffs,
   ): void {
-    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
+    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(this.normalizeBooleanFlagDiffReplace(diff))
+  }
+
+  /**
+   * `readOnly`/`writeOnly`/`deprecated` default to `false` per the JSON Schema spec, so a flag
+   * going from absent/false to `true` (or vice versa) surfaces from the diff engine as a boolean
+   * `DiffReplace` (e.g. `beforeValue: false, afterValue: true`), not a genuine add/remove. The
+   * flag BADGE (`BadgeWithDiffs`/`TagsWithDiffs`) only knows how to render add/remove - a badge
+   * either appears or disappears, there is no "replace" badge chrome - so a raw replace silently
+   * renders nothing (`BadgeWithDiffs` falls through to `return null` for any action other than
+   * add/remove). Mirrors ddlapi's identical `normalizeFlagDiffReplace` for the exact same reason
+   * (boolean row flags there - `isUnique`/`isNotNull`/`isGenerated` - have the same DiffReplace
+   * shape). `asReplaceFlagDiffForTitleRow` already expects this normalized add/remove shape (its
+   * `isDiffAdd`/`isDiffRemove` branches convert back to a synthetic replace for the title row) -
+   * it tolerates a raw, un-normalized replace too, which is why the title row's own yellow
+   * highlighting was never visibly broken by this gap, only the badge was.
+   */
+  private normalizeBooleanFlagDiffReplace(diff: Diff<DiffType>): Diff<DiffType> {
+    if (!isDiffReplace(diff) || typeof diff.afterValue !== "boolean") {
+      return diff
+    }
+    if (diff.afterValue) {
+      return {
+        type: diff.type,
+        scope: diff.scope,
+        description: diff.description,
+        action: DiffAction.add,
+        afterValue: true,
+        afterDeclarationPaths: diff.afterDeclarationPaths,
+      }
+    }
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      description: diff.description,
+      action: DiffAction.remove,
+      beforeValue: true,
+      beforeDeclarationPaths: diff.beforeDeclarationPaths,
+    }
   }
 
   private aggregateTypeLabelFieldDiffs(

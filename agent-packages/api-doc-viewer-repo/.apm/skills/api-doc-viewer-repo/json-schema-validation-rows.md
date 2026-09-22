@@ -436,6 +436,55 @@ correct placement is set — e.g. after a `Value range` add, assert `ValueRangeR
 shared-placement bug, since the shared key would coincidentally equal the right value whenever
 only one row actually changed.
 
+## Whole-list add/remove: row color suppresses per-chip highlight (session lesson)
+
+**Product rule (stated explicitly by the user who reported this):** once a row's own background
+already conveys "every item here was added" (green) or "every item here was removed" (red), the
+individual item chips inside that row must **not** also carry their own add/remove chip chrome
+(colored `borderShadowColor`, muted font for removed items). That per-chip highlight is redundant
+once the row itself says the same thing — it must render as a **plain** chip, still visible only on
+the correct side, with no extra color. This generalizes the same rule already applied to DDL's
+whole-node flag badges (see `next-data-model-authoring` skill, "Whole-node add/remove flag badges"):
+row/node-level add-or-remove chrome subsumes any nested per-item chrome it fully explains.
+
+**Where this shows up:** `enum` / `examples` / `allowedAdditionalPropertyNames` rows, whenever
+`aggregateListRowColorizingDiff`'s "every item in the merged list has its own diff, all agreeing on
+the same add/remove action" branch fires (see "Tiered attachment" note above — this is the
+Tier-2/3 case, e.g. `enum` newly appearing on a property that already has other unchanged sibling
+fields, such as AsyncAPI channel-parameter samples
+`packages/samples/async-api-diffs/channel-parameters/{6,7}-channel-parameters-fields-*`). Before the
+fix, the row correctly painted green/red, but each chip (`buildListValueDiffMetadata`) still carried
+its own `borderShadowColor`/`isFontMuted` — visually double-signaling the same add/remove on both
+the row and every chip inside it.
+
+**Fix (`kind-property.ts`, `aggregateListRowColorizingDiff`):** in the same branch that colors the
+row, also walk every entry in `nodeDiffs[itemDiffsKey]` (the chip diffs, e.g. `enumValueDiffs`) and
+rebuild each one via `this.buildChipAddRemoveDiffMetadata(entry.data)` **without** a `chipHighlight`
+argument — that overload already exists (used for DDL's plain-badge/side-visibility-only case) and
+produces the plain, side-visibility-only styles this rule needs: same `isContentVisible` per side,
+no color. Do not delete the chip diffs outright — `resolveSideEntries`/list-side-display logic still
+needs each entry's `.data` (action/before/afterValue) to decide which items render on which side;
+only the **highlight styling** must be stripped, not the diff itself.
+
+**Scope of the fix — do not over-apply:** this only applies to the "every item uniformly
+added/removed" branch. A **partial** change (e.g. one value appended to an otherwise-unchanged,
+already-existing list — `003-enum-value-appended`, or `propertyNames.enum` gaining one entry) keeps
+its per-item chip highlight as-is; the row itself stays a yellow "replace" there precisely because
+it does **not** fully explain every item's presence, so each changed item's own chip highlight is
+still the only signal a reader has for *which* item changed. Only suppress chip highlight when the
+row-level color is a true whole-list add or remove.
+
+**Regression:** `packages/next-data-model/tests/unit-tests/json-schema-with-diffs.test.ts`, describe
+block `"JsonSchema enum row: chip suppression when every item was uniformly added/removed"` — hand-
+builds the crawl value's `enum` array with per-index add/remove diffs attached directly to the
+array's own `diffsMetaKey` (mirroring the real AsyncAPI shape) rather than going through
+`mergeSchemas`/`apiDiff`, because without AsyncAPI's `unify: true` normalization a plain OpenAPI
+`apiDiff` call resolves this exact "new field alongside an unchanged sibling" shape to the *other*
+attachment tier (a single field-level diff on the parent, already covered by the pre-existing
+`001-enum-two-values-added`/`002-enum-two-values-removed` fixture tests) instead of per-item array
+diffs. Confirm any future test for this rule reproduces the array-level per-item diff shape, not
+just asserts on the row color.
+
 ## Testability trap: CSS imports break Jest unit tests (session lesson)
 
 `SchemaNodePlainContent.tsx` transitively imports `.css` (via `AdditionalInfoRow` →
@@ -467,6 +516,7 @@ independent of the component tree.
 | `additionalProperties` / `items` / combiner-variant rows show no diff at all | Data | `JsonSchemaNodeDiffsAggregatorFactory` must dispatch `KindProperty` (superset of `KindAny`) for every kind, not just PROPERTY/ROOT |
 | Unit test importing from a viewer `.tsx` fails with `SyntaxError: Unexpected token '.'` in a `.css` file | Test | Extract the pure logic to a CSS-free `utils/*.ts` file and import the test from there |
 | Floating diff badge on a validation/`Default`/`Examples`/`Allowed values` row points at the wrong field (e.g. always `minLength`) | Data + viewer | Missing dedicated `NodeDiffsSeverityPlacemennt` for that row, or `AdditionalInfoRow` not passed a `diffsSeverityPlacement` — see "Per-row floating-badge severity" below |
+| Row already colored wholly add/remove (green/red), but each chip inside it is *also* individually highlighted (colored border, muted font) | Data | Redundant per-chip highlight — see "Whole-list add/remove: row color suppresses per-chip highlight" below; fix in `aggregateListRowColorizingDiff`'s uniform-item branch, not the viewer |
 
 ---
 

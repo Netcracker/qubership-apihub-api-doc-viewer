@@ -393,6 +393,71 @@ passes the new rich `(layoutSide) => <JsonSchemaCombinerOption... />` function e
 
 ---
 
+## Cross-API-type rule: uniform-children colorizing requires full coverage
+
+**This is one of the most significant rules in the whole diff-rendering stack — read it before
+touching any children-list section header, in any spec.**
+
+> A children-list section's nesting-indicator title (the "Properties"/"Items"/"Extensions"/
+> "Columns"/"Indexes"/"Parameters"/… header `SchemaNodeViewer` — or the equivalent per-spec
+> viewer — renders above a node's list of children) may be painted **wholly-added** or
+> **wholly-removed** in exactly two situations:
+>
+> **(a)** the owning node itself (or an inherited ancestor container/parent) was wholly
+> added/removed, **or**
+>
+> **(b)** the owning node itself was **not** wholly added/removed, but **every single one** of its
+> visible children was uniformly added, or **every** child was uniformly removed.
+>
+> A mixed or partial set — some children added, some removed, some unchanged, some replaced, or
+> even just **one** unchanged child sitting alongside otherwise-uniform changes — must leave the
+> title **uncolored** (or yellow/partial, per that spec's convention for partial changes). It must
+> **never** be painted wholly-added/removed on anything less than full, unanimous coverage.
+
+Rule (a) is a **direct inheritance** check (`NODE_LEVEL_DIFF_KEY` cascading from a container/parent,
+or the node's own whole-node diff) — cheap to get right, and rarely the source of bugs. Rule (b) is
+where implementations go wrong: it is tempting to compute "uniform" over only the children/items
+that **have** a diff, forgetting that an **unchanged** child must also be counted — and an
+unchanged child never appears in a diffs record at all (there is nothing to record), so it is
+invisible to a check that only inspects diff objects. **The fix is always the same shape:** compare
+the number of children/items that have a diff against the **total** number of children/items
+present on the merged node, not just those that changed. Every implementation below either does
+this check or explicitly documents that it doesn't (JSO).
+
+**Concrete regression this rule caught:** JSON Schema's own `Extensions` nesting-indicator row
+(`aggregateExtensionsUniformRowColorizingDiff` below) painted wholly-green/red whenever *any*
+subset of `x-*` extensions changed in one direction, even with other extensions on the same node
+completely untouched — reproduced on nearly the entire
+`packages/samples/json-schema-diffs/extensions/existing-1-*`/`existing-2-*` matrix (each case is
+built specifically around "one extension changes, another coexists unchanged"). Fixed by comparing
+`extensionDiffs.length` against the total extension-key count on the merged crawl value.
+
+**Verified survey, grouped by API type** (source of truth — re-verify line numbers against current
+code before trusting them blindly, they will drift):
+
+| API type | Section | File → function | Full-coverage check? | Verdict |
+| --- | --- | --- | --- | --- |
+| JSON Schema | Properties/Items nesting indicator | `next-data-model/.../json-schema/tree-with-diffs/node-diffs-data/node-diffs/kind-any.ts` → `aggregateNestingIndicatorRowColorizingDiff` | Yes — `childDiffs.some(diff => !diff)` bails if any child lacks a diff | Correct |
+| JSON Schema | **Extensions** nesting indicator | same file → `aggregateExtensionsUniformRowColorizingDiff` | Yes (fixed — previously **no**, see regression above) | **Fixed** |
+| JSON Schema | enum / examples / allowedAdditionalPropertyNames row | `.../node-diffs/kind-property.ts` → `aggregateListRowColorizingDiff` | Yes — `itemDiffValues.length === listValue.length` | Correct (reference pattern both the Extensions fix and this rule's "how to fix it" are modeled on) |
+| JSO | Property children | *(no `aggregateByDescendantDiffs` override anywhere under `next-data-model/.../building-service/jso/`)* | N/A | **Not implemented** — a known gap, not a false positive: JSO's `kind-any.ts` only implements rule (a) (parent/container inheritance), never rule (b) ("all children uniformly changed"). Leave as a documented limitation until a task explicitly asks for it — do not add proactively |
+| DDL API | Columns / Indexes sections | `.../ddlapi/tree-with-diffs/node-diffs-data/shared/property-list-section-diff-utils.ts` → `aggregateUniformWholeNodeDescendantDiff` | Yes — `descendantDiffEntries.length !== childCount` | Correct |
+| AsyncAPI | Channel Parameters | `.../async-api/tree-with-diffs/node-diffs-data/node-diffs/kind-parameters.ts` → `aggregateByDescendantDiffs` | Yes — `parametersCount !== nodeDiffsCount` | Correct |
+| AsyncAPI | Bindings | `.../async-api/.../node-diffs/kind-bindings.ts` → `aggregateByDescendantDiffs` | Yes — falls back to a synthetic yellow "replace" for a partial set rather than leaving it uncolored | Correct (stricter variant of the rule — still never paints wholly-added/removed on a partial set) |
+| AsyncAPI | Servers | `.../async-api/.../node-diffs/kind-servers.ts` → `aggregateByDescendantDiffs` | Yes — `serversCount !== nodeDiffsCount` | Correct |
+| AsyncAPI | Extensions | `.../async-api/.../node-diffs/kind-extensions.ts` → `aggregateByDescendantDiffs` | Yes — `extensionsCount !== nodeDiffsCount` | Correct — notably AsyncAPI's own Extensions implementation never had JSON Schema's bug |
+
+**When adding a new children-list section colorizing diff in any spec:** write the full-coverage
+comparison *first*, before the uniform-action check — do not reuse a "some children have a diff"
+shortcut, and do not assume "if it fires, it must have been uniform" without independently
+verifying the count. Add a unit test for the specific partial-with-one-unchanged-sibling shape
+(not just "all changed" or "genuinely mixed actions" — both of those are cheaper to get right and
+don't exercise this rule) — see
+`packages/next-data-model/tests/unit-tests/json-schema-with-diffs.test.ts`, the Extensions describe
+block's "...but another sits unchanged alongside it" cases, for the pattern to copy.
+
+---
+
 ## Related documents
 
 - Diff inheritance / `NODE_LEVEL_DIFF_KEY` contract and the `aggregateByDescendantDiffs`

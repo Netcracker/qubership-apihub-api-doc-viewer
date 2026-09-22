@@ -410,4 +410,42 @@ describe("JSON Schema meta flag diffs", () => {
     expect(JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(nameNode)?.beforeValue).toBe(true)
     expect(JsonSchemaRowDiffs.TitleRow.takeDiff(nameNode)?.data.action).toBe(DiffAction.replace)
   })
+
+  // Regression: `readOnly`/`writeOnly`/`deprecated` default to `false` per the JSON Schema spec,
+  // so under the OAS-normalized merge the real Storybook viewer actually uses (`unify: true` -
+  // see mergeSchemasWithOasNormalize), the diff engine reports a flag flipping from absent/false
+  // to `true` as a boolean DiffReplace (`beforeValue: false, afterValue: true`), NOT a DiffAdd -
+  // unlike the plain `mergeSchemas` helper above, which never reproduces this shape and so never
+  // caught the bug: `aggregateMetaFlagDiff` used to pass that raw replace straight through, and
+  // `BadgeWithDiffs`/`TagsWithDiffs` only know how to render add/remove (any other action falls
+  // through to rendering nothing) - so the "Read-only"/"Write-only"/"Deprecated" badge silently
+  // never appeared for every case under packages/samples/json-schema-diffs/type-changes/type-flags/.
+  // `normalizeBooleanFlagDiffReplace` (kind-any.ts) now normalizes this the same way ddlapi's
+  // `normalizeFlagDiffReplace` already does for its own boolean row flags.
+  it("aggregates readOnly add via OAS-normalized merge as add, not replace (storybook path, case 001 shape)", () => {
+    const merged = mergeSchemasWithOasNormalize(
+      { type: "string", description: "Sample string description" },
+      { type: "string", description: "Sample string description", readOnly: true },
+    )
+    const tree = buildTree(merged)
+    const root = tree.root!
+
+    const readOnlyDiff = JsonSchemaRowDiffs.MetaFlags.takeReadOnlyDiff(root)
+    expect(readOnlyDiff?.data.action).toBe(DiffAction.add)
+    // The title row still renders this as a synthetic "replace" (yellow, both sides) -
+    // asReplaceFlagDiffForTitleRow converts the now-normalized add/remove back for that purpose.
+    expect(JsonSchemaRowDiffs.TitleRow.takeDiff(root)?.data.action).toBe(DiffAction.replace)
+  })
+
+  it("aggregates readOnly remove via OAS-normalized merge as remove, not replace (storybook path, case 002 shape)", () => {
+    const merged = mergeSchemasWithOasNormalize(
+      { type: "string", description: "Sample string description", readOnly: true },
+      { type: "string", description: "Sample string description" },
+    )
+    const tree = buildTree(merged)
+    const root = tree.root!
+
+    const readOnlyDiff = JsonSchemaRowDiffs.MetaFlags.takeReadOnlyDiff(root)
+    expect(readOnlyDiff?.data.action).toBe(DiffAction.remove)
+  })
 })
