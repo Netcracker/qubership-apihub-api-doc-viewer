@@ -33,6 +33,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
       diffsSeverities[NodeDiffsSeverityPlacemennt.DescriptionRow] = this.buildNodeDiffsSeverity(diffNode)
       diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow] = this.buildNodeDiffsSeverity(diffNode)
       diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow] = this.buildNodeDiffsSeverity(diffNode)
+      diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow] = this.buildNodeDiffsSeverity(diffNode)
     } else {
       this.applyMaxRowSeverityFromTypeLabelDiffs(nodeDiffs, diffsSeverities)
       this.applyRowSeverity(nodeDiffs, "description", NodeDiffsSeverityPlacemennt.DescriptionRow, diffsSeverities)
@@ -48,6 +49,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
         NodeDiffsSeverityPlacemennt.ExtensionsRow,
         diffsSeverities,
       )
+      this.applyCustomAnnotationsRowSeverity(nodeDiffs, diffsSeverities)
     }
 
     this.applyValidationRowSeverities(nodeDiffs, diffsSeverities)
@@ -81,6 +83,27 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
 
       diffsSeverities[JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS[rowKey]] = this.buildNodeDiffsSeverity(maxRowDiff)
     }
+  }
+
+  /**
+   * Floating diff badge for the generic `customAnnotations` extension point, shared across every
+   * entry on the node (accepted v1 limitation - see `NodeDiffsSeverityPlacemennt.CustomAnnotationRow`
+   * doc comment - a future spec needing 2+ independently-badged custom-annotation rows on the same
+   * node would need dedicated per-key placements instead).
+   */
+  private applyCustomAnnotationsRowSeverity(
+    nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
+    diffsSeverities: NodeDiffsSeverities,
+  ): void {
+    const customAnnotationDiffs = nodeDiffs as JsonSchemaKindAnyNodeDiffs
+    const maxRowDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+      ...Object.values(customAnnotationDiffs.customAnnotationDiffs ?? {}),
+      ...Object.values(customAnnotationDiffs.customAnnotationRowColorizingDiffs ?? {}),
+    )
+    if (!maxRowDiff) {
+      return
+    }
+    diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow] = this.buildNodeDiffsSeverity(maxRowDiff)
   }
 
   private applyMaxRowSeverityFromTypeLabelDiffs(

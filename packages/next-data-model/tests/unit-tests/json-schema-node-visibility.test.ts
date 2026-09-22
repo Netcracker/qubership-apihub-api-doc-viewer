@@ -53,6 +53,7 @@ describe("plain JSON Schema property node visibility", () => {
       showEnumValuesRow: false,
       showValidationsSection: false,
       showExtensionsRow: false,
+      showCustomAnnotationsRow: false,
       showContentSection: false,
       showAnyAdditionalInfoRow: false,
     })
@@ -75,6 +76,7 @@ describe("plain JSON Schema property node visibility", () => {
       showEnumValuesRow: true,
       showValidationsSection: true,
       showExtensionsRow: false,
+      showCustomAnnotationsRow: false,
       showContentSection: true,
       showAnyAdditionalInfoRow: true,
     })

@@ -71,8 +71,12 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
       resolveValidationKeysForType(value).length > 0
       || hasValidationRowDiffs(node)
     )
+    const showCustomAnnotationsRow = detailed && (
+      plainVisibility.showCustomAnnotationsRow
+      || JsonSchemaRowDiffs.CustomAnnotations.hasAnyDiff(node)
+    )
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
-      || showValidationsSection || plainVisibility.showExtensionsRow
+      || showValidationsSection || plainVisibility.showExtensionsRow || showCustomAnnotationsRow
     const showContentSection = showDescription
       || plainVisibility.showDeprecationReasonRow
       || showAnyAdditionalInfoRow
@@ -84,6 +88,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
       showExamplesRow,
       showEnumValuesRow,
       showValidationsSection,
+      showCustomAnnotationsRow,
       showContentSection,
       showAnyAdditionalInfoRow,
     }

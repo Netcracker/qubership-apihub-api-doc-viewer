@@ -32,6 +32,16 @@ export type JsonSchemaTreeNodeValue<T extends JsonSchemaNodeValueType = JsonSche
                     ? JsonSchemaTreeNodeValueBase
                     : never
 
+/**
+ * Generic, spec-agnostic annotation entry a consuming spec (e.g. AsyncAPI) can attach to any
+ * node's `customAnnotations` bag - the label is supplied entirely by the caller, so this layer
+ * never hardcodes a spec-specific concept (e.g. AsyncAPI's "Location") by name.
+ */
+export type JsonSchemaCustomAnnotation = {
+  readonly label: string
+  readonly value: unknown
+}
+
 export type JsonSchemaTreeNodeValueBase = {
   readonly type: JsonSchemaNodeValueType
   readonly nullable?: boolean
@@ -41,6 +51,7 @@ export type JsonSchemaTreeNodeValueBase = {
   readonly examples?: unknown[]
   readonly enum?: unknown[]
   readonly extensions?: Record<OpenApiExtensionKey, unknown>
+  readonly customAnnotations?: Readonly<Record<string, JsonSchemaCustomAnnotation>>
 }
 
 export type JsonSchemaTreeNodeValueAnyType = JsonSchemaTreeNodeValueBase & {
@@ -68,7 +79,6 @@ export type JsonSchemaTreeNodeValueTypeString = JsonSchemaTreeNodeValueBase & {
   readonly minLength?: number
   readonly maxLength?: number
   readonly pattern?: string
-  readonly location?: string
 }
 
 export type JsonSchemaTreeNodeValueTypeNumber = JsonSchemaTreeNodeValueBase & {

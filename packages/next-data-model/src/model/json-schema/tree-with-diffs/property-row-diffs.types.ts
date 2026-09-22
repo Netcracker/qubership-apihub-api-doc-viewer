@@ -90,6 +90,15 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
    * extensions record under the tree's `diffsMetaKey` symbol.
    */
   extensionsDiffs?: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>>
+  /**
+   * Per-key chip diffs for `JsonSchemaTreeNodeValueBase.customAnnotations` entries - a generic
+   * extension point for a consuming spec (e.g. AsyncAPI's "Location") to attach a labeled,
+   * diff-aware value to any node. Keys are opaque, caller-chosen strings - never a JSON-Schema
+   * keyword or a spec-specific literal hardcoded in this layer.
+   */
+  customAnnotationDiffs?: Partial<Record<string, ChangedPropertyMetaData>>
+  /** Row background per `customAnnotations` entry, shown behind its `AdditionalInfoRow`. */
+  customAnnotationRowColorizingDiffs?: Partial<Record<string, ChangedPropertyMetaData>>
 }
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {

@@ -290,6 +290,39 @@ class Extensions extends JsonSchemaRowDiffsBase {
   }
 }
 
+/**
+ * Generic, spec-agnostic annotation extension point (`JsonSchemaTreeNodeValueBase.customAnnotations`)
+ * - e.g. AsyncAPI's "Location" for channel parameters. Computed for every node kind, keyed by the
+ * caller-chosen annotation key (never a JSON-Schema keyword or a spec-specific literal hardcoded
+ * in this layer).
+ */
+class CustomAnnotations extends JsonSchemaRowDiffsBase {
+  public static takeDiff(node: JsonSchemaTreeNodeWithDiffs, key: string): ChangedPropertyMetaData | undefined {
+    return this.takeKindAnyNodeDiffs(node).customAnnotationDiffs?.[key]
+  }
+
+  public static takeRowColorizingDiff(node: JsonSchemaTreeNodeWithDiffs, key: string): ChangedPropertyMetaData | undefined {
+    return this.takeKindAnyNodeDiffs(node).customAnnotationRowColorizingDiffs?.[key]
+  }
+
+  /** Whether the node has a diff for any `customAnnotations` key, regardless of which one - used to
+   * keep the row visible on a whole-entry remove even if the merged value stripped the key. */
+  public static hasAnyDiff(node: JsonSchemaTreeNodeWithDiffs): boolean {
+    const kindAnyDiffs = this.takeKindAnyNodeDiffs(node)
+    return Object.keys(kindAnyDiffs.customAnnotationDiffs ?? {}).length > 0
+      || Object.keys(kindAnyDiffs.customAnnotationRowColorizingDiffs ?? {}).length > 0
+  }
+
+  public static resolveSideEntries(
+    mergedValue: unknown | undefined,
+    valueDiff: ChangedPropertyMetaData | undefined,
+    layoutSide: LayoutSide,
+  ): readonly JsonSchemaListSideEntry[] {
+    // Identical algorithm to a single scalar annotation value - delegate rather than duplicate.
+    return Default.resolveSideEntries(mergedValue, valueDiff, layoutSide)
+  }
+}
+
 class Default extends JsonSchemaRowDiffsBase {
   public static takeDiff(node: JsonSchemaNodeWithDiffs): ChangedPropertyMetaData | undefined {
     return this.takePropertyRowDiffs(node).default
@@ -760,6 +793,7 @@ export class JsonSchemaRowDiffs {
   public static readonly RequiredStar = RequiredStar
   public static readonly NodeLevel = NodeLevel
   public static readonly Extensions = Extensions
+  public static readonly CustomAnnotations = CustomAnnotations
   public static readonly Default = Default
   public static readonly Enum = Enum
   public static readonly Examples = Examples

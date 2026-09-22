@@ -27,6 +27,10 @@ function hasExtensions(value: JsonSchemaTreeNodeValue | null | undefined): boole
   return !!value?.extensions && Object.keys(value.extensions).length > 0
 }
 
+function hasCustomAnnotations(value: JsonSchemaTreeNodeValue | null | undefined): boolean {
+  return !!value?.customAnnotations && Object.keys(value.customAnnotations).length > 0
+}
+
 const DEPRECATION_REASON_EXTENSION_KEY = "x-deprecated-reason"
 
 function resolveDeprecationReason(value: JsonSchemaTreeNodeValue | null | undefined): string | undefined {
@@ -50,8 +54,9 @@ export class PlainPropertyNodeVisibilityManager {
     const showEnumValuesRow = detailed && Array.isArray(typedValue?.enum) && typedValue.enum.length > 0
     const showValidationsSection = detailed && resolveValidationKeysForType(value).length > 0
     const showExtensionsRow = detailed && hasExtensions(typedValue)
+    const showCustomAnnotationsRow = detailed && hasCustomAnnotations(typedValue)
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
-      || showValidationsSection || showExtensionsRow
+      || showValidationsSection || showExtensionsRow || showCustomAnnotationsRow
     const showContentSection = showDescription || showDeprecationReasonRow || showAnyAdditionalInfoRow
 
     return {
@@ -63,6 +68,7 @@ export class PlainPropertyNodeVisibilityManager {
       showEnumValuesRow,
       showValidationsSection,
       showExtensionsRow,
+      showCustomAnnotationsRow,
       showContentSection,
       showAnyAdditionalInfoRow,
     }

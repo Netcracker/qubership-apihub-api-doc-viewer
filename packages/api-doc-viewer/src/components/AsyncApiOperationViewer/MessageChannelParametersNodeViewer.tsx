@@ -27,6 +27,73 @@ import { isMessageChannelParametersNodeWithDiffs } from '../shared-utilities/tre
 
 const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
 
+// The only place the AsyncAPI-specific "location" concept may appear: JSON Schema Next's
+// `customAnnotations` extension point is fully generic (see JsonSchemaCustomAnnotation) - it never
+// hardcodes this label or key itself. AsyncAPI channel parameters carry a real spec concept,
+// `location` (a runtime expression pointing at where the parameter's value lives), that isn't a
+// JSON-Schema keyword, so it's reshaped into the generic extension point right here, at the
+// boundary before handing the parameters object to JsonSchemaNextViewer/JsonSchemaNextDiffsViewer.
+const CHANNEL_PARAMETER_LOCATION_LABEL = 'Location'
+const CHANNEL_PARAMETER_LOCATION_KEY = 'location'
+const CHANNEL_PARAMETER_CUSTOM_ANNOTATIONS_KEY = 'customAnnotations'
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function attachLocationCustomAnnotation(
+  paramValue: Record<string, unknown>,
+  diffsMetaKey: symbol | undefined,
+): Record<string, unknown> {
+  if (!(CHANNEL_PARAMETER_LOCATION_KEY in paramValue)) {
+    return paramValue
+  }
+
+  const { [CHANNEL_PARAMETER_LOCATION_KEY]: location, ...rest } = paramValue
+  const customAnnotations: Record<string, unknown> = {
+    [CHANNEL_PARAMETER_LOCATION_KEY]: { label: CHANNEL_PARAMETER_LOCATION_LABEL, value: location },
+  }
+
+  if (diffsMetaKey) {
+    const paramDiffs = Reflect.get(paramValue, diffsMetaKey)
+    const locationDiff = isPlainRecord(paramDiffs) ? paramDiffs[CHANNEL_PARAMETER_LOCATION_KEY] : undefined
+    if (locationDiff) {
+      Reflect.set(customAnnotations, diffsMetaKey, { [CHANNEL_PARAMETER_LOCATION_KEY]: locationDiff })
+    }
+  }
+
+  return { ...rest, [CHANNEL_PARAMETER_CUSTOM_ANNOTATIONS_KEY]: customAnnotations }
+}
+
+/**
+ * Reshapes every channel parameter's raw `location` field (an AsyncAPI concept - a runtime
+ * expression pointing at where the parameter's value lives) into JSON Schema Next's generic
+ * `customAnnotations` extension point, so `JsonSchemaNextViewer`/`JsonSchemaNextDiffsViewer` can
+ * render it as a labeled additional-info row without knowing what "location" means.
+ */
+function attachLocationCustomAnnotations(
+  addressParameters: Record<string, unknown> | undefined,
+  diffsMetaKey?: symbol,
+): Record<string, unknown> | undefined {
+  if (!isPlainRecord(addressParameters)) {
+    return addressParameters
+  }
+
+  const properties = addressParameters.properties
+  if (!isPlainRecord(properties)) {
+    return addressParameters
+  }
+
+  const transformedProperties: Record<string, unknown> = {}
+  for (const [paramKey, paramValue] of Object.entries(properties)) {
+    transformedProperties[paramKey] = isPlainRecord(paramValue)
+      ? attachLocationCustomAnnotation(paramValue, diffsMetaKey)
+      : paramValue
+  }
+
+  return { ...addressParameters, properties: transformedProperties }
+}
+
 type MessageChannelParametersNodeViewerProps = WithPrecededByProps & {
   node:
     | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
@@ -48,7 +115,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
   }
 
   const value = node.value()
-  const addressParameters = value?.rawValues ?? {}
+  const addressParameters = attachLocationCustomAnnotations(value?.rawValues ?? {})
 
   return <>
     <TitleRow
@@ -87,8 +154,9 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   }, [node])
 
   const preparedAddressParameters = useMemo(() => {
+    const withCustomAnnotations = attachLocationCustomAnnotations(addressParameters, diffMetaKeys?.diffsMetaKey)
     return prepareJsonSchemaInCaseOfWhollyChanged(
-      addressParameters,
+      withCustomAnnotations,
       node.diffs[NODE_LEVEL_DIFF_KEY],
       diffMetaKeys,
     )

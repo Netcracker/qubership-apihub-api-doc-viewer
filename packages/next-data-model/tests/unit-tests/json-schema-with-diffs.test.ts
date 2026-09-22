@@ -2012,3 +2012,102 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
     expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
   })
 })
+
+describe("JsonSchema customAnnotations (generic extension point) diffs", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the row green, changed-side-only, when a custom annotation was added", () => {
+    const tree = buildTree(
+      { type: "string" },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const chipDiff = JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")
+    expect(chipDiff?.data.action).toBe(DiffAction.add)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(false)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the row red, origin-side-only, when a custom annotation was removed", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+      { type: "string" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(true)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the row yellow (replace) when a custom annotation's value changed", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.payload#/id" } } },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    const chipDiff = JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")
+    expect(chipDiff?.data.action).toBe(DiffAction.replace)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("colors a wholly-added property's custom annotation, even though it has no diff of its own", () => {
+    const tree = buildTree(
+      { type: "object", properties: { prop0: { type: "string" } } },
+      {
+        type: "object",
+        properties: {
+          prop0: { type: "string" },
+          prop1: {
+            type: "string",
+            customAnnotations: { location: { label: "Location", value: "$message.header#/id" } },
+          },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(prop1Node!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const severity = prop1Node!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("leaves the row uncolored when the custom annotation is unchanged", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    expect(JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")).toBeUndefined()
+    expect(JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]).toBeUndefined()
+  })
+})

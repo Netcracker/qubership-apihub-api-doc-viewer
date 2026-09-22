@@ -107,6 +107,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...containerNodeDiff, inherited: true }
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
         this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
       const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
@@ -114,6 +115,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
         this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
     } else if (parentNode) {
@@ -122,6 +124,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = { ...parentNodeDiff, inherited: true }
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
         this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
       const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
@@ -129,44 +132,53 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
         this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
         this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
         return nodeDiffs
       }
     }
 
-    if (!AbstractNodeDiffsAggregator.isDiffsRecord(diffs)) {
-      return undefined
-    }
+    // `customAnnotations` diffs may live entirely inside a nested entry (see
+    // `aggregateCustomAnnotationsDiffs`'s doc comment, Tiers 2/3) even when this node's OWN
+    // top-level diffs record is empty (e.g. only `customAnnotations.location.value` changed).
+    // So that case must not be gated behind `isDiffsRecord(diffs)` the way the rest of this
+    // node's own field diffs are - mirrors how `kind-property.ts`'s `aggregate()` computes
+    // `enum`/`examples` independently of `super.aggregate()`'s own top-level-diffs check.
+    const validDiffs = AbstractNodeDiffsAggregator.isDiffsRecord(diffs) ? diffs : undefined
 
-    const wholeNodeDiff = diffs[NODE_LEVEL_DIFF_KEY]
-    wholeNodeDiff && this.aggregateTextDiff(wholeNodeDiff, NODE_LEVEL_DIFF_KEY, nodeDiffs)
+    if (validDiffs) {
+      const wholeNodeDiff = validDiffs[NODE_LEVEL_DIFF_KEY]
+      wholeNodeDiff && this.aggregateTextDiff(wholeNodeDiff, NODE_LEVEL_DIFF_KEY, nodeDiffs)
 
-    const titleDiff = diffs["title"]
-    const formatDiff = diffs["format"]
-    const typeDiff = diffs["type"]
+      const titleDiff = validDiffs["title"]
+      const formatDiff = validDiffs["format"]
+      const typeDiff = validDiffs["type"]
 
-    this.aggregateTypeLabelFieldDiffs(
-      { type: typeDiff, format: formatDiff, title: titleDiff },
-      nodeDiffs,
-    )
+      this.aggregateTypeLabelFieldDiffs(
+        { type: typeDiff, format: formatDiff, title: titleDiff },
+        nodeDiffs,
+      )
 
-    const descriptionDiff = diffs["description"]
-    descriptionDiff && this.aggregateTextDiff(descriptionDiff, "description", nodeDiffs)
+      const descriptionDiff = validDiffs["description"]
+      descriptionDiff && this.aggregateTextDiff(descriptionDiff, "description", nodeDiffs)
 
-    const suppressMetaFlagDiffs = this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)
-    if (!suppressMetaFlagDiffs) {
-      for (const metaFlagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
-        const metaFlagDiff = diffs[metaFlagKey]
-        if (AbstractNodeDiffsAggregator.isDiff(metaFlagDiff)) {
-          this.aggregateMetaFlagDiff(metaFlagDiff, metaFlagKey, nodeDiffs)
+      const suppressMetaFlagDiffs = this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)
+      if (!suppressMetaFlagDiffs) {
+        for (const metaFlagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
+          const metaFlagDiff = validDiffs[metaFlagKey]
+          if (AbstractNodeDiffsAggregator.isDiff(metaFlagDiff)) {
+            this.aggregateMetaFlagDiff(metaFlagDiff, metaFlagKey, nodeDiffs)
+          }
         }
       }
+
+      if (isObject(crawlValue)) {
+        this.aggregateValidationRowDiffs(crawlValue, validDiffs, nodeDiffs)
+      }
+
+      this.aggregateExtensionsDiffs(validDiffs, nodeDiffs)
     }
 
-    if (isObject(crawlValue)) {
-      this.aggregateValidationRowDiffs(crawlValue, diffs, nodeDiffs)
-    }
-
-    this.aggregateExtensionsDiffs(diffs, nodeDiffs)
+    this.aggregateCustomAnnotationsDiffs(crawlValue, validDiffs ?? {}, diffsMetaKey, nodeDiffs)
 
     this.stripMetaFlagDiffsWhenWholeNode(nodeDiffs)
     this.aggregateTitleRowDiff(nodeDiffs)
@@ -1069,6 +1081,184 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
     if (Object.keys(extensionsDiffs).length > 0) {
       nodeDiffs.extensionsDiffs = extensionsDiffs
+    }
+  }
+
+  /**
+   * Per-key diffs for `customAnnotations` entries - a generic extension point letting a
+   * consuming spec (e.g. AsyncAPI's "Location") attach a labeled, diff-aware value to any node
+   * without this layer ever knowing the spec-specific concept by name.
+   *
+   * `customAnnotations` is an unrecognized property as far as the diff engine is concerned, so it
+   * follows plain structural JSON diffing rather than a fixed convention - confirmed empirically
+   * (see session notes) to land at one of three different depths depending on how much structure
+   * matches between the before/after sides:
+   * 1. Whole `customAnnotations` key added/removed as a unit (absent on one side entirely) ->
+   *    `diffs["customAnnotations"]` on this node's own raw diffs record, `before`/`afterValue`
+   *    holding the *entire* entries map.
+   * 2. A single key added/removed within an otherwise-structurally-matching `customAnnotations`
+   *    object -> `customAnnotations[diffsMetaKey][key]`, mirroring `enum`/`examples`'s per-item
+   *    diffs convention.
+   * 3. An existing entry's `.value` replaced (key present, same shape, on both sides) -> the diff
+   *    recurses one level further, landing on `entry[diffsMetaKey].value`.
+   * Checked in that order, per key, mirroring ddlapi's own multi-depth `resolveDefaultValueDiff`
+   * fallback chain for the same underlying reason (structural JSON diffing, not a single fixed
+   * attachment point).
+   */
+  private aggregateCustomAnnotationsDiffs(
+    crawlValue: JsonSchemaTreeNodeStoredValue | null,
+    diffs: Partial<Record<string, Diff<DiffType>>>,
+    diffsMetaKey: symbol,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+  ): void {
+    const chipDiffs: Partial<Record<string, ChangedPropertyMetaData>> = {}
+    const colorizingDiffs: Partial<Record<string, ChangedPropertyMetaData>> = {}
+
+    const setEntry = (key: string, fieldDiff: Diff<DiffType>): void => {
+      if (isDiffReplace(fieldDiff)) {
+        const chipDiff = this.buildBooleanAwareChipReplaceDiffMetadata(fieldDiff)
+        chipDiffs[key] = chipDiff
+        colorizingDiffs[key] = this.asReplaceRowColorizingDiff(chipDiff)
+        return
+      }
+      const metadata = this.buildChangedPropertyMetaDataFromDiff(fieldDiff)
+      chipDiffs[key] = metadata
+      colorizingDiffs[key] = metadata
+    }
+
+    // Tier 1: whole `customAnnotations` key added/removed as a unit.
+    const wholeDiff = diffs["customAnnotations"]
+    if (AbstractNodeDiffsAggregator.isDiff(wholeDiff)) {
+      const { type, scope, description } = wholeDiff
+      if (isDiffAdd(wholeDiff) && isObject(wholeDiff.afterValue)) {
+        for (const [key, entry] of Object.entries(wholeDiff.afterValue as Record<string, { value?: unknown }>)) {
+          setEntry(key, {
+            type, scope, description,
+            action: DiffAction.add,
+            afterValue: entry?.value,
+            afterDeclarationPaths: wholeDiff.afterDeclarationPaths ?? [],
+          })
+        }
+      } else if (isDiffRemove(wholeDiff) && isObject(wholeDiff.beforeValue)) {
+        for (const [key, entry] of Object.entries(wholeDiff.beforeValue as Record<string, { value?: unknown }>)) {
+          setEntry(key, {
+            type, scope, description,
+            action: DiffAction.remove,
+            beforeValue: entry?.value,
+            beforeDeclarationPaths: wholeDiff.beforeDeclarationPaths ?? [],
+          })
+        }
+      }
+      this.assignCustomAnnotationDiffs(nodeDiffs, chipDiffs, colorizingDiffs)
+      return
+    }
+
+    // Tiers 2/3: `customAnnotations` exists (structurally) on both sides - check each merged
+    // key for a per-key add/remove diff first, then an entry-level `.value` replace diff.
+    if (!isObject(crawlValue)) {
+      return
+    }
+    const customAnnotations = Reflect.get(crawlValue, "customAnnotations")
+    if (!isObject(customAnnotations)) {
+      return
+    }
+
+    const perKeyDiffs = Reflect.get(customAnnotations, diffsMetaKey)
+    const perKeyDiffsRecord = AbstractNodeDiffsAggregator.isDiffsRecord(perKeyDiffs) ? perKeyDiffs : {}
+
+    for (const key of Object.keys(customAnnotations)) {
+      const keyDiff = perKeyDiffsRecord[key]
+      if (AbstractNodeDiffsAggregator.isDiff(keyDiff)) {
+        setEntry(key, keyDiff)
+        continue
+      }
+
+      const entry = Reflect.get(customAnnotations, key)
+      if (!isObject(entry)) {
+        continue
+      }
+      const entryDiffs = Reflect.get(entry, diffsMetaKey)
+      const valueDiff = AbstractNodeDiffsAggregator.isDiffsRecord(entryDiffs) ? entryDiffs.value : undefined
+      if (AbstractNodeDiffsAggregator.isDiff(valueDiff)) {
+        setEntry(key, valueDiff)
+      }
+    }
+
+    this.assignCustomAnnotationDiffs(nodeDiffs, chipDiffs, colorizingDiffs)
+  }
+
+  private assignCustomAnnotationDiffs(
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+    chipDiffs: Partial<Record<string, ChangedPropertyMetaData>>,
+    colorizingDiffs: Partial<Record<string, ChangedPropertyMetaData>>,
+  ): void {
+    if (Object.keys(chipDiffs).length > 0) {
+      nodeDiffs.customAnnotationDiffs = chipDiffs
+    }
+    if (Object.keys(colorizingDiffs).length > 0) {
+      nodeDiffs.customAnnotationRowColorizingDiffs = colorizingDiffs
+    }
+  }
+
+  /**
+   * Synthesizes uniform add/remove diffs (with the entry's real value, not a placeholder) for
+   * every `customAnnotations` key present on the merged fragment, when the owning node itself is
+   * inherited-added/removed from a parent/container. Mirrors
+   * {@link aggregateWholeNodeInheritedExtensionsDiffs}.
+   */
+  private aggregateWholeNodeInheritedCustomAnnotationsDiffs(
+    crawlValue: JsonSchemaTreeNodeStoredValue | null,
+    nodeDiffs: JsonSchemaKindAnyNodeDiffs,
+  ): void {
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    if (!nodeLevelDiff || !(isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
+      return
+    }
+    if (!isObject(crawlValue)) {
+      return
+    }
+
+    const customAnnotations = Reflect.get(crawlValue, "customAnnotations")
+    if (!isObject(customAnnotations)) {
+      return
+    }
+
+    const annotationKeys = Object.keys(customAnnotations)
+    if (annotationKeys.length === 0) {
+      return
+    }
+
+    const { data } = nodeLevelDiff
+    const annotationEntries = customAnnotations as Record<string, { value?: unknown }>
+    const customAnnotationDiffs: Partial<Record<string, ChangedPropertyMetaData>> = {}
+
+    if (isDiffAdd(data)) {
+      for (const key of annotationKeys) {
+        customAnnotationDiffs[key] = this.buildChangedPropertyMetaDataFromDiff({
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.add,
+          afterValue: annotationEntries[key]?.value,
+          afterDeclarationPaths: data.afterDeclarationPaths ?? [],
+        })
+      }
+    } else if (isDiffRemove(data)) {
+      for (const key of annotationKeys) {
+        customAnnotationDiffs[key] = this.buildChangedPropertyMetaDataFromDiff({
+          type: data.type,
+          scope: data.scope,
+          description: data.description,
+          action: DiffAction.remove,
+          beforeValue: annotationEntries[key]?.value,
+          beforeDeclarationPaths: data.beforeDeclarationPaths ?? [],
+        })
+      }
+    }
+
+    if (Object.keys(customAnnotationDiffs).length > 0) {
+      nodeDiffs.customAnnotationDiffs = customAnnotationDiffs
+      nodeDiffs.customAnnotationRowColorizingDiffs = customAnnotationDiffs
     }
   }
 

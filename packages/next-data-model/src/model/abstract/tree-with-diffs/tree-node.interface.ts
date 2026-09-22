@@ -130,6 +130,12 @@ export enum NodeDiffsSeverityPlacemennt {
   ItemsCountRow = 'items-count-row',
   /** JSON Schema `Unique items` validation row. */
   UniqueItemsRow = 'unique-items-row',
+  /**
+   * JSON Schema generic custom-annotation additional-info row (a spec-agnostic extension point -
+   * e.g. AsyncAPI's "Location"). Shared across every `customAnnotations` entry on a node; see the
+   * accepted v1 limitation on multiple simultaneous entries in `JsonSchemaKindAnyNodeDiffs.customAnnotationDiffs`.
+   */
+  CustomAnnotationRow = 'custom-annotation-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType

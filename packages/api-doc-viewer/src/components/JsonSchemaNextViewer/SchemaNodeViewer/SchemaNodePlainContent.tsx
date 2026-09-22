@@ -283,6 +283,25 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
     [examplesDiff, examplesValueDiffs, typedValue?.examples],
   )
 
+  const buildCustomAnnotationSubheader = useCallback(
+    (mergedValue: unknown, valueDiff: ReturnType<typeof JsonSchemaRowDiffs.CustomAnnotations.takeDiff>) => (
+      layoutSide: LayoutSide,
+    ) => {
+      const sideEntries = JsonSchemaRowDiffs.CustomAnnotations.resolveSideEntries(mergedValue, valueDiff, layoutSide)
+      if (sideEntries.length === 0) {
+        return <></>
+      }
+
+      return (
+        <JsonSchemaValidationChips
+          layoutSide={layoutSide}
+          sideItems={sideEntries.map(({ text }) => ({ text, diff: valueDiff }))}
+        />
+      )
+    },
+    [],
+  )
+
   const defaultAdditionalInfoSubheader = useCallback(
     (layoutSide: LayoutSide) => {
       const mergedDefault = typedValue?.default
@@ -399,6 +418,31 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
           )}
         />
       )}
+
+      {visibility.showCustomAnnotationsRow && Object.entries(typedValue?.customAnnotations ?? {}).map(([key, entry]) => {
+        const customAnnotationDiff = validationDiffsNode
+          ? JsonSchemaRowDiffs.CustomAnnotations.takeDiff(validationDiffsNode, key)
+          : undefined
+        const customAnnotationRowColorizingDiff = validationDiffsNode
+          ? JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(validationDiffsNode, key)
+          : undefined
+
+        return (
+          <AdditionalInfoRow
+            key={key}
+            label={entry.label}
+            usage={AdditionalInfoRowUsage.JsonSchemaValidation}
+            subheader={buildCustomAnnotationSubheader(entry.value, customAnnotationDiff)}
+            colorizingDiff={customAnnotationRowColorizingDiff}
+            diffsSeverities={
+              customAnnotationDiff || customAnnotationRowColorizingDiff
+                ? nodeDiffState?.nodeDiffsSeverities
+                : undefined
+            }
+            diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.CustomAnnotationRow}
+          />
+        )
+      })}
 
       {showAllowedAdditionalPropertyNamesRow && (
         <AdditionalInfoRow
