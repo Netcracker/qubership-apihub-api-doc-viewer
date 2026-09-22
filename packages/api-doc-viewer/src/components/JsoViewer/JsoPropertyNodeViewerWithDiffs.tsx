@@ -144,15 +144,25 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
       console.error('supportJsonSchema is set but no embeddedSchemaDiffsComponent was provided to JsoDiffsViewer', node)
       return null
     }
+    // The embedded schema's own root row is suppressed (`suppressRootNestingIndicator`), but
+    // `SchemaNodeViewerWithDiffs` still unconditionally increments the level for its children.
+    // Since that root row never renders, its children would otherwise inherit our `beforeLevel`/
+    // `afterLevel` (this property's own level) plus that extra increment - one level too deep
+    // relative to this property's JSO siblings. Pre-decrementing here cancels that increment out.
     return (
-      <EmbeddedSchemaDiffsComponent
-        key={node.id}
-        schema={jsonSchema}
-        expandedDepth={2}
-        displayMode={displayMode}
-        diffMetaKeys={diffMetaKeys}
-        customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
-      />
+      <AsyncLevelContextProvider
+        beforeLevel={Math.max(beforeLevel - 1, 0)}
+        afterLevel={Math.max(afterLevel - 1, 0)}
+      >
+        <EmbeddedSchemaDiffsComponent
+          key={node.id}
+          schema={jsonSchema}
+          expandedDepth={2}
+          displayMode={displayMode}
+          diffMetaKeys={diffMetaKeys}
+          customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
+        />
+      </AsyncLevelContextProvider>
     )
   }
 
