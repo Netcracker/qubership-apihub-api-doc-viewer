@@ -75,8 +75,16 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
     )
     const tree = useMemo(() => builder.build(), [builder])
 
+    // TEMPORARY: force-disable "hide unchanged nodes" for any JSON-Schema-in-JSO embedding,
+    // regardless of what the caller passed as embeddedSchemaDiffsComponent.
     const embeddingContext = useMemo(
-      () => ({ EmbeddedSchemaDiffsComponent: embeddedSchemaDiffsComponent }),
+      () => {
+        const EmbeddedComponent = embeddedSchemaDiffsComponent
+        const wrappedEmbeddedSchemaDiffsComponent: JsoEmbeddedSchemaDiffsComponent | undefined = EmbeddedComponent
+          ? (schemaProps) => <EmbeddedComponent {...schemaProps} hideUnchangedNodes={false} />
+          : undefined
+        return { EmbeddedSchemaDiffsComponent: wrappedEmbeddedSchemaDiffsComponent }
+      },
       [embeddedSchemaDiffsComponent],
     )
 
