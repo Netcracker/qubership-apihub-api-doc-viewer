@@ -1,5 +1,3 @@
-import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer"
-import { JsoViewer } from "@apihub/components/JsoViewer/JsoViewer"
 import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/NestingIndicatorTitleRow/NestingIndicatorTitleRow"
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
@@ -15,6 +13,7 @@ import {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiExtensionKey } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/types/extension-key"
 import { FC, useMemo } from "react"
+import { useJsonSchemaEmbeddingContext } from "../embedding/JsonSchemaEmbeddingContext"
 import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
 
 export type JsonSchemaExtensionsSectionProps = {
@@ -33,6 +32,7 @@ export const JsonSchemaExtensionsSection: FC<JsonSchemaExtensionsSectionProps> =
   const nestedLevel = level + 1
   const displayMode = useDisplayMode()
   const diffMetaKeys = useDiffMetaKeys()
+  const { ExtensionsJsoComponent, ExtensionsJsoDiffsComponent } = useJsonSchemaEmbeddingContext()
 
   // Mirrors SchemaNodeViewer's own children nesting-indicator row: when the owning node was
   // wholly added/removed, one side has no content at all, so the Extensions row's nesting level
@@ -78,14 +78,14 @@ export const JsonSchemaExtensionsSection: FC<JsonSchemaExtensionsSectionProps> =
             diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.ExtensionsRow}
           />
           {diffMetaKeys ? (
-            <JsoDiffsViewer
+            <ExtensionsJsoDiffsComponent
               mergedSource={mergedSource}
               initialLevel={nestedLevel}
               displayMode={displayMode}
               diffMetaKeys={diffMetaKeys}
             />
           ) : (
-            <JsoViewer
+            <ExtensionsJsoComponent
               source={extensions}
               initialLevel={nestedLevel}
             />

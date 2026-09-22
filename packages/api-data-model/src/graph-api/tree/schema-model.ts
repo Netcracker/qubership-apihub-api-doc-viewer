@@ -3,36 +3,40 @@ import { LazyBuildingContext } from "../../abstract/model/model-tree-node.impl";
 import { ModelTree } from '../../abstract/model/model-tree.impl';
 import { CreateNodeResult, IModelTreeNode } from '../../abstract/model/types';
 import { getNodeComplexityType, isObject, pick } from '../../utils';
-import { jsonSchemaNodeMetaProps, jsonSchemaNodeValueProps } from '../constants';
-import { isJsonSchemaNodeType } from '../guards';
+import { schemaNodeMetaProps, schemaNodeValueProps } from '../constants';
+import { isSchemaNodeType } from '../guards';
 import { isBrokenRef, isRequired } from '../utils';
 import type {
-  JsonSchemaCreateNodeParams,
-  JsonSchemaNodeKind,
-  JsonSchemaNodeMeta,
-  JsonSchemaNodeValue
-} from './types';
-import { JsonSchemaNodeType } from './types';
+  SchemaCreateNodeParams,
+  SchemaNodeKind,
+  SchemaNodeMeta,
+  SchemaNodeValue
+} from './schema-types';
+import { SchemaNodeType } from './schema-types';
 
-export class JsonSchemaModelTree<
-  T = JsonSchemaNodeValue,
-  K extends string = JsonSchemaNodeKind,
-  M extends object = JsonSchemaNodeMeta
+/**
+ * Generic schema-tree base: parses a schema-shaped value using a JSON-Schema-style keyword
+ * vocabulary (`type`, `enum`, `minLength`, etc. - see `schemaNodeValueProps`/`schemaNodeMetaProps`
+ * in `../constants`). Only consumed by `GraphApiModelTree` (`./model.ts`) today, since GraphQL
+ * schemas in this data model are represented through this same keyword-based shape.
+ */
+export class SchemaModelTree<
+  T = SchemaNodeValue,
+  K extends string = SchemaNodeKind,
+  M extends object = SchemaNodeMeta
 > extends ModelTree<T, K, M> {
-  public nodes: Map<string, IModelTreeNode<T, K, M>> = new Map();
-
   constructor(public source: any) {
     super()
   }
 
-  public createNodeMeta(params: JsonSchemaCreateNodeParams<T, K, M>): M {
+  public createNodeMeta(params: SchemaCreateNodeParams<T, K, M>): M {
     const { value, key = '', parent = null } = params
     const required = isRequired(key, parent)
     const brokenRef = isBrokenRef(value) ? { brokenRef: value.$ref } : {}
     const complexityType = getNodeComplexityType(value)
     if (complexityType === 'simple') {
       return {
-        ...pick<any>(value, jsonSchemaNodeMetaProps),
+        ...pick<any>(value, schemaNodeMetaProps),
         required,
         ...brokenRef,
         _fragment: value,
@@ -46,7 +50,7 @@ export class JsonSchemaModelTree<
     }
   }
 
-  public createNodeValue(params: JsonSchemaCreateNodeParams<T, K, M>): T {
+  public createNodeValue(params: SchemaCreateNodeParams<T, K, M>): T {
     const { value } = params
     if (value === undefined || value === null) {
       return null as T
@@ -54,19 +58,19 @@ export class JsonSchemaModelTree<
     if (!isObject(value)) {
       return value as T
     }
-    const type: JsonSchemaNodeType = isJsonSchemaNodeType(value.type) ? value.type : UNKNOWN_TYPE
+    const type: SchemaNodeType = isSchemaNodeType(value.type) ? value.type : UNKNOWN_TYPE
     return {
       /*
       FIXME 02.09.24
        This filtering is temporarily necessary
        because of separating props to "value" and "meta" in tree
       */
-      ...pick<any>(value, jsonSchemaNodeValueProps[type]),
+      ...pick<any>(value, schemaNodeValueProps[type]),
     } as T
   }
 
-  public createJsonSchemaNode(
-    params: JsonSchemaCreateNodeParams<T, K, M>,
+  public createSchemaNode(
+    params: SchemaCreateNodeParams<T, K, M>,
     lazyBuildingContext?: LazyBuildingContext<any, any, any>,
   ): CreateNodeResult<IModelTreeNode<T, K, M>> {
     const {
@@ -121,19 +125,5 @@ export class JsonSchemaModelTree<
     }
 
     return result
-  }
-
-  /** @deprecated */
-  public createNestedNode(id: string, kind: K, key: string | number, value: any, container: any, isCycle: boolean) {
-    const res = this.createJsonSchemaNode({ id, kind, key, value, container, parent: container.parent, isCycle })
-    container.addNestedNode(res.node)
-    return res
-  }
-
-  /** @deprecated */
-  public createChildNode(id: string, kind: K, key: string | number, value: any, parent: any, isCycle: boolean) {
-    const res = this.createJsonSchemaNode({ id, kind, key, value, parent, isCycle })
-    parent?.addChild(res.node)
-    return res
   }
 }

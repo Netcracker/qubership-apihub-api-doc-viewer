@@ -1,3 +1,4 @@
+import { JsonSchemaNextDiffsViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer";
 import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer";
 import type { ArgTypes } from "@storybook/react";
 import type { ComponentProps } from "react";
@@ -53,6 +54,7 @@ export const createJsoViewerArgs = (
   }),
   initialLevel: 1,
   supportJsonSchema: true,
+  embeddedSchemaDiffsComponent: JsonSchemaNextDiffsViewer,
   diffMetaKeys: TEST_DIFF_META_KEYS,
 });
 

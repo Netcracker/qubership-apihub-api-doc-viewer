@@ -1,28 +1,36 @@
-import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model"
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
-import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
-import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
-import { AsyncApiTreeNodeValueTypeChannelParameters } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
-import { FC, useMemo } from "react"
-import { JsonSchemaDiffViewer } from "../JsonSchemaViewer/JsonSchemaDiffViewer"
-import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer"
-import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props"
-import { TextValueVariant } from "../shared-components/TextValue/types"
-import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { TitleRowProps } from "../shared-components/TitleRow/types"
-import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
-import { isMessageChannelParametersNodeWithDiffs } from "../shared-utilities/tree-node-guards"
+import { SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS } from '@apihub/contexts/CustomizationOptionsContext'
+import { useDiffMetaKeys } from '@apihub/contexts/DiffMetaKeysContext'
+import { useDisplayMode } from '@apihub/contexts/DisplayModeContext'
+import { DiffMetaKeys } from '@netcracker/qubership-apihub-api-data-model'
+import { isDiffAdd, isDiffRemove } from '@netcracker/qubership-apihub-api-diff'
+import {
+  ChangedPropertyMetaData,
+  NODE_LEVEL_DIFF_KEY,
+} from '@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface'
+import {
+  AsyncApiTreeNode,
+  AsyncApiTreeNodeWithDiffs,
+} from '@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases'
+import { AsyncApiTreeNodeKinds } from '@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind'
+import {
+  AsyncApiTreeNodeValueTypeChannelParameters,
+} from '@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value'
+import { FC, useMemo } from 'react'
+import { JsonSchemaNextDiffsViewer } from '../JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
+import { JsonSchemaNextViewer } from '../JsonSchemaNextViewer/JsonSchemaNextViewer'
+import { buildRowDiffProps, toNodeDiffState } from '../shared-components/diffs/node-diff-props'
+import { TextValueVariant } from '../shared-components/TextValue/types'
+import { TitleRow } from '../shared-components/TitleRow/TitleRow'
+import { TitleRowProps } from '../shared-components/TitleRow/types'
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from '../shared-components/WithPrecededByProps'
+import { isMessageChannelParametersNodeWithDiffs } from '../shared-utilities/tree-node-guards'
 
 const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
 
 type MessageChannelParametersNodeViewerProps = WithPrecededByProps & {
   node:
-  | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
-  | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
+    | AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
+    | AsyncApiTreeNodeWithDiffs<typeof AsyncApiTreeNodeKinds.MESSAGE_CHANNEL_PARAMETERS>
 }
 
 export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNodeViewerProps> = (props) => {
@@ -49,12 +57,12 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
       expandable={false}
       variant={TextValueVariant.h3}
     />
-    <JsonSchemaViewer
+    <JsonSchemaNextViewer
       data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={addressParameters}
       expandedDepth={2}
       displayMode={displayMode}
-      overriddenKind='parameters'
+      customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
     />
   </>
 }
@@ -67,7 +75,6 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
   const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const displayMode = useDisplayMode()
-  const layoutMode = useLayoutMode()
 
   const value = node.value()
   const addressParameters = value?.rawValues
@@ -83,7 +90,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
     return prepareJsonSchemaInCaseOfWhollyChanged(
       addressParameters,
       node.diffs[NODE_LEVEL_DIFF_KEY],
-      diffMetaKeys
+      diffMetaKeys,
     )
   }, [addressParameters, diffMetaKeys, node.diffs])
 
@@ -100,14 +107,13 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       // diffs
       {...diffsProps}
     />
-    <JsonSchemaDiffViewer
+    <JsonSchemaNextDiffsViewer
       data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={preparedAddressParameters}
       expandedDepth={2}
       displayMode={displayMode}
-      layoutMode={layoutMode}
-      metaKeys={diffMetaKeys}
-      overriddenKind='parameters'
+      diffMetaKeys={diffMetaKeys}
+      customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
     />
   </>
 }
@@ -115,7 +121,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
 function prepareJsonSchemaInCaseOfWhollyChanged(
   jsonSchema: Record<string, unknown> | undefined,
   changedNodeMetadata: ChangedPropertyMetaData | undefined,
-  diffMetaKeys: DiffMetaKeys | undefined
+  diffMetaKeys: DiffMetaKeys | undefined,
 ): Record<PropertyKey, unknown> | undefined {
   if (!jsonSchema || !changedNodeMetadata || !diffMetaKeys) {
     return jsonSchema
@@ -135,7 +141,7 @@ function prepareJsonSchemaInCaseOfWhollyChanged(
         acc[key] = { ...diff, beforeValue: beforeValue }
       }
       return acc
-    }, {} as Record<PropertyKey, unknown>)
+    }, {} as Record<PropertyKey, unknown>),
   }
   return extendedJsonSchema
 }

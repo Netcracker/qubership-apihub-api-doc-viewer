@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonSchemaNextViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer';
 import { JsoViewer } from '@apihub/components/JsoViewer/JsoViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -34,6 +35,7 @@ const meta = {
   args: {
     source: {},
     supportJsonSchema: true,
+    embeddedSchemaComponent: JsonSchemaNextViewer,
     initialLevel: 1,
   }
 } satisfies Meta<typeof JsoViewer>;

@@ -1,3 +1,4 @@
+import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
@@ -26,6 +27,7 @@ import {
 import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
+import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
 import { JsonSchemaNestingIndicatorTypeValueWithDiffs } from "./TypeValue/JsonSchemaNestingIndicatorTypeValueWithDiffs"
@@ -54,6 +56,7 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
 
   const displayMode = useDisplayMode()
   const level = useLevelContext()
+  const customizationOptions = useCustomizationOptions()
   const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaNextViewerContext()
   const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
   const unchangedBlocksContext = useOptionalUnchangedBlocksContext()
@@ -117,7 +120,13 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
     })
   }, [materializeChildren, node])
 
-  const showNodeBody = !expandable || expanded
+  const suppressRootNesting =
+    !!customizationOptions?.suppressRootNestingIndicator &&
+    isJsonSchemaRootNode(node) &&
+    !visibility.showExtensionsRow &&
+    children.length > 0
+
+  const showNodeBody = suppressRootNesting || !expandable || expanded
 
   const nestingIndicatorTitle = useCallback((layoutSide: LayoutSide): ReactNode => (
     <JsonSchemaNestingIndicatorTypeValueWithDiffs
@@ -146,15 +155,17 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
       data-name="JsonNode"
       className="json-schema-property flex flex-col"
     >
-      <SchemaNodeTitleRowWithDiffs
-        data-precededby={precededBy}
-        ownerNode={node}
-        contentVisibility={visibility}
-        isLastInList={isLastInList}
-        expandable={expandable}
-        expanded={expanded}
-        onClickExpander={onClickExpander}
-      />
+      {!suppressRootNesting && (
+        <SchemaNodeTitleRowWithDiffs
+          data-precededby={precededBy}
+          ownerNode={node}
+          contentVisibility={visibility}
+          isLastInList={isLastInList}
+          expandable={expandable}
+          expanded={expanded}
+          onClickExpander={onClickExpander}
+        />
+      )}
 
       {showNodeBody && (
         <>
@@ -166,14 +177,16 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
           {children.length > 0 && (
             <LevelContext.Provider value={level + 1}>
               <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
-                <NestingIndicatorTitleRow
-                  title={nestingIndicatorTitle}
-                  usage={NestingIndicatorTitleRowUsage.JsonSchema}
-                  lastInvisible
-                  diff={nestingIndicatorRowColorizingDiff}
-                  diffsSeverities={node.diffsSeverities}
-                  diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
-                />
+                {!suppressRootNesting && (
+                  <NestingIndicatorTitleRow
+                    title={nestingIndicatorTitle}
+                    usage={NestingIndicatorTitleRowUsage.JsonSchema}
+                    lastInvisible
+                    diff={nestingIndicatorRowColorizingDiff}
+                    diffsSeverities={node.diffsSeverities}
+                    diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.NestingIndicatorRow}
+                  />
+                )}
                 {unchangedBlocksContext ? (
                   <SchemaNodeChildrenListWithDiffs
                     children={children}

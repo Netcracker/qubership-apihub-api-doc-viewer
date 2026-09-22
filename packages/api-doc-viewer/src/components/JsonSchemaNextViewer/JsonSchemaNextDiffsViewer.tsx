@@ -16,6 +16,8 @@ import "../../index.css"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import "../shared-styles/diffs/index.css"
+import { DefaultExtensionsJsoComponent, DefaultExtensionsJsoDiffsComponent } from "./embedding/DefaultJsonSchemaEmbedding"
+import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from "./embedding/JsonSchemaEmbeddingContext"
 import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
 import { JsonSchemaNodeViewerWithDiffs } from "./JsonSchemaNodeViewerWithDiffs"
 import { resolveJsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode"
@@ -112,30 +114,40 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
     [expandedDepth, materializeChildren, treeRevision],
   )
 
+  const embeddingContext: JsonSchemaEmbeddingContextValue = useMemo(
+    () => ({
+      ExtensionsJsoComponent: DefaultExtensionsJsoComponent,
+      ExtensionsJsoDiffsComponent: DefaultExtensionsJsoDiffsComponent,
+    }),
+    [],
+  )
+
   const root = tree.root
   if (!root) {
     return null
   }
 
   return (
-    <DiffMetaKeysContext.Provider value={diffMetaKeys}>
-      <DiffTypesContext.Provider value={diffTypes}>
-        <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
-          <JsonSchemaNextViewerContext.Provider value={viewerContext}>
-            <CustomizationOptionsContext.Provider value={customizationOptions}>
-              <DisplayModeContext.Provider value={displayMode}>
-                <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-                  <LevelContext.Provider value={initialLevel}>
-                    <div data-testid="json-schema-next-diffs-viewer">
-                      <JsonSchemaNodeViewerWithDiffs node={root} />
-                    </div>
-                  </LevelContext.Provider>
-                </LayoutModeContext.Provider>
-              </DisplayModeContext.Provider>
-            </CustomizationOptionsContext.Provider>
-          </JsonSchemaNextViewerContext.Provider>
-        </UnchangedBlocksContext.Provider>
-      </DiffTypesContext.Provider>
-    </DiffMetaKeysContext.Provider>
+    <JsonSchemaEmbeddingContext.Provider value={embeddingContext}>
+      <DiffMetaKeysContext.Provider value={diffMetaKeys}>
+        <DiffTypesContext.Provider value={diffTypes}>
+          <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
+            <JsonSchemaNextViewerContext.Provider value={viewerContext}>
+              <CustomizationOptionsContext.Provider value={customizationOptions}>
+                <DisplayModeContext.Provider value={displayMode}>
+                  <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
+                    <LevelContext.Provider value={initialLevel}>
+                      <div data-testid="json-schema-next-diffs-viewer">
+                        <JsonSchemaNodeViewerWithDiffs node={root} />
+                      </div>
+                    </LevelContext.Provider>
+                  </LayoutModeContext.Provider>
+                </DisplayModeContext.Provider>
+              </CustomizationOptionsContext.Provider>
+            </JsonSchemaNextViewerContext.Provider>
+          </UnchangedBlocksContext.Provider>
+        </DiffTypesContext.Provider>
+      </DiffMetaKeysContext.Provider>
+    </JsonSchemaEmbeddingContext.Provider>
   )
 }

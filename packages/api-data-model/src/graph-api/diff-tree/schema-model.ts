@@ -1,4 +1,4 @@
-import { isOpenApiExtensionKey } from '@apihub/api-data-model/oas-extension-key';
+import { isOpenApiExtensionKey } from '../../oas-extension-key';
 import { Diff, DiffType, isDiffReplace } from '@netcracker/qubership-apihub-api-diff';
 import { buildPointer, OpenApiExtensionKey } from '@netcracker/qubership-apihub-api-unifier';
 import { isArray } from '@netcracker/qubership-apihub-json-crawl';
@@ -8,20 +8,29 @@ import { ChangesSummaryUtils } from '../../abstract/diff-tree-utils';
 import { LazyBuildingContext } from "../../abstract/model/model-tree-node.impl";
 import { IModelTreeNode, ModelTreeNodeParams, ModelTreeNodeType } from '../../abstract/model/types';
 import { extendToObject, getNodeComplexityType, isDiff, isDiffMetaRecord, isObject, objectKeys, pick, setValueByPath } from '../../utils';
-import { jsonSchemaNodeMetaProps, jsonSchemaNodeValueProps } from '../constants';
-import { isJsonSchemaNodeType } from '../guards';
-import { JsonSchemaModelTree } from '../tree/model';
-import type { JsonSchemaCreateNodeParams, JsonSchemaNodeKind, JsonSchemaNodeType } from '../tree/types';
+import { schemaNodeMetaProps, schemaNodeValueProps } from '../constants';
+import { isSchemaNodeType } from '../guards';
+import { SchemaModelTree } from '../tree/schema-model';
+import type { SchemaCreateNodeParams, SchemaNodeKind, SchemaNodeType } from '../tree/schema-types';
 import { isBrokenRef, isRequired } from '../utils';
-import { JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue } from './types';
+import { SchemaDiffNodeMeta, SchemaDiffNodeValue } from './schema-types';
 
-const JSON_SCHEMA_SPECIFICALLY_HANDLED_PROPS = new Set<string>(['required'])
+const SCHEMA_SPECIFICALLY_HANDLED_PROPS = new Set<string>(['required'])
 
-export class JsonSchemaModelDiffTree<
-  T extends DiffNodeValue | null = JsonSchemaDiffNodeValue,
-  K extends string = JsonSchemaNodeKind,
-  M extends DiffNodeMeta = JsonSchemaDiffNodeMeta
-> extends JsonSchemaModelTree<T, K, M> {
+/**
+ * Diff-aware counterpart of `SchemaModelTree` (see `../tree/schema-model.ts`). Only consumed by
+ * `GraphApiModelDiffTree` (`./model.ts`) today. `GraphApiModelDiffTree` fully overrides
+ * `createNodeMeta`/`createNodeValue`/`simpleDiffMeta`/`nestedDiffMeta`/`getChildrenChanges`/
+ * `getNodeChange` with its own GraphQL-flavored bodies, so those method bodies here are inert for
+ * the GraphQL path today - kept verbatim (not trimmed) since this is a mechanical move/rename, not
+ * a behavior change; see the JSON-Schema-naming-purge plan for why trimming them is a separate,
+ * deliberately deferred cleanup.
+ */
+export class SchemaModelDiffTree<
+  T extends DiffNodeValue | null = SchemaDiffNodeValue,
+  K extends string = SchemaNodeKind,
+  M extends DiffNodeMeta = SchemaDiffNodeMeta
+> extends SchemaModelTree<T, K, M> {
 
   constructor(
     source: unknown,
@@ -63,7 +72,7 @@ export class JsonSchemaModelDiffTree<
     return node
   }
 
-  public createNodeMeta(params: JsonSchemaCreateNodeParams<T, K, M>): M {
+  public createNodeMeta(params: SchemaCreateNodeParams<T, K, M>): M {
     const { value } = params
 
     const complexityType = getNodeComplexityType(value)
@@ -74,7 +83,7 @@ export class JsonSchemaModelDiffTree<
     }
   }
 
-  public createNodeValue(params: JsonSchemaCreateNodeParams<T, K, M>): T {
+  public createNodeValue(params: SchemaCreateNodeParams<T, K, M>): T {
     const { value } = params
     if (value === undefined || value === null) {
       return null as T
@@ -82,17 +91,17 @@ export class JsonSchemaModelDiffTree<
     if (!isObject(value)) {
       return value as T
     }
-    const type: JsonSchemaNodeType = isJsonSchemaNodeType(value.type) ? value.type : UNKNOWN_TYPE
-    let observedProps = jsonSchemaNodeValueProps[type]
+    const type: SchemaNodeType = isSchemaNodeType(value.type) ? value.type : UNKNOWN_TYPE
+    let observedProps = schemaNodeValueProps[type]
     const valueDiffs = value[this.metaKeys.diffsMetaKey]
     if (isObject(valueDiffs) && 'type' in valueDiffs) {
       const typeDiff = valueDiffs.type
-      const previousType: JsonSchemaNodeType | undefined = isDiff(typeDiff) && isDiffReplace(typeDiff) && isJsonSchemaNodeType(typeDiff.beforeValue)
+      const previousType: SchemaNodeType | undefined = isDiff(typeDiff) && isDiffReplace(typeDiff) && isSchemaNodeType(typeDiff.beforeValue)
         ? typeDiff.beforeValue
         : undefined
       observedProps = [
         ...observedProps,
-        ...previousType ? jsonSchemaNodeValueProps[previousType] : []
+        ...previousType ? schemaNodeValueProps[previousType] : []
       ]
     }
 
@@ -166,7 +175,7 @@ export class JsonSchemaModelDiffTree<
       }
     }
 
-    const notHandledProps = props.filter(prop => !JSON_SCHEMA_SPECIFICALLY_HANDLED_PROPS.has(prop))
+    const notHandledProps = props.filter(prop => !SCHEMA_SPECIFICALLY_HANDLED_PROPS.has(prop))
 
     for (const observedProperty of notHandledProps) {
       const maybeDiffMetaRecord = _value[this.metaKeys.diffsMetaKey]
@@ -223,7 +232,7 @@ export class JsonSchemaModelDiffTree<
     return allDescendantsChanged
   }
 
-  protected getNodeChange(params: JsonSchemaCreateNodeParams<T, K, M>): NodeChange | undefined {
+  protected getNodeChange(params: SchemaCreateNodeParams<T, K, M>): NodeChange | undefined {
     const { id, parent = null, container = null } = params
     const inheritedChanges: NodeChange | undefined = container?.meta?.$nodeChange ?? parent?.meta?.$nodeChange
 
@@ -323,19 +332,19 @@ export class JsonSchemaModelDiffTree<
     return children
   }
 
-  public simpleDiffMeta(params: JsonSchemaCreateNodeParams<T, K, M>): JsonSchemaDiffNodeMeta {
+  public simpleDiffMeta(params: SchemaCreateNodeParams<T, K, M>): SchemaDiffNodeMeta {
     const { value, id, key = '', parent = null } = params
 
     const requiredChange = this.getRequiredChange(key, parent)
     const $metaChanges = {
       ...requiredChange ? { required: requiredChange } : {},
-      ...this.getPropsChanges(value, jsonSchemaNodeMetaProps),
+      ...this.getPropsChanges(value, schemaNodeMetaProps),
     }
     const $childrenChanges = this.getChildrenChanges(id, value ?? {})
     const $nodeChange = this.getNodeChange(params)
 
     return {
-      ...pick<any>(value, jsonSchemaNodeMetaProps),
+      ...pick<any>(value, schemaNodeMetaProps),
       ...$nodeChange ? { $nodeChange } : {},
       ...Object.keys($metaChanges).length ? { $metaChanges } : {},
       ...Object.keys($childrenChanges).length ? { $childrenChanges } : {},
@@ -346,7 +355,7 @@ export class JsonSchemaModelDiffTree<
     }
   }
 
-  public nestedDiffMeta(params: JsonSchemaCreateNodeParams<T, K, M>): JsonSchemaDiffNodeMeta {
+  public nestedDiffMeta(params: SchemaCreateNodeParams<T, K, M>): SchemaDiffNodeMeta {
     const { value, id, key = '', parent = null } = params
 
     const complexityType = getNodeComplexityType(value)

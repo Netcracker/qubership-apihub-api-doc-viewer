@@ -25,8 +25,6 @@ module.exports = {
     "^@apihub/api-data-model/abstract-model/(.*)$": "<rootDir>/src/abstract/$1",
     "^@apihub/api-data-model/graph-api-model$": "<rootDir>/src/graph-api",
     "^@apihub/api-data-model/graph-api-model/(.*)$": "<rootDir>/src/graph-api/$1",
-    "^@apihub/api-data-model/json-schema-model$": "<rootDir>/src/json-schema",
-    "^@apihub/api-data-model/json-schema-model/(.*)$": "<rootDir>/src/json-schema/$1",
     "^@apihub/api-data-model$": "<rootDir>/src",
     "^@apihub/api-data-model/(.*)$": "<rootDir>/src/$1",
   },
