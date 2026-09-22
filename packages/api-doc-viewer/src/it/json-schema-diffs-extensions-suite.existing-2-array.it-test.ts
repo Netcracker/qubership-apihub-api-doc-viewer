@@ -106,4 +106,18 @@ describe("JSON Schema Diffs Suite (Extensions) - Existing 2 Array", () => {
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
+
+  it("13-both-added", async () => {
+    story = await storyPage(page, `${META_ID}--case-13-both-added`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
+
+  it("14-both-removed", async () => {
+    story = await storyPage(page, `${META_ID}--case-14-both-removed`);
+    await waitForJsonSchemaDiffViewer();
+    component = await story.viewComponent();
+    expect(await component.captureScreenshot()).toMatchImageSnapshot();
+  });
 });
