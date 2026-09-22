@@ -103,6 +103,8 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
           diffMetaKeys={diffMetaKeys}
           diffTypes={diffTypes}
           customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
+          // TEMPORARY
+          hideUnchangedNodes={false}
         />
       )
     }

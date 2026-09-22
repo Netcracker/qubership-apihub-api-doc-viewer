@@ -130,7 +130,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           displayMode={displayMode}
           initialLevel={1}
           supportJsonSchema={true}
-          embeddedSchemaDiffsComponent={JsonSchemaNextDiffsViewer}
+          // TEMPORARY: force-disable hiding unchanged nodes
+          embeddedSchemaDiffsComponent={(schemaProps) => <JsonSchemaNextDiffsViewer {...schemaProps} hideUnchangedNodes={false} />}
           // diffs specific
           diffMetaKeys={diffMetaKeys}
         />
