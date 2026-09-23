@@ -211,8 +211,6 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       displayMode={displayMode}
       diffMetaKeys={diffMetaKeys}
       customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
-      // TEMPORARY
-      hideUnchangedNodes={false}
     />
   </>
 }
