@@ -17,6 +17,5 @@ export type JsoEmbeddedSchemaDiffsComponentProps = {
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
     customizationOptions?: CustomizationOptions;
-    hideUnchangedNodes?: boolean;
 };
 export type JsoEmbeddedSchemaDiffsComponent = FC<JsoEmbeddedSchemaDiffsComponentProps>;
