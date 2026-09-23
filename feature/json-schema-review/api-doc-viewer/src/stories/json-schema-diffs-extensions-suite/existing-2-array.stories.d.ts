@@ -46,3 +46,5 @@ export declare const Case_09_added_and_removed: Story;
 export declare const Case_10_removed_and_replaced: Story;
 export declare const Case_11_added_and_replaced: Story;
 export declare const Case_12_both_replaced: Story;
+export declare const Case_13_both_added: Story;
+export declare const Case_14_both_removed: Story;
