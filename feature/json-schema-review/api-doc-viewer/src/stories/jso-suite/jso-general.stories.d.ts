@@ -23,6 +23,7 @@ declare const meta: {
         initialLevel?: number;
         supportJsonSchema?: boolean;
         devMode?: boolean;
+        embeddedSchemaComponent?: import("../../components/JsoViewer/embedding/jso-embedding-types").JsoEmbeddedSchemaComponent;
     }>;
     parameters: {};
     argTypes: {
@@ -36,6 +37,7 @@ declare const meta: {
     args: {
         source: {};
         supportJsonSchema: true;
+        embeddedSchemaComponent: import('../../../../../node_modules/react').FC<import('../../components/JsonSchemaNextViewer/JsonSchemaNextViewer').JsonSchemaNextViewerProps>;
         initialLevel: number;
     };
 };

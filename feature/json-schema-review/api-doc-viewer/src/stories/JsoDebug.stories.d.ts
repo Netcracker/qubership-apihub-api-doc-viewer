@@ -14,6 +14,7 @@ declare const meta: {
         initialLevel?: number;
         supportJsonSchema?: boolean;
         devMode?: boolean;
+        embeddedSchemaComponent?: import("../components/JsoViewer/embedding/jso-embedding-types").JsoEmbeddedSchemaComponent;
     }>;
     parameters: {};
     argTypes: {

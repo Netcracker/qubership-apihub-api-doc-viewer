@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiffNodeValue, GraphApiNodeData, GraphSchemaNodeValue, IModelTreeNode, JsonSchemaDiffNodeMeta, JsonSchemaDiffNodeValue, JsonSchemaNodeKind, JsonSchemaNodeValue } from '../../../api-data-model/src';
+import { DiffNodeValue, GraphApiNodeData, GraphSchemaNodeValue, IModelTreeNode, SchemaDiffNodeMeta, SchemaDiffNodeValue, SchemaNodeKind } from '../../../api-data-model/src';
 import { Dispatch, SetStateAction } from '../../../../node_modules/react';
 import { IModelStatePropNode } from '../../../api-state-model/src';
 import { AnyTreeNode } from '../types/aliases/nodes';
@@ -40,16 +40,16 @@ export declare function isCombinerItemNode(node?: AnyTreeNode | null): boolean;
 export declare function isOneOfCombinerNode(node?: AnyTreeNode | null): boolean;
 export declare function isAnyOfCombinerNode(node?: AnyTreeNode | null): boolean;
 export declare function isAllOfCombinerNode(node?: AnyTreeNode | null): boolean;
-export declare function isPrimitiveValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
-export declare function isStringValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
-export declare function isNumberValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | DiffNodeValue | null): boolean;
-export declare function isBooleanValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
-export declare function isObjectValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
-export declare function isArrayValue(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
-export declare function valueHasExtensions(value?: JsonSchemaNodeValue | GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function isPrimitiveValue(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function isStringValue(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function isNumberValue(value?: GraphSchemaNodeValue | GraphApiNodeData | DiffNodeValue | null): boolean;
+export declare function isBooleanValue(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function isObjectValue(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function isArrayValue(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
+export declare function valueHasExtensions(value?: GraphSchemaNodeValue | GraphApiNodeData | null): boolean;
 export declare function hasNoContent(node?: AnyTreeNode | null): boolean;
 export declare function hasNoValidationsAndAnnotations(node?: AnyTreeNode | null): boolean;
 export declare function onToggleExpander(state: IModelStatePropNode<AnyTreeNode>, reactStateCallback: Dispatch<SetStateAction<boolean>>, mode?: ExpandingMode): void;
 export declare function onToggleSort(state: IModelStatePropNode<AnyTreeNode>, reactStateCallback: Dispatch<SetStateAction<number>>): void;
 export declare function matchNodeKind(kind: string, node?: AnyTreeNode | null): boolean;
-export declare function findNoSubHeaderSide(node: IModelTreeNode<JsonSchemaDiffNodeValue, JsonSchemaNodeKind, JsonSchemaDiffNodeMeta>): LayoutSide | undefined;
+export declare function findNoSubHeaderSide(node: IModelTreeNode<SchemaDiffNodeValue, SchemaNodeKind, SchemaDiffNodeMeta>): LayoutSide | undefined;

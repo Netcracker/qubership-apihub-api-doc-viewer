@@ -22,8 +22,6 @@ export * from './components/DdlTableViewer/DdlTableDiffsViewer';
 export * from './components/DdlTableViewer/DdlTableViewer';
 export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer';
 export * from './components/GraphQLOperationViewer/GraphQLOperationViewer';
-export * from './components/JsonSchemaViewer/JsonSchemaDiffViewer';
-export * from './components/JsonSchemaViewer/JsonSchemaViewer';
 export * from './components/JsonSchemaNextViewer/JsonSchemaNextViewer';
 export * from './components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
 export * from './types/DisplayMode';
