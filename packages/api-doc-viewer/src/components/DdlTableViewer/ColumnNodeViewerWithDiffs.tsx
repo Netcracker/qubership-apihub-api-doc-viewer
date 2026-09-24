@@ -1,7 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
-import { takeDiffSideIsFontMuted } from "@apihub/utils/diffs/take-diff-side-is-font-muted"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
+import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { takeColumnFlagDiffs, takeColumnForeignKeyTargetDiffs } from "@apihub/utils/ddlapi/column-row-badges"
 import {
   buildDdlPropertyTitleRowDiffProps,
@@ -136,12 +134,13 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         return <></>
       }
 
+      const style = resolveDiffSideStyle(defaultValueDiff, layoutSide)
       return (
         <AdditionalInfoPiece
           isVisible={true}
           value={defaultValue}
-          textHighlighterColor={takeDiffSideTextHighlighterColor(defaultValueDiff, layoutSide)}
-          borderShadowColor={takeDiffSideBorderShadowColor(defaultValueDiff, layoutSide)}
+          textHighlighterColor={style.textHighlighterColor}
+          borderShadowColor={style.borderShadowColor}
         />
       )
     },
@@ -155,11 +154,12 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
         return <></>
       }
 
+      const style = resolveDiffSideStyle(generatedExpressionDiff, layoutSide)
       return (
         <AdditionalInfoPiece
           isVisible={true}
           value={generatedExpression}
-          textHighlighterColor={takeDiffSideTextHighlighterColor(generatedExpressionDiff, layoutSide)}
+          textHighlighterColor={style.textHighlighterColor}
         />
       )
     },
@@ -175,16 +175,19 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
 
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {sideItems.map((sideItem, index) => (
-            <AdditionalInfoPiece
-              key={`${sideItem.literal}-${index}`}
-              isVisible={true}
-              value={sideItem.literal}
-              textHighlighterColor={takeDiffSideTextHighlighterColor(sideItem.diff, layoutSide)}
-              borderShadowColor={takeDiffSideBorderShadowColor(sideItem.diff, layoutSide)}
-              isFontMuted={takeDiffSideIsFontMuted(sideItem.diff, layoutSide)}
-            />
-          ))}
+          {sideItems.map((sideItem, index) => {
+            const style = resolveDiffSideStyle(sideItem.diff, layoutSide)
+            return (
+              <AdditionalInfoPiece
+                key={`${sideItem.literal}-${index}`}
+                isVisible={true}
+                value={sideItem.literal}
+                textHighlighterColor={style.textHighlighterColor}
+                borderShadowColor={style.borderShadowColor}
+                isFontMuted={style.isFontMuted}
+              />
+            )
+          })}
         </div>
       )
     },

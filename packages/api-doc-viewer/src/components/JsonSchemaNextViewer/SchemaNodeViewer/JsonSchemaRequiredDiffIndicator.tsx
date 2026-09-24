@@ -14,11 +14,7 @@ export type JsonSchemaRequiredDiffIndicatorProps = {
 export const JsonSchemaRequiredDiffIndicator: FC<JsonSchemaRequiredDiffIndicatorProps> = (props) => {
   const { required, requiredDiff, layoutSide } = props
   const layoutMode = useLayoutMode()
-  const { isDocumentLayoutMode, isSideBySideDiffsLayoutMode } = getLayoutModeFlags(layoutMode)
-
-  if (isDocumentLayoutMode) {
-    return required ? <sup className="ml-0.5 text-red-500">*</sup> : null
-  }
+  const { isSideBySideDiffsLayoutMode } = getLayoutModeFlags(layoutMode)
 
   if (layoutSide === undefined) {
     return null

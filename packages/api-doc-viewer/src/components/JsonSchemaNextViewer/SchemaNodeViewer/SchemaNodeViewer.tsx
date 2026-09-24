@@ -19,10 +19,10 @@ import {
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
-import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
+import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNestingIndicatorTypeValue } from "./TypeValue/JsonSchemaNestingIndicatorTypeValue"
-import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
+import { JsonSchemaNestingLevel } from "../utils/resolve-nesting-level"
 import { SchemaNodePlainContent } from "./SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "./SchemaNodeTitleRow"
 
@@ -92,7 +92,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
 
   const suppressRootNesting =
     !!customizationOptions?.suppressRootNestingIndicator &&
-    isJsonSchemaRootNode(node) &&
+    JsonSchemaNodeTypeCheckers.isRootNode(node) &&
     !visibility.showExtensionsRow &&
     children.length > 0
 
@@ -107,7 +107,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   const currentBeforeLevel = asyncLevel?.beforeLevel ?? level
   const currentAfterLevel = asyncLevel?.afterLevel ?? level
   const { beforeLevel: nextBeforeLevel, afterLevel: nextAfterLevel } = useMemo(
-    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, undefined),
+    () => JsonSchemaNestingLevel.resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, undefined),
     [currentBeforeLevel, currentAfterLevel],
   )
 

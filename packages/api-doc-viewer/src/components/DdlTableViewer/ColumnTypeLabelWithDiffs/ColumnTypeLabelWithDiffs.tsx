@@ -1,4 +1,4 @@
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
+import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import {
   DdlApiRowDiffs,
@@ -46,13 +46,14 @@ function renderColumnTypeLabelSegment(
   layoutSide: LayoutSide,
 ) {
   if (segment.diff) {
+    const style = resolveDiffSideStyle(segment.diff, layoutSide)
     return (
       <SubheaderValueWithDiffs
         key={`${segment.text}-${index}`}
         isVisible={true}
         value={segment.text}
         appearance={SubheaderValueAppearance.Text}
-        textHighlighterColor={takeDiffSideTextHighlighterColor(segment.diff, layoutSide)}
+        textHighlighterColor={style.textHighlighterColor}
       />
     )
   }

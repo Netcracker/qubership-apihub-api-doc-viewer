@@ -3,7 +3,7 @@ import { FC } from "react"
 import { WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { CombinerNodeViewer } from "./CombinerNodeViewer/CombinerNodeViewer"
 import { SchemaNodeViewer } from "./SchemaNodeViewer/SchemaNodeViewer"
-import { isJsonSchemaCombinerOwnerNode } from "./utils/node-type-checkers"
+import { JsonSchemaCombiner } from "./utils/resolve-combiner"
 
 export type JsonSchemaNodeViewerProps = WithPrecededByProps & {
   node: JsonSchemaTreeNode
@@ -13,7 +13,7 @@ export type JsonSchemaNodeViewerProps = WithPrecededByProps & {
 export const JsonSchemaNodeViewer: FC<JsonSchemaNodeViewerProps> = (props) => {
   const { node } = props
 
-  if (isJsonSchemaCombinerOwnerNode(node)) {
+  if (JsonSchemaCombiner.isOwnerNode(node)) {
     return <CombinerNodeViewer {...props} />
   }
 

@@ -2,7 +2,7 @@ import { BadgeWithDiffs } from "@apihub/components/shared-components/diffs/Badge
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { Diff } from "@netcracker/qubership-apihub-api-diff"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
+import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
@@ -95,7 +95,8 @@ function renderForeignKeyTargetBadge(options: {
 }): ReactNode {
   const { columnId, target, targetDiff, layoutMode, layoutSide } = options
   const badgeKey = buildForeignKeyBadgeKey(columnId, target)
-  const textHighlighterColor = takeDiffSideTextHighlighterColor(targetDiff, layoutSide)
+  const style = resolveDiffSideStyle(targetDiff, layoutSide)
+  const textHighlighterColor = style.textHighlighterColor
 
   if (targetDiff && !isContentVisibleOnSide(targetDiff, layoutSide)) {
     return <span key={badgeKey} className="inline-block min-h-[19px]" aria-hidden="true" />

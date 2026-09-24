@@ -2,8 +2,7 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { FC, memo } from "react"
-import { resolveCombinerOptionTitleSuffix } from "../../utils/resolve-combiner-node-diffs"
-import { resolveCombinerOptionLeafNode } from "../../utils/resolve-combiner-selection"
+import { JsonSchemaCombiner } from "../../utils/resolve-combiner"
 import { JsonSchemaTypeValueSideDisplay } from "./JsonSchemaTypeValueSideDisplay"
 import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
 
@@ -24,9 +23,9 @@ export type JsonSchemaCombinerOptionTypeValueWithDiffsProps = {
 export const JsonSchemaCombinerOptionTypeValueWithDiffs: FC<JsonSchemaCombinerOptionTypeValueWithDiffsProps> = memo<JsonSchemaCombinerOptionTypeValueWithDiffsProps>((props) => {
   const { node, layoutSide } = props
 
-  const leafNode = resolveCombinerOptionLeafNode(node)
+  const leafNode = JsonSchemaCombiner.Selection.resolveOptionLeafNode(node)
   const display = JsonSchemaRowDiffs.TypeLabel.resolveSideDisplay(leafNode, leafNode.meta(), layoutSide)
-  const suffix = resolveCombinerOptionTitleSuffix(node)
+  const suffix = JsonSchemaCombiner.NodeDiffs.resolveOptionTitleSuffix(node)
 
   return (
     <>

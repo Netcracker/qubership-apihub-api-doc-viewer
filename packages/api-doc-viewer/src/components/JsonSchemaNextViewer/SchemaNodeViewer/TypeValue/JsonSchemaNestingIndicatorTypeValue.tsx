@@ -1,7 +1,7 @@
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { FC, memo } from "react"
-import { isJsonSchemaNestingIndicatorHiddenForPlainNode } from "../../utils/node-type-checkers"
+import { JsonSchemaNodeTypeCheckers } from "../../utils/node-type-checkers"
 import { JSON_SCHEMA_NESTING_INDICATOR_TYPE_VALUE_COLOR } from "./json-schema-type-value-colors"
 import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
 
@@ -16,7 +16,7 @@ export type JsonSchemaNestingIndicatorTypeValueProps = {
 export const JsonSchemaNestingIndicatorTypeValue: FC<JsonSchemaNestingIndicatorTypeValueProps> = memo<JsonSchemaNestingIndicatorTypeValueProps>((props) => {
   const { node } = props
 
-  if (isJsonSchemaNestingIndicatorHiddenForPlainNode(node)) {
+  if (JsonSchemaNodeTypeCheckers.isNestingIndicatorHiddenForPlainNode(node)) {
     return null
   }
 

@@ -31,10 +31,11 @@ import { AdditionalInfoRow } from "@apihub/components/shared-components/Addition
 import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
 import { MarkdownTextRow } from "@apihub/components/shared-components/MarkdownTextRow/MarkdownTextRow"
 import { TextRowUsage } from "@apihub/components/shared-components/TextRow/types"
-import { resolveValidationRows } from "../utils/validation-rows"
-import { JsonSchemaValidationRowKey as ViewerValidationRowKey } from "../utils/validation-row-keys"
-import { sortValidationRowsByType } from "../utils/sort-validation-rows-by-type"
-import { isJsonSchemaAdditionalPropertiesNode } from "../utils/node-type-checkers"
+import {
+  JsonSchemaValidationRowKey as ViewerValidationRowKey,
+  JsonSchemaValidationRows,
+} from "../utils/validation-rows"
+import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import {
   ALLOWED_ADDITIONAL_PROPERTY_NAMES_LABEL,
   ITEMS_COUNT_LABEL,
@@ -156,7 +157,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   )
 
   const validationRows = useMemo(() => {
-    const baseRows = resolveValidationRows(typedValue)
+    const baseRows = JsonSchemaValidationRows.resolve(typedValue)
     if (!validationDiffsNode) {
       return baseRows
     }
@@ -174,7 +175,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
         values: [] as string[],
       }))
 
-    return sortValidationRowsByType([...baseRows, ...diffOnlyRows])
+    return JsonSchemaValidationRows.sortByType([...baseRows, ...diffOnlyRows])
   }, [validationDiffsNode, typedValue])
 
   // `propertyNames` constrains the containing object's property names, so legacy sources it from
@@ -182,7 +183,7 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   // as a validation of this node's own value. Diffs mirror `required`: parent-derived, taken from
   // the aggregated node.diffs of *this* (additionalProperties) node, not the parent's own diffs.
   const allowedAdditionalPropertyNames = useMemo(() => {
-    if (!isJsonSchemaAdditionalPropertiesNode(node)) {
+    if (!JsonSchemaNodeTypeCheckers.isAdditionalPropertiesNode(node)) {
       return undefined
     }
     // ITreeNode.parent is typed as the generic base ITreeNode, losing the JsonSchemaTreeNode

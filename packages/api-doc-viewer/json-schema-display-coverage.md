@@ -49,10 +49,10 @@ Raw / merged schema JSON
 
 | UI element | Condition | Source |
 | --- | --- | --- |
-| Root title (`Type: `) | root node | `resolveJsonSchemaNodeTitleDisplay` + `customizationOptions.headerRowTitle` |
-| Property name + required `*` | non-root property | `resolveJsonSchemaNodeTitleDisplay` |
+| Root title (`Type: `) | root node | `JsonSchemaNodeTitle.resolveDisplay` + `customizationOptions.headerRowTitle` |
+| Property name + required `*` | non-root property | `JsonSchemaNodeTitle.resolveDisplay` |
 | Structural title badges | `items`, `additionalItems`, `additionalProperties`, `patternProperty` | `JsonSchemaNodeTitle` → `UxBadge` |
-| Tuple item index | `item` kind | `[index]` via `resolveJsonSchemaNodeTitleDisplay` |
+| Tuple item index | `item` kind | `[index]` via `JsonSchemaNodeTitle.resolveDisplay` |
 | Type subheader | title row, except boolean `additionalProperties` | `resolveJsonSchemaTypeLabel(value, meta)` |
 | Broken `$ref` label | `meta.brokenRef` set | type label shows `$ref: …` |
 | **readOnly** / **writeOnly** / **deprecated** badges | meta flags | `DiffTags` (plain, no diff chrome) |

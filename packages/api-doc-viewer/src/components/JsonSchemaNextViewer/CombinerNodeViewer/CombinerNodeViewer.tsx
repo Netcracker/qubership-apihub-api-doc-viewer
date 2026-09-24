@@ -19,18 +19,8 @@ import {
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
 import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
-import {
-  applyCombinerSelection,
-  CombinerSelections,
-  resolveActiveLeafNode,
-  resolveCombinerSelectorLevels,
-} from "../utils/resolve-combiner-selection"
-import {
-  resolveCombinerBranchDisplayValue,
-  resolveCombinerLeafStructuralChildren,
-} from "../utils/resolve-combiner-display"
-import { buildCombinerSelectorOption, resolveCombinerOptionTitleSuffix } from "../utils/resolve-combiner-node-diffs"
-import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
+import { CombinerSelections, JsonSchemaCombiner } from "../utils/resolve-combiner"
+import { JsonSchemaNestingLevel } from "../utils/resolve-nesting-level"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { SchemaNodePlainContent } from "../SchemaNodeViewer/SchemaNodePlainContent"
 import { SchemaNodeTitleRow } from "../SchemaNodeViewer/SchemaNodeTitleRow"
@@ -57,17 +47,17 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
   const [selections, setSelections] = useState<CombinerSelections>(() => new Map())
 
   const selectorLevels = useMemo(
-    () => resolveCombinerSelectorLevels(node, selections),
+    () => JsonSchemaCombiner.Selection.resolveSelectorLevels(node, selections),
     [node, selections],
   )
 
   const activeLeaf = useMemo(
-    () => resolveActiveLeafNode(node, selections),
+    () => JsonSchemaCombiner.Selection.resolveActiveLeafNode(node, selections),
     [node, selections],
   )
 
   const activeLeafDisplayValue = useMemo(
-    () => resolveCombinerBranchDisplayValue(activeLeaf),
+    () => JsonSchemaCombiner.Display.resolveBranchValue(activeLeaf),
     [activeLeaf],
   )
 
@@ -77,7 +67,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
   )
 
   const leafChildren = useMemo(
-    () => resolveCombinerLeafStructuralChildren(activeLeaf),
+    () => JsonSchemaCombiner.Display.resolveLeafStructuralChildren(activeLeaf),
     // treeRevision: lazy materialization mutates tree in place
     // eslint-disable-next-line react-hooks/exhaustive-deps -- treeRevision
     [activeLeaf, treeRevision],
@@ -146,7 +136,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
    * option-button suffix logic since the check is identical.
    */
   const titleRowTypeValueSuffix = useMemo(
-    () => resolveCombinerOptionTitleSuffix(node),
+    () => JsonSchemaCombiner.NodeDiffs.resolveOptionTitleSuffix(node),
     [node],
   )
 
@@ -163,7 +153,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
    * lesson; plain mode has no colorizing diff to reduce the level either way).
    */
   const { beforeLevel: selectorBeforeLevel, afterLevel: selectorAfterLevel } = useMemo(
-    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, undefined),
+    () => JsonSchemaNestingLevel.resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, undefined),
     [currentBeforeLevel, currentAfterLevel],
   )
 
@@ -171,7 +161,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
     combinerNode: JsonSchemaTreeNode,
     option: SelectorOption<JsonSchemaTreeNode>,
   ) => {
-    setSelections((previousSelections) => applyCombinerSelection(
+    setSelections((previousSelections) => JsonSchemaCombiner.Selection.applySelection(
       node,
       previousSelections,
       combinerNode.id,
@@ -213,7 +203,7 @@ export const CombinerNodeViewer: FC<CombinerNodeViewerProps> = (props) => {
         <AsyncLevelContextProvider beforeLevel={selectorBeforeLevel} afterLevel={selectorAfterLevel}>
           {selectorLevels.map((selectorLevel) => {
             const options = selectorLevel.nestedNodes.map((nestedNode, index) => (
-              buildCombinerSelectorOption(
+              JsonSchemaCombiner.NodeDiffs.buildSelectorOption(
                 nestedNode,
                 index,
                 () => <JsonSchemaCombinerOptionTypeValue node={nestedNode} />,

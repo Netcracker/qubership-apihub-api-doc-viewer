@@ -14,7 +14,7 @@ import {
 import { OpenApiExtensionKey } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/types/extension-key"
 import { FC, useMemo } from "react"
 import { useJsonSchemaEmbeddingContext } from "../embedding/JsonSchemaEmbeddingContext"
-import { resolveNextLevelPair } from "../utils/resolve-nesting-level"
+import { JsonSchemaNestingLevel } from "../utils/resolve-nesting-level"
 
 export type JsonSchemaExtensionsSectionProps = {
   extensions: Record<OpenApiExtensionKey, unknown>
@@ -42,7 +42,7 @@ export const JsonSchemaExtensionsSection: FC<JsonSchemaExtensionsSectionProps> =
   const currentBeforeLevel = asyncLevel?.beforeLevel ?? level
   const currentAfterLevel = asyncLevel?.afterLevel ?? level
   const { beforeLevel: nextBeforeLevel, afterLevel: nextAfterLevel } = useMemo(
-    () => resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, extensionsRowColorizingDiff),
+    () => JsonSchemaNestingLevel.resolveNextLevelPair(currentBeforeLevel, currentAfterLevel, extensionsRowColorizingDiff),
     [currentBeforeLevel, currentAfterLevel, extensionsRowColorizingDiff],
   )
 
