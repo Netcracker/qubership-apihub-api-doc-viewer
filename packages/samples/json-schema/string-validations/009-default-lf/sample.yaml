@@ -1,5 +1,4 @@
 type: string
-default: |+
-  
+default: "\n"
 title: '[default] default = "\n"'
 
