@@ -226,7 +226,7 @@ diffMetaKeys)` is a no-op hook on the abstract base, already wired into each spe
 Use it — do not recompute descendant diffs a second time inside `aggregate()` — whenever a field
 needs to react to "are my children uniformly added/removed" (ddlapi's
 `DdlApiNodeDiffsAggregatorKindPropertyListSection`, async-api's binding/parameter/server kinds,
-JSON Schema's nesting-indicator row colorizing — see `api-doc-viewer-repo` skill,
+JSON Schema's nesting-indicator row colorizing — see `json-schema/json-schema-nesting-indicator-row-diffs.md`,
 **"Nesting-indicator row diffs"**). It exists per spec already; check for an override before
 adding new "count my descendant diffs" logic from scratch.
 
@@ -255,8 +255,8 @@ row still needs its **own** dedicated placement — reusing one generic member (
 `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` kept only for single-row callers, e.g. DDL) across
 several sibling rows silently collapses all their badges into whichever row's diff has the highest
 severity, with no type error and a badge whose `causedAt` path points at an unrelated field. See
-`api-doc-viewer-repo` skill, **"Per-row floating-badge severity"** in
-`json-schema-validation-rows.md` for the concrete bug and fix (per-validation-row-key placements
+**"Per-row floating-badge severity"** in
+`json-schema/json-schema-validation-rows.md` for the concrete bug and fix (per-validation-row-key placements
 via `JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS`, and the viewer-side `AdditionalInfoRow`
 `diffsSeverityPlacement` prop that makes the placement caller-selectable instead of hardcoded).
 
@@ -409,8 +409,8 @@ whole-node add/remove is present — do **not** suppress them.
 **Same rule applies one level up, in JSON Schema's `enum`/`examples`/`allowedAdditionalPropertyNames`
 rows:** once a row's own background already says "every item here was added/removed", each item's
 own chip must go plain too (no colored border, no muted font) — the chip highlight would be
-redundant on top of the row color. See `api-doc-viewer-repo` skill,
-`json-schema-validation-rows.md` → "Whole-list add/remove: row color suppresses per-chip highlight"
+redundant on top of the row color. See
+`json-schema/json-schema-validation-rows.md` → "Whole-list add/remove: row color suppresses per-chip highlight"
 for the JSON Schema-side implementation (`aggregateListRowColorizingDiff` in
 `node-diffs/kind-property.ts`, reusing `buildChipAddRemoveDiffMetadata` without `chipHighlight` —
 the same "plain, side-visibility-only" idea as `DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY`
@@ -423,7 +423,7 @@ Columns/Indexes/Parameters/Extensions/etc. across every spec) may only be painte
 removed when the owning node itself was wholly changed, **or** every single one of its children
 changed the same direction — never on a partial/mixed set, and never by checking only the children
 that happen to have a diff (an unchanged child is invisible to that check and must be counted
-separately). See `api-doc-viewer-repo` skill, `json-schema-nesting-indicator-row-diffs.md` →
+separately). See `json-schema/json-schema-nesting-indicator-row-diffs.md` →
 "Cross-API-type rule: uniform-children colorizing requires full coverage" for the full rule
 statement and a verified table of every implementation of it across JSON Schema, JSO, DDL API, and
 AsyncAPI.
@@ -540,7 +540,7 @@ When aggregating or resolving **constraint rows** (`validationRowDiffs`,
 `validationRowValueDiffs`, `validationRowColorizingDiffs`) — especially **value range** with OAS
 3.0/3.1 bound dialects — read:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
 
 Fix diff metadata in `kind-property.ts` and `value-range-diff-side-display.ts`; do not patch viewer
 components to compensate.
@@ -566,18 +566,18 @@ components to compensate.
   type-group order after combining — concatenation alone flips group order between a type change
   and its reverse (`string→number` vs `number→string`).
 
-Full detail: `agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`.
+Full detail: `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`.
 
 **Meta flags and parent `required`:** `resolveRequiredMetaDiff` in `kind-property.ts` reads parent
 crawl fragments — not picked `parent.value().required`. See
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`.
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md`.
 Unit tests: `json-schema-meta-flag-diffs.test.ts` (include OAS-normalized merge cases for Storybook parity).
 
 **Nesting-indicator row diffs:** `nestingIndicatorRowColorizingDiff` in `kind-any.ts`
 (`aggregateByDescendantDiffs` override) covers whole-node add/remove (including inherited
 parent/container) and uniform-children add/remove for the row `SchemaNodeViewer` renders above a
 node's children list. See
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`.
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md`.
 
 ## Cross-package boundary
 
