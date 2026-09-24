@@ -1,7 +1,7 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { Diff } from "@netcracker/qubership-apihub-api-diff";
 import { FC } from '../../../../../../node_modules/react';
-import { JsonSchemaNodeTitleDisplay } from "../utils/resolve-json-schema-node-title";
+import { JsonSchemaNodeTitleDisplay } from '../utils/resolve-json-schema-node-title';
 export type JsonSchemaNodeTitleProps = {
     display: JsonSchemaNodeTitleDisplay;
     required?: boolean;
