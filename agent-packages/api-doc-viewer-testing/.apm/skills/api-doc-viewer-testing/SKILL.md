@@ -81,6 +81,7 @@ that renders in dev **does not** prove the IT iframe URL is correct.
 | Story works in dev (9099) but IT fails | IT slug ≠ sample `caseId` / export slug mismatch | Compare IT id to `index.json` on **9009** |
 | `ConnectionClosedError` / suite failed to run | Chrome crash under parallel load | `--maxWorkers 1`; fix ID mismatches first |
 | Snapshot diff, height ~20px off | Layout/CSS drift, not a hang | Fix CSS or `regenerate-screenshots` — do not bump `failureThreshold` |
+| All suites pass, then `spawn wmic.exe ENOENT` + orphaned `node.exe` (Windows) | `start-server-and-test` 2.x uses `ps-tree` → `wmic.exe`, which newer Windows 11 no longer ships | Keep `start-server-and-test` at **3.x** (uses `tree-kill` / `taskkill`); do not downgrade |
 
 ### Story IDs — export slug, not sample `caseId`
 
