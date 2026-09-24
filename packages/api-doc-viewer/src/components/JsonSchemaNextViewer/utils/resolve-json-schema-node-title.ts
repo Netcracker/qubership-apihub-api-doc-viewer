@@ -4,9 +4,14 @@ import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-m
 import { BadgeKind, BADGE_KIND_ALTERNATIVE_INFO, BADGE_KIND_INFO } from "@apihub/components/kit/ux/UxBadge/types"
 import { isJsonSchemaRootNode } from "./node-type-checkers"
 
+const JsonSchemaNodeTitleVariants = {
+  BADGE: 'badge',
+  TEXT: 'text',
+} as const;
+
 export type JsonSchemaNodeTitleDisplay =
-  | { variant: "badge"; text: string; badgeKind: BadgeKind }
-  | { variant: "text"; text: string }
+  | { variant: typeof JsonSchemaNodeTitleVariants.BADGE; text: string; badgeKind: BadgeKind }
+  | { variant: typeof JsonSchemaNodeTitleVariants.TEXT; text: string }
 
 export type ResolveJsonSchemaNodeTitleOptions = {
   node: JsonSchemaTreeNode
@@ -15,6 +20,10 @@ export type ResolveJsonSchemaNodeTitleOptions = {
 }
 
 const DEFAULT_HEADER_ROW_TITLE = "Type: "
+const ADDITIONAL_PROPERTY_HEADER_ROW_TITLE = "additional property"
+const NO_ADDITIONAL_PROPERTIES_HEADER_ROW_TITLE = "no additional properties"
+const ADDITIONAL_ITEM_HEADER_ROW_TITLE = "additional item"
+const ITEM_HEADER_ROW_TITLE = "item"
 
 export function resolveJsonSchemaNodeTitleDisplay(
   options: ResolveJsonSchemaNodeTitleOptions,
@@ -23,38 +32,38 @@ export function resolveJsonSchemaNodeTitleDisplay(
   const kind = node.kind
 
   if (isJsonSchemaRootNode(node)) {
-    return { variant: "text", text: headerRowTitle ?? DEFAULT_HEADER_ROW_TITLE }
+    return { variant: JsonSchemaNodeTitleVariants.TEXT, text: headerRowTitle ?? DEFAULT_HEADER_ROW_TITLE }
   }
 
   if (kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES) {
     const fragment = meta?._fragment ?? node.value()
     if (fragment === false) {
       return {
-        variant: "badge",
-        text: "no additional properties",
+        variant: JsonSchemaNodeTitleVariants.BADGE,
+        text: NO_ADDITIONAL_PROPERTIES_HEADER_ROW_TITLE,
         badgeKind: BADGE_KIND_ALTERNATIVE_INFO,
       }
     }
-    return { variant: "badge", text: "additional property", badgeKind: BADGE_KIND_INFO }
+    return { variant: JsonSchemaNodeTitleVariants.BADGE, text: ADDITIONAL_PROPERTY_HEADER_ROW_TITLE, badgeKind: BADGE_KIND_INFO }
   }
 
   if (kind === JsonSchemaTreeNodeKinds.PATTERN_PROPERTY) {
-    return { variant: "badge", text: "additional property", badgeKind: BADGE_KIND_INFO }
+    return { variant: JsonSchemaNodeTitleVariants.BADGE, text: ADDITIONAL_PROPERTY_HEADER_ROW_TITLE, badgeKind: BADGE_KIND_INFO }
   }
 
   if (kind === JsonSchemaTreeNodeKinds.ITEMS) {
-    return { variant: "badge", text: "item", badgeKind: BADGE_KIND_INFO }
+    return { variant: JsonSchemaNodeTitleVariants.BADGE, text: ITEM_HEADER_ROW_TITLE, badgeKind: BADGE_KIND_INFO }
   }
 
   if (kind === JsonSchemaTreeNodeKinds.ADDITIONAL_ITEMS) {
-    return { variant: "badge", text: "additional item", badgeKind: BADGE_KIND_INFO }
+    return { variant: JsonSchemaNodeTitleVariants.BADGE, text: ADDITIONAL_ITEM_HEADER_ROW_TITLE, badgeKind: BADGE_KIND_INFO }
   }
 
   if (kind === JsonSchemaTreeNodeKinds.ITEM) {
-    return { variant: "text", text: `[${String(node.key)}]` }
+    return { variant: JsonSchemaNodeTitleVariants.TEXT, text: `[${String(node.key)}]` }
   }
 
-  return { variant: "text", text: String(node.key) }
+  return { variant: JsonSchemaNodeTitleVariants.TEXT, text: String(node.key) }
 }
 
 export function isJsonSchemaBooleanAdditionalPropertiesNode(
