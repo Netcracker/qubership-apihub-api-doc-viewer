@@ -4,7 +4,7 @@ import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-m
 import { BadgeKind, BADGE_KIND_ALTERNATIVE_INFO, BADGE_KIND_INFO } from "@apihub/components/kit/ux/UxBadge/types"
 import { isJsonSchemaRootNode } from "./node-type-checkers"
 
-const JsonSchemaNodeTitleVariants = {
+export const JsonSchemaNodeTitleVariants = {
   BADGE: 'badge',
   TEXT: 'text',
 } as const;
