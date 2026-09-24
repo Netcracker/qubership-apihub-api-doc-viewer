@@ -3,7 +3,7 @@ import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-meta"
 import { FC, memo } from "react"
-import { isJsonSchemaNestingIndicatorHiddenForSide } from "../../utils/node-type-checkers"
+import { JsonSchemaNodeTypeCheckers } from "../../utils/node-type-checkers"
 import { JSON_SCHEMA_NESTING_INDICATOR_TYPE_VALUE_COLOR } from "./json-schema-type-value-colors"
 import { JsonSchemaTypeValueSideDisplay } from "./JsonSchemaTypeValueSideDisplay"
 
@@ -20,7 +20,7 @@ export type JsonSchemaNestingIndicatorTypeValueWithDiffsProps = {
 export const JsonSchemaNestingIndicatorTypeValueWithDiffs: FC<JsonSchemaNestingIndicatorTypeValueWithDiffsProps> = memo<JsonSchemaNestingIndicatorTypeValueWithDiffsProps>((props) => {
   const { node, meta, layoutSide } = props
 
-  if (isJsonSchemaNestingIndicatorHiddenForSide(node, layoutSide)) {
+  if (JsonSchemaNodeTypeCheckers.isNestingIndicatorHiddenForSide(node, layoutSide)) {
     return null
   }
 

@@ -14,7 +14,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
-import { buildJsonSchemaTitleRowDiffProps } from "../utils/json-schema-title-row-diff-props"
+import { JsonSchemaTitleRowViewProps } from "../utils/json-schema-title-row-view-props"
 import { JsonSchemaTitleSubheaderWithDiffs } from "./JsonSchemaTitleSubheader"
 import { SchemaNodeTitleRowBase } from "./SchemaNodeTitleRowBase"
 
@@ -48,7 +48,7 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
   } = props
 
   const titleRowDiffProps = useMemo(
-    () => titleRowDiffPropsOverride ?? buildJsonSchemaTitleRowDiffProps(displayNode),
+    () => titleRowDiffPropsOverride ?? JsonSchemaTitleRowViewProps.buildRowDiffProps(displayNode),
     [displayNode, titleRowDiffPropsOverride],
   )
 

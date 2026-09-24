@@ -7,7 +7,7 @@ import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-m
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { FC } from "react"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
-import { buildJsonSchemaTagsWithDiffsProps } from "../utils/json-schema-tags-with-diffs-props"
+import { JsonSchemaTitleRowViewProps } from "../utils/json-schema-title-row-view-props"
 // NOTE: type-value rendering below deliberately does not reuse SubheaderValue/
 // SubheaderValueWithDiffs (see ./TypeValue) - to be reconciled with the shared subheader
 // stack later; not part of this change.
@@ -56,7 +56,7 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
 
 export const JsonSchemaTitleSubheaderWithDiffs: FC<JsonSchemaTitleSubheaderWithDiffsProps> = (props) => {
   const { meta, node, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix } = props
-  const tagsWithDiffsProps = buildJsonSchemaTagsWithDiffsProps(node)
+  const tagsWithDiffsProps = JsonSchemaTitleRowViewProps.buildTagsProps(node)
 
   return (
     <div className="flex flex-row items-center gap-2">

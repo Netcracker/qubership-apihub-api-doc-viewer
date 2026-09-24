@@ -20,8 +20,8 @@ async function waitForJsonSchemaDiffViewer() {
 
 // There is no `expandItems()` step anymore: once the `array` variant is selected, its `items`
 // child never becomes expandable in the current JsonSchemaNextViewer - a root-only combiner leaf
-// gets no structural children (resolveCombinerLeafStructuralChildren in
-// utils/resolve-combiner-display.ts falls through to childrenNodes(), which is empty for an
+// gets no structural children (JsonSchemaCombiner.Display.resolveLeafStructuralChildren in
+// utils/resolve-combiner.ts falls through to childrenNodes(), which is empty for an
 // array node), so no expander caret ever renders to click. This is the same "root-level array
 // renders as a summary only" gap documented in
 // packages/samples/json-schema-diffs/extensions/README.md, confirmed here to also apply to a
