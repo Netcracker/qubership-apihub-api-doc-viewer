@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react';
-import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 import { ComponentProps } from '../../../../node_modules/react';
+import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
     schemaText: string;
     componentsText?: string;

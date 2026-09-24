@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export declare function safePropertyIn(value: unknown, key: PropertyKey, context?: string): boolean;
 export declare class ObjectUtils {
     static get(source: unknown, path?: PropertyKey[]): unknown;
 }

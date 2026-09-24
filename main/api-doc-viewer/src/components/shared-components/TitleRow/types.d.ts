@@ -24,6 +24,7 @@ export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
     diff?: ChangedPropertyMetaData;
     descendantDiffs?: NodeDescendantDiffs;
     diffsSeverities?: NodeDiffsSeverities;
+    hideLevelIndicatorWhenSideEmpty?: boolean;
 };
 export type TitleRowContentProps = TitleRowProps & {
     layoutSide: LayoutSide;
