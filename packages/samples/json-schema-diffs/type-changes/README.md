@@ -560,7 +560,7 @@ Path: `type-changes/object-additional-properties/` (52 cases)
 | `051-one-of-object-variant-change-additional-properties-object-to-false` | OneOf variant: changed additionalProperties: object schema → false |
 | `052-one-of-object-variant-change-additional-properties-false-to-object` | OneOf variant: changed additionalProperties: false → object schema |
 
-### Object Additional Properties OAS 3.1
+### Object Properties And Additional Properties/Object Additional Properties OAS 3.1
 
 Path: `type-changes/object-additional-properties/` (11 cases)
 
