@@ -2,7 +2,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import {
   ChangedPropertyMetaData,
@@ -12,7 +12,6 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, memo, useMemo } from "react"
 import { DiffFloatingBadgeWrapper } from "../../shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
-import { OneSideLayout } from "../../shared-components/Layout/OneSideLayout"
 import { SideBySideLayout } from "../../shared-components/Layout/SideBySideLayout"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import { DEFAULT_SCHEMA_NAME } from "../consts"
@@ -116,12 +115,6 @@ export const DdlSchemaNameBlockWithDiffs: FC<DdlSchemaNameBlockWithDiffsContaine
             right={<DdlSchemaNameBlockSideContent {...sideProps(CHANGED_LAYOUT_SIDE)} />}
           />
         </DiffFloatingBadgeWrapper>
-      )
-    case DOCUMENT_LAYOUT_MODE:
-      return (
-        <OneSideLayout
-          content={<DdlSchemaNameBlockSideContent {...sideProps(CHANGED_LAYOUT_SIDE)} />}
-        />
       )
     default:
       return null
