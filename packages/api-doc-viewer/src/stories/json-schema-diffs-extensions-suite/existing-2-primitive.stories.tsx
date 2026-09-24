@@ -48,3 +48,5 @@ export const Case_09_added_and_removed: Story = createCaseStory("09-added-and-re
 export const Case_10_removed_and_replaced: Story = createCaseStory("10-removed-and-replaced");
 export const Case_11_added_and_replaced: Story = createCaseStory("11-added-and-replaced");
 export const Case_12_both_replaced: Story = createCaseStory("12-both-replaced");
+export const Case_13_both_added: Story = createCaseStory("13-both-added");
+export const Case_14_both_removed: Story = createCaseStory("14-both-removed");

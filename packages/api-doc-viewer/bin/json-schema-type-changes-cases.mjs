@@ -3134,8 +3134,8 @@ export const STORY_SUITES = [
   },
   {
     suiteKey: "object-additional-properties-oas-3-1",
-    title: "JSON Schema Diffs Suite/Object Additional Properties OAS 3.1",
-    metaKebab: "json-schema-diffs-suite-object-additional-properties-oas-3-1",
+    title: "JSON Schema Diffs Suite/Object Properties And Additional Properties/Object Additional Properties OAS 3.1",
+    metaKebab: "json-schema-diffs-suite-object-properties-and-additional-properties-object-additional-properties-oas-3-1",
     globPath: "object-additional-properties",
     storyFileName: "object-additional-properties-oas-3-1.stories.tsx",
     testFileName: "object-additional-properties-oas-3-1.it-test.ts",
