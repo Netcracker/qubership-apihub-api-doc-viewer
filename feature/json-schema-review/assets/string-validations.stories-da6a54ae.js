@@ -31,13 +31,11 @@ example: "\\r"
 title: '[example] example = "\\r"'
 
 `,aa=`type: string
-default: |+
-  
+default: "\\n"
 title: '[default] default = "\\n"'
 
 `,sa=`type: string
-example: |+
-  
+example: "\\n"
 title: '[example] example = "\\n"'
 
 `,ta=`type: string
@@ -70,8 +68,7 @@ examples:
   - "     "
   - "\\r\\n"
   - "\\r"
-  - |+
-    
+  - "\\n"
   - "\\t"
   - "    value with whitespaces around     "
   - just a value
@@ -83,8 +80,7 @@ enum:
   - "     "
   - "\\r\\n"
   - "\\r"
-  - |+
-    
+  - "\\n"
   - "\\t"
   - "    value with whitespaces around     "
   - just a value

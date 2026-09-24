@@ -1,4 +1,4 @@
-import{c as fe,a as Ie,d as Pe,b as Fe}from"./ddl-samples-common-509df314.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-30ab278b.js";import"./UxBadge-3d9cd0ec.js";import"./IndexesNodeViewer-bc39d3de.js";import"./build-from-ddl-browser-461ad47b.js";import"./iframe-4a43dbe5.js";import"../sb-preview/runtime.js";const Ue=`CREATE SCHEMA custom;
+import{c as fe,a as Ie,d as Pe,b as Fe}from"./ddl-samples-common-500d0918.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./DdlTableViewer-30ab278b.js";import"./UxBadge-3d9cd0ec.js";import"./IndexesNodeViewer-bc39d3de.js";import"./build-from-ddl-browser-901c6a3e.js";import"./iframe-799aa71b.js";import"../sb-preview/runtime.js";const Ue=`CREATE SCHEMA custom;
 
 CREATE TABLE custom.parent (
   id bigint PRIMARY KEY
