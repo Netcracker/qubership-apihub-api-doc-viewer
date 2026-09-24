@@ -1,6 +1,4 @@
-import { takeDiffSideBorderShadowColor } from "@apihub/utils/diffs/take-diff-side-border-shadow-color"
-import { takeDiffSideIsFontMuted } from "@apihub/utils/diffs/take-diff-side-is-font-muted"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
+import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { ListSideItem } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
@@ -22,18 +20,21 @@ export const JsonSchemaValidationChips: FC<JsonSchemaValidationChipsProps> = mem
 
   return (
     <div className="flex flex-wrap items-start gap-2">
-      {sideItems.map((sideItem, index) => (
-        <AdditionalInfoPiece
-          key={`${sideItem.text}-${index}`}
-          isVisible={true}
-          value={sideItem.text}
-          usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
-          textHighlighterColor={takeDiffSideTextHighlighterColor(sideItem.diff, layoutSide)}
-          borderShadowColor={takeDiffSideBorderShadowColor(sideItem.diff, layoutSide)}
-          isFontMuted={takeDiffSideIsFontMuted(sideItem.diff, layoutSide)}
-          isEmptyStringPlaceholder={JsonSchemaRowDiffs.Format.isEmptyStringDisplayValue(sideItem.text)}
-        />
-      ))}
+      {sideItems.map((sideItem, index) => {
+        const style = resolveDiffSideStyle(sideItem.diff, layoutSide)
+        return (
+          <AdditionalInfoPiece
+            key={`${sideItem.text}-${index}`}
+            isVisible={true}
+            value={sideItem.text}
+            usage={AdditionalInfoPieceUsage.JsonSchemaValidation}
+            textHighlighterColor={style.textHighlighterColor}
+            borderShadowColor={style.borderShadowColor}
+            isFontMuted={style.isFontMuted}
+            isEmptyStringPlaceholder={JsonSchemaRowDiffs.Format.isEmptyStringDisplayValue(sideItem.text)}
+          />
+        )
+      })}
     </div>
   )
 })
