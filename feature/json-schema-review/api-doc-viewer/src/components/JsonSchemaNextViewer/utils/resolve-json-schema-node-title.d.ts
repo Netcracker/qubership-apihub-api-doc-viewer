@@ -1,12 +1,16 @@
 import { JsonSchemaTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
 import { JsonSchemaTreeNodeMeta } from '../../../../../next-data-model/src/model/json-schema/types/node-meta';
 import { BadgeKind } from '../../kit/ux/UxBadge/types';
+declare const JsonSchemaNodeTitleVariants: {
+    readonly BADGE: "badge";
+    readonly TEXT: "text";
+};
 export type JsonSchemaNodeTitleDisplay = {
-    variant: "badge";
+    variant: typeof JsonSchemaNodeTitleVariants.BADGE;
     text: string;
     badgeKind: BadgeKind;
 } | {
-    variant: "text";
+    variant: typeof JsonSchemaNodeTitleVariants.TEXT;
     text: string;
 };
 export type ResolveJsonSchemaNodeTitleOptions = {
@@ -16,3 +20,4 @@ export type ResolveJsonSchemaNodeTitleOptions = {
 };
 export declare function resolveJsonSchemaNodeTitleDisplay(options: ResolveJsonSchemaNodeTitleOptions): JsonSchemaNodeTitleDisplay;
 export declare function isJsonSchemaBooleanAdditionalPropertiesNode(node: JsonSchemaTreeNode, meta: JsonSchemaTreeNodeMeta | null | undefined): boolean;
+export {};
