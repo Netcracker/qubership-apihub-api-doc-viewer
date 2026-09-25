@@ -3,15 +3,20 @@
 A table-level constraint that uniquely identifies each row. One per table; backed by an implicit
 unique index; its columns are implicitly NOT NULL.
 
-## Reference
+## Real-world usage
 
-| Case | Frequency |
-| --- | --- |
-| Single-column integer or UUID key named `id` | typical |
-| Auto-increment (`SERIAL`, `IDENTITY`) | typical |
-| Composite key in a junction table (`(user_id, role_id)`) | common for association tables |
-| Composite natural key in an entity table | less typical |
-| No primary key | less typical |
+How often each pattern appears in real-world schemas, on the scale defined in
+[../features/doc-view.md](../features/doc-view.md#prevalence-scale), and how the doc view handles it.
+Table and column names come from the fixture in the **Fixture** column (relative to
+`packages/samples/ddlapi/`); **none** marks a pattern without a fixture yet.
+
+| Pattern | Prevalence | In the doc view | Fixture |
+| --- | --- | --- | --- |
+| Single-column key `id`: integer (`users.id`) or UUID (`petstore.animals.id`) | Common | **PK** badge on the column | `e2e-scenarios/users`, `e2e-scenarios/petstore` |
+| Auto-increment key: `IDENTITY` (`users.id`) or `SERIAL` (`t.id`) | Common | **PK** badge; **generated** for `IDENTITY` | `e2e-scenarios/users`, `column-constraints/generated-serial` |
+| Composite key in a junction table (`employees_projects`: `employee_id`, `project_id`) | Occasional | **PK** badge on each key column | `e2e-scenarios/employees_projects` |
+| Composite natural key in an entity table | Rare | **PK** badge on each key column | none |
+| No primary key | Occasional | No **PK** badge | `indexes/one-column` |
 
 ## Display
 

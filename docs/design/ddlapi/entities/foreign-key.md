@@ -3,16 +3,22 @@
 A constraint linking referencing columns of this table to referenced columns of another table
 (or of the same table).
 
-## Reference
+## Real-world usage
 
-| Case | Frequency |
-| --- | --- |
-| Single-column FK to the `id` of another table | typical |
-| No explicit ON DELETE / ON UPDATE action | typical |
-| ON DELETE CASCADE | common |
-| ON DELETE SET NULL | less typical |
-| Composite FK; FK to a non-PK unique column; self-referential FK | less typical |
-| Several FKs to the same target table | rare |
+How often each pattern appears in real-world schemas, on the scale defined in
+[../features/doc-view.md](../features/doc-view.md#prevalence-scale), and how the doc view handles it.
+Table and column names come from the fixture in the **Fixture** column (relative to
+`packages/samples/ddlapi/`); **none** marks a pattern without a fixture yet.
+
+| Pattern | Prevalence | In the doc view | Fixture |
+| --- | --- | --- | --- |
+| Single-column FK to the `id` of another table (`employees.user_id` → `users.id`) | Common | **FK** badge and link `users.id` | `e2e-scenarios/employees` |
+| No explicit ON DELETE / ON UPDATE action (`employees.user_id`) | Common | Nothing — actions are never shown | `e2e-scenarios/employees` |
+| FK to a table in another schema (`t.ref_id` → `custom.parent.id`) | Occasional | Link text `custom.parent.id` | `column-constraints/foreign-key-custom-schema` |
+| ON DELETE CASCADE | Occasional | Not shown | none |
+| ON DELETE SET NULL | Rare | Not shown | none |
+| Composite FK, FK to a non-PK unique column, or self-referential FK | Rare | One **FK** badge and link per referencing column | none |
+| Several FKs from one column or to the same target table | Rare | One **FK** badge and link per target | none |
 
 ## Display
 

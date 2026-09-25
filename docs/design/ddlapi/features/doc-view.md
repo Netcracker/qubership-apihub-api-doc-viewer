@@ -11,8 +11,8 @@ readability, not completeness. The full list of what is and is not shown is in
 
 ## Principles
 
-1. **Typical cases are immediately visible; rare cases are secondary or omitted.** Frequencies per
-   entity are recorded in [../entities/](../entities/).
+1. **Common patterns are immediately visible; rare ones are secondary or omitted.** Each entity page
+   rates its patterns on the [prevalence scale](#prevalence-scale).
 2. **Show deviations from defaults.** SQL columns are nullable by default, so only `not null` is
    marked; `public` is the default schema, so its name is hidden.
 3. **Identifiers are shown exactly as stored.** Names and type names come from ddlapi without case
@@ -21,6 +21,17 @@ readability, not completeness. The full list of what is and is not shown is in
    components as the JSON Schema viewer.
 5. **Details live in detailed mode.** Descriptions and additional-info rows (`Values`, `Default`,
    `As`) appear only in `DETAILED_DISPLAY_MODE`; simple mode shows title rows only.
+
+## Prevalence scale
+
+Entity pages rate how often a pattern appears in real-world schemas. The rating is a design
+judgement, not a measurement; it decides how prominent a pattern is in the doc view.
+
+| Prevalence | Meaning | Display priority |
+| --- | --- | --- |
+| **Common** | Present in most schemas and most tables | Readable at a glance on the column or index row |
+| **Occasional** | Present in many schemas, but not in most tables | Shown correctly; may sit in a follow-on row or detailed mode |
+| **Rare** | Specialized schemas or dialect-specific features | May be shown with less detail or omitted |
 
 ## Layout
 

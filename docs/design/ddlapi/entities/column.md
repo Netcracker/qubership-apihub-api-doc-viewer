@@ -3,19 +3,26 @@
 A named, typed slot of a table row. Can take part in the primary key, foreign keys, unique
 indexes, and non-unique indexes at the same time.
 
-## Reference
+## Real-world usage
 
-| Case | Frequency |
-| --- | --- |
-| NOT NULL on core columns (`id`, `created_at`, status) | typical |
-| Nullable optional attributes (`description`, `deleted_at`) | typical |
-| Integer, varchar/text, boolean, timestamp, decimal types | typical |
-| UUID type | common in modern applications |
-| Default on timestamps, booleans, status fields (literal or function call) | common |
-| Enum type (PostgreSQL) | present, not universal |
-| JSON / JSONB column | increasingly common |
-| Generated column | less typical |
-| Binary, spatial, array types | rare in OLTP schemas |
+How often each pattern appears in real-world schemas, on the scale defined in
+[../features/doc-view.md](../features/doc-view.md#prevalence-scale), and how the doc view handles it.
+Table and column names come from the fixture in the **Fixture** column (relative to
+`packages/samples/ddlapi/`); **none** marks a pattern without a fixture yet.
+
+| Pattern | Prevalence | In the doc view | Fixture |
+| --- | --- | --- | --- |
+| Integer, character varying, character, boolean, timestamp types (`users`) | Common | Type label with parameters (`character varying (30)`) | `e2e-scenarios/users`, `column-types` |
+| NOT NULL on required columns (`users.login`, `users.registration_date`) | Common | **not null** badge (hidden by **PK**) | `e2e-scenarios/users` |
+| Nullable optional columns (`users.email`, `projects.description`) | Common | Nothing — nullable is the SQL default | `e2e-scenarios/users`, `e2e-scenarios/projects` |
+| Default value: literal (`users.enabled` = `true`) or function call (`petstore.animals.id` = `gen_random_uuid()`) | Common | `Default` row (detailed mode) | `e2e-scenarios/users`, `e2e-scenarios/petstore` |
+| UUID type (`petstore.animals.id`) | Common | Type label `uuid` | `e2e-scenarios/petstore`, `column-types/uuid` |
+| Enum type (`t.feeling` of type `mood`) | Occasional | Enum type name as the label, `Values` row (detailed mode) | `display-mode-simple/enum-values`, `column-types/enum` |
+| JSON / JSONB column | Occasional | Type label only; the content is opaque | `column-types/json`, `column-types/jsonb` |
+| Identity column (`users.id`) | Occasional | **generated** badge | `e2e-scenarios/users`, `column-constraints/generated-identity` |
+| Expression-generated column (`t.label`) | Occasional | **generated** badge, `As` row (detailed mode) | `column-constraints/generated-expression` |
+| Binary (`petstore.animals.photo`) and geometric types | Rare | Type label only | `e2e-scenarios/petstore`, `column-types/point` |
+| Array types | Rare | Type label only | none |
 
 ## Display
 
