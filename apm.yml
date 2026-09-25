@@ -10,7 +10,6 @@ targets:
 
 dependencies:
   apm:
-    - ./agent-packages/api-doc-viewer-repo
     - ./agent-packages/api-doc-viewer-authoring
     - ./agent-packages/api-doc-viewer-using
     - ./agent-packages/next-data-model-authoring

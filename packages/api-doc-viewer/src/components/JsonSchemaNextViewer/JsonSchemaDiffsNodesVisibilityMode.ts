@@ -5,7 +5,7 @@
  * the underlying concept is modeled here as a proper mode (mirroring `LayoutMode`/`DisplayMode`)
  * because a third mode is already planned: `show-only-nodes-with-filtered-changes` (hide a node
  * unless it has a diff whose type is in a caller-supplied `diffTypes` list). See
- * `refactoring-notes.md` (agent-packages/api-doc-viewer-repo) for the full design analysis,
+ * `refactoring-notes.md` (agent-packages/api-doc-viewer-authoring) for the full design analysis,
  * including how much of that third mode's data-layer plumbing already exists today.
  */
 export const SHOW_ALL_NODES_MODE = "show-all"

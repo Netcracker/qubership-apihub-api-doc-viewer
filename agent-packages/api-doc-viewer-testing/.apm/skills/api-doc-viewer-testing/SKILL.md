@@ -221,7 +221,7 @@ repo (compatibility-suite `*.generated.stories.tsx` /
 `.generated.stories.tsx`, or `.generated.it-test.ts` — those names are gitignored and
 the output is internal, not external. Write normal committed filenames instead (e.g.
 `value-range-diff-case-definitions.ts`, `number-validation-value-range.stories.tsx`).
-See `api-doc-viewer-repo` skill — **Generated filenames**.
+See root `AGENTS.md` — **Generated filenames**.
 
 Local fixture suites (JSO, AsyncAPI, DDL, JSON Schema diffs under `packages/samples/`)
 use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regenerates them.

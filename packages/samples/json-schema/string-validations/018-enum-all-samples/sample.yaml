@@ -4,8 +4,7 @@ enum:
   - "     "
   - "\r\n"
   - "\r"
-  - |+
-    
+  - "\n"
   - "\t"
   - "    value with whitespaces around     "
   - just a value

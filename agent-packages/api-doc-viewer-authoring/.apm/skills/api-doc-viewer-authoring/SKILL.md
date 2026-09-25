@@ -155,7 +155,7 @@ commit the result.
 Constraint rows in `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` (`Value range`, `Value
 length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
 
 Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
 rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
@@ -173,7 +173,7 @@ tests and CSS imports** section.
 Type-flag diffs (`readOnly`, `writeOnly`, `deprecated`, parent **`required`**) use title-row and
 subheader chrome — not validation rows. Parent-scoped `required` resolution and viewer wiring traps:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md`
 
 Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `DiffTags` via
 `buildJsonSchemaDiffTagsProps` — not the type-label subheader alone.
@@ -189,7 +189,7 @@ and toggle `visibility` on its content, not conditional unmounting. A `type`-fie
 crosses the primitive/non-primitive boundary (`string`→`array`, …) needs single-sided add/remove
 colorizing, not the default symmetric replace — see session lessons:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md`
 
 **Shared type-value rendering:** the title row, the nesting-indicator row, and combiner-selector
 option buttons (`CombinerNodeViewer.tsx` → `CombinerSelectorRow` → `shared-components/Selector`)
@@ -221,7 +221,7 @@ for one call site, add a rule scoped through an ancestor class that call site al
 `(0,3,0)`) — mirror the existing `.title-row-content > .json-schema-property-row-body` precedent a
 few lines above the base rule, don't reach for `!important` or an inline `style`. A more scalable
 CSS-custom-property-based alternative was analyzed but deliberately deferred — see
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/refactoring-notes.md` (entry 1)
+`agent-packages/api-doc-viewer-authoring/.apm/skills/api-doc-viewer-authoring/refactoring-notes.md` (entry 1)
 for the trade-off and when to reconsider it.
 
 ## DDL viewer notes
@@ -354,7 +354,7 @@ spacer (same horizontal footprint as the expander column). This is not
 `Default`, generated `As`), all still passing `diffsSeverities={node.diffsSeverities}` with no
 placement override, so they all read the same `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` key
 and can show the same wrong badge on rows that didn't actually change — the same bug JSON Schema's
-validation rows had (see `json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
+validation rows had (see `next-data-model-authoring` → `json-schema/json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
 It has not been fixed here. `AdditionalInfoRow` now accepts an optional `diffsSeverityPlacement`
 prop (defaults to the legacy `AdditionalInfoRow` member, so existing DDL callers are unaffected) —
 fixing this means adding dedicated `NodeDiffsSeverityPlacemennt` members (e.g. a DDL `DefaultRow` /
