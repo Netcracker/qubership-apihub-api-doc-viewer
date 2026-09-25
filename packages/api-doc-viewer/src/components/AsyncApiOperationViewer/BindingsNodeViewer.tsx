@@ -19,7 +19,8 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow";
 import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { isBindingNodeWithDiffs, isBindingsNodeWithDiffs } from "../shared-utilities/tree-node-guards";
-import { Selector, SelectorOption } from "./Selector/Selector";
+import { Selector, SelectorOption } from "@apihub/components/shared-components/Selector/Selector"
+import { SelectorVariant } from "@apihub/components/shared-components/Selector/types"
 import { SizeVariant } from "./types/SizeVariant";
 
 type BindingsNodeViewerProps = WithPrecededByProps & {
@@ -37,7 +38,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   const bindingsNodeMeta = node.meta()
   const brokenRef = bindingsNodeMeta?.brokenRef
 
-  const [selectedBinding, setSelectedBinding] = useState<SelectorOption | null>(null)
+  const [selectedBinding, setSelectedBinding] = useState<SelectorOption<AsyncApiTreeNode> | null>(null)
   const bindingNodes: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.nestedNodes()
   const bindingSelectorOptions = useMemo(() => (
     bindingNodes
@@ -86,7 +87,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         options={bindingSelectorOptions}
         selectedOption={selectedBinding}
         onSelectOption={setSelectedBinding}
-        variant={SizeVariant.SECONDARY}
+        variant={SelectorVariant.Secondary}
         // diffs
         layoutSide={layoutSide}
       />

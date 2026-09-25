@@ -3,7 +3,7 @@ import { isDetailedDisplayMode } from "@apihub/next-data-model/model/abstract/gu
 import { NODE_LEVEL_DIFF_KEY, ChangedPropertyMetaData } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { LayoutSide } from "@apihub/next-data-model/model/abstract/layout-side"
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
-import { resolveFieldSideText } from "@apihub/next-data-model/model/ddlapi/tree-with-diffs/list-side-display"
+import { resolveFieldSideText } from "@apihub/next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import {
   takeColumnDefaultValueDiff,
   takeColumnDefaultValueRowColorizingDiff,

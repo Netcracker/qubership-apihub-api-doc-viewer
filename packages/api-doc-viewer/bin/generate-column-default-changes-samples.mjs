@@ -9,8 +9,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, "..");
 const groupId = "column-default-changes";
 const samplesRoot = path.resolve(packageRoot, "../samples/ddlapi-diffs", groupId);
-const storiesOut = path.resolve(packageRoot, "src/stories/ddlapi-diffs-suite/column-default-changes-samples.stories.tsx");
-const testsOut = path.resolve(packageRoot, "src/it/ddlapi-diffs-suite/column-default-changes-samples.it-test.ts");
+const storiesOut = path.resolve(packageRoot, "src/stories/ddlapi-diffs-suite/column-default-changes.stories.tsx");
+const testsOut = path.resolve(packageRoot, "src/it/ddlapi-diffs-suite/column-default-changes.it-test.ts");
 
 const metaTitle = "DDL API Diffs Suite/Column Default Changes Samples";
 const metaKebab = "ddl-api-diffs-suite-column-default-changes-samples";
@@ -301,7 +301,7 @@ const testCases = cases
 
 const testsSource = `/**
  * Screenshot tests for ${metaTitle} stories.
- * Edit together with src/stories/ddlapi-diffs-suite/column-default-changes-samples.stories.tsx.
+ * Edit together with src/stories/ddlapi-diffs-suite/column-default-changes.stories.tsx.
  * SQL fixtures: packages/api-doc-viewer/bin/generate-column-default-changes-samples.mjs
  */
 import path from "path";

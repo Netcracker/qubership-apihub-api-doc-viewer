@@ -43,8 +43,10 @@ import {
   ADDITIONAL_INFO_LABEL_VALUES,
 } from "./consts"
 import { ColumnTypeLabelWithDiffs } from "./ColumnTypeLabelWithDiffs/ColumnTypeLabelWithDiffs"
-import { AdditionalInfoRow } from "./AdditionalInfoRow/AdditionalInfoRow"
-import { AdditionalInfoPiece } from "./AdditionalInfoPiece/AdditionalInfoPiece"
+import { AdditionalInfoRow } from "@apihub/components/shared-components/AdditionalInfoRow/AdditionalInfoRow"
+import { AdditionalInfoRowUsage } from "@apihub/components/shared-components/AdditionalInfoRow/types"
+import { AdditionalInfoPiece } from "@apihub/components/shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
+import { AdditionalInfoPieceUsage } from "@apihub/components/shared-components/AdditionalInfoPiece/types"
 
 type ColumnNodeViewerWithDiffsProps = WithPrecededByProps & {
   node: DdlApiTreeNodeWithDiffs<typeof DdlApiTreeNodeKinds.COLUMN>
@@ -231,6 +233,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
       )}
       {visibility.showEnumValuesRow && (
         <AdditionalInfoRow
+          usage={AdditionalInfoRowUsage.DdlApiProperty}
           data-precededby={additionalInfoPrecededBy}
           {...{ [ATTRIBUTE_DDL_LIST_LAST_ROW]: listLastRowFlags.isEnumAdditionalInfoListLastRow || undefined }}
           label={ADDITIONAL_INFO_LABEL_VALUES}
@@ -242,6 +245,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
       )}
       {visibility.showDefaultRow && (
         <AdditionalInfoRow
+          usage={AdditionalInfoRowUsage.DdlApiProperty}
           data-precededby={
             resolveColumnAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "default")
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW
@@ -257,6 +261,7 @@ export const ColumnNodeViewerWithDiffs: FC<ColumnNodeViewerWithDiffsProps> = (pr
       )}
       {visibility.showGeneratedRow && (
         <AdditionalInfoRow
+          usage={AdditionalInfoRowUsage.DdlApiProperty}
           data-precededby={
             resolveColumnAdditionalInfoRowUsesAfterRowPrecededBy(visibility, "generated")
               ? PrecededBy.DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW

@@ -16,7 +16,7 @@ import {
 } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
-import { resolveListSideItems } from "./list-side-display"
+import { resolveListSideItems, isDiffSideContentVisible, isDiffSideHeaderVisible, takeAddRemoveDiffIfPresent } from "../../abstract/tree-with-diffs/list-side-display"
 import {
   DDL_COLUMN_FLAG_DIFF_KEYS,
   DDL_INDEX_FLAG_DIFF_KEYS,
@@ -69,10 +69,16 @@ export type {
 export { isNamedIndexTitle, DDL_UNNAMED_INDEX_TITLE } from "../../../shared/ddlapi/index-title"
 
 export type {
-  DdlCommaSeparatedListParenthesesStyle,
-  DdlListSideItem,
-  DdlListSideSegment,
-} from "./list-side-display"
+  CommaSeparatedListParenthesesStyle as DdlCommaSeparatedListParenthesesStyle,
+  ListSideItem as DdlListSideItem,
+  ListSideSegment as DdlListSideSegment,
+  SideListDisplay,
+  SideListDisplayKind,
+} from "../../abstract/tree-with-diffs/list-side-display"
+
+export {
+  SideListDisplayKinds,
+} from "../../abstract/tree-with-diffs/list-side-display"
 
 export { formatForeignKeyTargetKey } from "../../../shared/ddlapi/foreign-key-target-key"
 
@@ -158,44 +164,21 @@ export function takeDdlPropertyTitleRowDiff(
 export function takeDdlPropertyNodeDiffIfPresent(
   node: DdlApiPropertyNodeWithDiffs,
 ) {
-  const diff = node.diffs[NODE_LEVEL_DIFF_KEY]
-  if (!diff) {
-    return undefined
-  }
-  if (isDiffAdd(diff.data) || isDiffRemove(diff.data)) {
-    return diff
-  }
-  return undefined
+  return takeAddRemoveDiffIfPresent(node.diffs[NODE_LEVEL_DIFF_KEY])
 }
 
 export function isDdlPropertySubheaderVisible(
   nodeLevelDiff: ChangedPropertyMetaData | undefined,
   layoutSide: LayoutSide,
 ): boolean {
-  if (!nodeLevelDiff) {
-    return true
-  }
-
-  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
-    ? nodeLevelDiff.styles.before
-    : nodeLevelDiff.styles.after
-
-  return styles.isHeaderVisible
+  return isDiffSideHeaderVisible(nodeLevelDiff, layoutSide)
 }
 
 export function isDdlPropertyRowContentVisible(
   nodeLevelDiff: ChangedPropertyMetaData | undefined,
   layoutSide: LayoutSide,
 ): boolean {
-  if (!nodeLevelDiff) {
-    return true
-  }
-
-  const styles = layoutSide === ORIGIN_LAYOUT_SIDE
-    ? nodeLevelDiff.styles.before
-    : nodeLevelDiff.styles.after
-
-  return styles.isContentVisible
+  return isDiffSideContentVisible(nodeLevelDiff, layoutSide)
 }
 
 export type DdlApiPropertyListSectionNodeWithDiffs =
