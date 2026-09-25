@@ -1,6 +1,6 @@
 /**
  * Programmatic combiner (anyOf) diff stories.
- * See src/stories/json-schema-diffs-suite/combiner-diff-case-definitions.ts and ../../../samples/combiners-cases.md.
+ * See src/stories/json-schema-diffs-suite/combiner-diff-case-definitions.ts and packages/samples/json-schema-diffs/{oneOf,anyOf,allOf}/README.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-diffs-suite-stories.mjs
  */
 import type { Meta, StoryObj } from "@storybook/react";

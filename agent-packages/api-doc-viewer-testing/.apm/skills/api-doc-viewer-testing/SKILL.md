@@ -12,6 +12,20 @@ Storybook build.
 **not** name or reference consuming applications, their repositories, file
 paths, or UI components in this skill.
 
+## Test-first workflow
+
+Features are built test-first (`docs/design/README.md` → Workflow):
+
+1. Read the design for the feature: `docs/design/<api-type>/display-coverage.md` and
+   `features/`. Cases assert what the design says is displayed — never items listed as not
+   displayed.
+2. Add fixtures under `packages/samples/` and update the catalogue `README.md` next to them
+   (layout and required sections: `packages/samples/README.md`).
+3. Add stories and paired screenshot ITs; add data-layer unit tests in
+   `packages/next-data-model/tests/`.
+4. Hand over to `next-data-model-authoring` / `api-doc-viewer-authoring` and repeat until the
+   developer confirms the feature is done.
+
 ## Commands
 
 From `packages/api-doc-viewer/`:

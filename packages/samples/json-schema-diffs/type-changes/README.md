@@ -7,7 +7,7 @@ JSON Schema documents.
 - Total cases: 507
 - Generator: `packages/api-doc-viewer/bin/generate-json-schema-type-changes-samples.mjs`
 
-## Sub-suites
+## Cases
 
 ### Type Changes/Type Flags
 
@@ -723,6 +723,8 @@ Path: `type-changes/one-of-array-variant/` (48 cases)
 
 Stories live under `packages/api-doc-viewer/src/stories/json-schema-diffs-suite/`.
 Screenshot ITs live under `packages/api-doc-viewer/src/it/json-schema-diffs-suite/`.
+
+## Regenerate
 
 ```bash
 cd packages/api-doc-viewer

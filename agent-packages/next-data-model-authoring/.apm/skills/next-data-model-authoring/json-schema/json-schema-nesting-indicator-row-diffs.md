@@ -1,5 +1,8 @@
 # JSON Schema nesting-indicator row diffs — agent reference
 
+Design (source of truth): `docs/design/json-schema/features/nesting-indicator-row-diffs.md` and the
+cross-API rule `docs/design/shared/features/section-header-colorizing.md`.
+
 Reference for AI assistants adding diff highlighting to `NestingIndicatorTitleRow` (the
 "Properties"/"Items" header `SchemaNodeViewer` renders above a node's children list) in the
 JSON Schema Next stack. Covers three cases: the owning node (or an inherited parent/container) was
@@ -36,10 +39,10 @@ about level computation, not diff colorizing, but touches the same row.
 | --- | --- |
 | Unit (data layer) | `packages/next-data-model/tests/unit-tests/json-schema-with-diffs.test.ts` — describe blocks `"JsonSchema nesting-indicator row colorizing diff"` and `"JsonSchema nesting-indicator type label diffs"` |
 | Storybook (case 1 — uniform children) | `packages/samples/json-schema-diffs/type-changes/object-properties/003…008` |
-| Storybook (case 2 — whole node) | `packages/samples/json-schema-diffs/hiding-unchanged-rows/complex-object/2.6`, `2.7` |
+| Storybook (case 2 — whole node) | `packages/samples/json-schema-diffs/hiding-unchanged-rows/complex-object/` cases `2.6`, `2.7` |
 | Storybook (case 3 — primitive/non-primitive `type` crossing) | `packages/samples/json-schema-diffs/type-changes/type-value-changes/` — any `*-to-array`/`*-to-object` or `array-to-*`/`object-to-*` pair (e.g. `004-string-to-array`, `021-array-to-string`, `026-object-to-string`, `027-object-to-number`); `030-object-to-array` (complex↔complex, non-crossing) is the regression guard that must stay yellow/replace |
 | Storybook (case 3b — special `any`/`nothing` pseudo-type crossing) | `all-of-combiner-diffs-suite` cases `041-array-add-option-string` / `042-array-remove-option-string` / `053-object-add-option-number` / `054-object-remove-option-number` (array/object option intersected with an incompatible option via `allOf` reduces the merged `type` to `nothing`) — no YAML fixtures, built programmatically, see `combiner-diff-case-definitions.ts` |
-| Storybook/manual (lesson 10 — combiner children level) | `json-schema` (plain) `one-of-combiner-suite` case `049-object-schema-one-of-one-of` (3-level nested combiner, object leaf); `json-schema-diffs` `one-of-combiner-diffs-suite`/`any-of-combiner-diffs-suite` cases `009`/`010`/`017`/`018` (single-level, object/array leaf) — no YAML fixtures, see `packages/samples/combiners-cases.md` for the full case matrix |
+| Storybook/manual (lesson 10 — combiner children level) | `json-schema` (plain) `one-of-combiner-suite` case `049-object-schema-one-of-one-of` (3-level nested combiner, object leaf); `json-schema-diffs` `one-of-combiner-diffs-suite`/`any-of-combiner-diffs-suite` cases `009`/`010`/`017`/`018` (single-level, object/array leaf) — no YAML fixtures, see `packages/samples/json-schema/{oneOf,anyOf,allOf}/README.md` for the case matrix |
 
 ---
 
@@ -352,8 +355,8 @@ safely regardless).
 nested combiner (`anyOf` → first variant is `allOf` → first variant is the real leaf). The option
 button must show the **leaf's** type/format/title (not the immediate variant's, which may have no
 `type` of its own), with a trailing `" (combinerKind)"` suffix per nesting level reflecting only
-that level's own immediate combiner kind — not an accumulated chain. `resolveCombinerOptionLeafNode`
-(`resolve-combiner-selection.ts`) gets the leaf by reusing the existing `resolveActiveLeafNode`
+that level's own immediate combiner kind — not an accumulated chain. `JsonSchemaCombiner.resolveOptionLeafNode`
+(`utils/resolve-combiner.ts`) gets the leaf by reusing the existing `resolveActiveLeafNode`
 with an **empty** selections map (it already falls back to `nestedNodes[0]` when nothing is
 selected for a given combiner id — no new recursive-walk code was needed). The suffix reuses the
 existing `resolveCombinerOptionTitleSuffix` (`resolve-combiner-node-diffs.ts`, now exported) which
@@ -369,7 +372,7 @@ unrelated add/remove visibility logic) at render time. `string` remains a valid 
 existing AsyncAPI consumers (`MessageSectionsViewer.tsx`, `BindingsNodeViewer.tsx`, both pass
 plain strings) needed no changes — this is why the type was **widened**, not replaced, when a
 shared component's contract must grow to fit a new caller's needs without an unrelated caller's
-being touched. `buildCombinerSelectorOption` (`resolve-combiner-node-diffs.ts`) itself gained an
+being touched. `buildSelectorOption` (`utils/resolve-combiner.ts`) itself gained an
 **optional** third `title` parameter (default: the old plain string, so untouched call sites in
 tests keep working) rather than a required one — `CombinerNodeViewer.tsx` is the only caller that
 passes the new rich `(layoutSide) => <JsonSchemaCombinerOption... />` function explicitly.
@@ -461,7 +464,7 @@ block's "...but another sits unchanged alongside it" cases, for the pattern to c
 ## Related documents
 
 - Diff inheritance / `NODE_LEVEL_DIFF_KEY` contract and the `aggregateByDescendantDiffs`
-  extension point: `next-data-model-authoring` skill — "Diff inheritance contract".
+  extension point: `next-data-model-authoring` skill — "Diff inheritance contract (JSO)".
 - ddlapi precedent for uniform-descendant colorizing:
   `packages/next-data-model/src/building-service/ddlapi/tree-with-diffs/node-diffs-data/shared/property-list-section-diff-utils.ts`.
 - async-api precedent for row diff + severity pairing:
@@ -474,8 +477,8 @@ block's "...but another sits unchanged alongside it" cases, for the pattern to c
 - Type-label diff resolution (data layer, unchanged by this work — only its view-layer consumers
   were unified): `packages/next-data-model/src/model/json-schema/tree-with-diffs/type-label-diffs.ts`.
 - Combiner option leaf resolution and suffix:
-  `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/utils/resolve-combiner-selection.ts`
-  (`resolveCombinerOptionLeafNode`) and `resolve-combiner-node-diffs.ts` (`resolveCombinerOptionTitleSuffix`,
-  `buildCombinerSelectorOption`). Regression: `packages/api-doc-viewer/tests/resolve-combiner-selection.test.ts`.
+  `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/utils/resolve-combiner.ts`
+  (`JsonSchemaCombiner`: `resolveOptionLeafNode`, `resolveOptionTitleSuffix`,
+  `buildSelectorOption`). Regression: `packages/api-doc-viewer/tests/resolve-combiner.test.ts`.
 - Generic selector button host: `packages/api-doc-viewer/src/components/shared-components/Selector/Selector.tsx`
   (shared with AsyncAPI — widen its contract, don't fork it, when JSON Schema needs richer content).

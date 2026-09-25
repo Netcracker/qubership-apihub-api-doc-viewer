@@ -12,7 +12,9 @@ Property addressing in case descriptions uses `#` for the root schema and `#.<n>
 *n*th first-level property (`prop1` … `prop5`). Nested properties use `#.<n>.<m>` (for example
 `#.2.2` is `prop2.properties.nested2`).
 
-## Suite 1 — simple object
+## Cases
+
+### Suite 1 — simple object
 
 Prerequisite: object-typed schema with five **primitive** properties (`prop1` … `prop5`).
 
@@ -23,7 +25,7 @@ Prerequisite: object-typed schema with five **primitive** properties (`prop1` �
 | `1.3-root-description-replaced` | No property changes; root `description` replaced |
 | `1.4-property-metadata-and-constraints-changed` | `#`.1 description replaced; `#`.2 enum value appended (3→4); `#`.3 `minimum`/`maximum` added; `#`.4 `default` removed; `#`.5 unchanged |
 
-## Suite 2 — complex object
+### Suite 2 — complex object
 
 Prerequisite: object-typed schema with five first-level properties. `prop1`, `prop3`, `prop5`
 are primitives; `prop2` and `prop4` are objects with two to four primitive nested properties
@@ -41,11 +43,11 @@ are primitives; `prop2` and `prop4` are objects with two to four primitive neste
 | `2.8-nested-property-metadata-and-constraints-changed` | Inside `#`.2: `.1` description replaced; `.2` enum appended (3→4); `.3` `minimum`/`maximum` added; `.4` `default` removed; `#`.1, `#`.3, `#`.4, `#`.5 unchanged |
 | `2.9-second-property-type-string-to-number` | `#`.2 `type` changed from `string` to `number` only; `#`.1 and `#`.3 unchanged |
 
-## Suite 3 — combiners
+### Suite 3 — combiners
 
 Prerequisite: object-typed schema with at least one `oneOf` / `anyOf` / `allOf` property and
-unchanged sibling properties. Cases mirror design rules 3–4 in
-`packages/api-doc-viewer/json-schema-hiding-nodes-design.ru.md`.
+unchanged sibling properties. Cases mirror the combiner rules in
+`docs/design/json-schema/features/hiding-unchanged-nodes.md`.
 
 | Case id | Change |
 | --- | --- |
@@ -71,8 +73,12 @@ Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples--case-1-1-two-added-three-removed`).
 
 Stories merge `before.yaml` / `after.yaml` via `prepareJsonDiffSchema` and render through
-`JsonSchemaNextDiffsViewer` (`json-schema-diffs-utils.tsx`). Changed-only row hiding is exercised
-once the Next diffs stack supports it; regenerate snapshots after visual changes.
+`JsonSchemaNextDiffsViewer` (`json-schema-diffs-utils.tsx`). Hiding unchanged nodes is on by default
+(`hideUnchangedNodes`).
+
+## Regenerate
+
+Hand-written fixtures; there is no generator. After visual changes:
 
 ```bash
 cd packages/api-doc-viewer

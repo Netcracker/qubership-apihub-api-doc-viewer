@@ -38,7 +38,7 @@ const printStoryFile = (suite, cases) => {
 
   return `/**
  * Programmatic combiner (${suite.combinerKind}) stories.
- * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and ../../../samples/combiners-cases.md.
+ * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and packages/samples/json-schema/{oneOf,anyOf,allOf}/README.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-suite-stories.mjs
  */
 import type { Meta, StoryObj } from "@storybook/react";

@@ -8,10 +8,9 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 - **`column-changes-except-types`** uses semantic hundred blocks (`101`–`102`, `201`–`206`, …)
   — see the `api-doc-viewer-testing` skill.
 - **`column-default-changes`** uses semantic hundred blocks (`101`–`125` add, `201`–`225` remove,
-  `301`–`325` replace) — regenerate fixtures, stories, and IT files with
-  `packages/api-doc-viewer/bin/generate-column-default-changes-samples.mjs`.
+  `301`–`325` replace).
 
-## Groups
+## Categories
 
 | Group | Cases | Description |
 | --- | ---: | --- |
@@ -25,7 +24,7 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | `column-type-changes` | 127 | Base type matrix (`001`–`090`), parameter changes (`091`–`103`), enum-to-enum (`104`–`107`), scalar-to-enum (`108`–`117`), enum-to-scalar (`118`–`127`) |
 | `column-default-changes` | 75 | Column `DEFAULT` add/remove/replace per PostgreSQL scalar storage type |
 
-### `column-default-changes` — type coverage
+## `column-default-changes` type coverage
 
 Cases use one canonical name per PostgreSQL storage family from the ddlapi scalar guard list. Each
 type has three cases: **add** (`101`–`125`), **remove** (`201`–`225`), **replace** (`301`–`325`).
@@ -58,6 +57,12 @@ Story id pattern: `{meta-id}--case-{case-id}` (for example
 `ddl-api-diffs-suite-whole-table-changes-samples--case-01-wholly-added-table`). When adding a
 case, append matching exports to the group story file and an `it(...)` to the paired IT file.
 
+
+## Regenerate
+
+Hand-written fixtures, except `column-default-changes`. From `packages/api-doc-viewer/`:
+
 ```bash
-npm run regenerate-screenshots
+node bin/generate-column-default-changes-samples.mjs   # column-default-changes fixtures, stories, ITs
+npm run regenerate-screenshots                          # after visual changes
 ```
