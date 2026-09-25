@@ -259,12 +259,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.isPrimaryKey = primaryKeyDiff
       }
 
-      const foreignKeyTargetDiffs = this.resolveForeignKeyTargetDiffsForColumn(
-        realm,
-        sourceTable,
-        sourceColumn,
-        owningSchemaName,
-      )
+      const foreignKeyTargetDiffs = this.resolveForeignKeyTargetDiffsForColumn(sourceTable, sourceColumn)
       if (Object.keys(foreignKeyTargetDiffs).length > 0) {
         columnDiffs.foreignKeyTargets = foreignKeyTargetDiffs
       }
@@ -707,7 +702,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return undefined
     }
 
-    return this.formatIndexPartName(value as { column?: { name: string }; expr?: Expr })
+    return this.formatIndexPartName(value as { column?: string; expr?: Expr })
   }
 
   private takeIndexPartSeqNoFromDiffValue(value: unknown): number | undefined {
@@ -811,22 +806,14 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return []
   }
 
-  private resolveForeignKeyTargetDiffsForColumn(
-    realm: Realm,
-    sourceTable: Table,
-    sourceColumn: Column,
-    owningSchemaName: string,
-  ): DiffsRecord {
+  private resolveForeignKeyTargetDiffsForColumn(sourceTable: Table, sourceColumn: Column): DiffsRecord {
     const foreignKeys = sourceTable.foreignKeys ?? []
     const foreignKeysArrayDiffs = this.getDiffsRecord(foreignKeys)
     const targetDiffs: DiffsRecord = {}
 
     for (let index = 0; index < foreignKeys.length; index += 1) {
       const foreignKey = foreignKeys[index]
-      const referencesColumn = foreignKey.columns?.some(foreignKeyColumn =>
-        this.isSameForeignKeyColumn(foreignKeyColumn, sourceColumn),
-      ) ?? false
-      if (!referencesColumn) {
+      if (!foreignKey.columns?.includes(sourceColumn.name)) {
         continue
       }
 
@@ -835,7 +822,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         continue
       }
 
-      const target = this.buildForeignKeyTarget(realm, foreignKey, sourceColumn, owningSchemaName)
+      const target = this.buildForeignKeyTarget(foreignKey, sourceColumn)
       if (!target) {
         continue
       }
