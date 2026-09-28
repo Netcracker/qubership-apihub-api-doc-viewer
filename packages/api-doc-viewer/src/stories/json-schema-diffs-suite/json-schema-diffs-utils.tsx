@@ -2,7 +2,12 @@ import { JsonSchemaDiffsViewer } from "@apihub/components/JsonSchemaViewer/JsonS
 import type { ArgTypes } from "@storybook/react";
 import type { ComponentProps } from "react";
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
-import { prepareJsonDiffSchema, RESPONSE_200_BODY_TARGET } from "../preprocess";
+import {
+  type JsonDiffSchemaOptions,
+  prepareJsonDiffSchema,
+  prepareJsonDiffSchemaOas31,
+  RESPONSE_200_BODY_TARGET,
+} from "../preprocess";
 import { parseYamlSource } from "../utils/parse-yaml-source";
 import { switchCombinerNodesToChangedVariant } from "@apihub/utils/combiner-changed-variant";
 
@@ -55,7 +60,7 @@ type JsonSchemaDiffCaseStoryArgs = {
   render: (args: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element;
 };
 
-const JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH = 5;
+export const JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH = 5;
 
 const createSchemaFromYaml = (sourceText: string): Record<string, unknown> =>
   parseYamlSource(sourceText);
@@ -68,8 +73,25 @@ const createJsonSchemaDiffViewerBaseArgs = (
   diffMetaKeys: JSON_SCHEMA_DIFF_META_KEYS,
 });
 
-export type JsonSchemaDiffsViewerArgsOptions = {
-  disableSubstitutionTitle?: boolean;
+/**
+ * `oasVersion` picks the synthetic OAS template the pair is wrapped in (default `"3.0"`). Use
+ * `"3.1"` for keywords the OAS 3.0 Schema Object dialect lacks (e.g. `propertyNames`, 3.1-style
+ * numeric `exclusiveMinimum`) - `apiDiff`'s `validate: true` strips them under OAS 3.0. The OAS 3.1
+ * template has no inline variant, so `disableSubstitutionTitle` is OAS 3.0 only.
+ */
+export type JsonSchemaDiffsViewerArgsOptions =
+  | { oasVersion?: "3.0"; disableSubstitutionTitle?: boolean }
+  | { oasVersion: "3.1" };
+
+const prepareSuiteJsonDiffSchema = (
+  beforeSchema: Record<string, unknown>,
+  afterSchema: Record<string, unknown>,
+  options: JsonSchemaDiffsViewerArgsOptions,
+): unknown => {
+  const schemaOptions: JsonDiffSchemaOptions = { beforeSchema, afterSchema, target: RESPONSE_200_BODY_TARGET };
+  return options.oasVersion === "3.1"
+    ? prepareJsonDiffSchemaOas31(schemaOptions)
+    : prepareJsonDiffSchema({ ...schemaOptions, disableSubstitutionTitle: options.disableSubstitutionTitle });
 };
 
 export const createJsonSchemaDiffsViewerArgsFromSchemas = (
@@ -77,14 +99,7 @@ export const createJsonSchemaDiffsViewerArgsFromSchemas = (
   afterSchema: Record<string, unknown>,
   options: JsonSchemaDiffsViewerArgsOptions = {},
 ): JsonSchemaDiffsViewerProps =>
-  createJsonSchemaDiffViewerBaseArgs(
-    prepareJsonDiffSchema({
-      beforeSchema,
-      afterSchema,
-      target: RESPONSE_200_BODY_TARGET,
-      disableSubstitutionTitle: options.disableSubstitutionTitle,
-    }),
-  );
+  createJsonSchemaDiffViewerBaseArgs(prepareSuiteJsonDiffSchema(beforeSchema, afterSchema, options));
 
 export const createJsonSchemaDiffsViewerArgs = (
   beforeSourceText: string,
@@ -186,6 +201,21 @@ export const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle = ({
 }: JsonSchemaDiffCaseStoryComponentProps) => (
   <JsonSchemaDiffsViewer
     {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml, { disableSubstitutionTitle: true })}
+    hideUnchangedNodes={hideUnchangedNodes}
+  />
+);
+
+/**
+ * Same as JsonSchemaDiffSamplesStory, but wraps the pair in the OAS 3.1 template - needed for
+ * keywords the OAS 3.0 dialect strips during `apiDiff` validation (see JsonSchemaDiffsViewerArgsOptions).
+ */
+export const JsonSchemaDiffSamplesStoryOas31 = ({
+  beforeYaml,
+  afterYaml,
+  hideUnchangedNodes,
+}: JsonSchemaDiffCaseStoryComponentProps) => (
+  <JsonSchemaDiffsViewer
+    {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml, { oasVersion: "3.1" })}
     hideUnchangedNodes={hideUnchangedNodes}
   />
 );

@@ -4,12 +4,12 @@
  */
 import type { Meta, StoryObj } from "@storybook/react";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
+import { JsonSchemaCircularDiffSamplesStory } from "./circular-utils";
 import {
-  JsonSchemaDiffSamplesStory,
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./circular-utils";
+} from "./json-schema-diffs-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/circular/*/before.yaml",
@@ -27,16 +27,16 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: "JSON Schema Diffs Suite/Circular",
-  component: JsonSchemaDiffSamplesStory,
+  component: JsonSchemaCircularDiffSamplesStory,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
-} satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
+} satisfies Meta<typeof JsonSchemaCircularDiffSamplesStory>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
-  JsonSchemaDiffSamplesStory,
+  JsonSchemaCircularDiffSamplesStory,
   sampleById,
 );
 

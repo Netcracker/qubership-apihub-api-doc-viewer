@@ -16,14 +16,14 @@ const packageRoot = path.resolve(__dirname, "..");
 const storiesOutDir = path.resolve(packageRoot, "src/stories/json-schema-diffs-suite");
 const testsOutDir = path.resolve(packageRoot, "src/it/json-schema-diffs-suite");
 
-/** @type {Array<{ suiteKey: string, title: string, metaKebab: string, storyFileName: string, testFileName: string, diffUtilsModule: string, includeOas31Only: boolean, sampleBuilderModule: string, sampleBuilderName: string }>} */
+/** @type {Array<{ suiteKey: string, title: string, metaKebab: string, storyFileName: string, testFileName: string, storyComponent: string, includeOas31Only: boolean, sampleBuilderModule: string, sampleBuilderName: string }>} */
 const VALUE_RANGE_STORY_SUITES = [
   {
     suiteKey: "number-validation-value-range",
     title: "JSON Schema Diffs Suite/Number Validation/Number Validation Value Range",
     storyFileName: "number-validation-value-range.stories.tsx",
     testFileName: "number-validation-value-range.it-test.ts",
-    diffUtilsModule: "./json-schema-diffs-utils",
+    storyComponent: "JsonSchemaDiffSamplesStory",
     includeOas31Only: false,
     sampleBuilderModule: "./value-range-diff-samples",
     sampleBuilderName: "buildValueRangeDiffProgrammaticSampleCases",
@@ -33,7 +33,7 @@ const VALUE_RANGE_STORY_SUITES = [
     title: "JSON Schema Diffs Suite/Number Validation/Number Validation Value Range OAS 3.1",
     storyFileName: "number-validation-value-range-oas-3-1.stories.tsx",
     testFileName: "number-validation-value-range-oas-3-1.it-test.ts",
-    diffUtilsModule: "./json-schema-diffs-oas-3-1-utils",
+    storyComponent: "JsonSchemaDiffSamplesStoryOas31",
     includeOas31Only: true,
     sampleBuilderModule: "./value-range-diff-oas-31-samples",
     sampleBuilderName: "buildValueRangeDiffOas31ProgrammaticSampleCases",
@@ -58,11 +58,11 @@ const printStoryFile = (suite, cases) => {
  */
 import type { Meta, StoryObj } from "@storybook/react";
 import {
-  JsonSchemaDiffSamplesStory,
+  ${suite.storyComponent},
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "${suite.diffUtilsModule}";
+} from "./json-schema-diffs-utils";
 import { ${suite.sampleBuilderName} } from "${suite.sampleBuilderModule}";
 
 const sampleCases = ${suite.sampleBuilderName}({ includeOas31Only: ${suite.includeOas31Only} });
@@ -71,16 +71,16 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: "${suite.title}",
-  component: JsonSchemaDiffSamplesStory,
+  component: ${suite.storyComponent},
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
-} satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
+} satisfies Meta<typeof ${suite.storyComponent}>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
-  JsonSchemaDiffSamplesStory,
+  ${suite.storyComponent},
   sampleById,
 );
 

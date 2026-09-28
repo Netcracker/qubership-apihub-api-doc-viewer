@@ -145,9 +145,11 @@ combiner-wrapped variants) before these fixtures were committed.
 Hand-written suites live under
 `packages/api-doc-viewer/src/stories/json-schema-diffs-extensions-suite/`
 and `packages/api-doc-viewer/src/it/`, reusing the generic helpers in
-`json-schema-diffs-hiding-unchanged-nodes-suite/json-schema-diffs-utils.tsx`
-(`createJsonSchemaDiffViewerArgs`, `createJsonSchemaDiffSampleById`,
-`createJsonSchemaDiffCaseStoryFactory`, `JsonSchemaDiffSamplesStory`).
+`json-schema-diffs-suite/json-schema-diffs-utils.tsx`
+(`createJsonSchemaDiffsViewerArgs`, `createJsonSchemaDiffSampleById`,
+`createJsonSchemaDiffCaseStoryFactory`, `JsonSchemaDiffSamplesStory`). The same module also
+provides the `JsonSchemaDiffSamplesStoryOas31` and
+`JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle` story variants.
 
 | Suite | Story title | Story / IT files |
 | --- | --- | --- |

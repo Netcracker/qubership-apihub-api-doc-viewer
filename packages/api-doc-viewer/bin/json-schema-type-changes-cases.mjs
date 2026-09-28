@@ -3094,7 +3094,8 @@ export const STORY_SUITES = [
     globPath: "circular",
     storyFileName: "circular.stories.tsx",
     testFileName: "circular.it-test.ts",
-    diffUtilsModule: "./circular-utils",
+    storyComponent: "JsonSchemaCircularDiffSamplesStory",
+    storyComponentModule: "./circular-utils",
   },
   {
     suiteKey: "type-value-changes",
@@ -3109,7 +3110,7 @@ export const STORY_SUITES = [
     globPath: "type-annotations-changes",
     storyFileName: "type-annotations-changes.stories.tsx",
     testFileName: "type-annotations-changes.it-test.ts",
-    diffUtilsModule: "./json-schema-diffs-type-annotations-utils",
+    storyComponent: "JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle",
   },
   {
     suiteKey: "object-properties",
@@ -3139,7 +3140,7 @@ export const STORY_SUITES = [
     globPath: "object-additional-properties",
     storyFileName: "object-additional-properties-oas-3-1.stories.tsx",
     testFileName: "object-additional-properties-oas-3-1.it-test.ts",
-    diffUtilsModule: "./json-schema-diffs-oas-3-1-utils",
+    storyComponent: "JsonSchemaDiffSamplesStoryOas31",
     caseFilter: (caseId) => caseId.includes("property-names"),
   },
   {

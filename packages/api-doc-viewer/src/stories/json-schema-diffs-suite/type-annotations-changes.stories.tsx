@@ -5,11 +5,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {
-  JsonSchemaDiffSamplesStory,
+  JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./json-schema-diffs-type-annotations-utils";
+} from "./json-schema-diffs-utils";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/type-annotations-changes/*/before.yaml",
@@ -27,16 +27,16 @@ const sampleById = createJsonSchemaDiffSampleById(sampleCases);
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: "JSON Schema Diffs Suite/Type Changes/Type Annotations Changes",
-  component: JsonSchemaDiffSamplesStory,
+  component: JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
-} satisfies Meta<typeof JsonSchemaDiffSamplesStory>;
+} satisfies Meta<typeof JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 const createCaseStory = createJsonSchemaDiffCaseStoryFactoryWithChangedVariant(
-  JsonSchemaDiffSamplesStory,
+  JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   sampleById,
 );
 
