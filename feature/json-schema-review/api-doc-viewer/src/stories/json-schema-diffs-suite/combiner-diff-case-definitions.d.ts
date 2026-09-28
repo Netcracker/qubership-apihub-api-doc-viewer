@@ -10,7 +10,7 @@ export type CombinerDiffCase = CombinerDiffCaseDefinition & {
 };
 /**
  * All combiner diff cases for one combiner kind (matches the sample sub-directory: oneOf / anyOf /
- * allOf). See combiners-cases.md for the full matrix and terminology.
+ * allOf). See packages/samples/json-schema-diffs/{oneOf,anyOf,allOf}/README.md for the case matrix.
  */
 export declare function getCombinerDiffCaseDefinitions(combinerKind: CombinerKind): CombinerDiffCaseDefinition[];
 export declare function listCombinerDiffCases(combinerKind: CombinerKind): CombinerDiffCase[];
