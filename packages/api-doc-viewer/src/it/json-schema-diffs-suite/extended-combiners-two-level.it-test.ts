@@ -5,32 +5,9 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-combiners-extended-combiners-two-level";
-
-import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-  await page.evaluate(switchCombinerNodesToChangedVariant);
-}
 
 describe("JSON Schema Diffs Suite/Combiners/Extended Combiners Two Level", () => {
   let story: StoryPage;
@@ -42,77 +19,77 @@ describe("JSON Schema Diffs Suite/Combiners/Extended Combiners Two Level", () =>
 
   it("001-two-level-append-variant-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-001-two-level-append-variant-string`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-two-level-append-variant-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-002-two-level-append-variant-object`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-two-level-append-variant-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-003-two-level-append-variant-array`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-two-level-remove-variant-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-004-two-level-remove-variant-string`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-two-level-remove-variant-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-005-two-level-remove-variant-object`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-two-level-remove-variant-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-006-two-level-remove-variant-array`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-two-level-change-variant-string", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-007-two-level-change-variant-string`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-two-level-change-variant-object", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-008-two-level-change-variant-object`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-two-level-change-variant-array", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-009-two-level-change-variant-array`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-two-level-append-variant-nested-combiner", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-010-two-level-append-variant-nested-combiner`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-two-level-remove-variant-nested-combiner", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-combiners-extended-combiners-two-level--case-011-two-level-remove-variant-nested-combiner`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

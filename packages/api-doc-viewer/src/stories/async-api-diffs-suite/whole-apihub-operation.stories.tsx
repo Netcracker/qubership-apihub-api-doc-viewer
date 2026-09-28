@@ -5,9 +5,9 @@ import {
   type AsyncApiCaseStoryComponentProps,
   asyncApiDiffSampleReadonlyArgTypes,
   createAsyncApiCaseStoryFactory,
-  createAsyncApiSampleById,
   createAsyncApiViewerArgs
 } from "./async-api-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/async-api-diffs/whole-apihub-operation/*/before.yaml",
@@ -20,7 +20,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = createAsyncApiSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 const AsyncApiWholeApihubOperationSamplesStory = ({
   beforeYaml,

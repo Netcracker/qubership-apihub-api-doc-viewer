@@ -1,8 +1,8 @@
 import { JsonSchemaViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 import { ComponentProps } from 'react';
-import { parse } from 'yaml';
 import { prepareJsonSchemaFromOAS } from './preprocess';
+import { parseYamlSource } from './utils/parse-yaml-source';
 
 type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
   oasText: string // OAS 3.0 or OAS 3.1, JSON or YAML
@@ -45,7 +45,7 @@ export const DebugOas30: Story = {
   render: (args) => {
     const { oasText, refToSchema, ...viewerArgs } = args
 
-    const parsedOas = parseJsonOrYaml(oasText)
+    const parsedOas = parseYamlSource(oasText)
 
     const schema = prepareJsonSchemaFromOAS({
       source: parsedOas,
@@ -61,25 +61,3 @@ export const DebugOas30: Story = {
 }
 DebugOas30.storyName = 'Debug OAS 3.0';
 
-function parseJsonOrYaml(text: string): unknown {
-  let parsed: unknown = undefined
-  try {
-    parsed = JSON.parse(text)
-  } catch (error) {
-    console.error('Cannot parse JSON:', error)
-    parsed = undefined
-  }
-  try {
-    if (!parsed) {
-      parsed = parse(text)
-    }
-  } catch (error) {
-    console.error('Cannot parse YAML:', error)
-    parsed = undefined
-  }
-  if (!parsed || typeof parsed !== 'object') {
-    parsed = {}
-  }
-  console.debug('Parsed source:', parsed)
-  return parsed
-}

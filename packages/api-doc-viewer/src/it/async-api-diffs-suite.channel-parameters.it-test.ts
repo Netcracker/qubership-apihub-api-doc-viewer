@@ -4,6 +4,7 @@
 import { StoryPage } from './service/story-page'
 import { ViewComponent } from './service/view-component'
 import { storyPage } from './service/storybook-service'
+import { waitForRenderingComplete } from './service/viewer-waits'
 
 describe('Async API Diffs Suite - Channel Parameters Samples', () => {
   let story: StoryPage
@@ -12,11 +13,6 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
   beforeEach(async () => {
     await jestPuppeteer.resetPage()
   })
-
-  async function waitForHtmlRenderingComplete() {
-    await page.waitForFunction(() => document.readyState === 'complete')
-    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
-  }
 
   async function switchToChannelSection() {
     await page.click('[data-testid="message-channel"]')
@@ -30,7 +26,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -41,7 +37,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -52,7 +48,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -63,7 +59,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -74,7 +70,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -85,7 +81,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -96,7 +92,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 
@@ -107,7 +103,7 @@ describe('Async API Diffs Suite - Channel Parameters Samples', () => {
     )
     component = await story.viewComponent()
     await switchToChannelSection()
-    await waitForHtmlRenderingComplete()
+    await waitForRenderingComplete(page)
     expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 })

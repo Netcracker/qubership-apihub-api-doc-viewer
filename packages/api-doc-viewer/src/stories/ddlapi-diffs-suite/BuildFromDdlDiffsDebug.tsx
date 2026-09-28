@@ -14,7 +14,8 @@ import {
   resolveDebugTableKey,
   resolveTableKeyFromRealm,
 } from "../ddlapi-suite/resolve-debug-table-key";
-import { TEST_DIFF_META_KEYS } from "./shared-test-data";
+import { TEST_DIFF_META_KEYS } from "../shared/test-diff-meta-keys";
+import { ddlStoryNavigationLinkBuilder } from "../ddlapi-suite/ddl-story-navigation";
 
 export const DEFAULT_BEFORE_DDL = `CREATE SCHEMA IF NOT EXISTS public;
 
@@ -34,11 +35,6 @@ export type BuildFromDdlDiffsDebugProps = {
   afterSql: string;
   displayMode?: DisplayMode;
 } & DebugTableKeyControls;
-
-const navigationLinkBuilder = (schema: string, table: string, column: string) => {
-  console.log(`Navigating to ${schema}.${table}.${column}`);
-  return `#${schema}.${table}.${column}`;
-};
 
 const prepareMergedSource = async (
   beforeSql: string,
@@ -158,7 +154,7 @@ export const BuildFromDdlDiffsDebug: FC<BuildFromDdlDiffsDebugProps> = ({
       key={`${btoa(beforeSql)}-${btoa(afterSql)}`}
       mergedSource={mergedSource}
       tableKey={tableKey}
-      navigationLinkBuilder={navigationLinkBuilder}
+      navigationLinkBuilder={ddlStoryNavigationLinkBuilder}
       diffMetaKeys={TEST_DIFF_META_KEYS}
       displayMode={displayMode}
       devMode={true}

@@ -5,32 +5,9 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-object-validation-object-validations-properties-count";
-
-import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-  await page.evaluate(switchCombinerNodesToChangedVariant);
-}
 
 describe("JSON Schema Diffs Suite/Object Validation/Object Validations Properties Count", () => {
   let story: StoryPage;
@@ -42,147 +19,147 @@ describe("JSON Schema Diffs Suite/Object Validation/Object Validations Propertie
 
   it("001-min-properties-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-001-min-properties-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-min-properties-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-002-min-properties-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-min-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-003-min-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-max-properties-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-004-max-properties-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-max-properties-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-005-max-properties-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-max-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-006-max-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-max-properties-added-to-min", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-007-max-properties-added-to-min`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-min-properties-added-to-max", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-008-min-properties-added-to-max`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-properties-count-both-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-009-properties-count-both-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-max-properties-removed-keep-min", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-010-max-properties-removed-keep-min`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-min-properties-removed-keep-max", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-011-min-properties-removed-keep-max`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-properties-count-both-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-012-properties-count-both-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-properties-count-replace-min", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-013-properties-count-replace-min`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-properties-count-replace-max", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-014-properties-count-replace-max`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-properties-count-replace-both", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-015-properties-count-replace-both`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-min-properties-added-max-properties-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-016-min-properties-added-max-properties-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-max-properties-added-min-properties-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-017-max-properties-added-min-properties-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-min-properties-added-max-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-018-min-properties-added-max-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-min-properties-removed-max-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-019-min-properties-removed-max-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-max-properties-added-min-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-020-max-properties-added-min-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-max-properties-removed-min-properties-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-object-validation-object-validations-properties-count--case-021-max-properties-removed-min-properties-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

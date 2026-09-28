@@ -145,6 +145,3 @@ export function resolveCombinerPlainSchema(
   }
   return sampleCase.schema
 }
-
-export const toCombinerCaseExportName = (caseId: string): string =>
-  `Case_${caseId.replace(/[.-]/g, '_')}`

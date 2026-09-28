@@ -6,6 +6,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 
@@ -17,20 +18,12 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   it('101-add-one-more-column-no-badges', async () => {
     story = await storyPage(
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-101-add-one-more-column-no-badges',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -43,7 +36,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-102-remove-one-more-column-no-badges',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -56,7 +49,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-201-add-column-primary-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -69,7 +62,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-202-add-column-foreign-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -82,7 +75,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-203-add-column-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -95,7 +88,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-204-add-column-not-null',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -108,7 +101,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-205-add-column-generated-identity',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -121,7 +114,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-206-add-column-generated-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -134,7 +127,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-207-add-column-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -147,7 +140,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-301-remove-column-primary-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -160,7 +153,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-302-remove-column-foreign-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -173,7 +166,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-303-remove-column-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -186,7 +179,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-304-remove-column-not-null',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -199,7 +192,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-305-remove-column-generated-identity',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -212,7 +205,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-306-remove-column-generated-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -225,7 +218,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-307-remove-column-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -238,7 +231,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-401-existing-column-became-primary-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -251,7 +244,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-402-existing-column-became-foreign-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -264,7 +257,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-403-existing-column-became-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -277,7 +270,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-404-existing-column-became-generated-identity',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -290,7 +283,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-405-existing-column-became-generated-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -303,7 +296,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-406-existing-column-became-not-null',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -316,7 +309,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-407-existing-column-gained-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -329,7 +322,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-501-existing-column-lost-primary-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -342,7 +335,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-502-existing-column-lost-foreign-key',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -355,7 +348,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-503-existing-column-lost-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -368,7 +361,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-504-existing-column-lost-generated-identity',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -381,7 +374,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-505-existing-column-lost-generated-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -394,7 +387,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-506-existing-column-lost-not-null',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -407,7 +400,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-507-existing-column-lost-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -420,7 +413,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-601-existing-column-replaced-generated-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -433,7 +426,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-602-existing-column-generated-expression-became-identity',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -446,7 +439,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-603-existing-column-generated-identity-became-expression',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -459,7 +452,7 @@ describe('DDL API Diffs Suite - Column Changes Except Types Samples', () => {
       page,
       'ddl-api-diffs-suite-column-changes-except-types-samples--case-604-existing-column-replaced-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

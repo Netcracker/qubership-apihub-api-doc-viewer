@@ -247,10 +247,10 @@ import {
   DdlDiffSampleStory,
   collectDdlDiffSampleCases,
   createDdlDiffCaseStoryFactory,
-  createDdlDiffSampleById,
   ddlDiffsSamplesStoryMetaBase,
   type DdlDiffsSamplesStoryObj,
 } from "./ddlapi-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/ddlapi-diffs/${groupId}/*/before.sql",
@@ -263,7 +263,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectDdlDiffSampleCases(beforeFiles, afterFiles);
-const sampleById = createDdlDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
@@ -289,7 +289,7 @@ const testCases = cases
       page,
       '${metaKebab}--case-${caseId}',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -308,6 +308,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 
@@ -318,14 +319,6 @@ describe('${metaTitle}', () => {
   beforeEach(async () => {
     await jestPuppeteer.resetPage();
   });
-
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
 ${testCases}
 });
 `;

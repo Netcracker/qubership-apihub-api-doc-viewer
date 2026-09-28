@@ -35,18 +35,13 @@ mkdirSync(testsOutDir, { recursive: true });
 const printTestFile = (suite, cases) => {
   // allOf has no variant selector (all sub-schemas apply simultaneously) -- nothing to switch.
   const includesChangedVariantSwitch = suite.combinerKind !== "allOf";
-  const combinerImport = includesChangedVariantSwitch
-    ? `\nimport { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";`
-    : "";
-  const combinerSwitchLine = includesChangedVariantSwitch
-    ? "\n  await page.evaluate(switchCombinerNodesToChangedVariant);"
-    : "";
+  const waitOptions = includesChangedVariantSwitch ? ", { switchCombinerVariant: true }" : "";
   const tests = cases
     .map(
       (sampleCase) => `
   it("${sampleCase.caseId}", async () => {
     story = await storyPage(page, \`${suite.metaKebab}--case-${sampleCase.caseId}\`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page${waitOptions});
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });`,
@@ -59,24 +54,10 @@ const printTestFile = (suite, cases) => {
  */
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
-import { storyPage } from "../service/storybook-service";${combinerImport}
+import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "${suite.metaKebab}";
-
-async function waitForJsonSchemaDiffViewer() {
-  // A combiner nested directly under another combiner (no plain-type sibling option) renders its
-  // root through CombinerNodeViewer, which never emits a [data-name="JsonNode"] element - only
-  // its own [data-testid="json-schema-combiner-node-viewer"] wrapper. Waiting on JsonNode alone
-  // hangs every such case for the full Puppeteer default timeout (~30s each).
-  await page.waitForSelector(
-    '[data-name="JsonNode"], [data-testid="json-schema-combiner-node-viewer"]',
-    { visible: true },
-  );
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));${combinerSwitchLine}
-}
 
 describe("${suite.title}", () => {
   let story: StoryPage;

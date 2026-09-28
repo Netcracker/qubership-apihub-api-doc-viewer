@@ -10,7 +10,6 @@ export {
   getCombinerPlainCaseDefinitions,
   listCombinerPlainCases,
   resolveCombinerPlainSchema,
-  toCombinerCaseExportName,
 } from './combiner-plain-case-definitions'
 
 export type CombinerPlainProgrammaticSampleCase = {

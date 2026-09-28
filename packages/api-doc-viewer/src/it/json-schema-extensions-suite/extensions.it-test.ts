@@ -4,16 +4,9 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaViewer } from "../service/viewer-waits";
 
 const META_ID = "json-schema-extensions-suite-extensions";
-
-async function waitForJsonSchemaViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-}
 
 describe("JSON Schema Suite (Extensions) - Extensions", () => {
   let story: StoryPage;
@@ -42,7 +35,7 @@ describe("JSON Schema Suite (Extensions) - Extensions", () => {
   for (const testId of TEST_IDS) {
     it(testId, async () => {
       story = await storyPage(page, `${META_ID}--case-${testId}`);
-      await waitForJsonSchemaViewer();
+      await waitForJsonSchemaViewer(page);
       component = await story.viewComponent();
       expect(await component.captureScreenshot()).toMatchImageSnapshot();
     });

@@ -2,8 +2,8 @@ import { SIMPLE_DISPLAY_MODE } from "@apihub/types/DisplayMode";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   collectDdlSampleCases,
-  createDdlSampleById,
 } from "../utils/ddl-samples-cases";
+import { createSampleById } from "../utils/sample-cases";
 import {
   DdlSampleStory,
   createCaseStoryFactory,
@@ -17,7 +17,7 @@ const sampleFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectDdlSampleCases(sampleFiles);
-const sampleById = createDdlSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 const createCaseStory = createCaseStoryFactory(sampleById, { displayMode: SIMPLE_DISPLAY_MODE });
 
 // eslint-disable-next-line storybook/story-exports

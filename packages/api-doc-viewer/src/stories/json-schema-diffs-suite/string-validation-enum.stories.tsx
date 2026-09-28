@@ -7,9 +7,9 @@ import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {
   JsonSchemaDiffSamplesStory,
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
-  createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/string-validation/enum/*/before.yaml",
@@ -22,7 +22,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = createJsonSchemaDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {

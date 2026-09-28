@@ -6,6 +6,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 
@@ -17,20 +18,12 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   it('01-add-index-when-none-present', async () => {
     story = await storyPage(
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-01-add-index-when-none-present',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -43,7 +36,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-02-add-index-unique-when-none-present',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -56,7 +49,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-03-remove-index-when-none-present',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -69,7 +62,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-04-remove-index-unique-when-none-present',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -82,7 +75,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-05-add-one-more-index-without-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -95,7 +88,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-06-add-one-more-index-with-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -108,7 +101,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-07-remove-one-more-index-without-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -121,7 +114,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-08-remove-one-more-index-with-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -134,7 +127,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-09-append-new-column-in-index',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -147,7 +140,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-10-remove-new-column-in-index',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -160,7 +153,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-11-replaced-column-in-index',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -173,7 +166,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-12-index-became-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -186,50 +179,11 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-13-index-lost-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
       customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-13-index-lost-unique-${counter}`,
-    });
-  });
-
-  it('14-remove-one-more-index-without-unique', async () => {
-    story = await storyPage(
-      page,
-      'ddl-api-diffs-suite-index-changes-samples--case-14-remove-one-more-index-without-unique',
-    );
-    await waitForDdlTableDiffsViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot({
-      customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-14-remove-one-more-index-without-unique-${counter}`,
-    });
-  });
-
-  it('15-remove-one-more-index-with-unique', async () => {
-    story = await storyPage(
-      page,
-      'ddl-api-diffs-suite-index-changes-samples--case-15-remove-one-more-index-with-unique',
-    );
-    await waitForDdlTableDiffsViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot({
-      customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-15-remove-one-more-index-with-unique-${counter}`,
-    });
-  });
-
-  it('16-remove-new-column-in-index', async () => {
-    story = await storyPage(
-      page,
-      'ddl-api-diffs-suite-index-changes-samples--case-16-remove-new-column-in-index',
-    );
-    await waitForDdlTableDiffsViewer();
-    component = await story.viewComponent();
-    expect(await component.captureScreenshot()).toMatchImageSnapshot({
-      customSnapshotsDir: SNAPSHOTS_DIR,
-      customSnapshotIdentifier: ({ counter }) => `ddl-api-diffs-suite-index-changes-samples-16-remove-new-column-in-index-${counter}`,
     });
   });
 
@@ -238,7 +192,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-17-unnamed-index-became-titled',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -251,7 +205,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-18-titled-index-became-unnamed',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -264,7 +218,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-19-unnamed-index-append-column',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -277,7 +231,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-20-unnamed-index-pop-column',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -290,7 +244,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-21-unnamed-index-replaced-column',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -303,7 +257,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-22-unnamed-index-became-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -316,7 +270,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-23-unnamed-index-lost-unique',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -329,7 +283,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-24-add-index-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -342,7 +296,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-25-remove-index-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -355,7 +309,7 @@ describe('DDL API Diffs Suite - Index Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-index-changes-samples--case-26-replace-index-description',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

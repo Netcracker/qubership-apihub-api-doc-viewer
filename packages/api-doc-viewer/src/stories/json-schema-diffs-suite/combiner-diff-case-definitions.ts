@@ -259,6 +259,3 @@ export function listCombinerDiffCases(combinerKind: CombinerKind): CombinerDiffC
     caseId: `${String(index + 1).padStart(3, "0")}-${definition.slug}`,
   }));
 }
-
-export const toCombinerCaseExportName = (caseId: string): string =>
-  `Case_${caseId.replace(/[.-]/g, "_")}`;

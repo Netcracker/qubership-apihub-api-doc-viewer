@@ -3,10 +3,10 @@ import {
   DdlDiffSampleStory,
   collectDdlDiffSampleCases,
   createDdlDiffCaseStoryFactory,
-  createDdlDiffSampleById,
   ddlDiffsSamplesStoryMetaBase,
   type DdlDiffsSamplesStoryObj,
 } from "./ddlapi-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/ddlapi-diffs/index-changes/*/before.sql",
@@ -19,7 +19,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectDdlDiffSampleCases(beforeFiles, afterFiles);
-const sampleById = createDdlDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
@@ -46,9 +46,6 @@ export const Case_10_remove_new_column_in_index: Story = createCaseStory("10-rem
 export const Case_11_replaced_column_in_index: Story = createCaseStory("11-replaced-column-in-index");
 export const Case_12_index_became_unique: Story = createCaseStory("12-index-became-unique");
 export const Case_13_index_lost_unique: Story = createCaseStory("13-index-lost-unique");
-export const Case_14_remove_one_more_index_without_unique: Story = createCaseStory("14-remove-one-more-index-without-unique");
-export const Case_15_remove_one_more_index_with_unique: Story = createCaseStory("15-remove-one-more-index-with-unique");
-export const Case_16_remove_new_column_in_index: Story = createCaseStory("16-remove-new-column-in-index");
 export const Case_17_unnamed_index_became_titled: Story = createCaseStory("17-unnamed-index-became-titled");
 export const Case_18_titled_index_became_unnamed: Story = createCaseStory("18-titled-index-became-unnamed");
 export const Case_19_unnamed_index_append_column: Story = createCaseStory("19-unnamed-index-append-column");

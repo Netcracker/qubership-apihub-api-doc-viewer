@@ -6,17 +6,10 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "./service/viewer-waits";
 import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-variant";
 
 const META_ID = "json-schema-diffs-suite-node-changes-summary-case-7-one-level-object-with-array-combiner-variant";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-}
 
 // There is no `expandItems()` step anymore: once the `array` variant is selected, its `items`
 // child never becomes expandable in the current JsonSchemaViewer - a root-only combiner leaf
@@ -39,32 +32,32 @@ describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 7 — One Level Ob
 
   it("expanded-root-chosen-array-expanded-items", async () => {
     story = await storyPage(page, `${META_ID}--expanded-root-chosen-array-expanded-items`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     await page.evaluate(switchCombinerNodesToChangedVariant);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("expanded-root-chosen-array-collapsed-items", async () => {
     story = await storyPage(page, `${META_ID}--expanded-root-chosen-array-collapsed-items`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     await page.evaluate(switchCombinerNodesToChangedVariant);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("expanded-root-default-choice", async () => {
     story = await storyPage(page, `${META_ID}--expanded-root-default-choice`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("collapsed-root", async () => {
     story = await storyPage(page, `${META_ID}--collapsed-root`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

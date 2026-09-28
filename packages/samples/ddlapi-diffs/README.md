@@ -19,7 +19,7 @@ These fixtures feed screenshot-diff scenarios for DDL table changes.
 | `whole-indexes-changes` | 2 | All indexes added when none present or removed when two were present |
 | `column-changes-except-types` | 34 | Column add/remove, constraint/badge, and description changes |
 | `foreign-key-reference-changes` | 12 | Referenced schema, table, and column changes |
-| `index-changes` | 26 | Index add/remove, uniqueness, column list, unnamed index, and description changes |
+| `index-changes` | 23 | Index add/remove, uniqueness, column list, unnamed index, and description changes |
 | `table-description-changes` | 8 | Table `COMMENT ON TABLE` add/remove/replace (short, long, and cross-length) |
 | `column-type-changes` | 127 | Base type matrix (`001`–`090`), parameter changes (`091`–`103`), enum-to-enum (`104`–`107`), scalar-to-enum (`108`–`117`), enum-to-scalar (`118`–`127`) |
 | `column-default-changes` | 75 | Column `DEFAULT` add/remove/replace per PostgreSQL scalar storage type |

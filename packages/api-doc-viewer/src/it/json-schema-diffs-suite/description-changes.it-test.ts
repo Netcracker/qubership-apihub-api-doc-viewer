@@ -5,32 +5,9 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-description-changes";
-
-import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-  await page.evaluate(switchCombinerNodesToChangedVariant);
-}
 
 describe("JSON Schema Diffs Suite/Description Changes", () => {
   let story: StoryPage;
@@ -42,182 +19,182 @@ describe("JSON Schema Diffs Suite/Description Changes", () => {
 
   it("001-description-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-001-description-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-description-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-002-description-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-description-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-003-description-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-description-with-enum-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-004-description-with-enum-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-description-with-enum-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-005-description-with-enum-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("006-description-with-enum-replaced", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-006-description-with-enum-replaced`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("007-unchanged-description-short", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-007-unchanged-description-short`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("008-unchanged-description-long", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-008-unchanged-description-long`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("009-description-changed-short-line-text-changed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-009-description-changed-short-line-text-changed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("010-description-changed-short-lines-text-changed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-010-description-changed-short-lines-text-changed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("011-description-changed-long-line-text-changed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-011-description-changed-long-line-text-changed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("012-description-changed-long-lines-text-changed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-012-description-changed-long-lines-text-changed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("013-description-changed-short-line-to-short-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-013-description-changed-short-line-to-short-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("014-description-changed-short-line-to-long-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-014-description-changed-short-line-to-long-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("015-description-changed-short-line-to-long-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-015-description-changed-short-line-to-long-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("016-description-changed-short-lines-to-short-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-016-description-changed-short-lines-to-short-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("017-description-changed-short-lines-to-long-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-017-description-changed-short-lines-to-long-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("018-description-changed-short-lines-to-long-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-018-description-changed-short-lines-to-long-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("019-description-changed-long-line-to-short-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-019-description-changed-long-line-to-short-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("020-description-changed-long-line-to-short-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-020-description-changed-long-line-to-short-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("021-description-changed-long-line-to-long-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-021-description-changed-long-line-to-long-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("022-description-changed-long-lines-to-short-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-022-description-changed-long-lines-to-short-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("023-description-changed-long-lines-to-short-lines", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-023-description-changed-long-lines-to-short-lines`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("024-description-changed-long-lines-to-long-line", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-024-description-changed-long-lines-to-long-line`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("025-unchanged-description-short-multiline", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-025-unchanged-description-short-multiline`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("026-unchanged-description-long-multiline", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-description-changes--case-026-unchanged-description-long-multiline`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

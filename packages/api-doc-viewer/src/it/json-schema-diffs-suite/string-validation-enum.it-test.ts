@@ -5,32 +5,9 @@
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-string-validation-string-validation-enum";
-
-import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
-  await page.waitForFunction(() => {
-    for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
-      const element = document.querySelector(selector);
-      if (!element) {
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        return true;
-      }
-    }
-    return false;
-  });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-  await page.evaluate(switchCombinerNodesToChangedVariant);
-}
 
 describe("JSON Schema Diffs Suite/String Validation/String Validation Enum", () => {
   let story: StoryPage;
@@ -42,35 +19,35 @@ describe("JSON Schema Diffs Suite/String Validation/String Validation Enum", () 
 
   it("001-enum-two-values-added", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-string-validation-enum--case-001-enum-two-values-added`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("002-enum-two-values-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-string-validation-enum--case-002-enum-two-values-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("003-enum-value-appended", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-string-validation-enum--case-003-enum-value-appended`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("004-enum-value-removed", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-string-validation-enum--case-004-enum-value-removed`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("005-enum-two-values-unchanged", async () => {
     story = await storyPage(page, `json-schema-diffs-suite-string-validation-string-validation-enum--case-005-enum-two-values-unchanged`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

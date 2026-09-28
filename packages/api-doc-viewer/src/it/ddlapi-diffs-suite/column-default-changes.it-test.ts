@@ -7,6 +7,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 
@@ -18,20 +19,12 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   it('101-add-default-bigint', async () => {
     story = await storyPage(
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-101-add-default-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -44,7 +37,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-201-remove-default-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -57,7 +50,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-301-replace-default-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -70,7 +63,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-102-add-default-bit',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -83,7 +76,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-202-remove-default-bit',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -96,7 +89,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-302-replace-default-bit',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -109,7 +102,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-103-add-default-bit-varying',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -122,7 +115,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-203-remove-default-bit-varying',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -135,7 +128,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-303-replace-default-bit-varying',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -148,7 +141,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-104-add-default-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -161,7 +154,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-204-remove-default-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -174,7 +167,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-304-replace-default-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -187,7 +180,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-105-add-default-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -200,7 +193,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-205-remove-default-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -213,7 +206,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-305-replace-default-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -226,7 +219,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-106-add-default-char',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -239,7 +232,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-206-remove-default-char',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -252,7 +245,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-306-replace-default-char',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -265,7 +258,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-107-add-default-date',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -278,7 +271,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-207-remove-default-date',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -291,7 +284,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-307-replace-default-date',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -304,7 +297,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-108-add-default-double-precision',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -317,7 +310,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-208-remove-default-double-precision',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -330,7 +323,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-308-replace-default-double-precision',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -343,7 +336,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-109-add-default-integer',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -356,7 +349,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-209-remove-default-integer',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -369,7 +362,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-309-replace-default-integer',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -382,7 +375,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-110-add-default-interval',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -395,7 +388,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-210-remove-default-interval',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -408,7 +401,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-310-replace-default-interval',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -421,7 +414,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-111-add-default-json',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -434,7 +427,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-211-remove-default-json',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -447,7 +440,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-311-replace-default-json',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -460,7 +453,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-112-add-default-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -473,7 +466,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-212-remove-default-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -486,7 +479,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-312-replace-default-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -499,7 +492,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-113-add-default-money',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -512,7 +505,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-213-remove-default-money',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -525,7 +518,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-313-replace-default-money',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -538,7 +531,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-114-add-default-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -551,7 +544,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-214-remove-default-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -564,7 +557,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-314-replace-default-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -577,7 +570,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-115-add-default-real',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -590,7 +583,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-215-remove-default-real',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -603,7 +596,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-315-replace-default-real',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -616,7 +609,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-116-add-default-smallint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -629,7 +622,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-216-remove-default-smallint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -642,7 +635,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-316-replace-default-smallint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -655,7 +648,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-117-add-default-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -668,7 +661,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-217-remove-default-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -681,7 +674,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-317-replace-default-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -694,7 +687,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-118-add-default-time',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -707,7 +700,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-218-remove-default-time',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -720,7 +713,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-318-replace-default-time',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -733,7 +726,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-119-add-default-timetz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -746,7 +739,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-219-remove-default-timetz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -759,7 +752,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-319-replace-default-timetz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -772,7 +765,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-120-add-default-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -785,7 +778,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-220-remove-default-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -798,7 +791,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-320-replace-default-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -811,7 +804,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-121-add-default-timestamptz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -824,7 +817,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-221-remove-default-timestamptz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -837,7 +830,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-321-replace-default-timestamptz',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -850,7 +843,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-122-add-default-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -863,7 +856,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-222-remove-default-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -876,7 +869,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-322-replace-default-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -889,7 +882,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-123-add-default-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -902,7 +895,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-223-remove-default-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -915,7 +908,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-323-replace-default-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -928,7 +921,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-124-add-default-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -941,7 +934,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-224-remove-default-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -954,7 +947,7 @@ describe('DDL API Diffs Suite/Column Default Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-default-changes-samples--case-324-replace-default-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

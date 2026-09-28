@@ -146,7 +146,7 @@ Hand-written suites live under
 `packages/api-doc-viewer/src/stories/json-schema-diffs-extensions-suite/`
 and `packages/api-doc-viewer/src/it/`, reusing the generic helpers in
 `json-schema-diffs-suite/json-schema-diffs-utils.tsx`
-(`createJsonSchemaDiffsViewerArgs`, `createJsonSchemaDiffSampleById`,
+(`createJsonSchemaDiffsViewerArgs`, `createSampleById` from `utils/sample-cases.ts`,
 `createJsonSchemaDiffCaseStoryFactory`, `JsonSchemaDiffSamplesStory`). The same module also
 provides the `JsonSchemaDiffSamplesStoryOas31` and
 `JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle` story variants.

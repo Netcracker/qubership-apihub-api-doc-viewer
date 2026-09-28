@@ -19,8 +19,8 @@ import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-
 import { isObject } from '@netcracker/qubership-apihub-json-crawl';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
-import { parse } from 'yaml';
 import { prepareJsonDiffSchema, REQUEST_BODY_TARGET } from './preprocess';
+import { parseYamlSource } from './utils/parse-yaml-source';
 
 type StoryArgs = ComponentProps<typeof JsonSchemaDiffsViewer> & {
   beforeSchemaText: string
@@ -95,10 +95,10 @@ export const Debug: Story = {
       ...viewerArgs
     } = args
 
-    const beforeSchema = parseJsonOrYaml(beforeSchemaText)
-    const afterSchema = parseJsonOrYaml(afterSchemaText)
-    const beforeComponents = beforeComponentsText ? parseJsonOrYaml(beforeComponentsText) : undefined
-    const afterComponents = afterComponentsText ? parseJsonOrYaml(afterComponentsText) : undefined
+    const beforeSchema = parseYamlSource(beforeSchemaText)
+    const afterSchema = parseYamlSource(afterSchemaText)
+    const beforeComponents = beforeComponentsText ? parseYamlSource(beforeComponentsText) : undefined
+    const afterComponents = afterComponentsText ? parseYamlSource(afterComponentsText) : undefined
 
     const schema = prepareJsonDiffSchema({
       beforeSchema,
@@ -116,25 +116,3 @@ export const Debug: Story = {
   },
 }
 
-function parseJsonOrYaml(text: string): unknown {
-  let parsed: unknown = undefined
-  try {
-    parsed = JSON.parse(text)
-  } catch (error) {
-    console.warn('Cannot parse JSON:', error)
-    parsed = undefined
-  }
-  try {
-    if (!parsed) {
-      parsed = parse(text)
-    }
-  } catch (error) {
-    console.warn('Cannot parse YAML:', error)
-    parsed = undefined
-  }
-  if (!parsed || typeof parsed !== 'object') {
-    parsed = {}
-  }
-  console.debug('Parsed source:', parsed)
-  return parsed
-}

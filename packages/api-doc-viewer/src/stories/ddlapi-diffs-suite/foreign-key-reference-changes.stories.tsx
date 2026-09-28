@@ -3,10 +3,10 @@ import {
   DdlDiffSampleStory,
   collectDdlDiffSampleCases,
   createDdlDiffCaseStoryFactory,
-  createDdlDiffSampleById,
   ddlDiffsSamplesStoryMetaBase,
   type DdlDiffsSamplesStoryObj,
 } from "./ddlapi-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/ddlapi-diffs/foreign-key-reference-changes/*/before.sql",
@@ -19,7 +19,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectDdlDiffSampleCases(beforeFiles, afterFiles);
-const sampleById = createDdlDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {

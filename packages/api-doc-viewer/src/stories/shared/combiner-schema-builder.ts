@@ -149,3 +149,7 @@ export const wrapInCombiner = (
   kind: CombinerKind,
   options: Record<string, unknown>[],
 ): Record<string, unknown> => ({ [kind]: options })
+
+/** Storybook CSF export name for a combiner case id (`001-foo.bar` -> `Case_001_foo_bar`). */
+export const toCombinerCaseExportName = (caseId: string): string =>
+  `Case_${caseId.replace(/[.-]/g, '_')}`

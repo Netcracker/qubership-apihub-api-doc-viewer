@@ -30,8 +30,8 @@ const printStoryFile = ({ schemaType, title, metaId }) => {
   return `import type { Meta, StoryObj } from "@storybook/react";
 import {
   collectJsonSchemaSampleCases,
-  createJsonSchemaSampleById,
 } from "../utils/json-schema-samples-cases";
+import { createSampleById } from "../utils/sample-cases";
 import {
   JsonSchemaSampleStory,
   createCaseStoryFactory,
@@ -45,7 +45,7 @@ const sampleFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);
-const sampleById = createJsonSchemaSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 const createCaseStory = createCaseStoryFactory(sampleById);
 
 // eslint-disable-next-line storybook/story-exports

@@ -6,18 +6,9 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
-import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-variant";
+import { waitForJsonSchemaDiffsViewer } from "./service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-node-changes-summary-case-5-one-level-object-with-primitive-combiner-variants";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-  await page.evaluate(switchCombinerNodesToChangedVariant);
-}
 
 describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 5 — One Level Object With Primitive Combiner Variants", () => {
   let story: StoryPage;
@@ -29,14 +20,14 @@ describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 5 — One Level Ob
 
   it("expanded-root", async () => {
     story = await storyPage(page, `${META_ID}--expanded-root`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("collapsed-root", async () => {
     story = await storyPage(page, `${META_ID}--collapsed-root`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

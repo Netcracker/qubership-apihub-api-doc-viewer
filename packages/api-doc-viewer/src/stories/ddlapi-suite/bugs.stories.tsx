@@ -5,13 +5,8 @@
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DdlTableViewer } from "@apihub/components/DdlTableViewer/DdlTableViewer";
-import { NavigationLinkBuilder } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/navigation-link-builder";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
-
-const navigationLinkBuilder: NavigationLinkBuilder = (schema, table, column) => {
-  console.log(`Navigating to ${schema}.${table}.${column}`);
-  return `#${schema}.${table}.${column}`;
-};
+import { ddlStoryNavigationLinkBuilder } from "./ddl-story-navigation";
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
@@ -437,7 +432,7 @@ export const BugForeignKey: Story = {
     <DdlTableViewer
       source={BUG_FOREIGN_KEY_REALM}
       tableKey={BUG_FOREIGN_KEY_TABLE_KEY}
-      navigationLinkBuilder={navigationLinkBuilder}
+      navigationLinkBuilder={ddlStoryNavigationLinkBuilder}
       devMode
     />
   ),

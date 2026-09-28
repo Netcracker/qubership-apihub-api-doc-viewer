@@ -21,7 +21,7 @@ import {
 } from '@netcracker/qubership-apihub-api-diff'
 import { denormalize, normalize, NormalizeOptions, RefErrorType, stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
 import { ObjectUtils } from '../utils/common/objects'
-import { TEST_DIFF_META_KEYS } from './async-api-diffs-suite/shared-test-data'
+import { TEST_DIFF_META_KEYS } from './shared/test-diff-meta-keys'
 import { TEST_REFERENCE_NAME_PROPERTY } from './async-api-suite/shared-test-data'
 
 const JSO_DIFFS_OPERATION_KEY = 'test-operation'

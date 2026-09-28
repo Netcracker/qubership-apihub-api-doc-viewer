@@ -10,7 +10,6 @@ import {
 } from "./json-schema-type-changes-cases.mjs";
 import { spawnSync } from "child_process";
 import {
-  printJsonSchemaDiffsItWaitFunction,
   toStorybookMetaId,
   toStorybookStorySlug,
 } from "./storybook-story-id-utils.mjs";
@@ -67,9 +66,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 ${storyComponentImport}import {
 ${sharedStoryComponentImport}  createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
-  createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/type-changes/${suite.globPath}/*/before.yaml",
@@ -82,7 +81,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = createJsonSchemaDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
@@ -113,7 +112,7 @@ const printTestFile = (suite, caseIds) => {
         return `
   it("${caseId}", async () => {
     story = await storyPage(page, \`${metaId}--${storySlug}\`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page, { switchCombinerVariant: true });
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });`;
@@ -128,10 +127,9 @@ const printTestFile = (suite, caseIds) => {
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "../service/viewer-waits";
 
 const META_ID = "${metaId}";
-
-${printJsonSchemaDiffsItWaitFunction()}
 
 describe("${suite.title}", () => {
   let story: StoryPage;

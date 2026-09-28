@@ -3,7 +3,6 @@ import type { CombinerKind } from "../shared/combiner-schema-builder.ts";
 import {
   getCombinerDiffCaseDefinitions,
   listCombinerDiffCases,
-  toCombinerCaseExportName,
 } from "./combiner-diff-case-definitions";
 import type { CombinerDiffCase, CombinerDiffCaseDefinition } from "./combiner-diff-case-definitions";
 
@@ -15,7 +14,6 @@ export type {
 export {
   getCombinerDiffCaseDefinitions,
   listCombinerDiffCases,
-  toCombinerCaseExportName,
 } from "./combiner-diff-case-definitions";
 
 export const findCombinerDiffCase = (combinerKind: CombinerKind, caseId: string): CombinerDiffCase => {

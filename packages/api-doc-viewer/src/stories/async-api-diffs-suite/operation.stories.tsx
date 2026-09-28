@@ -5,9 +5,9 @@ import {
   type AsyncApiCaseStoryComponentProps,
   asyncApiDiffSampleReadonlyArgTypes,
   createAsyncApiCaseStoryFactory,
-  createAsyncApiSampleById,
   createAsyncApiViewerArgs
 } from "./async-api-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/async-api-diffs/operation/*/before.yaml",
@@ -20,14 +20,14 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = createAsyncApiSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 const AsyncApiOperationSamplesStory = ({
   beforeYaml,
   afterYaml,
 }: AsyncApiCaseStoryComponentProps) => (
   <AsyncApiOperationDiffsViewer
-    {...createViewerArgs(beforeYaml, afterYaml)}
+    {...createAsyncApiViewerArgs(beforeYaml, afterYaml)}
   />
 );
 
@@ -41,15 +41,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-const OPERATION_KEY = "sendOperation";
-const MESSAGE_KEY = "TestMessage";
-
-const createViewerArgs = (beforeSourceText: string, afterSourceText: string) =>
-  createAsyncApiViewerArgs(beforeSourceText, afterSourceText, {
-    operationKey: OPERATION_KEY,
-    messageKey: MESSAGE_KEY,
-  });
 
 const createCaseStoryBase = createAsyncApiCaseStoryFactory(
   AsyncApiOperationSamplesStory,

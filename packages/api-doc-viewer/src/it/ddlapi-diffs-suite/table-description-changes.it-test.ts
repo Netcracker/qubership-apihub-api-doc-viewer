@@ -6,6 +6,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 const STORY_META_ID = "ddl-api-diffs-suite-table-description-changes-samples";
@@ -18,17 +19,9 @@ describe("DDL API Diffs Suite - Table Description Changes Samples", () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   async function captureCaseSnapshot(caseSlug: string, snapshotSlug: string) {
     story = await storyPage(page, `${STORY_META_ID}--case-${caseSlug}`);
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

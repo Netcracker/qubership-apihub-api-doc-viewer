@@ -3,9 +3,9 @@ import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {
   JsonSchemaDiffSamplesStory,
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
-  createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "../json-schema-diffs-suite/json-schema-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 
 // This suite exercises the hiding feature itself, so stories open with unchanged nodes collapsed.
 const HIDE_UNCHANGED_NODES_BY_DEFAULT = true;
@@ -21,7 +21,7 @@ const afterFiles = import.meta.glob(
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);
-const sampleById = createJsonSchemaDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {

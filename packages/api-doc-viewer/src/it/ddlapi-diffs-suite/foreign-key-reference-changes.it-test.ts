@@ -6,6 +6,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 const STORY_ID_PREFIX = "ddl-api-diffs-suite-foreign-key-reference-changes-samples--case-";
@@ -19,17 +20,9 @@ describe("DDL API Diffs Suite - Foreign Key Reference Changes Samples", () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   async function expectCaseScreenshot(caseId: string) {
     story = await storyPage(page, `${STORY_ID_PREFIX}${caseId}`);
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

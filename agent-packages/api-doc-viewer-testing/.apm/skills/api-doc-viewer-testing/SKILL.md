@@ -178,22 +178,27 @@ npx jest --maxWorkers 1 --verbose -c .config/it/it-test-docker.jest.config.cjs \
 (Requires static showcase on 9009 — e.g. run `npm run development:local-server:static`
 in another terminal, or use full `npm run screenshot-test` which starts it automatically.)
 
-### JSON Schema viewer mount selector
+### Viewer mount waits (`src/it/service/viewer-waits.ts`)
 
-Plain JSON Schema screenshot ITs wait for `[data-testid="json-schema-viewer"]`
-and at least one `[data-name="JsonNode"]`, then run the paint-settle helper (see **Flaky
-rendering**).
+Every screenshot IT — hand-written or emitted by a `bin/` generator — imports its wait from
+`src/it/service/viewer-waits.ts`. **Do not declare local `waitFor…` helpers in IT files**;
+generators emit the import, not a function body.
 
-JSON Schema **diff** screenshot ITs wait for `[data-testid="json-schema-diffs-viewer"]`
-and at least one `[data-name="JsonNode"]`, then the same paint-settle helper.
+| Helper | Waits for |
+| --- | --- |
+| `waitForJsonSchemaViewer(page, options?)` | `[data-testid="json-schema-viewer"]`, then a visible `[data-name="JsonNode"]` **or** `[data-testid="json-schema-combiner-node-viewer"]`, then paint settle |
+| `waitForJsonSchemaDiffsViewer(page, options?)` | same, with `[data-testid="json-schema-diffs-viewer"]` |
+| `waitForDdlTableViewer(page)` / `waitForDdlTableDiffsViewer(page)` | `[data-testid="ddl-table-viewer"]` / `[data-testid="ddl-table-diffs-viewer"]`, then paint settle |
+| `waitForRenderingComplete(page)` | paint settle only (see **Flaky rendering**) |
+
+The combiner alternative is required: a combiner root whose active option is a scalar or
+another combiner renders no `JsonNode`, and waiting on `JsonNode` alone hangs until the
+Puppeteer timeout. `{ switchCombinerVariant: true }` switches oneOf/anyOf nodes to the variant
+holding the diff before capture — it changes rendered content, so keep it exactly as the
+suite's baselines were captured (JSON Schema diffs suites except allOf use it).
 
 A wrong story id produces the same timeout as a broken viewer — rule out ID mismatch first.
 
-### DDL diff viewer mount selector
-
-Diff screenshot ITs wait for `[data-testid="ddl-table-diffs-viewer"]`. A wrong story id
- produces the same timeout as a broken viewer — always rule out ID mismatch before
- debugging React/data-layer issues.
 
 ## Test anatomy
 
@@ -222,6 +227,8 @@ Helpers in `src/it/service/`:
 
 - `storyPage(page, storyId)` — opens iframe URL, sets viewport, hides nav noise.
 - `story.viewComponent()` — locates the rendered viewer root for screenshots.
+- `viewer-waits.ts` — per-viewer mount waits and `waitForRenderingComplete` (see
+  **Viewer mount waits**).
 
 ## Generated vs hand-written suites
 
@@ -261,6 +268,24 @@ the generator is wrong):
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
 - Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
   `number-validation-value-range.stories.tsx` and paired ITs.
+
+**Runner:** generators that import `src/stories/**/*.ts` (combiner, value-range, validation
+suites) fail under plain `node` with `ERR_MODULE_NOT_FOUND` on extensionless TS imports such as
+`../shared/value-range-schema-builder`. Run them with `npx jiti bin/<generator>.mjs` (jiti is a
+root dev dependency).
+
+**Shared story helpers — reuse, do not copy:**
+
+- `src/stories/utils/sample-cases.ts` — case-folder conventions: `collectSampleSources`
+  (one `sample.<ext>` per case), `collectBeforeAfterSampleSources` (`before`/`after` pairs),
+  `createSampleById`. Per-API collectors (`collectSampleCases`, `collectDdlDiffSampleCases`,
+  `collectDdlSampleCases`, `collectJsonSchemaSampleCases`) only map these onto typed fields.
+- `src/stories/shared/test-diff-meta-keys.ts` — the one `TEST_DIFF_META_KEYS` pair for
+  AsyncAPI / JSO / DDL diff stories (merge and viewer must share the Symbol instances).
+- `src/stories/utils/parse-yaml-source.ts` — JSON-or-YAML parsing for stories and debug pages.
+- `src/stories/ddlapi-suite/ddl-story-navigation.ts` — `ddlStoryNavigationLinkBuilder`.
+- `src/stories/json-schema-diffs-suite/json-schema-diffs-utils.tsx` — all JSON Schema diff
+  suites (OAS 3.0 / 3.1, substitution-title variant, `defaultHideUnchangedNodes`).
 
 **`generate-json-schema-samples.mjs` only covers 6 hard-coded types** (`boolean`, `string`,
 `number`, `integer`, `object`, `array` — its `SCHEMA_TYPES` list) under
@@ -347,7 +372,8 @@ exports one story per case; append the Storybook kebab-case story id to
 FK navigation uses two public props on `DdlTableViewer` (see
 `api-doc-viewer-authoring` / `api-doc-viewer-using`):
 
-- **`navigationLinkBuilder`** — required in every DDL story; returns href string.
+- **`navigationLinkBuilder`** — required in every DDL story; returns href string. Stories use
+  the shared `ddlStoryNavigationLinkBuilder` (`src/stories/ddlapi-suite/ddl-story-navigation.ts`).
 - **`navigationLinkComponent`** — omitted in Storybook/screenshot suites; default
   `DefaultNavigationLink` renders `<a href>`.
 
@@ -453,16 +479,10 @@ Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
 
 ## Flaky rendering
 
-Some AsyncAPI diff stories need a paint settle helper before capture:
-
-```typescript
-await page.waitForFunction(() => document.readyState === 'complete')
-await page.evaluate(() => new Promise<void>(resolve =>
-  requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-))
-```
-
-Reuse this pattern when new stories show timing-related snapshot drift.
+Captures must wait for the document to load and two animation frames to paint.
+`waitForRenderingComplete(page)` in `src/it/service/viewer-waits.ts` does exactly that (the
+viewer waits call it); use it directly after interactions such as AsyncAPI section switches
+when new stories show timing-related snapshot drift.
 
 ## Pixel-diff blind spot for near-white diff colors (session lesson)
 

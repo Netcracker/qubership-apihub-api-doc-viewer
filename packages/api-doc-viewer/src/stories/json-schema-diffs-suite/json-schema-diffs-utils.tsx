@@ -112,14 +112,6 @@ export const createJsonSchemaDiffsViewerArgs = (
     options,
   );
 
-export const createJsonSchemaDiffSampleById = <TSample extends JsonSchemaDiffSampleCase>(
-  sampleCases: readonly TSample[],
-): Record<string, TSample> =>
-  sampleCases.reduce<Record<string, TSample>>((accumulator, sampleCase) => {
-    accumulator[sampleCase.caseId] = sampleCase;
-    return accumulator;
-  }, {});
-
 /**
  * `defaultHideUnchangedNodes` seeds the `hideUnchangedNodes` story arg (default `false`: validation
  * and metadata suites show every row; the "Hiding Unchanged Nodes" suite passes `true`).

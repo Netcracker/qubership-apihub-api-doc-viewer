@@ -6,6 +6,7 @@ import path from "path";
 import { StoryPage } from "../service/story-page";
 import { ViewComponent } from "../service/view-component";
 import { storyPage } from "../service/storybook-service";
+import { waitForDdlTableDiffsViewer } from "../service/viewer-waits";
 
 const SNAPSHOTS_DIR = path.resolve(__dirname, "..", "__image_snapshots__");
 
@@ -17,20 +18,12 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
     await jestPuppeteer.resetPage();
   });
 
-  async function waitForDdlTableDiffsViewer() {
-    await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true });
-    await page.waitForFunction(() => document.readyState === "complete");
-    await page.evaluate(() => new Promise<void>(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    ));
-  }
-
   it('001-type-change-int-4-to-bigint', async () => {
     story = await storyPage(
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-001-type-change-int-4-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -43,7 +36,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-002-type-change-int-4-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -56,7 +49,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-003-type-change-int-4-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -69,7 +62,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-004-type-change-int-4-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -82,7 +75,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-005-type-change-int-4-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -95,7 +88,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-006-type-change-int-4-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -108,7 +101,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-007-type-change-int-4-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -121,7 +114,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-008-type-change-int-4-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -134,7 +127,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-009-type-change-int-4-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -147,7 +140,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-010-type-change-bigint-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -160,7 +153,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-011-type-change-bigint-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -173,7 +166,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-012-type-change-bigint-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -186,7 +179,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-013-type-change-bigint-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -199,7 +192,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-014-type-change-bigint-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -212,7 +205,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-015-type-change-bigint-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -225,7 +218,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-016-type-change-bigint-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -238,7 +231,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-017-type-change-bigint-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -251,7 +244,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-018-type-change-bigint-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -264,7 +257,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-019-type-change-boolean-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -277,7 +270,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-020-type-change-boolean-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -290,7 +283,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-021-type-change-boolean-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -303,7 +296,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-022-type-change-boolean-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -316,7 +309,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-023-type-change-boolean-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -329,7 +322,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-024-type-change-boolean-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -342,7 +335,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-025-type-change-boolean-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -355,7 +348,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-026-type-change-boolean-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -368,7 +361,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-027-type-change-boolean-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -381,7 +374,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-028-type-change-uuid-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -394,7 +387,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-029-type-change-uuid-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -407,7 +400,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-030-type-change-uuid-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -420,7 +413,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-031-type-change-uuid-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -433,7 +426,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-032-type-change-uuid-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -446,7 +439,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-033-type-change-uuid-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -459,7 +452,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-034-type-change-uuid-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -472,7 +465,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-035-type-change-uuid-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -485,7 +478,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-036-type-change-uuid-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -498,7 +491,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-037-type-change-varchar-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -511,7 +504,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-038-type-change-varchar-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -524,7 +517,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-039-type-change-varchar-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -537,7 +530,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-040-type-change-varchar-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -550,7 +543,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-041-type-change-varchar-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -563,7 +556,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-042-type-change-varchar-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -576,7 +569,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-043-type-change-varchar-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -589,7 +582,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-044-type-change-varchar-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -602,7 +595,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-045-type-change-varchar-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -615,7 +608,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-046-type-change-text-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -628,7 +621,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-047-type-change-text-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -641,7 +634,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-048-type-change-text-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -654,7 +647,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-049-type-change-text-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -667,7 +660,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-050-type-change-text-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -680,7 +673,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-051-type-change-text-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -693,7 +686,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-052-type-change-text-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -706,7 +699,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-053-type-change-text-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -719,7 +712,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-054-type-change-text-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -732,7 +725,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-055-type-change-numeric-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -745,7 +738,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-056-type-change-numeric-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -758,7 +751,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-057-type-change-numeric-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -771,7 +764,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-058-type-change-numeric-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -784,7 +777,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-059-type-change-numeric-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -797,7 +790,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-060-type-change-numeric-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -810,7 +803,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-061-type-change-numeric-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -823,7 +816,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-062-type-change-numeric-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -836,7 +829,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-063-type-change-numeric-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -849,7 +842,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-064-type-change-timestamp-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -862,7 +855,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-065-type-change-timestamp-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -875,7 +868,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-066-type-change-timestamp-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -888,7 +881,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-067-type-change-timestamp-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -901,7 +894,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-068-type-change-timestamp-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -914,7 +907,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-069-type-change-timestamp-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -927,7 +920,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-070-type-change-timestamp-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -940,7 +933,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-071-type-change-timestamp-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -953,7 +946,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-072-type-change-timestamp-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -966,7 +959,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-073-type-change-bytea-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -979,7 +972,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-074-type-change-bytea-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -992,7 +985,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-075-type-change-bytea-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1005,7 +998,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-076-type-change-bytea-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1018,7 +1011,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-077-type-change-bytea-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1031,7 +1024,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-078-type-change-bytea-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1044,7 +1037,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-079-type-change-bytea-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1057,7 +1050,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-080-type-change-bytea-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1070,7 +1063,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-081-type-change-bytea-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1083,7 +1076,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-082-type-change-jsonb-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1096,7 +1089,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-083-type-change-jsonb-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1109,7 +1102,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-084-type-change-jsonb-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1122,7 +1115,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-085-type-change-jsonb-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1135,7 +1128,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-086-type-change-jsonb-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1148,7 +1141,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-087-type-change-jsonb-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1161,7 +1154,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-088-type-change-jsonb-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1174,7 +1167,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-089-type-change-jsonb-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1187,7 +1180,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-090-type-change-jsonb-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1200,7 +1193,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-091-param-varchar-length-change-1-st',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1213,7 +1206,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-092-param-varchar-length-change-wide',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1226,7 +1219,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-093-param-varchar-add-optional-parameter',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1239,7 +1232,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-094-param-varchar-remove-optional-parameter',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1252,7 +1245,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-095-param-bit-length-change-1-st',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1265,7 +1258,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-096-param-bit-varying-length-change-1-st',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1278,7 +1271,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-097-param-bit-add-optional-parameter',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1291,7 +1284,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-098-param-bit-remove-optional-parameter',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1304,7 +1297,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-099-param-decimal-change-precision-only',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1317,7 +1310,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-100-param-decimal-change-scale-only',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1330,7 +1323,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-101-param-decimal-change-precision-and-scale',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1343,7 +1336,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-102-param-decimal-add-optional-scale',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1356,7 +1349,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-103-param-decimal-remove-optional-scale',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1369,7 +1362,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-104-enum-enum-append-value',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1382,7 +1375,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-105-enum-enum-remove-value',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1395,7 +1388,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-106-enum-enum-change-value',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1408,7 +1401,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-107-enum-enum-change-type-title',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1421,7 +1414,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-108-type-change-int-4-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1434,7 +1427,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-109-type-change-bigint-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1447,7 +1440,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-110-type-change-boolean-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1460,7 +1453,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-111-type-change-uuid-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1473,7 +1466,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-112-type-change-varchar-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1486,7 +1479,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-113-type-change-text-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1499,7 +1492,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-114-type-change-numeric-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1512,7 +1505,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-115-type-change-timestamp-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1525,7 +1518,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-116-type-change-bytea-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1538,7 +1531,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-117-type-change-jsonb-to-enum',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1551,7 +1544,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-118-type-change-enum-to-int-4',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1564,7 +1557,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-119-type-change-enum-to-bigint',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1577,7 +1570,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-120-type-change-enum-to-boolean',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1590,7 +1583,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-121-type-change-enum-to-uuid',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1603,7 +1596,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-122-type-change-enum-to-varchar',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1616,7 +1609,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-123-type-change-enum-to-text',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1629,7 +1622,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-124-type-change-enum-to-numeric',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1642,7 +1635,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-125-type-change-enum-to-timestamp',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1655,7 +1648,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-126-type-change-enum-to-bytea',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,
@@ -1668,7 +1661,7 @@ describe('DDL API Diffs Suite - Column Type Changes Samples', () => {
       page,
       'ddl-api-diffs-suite-column-type-changes-samples--case-127-type-change-enum-to-jsonb',
     );
-    await waitForDdlTableDiffsViewer();
+    await waitForDdlTableDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

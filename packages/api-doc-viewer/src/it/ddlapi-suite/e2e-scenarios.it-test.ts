@@ -4,6 +4,7 @@
  */
 import path from 'path'
 import { storyPage } from '../service/storybook-service'
+import { waitForDdlTableViewer } from '../service/viewer-waits'
 
 const META_ID = 'ddlapi-suite-e2e-scenarios'
 const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
@@ -18,14 +19,6 @@ const STORY_IDS: string[] = [
   'no-heading-with-table-name',
 ]
 
-async function waitForDdlTableViewer() {
-  await page.waitForSelector('[data-testid="ddl-table-viewer"]', { visible: true })
-  await page.waitForFunction(() => document.readyState === 'complete')
-  await page.evaluate(() => new Promise<void>(resolve =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-  ))
-}
-
 beforeEach(async () => {
   await jestPuppeteer.resetPage()
 })
@@ -33,7 +26,7 @@ beforeEach(async () => {
 for (const storyId of STORY_IDS) {
   it(storyId, async () => {
     const story = await storyPage(page, `${META_ID}--${storyId}`)
-    await waitForDdlTableViewer()
+    await waitForDdlTableViewer(page)
     const component = await story.viewComponent()
     expect(await component.captureScreenshot()).toMatchImageSnapshot({
       customSnapshotsDir: SNAPSHOTS_DIR,

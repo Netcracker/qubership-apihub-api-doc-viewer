@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TableKey } from "@netcracker/qubership-apihub-next-data-model/shared/ddlapi/types/table-key";
 import type { DdlSampleCase } from "../utils/ddl-samples-cases";
-import { createDdlSampleById } from "../utils/ddl-samples-cases";
+import { createSampleById } from "../utils/sample-cases";
 import {
   DdlSampleStory,
   createCaseStoryFactory,
@@ -59,7 +59,7 @@ const collectE2eSampleCases = (): DdlSampleCase[] => {
   );
 };
 
-const sampleById = createDdlSampleById(collectE2eSampleCases());
+const sampleById = createSampleById(collectE2eSampleCases());
 const createCaseStory = createCaseStoryFactory(sampleById, {
   perCase: {
     sample_table: { noHeading: true },

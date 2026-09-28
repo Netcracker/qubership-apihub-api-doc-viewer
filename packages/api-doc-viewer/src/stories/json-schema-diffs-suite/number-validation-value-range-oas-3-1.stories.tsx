@@ -6,13 +6,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStoryOas31,
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,
-  createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 import { buildValueRangeDiffOas31ProgrammaticSampleCases } from "./value-range-diff-oas-31-samples";
 
 const sampleCases = buildValueRangeDiffOas31ProgrammaticSampleCases({ includeOas31Only: true });
-const sampleById = createJsonSchemaDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {

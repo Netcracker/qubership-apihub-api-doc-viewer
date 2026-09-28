@@ -6,16 +6,9 @@
 import { StoryPage } from "./service/story-page";
 import { ViewComponent } from "./service/view-component";
 import { storyPage } from "./service/storybook-service";
+import { waitForJsonSchemaDiffsViewer } from "./service/viewer-waits";
 
 const META_ID = "json-schema-diffs-suite-node-changes-summary-case-1-one-level-object";
-
-async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
-  await page.waitForFunction(() => document.readyState === "complete");
-  await page.evaluate(() => new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-  ));
-}
 
 describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 1 — One Level Object", () => {
   let story: StoryPage;
@@ -27,14 +20,14 @@ describe("JSON Schema Diffs Suite (Node Changes Summary)/Case 1 — One Level Ob
 
   it("expanded-root", async () => {
     story = await storyPage(page, `${META_ID}--expanded-root`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("collapsed-root", async () => {
     story = await storyPage(page, `${META_ID}--collapsed-root`);
-    await waitForJsonSchemaDiffViewer();
+    await waitForJsonSchemaDiffsViewer(page);
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

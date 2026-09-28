@@ -157,7 +157,7 @@ unchanged.
 | `JsonSchemaNextViewerContext` / `useJsonSchemaNextViewerContext` | `JsonSchemaViewerContext` / `useJsonSchemaViewerContext` |
 | `data-testid="json-schema-next-viewer"` | `data-testid="json-schema-viewer"` |
 | `data-testid="json-schema-next-diffs-viewer"` | `data-testid="json-schema-diffs-viewer"` |
-| `waitForJsonSchemaNextDiffsViewer` (screenshot ITs) | `waitForJsonSchemaDiffsViewer` |
+| `waitForJsonSchemaNextDiffsViewer` (local copies in screenshot ITs) | `waitForJsonSchemaDiffsViewer(page, options)` from `src/it/service/viewer-waits.ts` |
 
 ### JSON Schema type names (next-data-model)
 

@@ -8,6 +8,7 @@ import {
   resolveDebugTableKey,
   resolveTableKeyFromRealm,
 } from "./resolve-debug-table-key";
+import { ddlStoryNavigationLinkBuilder } from "./ddl-story-navigation";
 
 export const DEFAULT_DDL = `CREATE TABLE users (
   id bigint PRIMARY KEY,
@@ -18,11 +19,6 @@ export const DEFAULT_DDL = `CREATE TABLE users (
 export type BuildFromDdlDebugProps = {
   ddlText: string;
 } & DebugTableKeyControls;
-
-const navigationLinkBuilder = (schema: string, table: string, column: string) => {
-  console.log(`Navigating to ${schema}.${table}.${column}`);
-  return `#${schema}.${table}.${column}`;
-};
 
 export const BuildFromDdlDebug: FC<BuildFromDdlDebugProps> = ({
   ddlText,
@@ -108,7 +104,7 @@ export const BuildFromDdlDebug: FC<BuildFromDdlDebugProps> = ({
     <DdlTableViewer
       source={realm}
       tableKey={tableKey}
-      navigationLinkBuilder={navigationLinkBuilder}
+      navigationLinkBuilder={ddlStoryNavigationLinkBuilder}
       devMode={true}
     />
   );

@@ -7,13 +7,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle,
   createJsonSchemaDiffCaseStoryFactory,
-  createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from "./json-schema-diffs-utils";
+import { createSampleById } from "../utils/sample-cases";
 import { buildCombinerDiffProgrammaticSampleCases } from "./combiner-diff-samples";
 
 const sampleCases = buildCombinerDiffProgrammaticSampleCases("allOf");
-const sampleById = createJsonSchemaDiffSampleById(sampleCases);
+const sampleById = createSampleById(sampleCases);
 
 // eslint-disable-next-line storybook/story-exports
 const meta = {
