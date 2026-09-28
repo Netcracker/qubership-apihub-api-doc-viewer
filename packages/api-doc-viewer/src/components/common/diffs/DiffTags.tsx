@@ -43,7 +43,7 @@ export type DiffTagsProps = {
   isNodeChanged: boolean
   isContentChanged: boolean
   // GraphQL/legacy-only component (see shared-components/diffs/TagsWithDiffs.tsx for the
-  // next-data-model-typed equivalent used by JSON Schema Next and DDL).
+  // next-data-model-typed equivalent used by JSON Schema and DDL).
   $nodeChange?: NodeChange
   $metaChanges?: DiffNodeMeta['$metaChanges']
   $valueChanges?: DiffNodeValue['$changes']

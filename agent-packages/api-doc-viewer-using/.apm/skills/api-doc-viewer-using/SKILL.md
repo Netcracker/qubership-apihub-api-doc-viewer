@@ -19,8 +19,8 @@ This skill derives from the authoring and testing skills and the design in
 
 ```typescript
 import {
-  JsonSchemaNextViewer,
-  JsonSchemaNextDiffsViewer,
+  JsonSchemaViewer,
+  JsonSchemaDiffsViewer,
   GraphQLOperationViewer,
   GraphQLOperationDiffViewer,
   AsyncApiOperationViewer,
@@ -52,7 +52,7 @@ build/normalisation pipeline — do not hand-merge before/after specs in UI code
 
 | API type | Plain | Diffs | Document prop |
 | --- | --- | --- | --- |
-| JSON Schema | `JsonSchemaNextViewer` | `JsonSchemaNextDiffsViewer` | `schema` (merged document for diffs) |
+| JSON Schema | `JsonSchemaViewer` | `JsonSchemaDiffsViewer` | `schema` (merged document for diffs) |
 | GraphQL operation (legacy) | `GraphQLOperationViewer` | `GraphQLOperationDiffViewer` | `source` |
 | AsyncAPI operation | `AsyncApiOperationViewer` | `AsyncApiOperationDiffsViewer` | `source` / `mergedSource` |
 | DDL table | `DdlTableViewer` | `DdlTableDiffsViewer` | `source` / `mergedSource` |
@@ -110,10 +110,10 @@ before passing it as `source`. Select the operation with `operationType`
 
 ## JSON Schema-specific wiring
 
-`JsonSchemaNextViewer` takes `schema` plus optional `expandedDepth`, `displayMode`,
+`JsonSchemaViewer` takes `schema` plus optional `expandedDepth`, `displayMode`,
 `initialLevel`, and `customizationOptions` (`headerRowTitle` replaces the root title;
 `suppressRootNestingIndicator` renders a wrapper object's properties as a flat
-top-level list). `JsonSchemaNextDiffsViewer` takes the merged document as `schema`,
+top-level list). `JsonSchemaDiffsViewer` takes the merged document as `schema`,
 plus `diffMetaKeys`, optional `diffTypes`, and `hideUnchangedNodes` (default `true`:
 runs of unchanged nodes collapse behind a "Show N unchanged nodes" row).
 

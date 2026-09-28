@@ -77,10 +77,10 @@ Rows in rendering order:
 
 | UI element | Condition | Rendered by |
 | --- | --- | --- |
-| `Headers` (h3) + schema | `headers` present | `JsonSchemaNextViewer`, root wrapped as `Type`, root nesting indicator suppressed |
+| `Headers` (h3) + schema | `headers` present | `JsonSchemaViewer`, root wrapped as `Type`, root nesting indicator suppressed |
 | `Extensions` (h3) | `x-*` keys on the message | `JsoViewer` |
 | `Bindings` (h3) | `bindings` present | see **Bindings** |
-| `Payload` (h3) + schema | `payload` present | `JsonSchemaNextViewer`, same wrapping as headers |
+| `Payload` (h3) + schema | `payload` present | `JsonSchemaViewer`, same wrapping as headers |
 
 ### Channel section (`MessageChannelNodeViewer`)
 
@@ -88,7 +88,7 @@ Rows in rendering order:
 | --- | --- | --- |
 | Channel title (h2) | `title`, else the node key | `TitleRow` |
 | Description, summary | present | `TextRow` (h5) |
-| `Address Parameters` (h3) | `parameters` present | `JsonSchemaNextViewer`; each parameter gets a `Location` custom annotation row |
+| `Address Parameters` (h3) | `parameters` present | `JsonSchemaViewer`; each parameter gets a `Location` custom annotation row |
 | `Servers` (h3) | `servers` present | one server block per server |
 | `Extensions` (h3) | `x-*` keys on the channel | `JsoViewer` |
 | `Bindings` (h3) | `bindings` present | see **Bindings** |
@@ -133,7 +133,7 @@ props come from `buildRowDiffProps` over precomputed `nodeDiffs`, `descendantDif
 | Server address row | `protocol`, `host` (max severity of both) | `server-address-row` |
 | Binding version | `version` | `binding-version-row` |
 | `Headers` / `Payload` / `Address Parameters` / `Extensions` / `Bindings` / `Servers` titles | node-level diff | `title-row` |
-| Headers, payload, parameters content | continues in `JsonSchemaNextDiffsViewer` | JSON Schema placements |
+| Headers, payload, parameters content | continues in `JsonSchemaDiffsViewer` | JSON Schema placements |
 | Bindings and extensions content | continues in `JsoDiffsViewer` | JSO placements |
 
 Descendant summaries cross tree boundaries through the forward aggregators `kind-binding`,

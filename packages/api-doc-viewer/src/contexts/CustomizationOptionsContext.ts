@@ -11,7 +11,7 @@ export type CustomizationOptions = {
   /**
    * Root-only: suppresses the root node's own title row and the nesting-indicator row before its
    * children, so a synthetic wrapper schema's properties render as a flat top-level list instead
-   * of one nested "object" row. Mirrors the legacy `JsonSchemaViewer`'s
+   * of one nested "object" row. Mirrors the removed legacy (api-data-model based) `JsonSchemaViewer`'s
    * `overriddenKind === 'parameters'` behavior for hosts (AsyncAPI message content/parameters,
    * JSO-embedded schema values) that wrap a raw value in `{type: 'object', properties: {...}}`
    * purely to get a property row per key.

@@ -108,7 +108,7 @@ export class JsonSchemaTreeBuilder extends TreeBuilder<
         // level like every other node, the lazy-materialization depth budget (`materializeDepth`
         // passed by the viewer) would run one level short for anything below a combiner,
         // forcing an "initially expanded" chosen variant to render collapsed because its
-        // children array came back empty (see JsonSchemaNextViewer.tsx for the matching
+        // children array came back empty (see JsonSchemaViewer.tsx for the matching
         // `materializeDepth` derivation from `expandedDepth`).
         newDataLevel: !isPlainCombinerNodeKind(kind),
         parent,

@@ -6,7 +6,7 @@ import { WithPrecededByProps } from "../WithPrecededByProps"
 export enum TextRowUsage {
   Default = 'default',
   DdlApiProperty = 'ddlapi-property',
-  /** JsonSchemaNextViewer description and deprecation-reason typography. */
+  /** JsonSchemaViewer description and deprecation-reason typography. */
   JsonSchemaDescription = 'json-schema-description',
 }
 

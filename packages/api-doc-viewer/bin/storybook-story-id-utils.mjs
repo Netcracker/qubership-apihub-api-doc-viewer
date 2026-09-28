@@ -8,7 +8,7 @@ export const toStorybookMetaId = (title) => title.split("/").map(sanitize).join(
 export const toStorybookStorySlug = (exportName) => kebabCase(exportName);
 
 /**
- * Screenshot IT wait helper body for JSON Schema Next diffs viewers. Includes the import for
+ * Screenshot IT wait helper body for JSON Schema diffs viewers. Includes the import for
  * `switchCombinerNodesToChangedVariant` and a call to it at the end of the wait, so every
  * generated diffs-suite IT test picks the oneOf/anyOf combiner variant that actually contains
  * the diff before capturing a screenshot -- a safe no-op on pages with no combiner (or none of
@@ -20,7 +20,7 @@ export const toStorybookStorySlug = (exportName) => kebabCase(exportName);
 export const printJsonSchemaDiffsItWaitFunction = () => `import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
   await page.waitForFunction(() => {
     for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
       const element = document.querySelector(selector);

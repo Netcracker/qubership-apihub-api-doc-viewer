@@ -2,8 +2,8 @@
 
 Design (source of truth): `docs/design/json-schema/features/validation-rows.md`.
 
-Reference for AI assistants working on **validation constraint rows** in the JSON Schema Next stack
-(`JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` + `JsonSchemaTreeWithDiffsBuilder`).
+Reference for AI assistants working on **validation constraint rows** in the JSON Schema stack
+(`JsonSchemaViewer` / `JsonSchemaDiffsViewer` + `JsonSchemaTreeWithDiffsBuilder`).
 
 Implementation paths, session lessons, and troubleshooting.
 
@@ -58,7 +58,7 @@ Implementation map for the with-diffs rules:
 | Value-range partial bounds and dialects | `value-range-diff-side-display.ts` (`JsonSchemaValueRangeDiffResolver`), `bound-range.ts`, `json-schema-bound-range-dialect.ts` |
 | Chip keys `"0"` / `"1"` (value range) | `buildValueRangeChipStringDiffs`, `mergeValueRangeLabelChipDiffs` |
 | Side entries | `resolveJsonSchemaValidationRowSideEntries` (`property-row-diffs.ts`); pass `valueRangeCrawlDiffs` for value range |
-| Canonical row order | `JsonSchemaValidationRows.sortByType` (`JsonSchemaNextViewer/utils/validation-rows.ts`) |
+| Canonical row order | `JsonSchemaValidationRows.sortByType` (`JsonSchemaViewer/utils/validation-rows.ts`) |
 
 ---
 
@@ -68,7 +68,7 @@ Rows are not rendered in `JsonSchemaValidationRows.resolve` push order alone. `S
 appends **diff-only rows** (a row whose source keys have no *current* value — the owning type
 was fully removed, or not yet added — but still carries semantic diffs per
 `hasJsonSchemaValidationRowSemanticDiffs`) **after** the base rows, then sorts the combined list
-through `JsonSchemaValidationRows.sortByType` (`JsonSchemaNextViewer/utils/validation-rows.ts`)
+through `JsonSchemaValidationRows.sortByType` (`JsonSchemaViewer/utils/validation-rows.ts`)
 before rendering.
 
 **Why a sort, not just careful push order:** concatenating `[...baseRows, ...diffOnlyRows]`
@@ -267,7 +267,7 @@ pure, non-React helper defined at the top of the file — fails with
 
 When logic in a viewer `.tsx` component needs a direct unit test (not a screenshot IT), extract it
 to a sibling **CSS-free** `.ts` file under `utils/` first (e.g.
-`JsonSchemaNextViewer/utils/validation-rows.ts`), import it back into the component,
+`JsonSchemaViewer/utils/validation-rows.ts`), import it back into the component,
 and write the test against the utils file. Do not try to work around the Jest failure with mocks
 or moduleNameMapper for CSS — extraction is simpler and keeps the logic reusable/testable
 independent of the component tree.

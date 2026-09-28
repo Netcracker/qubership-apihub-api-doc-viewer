@@ -14,7 +14,7 @@ import {
   buildCombinerPlainProgrammaticSampleCases,
   type CombinerPlainProgrammaticSampleCase,
 } from './combiner-plain-samples'
-import { JsonSchemaNextViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer'
+import { JsonSchemaViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaViewer'
 
 const sampleCases = buildCombinerPlainProgrammaticSampleCases("oneOf");
 const sampleById = sampleCases.reduce<Record<string, CombinerPlainProgrammaticSampleCase>>(
@@ -37,7 +37,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
-        <JsonSchemaNextViewer schema={resolvedSample.schema} expandedDepth={5} />
+        <JsonSchemaViewer schema={resolvedSample.schema} expandedDepth={5} />
       );
     },
   };

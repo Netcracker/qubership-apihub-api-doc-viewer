@@ -1,6 +1,6 @@
 import { stringify as stringifyYaml } from "yaml";
 import type { ArgTypes, Meta, StoryObj } from "@storybook/react";
-import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer"
+import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer"
 import type { JsonSchemaSampleCase } from "../utils/json-schema-samples-cases"
 
 const JSON_SCHEMA_SUITE_EXPANDED_DEPTH = 5;
@@ -53,7 +53,7 @@ export const createCaseStoryFactory = (
       render: (args) => {
         const resolvedSample = sampleById[args.caseId];
         return (
-          <JsonSchemaNextViewer
+          <JsonSchemaViewer
             schema={resolvedSample.schema}
             expandedDepth={JSON_SCHEMA_SUITE_EXPANDED_DEPTH}
           />

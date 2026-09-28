@@ -1,6 +1,6 @@
 # JSON Schema fixtures
 
-Plain (non-diff) fixtures for `JsonSchemaNextViewer`. Each YAML case is
+Plain (non-diff) fixtures for `JsonSchemaViewer`. Each YAML case is
 `<category>/<case-id>/sample.yaml`. Design baseline:
 `docs/design/json-schema/display-coverage.md`.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Find the widest/deepest JSON Schema in an OpenAPI document for JSON Schema Next
+ * Find the widest/deepest JSON Schema in an OpenAPI document for JSON Schema
  * viewer performance demos.
  *
  * Uses @netcracker/qubership-apihub-api-unifier to resolve internal $ref pointers
@@ -200,7 +200,7 @@ function collectStructuralChildSchemas(schema) {
 }
 
 /**
- * Cycle-aware tree measure aligned with JSON Schema Next crawl semantics.
+ * Cycle-aware tree measure aligned with JSON Schema crawl semantics.
  *
  * @param {unknown} rootSchema
  */
@@ -621,7 +621,7 @@ async function main() {
     return;
   }
 
-  process.stdout.write("\nLargest JSON Schema candidates (JSON Schema Next crawl semantics)\n");
+  process.stdout.write("\nLargest JSON Schema candidates (JSON Schema crawl semantics)\n");
   process.stdout.write(`Source: ${filePath}\n`);
   if (winner) {
     process.stdout.write("\nRecommended Storybook root pointer:\n");

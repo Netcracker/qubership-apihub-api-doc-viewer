@@ -11,7 +11,7 @@ const META_ID = "json-schema-diffs-suite-object-properties-and-additional-proper
 import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-changed-variant";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
   await page.waitForFunction(() => {
     for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
       const element = document.querySelector(selector);

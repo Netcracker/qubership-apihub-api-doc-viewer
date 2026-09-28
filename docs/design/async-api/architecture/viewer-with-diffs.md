@@ -15,7 +15,7 @@ flowchart TB
   Guards["shared-utilities/tree-node-guards.ts<br/>is*NodeWithDiffs"]
   Rows["TitleRow · TextRow · AddressRow · ServerAddressRow<br/>→ DiffFloatingBadgeWrapper → SideBySideLayout"]
   SectionSelector["MessageSectionsViewer<br/>Selector options with diffsSummary · descendantDiffsSummary"]
-  JsonSchemaD["JsonSchemaNextDiffsViewer<br/>(headers · payload · parameters)"]
+  JsonSchemaD["JsonSchemaDiffsViewer<br/>(headers · payload · parameters)"]
   JsoD["JsoDiffsViewer<br/>(bindings · extensions)"]
   Wrap["wrapJsonSchemaForDiffsViewer ·<br/>prepareBindingValueInCaseOfWhollyChanged"]
 

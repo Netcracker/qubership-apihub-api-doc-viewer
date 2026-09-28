@@ -9,8 +9,8 @@ import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubersh
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { AsyncApiTreeNodeValue, AsyncApiTreeNodeValueTypeBinding } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { JsonSchemaNextDiffsViewer } from "../JsonSchemaNextViewer/JsonSchemaNextDiffsViewer";
-import { JsonSchemaNextViewer } from "../JsonSchemaNextViewer/JsonSchemaNextViewer";
+import { JsonSchemaDiffsViewer } from "../JsonSchemaViewer/JsonSchemaDiffsViewer";
+import { JsonSchemaViewer } from "../JsonSchemaViewer/JsonSchemaViewer";
 import { JsoDiffsViewer } from "../JsoViewer/JsoDiffsViewer";
 import { JsoViewer } from "../JsoViewer/JsoViewer";
 import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/node-diff-props";
@@ -130,7 +130,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           displayMode={displayMode}
           initialLevel={1}
           supportJsonSchema={true}
-          embeddedSchemaDiffsComponent={JsonSchemaNextDiffsViewer}
+          embeddedSchemaDiffsComponent={JsonSchemaDiffsViewer}
           // diffs specific
           diffMetaKeys={diffMetaKeys}
         />
@@ -144,7 +144,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           displayMode={displayMode}
           initialLevel={1}
           supportJsonSchema={true}
-          embeddedSchemaComponent={JsonSchemaNextViewer}
+          embeddedSchemaComponent={JsonSchemaViewer}
         />
       )
     }

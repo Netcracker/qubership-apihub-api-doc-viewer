@@ -1,11 +1,11 @@
-import { JsonSchemaNextViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer';
+import { JsonSchemaViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaViewer';
 import { isObject } from '@netcracker/qubership-apihub-json-crawl';
 import type { Meta, StoryObj } from '@storybook/react';
 import { ComponentProps } from 'react';
 import { parse } from 'yaml';
 import { prepareJsonSchema, REQUEST_BODY_TARGET } from './preprocess';
 
-type StoryArgs = ComponentProps<typeof JsonSchemaNextViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
   schemaText: string
   componentsText?: string
 }
@@ -14,7 +14,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaNextViewer> & {
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: 'Debug/Json Schema Viewer',
-  component: JsonSchemaNextViewer,
+  component: JsonSchemaViewer,
   parameters: {},
   argTypes: {
     schemaText: {
@@ -58,7 +58,7 @@ export const Debug: Story = {
     console.log(schemaText)
     console.debug('Prepared schema:', schema)
 
-    return <JsonSchemaNextViewer {...viewerArgs} schema={schema} />
+    return <JsonSchemaViewer {...viewerArgs} schema={schema} />
   }
 }
 

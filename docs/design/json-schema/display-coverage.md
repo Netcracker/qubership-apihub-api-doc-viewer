@@ -1,6 +1,6 @@
 # JSON Schema — display coverage
 
-Baseline for the JSON Schema stack (`JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` +
+Baseline for the JSON Schema stack (`JsonSchemaViewer` / `JsonSchemaDiffsViewer` +
 `JsonSchemaTreeBuilder` / `JsonSchemaTreeWithDiffsBuilder`). Assumes **current behaviour is
 correct**: this document records what is shown today, what is omitted on purpose, and how to
 classify a gap before planning work or writing tests.
@@ -20,19 +20,19 @@ Keep in sync when behaviour changes.
 | Row visibility (plain) | `packages/next-data-model/src/building-service/json-schema/tree/node-visibility-data/` |
 | Row visibility (with diffs) | `packages/next-data-model/src/building-service/json-schema/tree-with-diffs/node-visibility-data/` |
 | Hiding unchanged nodes | `packages/next-data-model/src/building-service/json-schema/tree-with-diffs/changed-only/` |
-| Viewers | `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/` |
+| Viewers | `packages/api-doc-viewer/src/components/JsonSchemaViewer/` |
 | Fixture catalogues | `packages/samples/json-schema/README.md`, `packages/samples/json-schema-diffs/README.md` |
 
 ## Scope
 
 One JSON Schema document (plain) or one merged `apiDiff` document (with diffs), rendered as a
-property tree. Not OpenAPI path navigation. The legacy `JsonSchemaViewer` has been removed; the
+property tree. Not OpenAPI path navigation. The legacy api-data-model based `JsonSchemaViewer` has been removed and its next-data-model successor (formerly `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer`) now owns the name; the
 JSON Schema stack also renders AsyncAPI headers, payload and channel parameters.
 
 | Viewer | Props |
 | --- | --- |
-| `JsonSchemaNextViewer` | `schema`, `expandedDepth`, `displayMode`, `devMode`, `initialLevel`, `customizationOptions` |
-| `JsonSchemaNextDiffsViewer` | same, plus `diffMetaKeys`, `diffTypes`, `hideUnchangedNodes` (default `true`) |
+| `JsonSchemaViewer` | `schema`, `expandedDepth`, `displayMode`, `devMode`, `initialLevel`, `customizationOptions` |
+| `JsonSchemaDiffsViewer` | same, plus `diffMetaKeys`, `diffTypes`, `hideUnchangedNodes` (default `true`) |
 
 `customizationOptions.headerRowTitle` replaces the root title; `suppressRootNestingIndicator`
 flattens a synthetic wrapper schema into a top-level property list (used by AsyncAPI).
@@ -43,7 +43,7 @@ flattens a synthetic wrapper schema into a top-level property list (used by Asyn
 schema / merged schema
   → JsonSchemaTreeBuilder | JsonSchemaTreeWithDiffsBuilder   (lazy: materializeDepth / expandedDepth)
   → JsonSchemaTree | JsonSchemaTreeWithDiffs
-  → JsonSchemaNextViewer | JsonSchemaNextDiffsViewer
+  → JsonSchemaViewer | JsonSchemaDiffsViewer
   → JsonSchemaNodeViewer[WithDiffs] → SchemaNodeViewer[WithDiffs] | CombinerNodeViewer[WithDiffs]
 ```
 
@@ -113,7 +113,7 @@ Validation row labels: `Value range`, `Value length`, `Value pattern`, `Value mu
 
 ## Displayed (with diffs)
 
-`JsonSchemaNextDiffsViewer` renders the same rows in `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE`. All diff
+`JsonSchemaDiffsViewer` renders the same rows in `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE`. All diff
 state is precomputed by next-data-model; the viewer reads it through `JsonSchemaRowDiffs`,
 `JsonSchemaCombinerSelectorRowResolver`, and `JsonSchemaTypeLabelResolver`.
 

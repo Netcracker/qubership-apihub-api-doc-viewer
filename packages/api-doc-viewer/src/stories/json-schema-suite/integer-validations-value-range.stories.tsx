@@ -3,7 +3,7 @@
  * Regenerate: node bin/generate-json-schema-validation-suite-stories.mjs
  */
 import type { Meta, StoryObj } from "@storybook/react";
-import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
+import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,
@@ -36,7 +36,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
-        <JsonSchemaNextViewer schema={resolvedSample.schema} expandedDepth={5} />
+        <JsonSchemaViewer schema={resolvedSample.schema} expandedDepth={5} />
       );
     },
   };

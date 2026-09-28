@@ -10,7 +10,7 @@ import { switchCombinerNodesToChangedVariant } from "../../utils/combiner-change
 const META_ID = "json-schema-diffs-suite-number-validation-number-validation-value-range";
 
 async function waitForJsonSchemaDiffViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
   await page.waitForFunction(() => {
     for (const selector of ['[data-name="JsonNode"]', '[data-testid="json-schema-combiner-node-viewer"]']) {
       const element = document.querySelector(selector);

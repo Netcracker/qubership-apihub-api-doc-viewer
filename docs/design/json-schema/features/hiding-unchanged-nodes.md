@@ -2,7 +2,7 @@
 
 JSON Schema application of the shared mechanism in
 [../../shared/features/hiding-unchanged-nodes.md](../../shared/features/hiding-unchanged-nodes.md).
-Applies only to the with-diffs data model and `JsonSchemaNextDiffsViewer`
+Applies only to the with-diffs data model and `JsonSchemaDiffsViewer`
 (`hideUnchangedNodes`, default `true`).
 
 | Piece | Location |

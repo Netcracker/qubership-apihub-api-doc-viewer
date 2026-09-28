@@ -18,7 +18,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import "../shared-styles/diffs/index.css"
 import { DefaultExtensionsJsoComponent, DefaultExtensionsJsoDiffsComponent } from "./embedding/DefaultJsonSchemaEmbedding"
 import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from "./embedding/JsonSchemaEmbeddingContext"
-import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
+import { JsonSchemaViewerContext } from "./JsonSchemaViewerContext"
 import { JsonSchemaNodeViewerWithDiffs } from "./JsonSchemaNodeViewerWithDiffs"
 import { resolveJsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode"
 import {
@@ -26,7 +26,7 @@ import {
   useUnchangedBlocksContextValue,
 } from "./UnchangedBlocksContext"
 
-export type JsonSchemaNextDiffsViewerProps = {
+export type JsonSchemaDiffsViewerProps = {
   schema: unknown
   expandedDepth?: number
   displayMode?: DisplayMode
@@ -45,19 +45,19 @@ export type JsonSchemaNextDiffsViewerProps = {
   hideUnchangedNodes?: boolean
 }
 
-export const JsonSchemaNextDiffsViewer: FC<JsonSchemaNextDiffsViewerProps> = memo((props) => {
+export const JsonSchemaDiffsViewer: FC<JsonSchemaDiffsViewerProps> = memo((props) => {
   if (props.schema === null || props.schema === undefined) {
     return null
   }
 
   return (
-    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSON Schema Next Diffs Viewer" />}>
-      <JsonSchemaNextDiffsViewerInner {...props} />
+    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSON Schema Diffs Viewer" />}>
+      <JsonSchemaDiffsViewerInner {...props} />
     </ErrorBoundary>
   )
 })
 
-const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (props) => {
+const JsonSchemaDiffsViewerInner: FC<JsonSchemaDiffsViewerProps> = (props) => {
   const {
     schema,
     expandedDepth = DEFAULT_EXPANDED_DEPTH,
@@ -81,7 +81,7 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
   const builder = useMemo(
     () => new JsonSchemaTreeWithDiffsBuilder({
       source: schema,
-      // See JsonSchemaNextViewer.tsx for why `expandedDepth` must be shifted by `initialLevel`
+      // See JsonSchemaViewer.tsx for why `expandedDepth` must be shifted by `initialLevel`
       // and incremented by 1 before being passed as `materializeDepth`: the builder's depth is
       // the crawled node's own 1-indexed depth, while `expandedDepth`/`initialLevel` are
       // 0-indexed UI levels, so passing `expandedDepth` unchanged defers a node's children one
@@ -132,19 +132,19 @@ const JsonSchemaNextDiffsViewerInner: FC<JsonSchemaNextDiffsViewerProps> = (prop
       <DiffMetaKeysContext.Provider value={diffMetaKeys}>
         <DiffTypesContext.Provider value={diffTypes}>
           <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
-            <JsonSchemaNextViewerContext.Provider value={viewerContext}>
+            <JsonSchemaViewerContext.Provider value={viewerContext}>
               <CustomizationOptionsContext.Provider value={customizationOptions}>
                 <DisplayModeContext.Provider value={displayMode}>
                   <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                     <LevelContext.Provider value={initialLevel}>
-                      <div data-testid="json-schema-next-diffs-viewer">
+                      <div data-testid="json-schema-diffs-viewer">
                         <JsonSchemaNodeViewerWithDiffs node={root} />
                       </div>
                     </LevelContext.Provider>
                   </LayoutModeContext.Provider>
                 </DisplayModeContext.Provider>
               </CustomizationOptionsContext.Provider>
-            </JsonSchemaNextViewerContext.Provider>
+            </JsonSchemaViewerContext.Provider>
           </UnchangedBlocksContext.Provider>
         </DiffTypesContext.Provider>
       </DiffMetaKeysContext.Provider>

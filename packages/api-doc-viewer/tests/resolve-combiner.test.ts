@@ -8,7 +8,7 @@ import { TreeNodeComplexityTypes } from "@netcracker/qubership-apihub-next-data-
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-kind"
 import { resolveJsonSchemaTypeLabel } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/type-label"
-import { JsonSchemaCombiner } from "../src/components/JsonSchemaNextViewer/utils/resolve-combiner"
+import { JsonSchemaCombiner } from "../src/components/JsonSchemaViewer/utils/resolve-combiner"
 
 const DIFF_META_KEYS = {
   diffsMetaKey: DIFF_META_KEY,

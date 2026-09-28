@@ -14,7 +14,7 @@ export const JsonSchemaEmbeddingContext = createContext<JsonSchemaEmbeddingConte
 export function useJsonSchemaEmbeddingContext(): JsonSchemaEmbeddingContextValue {
   const context = useContext(JsonSchemaEmbeddingContext)
   if (!context) {
-    throw new Error('useJsonSchemaEmbeddingContext must be used within JsonSchemaNextViewer or JsonSchemaNextDiffsViewer')
+    throw new Error('useJsonSchemaEmbeddingContext must be used within JsonSchemaViewer or JsonSchemaDiffsViewer')
   }
   return context
 }

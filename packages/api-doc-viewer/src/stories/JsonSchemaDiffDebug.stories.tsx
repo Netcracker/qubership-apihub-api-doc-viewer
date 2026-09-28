@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
+import { JsonSchemaDiffsViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer';
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff';
 import { isObject } from '@netcracker/qubership-apihub-json-crawl';
 import type { Meta, StoryObj } from '@storybook/react';
@@ -22,7 +22,7 @@ import type { ComponentProps } from 'react';
 import { parse } from 'yaml';
 import { prepareJsonDiffSchema, REQUEST_BODY_TARGET } from './preprocess';
 
-type StoryArgs = ComponentProps<typeof JsonSchemaNextDiffsViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaDiffsViewer> & {
   beforeSchemaText: string
   afterSchemaText: string
   beforeComponentsText?: string
@@ -38,7 +38,7 @@ const DIFF_META_KEYS = {
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: 'Debug/Json Schema Diff Viewer',
-  component: JsonSchemaNextDiffsViewer,
+  component: JsonSchemaDiffsViewer,
   parameters: {},
   argTypes: {
     beforeSchemaText: {
@@ -112,7 +112,7 @@ export const Debug: Story = {
     console.log(afterSchemaText)
     console.debug('Prepared diff schema:', schema)
 
-    return <JsonSchemaNextDiffsViewer {...viewerArgs} schema={schema} />
+    return <JsonSchemaDiffsViewer {...viewerArgs} schema={schema} />
   },
 }
 

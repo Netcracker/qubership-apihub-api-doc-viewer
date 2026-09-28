@@ -26,7 +26,7 @@ import {
 } from "../../shared-components/WithPrecededByProps"
 import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
+import { useJsonSchemaViewerContext } from "../JsonSchemaViewerContext"
 import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
 import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
@@ -57,7 +57,7 @@ export const SchemaNodeViewerWithDiffs: FC<SchemaNodeViewerWithDiffsProps> = (pr
   const displayMode = useDisplayMode()
   const level = useLevelContext()
   const customizationOptions = useCustomizationOptions()
-  const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaNextViewerContext()
+  const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaViewerContext()
   const propertyNodeWithDiffs = isJsonSchemaPropertyNodeWithDiffs(node) ? node : undefined
   const unchangedBlocksContext = useOptionalUnchangedBlocksContext()
 

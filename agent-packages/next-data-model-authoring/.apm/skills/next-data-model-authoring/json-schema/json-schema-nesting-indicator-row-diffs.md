@@ -5,7 +5,7 @@ cross-API rule `docs/design/shared/features/section-header-colorizing.md`.
 
 Reference for AI assistants adding diff highlighting to `NestingIndicatorTitleRow` (the
 "Properties"/"Items" header `SchemaNodeViewer` renders above a node's children list) in the
-JSON Schema Next stack. Covers three cases: the owning node (or an inherited parent/container) was
+JSON Schema stack. Covers three cases: the owning node (or an inherited parent/container) was
 wholly added/removed; every visible child was uniformly added or uniformly removed while the
 owning node itself was untouched; and the node's own `type` keyword crossed the primitive/
 non-primitive boundary (e.g. `string` → `array`), which must colorize as a single-sided add/remove
@@ -29,7 +29,7 @@ about level computation, not diff colorizing, but touches the same row.
 | Viewer wiring | `diff` + `diffsSeverities` + `diffsSeverityPlacement` props | `api-doc-viewer/.../SchemaNodeViewer/SchemaNodeViewer.tsx` |
 | Row rendering (chrome) | background, label visibility, floating badge | `shared-components/NestingIndicatorTitleRow/{NestingIndicatorTitleRow,NestingIndicatorTitleRowContent,NestingIndicatorTitleLabel}.tsx` |
 | Row rendering (type-value text) | leaf/wrapper/orchestrator stack, both title row and nesting-indicator row | `api-doc-viewer/.../SchemaNodeViewer/TypeValue/` — see "Shared type-value rendering architecture" below |
-| Combiner nesting **level** (indentation, not diff colorizing) | `resolveNextLevelPair`, `CombinerNodeViewer`'s `selectorBeforeLevel`/`selectorAfterLevel` | `api-doc-viewer/.../JsonSchemaNextViewer/utils/resolve-nesting-level.ts` + `CombinerNodeViewer/CombinerNodeViewer.tsx` — see lesson 10 |
+| Combiner nesting **level** (indentation, not diff colorizing) | `resolveNextLevelPair`, `CombinerNodeViewer`'s `selectorBeforeLevel`/`selectorAfterLevel` | `api-doc-viewer/.../JsonSchemaViewer/utils/resolve-nesting-level.ts` + `CombinerNodeViewer/CombinerNodeViewer.tsx` — see lesson 10 |
 | Reference pattern (async-api) | row diff + matching severity, same source diff | `AsyncApiOperationViewer/MessageChannelServerNodeViewer/MessageChannelServerNodeViewer.tsx` + `AsyncApiNodeDiffsSeveritiesAggregatorKindAny` |
 | Reference pattern (ddlapi) | uniform-descendant-diff detection (different storage target — see lesson 1) | `next-data-model/.../ddlapi/tree-with-diffs/node-diffs-data/shared/property-list-section-diff-utils.ts` (`aggregateUniformWholeNodeDescendantDiff`) |
 
@@ -230,7 +230,7 @@ passes before writing a fixture that's supposed to mirror it.
 
 **What this fix deliberately did NOT touch — `node-type-checkers.ts`'s content-hiding guards are a
 different question with a different answer.** `isJsonSchemaNestingIndicatorHiddenForPlainNode` /
-`isJsonSchemaNestingIndicatorHiddenForSide` (`api-doc-viewer/.../JsonSchemaNextViewer/utils/`) also
+`isJsonSchemaNestingIndicatorHiddenForSide` (`api-doc-viewer/.../JsonSchemaViewer/utils/`) also
 call `isJsonSchemaPrimitiveValueType` and look superficially like they need the same `any`/`nothing`
 treatment. They do **not**: those guards hide the nesting-indicator row's content when a side has
 **no real crawled children at all**, but a `nothing`-typed merged node can still carry a genuine
@@ -305,7 +305,7 @@ an existing per-node pattern one level lower is automatically correct.
 
 ## Shared type-value rendering architecture (title row + nesting-indicator row)
 
-`packages/api-doc-viewer/src/components/JsonSchemaNextViewer/SchemaNodeViewer/TypeValue/` holds
+`packages/api-doc-viewer/src/components/JsonSchemaViewer/SchemaNodeViewer/TypeValue/` holds
 the component stack that renders JSON Schema's "type value" text (`type`/`format`/`title`/
 `nullable`, e.g. `string(date-time)<Email> or null`) — used by **both** the title-row subheader
 and the nesting-indicator row, in **both** plain and with-diffs modes. Reuse it for any new JSON
@@ -473,11 +473,11 @@ block's "...but another sits unchanged alongside it" cases, for the pattern to c
   `packages/next-data-model/src/building-service/json-schema/tree-with-diffs/changed-only/`.
 - Unit tests: `packages/next-data-model/tests/unit-tests/json-schema-with-diffs.test.ts`.
 - Shared type-value component stack:
-  `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/SchemaNodeViewer/TypeValue/`.
+  `packages/api-doc-viewer/src/components/JsonSchemaViewer/SchemaNodeViewer/TypeValue/`.
 - Type-label diff resolution (data layer, unchanged by this work — only its view-layer consumers
   were unified): `packages/next-data-model/src/model/json-schema/tree-with-diffs/type-label-diffs.ts`.
 - Combiner option leaf resolution and suffix:
-  `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/utils/resolve-combiner.ts`
+  `packages/api-doc-viewer/src/components/JsonSchemaViewer/utils/resolve-combiner.ts`
   (`JsonSchemaCombiner`: `resolveOptionLeafNode`, `resolveOptionTitleSuffix`,
   `buildSelectorOption`). Regression: `packages/api-doc-viewer/tests/resolve-combiner.test.ts`.
 - Generic selector button host: `packages/api-doc-viewer/src/components/shared-components/Selector/Selector.tsx`

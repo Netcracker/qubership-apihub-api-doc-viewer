@@ -1,6 +1,6 @@
 # JSON Schema diff fixtures
 
-Before/after fixtures for `JsonSchemaNextDiffsViewer`. YAML cases are
+Before/after fixtures for `JsonSchemaDiffsViewer`. YAML cases are
 `<category>/[<group>/]<case-id>/{before,after}.yaml`, each a standalone JSON Schema document;
 stories merge them with `prepareJsonDiffSchema()` (`packages/api-doc-viewer/src/stories/preprocess.ts`).
 Design baseline: `docs/design/json-schema/display-coverage.md`.

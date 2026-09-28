@@ -8,8 +8,8 @@ import { switchCombinerNodesToChangedVariant } from "../utils/combiner-changed-v
 
 const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-combiners";
 
-async function waitForJsonSchemaNextDiffsViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+async function waitForJsonSchemaDiffsViewer() {
+  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
@@ -28,7 +28,7 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
 
   it("3.1-oneof-variant-added", async () => {
     story = await storyPage(page, `${META_ID}--case-3-1-oneof-variant-added`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -38,7 +38,7 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
       page,
       `${META_ID}--case-4-1-oneof-variant-content-changed`,
     );
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -48,14 +48,14 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
       page,
       `${META_ID}--case-4-2-oneof-variant-description-only-changed`,
     );
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("5.1-oneof-three-variants-unchanged", async () => {
     story = await storyPage(page, `${META_ID}--case-5-1-oneof-three-variants-unchanged`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -65,7 +65,7 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Combiners", () => {
       page,
       `${META_ID}--case-5-2-root-description-changed-oneof-unchanged`,
     );
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

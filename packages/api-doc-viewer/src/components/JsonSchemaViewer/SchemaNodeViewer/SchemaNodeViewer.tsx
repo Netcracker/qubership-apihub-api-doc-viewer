@@ -18,7 +18,7 @@ import {
   PrecededBy,
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
-import { useJsonSchemaNextViewerContext } from "../JsonSchemaNextViewerContext"
+import { useJsonSchemaViewerContext } from "../JsonSchemaViewerContext"
 import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
 import { JsonSchemaNestingIndicatorTypeValue } from "./TypeValue/JsonSchemaNestingIndicatorTypeValue"
@@ -41,7 +41,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
   const displayMode = useDisplayMode()
   const level = useLevelContext()
   const customizationOptions = useCustomizationOptions()
-  const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaNextViewerContext()
+  const { expandedDepth, materializeChildren, treeRevision } = useJsonSchemaViewerContext()
 
   const visibility = useMemo(
     () => resolvePlainPropertyNodeVisibility(node.value(), displayMode),

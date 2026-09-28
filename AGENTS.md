@@ -69,8 +69,10 @@ Canonical skill sources live under `agent-packages/`. After editing skills there
 
 - **Legacy viewers** — do not change `GraphSchemaViewer`, `GraphQLOperationViewer`,
   `GraphQLOperationDiffViewer`, or `components/common/diffs/` (`DiffTags`, `DiffBadge`)
-  without explicit approval. The legacy `JsonSchemaViewer` is removed; use
-  `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer`.
+  without explicit approval. The legacy (api-data-model based) `JsonSchemaViewer` is
+  removed; its next-data-model successor now owns the name — use `JsonSchemaViewer` /
+  `JsonSchemaDiffsViewer` (formerly `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer`,
+  see **JSON Schema viewer names** below).
 - **Type guards over casts** — use reusable guards in `src/utils/<spec>/` (viewer) or
   `src/shared/<spec>/guards/` (data layer); see authoring skills.
 - **Encapsulation** — domain preparation and diff aggregation stay on builder/transformer/
@@ -144,6 +146,18 @@ unchanged.
 - **Typed keys** — put branded string keys and their guards in
   `shared/<spec>/types/` (see `shared/json-schema/types/extension-key.ts`, mirroring
   `shared/async-api/types/operation-keys.ts`).
+
+### JSON Schema viewer names (api-doc-viewer)
+
+| Legacy | Current |
+| --- | --- |
+| `components/JsonSchemaNextViewer/` | `components/JsonSchemaViewer/` |
+| `JsonSchemaNextViewer` / `JsonSchemaNextViewerProps` | `JsonSchemaViewer` / `JsonSchemaViewerProps` |
+| `JsonSchemaNextDiffsViewer` / `JsonSchemaNextDiffsViewerProps` | `JsonSchemaDiffsViewer` / `JsonSchemaDiffsViewerProps` |
+| `JsonSchemaNextViewerContext` / `useJsonSchemaNextViewerContext` | `JsonSchemaViewerContext` / `useJsonSchemaViewerContext` |
+| `data-testid="json-schema-next-viewer"` | `data-testid="json-schema-viewer"` |
+| `data-testid="json-schema-next-diffs-viewer"` | `data-testid="json-schema-diffs-viewer"` |
+| `waitForJsonSchemaNextDiffsViewer` (screenshot ITs) | `waitForJsonSchemaDiffsViewer` |
 
 ### JSON Schema type names (next-data-model)
 
@@ -240,7 +254,7 @@ for why the row can't reuse `NODE_LEVEL_DIFF_KEY`, the `nodeDescendantDiffs` pol
 row-colorizing-vs-severity pairing rule. Apply when changing `SchemaNodeViewer`'s nesting-indicator
 wiring or the shared `NestingIndicatorTitleRow` components.
 
-## JSON Schema Next diffs workflow (hiding unchanged rows)
+## JSON Schema diffs workflow (hiding unchanged rows)
 
 Hand-written diff sample suites follow the AsyncAPI / JSO pattern:
 
@@ -251,10 +265,10 @@ Hand-written diff sample suites follow the AsyncAPI / JSO pattern:
    wraps each pair in a synthetic OAS template and runs `apiDiff`.
 3. **Stories** — `packages/api-doc-viewer/src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/`
    globs fixtures, merges via `json-schema-diffs-utils.tsx`, renders with
-   **`JsonSchemaNextDiffsViewer`** (`hideUnchangedNodes` defaults to `true`). Storybook root title:
+   **`JsonSchemaDiffsViewer`** (`hideUnchangedNodes` defaults to `true`). Storybook root title:
    `JSON Schema Diffs Suite (Hiding Unchanged Nodes)`.
 4. **Screenshot ITs** — paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`;
-   wait for `[data-testid="json-schema-next-diffs-viewer"]` before capture (see
+   wait for `[data-testid="json-schema-diffs-viewer"]` before capture (see
    `api-doc-viewer-testing` skill).
 5. **Changed-only rows** — data-layer `isJsonSchemaNodeChanged` /
    `resolveJsonSchemaUnchangedBlocks` plus viewer `UnchangedBlocksContext` and

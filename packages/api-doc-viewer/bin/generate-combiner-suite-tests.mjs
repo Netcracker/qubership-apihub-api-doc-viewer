@@ -40,7 +40,7 @@ ${testIdsLiteral}
 ]
 
 async function waitForJsonSchemaViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-viewer"]', { visible: true })
+  await page.waitForSelector('[data-testid="json-schema-viewer"]', { visible: true })
   // A combiner-suite root renders through CombinerNodeViewer, not SchemaNodeViewer: when the
   // active/default leaf option is a scalar type (string/number/integer/boolean) it has no
   // structural children, so [data-name="JsonNode"] never appears anywhere in the DOM and a

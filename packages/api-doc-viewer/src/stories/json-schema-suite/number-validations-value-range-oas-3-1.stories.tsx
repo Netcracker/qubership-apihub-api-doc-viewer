@@ -2,7 +2,7 @@
  * Programmatic value-range plain stories (see value-range-plain-case-definitions.ts).
  * Regenerate: node bin/generate-json-schema-validation-suite-stories.mjs
  */
-import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
+import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
 import type { Meta } from "@storybook/react";
 import {
   JsonSchemaSampleStory,
@@ -36,7 +36,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
-        <JsonSchemaNextViewer schema={resolvedSample.schema} expandedDepth={5} />
+        <JsonSchemaViewer schema={resolvedSample.schema} expandedDepth={5} />
       );
     },
   };

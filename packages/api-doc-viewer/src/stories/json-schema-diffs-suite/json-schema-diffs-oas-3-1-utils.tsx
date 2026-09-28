@@ -1,4 +1,4 @@
-import { JsonSchemaNextDiffsViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer";
+import { JsonSchemaDiffsViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer";
 import type { ArgTypes } from "@storybook/react";
 import type { ComponentProps } from "react";
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
@@ -42,11 +42,11 @@ export const jsonSchemaDiffSampleReadonlyArgTypes = {
   hideUnchangedNodes: {
     control: { type: "boolean" },
     table: { category: "Display" },
-    description: "Forwarded to JsonSchemaNextDiffsViewer's hideUnchangedNodes prop.",
+    description: "Forwarded to JsonSchemaDiffsViewer's hideUnchangedNodes prop.",
   },
 } satisfies Partial<ArgTypes<JsonSchemaDiffCaseStoryComponentProps>>;
 
-type JsonSchemaNextDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaDiffsViewer>;
 
 type JsonSchemaDiffCaseStoryArgs = {
   name: string;
@@ -60,10 +60,10 @@ const JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH = 5;
 const createSchemaFromYaml = (sourceText: string): Record<string, unknown> =>
   parseYamlSource(sourceText);
 
-export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
+export const createJsonSchemaDiffsViewerArgsFromSchemas = (
   beforeSchema: Record<string, unknown>,
   afterSchema: Record<string, unknown>,
-): JsonSchemaNextDiffsViewerProps => ({
+): JsonSchemaDiffsViewerProps => ({
   schema: prepareJsonDiffSchemaOas31({
     beforeSchema,
     afterSchema,
@@ -74,10 +74,10 @@ export const createJsonSchemaNextDiffsViewerArgsFromSchemas = (
   hideUnchangedNodes: false,
 });
 
-export const createJsonSchemaNextDiffsViewerArgs = (
+export const createJsonSchemaDiffsViewerArgs = (
   beforeSourceText: string,
   afterSourceText: string,
-): JsonSchemaNextDiffsViewerProps => ({
+): JsonSchemaDiffsViewerProps => ({
   schema: prepareJsonDiffSchemaOas31({
     beforeSchema: createSchemaFromYaml(beforeSourceText),
     afterSchema: createSchemaFromYaml(afterSourceText),
@@ -158,8 +158,8 @@ export const JsonSchemaDiffSamplesStory = ({
   afterYaml,
   hideUnchangedNodes,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer
-    {...createJsonSchemaNextDiffsViewerArgs(beforeYaml, afterYaml)}
+  <JsonSchemaDiffsViewer
+    {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)}
     hideUnchangedNodes={hideUnchangedNodes}
   />
 );

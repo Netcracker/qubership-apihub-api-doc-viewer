@@ -3,7 +3,7 @@
 Design (source of truth): `docs/design/json-schema/features/meta-flags-and-required.md`.
 
 Reference for AI assistants working on **type-flag diffs** (`readOnly`, `writeOnly`, `deprecated`,
-**parent `required`**) in the JSON Schema Next stack.
+**parent `required`**) in the JSON Schema stack.
 
 Grouped by **data model** (where diffs live) vs **viewer** (how they render). Includes session
 learnings from the type-flags diff work (cases `001`–`013` under `type-changes/type-flags/`).

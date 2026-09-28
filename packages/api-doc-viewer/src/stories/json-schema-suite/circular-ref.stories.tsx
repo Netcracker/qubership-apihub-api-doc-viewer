@@ -1,5 +1,5 @@
 import type { Meta } from "@storybook/react"
-import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer"
+import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer"
 import { prepareJsonSchema, REQUEST_BODY_TARGET } from "../preprocess"
 import {
   JsonSchemaSampleStory,
@@ -60,6 +60,6 @@ export const Cycled: Story = {
     sampleYaml: toSampleYaml({ schema: rawSchema, additionalComponents }),
   },
   render: () => (
-    <JsonSchemaNextViewer schema={cycledSchema} expandedDepth={JSON_SCHEMA_SUITE_EXPANDED_DEPTH} />
+    <JsonSchemaViewer schema={cycledSchema} expandedDepth={JSON_SCHEMA_SUITE_EXPANDED_DEPTH} />
   ),
 }

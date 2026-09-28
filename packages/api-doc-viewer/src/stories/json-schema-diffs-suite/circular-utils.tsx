@@ -1,4 +1,4 @@
-import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
+import { JsonSchemaDiffsViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer'
 import type { ArgTypes } from '@storybook/react'
 import type { ComponentProps } from 'react'
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
@@ -42,11 +42,11 @@ export const jsonSchemaDiffSampleReadonlyArgTypes = {
   hideUnchangedNodes: {
     control: { type: "boolean" },
     table: { category: "Display" },
-    description: "Forwarded to JsonSchemaNextDiffsViewer's hideUnchangedNodes prop.",
+    description: "Forwarded to JsonSchemaDiffsViewer's hideUnchangedNodes prop.",
   },
 } satisfies Partial<ArgTypes<JsonSchemaDiffCaseStoryComponentProps>>;
 
-type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaDiffsViewer>;
 
 type JsonSchemaDiffCaseStoryArgs = {
   name: string;
@@ -169,7 +169,7 @@ export const JsonSchemaDiffSamplesStory = ({
   afterYaml,
   hideUnchangedNodes,
 }: JsonSchemaDiffCaseStoryComponentProps) => (
-  <JsonSchemaNextDiffsViewer
+  <JsonSchemaDiffsViewer
     {...createJsonSchemaDiffViewerArgs(beforeYaml, afterYaml)}
     hideUnchangedNodes={hideUnchangedNodes}
   />

@@ -84,7 +84,7 @@
   border-bottom-right-radius: 5px;
 }
 
-/* JsonSchemaNextViewer description / deprecation-reason rows */
+/* JsonSchemaViewer description / deprecation-reason rows */
 .markdown-text-row .markdown.markdown-text-row__json-schema-description {
   font-size: 12px;
   font-weight: 400;

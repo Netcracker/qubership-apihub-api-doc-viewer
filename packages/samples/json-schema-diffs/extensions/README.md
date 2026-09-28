@@ -2,7 +2,7 @@
 
 Hand-written YAML pairs for screenshot-diff scenarios exercising specification
 extension (`x-`-prefixed) properties — see OAS 3.0/3.1 and JSON Schema
-draft-07 — in the JSON Schema Next diffs viewer. All cases are **root-only**
+draft-07 — in the JSON Schema diffs viewer. All cases are **root-only**
 (no property/`items`-location split, unlike the plain `json-schema/extensions/`
 suite).
 
@@ -72,10 +72,10 @@ combinations.
 | `13-both-added` | Starting state has no extensions → both primary and secondary extensions added at once (wholly-added group) |
 | `14-both-removed` | Starting state is the same-type pair `{<type>, <type>}` → both extensions removed at once (wholly-removed group) |
 
-### Suites 9–16 — Node diff → extension inheritance (JSON Schema Next Viewer ↔ JSO Viewer seam)
+### Suites 9–16 — Node diff → extension inheritance (JSON Schema Viewer ↔ JSO Viewer seam)
 
 The whole-node add/remove diff (a property/array item appearing or disappearing) is rendered
-by the JSON Schema Next Viewer, but the extensions attached to that node are rendered by the
+by the JSON Schema Viewer, but the extensions attached to that node are rendered by the
 (separate) JSO Viewer embedded within it. These 8 suites check that a node's "added"/"removed"
 diff status correctly inherits into its JSO-rendered extensions when the whole node — including
 its extensions — is inserted or deleted, across every root shape the viewer supports: plain
@@ -120,7 +120,7 @@ Each suite has 2 cases:
 
 `array-two-items`, `oneof-array-two-items`, `anyof-array-two-items`, and `allof-array-two-items`
 use root-level **tuple/indexed** `items:` (a YAML list — `items[0]`/`items[1]`), mirroring
-`type-changes/array-indexed-items/`. As of this writing, the JSON Schema Next diffs viewer
+`type-changes/array-indexed-items/`. As of this writing, the JSON Schema diffs viewer
 renders a root-level tuple array as a **text summary only** ("Tuple array with N indexed item
 schema(s)", `Unique items`, `Items count`) — it does **not** render the individual indexed items
 as inspectable child nodes. Confirmed by DOM inspection against the pre-existing, committed

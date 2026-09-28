@@ -2,7 +2,7 @@ import {
   JsonSchemaValidationRow,
   JsonSchemaValidationRowKeys,
   JsonSchemaValidationRows,
-} from "../src/components/JsonSchemaNextViewer/utils/validation-rows"
+} from "../src/components/JsonSchemaViewer/utils/validation-rows"
 
 describe("JsonSchemaValidationRows.resolveListValues", () => {
   it("returns one chip string per list item", () => {

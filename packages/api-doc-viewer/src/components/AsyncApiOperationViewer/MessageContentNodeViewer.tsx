@@ -27,8 +27,8 @@ import {
 } from '@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value'
 import { FC, useCallback, useMemo } from 'react'
 import { DiffMetaKeys, DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '../..'
-import { JsonSchemaNextDiffsViewer } from '../JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
-import { JsonSchemaNextViewer } from '../JsonSchemaNextViewer/JsonSchemaNextViewer'
+import { JsonSchemaDiffsViewer } from '../JsonSchemaViewer/JsonSchemaDiffsViewer'
+import { JsonSchemaViewer } from '../JsonSchemaViewer/JsonSchemaViewer'
 import { buildRowDiffProps, toNodeDiffState } from '../shared-components/diffs/node-diff-props'
 import { TextValueVariant } from '../shared-components/TextValue/types'
 import { TitleRow } from '../shared-components/TitleRow/TitleRow'
@@ -86,7 +86,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
   const renderJsonSchemaViewer = useCallback((source: unknown) => {
     if (layoutMode === DOCUMENT_LAYOUT_MODE) {
       return (
-        <JsonSchemaNextViewer
+        <JsonSchemaViewer
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}
@@ -96,7 +96,7 @@ export const MessageContentNodeViewer: FC<MessageContentNodeViewerProps> = (prop
     }
     if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE && diffMetaKeys) {
       return (
-        <JsonSchemaNextDiffsViewer
+        <JsonSchemaDiffsViewer
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           schema={source}
           displayMode={displayMode}

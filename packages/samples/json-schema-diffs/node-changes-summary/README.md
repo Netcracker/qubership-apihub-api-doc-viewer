@@ -27,7 +27,7 @@ of hand-editing these YAML files if the case shapes change.
 
 `packages/api-doc-viewer/src/stories/json-schema-diffs-node-changes-summary-suite/` - one file per
 case (`case-N-<slug>.stories.tsx`, sharing `node-changes-summary-utils.tsx`), each rendering its
-sample through `JsonSchemaNextDiffsViewer` with `hideUnchangedNodes={false}`.
+sample through `JsonSchemaDiffsViewer` with `hideUnchangedNodes={false}`.
 Splitting the suite by case (mirroring `json-schema-diffs-hiding-unchanged-nodes-suite/`'s
 per-topic files) gives each case its own sidebar group in Storybook, named after the case's
 schema shape rather than a generic "Case N":
@@ -47,10 +47,10 @@ dotted suite prefix (matching `json-schema-diffs-hiding-unchanged-nodes-suite.*.
 `json-schema-diffs-node-changes-summary-suite.case-N-<slug>.it-test.ts`.
 
 **Combiner variant selection is scripted in the paired IT test, not baked into the fixture.**
-Cases 6-7's stories render through `JsonSchemaNextDiffsViewer`
+Cases 6-7's stories render through `JsonSchemaDiffsViewer`
 (`packages/api-doc-viewer/src/stories/json-schema-diffs-node-changes-summary-suite/node-changes-summary-utils.tsx`),
 whose combiner picker (`CombinerSelectorRow`,
-`packages/api-doc-viewer/src/components/JsonSchemaNextViewer/CombinerNodeViewer/CombinerSelectorRow.tsx`)
+`packages/api-doc-viewer/src/components/JsonSchemaViewer/CombinerNodeViewer/CombinerSelectorRow.tsx`)
 carries `data-testid="json-schema-combiner-option-<index>"` on each option button - index-based,
 not keyed by JSON pointer, and the same index repeats once per combiner property AND once per
 diff side (`SideBySideLayout` renders both sides from one shared selection state, so either side's
@@ -67,7 +67,7 @@ renders its properties without a further expand step needed at this suite's `exp
 values, so there is no independently-toggleable "object chosen, but its properties collapsed"
 state to give a 3rd/4th story. Case 7 also has no working "expanded items" story despite keeping
 4 stories for historical reasons: a combiner-leaf array does not currently get an expandable
-`items` child in `JsonSchemaNextViewer` at all (no structural children, no expander control) -
+`items` child in `JsonSchemaViewer` at all (no structural children, no expander control) -
 the same "root-level array renders as a summary only" limitation documented in
 `packages/samples/json-schema-diffs/extensions/README.md`, here shown to also apply to a plain
 single-schema `items:` once the array is a combiner leaf, not the schema root. The IT test no

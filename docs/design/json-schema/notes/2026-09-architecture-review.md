@@ -1,6 +1,6 @@
 # 2026-09 architecture review — JSON Schema (plain and with diffs)
 
-Review of `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` and their next-data-model support
+Review of `JsonSchemaViewer` / `JsonSchemaDiffsViewer` and their next-data-model support
 (`model`, `building-service`, `shared` under `json-schema/`) against the review brief now kept in
 the `api-doc-viewer-reviewing` skill (`review/json-schema.md`). Stories, ITs, and samples were out
 of scope.

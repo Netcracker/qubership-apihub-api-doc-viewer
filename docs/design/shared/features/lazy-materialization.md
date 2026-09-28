@@ -8,7 +8,7 @@ Used by the JSON Schema and JSO builders; AsyncAPI and DDL build eagerly.
 | Deferred work, fragments, node ids, ancestor rebuild | `packages/next-data-model/src/building-service/abstract/tree/lazy-materialization.ts` |
 | Path-local ancestor registry | `packages/next-data-model/src/building-service/abstract/json-crawl-entities/state/ancestors-registry.ts` |
 | JSON Schema entry point | `JsonSchemaTreeBuilder.materializeChildren(node, depth)` |
-| Viewer trigger | `JsonSchemaNextViewerContext.materializeChildren` (called on expand and on combiner branch change) |
+| Viewer trigger | `JsonSchemaViewerContext.materializeChildren` (called on expand and on combiner branch change) |
 
 ## Principles
 

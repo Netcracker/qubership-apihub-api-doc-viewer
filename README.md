@@ -96,13 +96,17 @@ const SomeComponent: FC = () => {
 
 1. Pass the schema to the component:
 
-| Property      | Required | Type                     | Description                                                                                                                                                                                                      |
-|---------------|----------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| schema        | yes      | GraphSchema              | Any JSON schema without dependent definitions                                                                                                                                                                    |
-| source        | no       | object                   | Source JSON schema with definitions for `schema`                                                                                                                                                                 |
-| expandedDepth | no       | number                   | Amount of levels will be expanded by default. <br/><br/>**Default:** `2`                                                                                                                                         |
-| displayMode   | no       | `"simple" or "detailed"` | Which mode will be used during rendering.<p/>**Simple** means that there will be only node titles and types<p/>**Detailed** means there will be all information<p/>**Default:** `detailed` |
-| overridenKind | no       | `"parameters"`           | **ATTENTION.** This is a WA, not completed solution.<br/><br/>This flag now accepts only ```parameters``` value and renders root node and its immediate descendants as list of children without headers. |
+| Property             | Required | Type                     | Description |
+|----------------------|----------|--------------------------|-------------|
+| schema               | yes      | unknown                  | JSON schema (references are resolved by the viewer) |
+| expandedDepth        | no       | number                   | Amount of levels will be expanded by default. <br/><br/>**Default:** `2` |
+| displayMode          | no       | `"simple" or "detailed"` | Which mode will be used during rendering.<p/>**Simple** means that there will be only node titles and types<p/>**Detailed** means there will be all information<p/>**Default:** `detailed` |
+| initialLevel         | no       | number                   | Nesting level of the root row when the viewer is embedded into another viewer. <br/><br/>**Default:** `0` |
+| customizationOptions | no       | CustomizationOptions     | `headerRowTitle` replaces the root title; `suppressRootNestingIndicator` renders a wrapper object's properties as a flat top-level list |
+| devMode              | no       | boolean                  | Enables tree building diagnostics in the console. <br/><br/>**Default:** `false` |
+
+`JsonSchemaDiffsViewer` accepts the same properties, where `schema` is a merged `apiDiff` document, plus
+`diffMetaKeys` (required), optional `diffTypes`, and `hideUnchangedNodes` (**Default:** `true`).
 
 *Example:*
 

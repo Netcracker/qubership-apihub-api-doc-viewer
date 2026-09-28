@@ -16,8 +16,8 @@ import {
   AsyncApiTreeNodeValueTypeChannelParameters,
 } from '@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value'
 import { FC, useMemo } from 'react'
-import { JsonSchemaNextDiffsViewer } from '../JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
-import { JsonSchemaNextViewer } from '../JsonSchemaNextViewer/JsonSchemaNextViewer'
+import { JsonSchemaDiffsViewer } from '../JsonSchemaViewer/JsonSchemaDiffsViewer'
+import { JsonSchemaViewer } from '../JsonSchemaViewer/JsonSchemaViewer'
 import { buildRowDiffProps, toNodeDiffState } from '../shared-components/diffs/node-diff-props'
 import { TextValueVariant } from '../shared-components/TextValue/types'
 import { TitleRow } from '../shared-components/TitleRow/TitleRow'
@@ -27,12 +27,12 @@ import { isMessageChannelParametersNodeWithDiffs } from '../shared-utilities/tre
 
 const MESSAGE_CHANNEL_PARAMETERS_TITLE = 'Address Parameters'
 
-// The only place the AsyncAPI-specific "location" concept may appear: JSON Schema Next's
+// The only place the AsyncAPI-specific "location" concept may appear: JSON Schema's
 // `customAnnotations` extension point is fully generic (see JsonSchemaCustomAnnotation) - it never
 // hardcodes this label or key itself. AsyncAPI channel parameters carry a real spec concept,
 // `location` (a runtime expression pointing at where the parameter's value lives), that isn't a
 // JSON-Schema keyword, so it's reshaped into the generic extension point right here, at the
-// boundary before handing the parameters object to JsonSchemaNextViewer/JsonSchemaNextDiffsViewer.
+// boundary before handing the parameters object to JsonSchemaViewer/JsonSchemaDiffsViewer.
 const CHANNEL_PARAMETER_LOCATION_LABEL = 'Location'
 const CHANNEL_PARAMETER_LOCATION_KEY = 'location'
 const CHANNEL_PARAMETER_CUSTOM_ANNOTATIONS_KEY = 'customAnnotations'
@@ -67,8 +67,8 @@ function attachLocationCustomAnnotation(
 
 /**
  * Reshapes every channel parameter's raw `location` field (an AsyncAPI concept - a runtime
- * expression pointing at where the parameter's value lives) into JSON Schema Next's generic
- * `customAnnotations` extension point, so `JsonSchemaNextViewer`/`JsonSchemaNextDiffsViewer` can
+ * expression pointing at where the parameter's value lives) into JSON Schema's generic
+ * `customAnnotations` extension point, so `JsonSchemaViewer`/`JsonSchemaDiffsViewer` can
  * render it as a labeled additional-info row without knowing what "location" means.
  */
 function attachLocationCustomAnnotations(
@@ -136,7 +136,7 @@ export const MessageChannelParametersNodeViewer: FC<MessageChannelParametersNode
       expandable={false}
       variant={TextValueVariant.h3}
     />
-    <JsonSchemaNextViewer
+    <JsonSchemaViewer
       data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={addressParameters}
       expandedDepth={2}
@@ -175,7 +175,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
     // only to color the "Address Parameters" title row above, not a real structural signal).
     // `prepareJsonSchemaInCaseOfWhollyChanged` must fire only for the first case: when the
     // synthesized approximation applies, `properties[diffsMetaKey]` already carries the real
-    // per-parameter add/remove/rename diffs, and the JSON Schema Next tree's own nesting-indicator
+    // per-parameter add/remove/rename diffs, and the JSON Schema tree's own nesting-indicator
     // "uniform children" detection already colors and levels param rows correctly on its own -
     // wrapping it here instead stamps a synthetic add/remove onto every top-level schema key
     // (`type`, `properties`, ...), which hijacks that detection via the type-label-diff branch and
@@ -204,7 +204,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
       // diffs
       {...diffsProps}
     />
-    <JsonSchemaNextDiffsViewer
+    <JsonSchemaDiffsViewer
       data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       schema={preparedAddressParameters}
       expandedDepth={2}
@@ -217,7 +217,7 @@ const MessageChannelParametersNodeWithDiffsViewer: FC<MessageChannelParametersNo
 
 /**
  * True when the (already-merged) schema's own `properties` carries real per-property diffs
- * (add/remove/rename), meaning the JSON Schema Next tree can already correctly detect and color a
+ * (add/remove/rename), meaning the JSON Schema tree can already correctly detect and color a
  * "children uniformly added/removed" nesting indicator on its own - see the caller's comment.
  */
 function hasNestedPropertiesDiffs(

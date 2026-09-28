@@ -7,8 +7,8 @@ import { storyPage } from "./service/storybook-service";
 
 const META_ID = "json-schema-diffs-suite-hiding-unchanged-nodes-simple-object";
 
-async function waitForJsonSchemaNextDiffsViewer() {
-  await page.waitForSelector('[data-testid="json-schema-next-diffs-viewer"]', { visible: true });
+async function waitForJsonSchemaDiffsViewer() {
+  await page.waitForSelector('[data-testid="json-schema-diffs-viewer"]', { visible: true });
   await page.waitForSelector('[data-name="JsonNode"]', { visible: true });
   await page.waitForFunction(() => document.readyState === "complete");
   await page.evaluate(() => new Promise<void>((resolve) =>
@@ -26,7 +26,7 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Simple Object", () 
 
   it("1.1-two-added-three-removed", async () => {
     story = await storyPage(page, `${META_ID}--case-1-1-two-added-three-removed`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -36,14 +36,14 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Simple Object", () 
       page,
       `${META_ID}--case-1-2-second-and-fifth-added-others-unchanged`,
     );
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
 
   it("1.3-root-description-replaced", async () => {
     story = await storyPage(page, `${META_ID}--case-1-3-root-description-replaced`);
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });
@@ -53,7 +53,7 @@ describe("JSON Schema Diffs Suite (Hiding Unchanged Nodes) - Simple Object", () 
       page,
       `${META_ID}--case-1-4-property-metadata-and-constraints-changed`,
     );
-    await waitForJsonSchemaNextDiffsViewer();
+    await waitForJsonSchemaDiffsViewer();
     component = await story.viewComponent();
     expect(await component.captureScreenshot()).toMatchImageSnapshot();
   });

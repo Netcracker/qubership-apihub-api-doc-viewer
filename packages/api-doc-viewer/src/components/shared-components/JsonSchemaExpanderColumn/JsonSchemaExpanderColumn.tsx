@@ -6,13 +6,13 @@ export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-4 min-w-[16px] shrink-
 // export const JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS = "w-3 min-w-[12px] shrink-0 flex-none"
 
 // TEMPORARY (legacy pixel-parity bridge — see json-schema-legacy-vs-next-layout-diff.md §A):
-// the now-retired legacy JsonSchemaViewer reserved a flat 20px (`w-5`) at the root with NO extra
+// the now-retired legacy (api-data-model based) JsonSchemaViewer reserved a flat 20px (`w-5`) at the root with NO extra
 // row gap. Here the row's own `gap-2` (8px, TitleRowContent.tsx / MarkdownTextRowContent.tsx /
 // AdditionalInfoRowContent.tsx) is always applied on top of this offset, so 12px + 8px = 20px
 // reproduces that legacy total. Root-only; does not affect JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS
 // (non-root rows already match the old 16px). The legacy component is gone, so this hack is now
 // purely a screenshot-baseline-compatibility shim - safe to remove once the existing
-// JsonSchemaNextViewer/JsonSchemaNextDiffsViewer root-row screenshot baselines are intentionally
+// JsonSchemaViewer/JsonSchemaDiffsViewer root-row screenshot baselines are intentionally
 // regenerated against the current Next layout (not attempted here - out of scope for this change).
 const JSON_SCHEMA_ROOT_EXPANDER_OFFSET_WIDTH_CLASS = "w-3 min-w-[12px] shrink-0 flex-none"
 

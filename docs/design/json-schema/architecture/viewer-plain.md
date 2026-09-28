@@ -1,11 +1,11 @@
 # JSON Schema — viewer, plain
 
-Paths are relative to `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/`. Abstract
+Paths are relative to `packages/api-doc-viewer/src/components/JsonSchemaViewer/`. Abstract
 layer: [../../shared/architecture/viewer-plain.md](../../shared/architecture/viewer-plain.md).
 
 ```mermaid
 flowchart TB
-  Root["JsonSchemaNextViewer.tsx<br/>JsonSchemaTreeBuilder (lazy) · JsonSchemaNextViewerContext<br/>(expandedDepth · materializeChildren · treeRevision)"]
+  Root["JsonSchemaViewer.tsx<br/>JsonSchemaTreeBuilder (lazy) · JsonSchemaViewerContext<br/>(expandedDepth · materializeChildren · treeRevision)"]
   Embedding["embedding/JsonSchemaEmbeddingContext<br/>(JSO component for extensions)"]
   Dispatch["JsonSchemaNodeViewer.tsx<br/>Strategy: JsonSchemaCombiner.isOwnerNode(node)"]
   SchemaNode["SchemaNodeViewer/SchemaNodeViewer.tsx"]

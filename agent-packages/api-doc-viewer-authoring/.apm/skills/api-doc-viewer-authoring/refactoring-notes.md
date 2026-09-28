@@ -24,7 +24,7 @@ block (~line 183):
 }
 ```
 
-**Problem it solves:** `CombinerSelectorControlsRow` (`JsonSchemaNextViewer/CombinerNodeViewer/CombinerSelectorRow.tsx`)
+**Problem it solves:** `CombinerSelectorControlsRow` (`JsonSchemaViewer/CombinerNodeViewer/CombinerSelectorRow.tsx`)
 needed 12px vertical padding on its `.json-schema-property-row-body` div instead of the 4px every
 other JSON-Schema row body gets from the base rule at `preceded-by.css:173-176`
 (`.json-schema-property .json-schema-property-row-body { padding-top: 4px; padding-bottom: 4px; }`,
@@ -103,7 +103,7 @@ same "verify with computed styles in Storybook, don't assume" verification habit
 ## 2. "Showing/hiding unchanged nodes" feature toggle — boolean today, modeled as a mode for a planned third variant
 
 **Where the change landed:**
-- New file: `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/JsonSchemaDiffsNodesVisibilityMode.ts`
+- New file: `packages/api-doc-viewer/src/components/JsonSchemaViewer/JsonSchemaDiffsNodesVisibilityMode.ts`
   — `SHOW_ALL_NODES_MODE = "show-all"`, `SHOW_ONLY_CHANGED_NODES_MODE = "show-only-changed-nodes"`,
   a `JsonSchemaDiffsNodesVisibilityMode` union, `resolveJsonSchemaDiffsNodesVisibilityMode(hideUnchangedNodes: boolean)`
   (the boundary conversion) and `isHideUnchangedNodesMode(mode)` (`mode !== "show-all"`).
@@ -111,7 +111,7 @@ same "verify with computed styles in Storybook, don't assume" verification habit
   *and* a derived `hideUnchangedNodes: boolean` field (`isHideUnchangedNodesMode(mode)`, kept for
   the three existing consumers). `useUnchangedBlocksContextValue` now takes `mode` instead of a raw
   boolean.
-- `JsonSchemaNextDiffsViewer.tsx`: public prop `hideUnchangedNodes?: boolean` (default `true`)
+- `JsonSchemaDiffsViewer.tsx`: public prop `hideUnchangedNodes?: boolean` (default `true`)
   **unchanged in shape** — converted to `mode` once, right where the prop is destructured, via
   `resolveJsonSchemaDiffsNodesVisibilityMode`.
 - **Zero changes** to `SchemaNodeViewer.tsx`, `CombinerNodeViewer.tsx`,
@@ -119,7 +119,7 @@ same "verify with computed styles in Storybook, don't assume" verification habit
   `unchangedBlocksContext?.hideUnchangedNodes` exactly as before; it's just computed differently now.
 
 **What was asked:** make the "show/hide unchanged nodes" feature toggleable via a boolean in
-`JsonSchemaNextDiffsViewer`'s public API (it already was — `hideUnchangedNodes?: boolean`, default
+`JsonSchemaDiffsViewer`'s public API (it already was — `hideUnchangedNodes?: boolean`, default
 `true`) while designing the toggle so it can become a 3-way variant later without a disruptive
 rewrite: `show-all`, `show-only-changed-nodes` (today's `hideUnchangedNodes: true`), and a **planned,
 not-yet-designed** `show-only-nodes-with-filtered-changes` — hide a node unless it has a diff whose
@@ -130,13 +130,13 @@ types, should be hidden the same way an unchanged node is today.
 `packages/api-doc-viewer/src/types/{LayoutMode,DisplayMode}.ts` for the established "named string
 constants + union type" pattern in this codebase), but stop threading the raw boolean through
 `UnchangedBlocksContext`/consumers directly — convert it to the `JsonSchemaDiffsNodesVisibilityMode`
-union at the one boundary point (`JsonSchemaNextDiffsViewer.tsx`), and let the context be the single
+union at the one boundary point (`JsonSchemaDiffsViewer.tsx`), and let the context be the single
 place that *derives* the boolean consumers actually need. This means only the boundary conversion
 function and the public prop's *type* need to change when the third mode is added — no consumer
 files, no next-data-model call sites.
 
 **Key discovery — most of the planned third mode's *hiding* behavior already exists today,
-independent of this change:** `JsonSchemaNextDiffsViewer.tsx` already has a second, currently
+independent of this change:** `JsonSchemaDiffsViewer.tsx` already has a second, currently
 unrelated-looking public prop, `diffTypes?: ReadonlyArray<DiffType>` (feeds `DiffTypesContext`).
 `SchemaNodeChildrenListWithDiffs.tsx` already reads both `hideUnchangedNodes` (from
 `UnchangedBlocksContext`) *and* `diffTypes` (via `useDiffTypes()`) and passes **both** into
@@ -156,7 +156,7 @@ requires "highlighting diffs is applied to only diffs of these diff types" — i
 filtered-out type should not just leave nodes visible-but-hidden, they should stop being colored/
 badged too. Today, in the JSON Schema **Next** viewer, `diffTypes`/`useDiffTypes()` is consumed in
 exactly one place (`SchemaNodeChildrenListWithDiffs.tsx`, for hiding only) — nowhere else in
-`JsonSchemaNextViewer/**` reads it, so row/title colorizing (`SchemaNodePlainContent.tsx`,
+`JsonSchemaViewer/**` reads it, so row/title colorizing (`SchemaNodePlainContent.tsx`,
 `SchemaNodeTitleRow*.tsx`, etc.) is entirely unfiltered by `diffTypes` right now. (A superficially
 similar `filters={diffTypes}` prop exists on the **legacy** `JsonSchemaDiffViewer`, wired from
 AsyncAPI's `MessageContentNodeViewer.tsx` — that's a different, legacy component with its own
@@ -172,7 +172,7 @@ consumption of `diffsSeverities`/`colorizingDiff` props — genuinely new design
    it already returns `true` for any non-`"show-all"` mode, which is the correct hiding behavior for
    this mode too (per the key discovery above, that's the *only* thing `hideUnchangedNodes`-derived
    consumers currently need).
-2. Decide the public API shape: either widen `JsonSchemaNextDiffsViewerProps.hideUnchangedNodes`
+2. Decide the public API shape: either widen `JsonSchemaDiffsViewerProps.hideUnchangedNodes`
    into a mode-typed prop (breaking rename) or add a **new** optional prop (e.g.
    `nodesVisibilityMode?: JsonSchemaDiffsNodesVisibilityMode`) that takes precedence over the
    boolean when set, keeping `hideUnchangedNodes` as a deprecated boolean shorthand for the first
@@ -189,8 +189,8 @@ consumption of `diffsSeverities`/`colorizingDiff` props — genuinely new design
 4. Design and implement the highlighting-filter half (see "what's still missing" above) — this is
    the one part with no existing plumbing to lean on.
 
-**Related:** `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/UnchangedBlocksContext.tsx`,
-`JsonSchemaNextDiffsViewer.tsx`, `JsonSchemaDiffsNodesVisibilityMode.ts`;
+**Related:** `packages/api-doc-viewer/src/components/JsonSchemaViewer/UnchangedBlocksContext.tsx`,
+`JsonSchemaDiffsViewer.tsx`, `JsonSchemaDiffsNodesVisibilityMode.ts`;
 `packages/next-data-model/src/building-service/json-schema/tree-with-diffs/changed-only/` (`resolve-json-schema-unchanged-blocks.ts`,
 `has-own-change-signals.ts`, `is-node-changed.ts`, `types.ts`) for the already-`diffTypes`-aware
 data layer; `packages/api-doc-viewer/src/contexts/DiffTypesContext.ts`; Storybook suite

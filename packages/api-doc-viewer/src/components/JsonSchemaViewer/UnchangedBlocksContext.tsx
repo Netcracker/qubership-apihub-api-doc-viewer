@@ -20,7 +20,7 @@ export const UnchangedBlocksContext = createContext<UnchangedBlocksContextValue 
 export function useUnchangedBlocksContext(): UnchangedBlocksContextValue {
   const context = useContext(UnchangedBlocksContext)
   if (!context) {
-    throw new Error("useUnchangedBlocksContext must be used within JsonSchemaNextDiffsViewer")
+    throw new Error("useUnchangedBlocksContext must be used within JsonSchemaDiffsViewer")
   }
   return context
 }

@@ -1,7 +1,7 @@
 /**
- * "Showing/hiding unchanged nodes" feature toggle for the JSON Schema Next diffs viewer.
+ * "Showing/hiding unchanged nodes" feature toggle for the JSON Schema diffs viewer.
  *
- * The public prop (`JsonSchemaNextDiffsViewerProps.hideUnchangedNodes`) is a boolean today, but
+ * The public prop (`JsonSchemaDiffsViewerProps.hideUnchangedNodes`) is a boolean today, but
  * the underlying concept is modeled here as a proper mode (mirroring `LayoutMode`/`DisplayMode`)
  * because a third mode is already planned: `show-only-nodes-with-filtered-changes` (hide a node
  * unless it has a diff whose type is in a caller-supplied `diffTypes` list). See

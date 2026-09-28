@@ -1,10 +1,10 @@
-import { JsonSchemaNextViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer';
+import { JsonSchemaViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaViewer';
 import type { Meta, StoryObj } from '@storybook/react';
 import { ComponentProps } from 'react';
 import { parse } from 'yaml';
 import { prepareJsonSchemaFromOAS } from './preprocess';
 
-type StoryArgs = ComponentProps<typeof JsonSchemaNextViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
   oasText: string // OAS 3.0 or OAS 3.1, JSON or YAML
   refToSchema: string // #/components/schemas/JsonOffering
 }
@@ -13,7 +13,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaNextViewer> & {
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: 'Debug/Json Schema Viewer (OAS)',
-  component: JsonSchemaNextViewer,
+  component: JsonSchemaViewer,
   parameters: {},
   argTypes: {
     oasText: {
@@ -56,7 +56,7 @@ export const DebugOas30: Story = {
     console.log('Ref to schema:', refToSchema)
     console.debug('Prepared schema:', schema)
 
-    return <JsonSchemaNextViewer {...viewerArgs} schema={schema} />
+    return <JsonSchemaViewer {...viewerArgs} schema={schema} />
   }
 }
 DebugOas30.storyName = 'Debug OAS 3.0';

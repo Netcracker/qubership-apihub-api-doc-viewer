@@ -10,7 +10,7 @@ import {
   createJsonSchemaDiffsViewerArgs,
   jsonSchemaDiffSampleReadonlyArgTypes,
 } from '../json-schema-diffs-suite/json-schema-diffs-utils'
-import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer'
+import { JsonSchemaDiffsViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer'
 import { switchCombinerNodesToChangedVariant } from '@apihub/utils/combiner-changed-variant'
 
 const beforeFiles = import.meta.glob(
@@ -49,7 +49,7 @@ type NodeChangesSummaryStoryArgs = {
 
 /** `meta.component` for the per-case files; every story overrides `render` with its own depth. */
 export const NodeChangesSummarySampleStory = ({ beforeYaml, afterYaml }: NodeChangesSummaryStoryArgs) => (
-  <JsonSchemaNextDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} hideUnchangedNodes={false} />
+  <JsonSchemaDiffsViewer {...createJsonSchemaDiffsViewerArgs(beforeYaml, afterYaml)} hideUnchangedNodes={false} />
 )
 
 type NodeChangesSummaryCaseStoryResult = {
@@ -77,7 +77,7 @@ export const createNodeChangesSummaryCaseStory = (
     argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
     render: (args) => {
       const viewerArgs = createJsonSchemaDiffsViewerArgs(args.beforeYaml, args.afterYaml)
-      return <JsonSchemaNextDiffsViewer {...viewerArgs} expandedDepth={expandedDepth} hideUnchangedNodes={false}/>
+      return <JsonSchemaDiffsViewer {...viewerArgs} expandedDepth={expandedDepth} hideUnchangedNodes={false}/>
     },
   }
 }

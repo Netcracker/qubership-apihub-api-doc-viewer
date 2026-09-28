@@ -178,13 +178,13 @@ npx jest --maxWorkers 1 --verbose -c .config/it/it-test-docker.jest.config.cjs \
 (Requires static showcase on 9009 — e.g. run `npm run development:local-server:static`
 in another terminal, or use full `npm run screenshot-test` which starts it automatically.)
 
-### JSON Schema Next viewer mount selector
+### JSON Schema viewer mount selector
 
-Plain JSON Schema Next screenshot ITs wait for `[data-testid="json-schema-next-viewer"]`
+Plain JSON Schema screenshot ITs wait for `[data-testid="json-schema-viewer"]`
 and at least one `[data-name="JsonNode"]`, then run the paint-settle helper (see **Flaky
 rendering**).
 
-JSON Schema **diff** screenshot ITs wait for `[data-testid="json-schema-next-diffs-viewer"]`
+JSON Schema **diff** screenshot ITs wait for `[data-testid="json-schema-diffs-viewer"]`
 and at least one `[data-name="JsonNode"]`, then the same paint-settle helper.
 
 A wrong story id produces the same timeout as a broken viewer — rule out ID mismatch first.
@@ -306,7 +306,7 @@ rather than assuming the literal list is the complete requirement.
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts`.
-- JSON Schema Next diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
+- JSON Schema diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
   `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
 - DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios.stories.tsx`
@@ -431,7 +431,7 @@ explicit paths or `10#` prefix.
 
 ## JSON Schema diff fixtures (`packages/samples/json-schema-diffs/`)
 
-Hand-written YAML pairs for JSON Schema Next diff screenshot suites. Each case directory
+Hand-written YAML pairs for JSON Schema diff screenshot suites. Each case directory
 contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (not full OpenAPI).
 
 | Path | Purpose | Stories / tests |
@@ -443,7 +443,7 @@ contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (no
 Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 
 Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
-**`JsonSchemaNextDiffsViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
+**`JsonSchemaDiffsViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
 
 1. YAML pair under the appropriate suite subdirectory.
 2. Story export in the matching `*.stories.tsx`.
@@ -556,5 +556,5 @@ the helper you're actually testing.
 **CSS-free** `.ts` file (e.g. a `utils/` module) before writing the test, import it back into the
 component, and point the test at the extracted file. Do not attempt a CSS mock or
 `moduleNameMapper` workaround for one test file — extraction is simpler, keeps the logic reusable
-outside the component, and matches how pure JSON Schema Next viewer logic is already organized
-(see `JsonSchemaNextViewer/utils/`).
+outside the component, and matches how pure JSON Schema viewer logic is already organized
+(see `JsonSchemaViewer/utils/`).

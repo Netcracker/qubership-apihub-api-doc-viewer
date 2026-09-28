@@ -19,7 +19,7 @@ flowchart TB
   Bindings["BindingsNodeViewer.tsx<br/>protocol Selector · Version row"]
   Extensions["ExtensionsNodeViewer.tsx"]
   Visibility["utils/async-api/visibility-checkers.ts<br/>shouldBeDisplayed"]
-  JsonSchema["JsonSchemaNextViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]
+  JsonSchema["JsonSchemaViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]
   Jso["JsoViewer"]
 
   Root --> Message

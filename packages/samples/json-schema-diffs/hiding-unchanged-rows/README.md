@@ -1,7 +1,7 @@
 # JSON Schema diff fixtures — hiding unchanged rows
 
 Hand-written YAML pairs for screenshot-diff scenarios that exercise **changed-only** row
-hiding in the JSON Schema Next diffs viewer.
+hiding in the JSON Schema diffs viewer.
 
 - Total cases: 18 (4 simple-object + 9 complex-object + 5 combiners)
 - Layout: `json-schema-diffs/hiding-unchanged-rows/<suite>/<case-id>/before.yaml` and
@@ -73,7 +73,7 @@ Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples--case-1-1-two-added-three-removed`).
 
 Stories merge `before.yaml` / `after.yaml` via `prepareJsonDiffSchema` and render through
-`JsonSchemaNextDiffsViewer` (`json-schema-diffs-utils.tsx`). Hiding unchanged nodes is on by default
+`JsonSchemaDiffsViewer` (`json-schema-diffs-utils.tsx`). Hiding unchanged nodes is on by default
 (`hideUnchangedNodes`).
 
 ## Regenerate

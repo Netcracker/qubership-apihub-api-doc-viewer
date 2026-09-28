@@ -1,11 +1,11 @@
 # JSON Schema — viewer, with diffs
 
-Paths are relative to `packages/api-doc-viewer/src/components/JsonSchemaNextViewer/`. Abstract
+Paths are relative to `packages/api-doc-viewer/src/components/JsonSchemaViewer/`. Abstract
 layer: [../../shared/architecture/viewer-with-diffs.md](../../shared/architecture/viewer-with-diffs.md).
 
 ```mermaid
 flowchart TB
-  RootD["JsonSchemaNextDiffsViewer.tsx<br/>JsonSchemaTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>UnchangedBlocksContext · JsonSchemaDiffsNodesVisibilityMode"]
+  RootD["JsonSchemaDiffsViewer.tsx<br/>JsonSchemaTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>UnchangedBlocksContext · JsonSchemaDiffsNodesVisibilityMode"]
   DispatchD["JsonSchemaNodeViewerWithDiffs.tsx<br/>same Strategy as plain, typed to JsonSchemaTreeNodeWithDiffs"]
   SchemaNodeD["SchemaNodeViewer/SchemaNodeViewerWithDiffs.tsx"]
   CombinerNodeD["CombinerNodeViewer/CombinerNodeViewerWithDiffs.tsx"]

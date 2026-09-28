@@ -26,7 +26,7 @@ their repositories, file paths, or UI components — use generic terms such as
 
 | Family | Plain viewer | Diffs viewer | Status |
 | --- | --- | --- | --- |
-| JSON Schema | `JsonSchemaNextViewer` | `JsonSchemaNextDiffsViewer` | active (legacy `JsonSchemaViewer` removed) |
+| JSON Schema | `JsonSchemaViewer` | `JsonSchemaDiffsViewer` | active (formerly `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer`; the legacy api-data-model `JsonSchemaViewer` was removed) |
 | GraphQL schema | `GraphSchemaViewer` | — | legacy |
 | GraphQL operation | `GraphQLOperationViewer` | `GraphQLOperationDiffViewer` | legacy |
 | AsyncAPI operation | `AsyncApiOperationViewer` | `AsyncApiOperationDiffsViewer` | active |
@@ -161,13 +161,13 @@ commit the result.
 
 ## JSON Schema validation rows (Next viewer)
 
-Constraint rows in `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` (`Value range`, `Value
+Constraint rows in `JsonSchemaViewer` / `JsonSchemaDiffsViewer` (`Value range`, `Value
 length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules
 (design): `docs/design/json-schema/features/validation-rows.md`. Implementation reference:
 
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
 
-Plain chip list: `JsonSchemaValidationRows.resolve` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
+Plain chip list: `JsonSchemaValidationRows.resolve` in `JsonSchemaViewer/utils/validation-rows.ts`. With-diffs
 rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
 
 Rows render in a **canonical type-grouped order** (String → Number [covers integer] → Object →
@@ -208,7 +208,7 @@ colorizing, not the default symmetric replace — see session lessons:
 **Shared type-value rendering:** the title row, the nesting-indicator row, and combiner-selector
 option buttons (`CombinerNodeViewer.tsx` → `CombinerSelectorRow` → `shared-components/Selector`)
 all render JSON Schema's type/format/title text through one shared leaf/wrapper/orchestrator stack
-under `JsonSchemaNextViewer/SchemaNodeViewer/TypeValue/` (`JsonSchemaTypeValueText` leaf,
+under `JsonSchemaViewer/SchemaNodeViewer/TypeValue/` (`JsonSchemaTypeValueText` leaf,
 `JsonSchemaTypeValueDiffSegment` diff wrapper, `JsonSchemaTypeValueSideDisplay` side-display
 renderer, six plain/with-diffs orchestrators) — deliberately independent of `SubheaderValue`/
 `CommaSeparatedListWithDiffs`. Reuse this stack for any new JSON Schema row or control rendering a
@@ -472,7 +472,7 @@ screenshot ITs.
 | `packages/api-doc-viewer/src/components/DdlTableViewer/IndexesNodeViewer.tsx` | `Indexes` section `TitleRow` with `TitleRowUsage.DdlApiSection` |
 | `packages/api-doc-viewer/src/components/DdlTableViewer/TableNodeViewer.tsx` | `data-precededby` chain between table sections (e.g. Columns → Indexes) |
 | `packages/api-doc-viewer/src/components/shared-components/TitleRow/TitleRowContent.tsx` | `DdlApiProperty` row layout, `data-usage`, `min-h-*` on property rows |
-| `packages/api-doc-viewer/src/components/shared-components/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome (generalized from `DdlTableViewer/AdditionalInfoRow/`; now shared by DDL, AsyncAPI, and JSON Schema Next) |
+| `packages/api-doc-viewer/src/components/shared-components/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome (generalized from `DdlTableViewer/AdditionalInfoRow/`; now shared by DDL, AsyncAPI, and JSON Schema) |
 | `packages/api-doc-viewer/src/components/shared-components/TextRow/TextRowContent.tsx` | Description property row chrome |
 | `packages/api-doc-viewer/src/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper.tsx` | Side-by-side diff badge wrapper (must not be offset by row margins) |
 | `packages/api-doc-viewer/src/components/shared-components/Layout/SideBySideLayout.tsx` | Stretch behaviour for diff columns |
