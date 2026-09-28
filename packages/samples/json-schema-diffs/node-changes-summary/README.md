@@ -1,4 +1,4 @@
-# Node changes summary samples
+# JSON Schema diff fixtures — node changes summary
 
 Fixtures for the "node changes summary" marker-panel screenshot suite: a collapsed node shows a
 row of colored dots (one per distinct diff type found anywhere in its descendants, plus its own
@@ -11,6 +11,8 @@ builder composes later cases out of earlier ones (case 2 embeds case 1, case 4 e
 6/7 embed cases 1-4 as `oneOf` variants), so re-run the generator (and commit its output) instead
 of hand-editing these YAML files if the case shapes change.
 
+## Cases
+
 | Case | Schema shape | Change summary |
 |---|---|---|
 | `case-1-simple-properties` | object, 4 simple properties | `propAdded` wholly added, `propRemoved` wholly removed, `propDescriptionChanged` description changed, `propTypeChanged` type `string`→`integer` |
@@ -18,15 +20,14 @@ of hand-editing these YAML files if the case shapes change.
 | `case-3-array-items-case-1` | array | `items` = case 1's schema |
 | `case-4-array-items-case-2` | array | `items` = case 2's schema |
 | `case-5-oneof-properties` | object, 4 `oneOf` properties | `oneOfAdded` wholly added, `oneOfRemoved` wholly removed, `oneOfNumberAdded` gains a `number` variant, `oneOfNumberRemoved` loses its `number` variant |
-| `case-6-oneof-wrapping-object-cases` | object, 2 `oneOf` properties | `variantWithCaseOne` = `oneOf(string, case 1)`, `variantWithCaseTwo` = `oneOf(string, case 2)` - string listed first (default), see Stories below |
+| `case-6-oneof-wrapping-object-cases` | object, 2 `oneOf` properties | `variantWithCaseOne` = `oneOf(string, case 1)`, `variantWithCaseTwo` = `oneOf(string, case 2)` - string listed first (default), see Storybook and screenshot tests below |
 | `case-7-oneof-wrapping-array-cases` | object, 2 `oneOf` properties | `variantWithCaseThree` = `oneOf(string, case 3)`, `variantWithCaseFour` = `oneOf(string, case 4)` - string listed first (default) |
 
-## Stories
+## Storybook and screenshot tests
 
 `packages/api-doc-viewer/src/stories/json-schema-diffs-node-changes-summary-suite/` - one file per
 case (`case-N-<slug>.stories.tsx`, sharing `node-changes-summary-utils.tsx`), each rendering its
-sample through the **legacy** JSON Schema diff viewer (`JsonSchemaDiffViewer`) — this suite is a
-baseline for that viewer's existing node-changes-summary support, not the JSON Schema Next viewer.
+sample through `JsonSchemaNextDiffsViewer` with `hideUnchangedNodes={false}`.
 Splitting the suite by case (mirroring `json-schema-diffs-hiding-unchanged-nodes-suite/`'s
 per-topic files) gives each case its own sidebar group in Storybook, named after the case's
 schema shape rather than a generic "Case N":
@@ -73,4 +74,11 @@ single-schema `items:` once the array is a combiner leaf, not the schema root. T
 longer attempts an items-expand click; "expanded items" and "collapsed items" currently render
 identically.
 
-Regenerate screenshots: `cd packages/api-doc-viewer && npm run regenerate-screenshots`.
+## Regenerate
+
+From `packages/api-doc-viewer/`, then commit the output:
+
+```bash
+node bin/generate-node-changes-summary-samples.mjs
+npm run regenerate-screenshots
+```

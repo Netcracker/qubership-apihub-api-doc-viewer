@@ -1,5 +1,7 @@
 # JSON Schema meta flags and `required` — agent reference
 
+Design (source of truth): `docs/design/json-schema/features/meta-flags-and-required.md`.
+
 Reference for AI assistants working on **type-flag diffs** (`readOnly`, `writeOnly`, `deprecated`,
 **parent `required`**) in the JSON Schema Next stack.
 
@@ -16,8 +18,8 @@ learnings from the type-flags diff work (cases `001`–`013` under `type-changes
 | Title-row priority / yellow replace | `aggregatePropertyTitleRowDiff`, `asReplaceFlagDiffForTitleRow` | `kind-any.ts`, `kind-property.ts` |
 | Legacy reference | `getRequiredChange`, `$metaChanges.required` | `api-data-model/.../json-schema/diff-tree/model.ts` |
 | Title asterisk (diff mode) | `JsonSchemaRequiredDiffIndicator` | `api-doc-viewer/.../SchemaNodeViewer/` |
-| Subheader badges | `buildJsonSchemaDiffTagsProps` → `DiffTags` | `json-schema-diff-tags-props.ts`, `JsonSchemaTitleSubheader.tsx` |
-| Title-row background | `buildJsonSchemaTitleRowDiffProps` → `TitleRow` | `json-schema-title-row-diff-props.ts` |
+| Subheader tags | `JsonSchemaTitleRowViewProps.buildTagsProps` → `TagsWithDiffs` | `utils/json-schema-title-row-view-props.ts`, `JsonSchemaTitleSubheader.tsx` |
+| Title-row background | `JsonSchemaTitleRowViewProps.buildRowDiffProps` → `TitleRow` | `utils/json-schema-title-row-view-props.ts` |
 
 **Regression**
 
@@ -98,12 +100,12 @@ merge helper (see `mergeSchemasWithOasNormalize` in `json-schema-meta-flag-diffs
 | Chrome | Location | Component |
 | --- | --- | --- |
 | Red `*` (side-exclusive in diff mode) | **Title row** | `JsonSchemaRequiredDiffIndicator` |
-| `required` **badge** | **Subheader** | `DiffTags` via `requiredChanged` + `$metaChanges.required` |
-| `readOnly` / `writeOnly` / `deprecated` badges | Subheader | `DiffTags` only — not mixed into required indicator |
+| `required` **tag** | **Subheader** | `TagsWithDiffs` via `requiredChanged` + `requiredDiff` |
+| `readOnly` / `writeOnly` / `deprecated` tags | Subheader | `TagsWithDiffs` only — not mixed into required indicator |
 
 Do **not** look for the required badge only in `JsonSchemaTitleSubheader` title/type area — it is
-driven by `buildJsonSchemaDiffTagsProps`. `requiredChanged: false` hardcoded there hides the badge
-even when the data layer is correct.
+driven by `JsonSchemaTitleRowViewProps.buildTagsProps`. A hardcoded `requiredChanged: false` there hides
+the tag even when the data layer is correct.
 
 Side-exclusive asterisk logic mirrors legacy `RequiredStar`: without a resolved `requiredDiff`, side-by-side
 mode shows `*` on **both** sides whenever `meta.required === true` (unchanged required baseline).
@@ -150,8 +152,8 @@ Add cases in `collectTypeFlagsCases` inside `json-schema-type-changes-cases.mjs`
 1. Run `json-schema-meta-flag-diffs.test.ts` — fail → fix `kind-property.ts` first.
 2. Confirm OAS-normalized test case — fail only there → diff attachment / crawl fragment lookup bug.
 3. Inspect tree node: `takeJsonSchemaRequiredMetaDiffForDisplay(node)` should return normalized boolean diff.
-4. Inspect viewer wiring: `SchemaNodeTitleRowWithDiffs` passes `requiredDiff`; `buildJsonSchemaDiffTagsProps`
-   sets `requiredChanged` and `$metaChanges.required`.
+4. Inspect viewer wiring: `SchemaNodeTitleRowWithDiffs` passes `requiredDiff`;
+   `JsonSchemaTitleRowViewProps.buildTagsProps` sets `requiredChanged` and `requiredDiff`.
 5. Confirm title row: `takeJsonSchemaTitleRowDiff(node)?.styles.*.backgroundColor` is yellow for flag/required changes.
 
 Fix **data layer first**; do not patch React to hide missing diffs.

@@ -15,13 +15,30 @@ This monorepo ships two npm packages consumed by integrators:
 **View / data split:** React components render precomputed tree nodes. Diff aggregation,
 transformers, and crawl logic belong in **next-data-model** — not in the view layer.
 
+GraphQL viewers are **legacy** (external `api-data-model` / `api-state-model`). JSON Schema,
+AsyncAPI, DDL API, and JSO are the active API types.
+
+## Source of truth and workflow
+
+- **Design is the source of truth:** `docs/design/` (index and conventions:
+  `docs/design/README.md`). Per API type: `display-coverage.md`, `architecture/` (four
+  diagrams), `entities/`, `features/`, `notes/`; cross-API contracts in `docs/design/shared/`.
+- Skills derive from the design: `api-doc-viewer-testing`, `next-data-model-authoring`, and
+  `api-doc-viewer-authoring` from the design; `api-doc-viewer-using` from those skills. Report
+  every disagreement between code, skills, and design; update the design first when the
+  implementation is the approved behaviour.
+- **Test-first:** design → fixtures + catalogue, stories, screenshot ITs, unit tests
+  (`api-doc-viewer-testing`) → implementation (`*-authoring`) → repeat until the developer
+  confirms the feature is done.
+- Fixture catalogues live next to fixtures: `packages/samples/README.md`.
+
 ## Clarification before coding
 
 - Do **not** generate or modify code until task requirements are clear.
 - Ask targeted questions when scope, layout (title row vs follow-on row), or acceptance
   criteria are ambiguous.
-- Consult `packages/api-doc-viewer/ddlapi-display-coverage.md` before treating missing DDL UI
-  as a bug — current behaviour is the intentional baseline unless the ticket says otherwise.
+- Consult `docs/design/<api-type>/display-coverage.md` before treating missing UI as a bug —
+  current behaviour is the intentional baseline unless the ticket says otherwise.
 - If you must assume something, state assumptions explicitly and keep changes minimal until
   confirmed.
 
@@ -39,6 +56,7 @@ apm install --target cursor,claude --legacy-skill-paths
 | `next-data-model-authoring` | Builders, aggregators, crawl rules under `packages/next-data-model/src/`; JSON Schema row reference docs under its `json-schema/` folder |
 | `api-doc-viewer-testing` | Screenshot ITs, fixtures, snapshot regeneration; **troubleshooting hangs/timeouts** (read skill first) |
 | `api-doc-viewer-review-session` | End-of-session retrospective — surface findings, update skills |
+| `api-doc-viewer-reviewing` | Architecture review / refactoring of one API type stack (shared rules + `review/<api-type>.md` briefs) |
 | `api-doc-viewer-using` | Integrator-facing consumption patterns (host apps) |
 | `next-data-model-using` | Consuming tree builders from another TypeScript project |
 | `ddlapi-using` | ddlapi Realm / merged diff documents (external package) |
@@ -49,9 +67,10 @@ Canonical skill sources live under `agent-packages/`. After editing skills there
 
 ## Always-on conventions
 
-- **Legacy viewers** — do not change `JsonSchemaViewer`, `GraphSchemaViewer`, or
-  `GraphQLOperationViewer` without explicit approval. Prefer JSO, AsyncAPI, and DDL viewers
-  for new work.
+- **Legacy viewers** — do not change `GraphSchemaViewer`, `GraphQLOperationViewer`,
+  `GraphQLOperationDiffViewer`, or `components/common/diffs/` (`DiffTags`, `DiffBadge`)
+  without explicit approval. The legacy `JsonSchemaViewer` is removed; use
+  `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer`.
 - **Type guards over casts** — use reusable guards in `src/utils/<spec>/` (viewer) or
   `src/shared/<spec>/guards/` (data layer); see authoring skills.
 - **Encapsulation** — domain preparation and diff aggregation stay on builder/transformer/
@@ -171,7 +190,7 @@ DDL table diffs touch both packages and fixtures:
 - **Viewer consumes; do not patch** — `TextValue`, `AdditionalInfoPiece`, and `DiffBadge`
   read precomputed styles; fix aggregators/transformers first.
 
-Design notes for JSO diffs (shared contracts): `packages/api-doc-viewer/jso-diffs-implementation-actions.md`.
+JSO diffs specification: `docs/design/jso/features/diffs.md`.
 
 ## JSON Schema Diffs Suite (type changes)
 
@@ -187,8 +206,8 @@ validation-row and metadata diffs with **`hideUnchangedNodes: false`**.
 
 ### Value range (programmatic — not YAML)
 
-Number validation **value-range** cases are built programmatically (OAS 3.0 and OAS 3.1). Hub:
-`packages/samples/json-schema-diffs/type-changes/number-validation/README.md`.
+Number validation **value-range** cases are built programmatically (OAS 3.0 and OAS 3.1).
+Catalogue: `packages/samples/json-schema-diffs/README.md` → Value range.
 
 | Role | Path |
 | --- | --- |
@@ -199,14 +218,13 @@ Number validation **value-range** cases are built programmatically (OAS 3.0 and 
 
 ### Validation rows (plain and with-diffs)
 
-See
-`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
-for constraint-row display rules (value range, value length, pattern, counts, …), OAS 3.0/3.1 bound
-dialect behaviour, and session constraints from the value-range diff work.
+Design: `docs/design/json-schema/features/validation-rows.md` (row catalogue, order, OAS 3.0/3.1
+dialects, with-diffs rules). Implementation traps and session lessons:
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`.
 
 ### Meta flags and `required` (type-flags diffs)
 
-See
+Design: `docs/design/json-schema/features/meta-flags-and-required.md`. See
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md`
 for parent-scoped `required` propagation, legacy index-keyed diff records, crawl-fragment lookup traps,
 title asterisk vs subheader badge layout, and type-flags sample case conventions (`001`–`013`).
@@ -215,7 +233,8 @@ title asterisk vs subheader badge layout, and type-flags sample case conventions
 
 The "Properties"/"Items" header row above a node's children list highlights when the owning node
 (or an inherited parent/container) was wholly added/removed, or when every visible child was
-uniformly added/removed. See
+uniformly added/removed. Design: `docs/design/json-schema/features/nesting-indicator-row-diffs.md`
+and `docs/design/shared/features/section-header-colorizing.md`. See
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md`
 for why the row can't reuse `NODE_LEVEL_DIFF_KEY`, the `nodeDescendantDiffs` pollution trap, and the
 row-colorizing-vs-severity pairing rule. Apply when changing `SchemaNodeViewer`'s nesting-indicator
@@ -239,9 +258,9 @@ Hand-written diff sample suites follow the AsyncAPI / JSO pattern:
    `api-doc-viewer-testing` skill).
 5. **Changed-only rows** — data-layer `isJsonSchemaNodeChanged` /
    `resolveJsonSchemaUnchangedBlocks` plus viewer `UnchangedBlocksContext` and
-   `SchemaNodeChildrenListWithDiffs`; design notes in
-   `packages/api-doc-viewer/json-schema-hiding-nodes-design.md` and
-   `packages/api-doc-viewer/json-schema-next-stack-analysis.md` Appendix B.
+   `SchemaNodeChildrenListWithDiffs`; design in
+   `docs/design/json-schema/features/hiding-unchanged-nodes.md` and
+   `docs/design/shared/features/hiding-unchanged-nodes.md`.
 
 **Non-obvious hiding trap (design remark A / B / C):**
 
@@ -278,9 +297,9 @@ zero-padded renames that treat `08`/`09` as octal in shell arithmetic.
 
 ## Documentation
 
-- Human docs and coverage baselines: `packages/api-doc-viewer/ddlapi-display-coverage.md`,
-  `packages/samples/ddlapi-diffs/README.md`,
-  `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
+- Design (source of truth): `docs/design/README.md` — coverage baselines, architecture diagrams,
+  entities, features, and review notes per API type.
+- Fixture catalogues: `packages/samples/README.md` and the `README.md` next to each fixture folder.
 - JSON Schema reference docs (validation rows, meta flags / `required`, nesting-indicator row
   diffs): `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/`.
 - Refactoring candidates (viewer CSS, hiding-unchanged toggle):

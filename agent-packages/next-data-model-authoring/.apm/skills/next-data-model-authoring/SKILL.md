@@ -8,6 +8,18 @@ next-data-model is the type-safe successor to `api-data-model`. It builds
 tree structures consumed by api-doc-viewer components. Code lives under
 `packages/next-data-model/src/`.
 
+## Source of truth
+
+Design documents in `docs/design/` define the behaviour this skill implements:
+`docs/design/<api-type>/display-coverage.md`, `architecture/data-model-*.md`, `features/`, and the
+shared contracts in `docs/design/shared/`. This skill and its reference files (`json-schema/`,
+`node-visibility/`) add implementation paths, traps, and session lessons. When code or this skill
+disagrees with the design, report it; update the design first when the implementation is the
+approved behaviour.
+
+Work test-first: fixtures, stories, ITs, and unit tests (`api-doc-viewer-testing`) come before the
+data-layer change; see `docs/design/README.md` → Workflow.
+
 ## Layered layout
 
 Two top-level layers; never mix responsibilities:
@@ -22,7 +34,7 @@ Each layer has **abstract** contracts plus **spec-specific** implementations
 sub-layers implement node kinds, meta, and crawl behaviour.
 
 When adding a feature, extend abstract contracts first, then wire the JSO,
-AsyncAPI, and/or DDL API sub-layer — do not fork logic only in one sub-layer
+AsyncAPI, DDL API, and/or JSON Schema sub-layer — do not fork logic only in one sub-layer
 unless the behaviour is genuinely spec-specific.
 
 ## Encapsulation in building service
@@ -122,9 +134,9 @@ Canonical locations:
 - Building service: `packages/next-data-model/src/building-service/jso/`
 - Tree model: `packages/next-data-model/src/model/jso/`
 
-When editing JSO, follow existing JSO files and
-`packages/api-doc-viewer/jso-diffs-implementation-actions.md`; do not assume
-the ddlapi / async-api builder layout applies.
+When editing JSO, follow existing JSO files and the diffs specification
+`docs/design/jso/features/diffs.md`; do not assume the ddlapi / async-api
+builder layout applies.
 
 ### What the plain builder owns
 
@@ -197,26 +209,19 @@ metadata via overrides/hooks. Prefer constructing the transformer inside
 `prepareSource()` so the subclass can swap the with-diffs type without
 constructor juggling.
 
-## Diff inheritance contract
+## Diff inheritance contract (JSO)
 
-Inherited root diffs (`nodeDiffs[""]`) follow **parent-first** lookup:
+Specification: `docs/design/jso/features/diffs.md`. Summary:
 
-1. Parent `nodeDiffs[""]` (add/remove), then parent `nodeDescendantDiffs[nodeKey]`.
-2. If absent, repeat on the container node.
-3. Reuse the source diff object reference — do not clone.
-
-Severity propagation for complex transitions uses the same parent-first
-traversal. Descendant diff summaries include **add/remove only** — exclude
-replace from the descendant summary contract.
-
-Key resolution for value-level diff rendering:
-
-- `DiffAdd` / `DiffRemove` → key `""`.
-- `DiffReplace` primitive→primitive → key `"value"`.
-- `DiffReplace` with a complex side → key `""`.
-
-Full phased actions and entity IDs are in
-`packages/api-doc-viewer/jso-diffs-implementation-actions.md`.
+1. A child's `nodeDiffs[""]` is derived from the **parent only** — parent `nodeDiffs[""]`, else
+   parent `nodeDescendantDiffs[nodeKey]`. The container is passed to the aggregator but not
+   consulted.
+2. Primitive-side inheritance reuses the parent metadata object; complex transitions build derived
+   metadata (`inherited: true`, side visibility, `increaseLevel`).
+3. All value-level diffs are written under `""`. The `value` key is reserved: read defensively in
+   severity code, never written.
+4. `title-row` severity propagates **parent-first, then container**, cycle-safe.
+5. Descendant diff summaries include **add/remove only**.
 
 ### `aggregateByDescendantDiffs` — combining node diffs with descendant diffs
 
@@ -282,7 +287,7 @@ regressions.
 
 **Coverage baseline:** which ddlapi fields are mapped vs intentionally omitted — and which
 view-model fields the viewer does not paint — is documented in
-`packages/api-doc-viewer/ddlapi-display-coverage.md`. Use it to classify **`ndm-future`**
+`docs/design/ddlapi/display-coverage.md`. Use it to classify **`ndm-future`**
 (add mapping here first) vs **`out-of-scope`** (no support needed) before extending
 `node-value.ts` or the transformer.
 
@@ -536,9 +541,10 @@ property names use `buildDdlPropertyNameChangedPropertyMetaDataFromDiff` via
 
 ## JSON Schema validation rows
 
-When aggregating or resolving **constraint rows** (`validationRowDiffs`,
-`validationRowValueDiffs`, `validationRowColorizingDiffs`) — especially **value range** with OAS
-3.0/3.1 bound dialects — read:
+Display rules (design): `docs/design/json-schema/features/validation-rows.md`. When aggregating or
+resolving **constraint rows** (`validationRowDiffs`, `validationRowValueDiffs`,
+`validationRowColorizingDiffs`) — especially **value range** with OAS 3.0/3.1 bound dialects —
+also read the implementation reference:
 
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
 
@@ -568,12 +574,15 @@ components to compensate.
 
 Full detail: `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`.
 
-**Meta flags and parent `required`:** `resolveRequiredMetaDiff` in `kind-property.ts` reads parent
-crawl fragments — not picked `parent.value().required`. See
+**Meta flags and parent `required`** (design: `docs/design/json-schema/features/meta-flags-and-required.md`):
+`resolveRequiredMetaDiff` in `kind-property.ts` reads parent crawl fragments — not picked
+`parent.value().required`. See
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md`.
 Unit tests: `json-schema-meta-flag-diffs.test.ts` (include OAS-normalized merge cases for Storybook parity).
 
-**Nesting-indicator row diffs:** `nestingIndicatorRowColorizingDiff` in `kind-any.ts`
+**Nesting-indicator row diffs** (design: `docs/design/json-schema/features/nesting-indicator-row-diffs.md`,
+shared rule: `docs/design/shared/features/section-header-colorizing.md`):
+`nestingIndicatorRowColorizingDiff` in `kind-any.ts`
 (`aggregateByDescendantDiffs` override) covers whole-node add/remove (including inherited
 parent/container) and uniform-children add/remove for the row `SchemaNodeViewer` renders above a
 node's children list. See

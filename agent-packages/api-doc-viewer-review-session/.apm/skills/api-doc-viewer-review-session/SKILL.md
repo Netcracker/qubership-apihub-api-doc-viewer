@@ -62,6 +62,14 @@ happened:
   conversation's stated assumption vs. `git diff`/build output), trust the
   live repo state, and treat the mismatch itself as a finding.
 
+## Design first, then skills
+
+`docs/design/` is the source of truth; skills derive from it. A finding about **behaviour**
+(what is displayed, a diff rule, an architecture boundary) goes into the matching design file
+first — `docs/design/<api-type>/display-coverage.md`, `features/`, or `architecture/` — and the
+skill then references it. Findings about **process** (traps, tooling, verification) go into skills
+only. A dated review or decision record goes to `docs/design/<api-type>/notes/<yyyy-mm>-<topic>.md`.
+
 ## Updating the docs — canonical source, not the deployed copy
 
 **Do not edit `.claude/skills/*`, `.claude/rules/*`, `.cursor/skills/*`, or
