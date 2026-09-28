@@ -5,7 +5,7 @@
 import type { StoryObj } from "@storybook/react";
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: import("./circular-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: import("./json-schema-diffs-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

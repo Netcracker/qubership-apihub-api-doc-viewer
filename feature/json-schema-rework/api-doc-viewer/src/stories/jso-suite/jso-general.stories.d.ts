@@ -37,7 +37,7 @@ declare const meta: {
     args: {
         source: {};
         supportJsonSchema: true;
-        embeddedSchemaComponent: import('../../../../../node_modules/react').FC<import('../../components/JsonSchemaNextViewer/JsonSchemaNextViewer').JsonSchemaNextViewerProps>;
+        embeddedSchemaComponent: import('../../../../../node_modules/react').FC<import('../../components/JsonSchemaViewer/JsonSchemaViewer').JsonSchemaViewerProps>;
         initialLevel: number;
     };
 };

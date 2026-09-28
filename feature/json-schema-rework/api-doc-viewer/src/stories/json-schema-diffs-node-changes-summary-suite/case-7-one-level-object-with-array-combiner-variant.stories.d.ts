@@ -11,7 +11,7 @@
  * matter for it). "Default choice" and "Collapsed root" intentionally keep the plain
  * `createNodeChangesSummaryCaseStory` (no switch) - they exist specifically to show the
  * combiner's default, unswitched selection. There is no items-expand step: a combiner-leaf array
- * never gets an expandable `items` child in the current JsonSchemaNextViewer (see the IT test's
+ * never gets an expandable `items` child in the current JsonSchemaViewer (see the IT test's
  * comment), so "expanded items" and "collapsed items" are expected to render identically for now.
  */
 import type { StoryObj } from "@storybook/react";

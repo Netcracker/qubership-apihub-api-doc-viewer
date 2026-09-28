@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonSchemaNextDiffsViewer } from '../components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
+import { JsonSchemaDiffsViewer } from '../components/JsonSchemaViewer/JsonSchemaDiffsViewer';
 import type { StoryObj } from '@storybook/react';
 import type { ComponentProps } from '../../../../node_modules/react';
-type StoryArgs = ComponentProps<typeof JsonSchemaNextDiffsViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaDiffsViewer> & {
     beforeSchemaText: string;
     afterSchemaText: string;
     beforeComponentsText?: string;
@@ -24,7 +24,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaNextDiffsViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import('../components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer').JsonSchemaNextDiffsViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/JsonSchemaViewer/JsonSchemaDiffsViewer').JsonSchemaDiffsViewerProps>;
     parameters: {};
     argTypes: {
         beforeSchemaText: {

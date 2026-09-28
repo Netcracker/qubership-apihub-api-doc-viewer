@@ -1,4 +1,4 @@
-import { JsonSchemaNextDiffsViewer } from '../../components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
+import { JsonSchemaDiffsViewer } from '../../components/JsonSchemaViewer/JsonSchemaDiffsViewer';
 import type { ComponentProps } from '../../../../../node_modules/react';
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
 export declare const JSON_SCHEMA_DIFF_META_KEYS: {
@@ -43,20 +43,34 @@ export declare const jsonSchemaDiffSampleReadonlyArgTypes: {
         description: string;
     };
 };
-type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaNextDiffsViewer>;
+type JsonSchemaDiffsViewerProps = ComponentProps<typeof JsonSchemaDiffsViewer>;
 type JsonSchemaDiffCaseStoryArgs = {
     name: string;
     args: JsonSchemaDiffCaseStoryComponentProps;
     argTypes: typeof jsonSchemaDiffSampleReadonlyArgTypes;
     render: (args: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element;
 };
+export declare const JSON_SCHEMA_DIFFS_SUITE_EXPANDED_DEPTH = 5;
+/**
+ * `oasVersion` picks the synthetic OAS template the pair is wrapped in (default `"3.0"`). Use
+ * `"3.1"` for keywords the OAS 3.0 Schema Object dialect lacks (e.g. `propertyNames`, 3.1-style
+ * numeric `exclusiveMinimum`) - `apiDiff`'s `validate: true` strips them under OAS 3.0. The OAS 3.1
+ * template has no inline variant, so `disableSubstitutionTitle` is OAS 3.0 only.
+ */
 export type JsonSchemaDiffsViewerArgsOptions = {
+    oasVersion?: "3.0";
     disableSubstitutionTitle?: boolean;
+} | {
+    oasVersion: "3.1";
 };
 export declare const createJsonSchemaDiffsViewerArgsFromSchemas: (beforeSchema: Record<string, unknown>, afterSchema: Record<string, unknown>, options?: JsonSchemaDiffsViewerArgsOptions) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string, options?: JsonSchemaDiffsViewerArgsOptions) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
-export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
+/**
+ * `defaultHideUnchangedNodes` seeds the `hideUnchangedNodes` story arg (default `false`: validation
+ * and metadata suites show every row; the "Hiding Unchanged Nodes" suite passes `true`).
+ */
+export declare const createJsonSchemaDiffCaseStoryFactory: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>, defaultHideUnchangedNodes?: boolean) => (caseId: string) => JsonSchemaDiffCaseStoryArgs;
 type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs & {
     play: (context: {
         canvasElement: HTMLElement;
@@ -71,7 +85,7 @@ type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs
  * Puppeteer iframe.html harness); they call `switchCombinerNodesToChangedVariant` directly via
  * `page.evaluate`.
  */
-export declare const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>) => (caseId: string) => JsonSchemaDiffCaseStoryArgsWithChangedVariant;
+export declare const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>, defaultHideUnchangedNodes?: boolean) => (caseId: string) => JsonSchemaDiffCaseStoryArgsWithChangedVariant;
 export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 /**
  * Same as JsonSchemaDiffSamplesStory, but inlines schemas in the OAS template instead of $ref-ing
@@ -79,4 +93,9 @@ export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideU
  * substitution $ref would otherwise be the thing labeled at the diff root instead of the combiner.
  */
 export declare const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+/**
+ * Same as JsonSchemaDiffSamplesStory, but wraps the pair in the OAS 3.1 template - needed for
+ * keywords the OAS 3.0 dialect strips during `apiDiff` validation (see JsonSchemaDiffsViewerArgsOptions).
+ */
+export declare const JsonSchemaDiffSamplesStoryOas31: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
 export {};
