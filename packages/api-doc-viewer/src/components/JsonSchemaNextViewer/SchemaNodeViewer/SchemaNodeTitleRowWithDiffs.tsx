@@ -2,8 +2,7 @@ import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-d
 import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import {
-  takeJsonSchemaNodeChangesSummary,
-  takeJsonSchemaRequiredMetaDiffForDisplay,
+  JsonSchemaRowDiffs,
 } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
   isDiffSideHeaderVisible,
@@ -15,7 +14,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
-import { buildJsonSchemaTitleRowDiffProps } from "../utils/json-schema-title-row-diff-props"
+import { JsonSchemaTitleRowViewProps } from "../utils/json-schema-title-row-view-props"
 import { JsonSchemaTitleSubheaderWithDiffs } from "./JsonSchemaTitleSubheader"
 import { SchemaNodeTitleRowBase } from "./SchemaNodeTitleRowBase"
 
@@ -49,18 +48,18 @@ export const SchemaNodeTitleRowWithDiffs: FC<SchemaNodeTitleRowWithDiffsProps> =
   } = props
 
   const titleRowDiffProps = useMemo(
-    () => titleRowDiffPropsOverride ?? buildJsonSchemaTitleRowDiffProps(displayNode),
+    () => titleRowDiffPropsOverride ?? JsonSchemaTitleRowViewProps.buildRowDiffProps(displayNode),
     [displayNode, titleRowDiffPropsOverride],
   )
 
   const requiredDiff = useMemo(
-    () => takeJsonSchemaRequiredMetaDiffForDisplay(ownerNode),
+    () => JsonSchemaRowDiffs.RequiredStar.takeMetaDiffForDisplay(ownerNode),
     [ownerNode],
   )
 
   const layoutMode = useLayoutMode()
   const nodeChangesSummary = useMemo(
-    () => takeJsonSchemaNodeChangesSummary(displayNode),
+    () => JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(displayNode),
     [displayNode],
   )
   const showNodeChangesSummary = !expanded

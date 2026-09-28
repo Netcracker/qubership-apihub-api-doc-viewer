@@ -9,7 +9,7 @@ import { TitleRow } from "@apihub/components/shared-components/TitleRow/TitleRow
 import { TitleRowUsage } from "@apihub/components/shared-components/TitleRow/types"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
-import { isJsonSchemaRootNode } from "../utils/node-type-checkers"
+import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { useSchemaNodeTitleRowShared } from "./schema-node-title-row-shared"
 
 export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
@@ -74,7 +74,7 @@ export const SchemaNodeTitleRowBase: FC<SchemaNodeTitleRowBaseProps> = (props) =
       titleContent={titleContent}
       expandable={expandable}
       expanded={expanded}
-      isRoot={isJsonSchemaRootNode(ownerNode)}
+      isRoot={JsonSchemaNodeTypeCheckers.isRootNode(ownerNode)}
       onClickExpander={expandable ? onClickExpander : undefined}
       variant={TextValueVariant.body2}
       subheader={(layoutSide) => renderSubheader({

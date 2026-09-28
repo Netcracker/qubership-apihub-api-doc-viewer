@@ -584,7 +584,7 @@ properties:
               description: |-
                 References to an employeeprofile that is specified in the payroll administration level
 
-                `employeeProfileId` is a metadata field within the payroll administration context. Possible values can be managed by the user. 
+                `employeeProfileId` is a metadata field within the payroll administration context. Possible values can be managed by the user.
               format: metadata
               nullable: true
               properties:
@@ -638,7 +638,7 @@ properties:
               description: |-
                 References to a specified set of payrollcomponents that are to accessible via ESS for employee mutations
 
-                `essMutationSet` is a metadata field within the werkgever/provider context. Possible values can be managed by the user. 
+                `essMutationSet` is a metadata field within the werkgever/provider context. Possible values can be managed by the user.
               format: metadata
               nullable: true
               properties:
@@ -789,7 +789,7 @@ properties:
               description: |-
                 An administration used for payrolling. This field can not have a value at the same time as `nonPayrollAdministration`
 
-                `payrollAdministration` is a metadata field within the employer context. Possible values can be managed by the user. 
+                `payrollAdministration` is a metadata field within the employer context. Possible values can be managed by the user.
               format: metadata
               nullable: true
               properties:
@@ -1125,9 +1125,9 @@ properties:
               type: string
             distributionUnit:
               description: |
-                Distribution unit, used in several reports and the "basic wage journal" functionality. Commonly used as a cost center. 
+                Distribution unit, used in several reports and the "basic wage journal" functionality. Commonly used as a cost center.
 
-                `distributionUnit` is a metadata field within the employer context. Possible values can be managed by the user. 
+                `distributionUnit` is a metadata field within the employer context. Possible values can be managed by the user.
               format: metadata
               nullable: true
               properties:
@@ -1299,7 +1299,7 @@ properties:
           properties:
             applyPayGrade:
               description: |
-                Apply pay grade indicates that after submitting the record the server will replace the value of `grossWage` with the value represented by the selected `payGrade`. A pay grade contains time based values, the value that is active on the `start date` of the record will be selected. 
+                Apply pay grade indicates that after submitting the record the server will replace the value of `grossWage` with the value represented by the selected `payGrade`. A pay grade contains time based values, the value that is active on the `start date` of the record will be selected.
               example: true
               nullable: true
               readOnly: false
@@ -1363,7 +1363,7 @@ properties:
               type: object
             payGrade:
               description: |
-                The pay grade indicates on what level (cel) of the paygrade the employment is.  The level is multi dimensional where the description indicates both the level and for example the number of years of service within the given level. 
+                The pay grade indicates on what level (cel) of the paygrade the employment is.  The level is multi dimensional where the description indicates both the level and for example the number of years of service within the given level.
 
                 `payGrade` is a metadata field within the payroll administration/payScale context. Possible values can be managed by the user.
               format: metadata

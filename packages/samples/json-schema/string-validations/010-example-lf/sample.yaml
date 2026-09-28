@@ -1,5 +1,4 @@
 type: string
-example: |+
-  
+example: "\n"
 title: '[example] example = "\n"'
 

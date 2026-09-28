@@ -38,11 +38,10 @@ const printStoryFile = (suite, cases) => {
 
   return `/**
  * Programmatic combiner (${suite.combinerKind}) stories.
- * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and ../../../samples/combiners-cases.md.
+ * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and packages/samples/json-schema/{oneOf,anyOf,allOf}/README.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-suite-stories.mjs
  */
 import type { Meta, StoryObj } from "@storybook/react";
-import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,
@@ -53,6 +52,7 @@ import {
   buildCombinerPlainProgrammaticSampleCases,
   type CombinerPlainProgrammaticSampleCase,
 } from "./combiner-plain-samples";
+import { JsonSchemaNextViewer } from "@apihub/components/JsonSchemaNextViewer/JsonSchemaNextViewer";
 
 const sampleCases = buildCombinerPlainProgrammaticSampleCases("${suite.combinerKind}");
 const sampleById = sampleCases.reduce<Record<string, CombinerPlainProgrammaticSampleCase>>(
@@ -75,7 +75,7 @@ const createCaseStory = (caseId: string): JsonSchemaSamplesStoryObj => {
     render: (args) => {
       const resolvedSample = sampleById[args.caseId];
       return (
-        <JsonSchemaViewer schema={resolvedSample.schema} expandedDepth={5} />
+        <JsonSchemaNextViewer schema={resolvedSample.schema} expandedDepth={5} />
       );
     },
   };

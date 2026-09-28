@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
+import { JsonSchemaNextDiffsViewer } from '@apihub/components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff';
 import { isObject } from '@netcracker/qubership-apihub-json-crawl';
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
 import { parse } from 'yaml';
-import { JsonSchemaDiffViewer } from '../components/JsonSchemaViewer/JsonSchemaDiffViewer';
-import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '../types/LayoutMode';
 import { prepareJsonDiffSchema, REQUEST_BODY_TARGET } from './preprocess';
 
-type StoryArgs = ComponentProps<typeof JsonSchemaDiffViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaNextDiffsViewer> & {
   beforeSchemaText: string
   afterSchemaText: string
   beforeComponentsText?: string
@@ -39,7 +38,7 @@ const DIFF_META_KEYS = {
 // eslint-disable-next-line storybook/story-exports
 const meta = {
   title: 'Debug/Json Schema Diff Viewer',
-  component: JsonSchemaDiffViewer,
+  component: JsonSchemaNextDiffsViewer,
   parameters: {},
   argTypes: {
     beforeSchemaText: {
@@ -58,7 +57,7 @@ const meta = {
       control: { disable: true },
       table: { disable: true },
     },
-    metaKeys: {
+    diffMetaKeys: {
       control: { disable: true },
       table: { disable: true },
     },
@@ -68,8 +67,8 @@ const meta = {
     afterSchemaText: '',
     beforeComponentsText: '',
     afterComponentsText: '',
-    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
-    metaKeys: DIFF_META_KEYS,
+    diffMetaKeys: DIFF_META_KEYS,
+    hideUnchangedNodes: false,
   },
 } satisfies Meta<StoryArgs>;
 
@@ -84,8 +83,8 @@ export const Debug: Story = {
     beforeComponentsText: '',
     afterComponentsText: '',
     expandedDepth: 2,
-    layoutMode: SIDE_BY_SIDE_DIFFS_LAYOUT_MODE,
-    metaKeys: DIFF_META_KEYS,
+    diffMetaKeys: DIFF_META_KEYS,
+    hideUnchangedNodes: false,
   },
   render: (args) => {
     const {
@@ -113,7 +112,7 @@ export const Debug: Story = {
     console.log(afterSchemaText)
     console.debug('Prepared diff schema:', schema)
 
-    return <JsonSchemaDiffViewer {...viewerArgs} schema={schema} />
+    return <JsonSchemaNextDiffsViewer {...viewerArgs} schema={schema} />
   },
 }
 

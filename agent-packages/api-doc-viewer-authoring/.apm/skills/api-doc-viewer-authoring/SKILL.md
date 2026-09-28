@@ -9,6 +9,14 @@ JSO, DDL tables) as human-readable React trees. The view layer lives under
 `packages/api-doc-viewer/src/`; tree construction and diff aggregation live
 in `packages/next-data-model/` (see the `next-data-model-authoring` skill).
 
+**Source of truth:** design documents in `docs/design/` — per API type
+`display-coverage.md`, `architecture/viewer-*.md`, and `features/`, plus
+`docs/design/shared/`. This skill adds component paths, traps, and session lessons.
+When code or this skill disagrees with the design, report it; update the design first
+when the implementation is the approved behaviour. Work test-first: fixtures, stories,
+and ITs (`api-doc-viewer-testing`) come before the viewer change
+(`docs/design/README.md` → Workflow).
+
 **Documentation scope:** skills and agent docs for this repository describe
 library behaviour only. Do **not** name or reference consuming applications,
 their repositories, file paths, or UI components — use generic terms such as
@@ -18,7 +26,7 @@ their repositories, file paths, or UI components — use generic terms such as
 
 | Family | Plain viewer | Diffs viewer | Status |
 | --- | --- | --- | --- |
-| JSON Schema | `JsonSchemaViewer` | `JsonSchemaDiffViewer` | legacy — do not change without approval |
+| JSON Schema | `JsonSchemaNextViewer` | `JsonSchemaNextDiffsViewer` | active (legacy `JsonSchemaViewer` removed) |
 | GraphQL schema | `GraphSchemaViewer` | — | legacy |
 | GraphQL operation | `GraphQLOperationViewer` | `GraphQLOperationDiffViewer` | legacy |
 | AsyncAPI operation | `AsyncApiOperationViewer` | `AsyncApiOperationDiffsViewer` | active |
@@ -30,9 +38,10 @@ Public exports are registered in `src/index.ts`. Keep internal helpers
 
 ## Always-on rule
 
-Do not modify legacy viewers (`JsonSchemaViewer`, `GraphSchemaViewer`,
-`GraphQLOperationViewer`) without explicit user approval. Prefer
-`AsyncApiOperationViewer`, `JsoViewer`, and `DdlTableViewer` for new work.
+Do not modify legacy GraphQL viewers (`GraphSchemaViewer`,
+`GraphQLOperationViewer`, `GraphQLOperationDiffViewer`) or the legacy
+`components/common/diffs/` components without explicit user approval. Use the
+JSON Schema, AsyncAPI, JSO, and DDL viewers for new work.
 
 ## Layout and display modes
 
@@ -66,7 +75,7 @@ view layer — consume precalculated fields from tree nodes
 (`nodeDiffs`, `nodeDiffsSeverities`, `nodeDescendantDiffs`, summaries).
 
 Keep plain and diffs pipelines separate: wrappers orchestrate; shared base
-renderers (`BaseJsoValue`, layout rows) only draw resolved values and CSS
+renderers (`JsoValueBase`, layout rows) only draw resolved values and CSS
 classes.
 
 ## Shared UI building blocks
@@ -153,15 +162,16 @@ commit the result.
 ## JSON Schema validation rows (Next viewer)
 
 Constraint rows in `JsonSchemaNextViewer` / `JsonSchemaNextDiffsViewer` (`Value range`, `Value
-length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules:
+length`, …) consume precomputed diffs from next-data-model. Display and diff-styling rules
+(design): `docs/design/json-schema/features/validation-rows.md`. Implementation reference:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-validation-rows.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md`
 
-Plain chip list: `resolveValidationRows` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
+Plain chip list: `JsonSchemaValidationRows.resolve` in `JsonSchemaNextViewer/utils/validation-rows.ts`. With-diffs
 rendering: `SchemaNodePlainContent` → `AdditionalInfoRow` / `AdditionalInfoPiece`.
 
 Rows render in a **canonical type-grouped order** (String → Number [covers integer] → Object →
-Array), re-sorted via `sortValidationRowsByType` after combining present rows with diff-only rows
+Array), re-sorted via `JsonSchemaValidationRows.sortByType` after combining present rows with diff-only rows
 — see "Row ordering" and "Boolean-valued replace diffs" session lessons in the doc above before
 changing `validationRows` composition in `SchemaNodePlainContent`. When adding a unit test for
 logic defined inside that file (or any component with a transitive `.css` import), extract it to
@@ -171,15 +181,19 @@ tests and CSS imports** section.
 ## JSON Schema meta flags and `required` (Next viewer)
 
 Type-flag diffs (`readOnly`, `writeOnly`, `deprecated`, parent **`required`**) use title-row and
-subheader chrome — not validation rows. Parent-scoped `required` resolution and viewer wiring traps:
+subheader chrome — not validation rows. Design:
+`docs/design/json-schema/features/meta-flags-and-required.md`. Parent-scoped `required`
+resolution and viewer wiring traps:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-meta-flags-and-required.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md`
 
-Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required badge: subheader `DiffTags` via
-`buildJsonSchemaDiffTagsProps` — not the type-label subheader alone.
+Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required tag: subheader `TagsWithDiffs` via
+`JsonSchemaTitleRowViewProps.buildTagsProps` — not the type-label subheader alone. Legacy
+`DiffTags` / `DiffBadge` are GraphQL-only.
 
 ## JSON Schema nesting-indicator row diffs (Next viewer)
 
+Design: `docs/design/json-schema/features/nesting-indicator-row-diffs.md`.
 `SchemaNodeViewer` renders `NestingIndicatorTitleRow` above a node's children list. Wire **both**
 `diff` (background) and `diffsSeverities` + `diffsSeverityPlacement` (floating badge via
 `DiffFloatingBadgeWrapper`) from `takeJsonSchemaNestingIndicatorRowColorizingDiff` /
@@ -189,7 +203,7 @@ and toggle `visibility` on its content, not conditional unmounting. A `type`-fie
 crosses the primitive/non-primitive boundary (`string`→`array`, …) needs single-sided add/remove
 colorizing, not the default symmetric replace — see session lessons:
 
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/json-schema-nesting-indicator-row-diffs.md`
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md`
 
 **Shared type-value rendering:** the title row, the nesting-indicator row, and combiner-selector
 option buttons (`CombinerNodeViewer.tsx` → `CombinerSelectorRow` → `shared-components/Selector`)
@@ -221,13 +235,14 @@ for one call site, add a rule scoped through an ancestor class that call site al
 `(0,3,0)`) — mirror the existing `.title-row-content > .json-schema-property-row-body` precedent a
 few lines above the base rule, don't reach for `!important` or an inline `style`. A more scalable
 CSS-custom-property-based alternative was analyzed but deliberately deferred — see
-`agent-packages/api-doc-viewer-repo/.apm/skills/api-doc-viewer-repo/refactoring-notes.md` (entry 1)
+`agent-packages/api-doc-viewer-authoring/.apm/skills/api-doc-viewer-authoring/refactoring-notes.md` (entry 1)
 for the trade-off and when to reconsider it.
 
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in
-`packages/api-doc-viewer/ddlapi-display-coverage.md`. Consult it before adding rows/badges,
+`docs/design/ddlapi/display-coverage.md` (product design: `docs/design/ddlapi/features/doc-view.md`,
+`docs/design/ddlapi/entities/`). Consult it before adding rows/badges,
 writing Storybook assertions, or treating missing UI as a bug. Current behaviour is the
 intentional baseline.
 
@@ -354,7 +369,7 @@ spacer (same horizontal footprint as the expander column). This is not
 `Default`, generated `As`), all still passing `diffsSeverities={node.diffsSeverities}` with no
 placement override, so they all read the same `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` key
 and can show the same wrong badge on rows that didn't actually change — the same bug JSON Schema's
-validation rows had (see `json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
+validation rows had (see `next-data-model-authoring` → `json-schema/json-schema-validation-rows.md`, **"Per-row floating-badge severity"**).
 It has not been fixed here. `AdditionalInfoRow` now accepts an optional `diffsSeverityPlacement`
 prop (defaults to the legacy `AdditionalInfoRow` member, so existing DDL callers are unaffected) —
 fixing this means adding dedicated `NodeDiffsSeverityPlacemennt` members (e.g. a DDL `DefaultRow` /
@@ -457,7 +472,7 @@ screenshot ITs.
 | `packages/api-doc-viewer/src/components/DdlTableViewer/IndexesNodeViewer.tsx` | `Indexes` section `TitleRow` with `TitleRowUsage.DdlApiSection` |
 | `packages/api-doc-viewer/src/components/DdlTableViewer/TableNodeViewer.tsx` | `data-precededby` chain between table sections (e.g. Columns → Indexes) |
 | `packages/api-doc-viewer/src/components/shared-components/TitleRow/TitleRowContent.tsx` | `DdlApiProperty` row layout, `data-usage`, `min-h-*` on property rows |
-| `packages/api-doc-viewer/src/components/DdlTableViewer/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome |
+| `packages/api-doc-viewer/src/components/shared-components/AdditionalInfoRow/AdditionalInfoRowContent.tsx` | Additional-info property row chrome (generalized from `DdlTableViewer/AdditionalInfoRow/`; now shared by DDL, AsyncAPI, and JSON Schema Next) |
 | `packages/api-doc-viewer/src/components/shared-components/TextRow/TextRowContent.tsx` | Description property row chrome |
 | `packages/api-doc-viewer/src/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper.tsx` | Side-by-side diff badge wrapper (must not be offset by row margins) |
 | `packages/api-doc-viewer/src/components/shared-components/Layout/SideBySideLayout.tsx` | Stretch behaviour for diff columns |
@@ -804,6 +819,5 @@ Source imports use the `@apihub/` alias (maps to `packages/api-doc-viewer/src`).
 Cross-package imports reach `@netcracker/qubership-apihub-next-data-model/…`
 by subpath — mirror existing import paths when adding builders or types.
 
-JSO diffs design notes and phased actions are in
-`packages/api-doc-viewer/jso-diffs-implementation-actions.md` — read before
-large diffs-viewer refactors.
+The JSO diffs contract is specified in `docs/design/jso/features/diffs.md` —
+read it before diffs-viewer refactors.

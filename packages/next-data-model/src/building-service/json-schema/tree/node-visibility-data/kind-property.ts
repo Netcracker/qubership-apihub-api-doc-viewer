@@ -1,8 +1,10 @@
 import { DisplayMode } from "@apihub/next-data-model/model/abstract/display-mode"
 import { isDetailedDisplayMode } from "@apihub/next-data-model/model/abstract/guards/display-mode"
 import { JsonSchemaTreeNode } from "@apihub/next-data-model/model/json-schema/types/aliases"
-import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
-import { JsonSchemaTreeNodeValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
+import {
+  JsonSchemaTreeNodeStoredValue,
+  JsonSchemaTreeNodeValue,
+} from "@apihub/next-data-model/model/json-schema/types/node-value"
 import { asJsonSchemaTypedNodeValue } from "@apihub/next-data-model/shared/json-schema/guards/schema-value"
 import { resolveValidationKeysForType } from "@apihub/next-data-model/model/json-schema/validation-keys"
 import { jsonSchemaHasOwnChildren } from "@apihub/next-data-model/shared/json-schema/has-own-children"
@@ -25,6 +27,10 @@ function hasExtensions(value: JsonSchemaTreeNodeValue | null | undefined): boole
   return !!value?.extensions && Object.keys(value.extensions).length > 0
 }
 
+function hasCustomAnnotations(value: JsonSchemaTreeNodeValue | null | undefined): boolean {
+  return !!value?.customAnnotations && Object.keys(value.customAnnotations).length > 0
+}
+
 const DEPRECATION_REASON_EXTENSION_KEY = "x-deprecated-reason"
 
 function resolveDeprecationReason(value: JsonSchemaTreeNodeValue | null | undefined): string | undefined {
@@ -34,10 +40,9 @@ function resolveDeprecationReason(value: JsonSchemaTreeNodeValue | null | undefi
 
 export class PlainPropertyNodeVisibilityManager {
   public resolveNodeVisibility(
-    node: JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>,
+    value: JsonSchemaTreeNodeStoredValue | null,
     displayMode: DisplayMode,
   ): JsonSchemaPropertyRowVisibility {
-    const value = node.value()
     const typedValue = asJsonSchemaTypedNodeValue(value)
     const detailed = isDetailedDisplayMode(displayMode)
 
@@ -49,8 +54,9 @@ export class PlainPropertyNodeVisibilityManager {
     const showEnumValuesRow = detailed && Array.isArray(typedValue?.enum) && typedValue.enum.length > 0
     const showValidationsSection = detailed && resolveValidationKeysForType(value).length > 0
     const showExtensionsRow = detailed && hasExtensions(typedValue)
+    const showCustomAnnotationsRow = detailed && hasCustomAnnotations(typedValue)
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
-      || showValidationsSection || showExtensionsRow
+      || showValidationsSection || showExtensionsRow || showCustomAnnotationsRow
     const showContentSection = showDescription || showDeprecationReasonRow || showAnyAdditionalInfoRow
 
     return {
@@ -62,6 +68,7 @@ export class PlainPropertyNodeVisibilityManager {
       showEnumValuesRow,
       showValidationsSection,
       showExtensionsRow,
+      showCustomAnnotationsRow,
       showContentSection,
       showAnyAdditionalInfoRow,
     }
@@ -141,10 +148,10 @@ export class PlainPropertyNodeVisibilityManager {
 const defaultInstance = new PlainPropertyNodeVisibilityManager()
 
 export function resolvePlainPropertyNodeVisibility(
-  node: JsonSchemaTreeNode<typeof JsonSchemaTreeNodeKinds.PROPERTY>,
+  value: JsonSchemaTreeNodeStoredValue | null,
   displayMode: DisplayMode,
 ): JsonSchemaPropertyRowVisibility {
-  return defaultInstance.resolveNodeVisibility(node, displayMode)
+  return defaultInstance.resolveNodeVisibility(value, displayMode)
 }
 
 export function resolvePlainPropertyListLastRowFlags(

@@ -156,9 +156,10 @@ const SomeComponent: FC = () => {
 
 Agent instructions and skills for this monorepo:
 
-* **`AGENTS.md`** — repository orientation at the repo root (not committed; see `.gitignore`).
-  Canonical tracked source: `agent-packages/api-doc-viewer-repo/` (including **`*.generated.*`
-  naming rules** — compatibility-suites only).
+* **`AGENTS.md`** — repository orientation at the repo root (hand-written and committed,
+  including **`*.generated.*` naming rules** — compatibility-suites only). Do not run
+  `apm compile` at the root; it would overwrite this file.
+* **`agent-packages/`** — canonical skill sources deployed by APM.
 * **`apm.yml`** — APM dependency list; local packages under `agent-packages/`.
 
 Refresh deployed skills and rules after editing agent packages:

@@ -12,7 +12,9 @@ suite).
   `.../after.yaml`
 - Each file is a **standalone JSON Schema** document (not wrapped in OpenAPI).
 
-## Extension value catalog
+## Cases
+
+### Extension value catalog
 
 Every case is built from a fixed catalog of extension keys/values, so the
 same "kind" of extension always reads the same way across cases. A
@@ -26,7 +28,7 @@ the same kind (e.g. two primitives) without a key collision.
 | array | `x-tags: [beta, internal]` | `x-owners: [team-a, team-b]` | `[ga, public]` |
 | simple JSON Schema | `x-value-schema: {type: integer, minimum: 0}` | `x-response-schema: {type: string, minLength: 1}` | `{type: boolean}` |
 
-## Suites 1–4 — "Existing 1 `<type>` extension"
+### Suites 1–4 — "Existing 1 `<type>` extension"
 
 Starting state: one extension of the given type at the schema root
 (`existing-1-primitive/`, `existing-1-object/`, `existing-1-array/`,
@@ -43,7 +45,7 @@ Starting state: one extension of the given type at the schema root
 | `07-replace-to-array` | Value replaced → array (same key) |
 | `08-replace-to-json-schema` | Value replaced → simple JSON Schema (same key) |
 
-## Suites 5–8 — "Existing 2 `<type>` extensions"
+### Suites 5–8 — "Existing 2 `<type>` extensions"
 
 Starting state for the "removed" cases is the mixed pair `{<type>, X}` — the
 outcome of the matching "1 more X added" case above. Starting state for the
@@ -70,7 +72,7 @@ combinations.
 | `13-both-added` | Starting state has no extensions → both primary and secondary extensions added at once (wholly-added group) |
 | `14-both-removed` | Starting state is the same-type pair `{<type>, <type>}` → both extensions removed at once (wholly-removed group) |
 
-## Suites 9–16 — Node diff → extension inheritance (JSON Schema Next Viewer ↔ JSO Viewer seam)
+### Suites 9–16 — Node diff → extension inheritance (JSON Schema Next Viewer ↔ JSO Viewer seam)
 
 The whole-node add/remove diff (a property/array item appearing or disappearing) is rendered
 by the JSON Schema Next Viewer, but the extensions attached to that node are rendered by the
@@ -114,7 +116,7 @@ Each suite has 2 cases:
 | `01-second-property-added` | `01-second-item-added` | before: only the first member → after: both members, second one already carrying its extensions |
 | `02-second-property-removed` | `02-second-item-removed` | before: both members (second with extensions) → after: only the first member |
 
-### Known gap — the 4 array-shaped suites don't currently prove anything
+#### Known gap — the 4 array-shaped suites don't currently prove anything
 
 `array-two-items`, `oneof-array-two-items`, `anyof-array-two-items`, and `allof-array-two-items`
 use root-level **tuple/indexed** `items:` (a YAML list — `items[0]`/`items[1]`), mirroring
@@ -173,6 +175,10 @@ for the new suites). Meta ids were derived from the title strings above and conf
 a built Storybook `index.json` before the IT files were written (per the
 `api-doc-viewer-testing` skill's story-id verification step) — verified with
 `bin/audit-story-id-mismatches.mjs`, 0 mismatches.
+
+## Regenerate
+
+Hand-written fixtures; there is no generator. After visual changes:
 
 ```bash
 cd packages/api-doc-viewer

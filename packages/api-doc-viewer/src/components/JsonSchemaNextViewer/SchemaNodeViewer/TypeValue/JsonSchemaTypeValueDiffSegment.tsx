@@ -1,5 +1,4 @@
-import { takeDiffSideBackgroundColor } from "@apihub/utils/diffs/take-diff-side-background-color"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
+import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -21,11 +20,10 @@ export type JsonSchemaTypeValueDiffSegmentProps = {
 export const JsonSchemaTypeValueDiffSegment: FC<JsonSchemaTypeValueDiffSegmentProps> = memo<JsonSchemaTypeValueDiffSegmentProps>((props) => {
   const { text, diff, layoutSide, color } = props
 
-  const textHighlighterColor = takeDiffSideTextHighlighterColor(diff, layoutSide)
-  const backgroundColor = takeDiffSideBackgroundColor(diff, layoutSide)
+  const style = resolveDiffSideStyle(diff, layoutSide)
   const className = [
-    DiffsClassesBuilder.highlighter(textHighlighterColor),
-    DiffsClassesBuilder.background(backgroundColor),
+    DiffsClassesBuilder.highlighter(style.textHighlighterColor),
+    DiffsClassesBuilder.background(style.backgroundColor),
   ].filter(Boolean).join(" ")
 
   return (

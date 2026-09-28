@@ -3,16 +3,7 @@ import { isDetailedDisplayMode } from "@apihub/next-data-model/model/abstract/gu
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeKinds } from "@apihub/next-data-model/model/json-schema/types/node-kind"
 import {
-  takeJsonSchemaDefaultDiff,
-  takeJsonSchemaDefaultRowColorizingDiff,
-  takeJsonSchemaEnumDiff,
-  takeJsonSchemaEnumRowColorizingDiff,
-  takeJsonSchemaEnumValueDiffs,
-  takeJsonSchemaExamplesDiff,
-  takeJsonSchemaExamplesRowColorizingDiff,
-  takeJsonSchemaExamplesValueDiffs,
-  takeJsonSchemaValidationRowColorizingDiff,
-  takeJsonSchemaValidationRowDiff,
+  JsonSchemaRowDiffs,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import {
   JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS,
@@ -42,8 +33,8 @@ function hasValidationRowDiffs(
 ): boolean {
   return (Object.keys(JSON_SCHEMA_VALIDATION_ROW_SOURCE_KEYS) as JsonSchemaValidationRowKey[])
     .some((rowKey) => (
-      !!takeJsonSchemaValidationRowDiff(node, rowKey)
-      || !!takeJsonSchemaValidationRowColorizingDiff(node, rowKey)
+      !!JsonSchemaRowDiffs.ValidationRows.takeDiff(node, rowKey)
+      || !!JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(node, rowKey)
     ))
 }
 
@@ -54,34 +45,38 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
   ): JsonSchemaPropertyRowVisibility {
     const value = node.value()
     const typedValue = asJsonSchemaTypedNodeValue(value)
-    const plainVisibility = plainPropertyNodeVisibilityManager.resolveNodeVisibility(node, displayMode)
+    const plainVisibility = plainPropertyNodeVisibilityManager.resolveNodeVisibility(value, displayMode)
     const detailed = isDetailedDisplayMode(displayMode)
 
     const showDescription = detailed
       && (!!typedValue?.description || !!node.diffs.description)
     const showEnumValuesRow = detailed && (
       plainVisibility.showEnumValuesRow
-      || !!takeJsonSchemaEnumDiff(node)
-      || !!takeJsonSchemaEnumValueDiffs(node)
-      || !!takeJsonSchemaEnumRowColorizingDiff(node)
+      || !!JsonSchemaRowDiffs.Enum.takeDiff(node)
+      || !!JsonSchemaRowDiffs.Enum.takeValueDiffs(node)
+      || !!JsonSchemaRowDiffs.Enum.takeRowColorizingDiff(node)
     )
     const showDefaultRow = detailed && (
       hasDefinedValue(typedValue?.default)
-      || !!takeJsonSchemaDefaultDiff(node)
-      || !!takeJsonSchemaDefaultRowColorizingDiff(node)
+      || !!JsonSchemaRowDiffs.Default.takeDiff(node)
+      || !!JsonSchemaRowDiffs.Default.takeRowColorizingDiff(node)
     )
     const showExamplesRow = detailed && (
       plainVisibility.showExamplesRow
-      || !!takeJsonSchemaExamplesDiff(node)
-      || !!takeJsonSchemaExamplesValueDiffs(node)
-      || !!takeJsonSchemaExamplesRowColorizingDiff(node)
+      || !!JsonSchemaRowDiffs.Examples.takeDiff(node)
+      || !!JsonSchemaRowDiffs.Examples.takeValueDiffs(node)
+      || !!JsonSchemaRowDiffs.Examples.takeRowColorizingDiff(node)
     )
     const showValidationsSection = detailed && (
       resolveValidationKeysForType(value).length > 0
       || hasValidationRowDiffs(node)
     )
+    const showCustomAnnotationsRow = detailed && (
+      plainVisibility.showCustomAnnotationsRow
+      || JsonSchemaRowDiffs.CustomAnnotations.hasAnyDiff(node)
+    )
     const showAnyAdditionalInfoRow = showDefaultRow || showExamplesRow || showEnumValuesRow
-      || showValidationsSection || plainVisibility.showExtensionsRow
+      || showValidationsSection || plainVisibility.showExtensionsRow || showCustomAnnotationsRow
     const showContentSection = showDescription
       || plainVisibility.showDeprecationReasonRow
       || showAnyAdditionalInfoRow
@@ -93,6 +88,7 @@ export class JsonSchemaNodeVisibilityManagerKindProperty {
       showExamplesRow,
       showEnumValuesRow,
       showValidationsSection,
+      showCustomAnnotationsRow,
       showContentSection,
       showAnyAdditionalInfoRow,
     }

@@ -5,9 +5,8 @@ import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstrac
 import { SideListDisplayKinds } from "../../src/model/abstract/tree-with-diffs/list-side-display"
 import {
   JSON_SCHEMA_TITLE_ROW_DIFF_KEY,
-  resolveJsonSchemaTypeLabelSideDisplay,
-  takeJsonSchemaTitleRowDiff,
-  takeJsonSchemaTypeLabelFieldDiffs,
+  JsonSchemaRowDiffs,
+  JsonSchemaTypeLabelResolver,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { isJsonSchemaTreeNodeWithDiffs } from "../../src/shared/json-schema/guards/tree-node"
@@ -69,12 +68,12 @@ describe("JSON Schema type label diffs", () => {
     expect(root).toBeDefined()
     expect(isJsonSchemaTreeNodeWithDiffs(root!)).toBe(true)
 
-    const fieldDiffs = takeJsonSchemaTypeLabelFieldDiffs(root!)
+    const fieldDiffs = JsonSchemaTypeLabelResolver.takeFieldDiffs(root!)
     expect(fieldDiffs?.format?.data.action).toBe(DiffAction.add)
     expect(fieldDiffs?.format?.styles.after.textHighlighterColor).toBe(HighlightVariant.Green)
     expect(fieldDiffs?.format?.styles.before.textHighlighterColor).toBeUndefined()
 
-    const titleRowDiff = takeJsonSchemaTitleRowDiff(root!)
+    const titleRowDiff = JsonSchemaRowDiffs.TitleRow.takeDiff(root!)
     expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
     expect(titleRowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
   })
@@ -88,8 +87,8 @@ describe("JSON Schema type label diffs", () => {
     const root = tree.root!
     expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
 
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
-    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
@@ -127,7 +126,7 @@ describe("JSON Schema type label diffs", () => {
     )
     const tree = buildTree(merged)
     const root = tree.root!
-    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    const changedDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
 
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (changedDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
@@ -151,7 +150,7 @@ describe("JSON Schema type label diffs", () => {
     )
     const tree = buildTree(merged)
     const root = tree.root!
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
 
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (originDisplay.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
@@ -175,8 +174,8 @@ describe("JSON Schema type label diffs", () => {
     )
     const tree = buildTree(merged)
     const root = tree.root!
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
-    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
@@ -212,12 +211,12 @@ describe("JSON Schema type label diffs", () => {
     const mergedRoot = tree.root!
     expect(isJsonSchemaTreeNodeWithDiffs(mergedRoot)).toBe(true)
 
-    const fieldDiffs = takeJsonSchemaTypeLabelFieldDiffs(mergedRoot)
+    const fieldDiffs = JsonSchemaTypeLabelResolver.takeFieldDiffs(mergedRoot)
     expect(fieldDiffs?.type?.data.action).toBe(DiffAction.replace)
     expect(fieldDiffs?.type?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     expect(fieldDiffs?.type?.styles.after.textHighlighterColor).toBe(HighlightVariant.Yellow)
 
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(mergedRoot, mergedRoot.meta(), ORIGIN_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(mergedRoot, mergedRoot.meta(), ORIGIN_LAYOUT_SIDE)
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       expect(originDisplay.segments[0]?.text).toBe("string")
@@ -235,11 +234,11 @@ describe("JSON Schema type label diffs", () => {
     expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
     expect(root.kind).toBe(JsonSchemaTreeNodeKinds.ROOT)
 
-    const fieldDiffs = takeJsonSchemaTypeLabelFieldDiffs(root)
+    const fieldDiffs = JsonSchemaTypeLabelResolver.takeFieldDiffs(root)
     expect(fieldDiffs?.format?.data.action).toBe(DiffAction.remove)
     expect(fieldDiffs?.format?.styles.before.textHighlighterColor).toBe(HighlightVariant.Red)
 
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       expect(originDisplay.segments.map(segment => segment.text)).toEqual(["string", "(uuid)"])
@@ -256,8 +255,8 @@ describe("JSON Schema type label diffs", () => {
     const root = tree.root!
     expect(isJsonSchemaTreeNodeWithDiffs(root)).toBe(true)
 
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
-    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const changedDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
 
     expect(originDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.WHOLE_DIFFS)

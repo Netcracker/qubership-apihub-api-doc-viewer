@@ -4,29 +4,12 @@ import { JsonSchemaSpecWithDiffsTransformer } from "../../src/building-service/j
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { JsonSchemaTreeNodeKinds } from "../../src/model/json-schema/types/node-kind"
 import { JsonSchemaValidationRowKeys } from "../../src/model/json-schema/tree-with-diffs/validation-row-source-keys"
+import { JsonSchemaKindPropertyNodeDiffs } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs.types"
 import { formatJsonSchemaValidationRowChipDisplay } from "../../src/model/json-schema/tree-with-diffs/validation-row-chip-display"
 import { resolveValueRangeLabel } from "../../src/model/json-schema/value-range"
 import {
-  resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries,
-  resolveJsonSchemaDefaultSideEntries,
-  resolveJsonSchemaEnumSideEntries,
-  resolveJsonSchemaTypeLabelSideDisplay,
-  resolveJsonSchemaTypeSideValue,
-  resolveJsonSchemaValidationRowSideEntries,
-  takeJsonSchemaAllowedAdditionalPropertyNamesDiff,
-  takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff,
-  takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs,
-  takeJsonSchemaDefaultDiff,
-  takeJsonSchemaDefaultRowColorizingDiff,
-  takeJsonSchemaEnumDiff,
-  takeJsonSchemaEnumRowColorizingDiff,
-  takeJsonSchemaExtensionsDiffs,
-  takeJsonSchemaNestingIndicatorRowColorizingDiff,
-  takeJsonSchemaNodeChangesSummary,
-  takeJsonSchemaValidationRowColorizingDiff,
-  takeJsonSchemaValidationRowDiff,
-  takeJsonSchemaValidationRowValueDiffs,
-  takeJsonSchemaValueRangeCrawlDiffs,
+  JsonSchemaRowDiffs,
+  JsonSchemaTypeLabelResolver,
 } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import { ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
 import { SideListDisplayKinds } from "../../src/model/abstract/tree-with-diffs/list-side-display"
@@ -229,6 +212,57 @@ describe("JsonSchema with-diffs stack", () => {
     }
   })
 
+  // Reproduces the real AsyncAPI channel-parameters shape (packages/samples/async-api-diffs/
+  // channel-parameters/{6,7}-channel-parameters-fields-*): `enum` newly appearing on a property
+  // that already has other unchanged sibling fields (`location`) surfaces as per-index add/remove
+  // diffs attached directly to the `enum` array's OWN diffsMetaKey - not a single field-level diff
+  // on the property (see `resolveWholeListFieldDiff`'s doc comment) - so the crawl value is built
+  // by hand here rather than via `mergeSchemas`/`apiDiff`, which (without AsyncAPI's `unify: true`
+  // normalization) resolves this exact shape to the OTHER attachment tier instead.
+  describe("JsonSchema enum row: chip suppression when every item was uniformly added/removed", () => {
+    function buildEnumArrayDiffsSource(action: typeof DiffAction.add | typeof DiffAction.remove): object {
+      const isAdd = action === DiffAction.add
+      const enumArray: unknown[] = ["alpha", "beta"]
+      Reflect.set(enumArray, DIFF_META_KEY, {
+        "0": {
+          type: "unclassified", action, scope: "root",
+          ...(isAdd ? { afterValue: "alpha", afterDeclarationPaths: [["enum", 0]] } : { beforeValue: "alpha", beforeDeclarationPaths: [["enum", 0]] }),
+        },
+        "1": {
+          type: "unclassified", action, scope: "root",
+          ...(isAdd ? { afterValue: "beta", afterDeclarationPaths: [["enum", 1]] } : { beforeValue: "beta", beforeDeclarationPaths: [["enum", 1]] }),
+        },
+      })
+      return { type: "string", location: "$message.payload#/id", enum: enumArray }
+    }
+
+    it("colors the row green and leaves every chip plain when every enum item was uniformly added", () => {
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: buildEnumArrayDiffsSource(DiffAction.add),
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+      const diffs = tree.root!.diffs as JsonSchemaKindPropertyNodeDiffs
+
+      expect(diffs.enumRowColorizingDiff?.data.action).toBe(DiffAction.add)
+      expect(diffs.enumValueDiffs?.["0"]?.styles.after.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["1"]?.styles.after.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.after.isContentVisible).toBe(true)
+    })
+
+    it("colors the row red and leaves every chip plain when every enum item was uniformly removed", () => {
+      const tree = new JsonSchemaTreeWithDiffsBuilder({
+        source: buildEnumArrayDiffsSource(DiffAction.remove),
+        diffsMetaKeys: DIFF_META_KEYS,
+      }).build()
+      const diffs = tree.root!.diffs as JsonSchemaKindPropertyNodeDiffs
+
+      expect(diffs.enumRowColorizingDiff?.data.action).toBe(DiffAction.remove)
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.borderShadowColor).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.isFontMuted).toBeUndefined()
+      expect(diffs.enumValueDiffs?.["0"]?.styles.before.isContentVisible).toBe(true)
+    })
+  })
+
   it("aggregates property metadata and constraint diffs for case 1.4", () => {
     const fixtureDir = path.resolve(
       __dirname,
@@ -319,14 +353,14 @@ describe("JsonSchema with-diffs stack", () => {
     expect(valueLengthDiffs?.minLength).toBeDefined()
 
     const mergedChipValues = [">= 3"]
-    const originEntries = resolveJsonSchemaValidationRowSideEntries(
+    const originEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
       mergedChipValues,
       undefined,
       valueLengthDiffs as never,
       ORIGIN_LAYOUT_SIDE,
     )
-    const changedEntries = resolveJsonSchemaValidationRowSideEntries(
+    const changedEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
       mergedChipValues,
       undefined,
@@ -357,14 +391,14 @@ describe("JsonSchema with-diffs stack", () => {
     expect(maxLengthDiffs?.maxLength).toBeDefined()
 
     const maxMergedChipValues = ["<= 256"]
-    const maxOriginEntries = resolveJsonSchemaValidationRowSideEntries(
+    const maxOriginEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
       maxMergedChipValues,
       undefined,
       maxLengthDiffs as never,
       ORIGIN_LAYOUT_SIDE,
     )
-    const maxChangedEntries = resolveJsonSchemaValidationRowSideEntries(
+    const maxChangedEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
       maxMergedChipValues,
       undefined,
@@ -530,11 +564,11 @@ describe("JsonSchema with-diffs stack", () => {
     const chips = [range.data.lower, range.data.upper].filter(Boolean) as string[]
     const valueRangeContext = {
       nodeValue,
-      crawlDiffs: takeJsonSchemaValueRangeCrawlDiffs(tree.root!) ?? {},
+      crawlDiffs: JsonSchemaRowDiffs.ValidationRows.takeValueRangeCrawlDiffs(tree.root!) ?? {},
     }
 
     const valueDiffs = rootDiffs.validationRowValueDiffs?.[rowKey]
-    const originEntries = resolveJsonSchemaValidationRowSideEntries(
+    const originEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       rowKey,
       chips,
       rootDiffs.validationRowDiffs?.[rowKey],
@@ -542,7 +576,7 @@ describe("JsonSchema with-diffs stack", () => {
       ORIGIN_LAYOUT_SIDE,
       valueRangeContext,
     )
-    const changedEntries = resolveJsonSchemaValidationRowSideEntries(
+    const changedEntries = JsonSchemaRowDiffs.ValidationRows.resolveSideEntries(
       rowKey,
       chips,
       rootDiffs.validationRowDiffs?.[rowKey],
@@ -618,26 +652,26 @@ describe("JsonSchema with-diffs stack", () => {
     const nodeLevelDiff = prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]
     expect(nodeLevelDiff?.data.action).toBe(DiffAction.add)
 
-    expect(takeJsonSchemaEnumDiff(prop1Node!)).toBeUndefined()
-    const enumRowColorizingDiff = takeJsonSchemaEnumRowColorizingDiff(prop1Node!)
+    expect(JsonSchemaRowDiffs.Enum.takeDiff(prop1Node!)).toBeUndefined()
+    const enumRowColorizingDiff = JsonSchemaRowDiffs.Enum.takeRowColorizingDiff(prop1Node!)
     expect(enumRowColorizingDiff).toBeDefined()
     expect(enumRowColorizingDiff).not.toBe(nodeLevelDiff)
     expect(enumRowColorizingDiff?.data.action).toBe(DiffAction.add)
     expect(enumRowColorizingDiff?.data.afterValue).toBe(true)
     expect(enumRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
     expect(enumRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
-    expect(resolveJsonSchemaEnumSideEntries(
+    expect(JsonSchemaRowDiffs.Enum.resolveSideEntries(
       rule1StringProperty.enum,
       undefined,
       undefined,
       CHANGED_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
 
-    expect(takeJsonSchemaDefaultDiff(prop1Node!)).toBeUndefined()
-    const defaultRowColorizingDiff = takeJsonSchemaDefaultRowColorizingDiff(prop1Node!)
+    expect(JsonSchemaRowDiffs.Default.takeDiff(prop1Node!)).toBeUndefined()
+    const defaultRowColorizingDiff = JsonSchemaRowDiffs.Default.takeRowColorizingDiff(prop1Node!)
     expect(defaultRowColorizingDiff?.data.action).toBe(DiffAction.add)
     expect(defaultRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
-    expect(resolveJsonSchemaDefaultSideEntries(
+    expect(JsonSchemaRowDiffs.Default.resolveSideEntries(
       rule1StringProperty.default,
       undefined,
       CHANGED_LAYOUT_SIDE,
@@ -647,8 +681,8 @@ describe("JsonSchema with-diffs stack", () => {
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
       JsonSchemaValidationRowKeys.VALUE_PATTERN,
     ] as const) {
-      expect(takeJsonSchemaValidationRowDiff(prop1Node!, rowKey)).toBeUndefined()
-      const validationRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(prop1Node!, rowKey)
+      expect(JsonSchemaRowDiffs.ValidationRows.takeDiff(prop1Node!, rowKey)).toBeUndefined()
+      const validationRowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(prop1Node!, rowKey)
       expect(validationRowColorizingDiff?.data.action).toBe(DiffAction.add)
       expect(validationRowColorizingDiff?.styles.after.borderShadowColor).toBeUndefined()
       expect(validationRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -682,22 +716,22 @@ describe("JsonSchema with-diffs stack", () => {
     const nodeLevelDiff = prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]
     expect(nodeLevelDiff?.data.action).toBe(DiffAction.remove)
 
-    expect(takeJsonSchemaEnumDiff(prop1Node!)).toBeUndefined()
-    const enumRowColorizingDiff = takeJsonSchemaEnumRowColorizingDiff(prop1Node!)
+    expect(JsonSchemaRowDiffs.Enum.takeDiff(prop1Node!)).toBeUndefined()
+    const enumRowColorizingDiff = JsonSchemaRowDiffs.Enum.takeRowColorizingDiff(prop1Node!)
     expect(enumRowColorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(enumRowColorizingDiff?.styles.before.borderShadowColor).toBeUndefined()
-    expect(resolveJsonSchemaEnumSideEntries(
+    expect(JsonSchemaRowDiffs.Enum.resolveSideEntries(
       rule1StringProperty.enum,
       undefined,
       undefined,
       ORIGIN_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
 
-    expect(takeJsonSchemaValidationRowDiff(
+    expect(JsonSchemaRowDiffs.ValidationRows.takeDiff(
       prop1Node!,
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
     )).toBeUndefined()
-    const valueLengthColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+    const valueLengthColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(
       prop1Node!,
       JsonSchemaValidationRowKeys.VALUE_LENGTH,
     )
@@ -752,7 +786,7 @@ describe("JsonSchema with-diffs stack", () => {
       JsonSchemaValidationRowKeys.ITEMS_COUNT,
       JsonSchemaValidationRowKeys.UNIQUE_ITEMS,
     ] as const) {
-      const validationRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(arrayVariantNode!, rowKey)
+      const validationRowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(arrayVariantNode!, rowKey)
       expect(validationRowColorizingDiff?.data.action).toBe(DiffAction.add)
       expect(validationRowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     }
@@ -801,7 +835,7 @@ describe("JsonSchema with-diffs stack", () => {
     const nodeLevelDiff = objectVariantNode!.diffs[NODE_LEVEL_DIFF_KEY]
     expect(nodeLevelDiff?.data.action).toBe(DiffAction.remove)
 
-    const propertiesCountColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+    const propertiesCountColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(
       objectVariantNode!,
       JsonSchemaValidationRowKeys.PROPERTIES_COUNT,
     )
@@ -830,7 +864,7 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
     const tree = buildTree(beforeSchema, afterSchema)
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(tree.root!)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.styles.before.isContentVisible).toBe(false)
@@ -852,7 +886,7 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     const afterSchema = yaml.parse(fs.readFileSync(path.join(fixtureDir, "after.yaml"), "utf8"))
     const tree = buildTree(beforeSchema, afterSchema)
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(tree.root!)
     expect(rowDiff?.data.action).toBe(DiffAction.remove)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiff?.styles.before.isContentVisible).toBe(true)
@@ -882,7 +916,7 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     expect(isJsonSchemaTreeNodeWithDiffs(prop1Node!)).toBe(true)
     expect(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(prop1Node!)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(prop1Node!)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
     expect(rowDiff?.flags.before.increaseLevel).toBe(false)
@@ -906,7 +940,7 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     )
 
     expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(tree.root!)
     expect(rowDiff?.data.action).toBe(DiffAction.replace)
     expect(rowDiff?.flags.before.increaseLevel).toBe(true)
     expect(rowDiff?.flags.after.increaseLevel).toBe(true)
@@ -934,7 +968,7 @@ describe("JsonSchema nesting-indicator row colorizing diff", () => {
     // Root itself was not added/removed, and only one of its two-plus children (prop2) changed
     // - prop0/prop1 stayed unchanged, so the children are not "uniformly" added.
     expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
-    expect(takeJsonSchemaNestingIndicatorRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(tree.root!)).toBeUndefined()
     expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]).toBeUndefined()
   })
 })
@@ -975,24 +1009,24 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const tree = buildTreeFromFixture("001-string-to-number")
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(true)
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(true)
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
   })
 
   it("shows the correct origin-side type and hides the primitive changed side (021-array-to-string)", () => {
     const tree = buildTreeFromFixture("021-array-to-string")
     const root = tree.root!
 
-    const originType = resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)
-    const changedType = resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)
+    const originType = JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)
+    const changedType = JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)
     expect(originType).toBe("array")
     expect(changedType).toBe("string")
     expect(isJsonSchemaPrimitiveValueType(originType)).toBe(false)
     expect(isJsonSchemaPrimitiveValueType(changedType)).toBe(true)
 
-    const originDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
+    const originDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), ORIGIN_LAYOUT_SIDE)
     expect(originDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (originDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       const typeSegment = originDisplay.segments.find((segment) => segment.text === "array")
@@ -1001,7 +1035,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
 
     // Non-primitive (array) is on the origin/before side, so it disappears after the change -
     // the row colorizes as remove (red before, hidden after), not a symmetric replace.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.remove)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
@@ -1015,12 +1049,12 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const tree = buildTreeFromFixture("027-object-to-number")
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("number")
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(true)
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.remove)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
@@ -1032,12 +1066,12 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const tree = buildTreeFromFixture("004-string-to-array")
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("string")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
 
     // Non-primitive (array) lands on the changed/after side, so children newly appear there -
     // the row colorizes as add (green after, hidden before), not a symmetric yellow replace.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -1049,12 +1083,12 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const tree = buildTreeFromFixture("026-object-to-string")
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("string")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("object")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("string")
 
     // Non-primitive (object) is on the origin/before side, so its children disappear after the
     // change - the row colorizes as remove (red before, hidden after), not a symmetric replace.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.remove)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
@@ -1075,7 +1109,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const fooNode = tree.root!.childrenNodes().find((node) => node.key === "foo")!
     expect(isJsonSchemaTreeNodeWithDiffs(fooNode)).toBe(true)
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(fooNode!)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(fooNode!)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -1087,11 +1121,11 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const tree = buildTreeFromFixture("030-object-to-array")
     const root = tree.root!
 
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
-    expect(isJsonSchemaPrimitiveValueType(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE))).toBe(false)
+    expect(isJsonSchemaPrimitiveValueType(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE))).toBe(false)
 
     for (const layoutSide of [ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE]) {
-      const display = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), layoutSide)
+      const display = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), layoutSide)
       expect(display.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
       if (display.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
         const typeSegment = display.segments[0]
@@ -1102,7 +1136,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       }
     }
 
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.replace)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -1129,7 +1163,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     const root = tree.root!
 
     expect(root.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.replace)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
@@ -1142,7 +1176,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     )
     const root = tree.root!
 
-    const changedDisplay = resolveJsonSchemaTypeLabelSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
+    const changedDisplay = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)
     expect(changedDisplay.kind).toBe(SideListDisplayKinds.PARTIAL_DIFFS)
     if (changedDisplay.kind === SideListDisplayKinds.PARTIAL_DIFFS) {
       const titleSegment = changedDisplay.segments.find((segment) => segment.text === "<My Schema>")
@@ -1201,8 +1235,8 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     )
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("array")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("nothing")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("array")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("nothing")
     // `nothing` is a special synthesized pseudo-type, not a real JSON Schema primitive - but like
     // a primitive, it has no real children.
     expect(isJsonSchemaPrimitiveValueType("nothing")).toBe(false)
@@ -1210,7 +1244,7 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
 
     // Origin (array) has real children; changed (nothing) has none - the row must colorize as a
     // single-sided remove, not the default symmetric yellow replace both sides used to get.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.remove)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
@@ -1227,11 +1261,11 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
     )
     const root = tree.root!
 
-    expect(resolveJsonSchemaTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("nothing")
-    expect(resolveJsonSchemaTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, ORIGIN_LAYOUT_SIDE)).toBe("nothing")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(root, CHANGED_LAYOUT_SIDE)).toBe("array")
 
     // Origin (nothing) has no children; changed (array) gains real children - add, not replace.
-    const rowDiff = takeJsonSchemaNestingIndicatorRowColorizingDiff(root)
+    const rowDiff = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(root)
     expect(rowDiff?.data.action).toBe(DiffAction.add)
     expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -1248,12 +1282,12 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       { allOf: [unconstrainedOption, arrayOption] },
     )
     const rootToArray = treeToArray.root!
-    expect(resolveJsonSchemaTypeSideValue(rootToArray, ORIGIN_LAYOUT_SIDE)).toBe("any")
-    expect(resolveJsonSchemaTypeSideValue(rootToArray, CHANGED_LAYOUT_SIDE)).toBe("array")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(rootToArray, ORIGIN_LAYOUT_SIDE)).toBe("any")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(rootToArray, CHANGED_LAYOUT_SIDE)).toBe("array")
     expect(isJsonSchemaPrimitiveValueType("any")).toBe(false)
     expect(isJsonSchemaSpecialValueType("any")).toBe(true)
 
-    const rowDiffToArray = takeJsonSchemaNestingIndicatorRowColorizingDiff(rootToArray)
+    const rowDiffToArray = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(rootToArray)
     expect(rowDiffToArray?.data.action).toBe(DiffAction.add)
     expect(rowDiffToArray?.styles.before.backgroundColor).toBe(HighlightVariant.Gray)
     expect(rowDiffToArray?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -1263,10 +1297,10 @@ describe("JsonSchema nesting-indicator type label diffs", () => {
       { allOf: [unconstrainedOption] },
     )
     const rootFromArray = treeFromArray.root!
-    expect(resolveJsonSchemaTypeSideValue(rootFromArray, ORIGIN_LAYOUT_SIDE)).toBe("array")
-    expect(resolveJsonSchemaTypeSideValue(rootFromArray, CHANGED_LAYOUT_SIDE)).toBe("any")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(rootFromArray, ORIGIN_LAYOUT_SIDE)).toBe("array")
+    expect(JsonSchemaTypeLabelResolver.resolveTypeSideValue(rootFromArray, CHANGED_LAYOUT_SIDE)).toBe("any")
 
-    const rowDiffFromArray = takeJsonSchemaNestingIndicatorRowColorizingDiff(rootFromArray)
+    const rowDiffFromArray = JsonSchemaRowDiffs.NodeLevel.takeNestingIndicatorRowColorizingDiff(rootFromArray)
     expect(rowDiffFromArray?.data.action).toBe(DiffAction.remove)
     expect(rowDiffFromArray?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(rowDiffFromArray?.styles.after.backgroundColor).toBe(HighlightVariant.Gray)
@@ -1294,7 +1328,7 @@ describe("JsonSchema node changes summary", () => {
       },
     )
 
-    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    const summary = JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(tree.root!)
     // Own description change + descendant (prop1) add - two distinct diff types merged together.
     expect(summary?.size).toBe(2)
   })
@@ -1304,7 +1338,7 @@ describe("JsonSchema node changes summary", () => {
 
     // Empty summaries are not assigned at all (keeps `node.diffs` free of placeholder keys, which
     // would otherwise defeat "changed only" filtering elsewhere) - so this reads as undefined.
-    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    const summary = JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(tree.root!)
     expect(summary).toBeUndefined()
   })
 
@@ -1321,7 +1355,7 @@ describe("JsonSchema node changes summary", () => {
     const ownTitleDiffType = tree.root!.diffs.typeLabelFieldDiffs?.title?.data.type
     expect(ownTitleDiffType).toBeDefined()
 
-    const summary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    const summary = JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(tree.root!)
     expect(summary?.size).toBe(1)
     expect(summary?.has(ownTitleDiffType!)).toBe(false)
   })
@@ -1337,10 +1371,10 @@ describe("JsonSchema node changes summary", () => {
     const prop0OwnTypeDiffType = prop0.diffs.typeLabelFieldDiffs?.type?.data.type
     expect(prop0OwnTypeDiffType).toBeDefined()
 
-    const rootSummary = takeJsonSchemaNodeChangesSummary(tree.root!)
+    const rootSummary = JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(tree.root!)
     expect(rootSummary?.has(prop0OwnTypeDiffType!)).toBe(true)
 
-    const prop0Summary = takeJsonSchemaNodeChangesSummary(prop0)
+    const prop0Summary = JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(prop0)
     expect(prop0Summary).toBeUndefined()
   })
 
@@ -1373,8 +1407,8 @@ describe("JsonSchema node changes summary", () => {
     const valueProperty = tree.root!.childrenNodes().find((node) => node.key === "value")!
     const [stringVariant, objectVariant] = valueProperty.nestedNodes()
 
-    expect(takeJsonSchemaNodeChangesSummary(stringVariant)).toBeUndefined()
-    expect(takeJsonSchemaNodeChangesSummary(objectVariant)?.size).toBe(1)
+    expect(JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(stringVariant)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.NodeLevel.takeNodeChangesSummary(objectVariant)?.size).toBe(1)
   })
 })
 
@@ -1396,7 +1430,7 @@ describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
     )
     const root = tree.root!
 
-    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    const defaultDiff = JsonSchemaRowDiffs.Default.takeDiff(root)
     expect(defaultDiff?.data.action).toBe(DiffAction.replace)
     expect(defaultDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
     expect(defaultDiff?.styles.before.textHighlighterColor).toBeUndefined()
@@ -1411,7 +1445,7 @@ describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
     )
     const root = tree.root!
 
-    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    const defaultDiff = JsonSchemaRowDiffs.Default.takeDiff(root)
     expect(defaultDiff?.data.action).toBe(DiffAction.replace)
     // Origin side (boolean `true`) -> borderShadowColor.
     expect(defaultDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
@@ -1428,7 +1462,7 @@ describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
     )
     const root = tree.root!
 
-    const defaultDiff = takeJsonSchemaDefaultDiff(root)
+    const defaultDiff = JsonSchemaRowDiffs.Default.takeDiff(root)
     expect(defaultDiff?.data.action).toBe(DiffAction.replace)
     expect(defaultDiff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Yellow)
     expect(defaultDiff?.styles.before.borderShadowColor).toBeUndefined()
@@ -1443,7 +1477,7 @@ describe("JsonSchema boolean-value replace diffs use borderShadowColor", () => {
     )
     const root = tree.root!
 
-    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.UNIQUE_ITEMS)
+    const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(root, JsonSchemaValidationRowKeys.UNIQUE_ITEMS)
     const uniqueItemsDiff = valueDiffs?.["uniqueItems"]
     expect(uniqueItemsDiff?.data.action).toBe(DiffAction.replace)
     expect(uniqueItemsDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Yellow)
@@ -1472,12 +1506,12 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
     )
     const root = tree.root!
 
-    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const rowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
     expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
     expect(rowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(rowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
 
-    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
     const maxItemsDiff = valueDiffs?.["maxItems"]
     expect(maxItemsDiff?.data.action).toBe(DiffAction.add)
     expect(maxItemsDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Green)
@@ -1494,12 +1528,12 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
     )
     const root = tree.root!
 
-    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const rowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
     expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
     expect(rowColorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
     expect(rowColorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
 
-    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
+    const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(root, JsonSchemaValidationRowKeys.ITEMS_COUNT)
     const maxItemsDiff = valueDiffs?.["maxItems"]
     expect(maxItemsDiff?.data.action).toBe(DiffAction.remove)
     expect(maxItemsDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Red)
@@ -1515,10 +1549,10 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
     )
     const root = tree.root!
 
-    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const rowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
     expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
 
-    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
     const maxPropertiesDiff = valueDiffs?.["maxProperties"]
     expect(maxPropertiesDiff?.data.action).toBe(DiffAction.add)
     expect(maxPropertiesDiff?.styles.after.borderShadowColor).toBe(HighlightVariant.Green)
@@ -1533,10 +1567,10 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
     )
     const root = tree.root!
 
-    const rowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const rowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
     expect(rowColorizingDiff?.data.action).toBe(DiffAction.replace)
 
-    const valueDiffs = takeJsonSchemaValidationRowValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
+    const valueDiffs = JsonSchemaRowDiffs.ValidationRows.takeValueDiffs(root, JsonSchemaValidationRowKeys.PROPERTIES_COUNT)
     const maxPropertiesDiff = valueDiffs?.["maxProperties"]
     expect(maxPropertiesDiff?.data.action).toBe(DiffAction.remove)
     expect(maxPropertiesDiff?.styles.before.borderShadowColor).toBe(HighlightVariant.Red)
@@ -1548,7 +1582,7 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
       { type: "array" },
       { type: "array", minItems: 1, maxItems: 5 },
     )
-    const addRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+    const addRowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(
       addTree.root!,
       JsonSchemaValidationRowKeys.ITEMS_COUNT,
     )
@@ -1559,7 +1593,7 @@ describe("JsonSchema min/max validation rows - partial add/remove is not a whole
       { type: "array", minItems: 1, maxItems: 5 },
       { type: "array" },
     )
-    const removeRowColorizingDiff = takeJsonSchemaValidationRowColorizingDiff(
+    const removeRowColorizingDiff = JsonSchemaRowDiffs.ValidationRows.takeColorizingDiff(
       removeTree.root!,
       JsonSchemaValidationRowKeys.ITEMS_COUNT,
     )
@@ -1592,12 +1626,12 @@ describe("JsonSchema default/enum/examples diffs on non-PROPERTY/ROOT nodes (add
       .find((node) => node.key === "additionalProperties")!
     expect(isJsonSchemaTreeNodeWithDiffs(additionalPropertiesNode)).toBe(true)
 
-    const defaultDiff = takeJsonSchemaDefaultRowColorizingDiff(additionalPropertiesNode)
+    const defaultDiff = JsonSchemaRowDiffs.Default.takeRowColorizingDiff(additionalPropertiesNode)
     expect(defaultDiff?.data.action).toBe(DiffAction.add)
     expect(defaultDiff?.styles.before.isContentVisible).toBe(false)
     expect(defaultDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
 
-    const enumDiff = takeJsonSchemaEnumRowColorizingDiff(additionalPropertiesNode)
+    const enumDiff = JsonSchemaRowDiffs.Enum.takeRowColorizingDiff(additionalPropertiesNode)
     expect(enumDiff?.data.action).toBe(DiffAction.add)
     expect(enumDiff?.styles.before.isContentVisible).toBe(false)
     expect(enumDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
@@ -1616,12 +1650,12 @@ describe("JsonSchema default/enum/examples diffs on non-PROPERTY/ROOT nodes (add
       .find((node) => node.key === "additionalProperties")!
     expect(isJsonSchemaTreeNodeWithDiffs(additionalPropertiesNode)).toBe(true)
 
-    const defaultDiff = takeJsonSchemaDefaultRowColorizingDiff(additionalPropertiesNode)
+    const defaultDiff = JsonSchemaRowDiffs.Default.takeRowColorizingDiff(additionalPropertiesNode)
     expect(defaultDiff?.data.action).toBe(DiffAction.remove)
     expect(defaultDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(defaultDiff?.styles.after.isContentVisible).toBe(false)
 
-    const enumDiff = takeJsonSchemaEnumRowColorizingDiff(additionalPropertiesNode)
+    const enumDiff = JsonSchemaRowDiffs.Enum.takeRowColorizingDiff(additionalPropertiesNode)
     expect(enumDiff?.data.action).toBe(DiffAction.remove)
     expect(enumDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(enumDiff?.styles.after.isContentVisible).toBe(false)
@@ -1655,22 +1689,22 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       },
     )
 
-    const wholeDiff = takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)
+    const wholeDiff = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(additionalPropertiesNode)
     expect(wholeDiff?.data.action).toBe(DiffAction.add)
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)).toBeUndefined()
 
-    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    const colorizingDiff = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeRowColorizingDiff(additionalPropertiesNode)
     expect(colorizingDiff?.data.action).toBe(DiffAction.add)
     expect(colorizingDiff?.styles.before.isContentVisible).toBe(false)
     expect(colorizingDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
 
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       wholeDiff,
       undefined,
       CHANGED_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       wholeDiff,
       undefined,
@@ -1689,21 +1723,21 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       { type: "object", additionalProperties: { type: "string" } },
     )
 
-    const wholeDiff = takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)
+    const wholeDiff = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(additionalPropertiesNode)
     expect(wholeDiff?.data.action).toBe(DiffAction.remove)
 
-    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    const colorizingDiff = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeRowColorizingDiff(additionalPropertiesNode)
     expect(colorizingDiff?.data.action).toBe(DiffAction.remove)
     expect(colorizingDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Red)
     expect(colorizingDiff?.styles.after.isContentVisible).toBe(false)
 
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       wholeDiff,
       undefined,
       ORIGIN_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       wholeDiff,
       undefined,
@@ -1726,21 +1760,21 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       },
     )
 
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
-    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(additionalPropertiesNode)).toBeUndefined()
+    const valueDiffs = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)
     expect(Object.keys(valueDiffs ?? {})).toEqual(["2"])
     expect(valueDiffs?.["2"]?.data.action).toBe(DiffAction.add)
 
-    const colorizingDiff = takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)
+    const colorizingDiff = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeRowColorizingDiff(additionalPropertiesNode)
     expect(colorizingDiff?.data.action).toBe(DiffAction.replace)
 
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta", "gamma"],
       undefined,
       valueDiffs,
       CHANGED_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta", "gamma"])
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta", "gamma"],
       undefined,
       valueDiffs,
@@ -1763,17 +1797,17 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       },
     )
 
-    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    const valueDiffs = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)
     expect(Object.keys(valueDiffs ?? {})).toEqual(["1"])
     expect(valueDiffs?.["1"]?.data.action).toBe(DiffAction.remove)
 
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       undefined,
       valueDiffs,
       ORIGIN_LAYOUT_SIDE,
     ).map((entry) => entry.text)).toEqual(["alpha", "beta"])
-    expect(resolveJsonSchemaAllowedAdditionalPropertyNamesSideEntries(
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.resolveSideEntries(
       ["alpha", "beta"],
       undefined,
       valueDiffs,
@@ -1798,7 +1832,7 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
 
     // A "replace" decomposes into a remove at the old index plus an add at the new index -
     // list diffing is index-based add/remove, not a true same-index replace (matches plain enum).
-    const valueDiffs = takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)
+    const valueDiffs = JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)
     expect(Object.keys(valueDiffs ?? {}).sort()).toEqual(["1", "2"])
     expect(valueDiffs?.["1"]?.data.action).toBe(DiffAction.remove)
     expect(valueDiffs?.["2"]?.data.action).toBe(DiffAction.add)
@@ -1819,9 +1853,9 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       },
     )
 
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
   })
 
   // Mirrors packages/samples/json-schema-diffs/type-changes/object-additional-properties/063-property-names-unchanged
@@ -1839,9 +1873,9 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
       },
     )
 
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(additionalPropertiesNode)).toBeUndefined()
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(additionalPropertiesNode)).toBeUndefined()
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(additionalPropertiesNode)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeRowColorizingDiff(additionalPropertiesNode)).toBeUndefined()
   })
 
   it("does not attach the row diff to unrelated node kinds (e.g. a named property)", () => {
@@ -1864,8 +1898,8 @@ describe("JsonSchema parent propertyNames.enum diff on the additionalProperties 
     const nameNode = tree.root!.childrenNodes().find((node) => node.key === "name")!
     expect(nameNode).toBeDefined()
 
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesDiff(nameNode as never)).toBeUndefined()
-    expect(takeJsonSchemaAllowedAdditionalPropertyNamesValueDiffs(nameNode as never)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeDiff(nameNode as never)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.AllowedAdditionalPropertyNames.takeValueDiffs(nameNode as never)).toBeUndefined()
   })
 
   it("populates the AllowedAdditionalPropertyNamesRow severity independently of other rows", () => {
@@ -1907,7 +1941,7 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
       { type: "string", "x-a": true, "x-b": "new" },
     )
 
-    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    const extensionsDiffs = JsonSchemaRowDiffs.Extensions.takeDiffs(tree.root!)
     expect(extensionsDiffs?.["x-a"]).toBeUndefined()
     expect(extensionsDiffs?.["x-b"]?.action).toBe(DiffAction.add)
     expect(extensionsDiffs?.["x-b"] && "afterValue" in extensionsDiffs["x-b"] ? extensionsDiffs["x-b"].afterValue : undefined)
@@ -1920,7 +1954,7 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
       { type: "string", "x-a": ["beta", "internal"] },
     )
 
-    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    const extensionsDiffs = JsonSchemaRowDiffs.Extensions.takeDiffs(tree.root!)
     const aDiff = extensionsDiffs?.["x-a"]
     expect(aDiff?.action).toBe(DiffAction.replace)
     expect(aDiff && "beforeValue" in aDiff ? aDiff.beforeValue : undefined).toEqual({ team: "core" })
@@ -1933,7 +1967,7 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
       { type: "string", "x-a": true },
     )
 
-    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(tree.root!)
+    const extensionsDiffs = JsonSchemaRowDiffs.Extensions.takeDiffs(tree.root!)
     expect(extensionsDiffs?.["x-a"]).toBeUndefined()
     const bDiff = extensionsDiffs?.["x-b"]
     expect(bDiff?.action).toBe(DiffAction.remove)
@@ -1954,7 +1988,7 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
     const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
     expect(prop1Node).toBeDefined()
 
-    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(prop1Node)
+    const extensionsDiffs = JsonSchemaRowDiffs.Extensions.takeDiffs(prop1Node)
     const aDiff = extensionsDiffs?.["x-a"]
     const bDiff = extensionsDiffs?.["x-b"]
     expect(aDiff?.action).toBe(DiffAction.add)
@@ -1977,9 +2011,257 @@ describe("JsonSchema specification-extension (x-*) diffs", () => {
     const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
     expect(prop1Node).toBeDefined()
 
-    const extensionsDiffs = takeJsonSchemaExtensionsDiffs(prop1Node)
+    const extensionsDiffs = JsonSchemaRowDiffs.Extensions.takeDiffs(prop1Node)
     const aDiff = extensionsDiffs?.["x-a"]
     expect(aDiff?.action).toBe(DiffAction.remove)
     expect(aDiff && "beforeValue" in aDiff ? aDiff.beforeValue : undefined).toBe(true)
+  })
+
+  it("colors the Extensions row green, changed-side-only, when every extension was added while the owning node itself was untouched", () => {
+    const tree = buildTree(
+      { type: "string" },
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(false)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(false)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(true)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the Extensions row red, origin-side-only, when every extension was removed while the owning node itself was untouched", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+      { type: "string" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(true)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+    expect(rowDiff?.flags.before.increaseLevel).toBe(true)
+    expect(rowDiff?.flags.after.increaseLevel).toBe(false)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("leaves the Extensions row uncolored when one extension was added and another removed (mixed)", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-c": "old" },
+      { type: "string", "x-a": true, "x-b": "new" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
+
+  // Mirrors the real regression shape: packages/samples/json-schema-diffs/extensions/
+  // existing-1-array/01-add-primitive (x-tags stays untouched, x-internal is added alongside it)
+  // and existing-2-object/01-primitive-removed (x-metadata stays untouched, x-internal is
+  // removed). A single extension changing while a SIBLING extension sits completely unchanged on
+  // both sides is a genuinely partial change - unlike the "mixed" case above (different actions),
+  // here every changed extension agrees on direction, which is exactly what could be mistaken for
+  // "every extension uniformly added/removed" if the check doesn't also require full coverage.
+  it("leaves the Extensions row uncolored when one extension was added but another sits unchanged alongside it", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true },
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
+
+  it("leaves the Extensions row uncolored when one extension was removed but another sits unchanged alongside it", () => {
+    const tree = buildTree(
+      { type: "string", "x-a": true, "x-b": "1.0.0" },
+      { type: "string", "x-a": true },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Extensions.takeRowColorizingDiff(tree.root!)).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+  })
+})
+
+describe("JsonSchema customAnnotations (generic extension point) diffs", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the row green, changed-side-only, when a custom annotation was added", () => {
+    const tree = buildTree(
+      { type: "string" },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const chipDiff = JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")
+    expect(chipDiff?.data.action).toBe(DiffAction.add)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(false)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(true)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the row red, origin-side-only, when a custom annotation was removed", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+      { type: "string" },
+    )
+
+    expect(tree.root!.diffs[NODE_LEVEL_DIFF_KEY]).toBeUndefined()
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.remove)
+    expect(rowDiff?.styles.before.isContentVisible).toBe(true)
+    expect(rowDiff?.styles.after.isContentVisible).toBe(false)
+
+    const severity = tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("colors the row yellow (replace) when a custom annotation's value changed", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.payload#/id" } } },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    const chipDiff = JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")
+    expect(chipDiff?.data.action).toBe(DiffAction.replace)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")
+    expect(rowDiff?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+  })
+
+  it("colors a wholly-added property's custom annotation, even though it has no diff of its own", () => {
+    const tree = buildTree(
+      { type: "object", properties: { prop0: { type: "string" } } },
+      {
+        type: "object",
+        properties: {
+          prop0: { type: "string" },
+          prop1: {
+            type: "string",
+            customAnnotations: { location: { label: "Location", value: "$message.header#/id" } },
+          },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+
+    const rowDiff = JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(prop1Node!, "location")
+    expect(rowDiff?.data.action).toBe(DiffAction.add)
+    expect(rowDiff?.styles.after.backgroundColor).toBe(HighlightVariant.Green)
+
+    const severity = prop1Node!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]
+    expect(severity?.type).toBe(rowDiff?.data.type)
+  })
+
+  it("leaves the row uncolored when the custom annotation is unchanged", () => {
+    const tree = buildTree(
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+      { type: "string", customAnnotations: { location: { label: "Location", value: "$message.header#/id" } } },
+    )
+
+    expect(JsonSchemaRowDiffs.CustomAnnotations.takeDiff(tree.root!, "location")).toBeUndefined()
+    expect(JsonSchemaRowDiffs.CustomAnnotations.takeRowColorizingDiff(tree.root!, "location")).toBeUndefined()
+    expect(tree.root!.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]).toBeUndefined()
+  })
+})
+
+// Regression for a boolean-vs-object blind spot in JsonSchemaNodeDiffsAggregatorKindAny.aggregate():
+// the whole-node container/parent-inherited branches used to run only after a
+// `!isObject(crawlValue) && !Array.isArray(crawlValue)` guard, so a node whose crawl value is a
+// raw primitive - the boolean `additionalProperties: false` (only `additionalProperties: true` is
+// pre-transformed into an object, `{type: 'any'}`) - bailed out before ever reaching inheritance,
+// leaving it uncolored even when its owning property was wholly added/removed while every other
+// sibling row/child correctly inherited that styling. Mirrors
+// packages/samples/jso-diffs/property/13.2-objectJsonSchema-add-complex-json-schema /
+// 13.4-...-remove-complex-json-schema.
+describe("JsonSchema additionalProperties:false inherits whole-node styling from an ancestor add/remove", () => {
+  simplifyConsole()
+
+  function buildTree(beforeSchema: object, afterSchema: object) {
+    const merged = mergeSchemas(beforeSchema, afterSchema)
+    return new JsonSchemaTreeWithDiffsBuilder({
+      source: merged,
+      diffsMetaKeys: DIFF_META_KEYS,
+    }).build()
+  }
+
+  it("colors the 'no additional properties' row green when the whole containing property was added", () => {
+    const tree = buildTree(
+      { type: "object", properties: {} },
+      {
+        type: "object",
+        properties: {
+          prop1: {
+            type: "object",
+            properties: { id: { type: "string" } },
+            additionalProperties: false,
+          },
+        },
+      },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+
+    const additionalPropertiesNode = prop1Node.childrenNodes()
+      .find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES)
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.add)
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
+  })
+
+  it("colors the 'no additional properties' row red when the whole containing property was removed", () => {
+    const tree = buildTree(
+      {
+        type: "object",
+        properties: {
+          prop1: {
+            type: "object",
+            properties: { id: { type: "string" } },
+            additionalProperties: false,
+          },
+        },
+      },
+      { type: "object", properties: {} },
+    )
+
+    const prop1Node = tree.root!.childrenNodes().find((node) => node.key === "prop1")!
+    expect(prop1Node).toBeDefined()
+    expect(prop1Node.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+
+    const additionalPropertiesNode = prop1Node.childrenNodes()
+      .find((node) => node.kind === JsonSchemaTreeNodeKinds.ADDITIONAL_PROPERTIES)
+    expect(additionalPropertiesNode).toBeDefined()
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.data.action).toBe(DiffAction.remove)
+    expect(additionalPropertiesNode!.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
   })
 })

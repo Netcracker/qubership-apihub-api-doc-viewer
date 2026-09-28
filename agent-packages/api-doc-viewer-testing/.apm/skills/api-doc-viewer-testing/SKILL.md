@@ -12,6 +12,20 @@ Storybook build.
 **not** name or reference consuming applications, their repositories, file
 paths, or UI components in this skill.
 
+## Test-first workflow
+
+Features are built test-first (`docs/design/README.md` → Workflow):
+
+1. Read the design for the feature: `docs/design/<api-type>/display-coverage.md` and
+   `features/`. Cases assert what the design says is displayed — never items listed as not
+   displayed.
+2. Add fixtures under `packages/samples/` and update the catalogue `README.md` next to them
+   (layout and required sections: `packages/samples/README.md`).
+3. Add stories and paired screenshot ITs; add data-layer unit tests in
+   `packages/next-data-model/tests/`.
+4. Hand over to `next-data-model-authoring` / `api-doc-viewer-authoring` and repeat until the
+   developer confirms the feature is done.
+
 ## Commands
 
 From `packages/api-doc-viewer/`:
@@ -81,6 +95,7 @@ that renders in dev **does not** prove the IT iframe URL is correct.
 | Story works in dev (9099) but IT fails | IT slug ≠ sample `caseId` / export slug mismatch | Compare IT id to `index.json` on **9009** |
 | `ConnectionClosedError` / suite failed to run | Chrome crash under parallel load | `--maxWorkers 1`; fix ID mismatches first |
 | Snapshot diff, height ~20px off | Layout/CSS drift, not a hang | Fix CSS or `regenerate-screenshots` — do not bump `failureThreshold` |
+| All suites pass, then `spawn wmic.exe ENOENT` + orphaned `node.exe` (Windows) | `start-server-and-test` 2.x uses `ps-tree` → `wmic.exe`, which newer Windows 11 no longer ships | Keep `start-server-and-test` at **3.x** (uses `tree-kill` / `taskkill`); do not downgrade |
 
 ### Story IDs — export slug, not sample `caseId`
 
@@ -220,7 +235,7 @@ repo (compatibility-suite `*.generated.stories.tsx` /
 `.generated.stories.tsx`, or `.generated.it-test.ts` — those names are gitignored and
 the output is internal, not external. Write normal committed filenames instead (e.g.
 `value-range-diff-case-definitions.ts`, `number-validation-value-range.stories.tsx`).
-See `api-doc-viewer-repo` skill — **Generated filenames**.
+See root `AGENTS.md` — **Generated filenames**.
 
 Local fixture suites (JSO, AsyncAPI, DDL, JSON Schema diffs under `packages/samples/`)
 use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regenerates them.

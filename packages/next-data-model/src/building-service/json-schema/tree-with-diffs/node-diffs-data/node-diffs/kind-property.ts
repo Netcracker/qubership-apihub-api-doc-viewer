@@ -567,6 +567,42 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       return
     }
 
+    // A whole list newly added/removed within an otherwise structurally-matching parent (e.g.
+    // `enum` appearing on a parameter that already existed) surfaces as per-index add/remove
+    // diffs on every item of the list, not a single field-level diff on the parent - see
+    // `resolveWholeListFieldDiff` above. That is a genuine whole-list add/remove - color the row
+    // green/red like `wholeFieldDiff` would - only when EVERY item in the merged list has its own
+    // diff (no unchanged item survives on either side) and they all agree on the same action.
+    // Appending/removing a single item within an otherwise-unchanged, already-existing list (some
+    // items have no diff at all) is a genuinely partial change and must stay a yellow replace -
+    // matching {@link JsonSchemaRowDiffs.AllowedAdditionalPropertyNames}'s established contract
+    // for a `propertyNames.enum` value appended to an existing list.
+    const itemDiffValues = Object.values(itemDiffs) as ChangedPropertyMetaData[]
+    if (itemDiffValues.length === listValue.length) {
+      const [firstItemDiff, ...restItemDiffs] = itemDiffValues
+      if (
+        (isDiffAdd(firstItemDiff.data) || isDiffRemove(firstItemDiff.data))
+        && restItemDiffs.every((diff) => diff.data.action === firstItemDiff.data.action)
+      ) {
+        nodeDiffs[colorizingDiffKey] = this.buildChangedPropertyMetaDataFromDiff(firstItemDiff.data)
+        // The row background above already conveys "every item was added/removed" - do not also
+        // highlight each item's own chip with the same add/remove chrome (colored border shadow,
+        // muted font for removed items). Downgrade every chip to the plain, side-visibility-only
+        // variant `buildChipAddRemoveDiffMetadata` produces when called without `chipHighlight` -
+        // same side presence, no redundant per-chip color. Mirrors the product rule already
+        // applied to boolean row flags in `stripMetaFlagDiffsWhenWholeNode`: once a higher-level
+        // element (row/node) is colored for a whole add/remove, nested elements it fully explains
+        // stay plain.
+        for (const key of Object.keys(itemDiffs)) {
+          const entry = itemDiffs[key]
+          if (entry) {
+            itemDiffs[key] = this.buildChipAddRemoveDiffMetadata(entry.data)
+          }
+        }
+        return
+      }
+    }
+
     const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
       ...Object.values(itemDiffs),
     )

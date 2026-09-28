@@ -9,10 +9,8 @@ import { JsonSchemaViewerTreeNode } from "@netcracker/qubership-apihub-next-data
 import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
 import { useMemo } from "react"
-import {
-  isJsonSchemaBooleanAdditionalPropertiesNode,
-  resolveJsonSchemaNodeTitleDisplay,
-} from "../utils/resolve-json-schema-node-title"
+import { JsonSchemaNodeTitle } from "../utils/resolve-json-schema-node-title"
+import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeTitlePlain, JsonSchemaNodeTitleWithDiffs } from "./JsonSchemaNodeTitle"
 
 export type SchemaNodeTitleRowSharedInput = {
@@ -49,7 +47,7 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
   )
 
   const titleDisplay = useMemo(
-    () => resolveJsonSchemaNodeTitleDisplay({
+    () => JsonSchemaNodeTitle.resolveDisplay({
       node: ownerNode,
       meta: ownerMeta,
       headerRowTitle: customizationOptions?.headerRowTitle,
@@ -88,7 +86,7 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
   )
 
   const showTypeSubheader = useMemo(
-    () => !isJsonSchemaBooleanAdditionalPropertiesNode(displayNode, displayMeta),
+    () => !JsonSchemaNodeTypeCheckers.isBooleanAdditionalPropertiesNode(displayNode, displayMeta),
     [displayMeta, displayNode],
   )
 

@@ -240,7 +240,7 @@ const collectSuite2ComplexCombinerCases = (combinerKind: CombinerKind, add: AddC
 
 /**
  * All combiner diff cases for one combiner kind (matches the sample sub-directory: oneOf / anyOf /
- * allOf). See combiners-cases.md for the full matrix and terminology.
+ * allOf). See packages/samples/json-schema-diffs/{oneOf,anyOf,allOf}/README.md for the case matrix.
  */
 export function getCombinerDiffCaseDefinitions(combinerKind: CombinerKind): CombinerDiffCaseDefinition[] {
   const definitions: CombinerDiffCaseDefinition[] = [];

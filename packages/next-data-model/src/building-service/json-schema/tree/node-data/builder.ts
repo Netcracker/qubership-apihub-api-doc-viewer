@@ -52,8 +52,8 @@ import {
 import { resolveJsonSchemaPrimitiveCrawlNodeValue } from "@apihub/next-data-model/shared/json-schema/additional-properties-node-value"
 import { isRequiredJsonSchemaProperty } from "@apihub/next-data-model/shared/json-schema/guards/tree-node"
 import {
+  JSON_SCHEMA_NODE_VALUE_PROPERTY_CUSTOM_ANNOTATIONS,
   JSON_SCHEMA_NODE_VALUE_PROPERTY_EXTENSIONS,
-  JSON_SCHEMA_NODE_VALUE_PROPERTY_LOCATION,
 } from "@apihub/next-data-model/shared/json-schema/types/node-value-property-key"
 import { ITreeNode } from "@apihub/next-data-model/model/abstract/tree/tree-node.interface"
 import { isObject } from "@apihub/next-data-model/utilities"
@@ -98,6 +98,7 @@ export class JsonSchemaNodeDataBuilder extends AbstractNodeDataBuilder<
     JSON_SCHEMA_PROPERTY_EXAMPLES,
     JSON_SCHEMA_PROPERTY_NULLABLE,
     JSON_SCHEMA_NODE_VALUE_PROPERTY_EXTENSIONS,
+    JSON_SCHEMA_NODE_VALUE_PROPERTY_CUSTOM_ANNOTATIONS,
   ] satisfies (keyof JsonSchemaTreeNodeValueBase)[]
 
   public static getJsonSchemaTreeNodeValueProps(
@@ -135,7 +136,6 @@ export class JsonSchemaNodeDataBuilder extends AbstractNodeDataBuilder<
           JSON_SCHEMA_PROPERTY_MIN_LENGTH,
           JSON_SCHEMA_PROPERTY_MAX_LENGTH,
           JSON_SCHEMA_PROPERTY_PATTERN,
-          JSON_SCHEMA_NODE_VALUE_PROPERTY_LOCATION,
         ] satisfies (keyof JsonSchemaTreeNodeValueTypeString)[]
       case JsonSchemaNodeValueTypes.NUMBER:
       case JsonSchemaNodeValueTypes.INTEGER:

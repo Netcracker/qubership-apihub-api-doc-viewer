@@ -11,6 +11,8 @@ import { FC, memo, useCallback, useMemo, useReducer } from "react"
 import "../../index.css"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
+import { DefaultExtensionsJsoComponent, DefaultExtensionsJsoDiffsComponent } from "./embedding/DefaultJsonSchemaEmbedding"
+import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from "./embedding/JsonSchemaEmbeddingContext"
 import { JsonSchemaNodeViewer } from "./JsonSchemaNodeViewer"
 import { JsonSchemaNextViewerContext } from "./JsonSchemaNextViewerContext"
 
@@ -81,6 +83,14 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
     [expandedDepth, materializeChildren, treeRevision],
   )
 
+  const embeddingContext: JsonSchemaEmbeddingContextValue = useMemo(
+    () => ({
+      ExtensionsJsoComponent: DefaultExtensionsJsoComponent,
+      ExtensionsJsoDiffsComponent: DefaultExtensionsJsoDiffsComponent,
+    }),
+    [],
+  )
+
   console.debug('[JSON Schema] Schema:', schema)
   console.debug('[JSON Schema] Tree:', tree)
 
@@ -90,18 +100,20 @@ const JsonSchemaNextViewerInner: FC<JsonSchemaNextViewerProps> = (props) => {
   }
 
   return (
-    <JsonSchemaNextViewerContext.Provider value={viewerContext}>
-      <CustomizationOptionsContext.Provider value={customizationOptions}>
-        <DisplayModeContext.Provider value={displayMode}>
-          <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
-            <LevelContext.Provider value={initialLevel}>
-              <div data-testid="json-schema-next-viewer">
-                <JsonSchemaNodeViewer node={root} />
-              </div>
-            </LevelContext.Provider>
-          </LayoutModeContext.Provider>
-        </DisplayModeContext.Provider>
-      </CustomizationOptionsContext.Provider>
-    </JsonSchemaNextViewerContext.Provider>
+    <JsonSchemaEmbeddingContext.Provider value={embeddingContext}>
+      <JsonSchemaNextViewerContext.Provider value={viewerContext}>
+        <CustomizationOptionsContext.Provider value={customizationOptions}>
+          <DisplayModeContext.Provider value={displayMode}>
+            <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
+              <LevelContext.Provider value={initialLevel}>
+                <div data-testid="json-schema-next-viewer">
+                  <JsonSchemaNodeViewer node={root} />
+                </div>
+              </LevelContext.Provider>
+            </LayoutModeContext.Provider>
+          </DisplayModeContext.Provider>
+        </CustomizationOptionsContext.Provider>
+      </JsonSchemaNextViewerContext.Provider>
+    </JsonSchemaEmbeddingContext.Provider>
   )
 }

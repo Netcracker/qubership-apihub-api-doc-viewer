@@ -55,10 +55,11 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
   nestingIndicatorRowColorizingDiff?: ChangedPropertyMetaData
   /**
    * Row background for the `Extensions` nesting-indicator header row shown above a node's
-   * `x-*` sub-tree. Unlike {@link nestingIndicatorRowColorizingDiff}, scoped to **only** the
-   * "this node was wholly added/removed" case - a type/format/title replace or a uniform
+   * `x-*` sub-tree. Set when the owning node itself was wholly added/removed, or - independently
+   * of that - when every extension present on the node was uniformly added or uniformly removed.
+   * Unlike {@link nestingIndicatorRowColorizingDiff}, a type/format/title replace or a uniform
    * add/remove across the node's *schema* children (properties/items) says nothing about
-   * whether the node's own extensions changed, so those branches do not populate this field.
+   * whether the node's own extensions changed, so those two branches do not populate this field.
    */
   extensionsRowColorizingDiff?: ChangedPropertyMetaData
   /**
@@ -89,6 +90,15 @@ export type JsonSchemaKindAnyNodeDiffs = NodeDiffs<JsonSchemaTreeNodeValue | nul
    * extensions record under the tree's `diffsMetaKey` symbol.
    */
   extensionsDiffs?: Partial<Record<OpenApiExtensionKey, Diff<DiffType>>>
+  /**
+   * Per-key chip diffs for `JsonSchemaTreeNodeValueBase.customAnnotations` entries - a generic
+   * extension point for a consuming spec (e.g. AsyncAPI's "Location") to attach a labeled,
+   * diff-aware value to any node. Keys are opaque, caller-chosen strings - never a JSON-Schema
+   * keyword or a spec-specific literal hardcoded in this layer.
+   */
+  customAnnotationDiffs?: Partial<Record<string, ChangedPropertyMetaData>>
+  /** Row background per `customAnnotations` entry, shown behind its `AdditionalInfoRow`. */
+  customAnnotationRowColorizingDiffs?: Partial<Record<string, ChangedPropertyMetaData>>
 }
 
 export type JsonSchemaKindPropertyNodeDiffs = JsonSchemaKindAnyNodeDiffs & {
