@@ -1,13 +1,13 @@
+import { JsonSchemaNextViewer } from '../components/JsonSchemaNextViewer/JsonSchemaNextViewer';
 import type { StoryObj } from '@storybook/react';
 import { ComponentProps } from '../../../../node_modules/react';
-import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
-type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaNextViewer> & {
     oasText: string;
     refToSchema: string;
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/JsonSchemaNextViewer/JsonSchemaNextViewer').JsonSchemaNextViewerProps>;
     parameters: {};
     argTypes: {
         oasText: {
@@ -15,6 +15,14 @@ declare const meta: {
         };
         refToSchema: {
             control: "text";
+        };
+        schema: {
+            control: {
+                disable: true;
+            };
+            table: {
+                disable: true;
+            };
         };
     };
     args: {

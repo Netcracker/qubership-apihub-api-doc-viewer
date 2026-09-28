@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GraphNodeTitleDataOptions, JsonNodeTitleDataOptions, NodeTitleData } from '../types/NodeTitleData';
-import { GraphNodeTypeDataOptions, JsonNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData';
-export declare function buildNodeTitleData(options: JsonNodeTitleDataOptions | GraphNodeTitleDataOptions): NodeTitleData;
-export declare function buildNodeTypeData(options: JsonNodeTypeDataOptions | GraphNodeTypeDataOptions): NodeTypeData | null;
+import { GraphNodeTitleDataOptions, NodeTitleData } from '../types/NodeTitleData';
+import { GraphNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData';
+export declare function buildNodeTitleData(options: GraphNodeTitleDataOptions): NodeTitleData;
+export declare function buildNodeTypeData(options: GraphNodeTypeDataOptions): NodeTypeData | null;

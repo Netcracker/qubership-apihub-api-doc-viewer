@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonSchemaNextDiffsViewer } from '../components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer';
 import type { StoryObj } from '@storybook/react';
 import type { ComponentProps } from '../../../../node_modules/react';
-import { JsonSchemaDiffViewer } from '../components/JsonSchemaViewer/JsonSchemaDiffViewer';
-type StoryArgs = ComponentProps<typeof JsonSchemaDiffViewer> & {
+type StoryArgs = ComponentProps<typeof JsonSchemaNextDiffsViewer> & {
     beforeSchemaText: string;
     afterSchemaText: string;
     beforeComponentsText?: string;
@@ -24,7 +24,7 @@ type StoryArgs = ComponentProps<typeof JsonSchemaDiffViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("..").JsonSchemaDiffViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/JsonSchemaNextViewer/JsonSchemaNextDiffsViewer').JsonSchemaNextDiffsViewerProps>;
     parameters: {};
     argTypes: {
         beforeSchemaText: {
@@ -47,7 +47,7 @@ declare const meta: {
                 disable: true;
             };
         };
-        metaKeys: {
+        diffMetaKeys: {
             control: {
                 disable: true;
             };
@@ -61,11 +61,11 @@ declare const meta: {
         afterSchemaText: string;
         beforeComponentsText: string;
         afterComponentsText: string;
-        layoutMode: "side-by-side-diffs";
-        metaKeys: {
+        diffMetaKeys: {
             diffsMetaKey: symbol;
             aggregatedDiffsMetaKey: symbol;
         };
+        hideUnchangedNodes: false;
     };
 };
 export default meta;

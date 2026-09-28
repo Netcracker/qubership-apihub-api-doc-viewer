@@ -17,7 +17,7 @@ export type JsonSchemaNextDiffsViewerProps = {
      * runs of unchanged nodes behind a "Show unchanged" reveal control, `false` shows everything.
      * Modeled internally as `JsonSchemaDiffsNodesVisibilityMode` (see that file) because a third
      * mode - hide nodes whose only diffs fall outside `diffTypes` - is already planned; see
-     * refactoring-notes.md (agent-packages/api-doc-viewer-repo) for the design analysis.
+     * refactoring-notes.md (agent-packages/api-doc-viewer-authoring) for the design analysis.
      */
     hideUnchangedNodes?: boolean;
 };

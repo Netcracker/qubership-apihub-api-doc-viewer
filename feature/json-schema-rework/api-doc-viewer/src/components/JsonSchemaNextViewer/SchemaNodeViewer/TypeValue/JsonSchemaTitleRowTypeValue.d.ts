@@ -5,7 +5,7 @@ export type JsonSchemaTitleRowTypeValueProps = {
     value: JsonSchemaTreeNodeValue | null | undefined;
     meta: JsonSchemaTreeNodeMeta | null | undefined;
     /**
-     * Plain, non-diff-highlighted trailing text (e.g. `resolveCombinerOptionTitleSuffix`'s
+     * Plain, non-diff-highlighted trailing text (e.g. `JsonSchemaCombiner.NodeDiffs.resolveOptionTitleSuffix`'s
      * `" (anyOf)"`) appended after the type value - used when this title row belongs to a
      * combiner-owning property, matching legacy's `NodeType.tsx` `{type} ({combiner})` display.
      */
