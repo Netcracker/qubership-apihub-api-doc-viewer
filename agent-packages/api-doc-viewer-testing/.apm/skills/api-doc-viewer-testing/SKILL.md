@@ -443,7 +443,8 @@ contains `before.yaml` and `after.yaml` — standalone JSON Schema documents (no
 Catalogue and case semantics: `packages/samples/json-schema-diffs/hiding-unchanged-rows/README.md`.
 
 Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
-**`JsonSchemaDiffsViewer`** via `json-schema-diffs-utils.tsx`. When adding a case:
+**`JsonSchemaDiffsViewer`** via the shared `json-schema-diffs-suite/json-schema-diffs-utils.tsx`
+(the hiding suite passes `defaultHideUnchangedNodes = true` to the case factory). When adding a case:
 
 1. YAML pair under the appropriate suite subdirectory.
 2. Story export in the matching `*.stories.tsx`.

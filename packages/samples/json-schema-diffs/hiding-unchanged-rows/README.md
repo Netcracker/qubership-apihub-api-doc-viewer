@@ -61,7 +61,8 @@ unchanged sibling properties. Cases mirror the combiner rules in
 
 Hand-written suites live under
 `packages/api-doc-viewer/src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/`
-and `packages/api-doc-viewer/src/it/`. Shared helpers are in `json-schema-diffs-utils.tsx`.
+and `packages/api-doc-viewer/src/it/`. Shared helpers are in
+`packages/api-doc-viewer/src/stories/json-schema-diffs-suite/json-schema-diffs-utils.tsx`.
 
 | Suite | Story title | Story / IT files |
 | --- | --- | --- |
@@ -73,8 +74,8 @@ Story id pattern: `{meta-id}--case-{case-id}` (for example
 `json-schema-diffs-suite-hiding-unchanged-nodes-simple-object-samples--case-1-1-two-added-three-removed`).
 
 Stories merge `before.yaml` / `after.yaml` via `prepareJsonDiffSchema` and render through
-`JsonSchemaDiffsViewer` (`json-schema-diffs-utils.tsx`). Hiding unchanged nodes is on by default
-(`hideUnchangedNodes`).
+`JsonSchemaDiffsViewer` (`json-schema-diffs-suite/json-schema-diffs-utils.tsx`). Hiding unchanged nodes is on by default
+(each story file passes `defaultHideUnchangedNodes = true` to the shared case factory).
 
 ## Regenerate
 

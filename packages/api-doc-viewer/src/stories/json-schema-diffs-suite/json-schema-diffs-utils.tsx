@@ -120,9 +120,14 @@ export const createJsonSchemaDiffSampleById = <TSample extends JsonSchemaDiffSam
     return accumulator;
   }, {});
 
+/**
+ * `defaultHideUnchangedNodes` seeds the `hideUnchangedNodes` story arg (default `false`: validation
+ * and metadata suites show every row; the "Hiding Unchanged Nodes" suite passes `true`).
+ */
 export const createJsonSchemaDiffCaseStoryFactory = (
   StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element,
   sampleById: Record<string, JsonSchemaDiffSampleCase>,
+  defaultHideUnchangedNodes: boolean = JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES,
 ) => (caseId: string): JsonSchemaDiffCaseStoryArgs => {
   const sample = sampleById[caseId];
   if (!sample) {
@@ -135,7 +140,7 @@ export const createJsonSchemaDiffCaseStoryFactory = (
       caseId,
       beforeYaml: sample.beforeYaml,
       afterYaml: sample.afterYaml,
-      hideUnchangedNodes: JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES,
+      hideUnchangedNodes: defaultHideUnchangedNodes,
     },
     argTypes: jsonSchemaDiffSampleReadonlyArgTypes,
     render: (args) => {
@@ -168,8 +173,9 @@ type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs
 export const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant = (
   StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element,
   sampleById: Record<string, JsonSchemaDiffSampleCase>,
+  defaultHideUnchangedNodes: boolean = JSON_SCHEMA_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES,
 ) => {
-  const createCaseStory = createJsonSchemaDiffCaseStoryFactory(StoryComponent, sampleById);
+  const createCaseStory = createJsonSchemaDiffCaseStoryFactory(StoryComponent, sampleById, defaultHideUnchangedNodes);
   return (caseId: string): JsonSchemaDiffCaseStoryArgsWithChangedVariant => ({
     ...createCaseStory(caseId),
     play: async ({ canvasElement }) => {

@@ -5,7 +5,10 @@ import {
   createJsonSchemaDiffCaseStoryFactory,
   createJsonSchemaDiffSampleById,
   jsonSchemaDiffSampleReadonlyArgTypes,
-} from "./json-schema-diffs-utils";
+} from "../json-schema-diffs-suite/json-schema-diffs-utils";
+
+// This suite exercises the hiding feature itself, so stories open with unchanged nodes collapsed.
+const HIDE_UNCHANGED_NODES_BY_DEFAULT = true;
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/hiding-unchanged-rows/complex-object/*/before.yaml",
@@ -34,6 +37,7 @@ type Story = StoryObj<typeof meta>;
 const createCaseStory = createJsonSchemaDiffCaseStoryFactory(
   JsonSchemaDiffSamplesStory,
   sampleById,
+  HIDE_UNCHANGED_NODES_BY_DEFAULT,
 );
 
 export const Case_2_1_root_description_changed: Story = createCaseStory("2.1-root-description-changed");

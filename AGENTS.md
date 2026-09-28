@@ -264,7 +264,8 @@ Hand-written diff sample suites follow the AsyncAPI / JSO pattern:
 2. **Merge** — `prepareJsonDiffSchema()` in `packages/api-doc-viewer/src/stories/preprocess.ts`
    wraps each pair in a synthetic OAS template and runs `apiDiff`.
 3. **Stories** — `packages/api-doc-viewer/src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/`
-   globs fixtures, merges via `json-schema-diffs-utils.tsx`, renders with
+   globs fixtures, merges via the shared `json-schema-diffs-suite/json-schema-diffs-utils.tsx`
+   (case factories called with `defaultHideUnchangedNodes = true`), renders with
    **`JsonSchemaDiffsViewer`** (`hideUnchangedNodes` defaults to `true`). Storybook root title:
    `JSON Schema Diffs Suite (Hiding Unchanged Nodes)`.
 4. **Screenshot ITs** — paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`;
