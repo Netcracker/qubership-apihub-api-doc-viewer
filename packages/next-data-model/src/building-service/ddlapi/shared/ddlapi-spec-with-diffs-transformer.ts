@@ -1,5 +1,5 @@
 import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
-import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
+import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiForeignKeyTarget, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
 import { DiffsRecord, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities";
 import { aggregateDiffsWithRollup, Diff, DiffAction, DiffAdd, DiffRemove, isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
@@ -8,6 +8,7 @@ import {
   Column,
   Expr,
   findAttr,
+  ForeignKey,
   Index,
   PgAttrKind,
   Realm,
@@ -37,6 +38,9 @@ type ColumnCrawlDiffsRecord = Omit<DiffsRecord, 'foreignKeyTargets' | 'enumValue
 type IndexCrawlDiffsRecord = Omit<DiffsRecord, 'partNameDiffs'> & {
   partNameDiffs?: DiffsRecord
 }
+
+// The foreign key fields that decide a column's target, each diffed by api-diff as one value.
+const FOREIGN_KEY_REFERENCE_FIELDS = ['columns', 'refTable', 'refColumns'] as const
 
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
 
@@ -149,7 +153,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     sourceTable: Table,
     tableKey: TableKey,
   ): DdlApiTableOrientedSpecWithDiffs {
-    const transformedWithDiffs = this.createTableOrientedSpecWithDiffs(spec)
+    const transformedWithDiffs = this.withBeforeOnlyForeignKeyTargets(
+      this.createTableOrientedSpecWithDiffs(spec),
+      sourceTable,
+    )
     const { diffsMetaKey, aggregatedDiffsMetaKey } = this.diffMetaKeys
     const owningSchemaName = tableKey.schemaName ?? schema?.name ?? 'public'
     const wholeTableDiff = this.resolveWholeTableDiff(realm, schema, sourceTable)
@@ -816,24 +823,133 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
 
     for (let index = 0; index < foreignKeys.length; index += 1) {
       const foreignKey = foreignKeys[index]
-      if (!foreignKey.columns?.includes(sourceColumn.name)) {
-        continue
-      }
-
       const wholeForeignKeyDiff = this.resolveArrayElementDiff(foreignKeysArrayDiffs, index)
-      if (!wholeForeignKeyDiff) {
+      if (wholeForeignKeyDiff) {
+        const target = foreignKey.columns?.includes(sourceColumn.name)
+          ? this.buildForeignKeyTarget(foreignKey, sourceColumn)
+          : undefined
+        if (target) {
+          targetDiffs[formatForeignKeyTargetKey(target)] = wholeForeignKeyDiff
+        }
         continue
       }
 
-      const target = this.buildForeignKeyTarget(foreignKey, sourceColumn)
-      if (!target) {
-        continue
+      const change = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)
+      if (change?.before) {
+        targetDiffs[formatForeignKeyTargetKey(change.before)] = {
+          type: change.diff.type,
+          scope: change.diff.scope,
+          description: change.diff.description,
+          action: DiffAction.remove,
+          beforeValue: change.before,
+          beforeDeclarationPaths: 'beforeDeclarationPaths' in change.diff ? change.diff.beforeDeclarationPaths : [],
+        }
       }
-
-      targetDiffs[formatForeignKeyTargetKey(target)] = wholeForeignKeyDiff
+      if (change?.after) {
+        targetDiffs[formatForeignKeyTargetKey(change.after)] = {
+          type: change.diff.type,
+          scope: change.diff.scope,
+          description: change.diff.description,
+          action: DiffAction.add,
+          afterValue: change.after,
+          afterDeclarationPaths: 'afterDeclarationPaths' in change.diff ? change.diff.afterDeclarationPaths : [],
+        }
+      }
     }
 
     return targetDiffs
+  }
+
+  /**
+   * How a column's target changes under a foreign key that exists on both sides but changed its
+   * `columns`, `refColumns` or `refTable`. api-diff compares each of these as one value, and the
+   * merged key holds the after value, so the before value comes from the diff. `before` is the
+   * column's target that went away and `after` the one that appeared; either is absent when the
+   * column had no target on that side. Returns `undefined` when the column's target is unchanged.
+   */
+  private resolveForeignKeyTargetChange(
+    foreignKey: ForeignKey,
+    sourceColumn: Column,
+  ): { before?: DdlApiForeignKeyTarget; after?: DdlApiForeignKeyTarget; diff: Diff } | undefined {
+    const fieldDiffs = this.getDiffsRecord(foreignKey)
+    const changeDiff = FOREIGN_KEY_REFERENCE_FIELDS
+      .map(field => fieldDiffs?.[field])
+      .find((diff): diff is Diff => diff !== undefined)
+    if (!changeDiff) {
+      return undefined
+    }
+
+    const sides = (field: typeof FOREIGN_KEY_REFERENCE_FIELDS[number]): { before: unknown; after: unknown } => {
+      const diff = fieldDiffs?.[field]
+      if (!diff) {
+        return { before: foreignKey[field], after: foreignKey[field] }
+      }
+      return {
+        before: 'beforeValue' in diff ? diff.beforeValue : undefined,
+        after: isDiffRemove(diff) ? undefined : foreignKey[field],
+      }
+    }
+    const keyOnSide = (side: 'before' | 'after'): ForeignKey => ({
+      ...foreignKey,
+      columns: sides('columns')[side] as ForeignKey['columns'],
+      refTable: sides('refTable')[side] as ForeignKey['refTable'],
+      refColumns: sides('refColumns')[side] as ForeignKey['refColumns'],
+    })
+
+    const before = this.buildForeignKeyTarget(keyOnSide('before'), sourceColumn)
+    const after = this.buildForeignKeyTarget(keyOnSide('after'), sourceColumn)
+    const beforeKey = before ? formatForeignKeyTargetKey(before) : undefined
+    const afterKey = after ? formatForeignKeyTargetKey(after) : undefined
+    if (beforeKey === afterKey) {
+      return undefined
+    }
+
+    return {
+      ...(before && { before }),
+      ...(after && { after }),
+      diff: changeDiff,
+    }
+  }
+
+  /**
+   * Adds to each column row the targets it had only before the change, from a foreign key that
+   * exists on both sides. The merged document holds the after values, so without this such a
+   * target has no badge to show as removed. A key removed as a whole needs nothing: the merged
+   * document keeps it.
+   */
+  private withBeforeOnlyForeignKeyTargets(
+    spec: DdlApiTableOrientedSpecWithDiffs,
+    sourceTable: Table,
+  ): DdlApiTableOrientedSpecWithDiffs {
+    const foreignKeys = sourceTable.foreignKeys ?? []
+    const foreignKeysArrayDiffs = this.getDiffsRecord(foreignKeys)
+    const partlyChangedForeignKeys = foreignKeys.filter(
+      (_, index) => !this.resolveArrayElementDiff(foreignKeysArrayDiffs, index),
+    )
+    if (partlyChangedForeignKeys.length === 0) {
+      return spec
+    }
+
+    const items = spec.columns.items.map((columnRow): DdlApiColumnRowValueWithDiffs => {
+      const sourceColumn = sourceTable.columns?.find(column => column.name === columnRow.columnName)
+      if (!sourceColumn) {
+        return columnRow
+      }
+      const targets = [...(columnRow.foreignKeyTargets ?? [])]
+      const targetKeys = new Set(targets.map(formatForeignKeyTargetKey))
+      for (const foreignKey of partlyChangedForeignKeys) {
+        const before = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)?.before
+        if (before && !targetKeys.has(formatForeignKeyTargetKey(before))) {
+          targets.push(before)
+          targetKeys.add(formatForeignKeyTargetKey(before))
+        }
+      }
+      return targets.length === (columnRow.foreignKeyTargets?.length ?? 0)
+        ? columnRow
+        : { ...columnRow, foreignKeyTargets: targets }
+    })
+
+    return { ...spec, columns: { ...spec.columns, items } }
   }
 
   // A column that joins or leaves an existing primary key is reported by api-diff as an added or
