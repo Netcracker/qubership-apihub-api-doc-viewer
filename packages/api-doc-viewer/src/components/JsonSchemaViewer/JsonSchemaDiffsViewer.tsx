@@ -1,30 +1,38 @@
-import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from "@apihub/constants/configuration"
-import { CustomizationOptions, CustomizationOptionsContext } from "@apihub/contexts/CustomizationOptionsContext"
-import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
-import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
-import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext } from "@apihub/contexts/LevelContext"
-import { DiffMetaKeys } from "@apihub/types/DiffMetaKeys"
-import { DisplayMode } from "@apihub/types/DisplayMode"
-import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { DiffType } from "@netcracker/qubership-apihub-api-diff"
-import { JsonSchemaTreeWithDiffsBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
-import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { FC, memo, useCallback, useMemo, useReducer } from "react"
-import "../../index.css"
-import { ErrorBoundary } from "../services/ErrorBoundary"
-import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import "../shared-styles/diffs/index.css"
-import { DefaultExtensionsJsoComponent, DefaultExtensionsJsoDiffsComponent } from "./embedding/DefaultJsonSchemaEmbedding"
-import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from "./embedding/JsonSchemaEmbeddingContext"
-import { JsonSchemaViewerContext } from "./JsonSchemaViewerContext"
-import { JsonSchemaNodeViewerWithDiffs } from "./JsonSchemaNodeViewerWithDiffs"
-import { resolveJsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode"
+import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from '@apihub/constants/configuration'
+import { CustomizationOptions, CustomizationOptionsContext } from '@apihub/contexts/CustomizationOptionsContext'
+import { DiffMetaKeysContext } from '@apihub/contexts/DiffMetaKeysContext'
+import { DisplayModeContext } from '@apihub/contexts/DisplayModeContext'
+import { LayoutModeContext } from '@apihub/contexts/LayoutModeContext'
+import { LevelContext } from '@apihub/contexts/LevelContext'
+import { DiffMetaKeys } from '@apihub/types/DiffMetaKeys'
+import { DisplayMode } from '@apihub/types/DisplayMode'
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from '@apihub/types/LayoutMode'
+import { DiffType } from '@netcracker/qubership-apihub-api-diff'
+import {
+  JsonSchemaTreeWithDiffsBuilder,
+  createBuildingServiceLogger,
+} from '@netcracker/qubership-apihub-next-data-model'
+import {
+  JsonSchemaTreeNode,
+  JsonSchemaTreeNodeWithDiffs,
+} from '@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases'
+import { FC, memo, useCallback, useMemo, useReducer } from 'react'
+import '../../index.css'
+import { ErrorBoundary } from '../services/ErrorBoundary'
+import { ErrorBoundaryFallback } from '../services/ErrorBoundaryFallback'
+import '../shared-styles/diffs/index.css'
+import {
+  DefaultExtensionsJsoComponent,
+  DefaultExtensionsJsoDiffsComponent,
+} from './embedding/DefaultJsonSchemaEmbedding'
+import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from './embedding/JsonSchemaEmbeddingContext'
+import { JsonSchemaViewerContext } from './JsonSchemaViewerContext'
+import { JsonSchemaNodeViewerWithDiffs } from './JsonSchemaNodeViewerWithDiffs'
+import { resolveJsonSchemaDiffsNodesVisibilityMode } from './JsonSchemaDiffsNodesVisibilityMode'
 import {
   UnchangedBlocksContext,
   useUnchangedBlocksContextValue,
-} from "./UnchangedBlocksContext"
+} from './UnchangedBlocksContext'
 
 export type JsonSchemaDiffsViewerProps = {
   schema: unknown
@@ -34,6 +42,10 @@ export type JsonSchemaDiffsViewerProps = {
   initialLevel?: number
   customizationOptions?: CustomizationOptions
   diffMetaKeys: DiffMetaKeys
+  /**
+   * Placeholder - accepted but not implemented yet: the viewer currently ignores it and renders
+   * all diffs regardless of their type. Reserved for filtering diffs by type.
+   */
   diffTypes?: ReadonlyArray<DiffType>
   /**
    * Toggles the "showing/hiding unchanged nodes" feature as a whole: `true` (default) collapses
@@ -51,7 +63,12 @@ export const JsonSchemaDiffsViewer: FC<JsonSchemaDiffsViewerProps> = memo((props
   }
 
   return (
-    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSON Schema Diffs Viewer" />}>
+    <ErrorBoundary fallback={(caught) => (
+      <ErrorBoundaryFallback
+        componentName="JSON Schema Diffs Viewer"
+        caught={caught}
+      />
+    )}>
       <JsonSchemaDiffsViewerInner {...props} />
     </ErrorBoundary>
   )
@@ -66,7 +83,7 @@ const JsonSchemaDiffsViewerInner: FC<JsonSchemaDiffsViewerProps> = (props) => {
     initialLevel = 0,
     customizationOptions,
     diffMetaKeys,
-    diffTypes,
+    // `diffTypes` is intentionally not read: filtering by diff type is a placeholder (see props).
     hideUnchangedNodes = true,
   } = props
 
@@ -130,23 +147,21 @@ const JsonSchemaDiffsViewerInner: FC<JsonSchemaDiffsViewerProps> = (props) => {
   return (
     <JsonSchemaEmbeddingContext.Provider value={embeddingContext}>
       <DiffMetaKeysContext.Provider value={diffMetaKeys}>
-        <DiffTypesContext.Provider value={diffTypes}>
-          <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
-            <JsonSchemaViewerContext.Provider value={viewerContext}>
-              <CustomizationOptionsContext.Provider value={customizationOptions}>
-                <DisplayModeContext.Provider value={displayMode}>
-                  <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-                    <LevelContext.Provider value={initialLevel}>
-                      <div data-testid="json-schema-diffs-viewer">
-                        <JsonSchemaNodeViewerWithDiffs node={root} />
-                      </div>
-                    </LevelContext.Provider>
-                  </LayoutModeContext.Provider>
-                </DisplayModeContext.Provider>
-              </CustomizationOptionsContext.Provider>
-            </JsonSchemaViewerContext.Provider>
-          </UnchangedBlocksContext.Provider>
-        </DiffTypesContext.Provider>
+        <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
+          <JsonSchemaViewerContext.Provider value={viewerContext}>
+            <CustomizationOptionsContext.Provider value={customizationOptions}>
+              <DisplayModeContext.Provider value={displayMode}>
+                <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
+                  <LevelContext.Provider value={initialLevel}>
+                    <div data-testid="json-schema-diffs-viewer">
+                      <JsonSchemaNodeViewerWithDiffs node={root}/>
+                    </div>
+                  </LevelContext.Provider>
+                </LayoutModeContext.Provider>
+              </DisplayModeContext.Provider>
+            </CustomizationOptionsContext.Provider>
+          </JsonSchemaViewerContext.Provider>
+        </UnchangedBlocksContext.Provider>
       </DiffMetaKeysContext.Provider>
     </JsonSchemaEmbeddingContext.Provider>
   )

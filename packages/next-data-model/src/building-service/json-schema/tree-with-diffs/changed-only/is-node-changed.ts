@@ -2,7 +2,6 @@ import { TreeNodeComplexityTypes } from "@apihub/next-data-model/model/abstract/
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { NodeId } from "@apihub/next-data-model/utility-types"
 import { hasOwnChangeSignals } from "./has-own-change-signals"
-import { JsonSchemaNodeChangedOptions } from "./types"
 
 type VisitState = {
   visiting: Set<NodeId>
@@ -10,11 +9,10 @@ type VisitState = {
 
 function isJsonSchemaNodeChangedInternal(
   node: JsonSchemaTreeNodeWithDiffs,
-  options: JsonSchemaNodeChangedOptions | undefined,
   state: VisitState,
 ): boolean {
   if (node.isCycle) {
-    return hasOwnChangeSignals(node, options)
+    return hasOwnChangeSignals(node)
   }
 
   if (state.visiting.has(node.id)) {
@@ -24,27 +22,24 @@ function isJsonSchemaNodeChangedInternal(
   state.visiting.add(node.id)
 
   try {
-    if (hasOwnChangeSignals(node, options)) {
+    if (hasOwnChangeSignals(node)) {
       return true
     }
 
     if (node.type === TreeNodeComplexityTypes.COMPLEX) {
       return node.nestedNodes().some((nestedNode) => (
-        isJsonSchemaNodeChangedInternal(nestedNode, options, state)
+        isJsonSchemaNodeChangedInternal(nestedNode, state)
       ))
     }
 
     return node.childrenNodes().some((childNode) => (
-      isJsonSchemaNodeChangedInternal(childNode, options, state)
+      isJsonSchemaNodeChangedInternal(childNode, state)
     ))
   } finally {
     state.visiting.delete(node.id)
   }
 }
 
-export function isJsonSchemaNodeChanged(
-  node: JsonSchemaTreeNodeWithDiffs,
-  options?: JsonSchemaNodeChangedOptions,
-): boolean {
-  return isJsonSchemaNodeChangedInternal(node, options, { visiting: new Set() })
+export function isJsonSchemaNodeChanged(node: JsonSchemaTreeNodeWithDiffs): boolean {
+  return isJsonSchemaNodeChangedInternal(node, { visiting: new Set() })
 }

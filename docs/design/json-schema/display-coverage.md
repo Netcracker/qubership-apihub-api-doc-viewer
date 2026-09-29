@@ -32,7 +32,7 @@ JSON Schema stack also renders AsyncAPI headers, payload and channel parameters.
 | Viewer | Props |
 | --- | --- |
 | `JsonSchemaViewer` | `schema`, `expandedDepth`, `displayMode`, `devMode`, `initialLevel`, `customizationOptions` |
-| `JsonSchemaDiffsViewer` | same, plus `diffMetaKeys`, `diffTypes`, `hideUnchangedNodes` (default `true`) |
+| `JsonSchemaDiffsViewer` | same, plus `diffMetaKeys`, `diffTypes` (placeholder — accepted, ignored), `hideUnchangedNodes` (default `true`) |
 
 `customizationOptions.headerRowTitle` replaces the root title; `suppressRootNestingIndicator`
 flattens a synthetic wrapper schema into a top-level property list (used by AsyncAPI).
@@ -136,7 +136,7 @@ state is precomputed by next-data-model; the viewer reads it through `JsonSchema
 | `const` constraint row | `intentional-gap` | Not requested by consumers; `enum` uses the Allowed values row. |
 | Property sort toggle | `intentional-gap` | Legacy `onToggleSort` was not ported. |
 | Identity vs. inherited badges for a wholly added property's meta flags | `intentional-gap` | Flags render as plain tags; see [notes/2026-09-architecture-review.md](notes/2026-09-architecture-review.md). |
-| Hiding nodes whose only diffs fall outside `diffTypes` | `planned` | Third visibility mode; see `JsonSchemaDiffsNodesVisibilityMode`. |
+| Filtering diffs by `diffTypes` (hiding and highlighting) | `planned` | `diffTypes` is an API placeholder with no implementation; all diffs render unfiltered. Hiding part is the planned third visibility mode (see `JsonSchemaDiffsNodesVisibilityMode`). A previous hiding-only implementation was removed: it read row-level helper entries in `node.diffs` (e.g. `nodeChangesSummary`) as diff records and crashed. |
 
 ## Triage rules
 

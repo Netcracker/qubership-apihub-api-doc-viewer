@@ -36,7 +36,6 @@ export {
   resolveJsonSchemaUnchangedBlocks,
 } from "./building-service/json-schema/tree-with-diffs/changed-only"
 export type {
-  JsonSchemaNodeChangedOptions,
   ResolveJsonSchemaUnchangedBlocksOptions,
   UnchangedBlockMembership,
   UnchangedVisibleItem,

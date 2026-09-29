@@ -135,29 +135,25 @@ place that *derives* the boolean consumers actually need. This means only the bo
 function and the public prop's *type* need to change when the third mode is added — no consumer
 files, no next-data-model call sites.
 
-**Key discovery — most of the planned third mode's *hiding* behavior already exists today,
-independent of this change:** `JsonSchemaDiffsViewer.tsx` already has a second, currently
-unrelated-looking public prop, `diffTypes?: ReadonlyArray<DiffType>` (feeds `DiffTypesContext`).
-`SchemaNodeChildrenListWithDiffs.tsx` already reads both `hideUnchangedNodes` (from
-`UnchangedBlocksContext`) *and* `diffTypes` (via `useDiffTypes()`) and passes **both** into
-`resolveJsonSchemaUnchangedBlocks(children, { hideUnchangedNodes, diffTypes: diffTypesSet })` — and
-that next-data-model function's options type, `ResolveJsonSchemaUnchangedBlocksOptions =
-JsonSchemaNodeChangedOptions & { hideUnchangedNodes?: boolean }` (`JsonSchemaNodeChangedOptions =
-{ diffTypes?: ReadonlySet<DiffType> }`), already threads `diffTypes` into the underlying
-"is this node changed" predicate (`hasOwnChangeSignals`/`isJsonSchemaNodeChanged`) used for block
-grouping. In other words: **passing `hideUnchangedNodes={true}` together with a non-empty
-`diffTypes` today already hides nodes whose only diffs are outside that list** — exactly the hiding
-semantics described for `show-only-nodes-with-filtered-changes`. No next-data-model work is needed
-for that half of the third mode; it was already built (for a different-looking purpose) before this
-task.
+**`diffTypes` is an API placeholder (no implementation):** `JsonSchemaDiffsViewerProps.diffTypes`
+is accepted but ignored — `JsonSchemaDiffsViewer` does not provide `DiffTypesContext`, and nothing
+under `JsonSchemaViewer/**` or next-data-model's `changed-only/` filters by diff type. An earlier
+hiding-only implementation (`JsonSchemaNodeChangedOptions.diffTypes` threaded through
+`resolveJsonSchemaUnchangedBlocks` → `isJsonSchemaNodeChanged` → `hasOwnChangeSignals` →
+`collectJsonSchemaOwnChangeTypes`) was **removed**: it iterated `Object.values(node.diffs)` as if
+every entry were `ChangedPropertyMetaData`, but JSON Schema `node.diffs` also carries row-level
+helper entries (`nodeChangesSummary` — a `Set`, `typeLabelFieldDiffs`, `validationRowDiffs`, …),
+so it crashed (`cannot read "type" of undefined`) as soon as a consumer passed `diffTypes`
+(apispec-view, OAS `remove-discriminator-for-one-of`). No local story passed `diffTypes`, so
+screenshot ITs never exercised it. Any future implementation must read typed row accessors (or a
+guard such as `isChangedPropertyMetaData`), never raw `Object.values(node.diffs)`, and must ship
+with stories/ITs that pass `diffTypes`.
 
-**What's still missing for the third mode — the *highlighting* half:** the user's description also
+**The *highlighting* half of the third mode is also missing:** the user's description also
 requires "highlighting diffs is applied to only diffs of these diff types" — i.e. diffs of a
-filtered-out type should not just leave nodes visible-but-hidden, they should stop being colored/
-badged too. Today, in the JSON Schema **Next** viewer, `diffTypes`/`useDiffTypes()` is consumed in
-exactly one place (`SchemaNodeChildrenListWithDiffs.tsx`, for hiding only) — nowhere else in
-`JsonSchemaViewer/**` reads it, so row/title colorizing (`SchemaNodePlainContent.tsx`,
-`SchemaNodeTitleRow*.tsx`, etc.) is entirely unfiltered by `diffTypes` right now. (A superficially
+filtered-out type should not just be hidden, they should stop being colored/badged too. Nothing in
+`JsonSchemaViewer/**` reads `diffTypes`, so row/title colorizing (`SchemaNodePlainContent.tsx`,
+`SchemaNodeTitleRow*.tsx`, etc.) is entirely unfiltered. (A superficially
 similar `filters={diffTypes}` prop exists on the **legacy** `JsonSchemaDiffViewer`, wired from
 AsyncAPI's `MessageContentNodeViewer.tsx` — that's a different, legacy component with its own
 filtering implementation; not reusable here, and out of scope for the Next viewer per the
@@ -170,29 +166,22 @@ consumption of `diffsSeverities`/`colorizingDiff` props — genuinely new design
 1. Add `SHOW_ONLY_NODES_WITH_FILTERED_CHANGES_MODE = "show-only-nodes-with-filtered-changes"` to
    `JsonSchemaDiffsNodesVisibilityMode.ts`'s union. `isHideUnchangedNodesMode` needs **no change** —
    it already returns `true` for any non-`"show-all"` mode, which is the correct hiding behavior for
-   this mode too (per the key discovery above, that's the *only* thing `hideUnchangedNodes`-derived
-   consumers currently need).
+   this mode too; only the "changed" predicate differs.
 2. Decide the public API shape: either widen `JsonSchemaDiffsViewerProps.hideUnchangedNodes`
    into a mode-typed prop (breaking rename) or add a **new** optional prop (e.g.
    `nodesVisibilityMode?: JsonSchemaDiffsNodesVisibilityMode`) that takes precedence over the
    boolean when set, keeping `hideUnchangedNodes` as a deprecated boolean shorthand for the first
    two modes — the latter avoids a breaking change; not decided here, flagged for whoever designs
    the third mode's API.
-3. The existing `diffTypes` prop's hide/show effect needs no data-layer change (see key discovery);
-   confirm intent though — currently `diffTypes` always filters hiding whenever it's non-empty,
-   *regardless* of the resolved mode. If `show-only-changed-nodes` (mode 2) is expected to ignore
-   `diffTypes` entirely (show any change, unfiltered) while only mode 3 respects it, that's a
-   **behavior change** to `SchemaNodeChildrenListWithDiffs.tsx` (gate the `diffTypes` it passes to
-   `resolveJsonSchemaUnchangedBlocks` on `mode === SHOW_ONLY_NODES_WITH_FILTERED_CHANGES_MODE`, not
-   just forward whatever `useDiffTypes()` returns) — verify which behavior is actually wanted before
-   assuming today's "always apply `diffTypes` if present" is correct for mode 2 too.
-4. Design and implement the highlighting-filter half (see "what's still missing" above) — this is
-   the one part with no existing plumbing to lean on.
+3. Implement diff-type-aware hiding from scratch (see the placeholder note above for the trap that
+   sank the previous attempt) and decide whether mode 2 (`show-only-changed-nodes`) ignores
+   `diffTypes` while only mode 3 respects it.
+4. Design and implement the highlighting-filter half (see above).
 
 **Related:** `packages/api-doc-viewer/src/components/JsonSchemaViewer/UnchangedBlocksContext.tsx`,
 `JsonSchemaDiffsViewer.tsx`, `JsonSchemaDiffsNodesVisibilityMode.ts`;
 `packages/next-data-model/src/building-service/json-schema/tree-with-diffs/changed-only/` (`resolve-json-schema-unchanged-blocks.ts`,
-`has-own-change-signals.ts`, `is-node-changed.ts`, `types.ts`) for the already-`diffTypes`-aware
-data layer; `packages/api-doc-viewer/src/contexts/DiffTypesContext.ts`; Storybook suite
+`has-own-change-signals.ts`, `is-node-changed.ts`) for the (diff-type-agnostic) "changed"
+predicate; `packages/api-doc-viewer/src/contexts/DiffTypesContext.ts`; Storybook suite
 `JSON Schema Diffs Suite (Hiding Unchanged Nodes)` (`src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/`)
 for interactive verification of the hide/reveal behavior.

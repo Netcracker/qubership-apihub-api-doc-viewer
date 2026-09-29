@@ -6,11 +6,10 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/changed-only/resolve-unchanged-blocks"
 import { JsonSchemaTreeNodeWithDiffs } from "@apihub/next-data-model/model/json-schema/types/aliases"
 import { isJsonSchemaNodeChanged } from "./is-node-changed"
-import { JsonSchemaNodeChangedOptions } from "./types"
 
 export type { UnchangedBlockMembership, UnchangedVisibleItem }
 
-export type ResolveJsonSchemaUnchangedBlocksOptions = JsonSchemaNodeChangedOptions & {
+export type ResolveJsonSchemaUnchangedBlocksOptions = {
   hideUnchangedNodes?: boolean
 }
 
@@ -19,13 +18,10 @@ export function resolveJsonSchemaUnchangedBlocks(
   options?: ResolveJsonSchemaUnchangedBlocksOptions,
 ): ResolveUnchangedBlocksResult<JsonSchemaTreeNodeWithDiffs> {
   const hideUnchangedNodes = options?.hideUnchangedNodes !== false
-  const changedOptions: JsonSchemaNodeChangedOptions | undefined = options?.diffTypes
-    ? { diffTypes: options.diffTypes }
-    : undefined
 
   return resolveUnchangedBlocks(
     children,
-    (node) => isJsonSchemaNodeChanged(node, changedOptions),
+    (node) => isJsonSchemaNodeChanged(node),
     hideUnchangedNodes,
   )
 }

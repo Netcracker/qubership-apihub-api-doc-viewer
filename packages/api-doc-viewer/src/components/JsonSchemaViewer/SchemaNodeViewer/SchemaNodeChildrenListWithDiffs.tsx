@@ -1,6 +1,4 @@
 import { ShowUnchangedRow } from "@apihub/components/shared-components/ShowUnchangedRow/ShowUnchangedRow"
-import { useDiffTypes } from "@apihub/contexts/DiffTypesContext"
-import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { resolveJsonSchemaUnchangedBlocks } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree-with-diffs/changed-only"
 import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { FC, Fragment, useMemo } from "react"
@@ -15,19 +13,10 @@ export type SchemaNodeChildrenListWithDiffsProps = {
 export const SchemaNodeChildrenListWithDiffs: FC<SchemaNodeChildrenListWithDiffsProps> = (props) => {
   const { children } = props
   const { hideUnchangedNodes, revealedBlockIds, revealBlock } = useUnchangedBlocksContext()
-  const diffTypes = useDiffTypes()
-
-  const diffTypesSet = useMemo(
-    () => (diffTypes ? new Set<DiffType>(diffTypes) : undefined),
-    [diffTypes],
-  )
 
   const { visibleSequence } = useMemo(
-    () => resolveJsonSchemaUnchangedBlocks(children, {
-      hideUnchangedNodes,
-      diffTypes: diffTypesSet,
-    }),
-    [children, diffTypesSet, hideUnchangedNodes],
+    () => resolveJsonSchemaUnchangedBlocks(children, { hideUnchangedNodes }),
+    [children, hideUnchangedNodes],
   )
 
   return (

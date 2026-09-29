@@ -1,20 +1,23 @@
-import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from "@apihub/constants/configuration"
-import { CustomizationOptions, CustomizationOptionsContext } from "@apihub/contexts/CustomizationOptionsContext"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
-import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext } from "@apihub/contexts/LevelContext"
-import { DisplayMode } from "@apihub/types/DisplayMode"
-import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { JsonSchemaTreeBuilder, createBuildingServiceLogger } from "@netcracker/qubership-apihub-next-data-model"
-import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
-import { FC, memo, useCallback, useMemo, useReducer } from "react"
-import "../../index.css"
-import { ErrorBoundary } from "../services/ErrorBoundary"
-import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { DefaultExtensionsJsoComponent, DefaultExtensionsJsoDiffsComponent } from "./embedding/DefaultJsonSchemaEmbedding"
-import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from "./embedding/JsonSchemaEmbeddingContext"
-import { JsonSchemaNodeViewer } from "./JsonSchemaNodeViewer"
-import { JsonSchemaViewerContext } from "./JsonSchemaViewerContext"
+import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from '@apihub/constants/configuration'
+import { CustomizationOptions, CustomizationOptionsContext } from '@apihub/contexts/CustomizationOptionsContext'
+import { DisplayModeContext } from '@apihub/contexts/DisplayModeContext'
+import { LayoutModeContext } from '@apihub/contexts/LayoutModeContext'
+import { LevelContext } from '@apihub/contexts/LevelContext'
+import { DisplayMode } from '@apihub/types/DisplayMode'
+import { DOCUMENT_LAYOUT_MODE } from '@apihub/types/LayoutMode'
+import { JsonSchemaTreeBuilder, createBuildingServiceLogger } from '@netcracker/qubership-apihub-next-data-model'
+import { JsonSchemaTreeNode } from '@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases'
+import { FC, memo, useCallback, useMemo, useReducer } from 'react'
+import '../../index.css'
+import { ErrorBoundary } from '../services/ErrorBoundary'
+import { ErrorBoundaryFallback } from '../services/ErrorBoundaryFallback'
+import {
+  DefaultExtensionsJsoComponent,
+  DefaultExtensionsJsoDiffsComponent,
+} from './embedding/DefaultJsonSchemaEmbedding'
+import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from './embedding/JsonSchemaEmbeddingContext'
+import { JsonSchemaNodeViewer } from './JsonSchemaNodeViewer'
+import { JsonSchemaViewerContext } from './JsonSchemaViewerContext'
 
 export type JsonSchemaViewerProps = {
   schema: unknown
@@ -31,7 +34,12 @@ export const JsonSchemaViewer: FC<JsonSchemaViewerProps> = memo((props) => {
   }
 
   return (
-    <ErrorBoundary fallback={<ErrorBoundaryFallback componentName="JSON Schema Viewer" />}>
+    <ErrorBoundary fallback={(caught) => (
+      <ErrorBoundaryFallback
+        componentName="JSON Schema Viewer"
+        caught={caught}
+      />
+    )}>
       <JsonSchemaViewerInner {...props} />
     </ErrorBoundary>
   )
@@ -107,7 +115,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
             <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
               <LevelContext.Provider value={initialLevel}>
                 <div data-testid="json-schema-viewer">
-                  <JsonSchemaNodeViewer node={root} />
+                  <JsonSchemaNodeViewer node={root}/>
                 </div>
               </LevelContext.Provider>
             </LayoutModeContext.Provider>

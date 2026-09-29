@@ -114,7 +114,8 @@ before passing it as `source`. Select the operation with `operationType`
 `initialLevel`, and `customizationOptions` (`headerRowTitle` replaces the root title;
 `suppressRootNestingIndicator` renders a wrapper object's properties as a flat
 top-level list). `JsonSchemaDiffsViewer` takes the merged document as `schema`,
-plus `diffMetaKeys`, optional `diffTypes`, and `hideUnchangedNodes` (default `true`:
+plus `diffMetaKeys`, optional `diffTypes` (placeholder: accepted but ignored — no diff-type
+filtering yet), and `hideUnchangedNodes` (default `true`:
 runs of unchanged nodes collapse behind a "Show N unchanged nodes" row).
 
 ## DDL table-specific wiring
