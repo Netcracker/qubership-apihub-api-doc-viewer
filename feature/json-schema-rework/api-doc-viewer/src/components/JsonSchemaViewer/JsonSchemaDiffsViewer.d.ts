@@ -1,7 +1,7 @@
 import { CustomizationOptions } from '../../contexts/CustomizationOptionsContext';
 import { DiffMetaKeys } from '../../types/DiffMetaKeys';
 import { DisplayMode } from '../../types/DisplayMode';
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { FC } from '../../../../../node_modules/react';
 export type JsonSchemaDiffsViewerProps = {
     schema: unknown;
@@ -11,6 +11,10 @@ export type JsonSchemaDiffsViewerProps = {
     initialLevel?: number;
     customizationOptions?: CustomizationOptions;
     diffMetaKeys: DiffMetaKeys;
+    /**
+     * Placeholder - accepted but not implemented yet: the viewer currently ignores it and renders
+     * all diffs regardless of their type. Reserved for filtering diffs by type.
+     */
     diffTypes?: ReadonlyArray<DiffType>;
     /**
      * Toggles the "showing/hiding unchanged nodes" feature as a whole: `true` (default) collapses

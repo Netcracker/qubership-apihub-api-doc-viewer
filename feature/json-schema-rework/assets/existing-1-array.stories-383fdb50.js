@@ -1,0 +1,71 @@
+import{c as T}from"./diffs-samples-cases-91c2d1e6.js";import{d as I,j as N,c as R}from"./json-schema-diffs-utils-7c0d91ed.js";import{b as k}from"./sample-cases-8c510854.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./AsyncApiOperationViewer-bd86394b.js";import"./UxBadge-a3d5708d.js";import"./IndexesNodeViewer-04e95f65.js";import"./DdlTableDiffsViewer-b5691702.js";/* empty css              */import"./DdlTableViewer-34306a32.js";import"./GraphQLOperationDiffViewer-b8487c17.js";import"./GraphPropNodeViewer-c64786c2.js";import"./index-415bee12.js";import"./GraphQLOperationViewer-7b86c0e8.js";import"./preprocess-fae22708.js";import"./test-diff-meta-keys-5677f54d.js";import"./parse-yaml-source-3e95a000.js";import"./public-api-99af098d.js";const q=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,z=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,G=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,H=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,K=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,L=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,M=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,P=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+`,Q=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+x-internal: true
+`,U=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+x-metadata:
+  owner: 'platform-team'
+`,V=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+x-owners:
+  - 'team-a'
+  - 'team-b'
+`,W=`type: 'string'
+x-tags:
+  - 'beta'
+  - 'internal'
+x-value-schema:
+  type: 'integer'
+  minimum: 0
+`,X=`type: 'string'
+x-tags: true
+`,Y=`type: 'string'
+x-tags:
+  owner: 'platform-team'
+`,Z=`type: 'string'
+x-tags:
+  - 'ga'
+  - 'public'
+`,$=`type: 'string'
+x-tags:
+  type: 'integer'
+  minimum: 0
+`,ee=Object.assign({"../../../../samples/json-schema-diffs/extensions/existing-1-array/01-add-primitive/before.yaml":q,"../../../../samples/json-schema-diffs/extensions/existing-1-array/02-add-object/before.yaml":z,"../../../../samples/json-schema-diffs/extensions/existing-1-array/03-add-array/before.yaml":G,"../../../../samples/json-schema-diffs/extensions/existing-1-array/04-add-json-schema/before.yaml":H,"../../../../samples/json-schema-diffs/extensions/existing-1-array/05-replace-to-primitive/before.yaml":K,"../../../../samples/json-schema-diffs/extensions/existing-1-array/06-replace-to-object/before.yaml":L,"../../../../samples/json-schema-diffs/extensions/existing-1-array/07-replace-to-array/before.yaml":M,"../../../../samples/json-schema-diffs/extensions/existing-1-array/08-replace-to-json-schema/before.yaml":P}),ae=Object.assign({"../../../../samples/json-schema-diffs/extensions/existing-1-array/01-add-primitive/after.yaml":Q,"../../../../samples/json-schema-diffs/extensions/existing-1-array/02-add-object/after.yaml":U,"../../../../samples/json-schema-diffs/extensions/existing-1-array/03-add-array/after.yaml":V,"../../../../samples/json-schema-diffs/extensions/existing-1-array/04-add-json-schema/after.yaml":W,"../../../../samples/json-schema-diffs/extensions/existing-1-array/05-replace-to-primitive/after.yaml":X,"../../../../samples/json-schema-diffs/extensions/existing-1-array/06-replace-to-object/after.yaml":Y,"../../../../samples/json-schema-diffs/extensions/existing-1-array/07-replace-to-array/after.yaml":Z,"../../../../samples/json-schema-diffs/extensions/existing-1-array/08-replace-to-json-schema/after.yaml":$}),se=T(ee,ae),te=k(se),Se={title:"JSON Schema Diffs Suite (Extensions)/Existing 1 Array",component:I,argTypes:N},e=R(I,te),a=e("01-add-primitive"),s=e("02-add-object"),t=e("03-add-array"),r=e("04-add-json-schema"),n=e("05-replace-to-primitive"),o=e("06-replace-to-object"),i=e("07-replace-to-array"),c=e("08-replace-to-json-schema");var m,_,p;a.parameters={...a.parameters,docs:{...(m=a.parameters)==null?void 0:m.docs,source:{originalSource:'createCaseStory("01-add-primitive")',...(p=(_=a.parameters)==null?void 0:_.docs)==null?void 0:p.source}}};var l,d,g;s.parameters={...s.parameters,docs:{...(l=s.parameters)==null?void 0:l.docs,source:{originalSource:'createCaseStory("02-add-object")',...(g=(d=s.parameters)==null?void 0:d.docs)==null?void 0:g.source}}};var y,f,x;t.parameters={...t.parameters,docs:{...(y=t.parameters)==null?void 0:y.docs,source:{originalSource:'createCaseStory("03-add-array")',...(x=(f=t.parameters)==null?void 0:f.docs)==null?void 0:x.source}}};var b,j,h;r.parameters={...r.parameters,docs:{...(b=r.parameters)==null?void 0:b.docs,source:{originalSource:'createCaseStory("04-add-json-schema")',...(h=(j=r.parameters)==null?void 0:j.docs)==null?void 0:h.source}}};var u,v,S;n.parameters={...n.parameters,docs:{...(u=n.parameters)==null?void 0:u.docs,source:{originalSource:'createCaseStory("05-replace-to-primitive")',...(S=(v=n.parameters)==null?void 0:v.docs)==null?void 0:S.source}}};var C,D,O;o.parameters={...o.parameters,docs:{...(C=o.parameters)==null?void 0:C.docs,source:{originalSource:'createCaseStory("06-replace-to-object")',...(O=(D=o.parameters)==null?void 0:D.docs)==null?void 0:O.source}}};var w,E,F;i.parameters={...i.parameters,docs:{...(w=i.parameters)==null?void 0:w.docs,source:{originalSource:'createCaseStory("07-replace-to-array")',...(F=(E=i.parameters)==null?void 0:E.docs)==null?void 0:F.source}}};var J,A,B;c.parameters={...c.parameters,docs:{...(J=c.parameters)==null?void 0:J.docs,source:{originalSource:'createCaseStory("08-replace-to-json-schema")',...(B=(A=c.parameters)==null?void 0:A.docs)==null?void 0:B.source}}};const Ce=["Case_01_add_primitive","Case_02_add_object","Case_03_add_array","Case_04_add_json_schema","Case_05_replace_to_primitive","Case_06_replace_to_object","Case_07_replace_to_array","Case_08_replace_to_json_schema"];export{a as Case_01_add_primitive,s as Case_02_add_object,t as Case_03_add_array,r as Case_04_add_json_schema,n as Case_05_replace_to_primitive,o as Case_06_replace_to_object,i as Case_07_replace_to_array,c as Case_08_replace_to_json_schema,Ce as __namedExportsOrder,Se as default};
