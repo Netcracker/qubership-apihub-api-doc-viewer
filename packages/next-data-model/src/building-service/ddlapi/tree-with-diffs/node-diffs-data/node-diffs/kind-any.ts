@@ -252,6 +252,14 @@ export class DdlApiNodeDiffsAggregatorKindAny
     },
   }
 
+  // The title row shows the node's own name. For a replace diff, TextValue renders a string
+  // beforeValue or afterValue in place of that name, so the diff this method builds for the title
+  // row replaces any string value with a boolean placeholder. Otherwise a column whose type
+  // changed from bigint to smallint would be titled 'bigint' and 'smallint'.
+  private static titleRowValue(value: unknown, placeholder: boolean): unknown {
+    return typeof value === 'string' ? placeholder : value
+  }
+
   protected asReplaceFlagDiffForTitleRow(
     flagDiff: ChangedPropertyMetaData,
   ): ChangedPropertyMetaData {
@@ -260,6 +268,11 @@ export class DdlApiNodeDiffsAggregatorKindAny
     if (isDiffReplace(data)) {
       return {
         ...flagDiff,
+        data: {
+          ...data,
+          beforeValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.beforeValue, false),
+          afterValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.afterValue, true),
+        },
         styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
       }
     }
@@ -273,7 +286,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
           description: data.description,
           action: DiffAction.replace,
           beforeValue: false,
-          afterValue: data.afterValue ?? true,
+          afterValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.afterValue ?? true, true),
           beforeDeclarationPaths: [],
           afterDeclarationPaths: data.afterDeclarationPaths,
         },
@@ -289,7 +302,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
           scope: data.scope,
           description: data.description,
           action: DiffAction.replace,
-          beforeValue: data.beforeValue ?? true,
+          beforeValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.beforeValue ?? true, true),
           afterValue: false,
           beforeDeclarationPaths: data.beforeDeclarationPaths,
           afterDeclarationPaths: [],
