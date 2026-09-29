@@ -1,0 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { GraphQLCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<GraphQLCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddDescriptionForRootType: Story;
+export declare const AddNewRootType: Story;
+export declare const ChangeDescriptionForRootType: Story;
+export declare const DeleteDescriptionForRootType: Story;
+export declare const DeleteRootType: Story;

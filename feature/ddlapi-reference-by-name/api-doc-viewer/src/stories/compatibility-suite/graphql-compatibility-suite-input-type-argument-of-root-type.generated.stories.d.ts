@@ -1,0 +1,17 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { GraphQLCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<GraphQLCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddDescriptionForFieldOfInputTypeArgument: Story;
+export declare const AddEnumValueOfFieldInInputTypeArgument: Story;
+export declare const AddInputTypeArgument: Story;
+export declare const AddNewFieldInInputTypeArgument: Story;
+export declare const ChangeTypeOfFieldInInputTypeArgument: Story;
+export declare const DeleteDescriptionForFieldOfInputTypeArgument: Story;
+export declare const MarkMandatoryFieldOfInputTypeArgumentAsOptional: Story;
+export declare const MarkOptionalFieldOfInputTypeArgumentAsMandatory: Story;
+export declare const RemoveEnumValueOfFieldInInputTypeArgument: Story;
+export declare const RemoveFieldFromInputTypeArgument: Story;
+export declare const RemoveInputTypeArgument: Story;
+export declare const UpdateDescriptionForFieldOfInputTypeArgument: Story;
