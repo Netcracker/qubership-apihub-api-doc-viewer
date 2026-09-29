@@ -1,0 +1,16 @@
+import"./AsyncApiOperationViewer-c588ad32.js";import"./DdlTableDiffsViewer-ea0d57fe.js";import"./DdlTableViewer-4a4cb4bb.js";import"./GraphQLOperationDiffViewer-c7eca3f0.js";import"./GraphQLOperationViewer-c74eea3c.js";import"./DiffBadge-cfa87d19.js";import{G as R,a as e,b as r}from"./compatibility-suite-utils-f117f707.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./IndexesNodeViewer-616bb723.js";/* empty css              */import"./GraphPropNodeViewer-6ab43233.js";import"./index-415bee12.js";import"./graph-api-transformers-eb8299a9.js";import"./buildASTSchema-f14864f0.js";import"./index-8cf80a84.js";import"./build-from-ddl-browser-eb48d528.js";import"./iframe-ed69b2ff.js";import"../sb-preview/runtime.js";import"./ddl-story-realm-utils-c0692776.js";const z={id:"graphql-compatibility-suite-root-type-general",title:"GraphQL Compatibility Suite/root-type-general",render:R},o="root-type-general",t={name:"add-description-for-root-type",args:e(r,o,"add-description-for-root-type")},p={name:"add-new-root-type",args:e(r,o,"add-new-root-type")},a={name:"change-description-for-root-type",args:e(r,o,"change-description-for-root-type")},s={name:"delete-description-for-root-type",args:e(r,o,"delete-description-for-root-type")},i={name:"delete-root-type",args:e(r,o,"delete-root-type")};var n,d,c;t.parameters={...t.parameters,docs:{...(n=t.parameters)==null?void 0:n.docs,source:{originalSource:`{
+  name: 'add-description-for-root-type',
+  args: getGraphQLStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'add-description-for-root-type')
+}`,...(c=(d=t.parameters)==null?void 0:d.docs)==null?void 0:c.source}}};var m,y,g;p.parameters={...p.parameters,docs:{...(m=p.parameters)==null?void 0:m.docs,source:{originalSource:`{
+  name: 'add-new-root-type',
+  args: getGraphQLStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'add-new-root-type')
+}`,...(g=(y=p.parameters)==null?void 0:y.docs)==null?void 0:g.source}}};var T,_,S;a.parameters={...a.parameters,docs:{...(T=a.parameters)==null?void 0:T.docs,source:{originalSource:`{
+  name: 'change-description-for-root-type',
+  args: getGraphQLStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'change-description-for-root-type')
+}`,...(S=(_=a.parameters)==null?void 0:_.docs)==null?void 0:S.source}}};var l,E,u;s.parameters={...s.parameters,docs:{...(l=s.parameters)==null?void 0:l.docs,source:{originalSource:`{
+  name: 'delete-description-for-root-type',
+  args: getGraphQLStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'delete-description-for-root-type')
+}`,...(u=(E=s.parameters)==null?void 0:E.docs)==null?void 0:u.source}}};var P,A,D;i.parameters={...i.parameters,docs:{...(P=i.parameters)==null?void 0:P.docs,source:{originalSource:`{
+  name: 'delete-root-type',
+  args: getGraphQLStoryArgs(TEST_SPEC_TYPE_GRAPH_QL, SUITE_ID, 'delete-root-type')
+}`,...(D=(A=i.parameters)==null?void 0:A.docs)==null?void 0:D.source}}};const B=["AddDescriptionForRootType","AddNewRootType","ChangeDescriptionForRootType","DeleteDescriptionForRootType","DeleteRootType"];export{t as AddDescriptionForRootType,p as AddNewRootType,a as ChangeDescriptionForRootType,s as DeleteDescriptionForRootType,i as DeleteRootType,B as __namedExportsOrder,z as default};
