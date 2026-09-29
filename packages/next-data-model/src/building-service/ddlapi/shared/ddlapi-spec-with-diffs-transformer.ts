@@ -835,6 +835,21 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const change = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)
+      if (change?.before && change.after) {
+        // The column keeps its key and only the target changes: one changed badge, keyed by the
+        // target the row shows, with the old target as the before value.
+        targetDiffs[formatForeignKeyTargetKey(change.after)] = {
+          type: change.diff.type,
+          scope: change.diff.scope,
+          description: change.diff.description,
+          action: DiffAction.replace,
+          beforeValue: change.before,
+          afterValue: change.after,
+          beforeDeclarationPaths: 'beforeDeclarationPaths' in change.diff ? change.diff.beforeDeclarationPaths : [],
+          afterDeclarationPaths: 'afterDeclarationPaths' in change.diff ? change.diff.afterDeclarationPaths : [],
+        }
+        continue
+      }
       if (change?.before) {
         targetDiffs[formatForeignKeyTargetKey(change.before)] = {
           type: change.diff.type,
@@ -912,10 +927,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   }
 
   /**
-   * Adds to each column row the targets it had only before the change, from a foreign key that
-   * exists on both sides. The merged document holds the after values, so without this such a
-   * target has no badge to show as removed. A key removed as a whole needs nothing: the merged
-   * document keeps it.
+   * Adds to each column row the target it had only before the change, from a foreign key that
+   * exists on both sides but no longer covers the column. The merged document holds the after
+   * values, so without this such a target has no badge to show as removed. A column that keeps
+   * the key needs nothing, because its changed target is one badge. A key removed as a whole
+   * needs nothing either: the merged document keeps it.
    */
   private withBeforeOnlyForeignKeyTargets(
     spec: DdlApiTableOrientedSpecWithDiffs,
@@ -938,7 +954,8 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       const targets = [...(columnRow.foreignKeyTargets ?? [])]
       const targetKeys = new Set(targets.map(formatForeignKeyTargetKey))
       for (const foreignKey of partlyChangedForeignKeys) {
-        const before = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)?.before
+        const change = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)
+        const before = change && !change.after ? change.before : undefined
         if (before && !targetKeys.has(formatForeignKeyTargetKey(before))) {
           targets.push(before)
           targetKeys.add(formatForeignKeyTargetKey(before))
