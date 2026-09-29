@@ -255,8 +255,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.isNotNull = this.invertBooleanDiffValues(nullabilityDiff)
       }
 
-      if (primaryKeyDiff && this.isPrimaryKeyColumn(sourceTable, sourceColumn)) {
-        columnDiffs.isPrimaryKey = primaryKeyDiff
+      const isPrimaryKeyDiff = primaryKeyDiff && this.isPrimaryKeyColumn(sourceTable, sourceColumn)
+        ? primaryKeyDiff
+        : this.resolvePrimaryKeyPartDiffForColumn(sourceTable, sourceColumn.name)
+      if (isPrimaryKeyDiff) {
+        columnDiffs.isPrimaryKey = isPrimaryKeyDiff
       }
 
       const foreignKeyTargetDiffs = this.resolveForeignKeyTargetDiffsForColumn(sourceTable, sourceColumn)
@@ -831,6 +834,22 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     }
 
     return targetDiffs
+  }
+
+  // A column that joins or leaves an existing primary key is reported by api-diff as an added or
+  // removed element of `primaryKey.parts`, not as a diff of `primaryKey` itself.
+  private resolvePrimaryKeyPartDiffForColumn(sourceTable: Table, columnName: string): Diff | undefined {
+    const partsDiffs = this.getDiffsRecord(sourceTable.primaryKey?.parts)
+    for (const diff of Object.values(partsDiffs ?? {})) {
+      if (!diff) {
+        continue
+      }
+      const part = isDiffAdd(diff) ? diff.afterValue : isDiffRemove(diff) ? diff.beforeValue : undefined
+      if (isObject(part) && part.column === columnName) {
+        return diff
+      }
+    }
+    return undefined
   }
 
   private resolveUniqueIndexDiffForColumn(sourceTable: Table, columnName: string): Diff | undefined {
