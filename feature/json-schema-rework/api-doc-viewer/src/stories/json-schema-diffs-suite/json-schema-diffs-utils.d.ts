@@ -65,7 +65,6 @@ export type JsonSchemaDiffsViewerArgsOptions = {
 };
 export declare const createJsonSchemaDiffsViewerArgsFromSchemas: (beforeSchema: Record<string, unknown>, afterSchema: Record<string, unknown>, options?: JsonSchemaDiffsViewerArgsOptions) => JsonSchemaDiffsViewerProps;
 export declare const createJsonSchemaDiffsViewerArgs: (beforeSourceText: string, afterSourceText: string, options?: JsonSchemaDiffsViewerArgsOptions) => JsonSchemaDiffsViewerProps;
-export declare const createJsonSchemaDiffSampleById: <TSample extends JsonSchemaDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 /**
  * `defaultHideUnchangedNodes` seeds the `hideUnchangedNodes` story arg (default `false`: validation
  * and metadata suites show every row; the "Hiding Unchanged Nodes" suite passes `true`).

@@ -1,4 +1,5 @@
-export type RawYamlSources = Record<string, string>;
+import { type RawSampleSources } from "./sample-cases";
+export type RawYamlSources = RawSampleSources;
 export type SampleCase = {
     caseId: string;
     beforeYaml: string;

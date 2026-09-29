@@ -35,10 +35,12 @@ type AsyncApiCaseStoryArgs = {
     }) => Promise<void>;
 };
 export declare const createAsyncApiSource: (sourceText: string) => Record<string, unknown>;
-export declare const createAsyncApiViewerArgs: (beforeSourceText: string, afterSourceText: string, options: {
+export type AsyncApiDiffsSuiteOperationKeys = {
     operationKey: string;
     messageKey: string;
-}) => AsyncApiOperationDiffsViewerProps;
-export declare const createAsyncApiSampleById: <TSample extends AsyncApiDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
+};
+/** Operation/message every synthetic AsyncAPI diff fixture declares (all suites but whole-apihub-operation). */
+export declare const ASYNC_API_DIFFS_SUITE_OPERATION_KEYS: AsyncApiDiffsSuiteOperationKeys;
+export declare const createAsyncApiViewerArgs: (beforeSourceText: string, afterSourceText: string, options?: AsyncApiDiffsSuiteOperationKeys) => AsyncApiOperationDiffsViewerProps;
 export declare const createAsyncApiCaseStoryFactory: (StoryComponent: (props: AsyncApiCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, AsyncApiDiffSampleCase>, playTestId?: string) => (caseId: string) => AsyncApiCaseStoryArgs;
 export {};

@@ -1,6 +1,6 @@
 import type { CombinerKind } from '../shared/combiner-schema-builder';
 export type { CombinerPlainCase, CombinerPlainCaseDefinition, } from './combiner-plain-case-definitions';
-export { getCombinerPlainCaseDefinitions, listCombinerPlainCases, resolveCombinerPlainSchema, toCombinerCaseExportName, } from './combiner-plain-case-definitions';
+export { getCombinerPlainCaseDefinitions, listCombinerPlainCases, resolveCombinerPlainSchema, } from './combiner-plain-case-definitions';
 export type CombinerPlainProgrammaticSampleCase = {
     caseId: string;
     schema: Record<string, unknown>;

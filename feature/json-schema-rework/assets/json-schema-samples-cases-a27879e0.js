@@ -1,0 +1,1 @@
+import{p as s}from"./parse-yaml-source-3e95a000.js";import{a as o}from"./sample-cases-8c510854.js";const p=a=>o(a,["/sample.yaml","/sample.json"]).map(({caseId:e,source:m})=>({caseId:e,schema:s(m)}));export{p as c};

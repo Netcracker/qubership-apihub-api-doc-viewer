@@ -14,4 +14,3 @@ export type CombinerDiffCase = CombinerDiffCaseDefinition & {
  */
 export declare function getCombinerDiffCaseDefinitions(combinerKind: CombinerKind): CombinerDiffCaseDefinition[];
 export declare function listCombinerDiffCases(combinerKind: CombinerKind): CombinerDiffCase[];
-export declare const toCombinerCaseExportName: (caseId: string) => string;

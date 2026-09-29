@@ -25,3 +25,5 @@ export type BuildComprehensiveTypeSchemaOptions = {
 /** A "type-schema" (comprehensive, all applicable validation keywords) per the combiner-cases terms. */
 export declare const buildComprehensiveTypeSchema: (type: CombinerSchemaType, options?: BuildComprehensiveTypeSchemaOptions) => Record<string, unknown>;
 export declare const wrapInCombiner: (kind: CombinerKind, options: Record<string, unknown>[]) => Record<string, unknown>;
+/** Storybook CSF export name for a combiner case id (`001-foo.bar` -> `Case_001_foo_bar`). */
+export declare const toCombinerCaseExportName: (caseId: string) => string;

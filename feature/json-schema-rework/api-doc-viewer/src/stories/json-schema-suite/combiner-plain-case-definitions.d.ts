@@ -15,4 +15,3 @@ export type CombinerPlainCase = CombinerPlainCaseDefinition & {
 export declare function getCombinerPlainCaseDefinitions(combinerKind: CombinerKind): CombinerPlainCaseDefinition[];
 export declare function listCombinerPlainCases(combinerKind: CombinerKind): CombinerPlainCase[];
 export declare function resolveCombinerPlainSchema(combinerKind: CombinerKind, caseId: string): Record<string, unknown>;
-export declare const toCombinerCaseExportName: (caseId: string) => string;
