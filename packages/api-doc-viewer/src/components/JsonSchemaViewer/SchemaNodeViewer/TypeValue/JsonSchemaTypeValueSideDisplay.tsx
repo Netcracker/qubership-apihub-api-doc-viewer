@@ -1,5 +1,5 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { SideListDisplay, SideListDisplayKinds } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
+import { ListSideSegment, SideListDisplay, SideListDisplayKinds } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { FC, memo } from "react"
 import { JsonSchemaTypeValueDiffSegment } from "./JsonSchemaTypeValueDiffSegment"
 import { JsonSchemaTypeValueText } from "./JsonSchemaTypeValueText"
@@ -34,19 +34,39 @@ export const JsonSchemaTypeValueSideDisplay: FC<JsonSchemaTypeValueSideDisplayPr
   }
 
   return (
-    // No gap: legacy's NodeType.tsx concatenates type/qualifier/title as adjacent tokens with
-    // zero space (`{actualType}{actualQualifier}{actualTitle}`, all inside one `.inline` div) -
-    // matching that means segments here must abut, not sit `gap-1` apart.
-    <span className="json-schema-type-value-segments inline-flex items-center">
-      {display.segments.map((segment, index) => (
-        <JsonSchemaTypeValueDiffSegment
-          key={`${segment.text}-${index}`}
-          text={segment.text}
-          diff={segment.diff}
-          layoutSide={layoutSide}
-          color={color}
-        />
+    // Segments within a group abut: legacy's NodeType.tsx concatenates type/qualifier/title as
+    // adjacent tokens with zero space (`{actualType}{actualQualifier}{actualTitle}`, all inside
+    // one `.inline` div). Only a `spacedBefore` segment (the ` or null` suffix) starts a new
+    // group, `gap-1` apart from the previous one.
+    <span className="json-schema-type-value-segments inline-flex items-center gap-1">
+      {groupSegments(display.segments).map((group, groupIndex) => (
+        <span key={groupIndex} className="inline-flex items-center">
+          {group.map(({ segment, index }) => (
+            <JsonSchemaTypeValueDiffSegment
+              key={`${segment.text}-${index}`}
+              text={segment.text}
+              diff={segment.diff}
+              layoutSide={layoutSide}
+              color={color}
+            />
+          ))}
+        </span>
       ))}
     </span>
   )
 })
+
+type IndexedSegment = { segment: ListSideSegment; index: number }
+
+function groupSegments(segments: readonly ListSideSegment[]): IndexedSegment[][] {
+  const groups: IndexedSegment[][] = []
+  segments.forEach((segment, index) => {
+    const lastGroup = groups[groups.length - 1]
+    if (!lastGroup || segment.spacedBefore) {
+      groups.push([{ segment, index }])
+    } else {
+      lastGroup.push({ segment, index })
+    }
+  })
+  return groups
+}

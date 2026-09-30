@@ -293,6 +293,8 @@ describe("JSON Schema type label diffs", () => {
       expect(origin.map(segment => segment.text)).toEqual(["string"])
       expect(changed.map(segment => segment.text)).toEqual(["string", "or null"])
       expect(changed[0]?.diff).toBeUndefined()
+      expect(changed[0]?.spacedBefore).toBeUndefined()
+      expect(changed[1]?.spacedBefore).toBe(true)
       expect(changed[1]?.diff?.data.action).toBe(DiffAction.add)
       expect(changed[1]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Green)
       expect(JsonSchemaRowDiffs.TitleRow.takeDiff(root)?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)

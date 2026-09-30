@@ -8,6 +8,8 @@ import { ChangedPropertyMetaData } from "./tree-node.interface"
 export type ListSideSegment = {
   readonly text: string
   readonly diff?: ChangedPropertyMetaData
+  /** Rendered detached from the previous segment (with a gap) instead of abutting it. */
+  readonly spacedBefore?: boolean
 }
 
 export type ListSideItem = {

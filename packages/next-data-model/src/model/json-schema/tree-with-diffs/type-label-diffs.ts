@@ -261,7 +261,7 @@ export class JsonSchemaTypeLabelResolver {
     if (isJsonSchemaPrimitiveNodeValue(value) || !this.isNullableOnSide(value, diff, layoutSide)) {
       return undefined
     }
-    return { text: NULLABLE_SUFFIX.trim(), diff }
+    return { text: NULLABLE_SUFFIX.trim(), diff, spacedBefore: true }
   }
 
   /**
