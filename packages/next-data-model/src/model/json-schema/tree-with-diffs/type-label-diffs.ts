@@ -1,7 +1,9 @@
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { TYPE_UNKNOWN } from "@apihub/next-data-model/model/abstract/constants"
 import {
+  CHANGED_LAYOUT_SIDE,
   LayoutSide,
+  ORIGIN_LAYOUT_SIDE,
 } from "@apihub/next-data-model/model/abstract/layout-side"
 import {
   ChangedPropertyMetaData,
@@ -124,7 +126,7 @@ export class JsonSchemaTypeLabelResolver {
       segments.push(titleSegment)
     }
 
-    const nullableSuffix = this.takeNullableSuffixSegment(value)
+    const nullableSuffix = this.takeNullableSuffixSegment(value, fieldDiffs.nullable, layoutSide)
     if (nullableSuffix) {
       segments.push(nullableSuffix)
     }
@@ -199,7 +201,7 @@ export class JsonSchemaTypeLabelResolver {
       parts.push(titleText)
     }
 
-    if (value?.nullable) {
+    if (this.isNullableOnSide(value, fieldDiffs.nullable, layoutSide)) {
       parts.push(NULLABLE_SUFFIX.trim())
     }
 
@@ -253,11 +255,32 @@ export class JsonSchemaTypeLabelResolver {
 
   private static takeNullableSuffixSegment(
     value: JsonSchemaTreeNodeStoredValue | null | undefined,
+    diff: ChangedPropertyMetaData | undefined,
+    layoutSide: LayoutSide,
   ): JsonSchemaTypeLabelSideSegment | undefined {
-    if (isJsonSchemaPrimitiveNodeValue(value) || !value?.nullable) {
+    if (isJsonSchemaPrimitiveNodeValue(value) || !this.isNullableOnSide(value, diff, layoutSide)) {
       return undefined
     }
-    return { text: NULLABLE_SUFFIX.trim() }
+    return { text: NULLABLE_SUFFIX.trim(), diff }
+  }
+
+  /**
+   * The merged value can't be trusted per side: a removed `nullable: true` stays `true` in the
+   * merged document, and `true -> false` merges to `false`. The `nullable` field diff is
+   * normalized to add/remove upstream, so it alone decides which side carries the suffix.
+   */
+  private static isNullableOnSide(
+    value: JsonSchemaTreeNodeValue | null | undefined,
+    diff: ChangedPropertyMetaData | undefined,
+    layoutSide: LayoutSide,
+  ): boolean {
+    if (diff && isDiffAdd(diff.data)) {
+      return layoutSide === CHANGED_LAYOUT_SIDE
+    }
+    if (diff && isDiffRemove(diff.data)) {
+      return layoutSide === ORIGIN_LAYOUT_SIDE
+    }
+    return !!value?.nullable
   }
 
   private static takeMergedFormat(value: JsonSchemaTreeNodeStoredValue | null | undefined): string | undefined {

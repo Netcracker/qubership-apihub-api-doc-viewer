@@ -12,10 +12,15 @@ import { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff"
 /** Synthetic diff slot: resolved title-row background diff for type-label field changes. */
 export const JSON_SCHEMA_TITLE_ROW_DIFF_KEY = "titleRow" as const
 
+/**
+ * Keywords rendered inside the type label. `nullable` (OAS 3.0 only) drives the ` or null`
+ * suffix; its diff is stored normalized to add/remove - the suffix either appears or disappears.
+ */
 export const JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS = [
   "type",
   "format",
   "title",
+  "nullable",
 ] as const
 
 export const JSON_SCHEMA_META_FLAG_DIFF_KEYS = [
@@ -28,7 +33,7 @@ export type JsonSchemaMetaFlagDiffKey = (typeof JSON_SCHEMA_META_FLAG_DIFF_KEYS)
 
 export type JsonSchemaTypeLabelFieldDiffKey = (typeof JSON_SCHEMA_TYPE_LABEL_FIELD_DIFF_KEYS)[number]
 
-/** Per-field diffs for type subheader parts (`type`, `(format)`, `<title>`). */
+/** Per-field diffs for type subheader parts (`type`, `(format)`, `<title>`, ` or null`). */
 export type JsonSchemaTypeLabelFieldDiffs = Partial<
   Record<JsonSchemaTypeLabelFieldDiffKey, ChangedPropertyMetaData>
 >

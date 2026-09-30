@@ -271,6 +271,79 @@ describe("JSON Schema type label diffs", () => {
     }
   })
 
+  describe("nullable suffix (OAS 3.0)", () => {
+    function resolveSideSegments(beforeSchema: object, afterSchema: object) {
+      const root = buildTree(mergeSchemas(beforeSchema, afterSchema)).root!
+      const sides = [ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE].map(layoutSide => {
+        const display = JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), layoutSide)
+        if (display.kind !== SideListDisplayKinds.PARTIAL_DIFFS) {
+          throw new Error(`expected partial diffs display, got ${display.kind}`)
+        }
+        return display.segments
+      })
+      return { root, origin: sides[0]!, changed: sides[1]! }
+    }
+
+    it.each([
+      ["absent", { type: "string" }],
+      ["false", { type: "string", nullable: false }],
+    ])("highlights added suffix in green when nullable goes from %s to true", (_, beforeSchema) => {
+      const { root, origin, changed } = resolveSideSegments(beforeSchema, { type: "string", nullable: true })
+
+      expect(origin.map(segment => segment.text)).toEqual(["string"])
+      expect(changed.map(segment => segment.text)).toEqual(["string", "or null"])
+      expect(changed[0]?.diff).toBeUndefined()
+      expect(changed[1]?.diff?.data.action).toBe(DiffAction.add)
+      expect(changed[1]?.diff?.styles.after.textHighlighterColor).toBe(HighlightVariant.Green)
+      expect(JsonSchemaRowDiffs.TitleRow.takeDiff(root)?.styles.before.backgroundColor).toBe(HighlightVariant.Yellow)
+    })
+
+    it.each([
+      ["absent", { type: "string" }],
+      ["false", { type: "string", nullable: false }],
+    ])("highlights removed suffix in red when nullable goes from true to %s", (_, afterSchema) => {
+      const { origin, changed } = resolveSideSegments({ type: "string", nullable: true }, afterSchema)
+
+      expect(origin.map(segment => segment.text)).toEqual(["string", "or null"])
+      expect(origin[1]?.diff?.data.action).toBe(DiffAction.remove)
+      expect(origin[1]?.diff?.styles.before.textHighlighterColor).toBe(HighlightVariant.Red)
+      expect(changed.map(segment => segment.text)).toEqual(["string"])
+    })
+
+    it("keeps unchanged suffix plain next to a type change", () => {
+      const { origin, changed } = resolveSideSegments(
+        { type: "string", nullable: true },
+        { type: "integer", nullable: true },
+      )
+
+      expect(origin.map(segment => segment.text)).toEqual(["string", "or null"])
+      expect(changed.map(segment => segment.text)).toEqual(["integer", "or null"])
+      expect(origin[1]?.diff).toBeUndefined()
+      expect(changed[1]?.diff).toBeUndefined()
+    })
+
+    it("ignores nullable diffs that do not change the suffix", () => {
+      const root = buildTree(mergeSchemas({ type: "string" }, { type: "string", nullable: false })).root!
+
+      expect(JsonSchemaTypeLabelResolver.takeFieldDiffs(root)).toBeUndefined()
+      expect(JsonSchemaRowDiffs.TitleRow.takeDiff(root)).toBeUndefined()
+      expect(JsonSchemaTypeLabelResolver.resolveSideDisplay(root, root.meta(), CHANGED_LAYOUT_SIDE)).toEqual({
+        kind: SideListDisplayKinds.NO_DIFFS,
+        text: "string",
+      })
+    })
+
+    it("excludes own nullable change from the node changes summary", () => {
+      const tree = buildTree(mergeSchemas(
+        { type: "object", properties: { a: { type: "string" } } },
+        { type: "object", nullable: true, properties: { a: { type: "string" } } },
+      ))
+
+      expect(tree.root!.diffs.typeLabelFieldDiffs?.nullable?.data.action).toBe(DiffAction.add)
+      expect(tree.root!.diffs.nodeChangesSummary).toBeUndefined()
+    })
+  })
+
   it("stores synthetic titleRow diff without chip text highlighter", () => {
     const merged = mergeSchemas(
       { type: "string", title: "Label" },

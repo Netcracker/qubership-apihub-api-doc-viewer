@@ -164,9 +164,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       const titleDiff = validDiffs["title"]
       const formatDiff = validDiffs["format"]
       const typeDiff = validDiffs["type"]
+      const nullableDiff = this.normalizeNullableDiff(validDiffs["nullable"])
 
       this.aggregateTypeLabelFieldDiffs(
-        { type: typeDiff, format: formatDiff, title: titleDiff },
+        { type: typeDiff, format: formatDiff, title: titleDiff, nullable: nullableDiff },
         nodeDiffs,
       )
 
@@ -221,9 +222,12 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   /**
    * "Node changes summary": the merged set of diff types found anywhere in this node's subtree
    * (its own diffs plus every descendant's, recursively) - excluding this node's OWN `type`/
-   * `title`/`format` diffs (already conveyed by the always-visible type label, so redundant in a
-   * collapsed-node summary marker). A descendant's own type/title/format change is NOT excluded -
-   * collapsing hides that descendant's row entirely, so the summary is the only remaining signal.
+   * `title`/`format`/`nullable` diffs (already conveyed by the always-visible type label, so
+   * redundant in a collapsed-node summary marker). The own `nullable` diff is matched by its raw
+   * crawl entry: the stored type-label copy is normalized (see {@link normalizeNullableDiff}), so
+   * it is not the same object as the rolled-up one. A descendant's own type-label change is NOT
+   * excluded - collapsing hides that descendant's row entirely, so the summary is the only
+   * remaining signal.
    *
    * Reuses the document-level `aggregatedDiffsMetaKey` rollup (`takeAggregatedDiffs`) read off
    * this node's OWN `crawlValue` - since JSON Schema's crawl rules map each data-model node 1:1
@@ -242,6 +246,13 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       if (fieldDiff?.data) {
         ownTypeLabelDiffs.add(fieldDiff.data)
       }
+    }
+    const ownDiffs = isObject(crawlValue)
+      ? (crawlValue as Record<PropertyKey, unknown>)[diffMetaKeys.diffsMetaKey]
+      : undefined
+    const ownNullableDiff = AbstractNodeDiffsAggregator.isDiffsRecord(ownDiffs) ? ownDiffs["nullable"] : undefined
+    if (AbstractNodeDiffsAggregator.isDiff(ownNullableDiff)) {
+      ownTypeLabelDiffs.add(ownNullableDiff)
     }
 
     const summary: NodeDiffsSummary = new Set()
@@ -574,6 +585,28 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     nodeDiffs: JsonSchemaKindAnyNodeDiffs,
   ): void {
     nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(this.normalizeBooleanFlagDiffReplace(diff))
+  }
+
+  /**
+   * OAS 3.0 `nullable` defaults to `false` and only surfaces in the type label as the ` or null`
+   * suffix, so - like the meta flags (see {@link normalizeBooleanFlagDiffReplace}) - its boolean
+   * replace is normalized to add/remove of that suffix. Diffs that leave the suffix unchanged on
+   * both sides (absent <-> `false`) are dropped: there is nothing in the label to highlight.
+   */
+  private normalizeNullableDiff(diff: unknown): Diff<DiffType> | undefined {
+    if (!AbstractNodeDiffsAggregator.isDiff(diff)) {
+      return undefined
+    }
+    if (isDiffAdd(diff) && diff.afterValue !== true) {
+      return undefined
+    }
+    if (isDiffRemove(diff) && diff.beforeValue !== true) {
+      return undefined
+    }
+    if (isDiffReplace(diff) && !!diff.beforeValue === !!diff.afterValue) {
+      return undefined
+    }
+    return this.normalizeBooleanFlagDiffReplace(diff)
   }
 
   /**
