@@ -1,0 +1,11 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { DdlCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<DdlCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddTable: Story;
+export declare const AddTableComment: Story;
+export declare const RemoveTable: Story;
+export declare const RemoveTableComment: Story;
+export declare const RenameTable: Story;
+export declare const UpdateTableComment: Story;
