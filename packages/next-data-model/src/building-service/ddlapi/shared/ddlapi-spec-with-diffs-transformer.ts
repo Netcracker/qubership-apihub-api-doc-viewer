@@ -845,39 +845,41 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const change = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)
-      if (change?.before && change.after) {
+      if (!change) {
+        continue
+      }
+
+      const { before, after, diff } = change
+      const diffBase = { type: diff.type, scope: diff.scope, description: diff.description }
+      const beforeDeclarationPaths = 'beforeDeclarationPaths' in diff ? diff.beforeDeclarationPaths : []
+      const afterDeclarationPaths = 'afterDeclarationPaths' in diff ? diff.afterDeclarationPaths : []
+      if (before && after) {
         // The column keeps its key and only the target changes: one changed badge, keyed by the
         // target the row shows, with the old target as the before value.
-        targetDiffs[formatForeignKeyTargetKey(change.after)] = {
-          type: change.diff.type,
-          scope: change.diff.scope,
-          description: change.diff.description,
+        targetDiffs[formatForeignKeyTargetKey(after)] = {
+          ...diffBase,
           action: DiffAction.replace,
-          beforeValue: change.before,
-          afterValue: change.after,
-          beforeDeclarationPaths: 'beforeDeclarationPaths' in change.diff ? change.diff.beforeDeclarationPaths : [],
-          afterDeclarationPaths: 'afterDeclarationPaths' in change.diff ? change.diff.afterDeclarationPaths : [],
+          beforeValue: before,
+          afterValue: after,
+          beforeDeclarationPaths,
+          afterDeclarationPaths,
         }
         continue
       }
-      if (change?.before) {
-        targetDiffs[formatForeignKeyTargetKey(change.before)] = {
-          type: change.diff.type,
-          scope: change.diff.scope,
-          description: change.diff.description,
+      if (before) {
+        targetDiffs[formatForeignKeyTargetKey(before)] = {
+          ...diffBase,
           action: DiffAction.remove,
-          beforeValue: change.before,
-          beforeDeclarationPaths: 'beforeDeclarationPaths' in change.diff ? change.diff.beforeDeclarationPaths : [],
+          beforeValue: before,
+          beforeDeclarationPaths,
         }
       }
-      if (change?.after) {
-        targetDiffs[formatForeignKeyTargetKey(change.after)] = {
-          type: change.diff.type,
-          scope: change.diff.scope,
-          description: change.diff.description,
+      if (after) {
+        targetDiffs[formatForeignKeyTargetKey(after)] = {
+          ...diffBase,
           action: DiffAction.add,
-          afterValue: change.after,
-          afterDeclarationPaths: 'afterDeclarationPaths' in change.diff ? change.diff.afterDeclarationPaths : [],
+          afterValue: after,
+          afterDeclarationPaths,
         }
       }
     }
@@ -966,9 +968,13 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       for (const foreignKey of partlyChangedForeignKeys) {
         const change = this.resolveForeignKeyTargetChange(foreignKey, sourceColumn)
         const before = change && !change.after ? change.before : undefined
-        if (before && !targetKeys.has(formatForeignKeyTargetKey(before))) {
+        if (!before) {
+          continue
+        }
+        const beforeKey = formatForeignKeyTargetKey(before)
+        if (!targetKeys.has(beforeKey)) {
           targets.push(before)
-          targetKeys.add(formatForeignKeyTargetKey(before))
+          targetKeys.add(beforeKey)
         }
       }
       return targets.length === (columnRow.foreignKeyTargets?.length ?? 0)

@@ -225,14 +225,12 @@ export class DdlApiSpecTransformer {
   }
 
   protected isSingleColumnUniqueIndexForColumn(index: Index, columnName: string): boolean {
-    return index.unique === true
-      && (index.parts ?? []).length === 1
-      && (index.parts ?? [])[0]?.column === columnName
+    return index.unique === true && this.isSingleColumnIndexForColumn(index, columnName)
   }
 
   protected isSingleColumnIndexForColumn(index: Index, columnName: string): boolean {
-    return (index.parts ?? []).length === 1
-      && (index.parts ?? [])[0]?.column === columnName
+    const parts = index.parts ?? []
+    return parts.length === 1 && parts[0].column === columnName
   }
 
   private isUniqueColumn(table: Table, column: Column): boolean {
