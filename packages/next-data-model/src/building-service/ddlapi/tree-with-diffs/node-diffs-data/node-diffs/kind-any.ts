@@ -86,9 +86,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
     key: ChangedPropertyKey<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
     nodeDiffs: NodeDiffs<DdlApiTreeNodeValue<DdlApiTreeNodeKind> | null>,
   ) {
-    nodeDiffs[key] = key === 'columnName' || key === 'indexName'
-      ? this.buildDdlPropertyNameChangedPropertyMetaDataFromDiff(diff)
-      : this.buildChangedPropertyMetaDataFromDiff(diff)
+    nodeDiffs[key] = this.buildChangedPropertyMetaDataFromDiff(diff)
   }
 
   protected buildChangedPropertyMetaDataFromDiff(diff: Diff<DiffType>): ChangedPropertyMetaData {
@@ -170,50 +168,6 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
 
     nodeDiffs.description = this.buildChangedPropertyMetaDataFromDiff(diff)
-  }
-
-  protected buildDdlPropertyNameChangedPropertyMetaDataFromDiff(
-    diff: Diff<DiffType>,
-  ): ChangedPropertyMetaData {
-    let beforeStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
-    let afterStyles: DiffStyles = this.DEFAULT_DIFF_STYLES
-    if (isDiffAdd(diff)) {
-      beforeStyles = {
-        ...beforeStyles,
-        isContentVisible: false,
-        backgroundColor: HighlightVariant.Gray,
-      }
-      afterStyles = {
-        ...afterStyles,
-        isContentVisible: true,
-        backgroundColor: HighlightVariant.Green,
-      }
-    }
-    if (isDiffRemove(diff)) {
-      beforeStyles = {
-        ...beforeStyles,
-        isContentVisible: true,
-        backgroundColor: HighlightVariant.Red,
-      }
-      afterStyles = {
-        ...afterStyles,
-        isContentVisible: false,
-        backgroundColor: HighlightVariant.Gray,
-      }
-    }
-    if (isDiffRename(diff) || isDiffReplace(diff)) {
-      beforeStyles = {
-        ...beforeStyles,
-        isContentVisible: true,
-        backgroundColor: HighlightVariant.Yellow,
-      }
-      afterStyles = {
-        ...afterStyles,
-        isContentVisible: true,
-        backgroundColor: HighlightVariant.Yellow,
-      }
-    }
-    return this.createChangedPropertyMetaData(diff, beforeStyles, afterStyles)
   }
 
   private createChangedPropertyMetaData(

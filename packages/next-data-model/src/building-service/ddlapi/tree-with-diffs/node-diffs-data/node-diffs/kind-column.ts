@@ -83,11 +83,6 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
       nodeDiffs,
     )
 
-    const columnNameDiff = diffs['columnName']
-    if (AbstractNodeDiffsAggregator.isDiff(columnNameDiff)) {
-      this.aggregateTextDiff(columnNameDiff, 'columnName', nodeDiffs)
-    }
-
     const generatedExpressionDiff = diffs['generatedExpression']
     if (AbstractNodeDiffsAggregator.isDiff(generatedExpressionDiff)) {
       this.aggregateTextDiff(
@@ -180,12 +175,6 @@ export class DdlApiNodeDiffsAggregatorKindColumn extends DdlApiNodeDiffsAggregat
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
       nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
-      return
-    }
-
-    const nameDiff = nodeDiffs.columnName
-    if (nameDiff) {
-      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nameDiff
       return
     }
 

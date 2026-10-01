@@ -349,11 +349,6 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       }
 
       const indexFieldDiffs = this.getDiffsRecord(sourceIndex)
-      const indexNameDiff = indexFieldDiffs?.name
-      if (indexNameDiff) {
-        indexDiffs.indexName = indexNameDiff
-      }
-
       const uniqueDiff = indexFieldDiffs?.unique
       if (uniqueDiff) {
         indexDiffs.isUnique = uniqueDiff

@@ -74,11 +74,6 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
       nodeDiffs,
     )
 
-    const indexNameDiff = diffs['indexName']
-    if (AbstractNodeDiffsAggregator.isDiff(indexNameDiff)) {
-      this.aggregateTextDiff(indexNameDiff, 'indexName', nodeDiffs)
-    }
-
     if (this.hasWholeNodeAddOrRemoveDiff(nodeDiffs)) {
       this.aggregatePresentFlagDiffsFromWholeNodeAddOrRemove(
         crawlValue,
@@ -134,12 +129,6 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
       nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
-      return
-    }
-
-    const nameDiff = nodeDiffs.indexName
-    if (nameDiff) {
-      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = nameDiff
       return
     }
 
