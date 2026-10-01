@@ -31,10 +31,10 @@ import {
   AttrKind,
   Column,
   ColumnType,
-  Expr,
   findAttr,
   ForeignKey,
   Index,
+  IndexPart,
   PgAttrKind,
   PgObjectKind,
   Realm,
@@ -56,6 +56,9 @@ export interface DdlApiTableOrientedSpecColumnsSection extends DdlApiSectionHead
 export interface DdlApiTableOrientedSpecIndexesSection extends DdlApiSectionHeaderRowValue {
   readonly items: readonly DdlApiIndexRowValue[];
 }
+
+/** The fields of an index part that make up its display name. */
+export type DdlApiIndexPartNameSource = Pick<IndexPart, 'column' | 'expr'>
 
 /** Crawl-ready table document produced from a normalized or merged DDL source. */
 export interface DdlApiTableOrientedSpec extends DdlApiTableRowValue {
@@ -414,7 +417,7 @@ export class DdlApiSpecTransformer {
     return `${typeName} (${definedParameters.join(', ')})`
   }
 
-  protected formatIndexPartName(part: { column?: string; expr?: Expr }): string {
+  protected formatIndexPartName(part: DdlApiIndexPartNameSource): string {
     if (part.column) {
       return part.column
     }

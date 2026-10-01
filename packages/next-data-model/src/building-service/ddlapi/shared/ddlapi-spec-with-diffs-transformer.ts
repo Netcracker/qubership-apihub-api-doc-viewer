@@ -1,3 +1,4 @@
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/next-data-model/model/abstract/layout-side";
 import { NODE_LEVEL_DIFF_KEY } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiColumnRowValue, DdlApiColumnTypeValue, DdlApiForeignKeyTarget, DdlApiIndexRowValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { TableKey } from "@apihub/next-data-model/shared/ddlapi/types/table-key";
@@ -24,6 +25,7 @@ import { isEnumType } from "@apihub/next-data-model/shared/ddlapi/guards/schema-
 import { BuildingServiceLogger } from "../../../loggers";
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import {
+  DdlApiIndexPartNameSource,
   DdlApiSpecTransformer,
   DdlApiTableOrientedSpec,
   DdlApiTableOrientedSpecColumnsSection,
@@ -41,6 +43,14 @@ type IndexCrawlDiffsRecord = Omit<DiffsRecord, 'partNameDiffs'> & {
 
 // The foreign key fields that decide a column's target, each diffed by api-diff as one value.
 const FOREIGN_KEY_REFERENCE_FIELDS = ['columns', 'refTable', 'refColumns'] as const
+
+type ForeignKeyReferenceField = typeof FOREIGN_KEY_REFERENCE_FIELDS[number]
+
+type ForeignKeyTargetChange = {
+  before?: DdlApiForeignKeyTarget
+  after?: DdlApiForeignKeyTarget
+  diff: Diff
+}
 
 type GeneratedColumnAttrKind = typeof AttrKind.GeneratedExpr | typeof PgAttrKind.Identity
 
@@ -712,7 +722,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return undefined
     }
 
-    return this.formatIndexPartName(value as { column?: string; expr?: Expr })
+    return this.formatIndexPartName(value as DdlApiIndexPartNameSource)
   }
 
   private takeIndexPartSeqNoFromDiffValue(value: unknown): number | undefined {
@@ -885,7 +895,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
   private resolveForeignKeyTargetChange(
     foreignKey: ForeignKey,
     sourceColumn: Column,
-  ): { before?: DdlApiForeignKeyTarget; after?: DdlApiForeignKeyTarget; diff: Diff } | undefined {
+  ): ForeignKeyTargetChange | undefined {
     const fieldDiffs = this.getDiffsRecord(foreignKey)
     const referenceDiff = FOREIGN_KEY_REFERENCE_FIELDS
       .map(field => fieldDiffs?.[field])
@@ -894,25 +904,25 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
       return undefined
     }
 
-    const sides = (field: typeof FOREIGN_KEY_REFERENCE_FIELDS[number]): { before: unknown; after: unknown } => {
+    const valueOnSide = (field: ForeignKeyReferenceField, side: LayoutSide): unknown => {
       const diff = fieldDiffs?.[field]
       if (!diff) {
-        return { before: foreignKey[field], after: foreignKey[field] }
+        return foreignKey[field]
       }
-      return {
-        before: 'beforeValue' in diff ? diff.beforeValue : undefined,
-        after: isDiffRemove(diff) ? undefined : foreignKey[field],
+      if (side === ORIGIN_LAYOUT_SIDE) {
+        return 'beforeValue' in diff ? diff.beforeValue : undefined
       }
+      return isDiffRemove(diff) ? undefined : foreignKey[field]
     }
-    const keyOnSide = (side: 'before' | 'after'): ForeignKey => ({
+    const keyOnSide = (side: LayoutSide): ForeignKey => ({
       ...foreignKey,
-      columns: sides('columns')[side] as ForeignKey['columns'],
-      refTable: sides('refTable')[side] as ForeignKey['refTable'],
-      refColumns: sides('refColumns')[side] as ForeignKey['refColumns'],
+      columns: valueOnSide('columns', side) as ForeignKey['columns'],
+      refTable: valueOnSide('refTable', side) as ForeignKey['refTable'],
+      refColumns: valueOnSide('refColumns', side) as ForeignKey['refColumns'],
     })
 
-    const before = this.buildForeignKeyTarget(keyOnSide('before'), sourceColumn)
-    const after = this.buildForeignKeyTarget(keyOnSide('after'), sourceColumn)
+    const before = this.buildForeignKeyTarget(keyOnSide(ORIGIN_LAYOUT_SIDE), sourceColumn)
+    const after = this.buildForeignKeyTarget(keyOnSide(CHANGED_LAYOUT_SIDE), sourceColumn)
     const beforeKey = before ? formatForeignKeyTargetKey(before) : undefined
     const afterKey = after ? formatForeignKeyTargetKey(after) : undefined
     if (beforeKey === afterKey) {
