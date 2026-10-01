@@ -36,6 +36,7 @@ import {
   DiffType,
   isDiffAdd,
   isDiffRemove,
+  isDiffRename,
   isDiffReplace,
 } from '@netcracker/qubership-apihub-api-diff'
 
@@ -269,6 +270,28 @@ class NodeLevel extends JsonSchemaRowDiffsBase {
     }
     const { data } = nodeLevelDiff
     return data.action === 'add' || data.action === 'remove'
+  }
+}
+
+/**
+ * Renamed property key. JSON Schema diffs never rename a property (its object mapping pairs equal
+ * keys only), but consumers synthesizing a schema can: e.g. apispec-view maps an OpenAPI path
+ * parameter's `name` change to a `rename` of the parameter's property, with `beforeKey`/`afterKey`.
+ */
+class PropertyName extends JsonSchemaRowDiffsBase {
+  public static takeRenameDiff(node: JsonSchemaTreeNodeWithDiffs): ChangedPropertyMetaData | undefined {
+    const nodeLevelDiff = node.diffs[NODE_LEVEL_DIFF_KEY]
+    return nodeLevelDiff && isDiffRename(nodeLevelDiff.data) ? nodeLevelDiff : undefined
+  }
+
+  /** Property name shown on `layoutSide`: the key before/after the rename, otherwise the node key. */
+  public static resolveSideText(node: JsonSchemaTreeNodeWithDiffs, layoutSide: LayoutSide): string {
+    const renameData = this.takeRenameDiff(node)?.data
+    if (!renameData || !isDiffRename(renameData)) {
+      return String(node.key)
+    }
+    const sideKey = layoutSide === ORIGIN_LAYOUT_SIDE ? renameData.beforeKey : renameData.afterKey
+    return String(sideKey ?? node.key)
   }
 }
 
@@ -792,6 +815,7 @@ export class JsonSchemaRowDiffs {
   public static readonly MetaFlags = MetaFlags
   public static readonly RequiredStar = RequiredStar
   public static readonly NodeLevel = NodeLevel
+  public static readonly PropertyName = PropertyName
   public static readonly Extensions = Extensions
   public static readonly CustomAnnotations = CustomAnnotations
   public static readonly Default = Default

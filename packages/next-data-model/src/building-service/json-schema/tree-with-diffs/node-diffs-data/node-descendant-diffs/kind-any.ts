@@ -12,7 +12,7 @@ import {
 } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DiffsRecord, isArray, isObject, takeIfDiffsRecord } from "@apihub/next-data-model/utilities"
 import { Diff, DiffAction, DiffAdd, DiffRemove } from "@netcracker/qubership-apihub-api-diff"
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeNodeStoredValue } from "@apihub/next-data-model/model/json-schema/types/node-value"
 
 const JSON_SCHEMA_CHILD_DIFF_BAG_KEYS = [
@@ -192,6 +192,21 @@ export class JsonSchemaNodeDescendantDiffsAggregatorKindAny extends AbstractNode
         isContentVisible: false,
         isHeaderVisible: true,
         backgroundColor: HighlightVariant.Yellow,
+        textHighlighterColor: HighlightVariant.Yellow,
+      }
+    }
+
+    // Renamed key: the same node with a new name, so its content stays visible. The yellow row
+    // background comes from the title row diff, the highlighter marks the name itself.
+    if (isDiffRename(diff)) {
+      beforeStyles = {
+        isContentVisible: true,
+        isHeaderVisible: true,
+        textHighlighterColor: HighlightVariant.Yellow,
+      }
+      afterStyles = {
+        isContentVisible: true,
+        isHeaderVisible: true,
         textHighlighterColor: HighlightVariant.Yellow,
       }
     }

@@ -116,10 +116,13 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       const maybeNodeDiffs = containerNode.descendantDiffs[nodeKey]
       if (maybeNodeDiffs) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
-        this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
-        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
-        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
-        return nodeDiffs
+        // A renamed key is still the same node: its own field diffs below apply as usual
+        if (!isDiffRename(maybeNodeDiffs.data)) {
+          this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+          this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+          this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
+          return nodeDiffs
+        }
       }
     } else if (parentNode) {
       const parentNodeDiff = parentNode.diffs[NODE_LEVEL_DIFF_KEY]
@@ -133,10 +136,13 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       const maybeNodeDiffs = parentNode.descendantDiffs[nodeKey]
       if (maybeNodeDiffs) {
         nodeDiffs[NODE_LEVEL_DIFF_KEY] = maybeNodeDiffs
-        this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
-        this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
-        this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
-        return nodeDiffs
+        // A renamed key is still the same node: its own field diffs below apply as usual
+        if (!isDiffRename(maybeNodeDiffs.data)) {
+          this.aggregateWholeNodeInheritedValidationRowDiffs(crawlValue, nodeDiffs)
+          this.aggregateWholeNodeInheritedExtensionsDiffs(crawlValue, nodeDiffs)
+          this.aggregateWholeNodeInheritedCustomAnnotationsDiffs(crawlValue, nodeDiffs)
+          return nodeDiffs
+        }
       }
     }
 
@@ -144,6 +150,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     // field diffs, which do need an object/array crawl value (a primitive like `false` never
     // carries its own symbol-keyed diffs record).
     if (!isObject(crawlValue) && !Array.isArray(crawlValue)) {
+      if (nodeDiffs[NODE_LEVEL_DIFF_KEY]) {
+        this.aggregateTitleRowDiff(nodeDiffs)
+        return nodeDiffs
+      }
       return undefined
     }
 
@@ -672,6 +682,10 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
       nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
       return
     }
+    if (nodeLevelDiff && isDiffRename(nodeLevelDiff.data)) {
+      nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceRowColorizingDiff(nodeLevelDiff)
+      return
+    }
 
     for (const flagKey of JSON_SCHEMA_META_FLAG_DIFF_KEYS) {
       const flagDiff = nodeDiffs[flagKey]
@@ -794,7 +808,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
   ): ChangedPropertyMetaData {
     const { data } = sourceDiff
 
-    if (isDiffReplace(data)) {
+    if (isDiffReplace(data) || isDiffRename(data)) {
       return {
         ...sourceDiff,
         styles: this.ROW_PARTIAL_CHANGE_STYLES,

@@ -5,11 +5,13 @@ import { resolvePlainPropertyListLastRowFlags } from "@netcracker/qubership-apih
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
 import { isDiffSideContentVisible, isDiffSideHeaderVisible, takeAddRemoveDiffIfPresent } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/list-side-display"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { JsonSchemaRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaViewerTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeStoredValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { asJsonSchemaTypedNodeValue } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/schema-value"
+import { isJsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/json-schema/guards/tree-node"
 import { useMemo } from "react"
-import { JsonSchemaNodeTitle } from "../utils/resolve-json-schema-node-title"
+import { JsonSchemaNodeTitle, JsonSchemaNodeTitleVariants } from "../utils/resolve-json-schema-node-title"
 import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeTitlePlain, JsonSchemaNodeTitleWithDiffs } from "./JsonSchemaNodeTitle"
 
@@ -55,6 +57,12 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
     [customizationOptions?.headerRowTitle, ownerMeta, ownerNode],
   )
 
+  // Renamed property key: each side shows its own name (`beforeKey` / `afterKey`), highlighted
+  const renameDiff = useMemo(
+    () => isJsonSchemaTreeNodeWithDiffs(ownerNode) ? JsonSchemaRowDiffs.PropertyName.takeRenameDiff(ownerNode) : undefined,
+    [ownerNode],
+  )
+
   const titleContent = useMemo(
     () => (layoutSide: LayoutSide) => {
       const addRemoveDiff = takeAddRemoveDiffIfPresent(titleRowDiff)
@@ -66,13 +74,19 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
         return null
       }
 
+      const sideTitleDisplay = renameDiff && isJsonSchemaTreeNodeWithDiffs(ownerNode)
+        && titleDisplay.variant === JsonSchemaNodeTitleVariants.TEXT
+        ? { ...titleDisplay, text: JsonSchemaRowDiffs.PropertyName.resolveSideText(ownerNode, layoutSide) }
+        : titleDisplay
+
       return withRequiredDiffIndicator
         ? (
           <JsonSchemaNodeTitleWithDiffs
-            display={titleDisplay}
+            display={sideTitleDisplay}
             required={ownerMeta?.required}
             requiredDiff={requiredDiff}
             layoutSide={layoutSide}
+            textDiff={renameDiff}
           />
         )
         : (
@@ -82,7 +96,7 @@ export function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput
           />
         )
     },
-    [ownerMeta?.required, requiredDiff, titleDisplay, titleRowDiff, withRequiredDiffIndicator],
+    [ownerMeta?.required, ownerNode, renameDiff, requiredDiff, titleDisplay, titleRowDiff, withRequiredDiffIndicator],
   )
 
   const showTypeSubheader = useMemo(

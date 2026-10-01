@@ -23,6 +23,7 @@ import {
   DiffType,
   isDiffAdd,
   isDiffRemove,
+  isDiffRename,
   isDiffReplace,
 } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaNodeDiffsAggregatorKindAny } from "./kind-any"
@@ -142,6 +143,10 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
     const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
     if (nodeLevelDiff && (isDiffAdd(nodeLevelDiff.data) || isDiffRemove(nodeLevelDiff.data))) {
       nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = nodeLevelDiff
+      return
+    }
+    if (nodeLevelDiff && isDiffRename(nodeLevelDiff.data)) {
+      nodeDiffs[JSON_SCHEMA_TITLE_ROW_DIFF_KEY] = this.asReplaceRowColorizingDiff(nodeLevelDiff)
       return
     }
 
