@@ -1,1 +1,0 @@
-export declare const DEFAULT_LONG_TEXT_COLOR = "#353C4E";
