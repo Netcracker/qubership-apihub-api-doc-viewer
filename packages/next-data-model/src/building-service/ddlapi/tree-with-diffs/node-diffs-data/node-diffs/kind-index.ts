@@ -146,7 +146,7 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
     for (const flagKey of DDL_INDEX_FLAG_DIFF_KEYS) {
       const flagDiff = nodeDiffs[flagKey]
       if (flagDiff) {
-        nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(flagDiff)
+        nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asTitleRowColorizingDiff(flagDiff)
         return
       }
     }
@@ -160,7 +160,7 @@ export class DdlApiNodeDiffsAggregatorKindIndex extends DdlApiNodeDiffsAggregato
       ...Object.values(partNameDiffs),
     )
     if (representativeDiff) {
-      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asReplaceFlagDiffForTitleRow(representativeDiff)
+      nodeDiffs[DDL_PROPERTY_TITLE_ROW_DIFF_KEY] = this.asTitleRowColorizingDiff(representativeDiff)
     }
   }
 

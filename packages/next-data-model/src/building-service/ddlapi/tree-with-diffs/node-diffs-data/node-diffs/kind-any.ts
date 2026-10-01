@@ -1,6 +1,6 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys";
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator";
-import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
+import { ChangedPropertyKey, ChangedPropertyMetaData, DIFF_HIGHLIGHTING_MODES_DEFAULT, DIFF_HIGHLIGHTING_MODES_DDL_FLAG_BADGE_SIDE_VISIBILITY_ONLY, DIFF_HIGHLIGHTING_MODES_DDL_TITLE_ROW, DiffStyles, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { DdlApiTreeNodeValue } from "@apihub/next-data-model/model/ddlapi/tree/node-value";
 import { DdlApiTreeNodeKind } from "@apihub/next-data-model/model/ddlapi/types/node-kind";
 import { DdlApiTreeNodeMeta } from "@apihub/next-data-model/model/ddlapi/types/node-meta";
@@ -239,7 +239,7 @@ export class DdlApiNodeDiffsAggregatorKindAny
     }
   }
 
-  protected readonly TITLE_ROW_FLAG_AS_REPLACE_STYLES: { before: DiffStyles; after: DiffStyles } = {
+  protected readonly TITLE_ROW_COLORIZING_STYLES: { before: DiffStyles; after: DiffStyles } = {
     before: {
       isContentVisible: true,
       isHeaderVisible: true,
@@ -252,66 +252,58 @@ export class DdlApiNodeDiffsAggregatorKindAny
     },
   }
 
-  // The title row shows the node's own name. For a replace diff, TextValue renders a string
-  // beforeValue or afterValue in place of that name, so the diff this method builds for the title
-  // row replaces any string value with a boolean placeholder. Otherwise a column whose type
-  // changed from bigint to smallint would be titled 'bigint' and 'smallint'.
-  private static titleRowValue(value: unknown, placeholder: boolean): unknown {
-    return typeof value === 'string' ? placeholder : value
-  }
-
-  protected asReplaceFlagDiffForTitleRow(
-    flagDiff: ChangedPropertyMetaData,
+  /**
+   * Builds a diff that only colors a row whose property changed. The row stays visible on both
+   * sides, so an added or removed property is reported as a replace. The highlighting mode keeps
+   * the row's name in place of the diff's values, such as the type names of a changed column type.
+   */
+  protected asTitleRowColorizingDiff(
+    propertyDiff: ChangedPropertyMetaData,
   ): ChangedPropertyMetaData {
-    const { data } = flagDiff
-
-    if (isDiffReplace(data)) {
-      return {
-        ...flagDiff,
-        data: {
-          ...data,
-          beforeValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.beforeValue, false),
-          afterValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.afterValue, true),
-        },
-        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
-      }
+    const { data } = propertyDiff
+    const colorizingDiff = {
+      ...propertyDiff,
+      styles: this.TITLE_ROW_COLORIZING_STYLES,
+      highlightingMode: DIFF_HIGHLIGHTING_MODES_DDL_TITLE_ROW,
     }
 
     if (isDiffAdd(data)) {
       return {
-        ...flagDiff,
+        ...colorizingDiff,
         data: {
           type: data.type,
           scope: data.scope,
           description: data.description,
           action: DiffAction.replace,
-          beforeValue: false,
-          afterValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.afterValue ?? true, true),
+          beforeValue: undefined,
+          afterValue: data.afterValue,
           beforeDeclarationPaths: [],
           afterDeclarationPaths: data.afterDeclarationPaths,
         },
-        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
       }
     }
 
     if (isDiffRemove(data)) {
       return {
-        ...flagDiff,
+        ...colorizingDiff,
         data: {
           type: data.type,
           scope: data.scope,
           description: data.description,
           action: DiffAction.replace,
-          beforeValue: DdlApiNodeDiffsAggregatorKindAny.titleRowValue(data.beforeValue ?? true, true),
-          afterValue: false,
+          beforeValue: data.beforeValue,
+          afterValue: undefined,
           beforeDeclarationPaths: data.beforeDeclarationPaths,
           afterDeclarationPaths: [],
         },
-        styles: this.TITLE_ROW_FLAG_AS_REPLACE_STYLES,
       }
     }
 
-    return flagDiff
+    if (isDiffReplace(data)) {
+      return colorizingDiff
+    }
+
+    return propertyDiff
   }
 
   protected adoptNodeLevelDiffFromCrawlIfAbsent(

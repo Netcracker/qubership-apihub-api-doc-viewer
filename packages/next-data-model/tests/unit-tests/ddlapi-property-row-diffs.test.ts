@@ -796,10 +796,12 @@ describe("DDL property row diff aggregators", () => {
     }).build()
     const column = Array.from(tree.nodes.values()).find(node => node.kind === DdlApiTreeNodeKinds.COLUMN)!
 
-    // The title row renders the node's name, and TextValue renders a string value of a replace
-    // diff in its place. The type names stay on the type field diff, which the type label uses.
+    // In the default highlighting mode, TextValue renders a string value of a replace diff in
+    // place of the column name. The title row diff uses the immutable mode, which keeps the name.
     const titleRowDiff = takeDdlPropertyTitleRowDiff(column)
-    expect(titleRowDiff?.data).toMatchObject({ action: DiffAction.replace, beforeValue: false, afterValue: true })
+    expect(titleRowDiff?.data.action).toBe(DiffAction.replace)
+    expect(titleRowDiff?.highlightingMode.get(DiffHiglightingApplicationArea.Default))
+      .toBe(DiffHighlightingApplicationMode.Immutable)
     expect(column.diffs.columnTypeFieldDiffs?.typeName?.data).toMatchObject({ beforeValue: "bigint", afterValue: "smallint" })
     expect(column.value()?.columnName).toBe("v")
   })
