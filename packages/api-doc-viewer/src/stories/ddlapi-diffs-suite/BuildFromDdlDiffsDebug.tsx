@@ -43,6 +43,11 @@ type TableOption = {
   presence: TablePresence;
 };
 
+type PreparedMergedSource = {
+  mergedSource: Realm;
+  tableOptions: TableOption[];
+};
+
 const PRESENCE_LABELS: Record<TablePresence, string> = {
   both: "",
   before: " (before only)",
@@ -76,7 +81,7 @@ const resolveTableOptions = (merged: Realm, before: Realm, after: Realm): TableO
 const prepareMergedSource = async (
   beforeSql: string,
   afterSql: string,
-): Promise<{ mergedSource: Realm; tableOptions: TableOption[] }> => {
+): Promise<PreparedMergedSource> => {
   const [beforeRealm, afterRealm] = await Promise.all([
     buildFromDdlInBrowser(beforeSql),
     buildFromDdlInBrowser(afterSql),
