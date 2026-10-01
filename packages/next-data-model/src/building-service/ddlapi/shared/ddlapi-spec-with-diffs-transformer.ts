@@ -262,11 +262,11 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
         columnDiffs.isNotNull = this.invertBooleanDiffValues(nullabilityDiff)
       }
 
-      const isPrimaryKeyDiff = primaryKeyDiff && this.isPrimaryKeyColumn(sourceTable, sourceColumn)
+      const columnPrimaryKeyDiff = primaryKeyDiff && this.isPrimaryKeyColumn(sourceTable, sourceColumn)
         ? primaryKeyDiff
         : this.resolvePrimaryKeyPartDiffForColumn(sourceTable, sourceColumn.name)
-      if (isPrimaryKeyDiff) {
-        columnDiffs.isPrimaryKey = isPrimaryKeyDiff
+      if (columnPrimaryKeyDiff) {
+        columnDiffs.isPrimaryKey = columnPrimaryKeyDiff
       }
 
       const foreignKeyTargetDiffs = this.resolveForeignKeyTargetDiffsForColumn(sourceTable, sourceColumn)
@@ -887,10 +887,10 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     sourceColumn: Column,
   ): { before?: DdlApiForeignKeyTarget; after?: DdlApiForeignKeyTarget; diff: Diff } | undefined {
     const fieldDiffs = this.getDiffsRecord(foreignKey)
-    const changeDiff = FOREIGN_KEY_REFERENCE_FIELDS
+    const referenceDiff = FOREIGN_KEY_REFERENCE_FIELDS
       .map(field => fieldDiffs?.[field])
       .find((diff): diff is Diff => diff !== undefined)
-    if (!changeDiff) {
+    if (!referenceDiff) {
       return undefined
     }
 
@@ -922,7 +922,7 @@ export class DdlApiSpecWithDiffsTransformer extends DdlApiSpecTransformer {
     return {
       ...(before && { before }),
       ...(after && { after }),
-      diff: changeDiff,
+      diff: referenceDiff,
     }
   }
 
