@@ -222,14 +222,17 @@ export const ColumnRowBadgesContent: FC<ColumnRowBadgesContentProps> = memo<Colu
 
     // One badge per foreign key: two keys of the column can show the same target.
     const targetKeys = formatForeignKeyTargetKeys(targets)
-    return targets.map((target, index) => renderForeignKeyTargetBadge({
-      columnId,
-      target,
-      targetKey: targetKeys[index],
-      targetDiff: targetDiffs[targetKeys[index]],
-      layoutMode,
-      layoutSide,
-    }))
+    return targets.map((target, index) => {
+      const targetKey = targetKeys[index]
+      return renderForeignKeyTargetBadge({
+        columnId,
+        target,
+        targetKey,
+        targetDiff: targetDiffs[targetKey],
+        layoutMode,
+        layoutSide,
+      })
+    })
   }, [columnId, layoutMode, layoutSide, targetDiffs, value.foreignKeyTargets])
 
   const badges = useMemo(
