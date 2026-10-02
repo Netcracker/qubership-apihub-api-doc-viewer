@@ -191,6 +191,25 @@ Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required tag: subheader `Tags
 `JsonSchemaTitleRowViewProps.buildTagsProps` — not the type-label subheader alone. Legacy
 `DiffTags` / `DiffBadge` are GraphQL-only.
 
+## JSON Schema node key rename (Next viewer)
+
+Design: `docs/design/json-schema/features/node-key-rename.md`. A renamed property key (`rename`
+node-level diff) shows `beforeKey` on the origin side and `afterKey` on the changed side, both
+highlighted, on a yellow title row. The merged schema holds only the after key, so **never** render
+`node.key` / `JsonSchemaNodeTitle.resolveDisplay` text directly in diff mode for a renamed node:
+`schema-node-title-row-shared.tsx` takes the per-side text from
+`JsonSchemaRowDiffs.PropertyName.resolveSideText` and passes the rename diff as `textDiff` to
+`JsonSchemaNodeTitleWithDiffs`, which highlights the key with the side's `textHighlighterColor`.
+Plain mode is unchanged. The rename paints the **title row only**: other rows must not take
+`node.diffs[NODE_LEVEL_DIFF_KEY]` as "whole node changed" — `buildRowDiffProps`' default
+`fallbackToNodeDiff` did exactly that and highlighted the description as replaced. Pass a
+`resolveDiff` built on `JsonSchemaRowDiffs.Description.takeRowDiff` /
+`JsonSchemaRowDiffs.NodeLevel.takeWholeNodeDiff` instead. Screenshot suite:
+`JSON Schema Diffs Suite/Property Rename` (OpenAPI fixtures, see
+`packages/samples/json-schema-diffs/property-rename/README.md`). Data-layer details:
+
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-node-key-rename.md`
+
 ## JSON Schema nesting-indicator row diffs (Next viewer)
 
 Design: `docs/design/json-schema/features/nesting-indicator-row-diffs.md`.

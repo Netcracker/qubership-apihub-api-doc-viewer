@@ -30,9 +30,11 @@ property, with and without diffs.
 ### Title-row priority
 
 1. Whole-node add / remove — wins outright and suppresses flag and required diffs on the same node.
-2. Meta flags.
-3. Required status.
-4. Type-label field diffs.
+2. Node key rename — see [node-key-rename.md](node-key-rename.md); the node's own diffs still apply
+   to their elements.
+3. Meta flags.
+4. Required status.
+5. Type-label field diffs.
 
 Flag and required changes become a synthetic **replace** for the title row (yellow on both sides).
 

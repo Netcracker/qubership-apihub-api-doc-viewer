@@ -24,7 +24,7 @@ flowchart TB
     NodeDataD["tree-with-diffs/node-data/builder.ts<br/>JsonSchemaNodeDataWithDiffsBuilder"]
     subgraph AGG["tree-with-diffs/node-diffs-data — Factory + Strategy"]
       DiffsFactory["node-diffs/factory.ts → KindProperty for every kind"]
-      KindAny["node-diffs/kind-any.ts · KindAny<br/>whole-node cascade · meta flags · type label ·<br/>nesting-indicator and extensions rows · validation rows"]
+      KindAny["node-diffs/kind-any.ts · KindAny<br/>whole-node cascade (a key rename keeps own diffs) · meta flags · type label ·<br/>nesting-indicator and extensions rows · validation rows"]
       KindProperty["node-diffs/kind-property.ts · KindProperty<br/>default · enum · examples · required · list rows"]
       Severities["node-diffs-severities/{kind-any,kind-property}.ts<br/>one placement per row"]
       Summary["node-diffs-summary/kind-any.ts"]
@@ -36,7 +36,7 @@ flowchart TB
   end
 
   subgraph MODELD["model/json-schema"]
-    RowDiffs["tree-with-diffs/property-row-diffs.ts<br/>JsonSchemaRowDiffs (MetaFlags · RequiredStar · CustomAnnotations · …)"]
+    RowDiffs["tree-with-diffs/property-row-diffs.ts<br/>JsonSchemaRowDiffs (MetaFlags · RequiredStar · PropertyName · CustomAnnotations · …)"]
     RowDiffTypes["tree-with-diffs/property-row-diffs.types.ts"]
     TypeLabelDiffs["tree-with-diffs/type-label-diffs.ts<br/>JsonSchemaTypeLabelResolver"]
     CombinerRow["tree-with-diffs/combiner-row-diffs.ts<br/>JsonSchemaCombinerSelectorRowResolver"]
@@ -77,3 +77,6 @@ flowchart TB
 - `JsonSchemaNodeDataWithDiffsBuilder` is an intentionally empty extension point.
 - `JsonSchemaCombinerSelectorRowResolver` runs at read time over the built tree, because combiner
   branches do not exist yet when the owner's own diffs are aggregated during the crawl.
+- A node key `rename` arrives as the node-level diff from the parent's descendant diffs; unlike an
+  inherited add / remove it does not end the node's aggregation. See
+  [../features/node-key-rename.md](../features/node-key-rename.md).

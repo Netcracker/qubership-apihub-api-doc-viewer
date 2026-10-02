@@ -17,7 +17,7 @@ Out of scope: `stories/`, `it/`, `samples/`.
 - Coverage: `docs/design/json-schema/display-coverage.md`
 - Architecture: `docs/design/json-schema/architecture/`
 - Features: `docs/design/json-schema/features/` (validation rows, meta flags and `required`,
-  nesting-indicator rows, hiding unchanged nodes)
+  nesting-indicator rows, hiding unchanged nodes, node key rename)
 - Previous review: `docs/design/json-schema/notes/2026-09-architecture-review.md`
 
 ## Focus

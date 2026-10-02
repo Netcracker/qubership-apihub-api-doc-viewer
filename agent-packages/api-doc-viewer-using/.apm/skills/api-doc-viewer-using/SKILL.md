@@ -118,6 +118,15 @@ plus `diffMetaKeys`, optional `diffTypes` (placeholder: accepted but ignored —
 filtering yet), and `hideUnchangedNodes` (default `true`:
 runs of unchanged nodes collapse behind a "Show N unchanged nodes" row).
 
+**Synthesized schemas — renamed keys.** When the host builds a schema itself (for example one
+property per API parameter) and a property's key changed between versions, it can express the
+change as a rename instead of a removed plus an added property: in the parent's `properties` diff
+record (`properties[diffsMetaKey]`), key the diff by the property's **after** key with
+`action: 'rename'`, `beforeKey`, and `afterKey`. `JsonSchemaDiffsViewer` then shows the old key on
+the origin side and the new key on the changed side, highlighted, and keeps the property's own diffs.
+`apiDiff` never produces such a diff for plain JSON Schema documents. Design:
+`docs/design/json-schema/features/node-key-rename.md`.
+
 ## DDL table-specific wiring
 
 `DdlTableViewer` and `DdlTableDiffsViewer` require:

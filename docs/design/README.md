@@ -37,7 +37,7 @@ docs/design/
 | AsyncAPI | [display-coverage.md](async-api/display-coverage.md) | [architecture/](async-api/architecture/) | — | — | — |
 | DDL API | [display-coverage.md](ddlapi/display-coverage.md) | [architecture/](ddlapi/architecture/) | [entities/](ddlapi/entities/) | [doc view](ddlapi/features/doc-view.md) | — |
 | JSO | — | — | — | [diffs specification](jso/features/diffs.md) | — |
-| JSON Schema | [display-coverage.md](json-schema/display-coverage.md) | [architecture/](json-schema/architecture/) | — | [validation rows](json-schema/features/validation-rows.md), [meta flags and required](json-schema/features/meta-flags-and-required.md), [nesting-indicator row diffs](json-schema/features/nesting-indicator-row-diffs.md), [hiding unchanged nodes](json-schema/features/hiding-unchanged-nodes.md) | [2026-09 review](json-schema/notes/2026-09-architecture-review.md) |
+| JSON Schema | [display-coverage.md](json-schema/display-coverage.md) | [architecture/](json-schema/architecture/) | — | [validation rows](json-schema/features/validation-rows.md), [meta flags and required](json-schema/features/meta-flags-and-required.md), [nesting-indicator row diffs](json-schema/features/nesting-indicator-row-diffs.md), [hiding unchanged nodes](json-schema/features/hiding-unchanged-nodes.md), [node key rename](json-schema/features/node-key-rename.md) | [2026-09 review](json-schema/notes/2026-09-architecture-review.md) |
 | GraphQL (legacy) | — | [architecture/](graphql/architecture/) | — | — | — |
 
 ## Conventions

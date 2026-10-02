@@ -191,7 +191,7 @@ populate diff-related fields:
 
 | Field | Meaning |
 | --- | --- |
-| `nodeDiffs` | Diffs on this node; keys are property names, except `""` (`NODE_LEVEL_DIFF_KEY`) for whole-node add/remove/replace |
+| `nodeDiffs` | Diffs on this node; keys are property names, except `""` (`NODE_LEVEL_DIFF_KEY`) for whole-node add/remove/replace and a node key rename |
 | `nodeDescendantDiffs` | Summarised diffs from direct descendants; keys match descendant `key` |
 | `nodeDiffsSummary` / `nodeDescendantDiffsSummary` | Unique diff-type sets for badges |
 | `nodeDiffsSeverities` | Severity per UI placement (`title-row`, `description-row`, …) |
@@ -436,7 +436,9 @@ AsyncAPI.
 **Descendant-diff trap:** array-element add/remove inherits `NODE_LEVEL_DIFF_KEY` from
 `node-descendant-diffs/kind-any.ts` where `styles.*.isContentVisible` is **false on both
 sides** (title row uses `isHeaderVisible` instead). Do **not** reuse node-level diff styles for
-badge side visibility in the viewer — fix in aggregators above.
+badge side visibility in the viewer — fix in aggregators above. A node key **rename** is the
+exception: it keeps content and header visible and does not end the node's aggregation (see
+`json-schema/json-schema-node-key-rename.md`).
 
 **Regression samples:** `203-add-column-unique`, `303-remove-column-unique` (column);
 `403-existing-column-became-unique` / `503-existing-column-lost-unique` **index** rows (plain
@@ -587,6 +589,18 @@ shared rule: `docs/design/shared/features/section-header-colorizing.md`):
 parent/container) and uniform-children add/remove for the row `SchemaNodeViewer` renders above a
 node's children list. See
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md`.
+
+**Node key rename** (design: `docs/design/json-schema/features/node-key-rename.md`):
+a `rename` diff on a property (parent's `properties` diff record, keyed by the after key,
+`beforeKey` / `afterKey`) is the node-level diff of the property. `apiDiff` never emits it for JSON
+Schema — only consumers synthesizing a schema do — so JSON Schema fixture pairs cannot produce it
+(the screenshot suite uses OpenAPI path-parameter fixtures and a synthesized parameters schema).
+The title shows `JsonSchemaRowDiffs.PropertyName.resolveSideText` per side; the node's own diffs are
+still aggregated. The rename sits under `NODE_LEVEL_DIFF_KEY` but is **not** a whole-node change:
+"whole node changed" consumers (description row, severities, `required` tag) must use
+`JsonSchemaRowDiffs.NodeLevel.takeWholeNodeDiff`, never the raw key. See
+`agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-node-key-rename.md`.
+Unit tests: `json-schema-property-rename-diffs.test.ts`.
 
 ## Cross-package boundary
 

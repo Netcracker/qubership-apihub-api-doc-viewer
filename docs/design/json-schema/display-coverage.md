@@ -5,7 +5,7 @@ Baseline for the JSON Schema stack (`JsonSchemaViewer` / `JsonSchemaDiffsViewer`
 correct**: this document records what is shown today, what is omitted on purpose, and how to
 classify a gap before planning work or writing tests.
 
-Last reviewed against the codebase: 2026-09-25.
+Last reviewed against the codebase: 2026-10-01.
 
 ## Sources
 
@@ -120,6 +120,7 @@ state is precomputed by next-data-model; the viewer reads it through `JsonSchema
 | Area | What is diffed | Design reference |
 | --- | --- | --- |
 | Title row | whole-node add/remove/replace, type label segments, required `*`, meta tags | [features/meta-flags-and-required.md](features/meta-flags-and-required.md) |
+| Property name (node key) | renamed key (`rename` diff): `beforeKey` / `afterKey` per side, highlighted | [features/node-key-rename.md](features/node-key-rename.md) |
 | Nesting-indicator row | whole owner add/remove, uniform children add/remove | [features/nesting-indicator-row-diffs.md](features/nesting-indicator-row-diffs.md) |
 | Content rows | description, deprecation reason, default, examples, allowed values, allowed additional property names, custom annotations | per-row `NodeDiffsSeverityPlacemennt` |
 | Validation rows | per-row colorizing and per-chip side display | [features/validation-rows.md](features/validation-rows.md) |

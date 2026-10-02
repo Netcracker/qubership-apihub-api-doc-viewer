@@ -11,6 +11,7 @@ flowchart TB
   CombinerNodeD["CombinerNodeViewer/CombinerNodeViewerWithDiffs.tsx"]
   TitleRowD["SchemaNodeTitleRowWithDiffs.tsx<br/>(shares SchemaNodeTitleRowBase with plain)<br/>+ UxMarkerPanel (node changes summary)"]
   Required["JsonSchemaRequiredDiffIndicator.tsx<br/>JsonSchemaRowDiffs.RequiredStar.isVisibleOnSide"]
+  NodeTitleD["JsonSchemaNodeTitleWithDiffs (schema-node-title-row-shared.tsx)<br/>per-side key + textDiff highlight: JsonSchemaRowDiffs.PropertyName"]
   Tags["JsonSchemaTitleSubheaderWithDiffs → TagsWithDiffs<br/>JsonSchemaTitleRowViewProps.buildTagsProps"]
   TypeValueD["TypeValue/*WithDiffs → JsonSchemaTypeValueDiffSegment →<br/>JsonSchemaTypeValueSideDisplay"]
   ContentD["SchemaNodePlainContent.tsx (shared with plain)<br/>per-row diff · colorizingDiff · diffsSeverityPlacement"]
@@ -33,7 +34,8 @@ flowchart TB
   CombinerNodeD --> ChildrenList
   CombinerNodeD --> CombinerResolver
   ChildrenList -->|recurse| DispatchD
-  TitleRowD --> Required
+  TitleRowD --> NodeTitleD
+  NodeTitleD --> Required
   TitleRowD --> Tags
   TitleRowD --> TypeValueD
   NestingD --> TypeValueD
