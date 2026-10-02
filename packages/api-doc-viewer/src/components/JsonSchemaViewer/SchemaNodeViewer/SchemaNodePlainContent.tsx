@@ -150,10 +150,11 @@ export const SchemaNodePlainContent: FC<SchemaNodePlainContentProps> = (props) =
   const nodeDiffState = useNodeDiffState(node, isJsonSchemaTreeNodeWithDiffs)
   const descriptionRowDiffProps = useMemo(
     () => buildRowDiffProps<JsonSchemaTreeNodeValue>(nodeDiffState, {
-      diffKey: "description" as keyof JsonSchemaTreeNodeValue,
+      // Not the raw node-level diff: a renamed property key must not paint the description row
+      resolveDiff: () => (validationDiffsNode ? JsonSchemaRowDiffs.Description.takeRowDiff(validationDiffsNode) : undefined),
       diffsSeverityPlacement: NodeDiffsSeverityPlacemennt.DescriptionRow,
     }),
-    [nodeDiffState],
+    [nodeDiffState, validationDiffsNode],
   )
 
   const validationRows = useMemo(() => {

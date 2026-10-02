@@ -266,6 +266,11 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- JSON Schema property rename — `node bin/generate-json-schema-property-rename-suite.mjs` →
+  `src/stories/json-schema-diffs-suite/property-rename.stories.tsx` and
+  `src/it/json-schema-diffs-suite/property-rename.it-test.ts` from the OpenAPI fixture pairs under
+  `packages/samples/json-schema-diffs/property-rename/` (stories synthesize a parameters schema —
+  `apiDiff` never renames a JSON Schema property).
 - Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
   `number-validation-value-range.stories.tsx` and paired ITs.
 

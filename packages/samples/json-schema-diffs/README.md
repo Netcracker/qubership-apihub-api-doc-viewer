@@ -14,7 +14,7 @@ Design baseline: `docs/design/json-schema/display-coverage.md`.
 | `extensions/` | 104 | hand-written YAML | [extensions/README.md](extensions/README.md) |
 | `hiding-unchanged-rows/` | 18 | hand-written YAML | [hiding-unchanged-rows/README.md](hiding-unchanged-rows/README.md) |
 | `node-changes-summary/` | 7 (18 stories) | generated once (`generate-node-changes-summary-samples.mjs`) | [node-changes-summary/README.md](node-changes-summary/README.md) |
-| `property-rename/` | 9 | hand-written OpenAPI pairs (synthesized parameters schema) | [property-rename/README.md](property-rename/README.md) |
+| `property-rename/` | 9 | hand-written OpenAPI pairs (synthesized parameters schema); stories/ITs generated (`generate-json-schema-property-rename-suite.mjs`) | [property-rename/README.md](property-rename/README.md) |
 
 `type-changes/` renders with `hideUnchangedNodes: false`; the other categories use the viewer
 default unless stated in their catalogue.

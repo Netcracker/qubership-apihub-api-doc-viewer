@@ -1,7 +1,7 @@
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaTreeWithDiffsBuilder } from "../../src/building-service/json-schema/tree-with-diffs/builder"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "../../src/model/abstract/layout-side"
-import { HighlightVariant, NODE_LEVEL_DIFF_KEY } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
+import { HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "../../src/model/abstract/tree-with-diffs/tree-node.interface"
 import { JsonSchemaRowDiffs, JsonSchemaTypeLabelResolver } from "../../src/model/json-schema/tree-with-diffs/property-row-diffs"
 import { JsonSchemaTreeNodeWithDiffs } from "../../src/model/json-schema/types/aliases"
 import { createBuildingServiceLogger } from "../../src/loggers"
@@ -17,8 +17,8 @@ const renameDiff = (beforeKey: string, afterKey: string) => ({
   action: DiffAction.rename,
   beforeKey,
   afterKey,
-  beforeDeclarationPaths: [],
-  afterDeclarationPaths: [],
+  beforeDeclarationPaths: [["properties", beforeKey]],
+  afterDeclarationPaths: [["properties", afterKey]],
 })
 
 /**
@@ -109,6 +109,73 @@ describe("JSON Schema property rename diffs", () => {
     expect(JsonSchemaRowDiffs.PropertyName.resolveSideText(renamed, ORIGIN_LAYOUT_SIDE)).toBe("id")
     // The node-level rename keeps priority for the title row
     expect(JsonSchemaRowDiffs.TitleRow.takeDiff(renamed)?.data.action).toBe(DiffAction.rename)
+  })
+
+  it("does not spread the rename onto the description row", () => {
+    const tree = buildTree(
+      { key: { type: "string", description: "Identifier" } },
+      { key: renameDiff("id", "key") },
+    )
+    const renamed = findChild(tree.root as JsonSchemaTreeNodeWithDiffs, "key")
+
+    expect(JsonSchemaRowDiffs.NodeLevel.takeWholeNodeDiff(renamed)).toBeUndefined()
+    expect(JsonSchemaRowDiffs.Description.takeRowDiff(renamed)).toBeUndefined()
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.DescriptionRow]).toBeUndefined()
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.NestingIndicatorRow]).toBeUndefined()
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.ExtensionsRow]).toBeUndefined()
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.CustomAnnotationRow]).toBeUndefined()
+    // The rename itself is still badged on the title row, pointing at the before declaration
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow]).toEqual({
+      type: "annotation",
+      causedAt: ["properties", "id"],
+    })
+  })
+
+  it("keeps the own description diff of a renamed property", () => {
+    const tree = buildTree(
+      {
+        key: {
+          type: "string",
+          description: "Identifier",
+          [DIFF_META_KEY]: {
+            description: {
+              type: "annotation",
+              action: DiffAction.replace,
+              beforeValue: "Id",
+              afterValue: "Identifier",
+              beforeDeclarationPaths: [["properties", "id", "description"]],
+              afterDeclarationPaths: [["properties", "key", "description"]],
+            },
+          },
+        },
+      },
+      { key: renameDiff("id", "key") },
+    )
+    const renamed = findChild(tree.root as JsonSchemaTreeNodeWithDiffs, "key")
+
+    expect(JsonSchemaRowDiffs.Description.takeRowDiff(renamed)?.data.action).toBe(DiffAction.replace)
+    expect(renamed.diffsSeverities[NodeDiffsSeverityPlacemennt.DescriptionRow]).toEqual({
+      type: "annotation",
+      causedAt: ["properties", "id", "description"],
+    })
+  })
+
+  it("keeps the whole-node diff on the description row of an added property", () => {
+    const tree = buildTree(
+      { key: { type: "string", description: "Identifier" } },
+      {
+        key: {
+          type: "non-breaking",
+          action: DiffAction.add,
+          afterValue: { type: "string", description: "Identifier" },
+          afterDeclarationPaths: [["properties", "key"]],
+        },
+      },
+    )
+    const added = findChild(tree.root as JsonSchemaTreeNodeWithDiffs, "key")
+
+    expect(JsonSchemaRowDiffs.NodeLevel.takeWholeNodeDiff(added)?.data.action).toBe(DiffAction.add)
+    expect(JsonSchemaRowDiffs.Description.takeRowDiff(added)?.data.action).toBe(DiffAction.add)
   })
 
   it("keeps the rename of a boolean property schema", () => {

@@ -17,7 +17,7 @@ import {
   JSON_SCHEMA_VALIDATION_ROW_SEVERITY_PLACEMENTS,
   JsonSchemaValidationRowKeys,
 } from "@apihub/next-data-model/model/json-schema/tree-with-diffs/validation-row-source-keys"
-import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
   extends AbstractNodeDiffsSeveritiesAggregator<JsonSchemaTreeNodeStoredValue | null> {
@@ -25,7 +25,10 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
   public aggregate(
     nodeDiffs: NodeDiffs<JsonSchemaTreeNodeStoredValue | null>,
   ): NodeDiffsSeverities | undefined {
-    const diffNode = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    // A renamed key is not a whole-node change: the rename is badged on the title row only (via
+    // the title-row diff, see `applyMaxRowSeverityFromTypeLabelDiffs`), other rows keep their own
+    const nodeLevelDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]
+    const diffNode = nodeLevelDiff && !isDiffRename(nodeLevelDiff.data) ? nodeLevelDiff : undefined
     const diffsSeverities: NodeDiffsSeverities = {}
 
     if (diffNode) {
@@ -132,7 +135,7 @@ export class JsonSchemaNodeDiffsSeveritiesAggregatorKindAny
       type: diff.type,
       causedAt: [],
     }
-    if (isDiffRemove(diff) || isDiffReplace(diff)) {
+    if (isDiffRemove(diff) || isDiffReplace(diff) || isDiffRename(diff)) {
       nodeDiffsSeverity.causedAt = diff.beforeDeclarationPaths[0]
     } else if (isDiffAdd(diff)) {
       nodeDiffsSeverity.causedAt = diff.afterDeclarationPaths[0]

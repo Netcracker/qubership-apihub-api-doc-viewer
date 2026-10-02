@@ -420,6 +420,16 @@ export function prepareJsonDiffSchemaFromOAS(options: JsonDiffSchemaFromOASOptio
   return mergedSchema
 }
 
+/** Merged `apiDiff` document of two whole OpenAPI documents, diffs stored under `DIFF_META_KEY`. */
+export function mergeOpenApiDocuments(beforeDocument: unknown, afterDocument: unknown): unknown {
+  return apiDiff(beforeDocument, afterDocument, {
+    ...DEFAULT_NORMALIZE_OPTIONS,
+    beforeSource: beforeDocument,
+    afterSource: afterDocument,
+    metaKey: DIFF_META_KEY,
+  }).merged
+}
+
 function removeComponents(source: unknown): unknown {
   if (source && isObject(source) && 'components' in source) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

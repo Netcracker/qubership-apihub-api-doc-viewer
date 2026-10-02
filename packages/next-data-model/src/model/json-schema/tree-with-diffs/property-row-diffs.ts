@@ -263,6 +263,16 @@ class NodeLevel extends JsonSchemaRowDiffsBase {
     return this.takeKindAnyNodeDiffs(node).nodeChangesSummary
   }
 
+  /**
+   * Node-level diff that changes the node as a whole (add / remove / replace) and therefore paints
+   * every row of the node. A `rename` is excluded: it changes only the key shown in the title row
+   * (see {@link PropertyName}), the node's other rows keep their own diffs.
+   */
+  public static takeWholeNodeDiff(node: JsonSchemaTreeNodeWithDiffs): ChangedPropertyMetaData | undefined {
+    const nodeLevelDiff = node.diffs[NODE_LEVEL_DIFF_KEY]
+    return nodeLevelDiff && !isDiffRename(nodeLevelDiff.data) ? nodeLevelDiff : undefined
+  }
+
   public static isWholePropertyAddOrRemove(node: JsonSchemaNodeWithDiffs): boolean {
     const nodeLevelDiff = node.diffs[NODE_LEVEL_DIFF_KEY]
     if (!nodeLevelDiff) {
@@ -292,6 +302,13 @@ class PropertyName extends JsonSchemaRowDiffsBase {
     }
     const sideKey = layoutSide === ORIGIN_LAYOUT_SIDE ? renameData.beforeKey : renameData.afterKey
     return String(sideKey ?? node.key)
+  }
+}
+
+class Description extends JsonSchemaRowDiffsBase {
+  /** Whole-node diff first, then the node's own `description` diff. */
+  public static takeRowDiff(node: JsonSchemaTreeNodeWithDiffs): ChangedPropertyMetaData | undefined {
+    return NodeLevel.takeWholeNodeDiff(node) ?? this.takeKindAnyNodeDiffs(node).description
   }
 }
 
@@ -816,6 +833,7 @@ export class JsonSchemaRowDiffs {
   public static readonly RequiredStar = RequiredStar
   public static readonly NodeLevel = NodeLevel
   public static readonly PropertyName = PropertyName
+  public static readonly Description = Description
   public static readonly Extensions = Extensions
   public static readonly CustomAnnotations = CustomAnnotations
   public static readonly Default = Default
