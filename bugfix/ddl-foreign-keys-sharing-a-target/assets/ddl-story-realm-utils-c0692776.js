@@ -1,1 +1,0 @@
-function r(e){for(const a of e.schemas??[])if((a.tables??[]).length>0)return!0;return!1}function n(e){return{ddlapi:e.ddlapi,schemas:(e.schemas??[]).map(({name:a})=>({name:a,tables:[]}))}}function s(e,a){return r(e)||!r(a)?e:n(a)}function t(e,a){return{before:s(e,a),after:s(a,e)}}export{r as a,t as r};
