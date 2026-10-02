@@ -138,16 +138,16 @@ before the parenthesis (`normalizeTypeLabelSpacing`).
 ## Displayed (with diffs)
 
 `DdlTableDiffsViewer` renders the same rows side by side. Every diff is prepared by the transformer
-and kind aggregators; viewers read it through `DdlApiRowDiffs`, `takeColumnFlagDiffs`,
-`takeColumnForeignKeyTargetDiffs`, and `takeIndexFlagDiffs`.
+and kind aggregators; viewers read it through `DdlApiRowDiffs` (including `DdlApiRowDiffs.ForeignKey.resolveTargetSideDisplay`),
+`takeColumnFlagDiffs`, `takeColumnForeignKeyTargetDiffs`, and `takeIndexFlagDiffs`.
 
 | Area | What is diffed |
 | --- | --- |
 | Table | whole table add/remove, schema name, description |
 | Sections | `Columns` / `Indexes` title row when every child was added or removed |
-| Column title row | whole column add/remove, name, type label, each badge flag, each FK target |
+| Column title row | whole column add/remove, type label, each badge flag, each FK target |
 | Column rows | description, **Values** (per value and whole row), **Default**, **As** |
-| Index title row | whole index add/remove, name, part names, **unique** flag |
+| Index title row | whole index add/remove, part names, **unique** flag |
 | Index rows | description |
 
 Non-obvious rules (kept in the data layer):
@@ -157,6 +157,20 @@ Non-obvious rules (kept in the data layer):
 - `textHighlighterColor` applies to expression replace and FK link text only — never to
   column/index names. A synthetic title-row replace colors the row background only.
 - Index part names are always rendered as `(c1, c2)` in diffs, including when `partNameDiffs` is absent.
+- Names are never diffed: api-diff matches tables and columns by name, and indexes by name or by
+  the columns an unnamed index covers, so a rename is a remove plus an add. DDL title-row diffs
+  carry `DIFF_HIGHLIGHTING_MODES_DDL_TITLE_ROW` (immutable default area), so a replace diff only
+  colors the row and never replaces the column/index name with a diff value.
+- A foreign key that keeps its key while its referenced column or table changes is one **replace**
+  target diff keyed by the after target (before target in `beforeValue`): the FK badge stays plain
+  and each side shows its own target text in yellow
+  (`DdlApiRowDiffs.ForeignKey.resolveTargetSideDisplay`). A column the key stops/starts covering
+  is still a remove/add.
+- `foreignKeyTargetDiffs` keys come from `formatForeignKeyTargetKeys`: a repeated target on the
+  same column (e.g. a renamed key — the removed and the added key) gets an occurrence suffix, so
+  each FK badge reads the diff of its own key.
+- A column joining or leaving an existing primary key (`primaryKey.parts` add/remove) gets an
+  `isPrimaryKey` flag diff.
 - Known gap: the column `Values`, `Default`, and `As` rows share the single
   `NodeDiffsSeverityPlacemennt.AdditionalInfoRow` badge placement, so when several of them change
   their badges show the highest-severity diff. JSON Schema uses one placement per row.

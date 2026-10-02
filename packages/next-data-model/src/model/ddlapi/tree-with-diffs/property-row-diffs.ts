@@ -13,6 +13,7 @@ import {
   DiffHiglightingApplicationArea,
   NODE_LEVEL_DIFF_KEY,
 } from "../../abstract/tree-with-diffs/tree-node.interface"
+import { DdlApiForeignKeyTarget } from "../tree/node-value"
 import { DdlApiTreeNodeWithDiffs } from "../types/aliases"
 import { DdlApiTreeNodeKinds } from "../types/node-kind"
 import { resolveListSideItems, isDiffSideContentVisible, isDiffSideHeaderVisible, takeAddRemoveDiffIfPresent } from "../../abstract/tree-with-diffs/list-side-display"
@@ -226,6 +227,30 @@ class ForeignKey {
       return undefined
     }
     return targetDiffs
+  }
+
+  /**
+   * The foreign key target a side shows. A replace diff marks a column that keeps its key while the
+   * referenced column or table changes: the row holds the after target, and the before side shows
+   * the target from the diff's before value.
+   */
+  public static resolveTargetSideDisplay(
+    target: DdlApiForeignKeyTarget,
+    targetDiff: ChangedPropertyMetaData | undefined,
+    layoutSide: LayoutSide,
+  ): DdlApiForeignKeyTarget {
+    const diff = targetDiff?.data
+    if (layoutSide === ORIGIN_LAYOUT_SIDE && diff && isDiffReplace(diff) && ForeignKey.isTarget(diff.beforeValue)) {
+      return diff.beforeValue
+    }
+    return target
+  }
+
+  private static isTarget(value: unknown): value is DdlApiForeignKeyTarget {
+    return isObject(value)
+      && typeof value.schemaName === 'string'
+      && typeof value.tableName === 'string'
+      && typeof value.columnName === 'string'
   }
 }
 

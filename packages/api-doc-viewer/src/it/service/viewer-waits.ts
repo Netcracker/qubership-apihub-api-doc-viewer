@@ -85,3 +85,13 @@ export async function waitForDdlTableDiffsViewer(page: Page): Promise<void> {
   await page.waitForSelector('[data-testid="ddl-table-diffs-viewer"]', { visible: true })
   await waitForRenderingComplete(page)
 }
+
+/** Waits for an optional viewer selector (compatibility-suite generated ITs pass one per spec type). */
+export async function waitForVisibleSelector(page: Page, selector: string | undefined): Promise<void> {
+  if (selector === undefined) {
+    return
+  }
+
+  await page.waitForSelector(selector, { visible: true })
+  await waitForRenderingComplete(page)
+}
