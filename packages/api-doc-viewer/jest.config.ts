@@ -28,6 +28,13 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   moduleNameMapper: {
+    '^@apihub/builders/(.*)$': '<rootDir>/src/builders/$1',
+    '^@apihub/components/(.*)$': '<rootDir>/src/components/$1',
+    '^@apihub/constants/(.*)$': '<rootDir>/src/consts/$1',
+    '^@apihub/contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@apihub/hooks/(.*)$': '<rootDir>/src/hooks/$1',
+    '^@apihub/types/(.*)$': '<rootDir>/src/types/$1',
+    '^@apihub/utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@apihub/api-data-model$': '<rootDir>/../api-data-model/src',
     '^@apihub/api-data-model/(.*)$': '<rootDir>/../api-data-model/src/$1',
     '^@apihub/next-data-model$': '<rootDir>/../next-data-model/src',
