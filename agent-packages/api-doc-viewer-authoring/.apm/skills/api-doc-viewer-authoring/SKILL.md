@@ -191,6 +191,17 @@ Title asterisk: `JsonSchemaRequiredDiffIndicator`. Required tag: subheader `Tags
 `JsonSchemaTitleRowViewProps.buildTagsProps` — not the type-label subheader alone. Legacy
 `DiffTags` / `DiffBadge` are GraphQL-only.
 
+## JSON Schema top-level property media types (Next viewer)
+
+Design: `docs/design/json-schema/features/top-level-props-media-types.md`. A legacy workaround
+restored for hosts that synthesize a schema from API parameters: `JsonSchemaViewer`'s
+`topLevelPropsMediaTypes` prop travels through `JsonSchemaViewerContext`; `SchemaNodeTitleRow`
+resolves the owner node's media type with `JsonSchemaTopLevelPropsMediaTypes.resolve`
+(`JsonSchemaViewer/utils/top-level-props-media-types.ts` — root's direct `property` nodes only) and
+`JsonSchemaTitleSubheader` renders a `default-outline` `UxBadge` after the tags. Plain only: the
+with-diffs title row and `JsonSchemaDiffsViewer` deliberately have no such prop. Unlike the legacy
+viewer (matched by node title at any depth), nested properties with the same key never match.
+
 ## JSON Schema node key rename (Next viewer)
 
 Design: `docs/design/json-schema/features/node-key-rename.md`. A renamed property key (`rename`

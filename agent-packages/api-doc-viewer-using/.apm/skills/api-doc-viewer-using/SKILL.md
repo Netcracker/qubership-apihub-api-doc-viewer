@@ -127,6 +127,13 @@ the origin side and the new key on the changed side, highlighted, and keeps the 
 `apiDiff` never produces such a diff for plain JSON Schema documents. Design:
 `docs/design/json-schema/features/node-key-rename.md`.
 
+**Synthesized schemas — media types of top-level properties.** `JsonSchemaViewer` (plain only)
+accepts `topLevelPropsMediaTypes: Record<string, string>` — root's direct property key → media type
+(for example an API parameter described with `content` rather than `schema`). Each listed property
+gets an outline badge with the media type after its type label and tags; nested properties with the
+same key are not matched. `JsonSchemaDiffsViewer` does not support it. Design:
+`docs/design/json-schema/features/top-level-props-media-types.md`.
+
 ## DDL table-specific wiring
 
 `DdlTableViewer` and `DdlTableDiffsViewer` require:

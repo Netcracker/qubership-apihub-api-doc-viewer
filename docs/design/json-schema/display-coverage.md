@@ -31,8 +31,8 @@ JSON Schema stack also renders AsyncAPI headers, payload and channel parameters.
 
 | Viewer | Props |
 | --- | --- |
-| `JsonSchemaViewer` | `schema`, `expandedDepth`, `displayMode`, `devMode`, `initialLevel`, `customizationOptions` |
-| `JsonSchemaDiffsViewer` | same, plus `diffMetaKeys`, `diffTypes` (placeholder — accepted, ignored), `hideUnchangedNodes` (default `true`) |
+| `JsonSchemaViewer` | `schema`, `expandedDepth`, `displayMode`, `devMode`, `initialLevel`, `customizationOptions`, `topLevelPropsMediaTypes` |
+| `JsonSchemaDiffsViewer` | same except `topLevelPropsMediaTypes`, plus `diffMetaKeys`, `diffTypes` (placeholder — accepted, ignored), `hideUnchangedNodes` (default `true`) |
 
 `customizationOptions.headerRowTitle` replaces the root title; `suppressRootNestingIndicator`
 flattens a synthetic wrapper schema into a top-level property list (used by AsyncAPI).
@@ -72,6 +72,7 @@ Diagrams: [architecture/](architecture/).
 | Broken `$ref` label | `meta.brokenRef` | type label shows `$ref: …` |
 | **read-only** / **write-only** / **deprecated** tags | meta flags | `TagsWithDiffs` (no diff chrome in plain mode) |
 | Circular ref icon | `node.isCycle` | `CircularRefIcon` + tooltip |
+| Media type badge | root's direct property whose key is in `topLevelPropsMediaTypes` (plain only) | `UxBadge` `default-outline` — [features/top-level-props-media-types.md](features/top-level-props-media-types.md) |
 | Expander | `resolvePlainPropertyIsExpandable`; never on cycle nodes | local React `expanded` state |
 | Initial expansion | `expandedDepth` + `LevelContext` level | `resolvePlainPropertyInitiallyExpanded` |
 

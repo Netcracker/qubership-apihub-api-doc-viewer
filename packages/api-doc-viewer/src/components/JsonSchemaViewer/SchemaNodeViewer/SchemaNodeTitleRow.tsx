@@ -1,7 +1,9 @@
 import { JsonSchemaTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/aliases"
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { JsonSchemaPropertyRowVisibility } from "@netcracker/qubership-apihub-next-data-model/building-service/json-schema/tree/node-visibility-data/types"
-import { FC } from "react"
+import { FC, useMemo } from "react"
+import { useJsonSchemaViewerContext } from "../JsonSchemaViewerContext"
+import { JsonSchemaTopLevelPropsMediaTypes } from "../utils/top-level-props-media-types"
 import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
 import { JsonSchemaTitleSubheader } from "./JsonSchemaTitleSubheader"
 import { SchemaNodeTitleRowBase } from "./SchemaNodeTitleRowBase"
@@ -33,6 +35,12 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
     ...precededByProps
   } = props
 
+  const { topLevelPropsMediaTypes } = useJsonSchemaViewerContext()
+  const mediaType = useMemo(
+    () => JsonSchemaTopLevelPropsMediaTypes.resolve(ownerNode, topLevelPropsMediaTypes),
+    [ownerNode, topLevelPropsMediaTypes],
+  )
+
   return (
     <SchemaNodeTitleRowBase
       {...precededByProps}
@@ -58,6 +66,7 @@ export const SchemaNodeTitleRow: FC<SchemaNodeTitleRowProps> = (props) => {
           layoutSide={layoutSide}
           showTypeLabel={showTypeSubheader}
           typeValueSuffix={typeValueSuffix}
+          mediaType={mediaType}
         />
       )}
     />

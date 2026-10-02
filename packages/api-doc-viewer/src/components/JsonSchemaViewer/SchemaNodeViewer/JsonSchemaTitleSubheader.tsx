@@ -7,6 +7,8 @@ import { JsonSchemaTreeNodeMeta } from "@netcracker/qubership-apihub-next-data-m
 import { JsonSchemaTreeNodeValue } from "@netcracker/qubership-apihub-next-data-model/model/json-schema/types/node-value"
 import { FC } from "react"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
+import { UxBadge } from "@apihub/components/kit/ux/UxBadge/UxBadge"
+import { BADGE_KIND_DEFAULT_OUTLINE } from "@apihub/components/kit/ux/UxBadge/types"
 import { JsonSchemaTitleRowViewProps } from "../utils/json-schema-title-row-view-props"
 // NOTE: type-value rendering below deliberately does not reuse SubheaderValue/
 // SubheaderValueWithDiffs (see ./TypeValue) - to be reconciled with the shared subheader
@@ -22,6 +24,8 @@ export type JsonSchemaTitleSubheaderProps = {
   showTypeLabel?: boolean
   /** See JsonSchemaTitleRowTypeValue's `suffix` prop - combiner-kind suffix, e.g. " (anyOf)". */
   typeValueSuffix?: string
+  /** Media type badge of a root's direct property (`topLevelPropsMediaTypes`), plain only. */
+  mediaType?: string
 }
 
 export type JsonSchemaTitleSubheaderWithDiffsProps = {
@@ -34,7 +38,7 @@ export type JsonSchemaTitleSubheaderWithDiffsProps = {
 }
 
 export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (props) => {
-  const { value, meta, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix } = props
+  const { value, meta, isCycle, layoutSide, showTypeLabel = true, typeValueSuffix, mediaType } = props
 
   return (
     <div className="flex flex-row items-center gap-2">
@@ -50,6 +54,7 @@ export const JsonSchemaTitleSubheader: FC<JsonSchemaTitleSubheaderProps> = (prop
         deprecated={meta?.deprecated}
         layoutSide={layoutSide}
       />
+      {mediaType && <UxBadge kind={BADGE_KIND_DEFAULT_OUTLINE} text={mediaType} />}
     </div>
   )
 }

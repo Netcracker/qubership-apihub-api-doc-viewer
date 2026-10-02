@@ -18,6 +18,7 @@ import {
 import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from './embedding/JsonSchemaEmbeddingContext'
 import { JsonSchemaNodeViewer } from './JsonSchemaNodeViewer'
 import { JsonSchemaViewerContext } from './JsonSchemaViewerContext'
+import { TopLevelPropsMediaTypesMap } from './utils/top-level-props-media-types'
 
 export type JsonSchemaViewerProps = {
   schema: unknown
@@ -26,6 +27,11 @@ export type JsonSchemaViewerProps = {
   devMode?: boolean
   initialLevel?: number
   customizationOptions?: CustomizationOptions
+  /**
+   * Root's direct property key -> media type, shown as a badge next to the property name (e.g.
+   * OpenAPI parameters described with `content`). Not supported by `JsonSchemaDiffsViewer`.
+   */
+  topLevelPropsMediaTypes?: TopLevelPropsMediaTypesMap
 }
 
 export const JsonSchemaViewer: FC<JsonSchemaViewerProps> = memo((props) => {
@@ -53,6 +59,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
     devMode = false,
     initialLevel = 0,
     customizationOptions,
+    topLevelPropsMediaTypes,
   } = props
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
@@ -87,8 +94,9 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
       expandedDepth,
       materializeChildren,
       treeRevision,
+      topLevelPropsMediaTypes,
     }),
-    [expandedDepth, materializeChildren, treeRevision],
+    [expandedDepth, materializeChildren, treeRevision, topLevelPropsMediaTypes],
   )
 
   const embeddingContext: JsonSchemaEmbeddingContextValue = useMemo(
