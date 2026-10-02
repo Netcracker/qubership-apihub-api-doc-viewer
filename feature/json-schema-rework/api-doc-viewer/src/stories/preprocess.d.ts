@@ -46,6 +46,8 @@ type JsonDiffSchemaFromOASOptions = {
     circular?: boolean;
 };
 export declare function prepareJsonDiffSchemaFromOAS(options: JsonDiffSchemaFromOASOptions): unknown;
+/** Merged `apiDiff` document of two whole OpenAPI documents, diffs stored under `DIFF_META_KEY`. */
+export declare function mergeOpenApiDocuments(beforeDocument: unknown, afterDocument: unknown): unknown;
 export type JsonDiffSchemaOptions = {
     beforeSchema?: unknown;
     afterSchema: unknown;
