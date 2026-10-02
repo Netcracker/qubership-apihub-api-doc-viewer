@@ -11,6 +11,8 @@ export type JsonSchemaTitleSubheaderProps = {
     showTypeLabel?: boolean;
     /** See JsonSchemaTitleRowTypeValue's `suffix` prop - combiner-kind suffix, e.g. " (anyOf)". */
     typeValueSuffix?: string;
+    /** Media type badge of a root's direct property (`topLevelPropsMediaTypes`), plain only. */
+    mediaType?: string;
 };
 export type JsonSchemaTitleSubheaderWithDiffsProps = {
     meta: JsonSchemaTreeNodeMeta | null | undefined;
