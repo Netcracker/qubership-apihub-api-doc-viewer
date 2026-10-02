@@ -1,5 +1,5 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { getDdlApiChildNodes, isColumnsNode, isIndexesNode } from "@apihub/utils/ddlapi/node-type-checkers"
+import { useDisplayMode } from "../../contexts/DisplayModeContext"
+import { getDdlApiChildNodes, isColumnsNode, isIndexesNode } from "../../utils/ddlapi/node-type-checkers"
 import { DdlApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/aliases"
 import { DdlApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/types/node-kind"
 import { FC } from "react"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCustomizationOptions } from '@apihub/contexts/CustomizationOptionsContext'
+import { useCustomizationOptions } from '../../../contexts/CustomizationOptionsContext'
 import { DiffNodeMeta, DiffNodeValue } from '@netcracker/qubership-apihub-api-data-model'
 import { isExpandableTreeNode } from '@netcracker/qubership-apihub-api-state-model'
 import type { FC } from 'react'

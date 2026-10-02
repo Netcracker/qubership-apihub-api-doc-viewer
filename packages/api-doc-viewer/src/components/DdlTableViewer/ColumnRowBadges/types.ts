@@ -1,4 +1,4 @@
-import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide } from "../../../types/internal/LayoutSide"
 import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { DdlApiForeignKeyTarget } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree/node-value"
 import { DdlApiForeignKeyTargetDiffs } from "@netcracker/qubership-apihub-next-data-model/model/ddlapi/tree-with-diffs/property-row-diffs"

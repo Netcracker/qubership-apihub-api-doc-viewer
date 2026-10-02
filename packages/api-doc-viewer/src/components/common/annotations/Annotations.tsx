@@ -38,7 +38,7 @@ import { AdditionalInfoArrayRow } from '../AdditionalInfoArrayRow'
 import { AdditionalInfoObjectRow } from '../AdditionalInfoObjectRow'
 import { DeprecationReasonRow } from './DeprecationReasonRow'
 import { DescriptionRow } from './Description/DescriptionRow'
-import { isBooleanValue } from '@apihub/utils/nodes'
+import { isBooleanValue } from '../../../utils/nodes'
 
 export type AnnotationsProps = PropsWithoutChangesSummary<
   PropsWithShift &

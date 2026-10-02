@@ -1,7 +1,7 @@
-import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
-import { LayoutSide } from "@apihub/types/internal/LayoutSide";
-import { isBindingNode } from "@apihub/utils/async-api/node-type-checkers";
+import { useDiffMetaKeys } from "../../contexts/DiffMetaKeysContext";
+import { useDisplayMode } from "../../contexts/DisplayModeContext";
+import { LayoutSide } from "../../types/internal/LayoutSide";
+import { isBindingNode } from "../../utils/async-api/node-type-checkers";
 import { DiffMetaKeys } from "@netcracker/qubership-apihub-api-data-model";
 import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff";
 import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";

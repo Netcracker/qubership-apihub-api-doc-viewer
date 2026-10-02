@@ -1,4 +1,4 @@
-import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../types/internal/LayoutSide"
 import {
   ChangedPropertyMetaData,
   HighlightVariant,

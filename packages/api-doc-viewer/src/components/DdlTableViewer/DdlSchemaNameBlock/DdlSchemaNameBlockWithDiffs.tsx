@@ -1,9 +1,9 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
-import { takeDiffSideTextHighlighterColor } from "@apihub/utils/diffs/take-diff-side-text-highlighter-color"
-import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
-import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import { useLayoutMode } from "../../../contexts/LayoutModeContext"
+import { takeDiffSideTextHighlighterColor } from "../../../utils/diffs/take-diff-side-text-highlighter-color"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../../types/internal/LayoutSide"
+import { DOCUMENT_LAYOUT_MODE, SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "../../../types/LayoutMode"
+import { buildDiffCauseByPathCausedAt } from "../../../utils/common/changes"
 import {
   ChangedPropertyMetaData,
   NodeDiffsSeverities,

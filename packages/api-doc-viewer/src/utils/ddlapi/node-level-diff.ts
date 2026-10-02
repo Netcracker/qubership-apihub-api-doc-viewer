@@ -1,5 +1,5 @@
-import { buildRowDiffProps, toNodeDiffState } from "@apihub/components/shared-components/diffs/node-diff-props"
-import { TitleRowProps } from "@apihub/components/shared-components/TitleRow/types"
+import { buildRowDiffProps, toNodeDiffState } from "../../components/shared-components/diffs/node-diff-props"
+import { TitleRowProps } from "../../components/shared-components/TitleRow/types"
 import {
   DdlApiPropertyNodeWithDiffs,
   DdlApiPropertyRowValue,

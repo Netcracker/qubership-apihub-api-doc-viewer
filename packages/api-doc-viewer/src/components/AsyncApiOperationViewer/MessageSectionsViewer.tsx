@@ -1,7 +1,7 @@
-import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
-import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
-import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
-import { isMessageSectionNode } from "@apihub/utils/async-api/node-type-checkers";
+import { useDisplayMode } from "../../contexts/DisplayModeContext";
+import { useLayoutMode } from "../../contexts/LayoutModeContext";
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../types/internal/LayoutSide";
+import { isMessageSectionNode } from "../../utils/async-api/node-type-checkers";
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities";
 import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";

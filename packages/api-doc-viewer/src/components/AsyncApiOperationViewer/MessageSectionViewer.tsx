@@ -1,4 +1,4 @@
-import { isMessageChannelNode, isMessageContentNode, isMessageOperationNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isMessageChannelNode, isMessageContentNode, isMessageOperationNode } from "../../utils/async-api/node-type-checkers";
 import { AsyncApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases";
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind";
 import { FC } from "react";

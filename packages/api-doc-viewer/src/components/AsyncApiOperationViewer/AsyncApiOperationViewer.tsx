@@ -1,9 +1,9 @@
-import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration";
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext";
-import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext";
-import { LevelContext } from "@apihub/contexts/LevelContext";
-import { DisplayMode } from "@apihub/types/DisplayMode";
-import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode";
+import { DEFAULT_DISPLAY_MODE } from "../../consts/configuration";
+import { DisplayModeContext } from "../../contexts/DisplayModeContext";
+import { LayoutModeContext } from "../../contexts/LayoutModeContext";
+import { LevelContext } from "../../contexts/LevelContext";
+import { DisplayMode } from "../../types/DisplayMode";
+import { DOCUMENT_LAYOUT_MODE } from "../../types/LayoutMode";
 import { AsyncApiTreeBuilder, createAsyncApiLogger } from "@netcracker/qubership-apihub-next-data-model";
 import { FC, memo, useMemo } from "react";
 import { ErrorBoundary } from "../services/ErrorBoundary";
@@ -12,7 +12,7 @@ import { AsyncApiDevModeContext } from "./AsyncApiDevModeContext";
 import { MessageNodeViewer } from "./MessageNodeViewer";
 
 import { OperationKeys } from "@apihub/next-data-model/shared/async-api/types/operation-keys";
-import { isMessageNode } from "@apihub/utils/async-api/node-type-checkers";
+import { isMessageNode } from "../../utils/async-api/node-type-checkers";
 import '../../index.css';
 
 export type AsyncApiOperationViewerProps = {

@@ -1,4 +1,4 @@
-import { DdlTableViewer } from "@apihub/components/DdlTableViewer/DdlTableViewer";
+import { DdlTableViewer } from "../../components/DdlTableViewer/DdlTableViewer";
 import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
 import { FC, useEffect, useState } from "react";
 import { buildFromDdlInBrowser, realmHasTables } from "./build-from-ddl-browser";

@@ -35,7 +35,7 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { JsonCombinerNodeViewer } from './JsonCombinerNodeViewer/JsonCombinerNodeViewer'
 import { JsonPropNodeViewer } from './JsonPropNodeViewer/JsonPropNodeViewer'
 import { isCombinerNodeState, isPropNodeState } from './types/nodes.guards'
-import { DiffMetaKeysContext } from '@apihub/contexts/DiffMetaKeysContext'
+import { DiffMetaKeysContext } from '../../contexts/DiffMetaKeysContext'
 
 export type JsonSchemaDiffViewerProps = {
   schema: unknown,
