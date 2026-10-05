@@ -1,6 +1,6 @@
 import {
   type AsyncApiOperationDiffsViewerProps
-} from "../../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
+} from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
 import type { ArgTypes } from "@storybook/react-vite";
 import { userEvent, within } from "storybook/test";
 import { TEST_REFERENCE_NAME_PROPERTY } from "../async-api-suite/shared-test-data";

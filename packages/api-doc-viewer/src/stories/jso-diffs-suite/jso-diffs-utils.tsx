@@ -1,4 +1,4 @@
-import { JsoDiffsViewer } from "../../components/JsoViewer/JsoDiffsViewer";
+import { JsoDiffsViewer } from "@apihub/components/JsoViewer/JsoDiffsViewer";
 import type { ArgTypes } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { prepareJsoDiffsDocument } from "../preprocess";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AsyncApiOperationViewer } from '../components/AsyncApiOperationViewer/AsyncApiOperationViewer';
+import { AsyncApiOperationViewer } from '@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { parse } from 'yaml';
 import type { ComponentProps } from 'react';

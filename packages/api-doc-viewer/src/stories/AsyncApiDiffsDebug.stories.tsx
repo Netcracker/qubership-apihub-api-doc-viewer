@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AsyncApiOperationDiffsViewer } from '../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
+import { AsyncApiOperationDiffsViewer } from '@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { parse } from 'yaml';
 import type { ComponentProps } from 'react';

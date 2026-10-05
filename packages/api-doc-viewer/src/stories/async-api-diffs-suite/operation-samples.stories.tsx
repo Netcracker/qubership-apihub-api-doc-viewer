@@ -1,4 +1,4 @@
-import { AsyncApiOperationDiffsViewer } from "../../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
+import { AsyncApiOperationDiffsViewer } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {

@@ -19,6 +19,31 @@ import path from "path";
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import { esmExternalRequirePlugin } from 'rolldown/plugins';
+import ts from 'typescript';
+
+/* The aliases are defined once, in tsconfig.json "paths"; tsc reads them there, jest.config.ts
+   derives its moduleNameMapper from them, and this builds vite's alias table from them. The table
+   is built when the config loads, so it stays a static resolve.alias: vite-plugin-dts uses that
+   table to rewrite every alias in the emitted declarations back to a relative path, and the
+   published .d.ts must not contain an @apihub/... specifier, which no consumer can resolve.
+   A "paths" key "@x/*" with target "./dir/*" becomes the alias "@x" -> <package>/dir; vite matches
+   it as "@x" itself or "@x/" followed by a path, the same prefix "@x/*" matches in tsconfig. */
+function aliasesFromTsconfig(): Record<string, string> {
+  const { config, error } = ts.readConfigFile(path.resolve(__dirname, 'tsconfig.json'), ts.sys.readFile)
+  if (error) {
+    throw new Error(ts.flattenDiagnosticMessageText(error.messageText, '\n'))
+  }
+  const aliases: Record<string, string> = {}
+  for (const [key, targets] of Object.entries<string[]>(config.compilerOptions.paths)) {
+    const find = key.replace(/\/\*$/, '')
+    const replacement = path.resolve(__dirname, targets[0].replace(/\/\*$/, ''))
+    if (aliases[find] && aliases[find] !== replacement) {
+      throw new Error(`tsconfig.json paths map ${find} to two directories: ${aliases[find]} and ${replacement}`)
+    }
+    aliases[find] = replacement
+  }
+  return aliases
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -64,14 +89,6 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      // Cross-package aliases (external dependencies)
-      '@netcracker/qubership-apihub-api-state-model': path.resolve(__dirname, '../api-state-model/src'),
-      '@netcracker/qubership-apihub-api-data-model': path.resolve(__dirname, '../api-data-model/src'),
-      '@netcracker/qubership-apihub-next-data-model': path.resolve(__dirname, '../next-data-model/src'),
-      '@netcracker/qubership-apihub-samples': path.resolve(__dirname, '../samples/src'),
-      '@apihub/api-data-model': path.resolve(__dirname, '../api-data-model/src'),
-      '@apihub/next-data-model': path.resolve(__dirname, '../next-data-model/src'),
-    }
-  }
+    alias: aliasesFromTsconfig(),
+  },
 })
