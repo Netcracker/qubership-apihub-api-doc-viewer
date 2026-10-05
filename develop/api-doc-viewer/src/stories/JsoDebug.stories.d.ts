@@ -1,5 +1,5 @@
 import { JsoViewer } from '../components/JsoViewer/JsoViewer';
-import type { StoryObj } from '@storybook/react';
+import { StoryObj } from '@storybook/react-vite';
 import { ComponentProps } from '../../../../node_modules/react';
 type StoryArgs = ComponentProps<typeof JsoViewer> & {
     jsoText: string;
@@ -7,10 +7,10 @@ type StoryArgs = ComponentProps<typeof JsoViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import("../components/shared-components/WithPrecededByProps").WithPrecededByProps & {
+    component: import('../../../../node_modules/react').FC<import('../components/shared-components/WithPrecededByProps').WithPrecededByProps & {
         source: object | null;
-        displayMode?: import("..").DisplayMode;
-        layoutMode?: import("..").LayoutMode;
+        displayMode?: import('..').DisplayMode;
+        layoutMode?: import('..').LayoutMode;
         initialLevel?: number;
         supportJsonSchema?: boolean;
         devMode?: boolean;

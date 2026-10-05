@@ -1,4 +1,4 @@
-import type { StoryObj } from "@storybook/react";
+import { StoryObj } from '@storybook/react-vite';
 import { DdlTableViewer } from '../../components/DdlTableViewer/DdlTableViewer';
 declare const meta: {
     id: string;

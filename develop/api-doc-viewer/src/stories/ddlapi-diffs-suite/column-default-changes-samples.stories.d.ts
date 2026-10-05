@@ -1,7 +1,7 @@
-import { type DdlDiffsSamplesStoryObj } from "./ddlapi-diffs-utils";
+import { DdlDiffsSamplesStoryObj } from './ddlapi-diffs-utils';
 declare const meta: {
     title: string;
-    component: (_props: import("./ddlapi-diffs-utils").DdlDiffCaseStoryComponentProps) => null;
+    component: (_props: import('./ddlapi-diffs-utils').DdlDiffCaseStoryComponentProps) => null;
     argTypes: {
         caseId: {
             control: {

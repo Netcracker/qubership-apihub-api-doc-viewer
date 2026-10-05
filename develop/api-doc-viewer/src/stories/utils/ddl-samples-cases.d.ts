@@ -1,4 +1,4 @@
-import type { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
 export type RawDdlSources = Record<string, string>;
 export type DdlSampleCase = {
     caseId: string;

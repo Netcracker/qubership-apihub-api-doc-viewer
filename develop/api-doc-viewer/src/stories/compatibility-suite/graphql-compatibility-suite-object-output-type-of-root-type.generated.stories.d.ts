@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { GraphQLCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
 declare const meta: Meta<GraphQLCompatibilitySuiteStoryArgs>;
 export default meta;

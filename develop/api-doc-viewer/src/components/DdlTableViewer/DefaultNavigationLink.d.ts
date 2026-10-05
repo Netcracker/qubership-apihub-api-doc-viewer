@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from '../../../../../node_modules/react';
+import { FC, ReactNode } from '../../../../../node_modules/react';
 export type NavigationLinkProps = {
     href: string;
     className?: string;
