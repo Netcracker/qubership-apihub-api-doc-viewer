@@ -8,6 +8,12 @@
  *   node bin/run-screenshot-test-suite.mjs regenerate json-schema-diffs-suite
  *   node bin/run-screenshot-test-suite.mjs regenerate json-schema-diffs-suite combiners
  *   node bin/run-screenshot-test-suite.mjs regenerate --ui=select
+ *   node bin/run-screenshot-test-suite.mjs regenerate ddlapi-compatibility-suite column-type
+ *
+ * Compatibility-suite test runs (e.g. `ddlapi-compatibility-suite`) select their spec type's
+ * `*.generated.it-test.ts` files inside `src/it/compatibility-suite/`. Those files are gitignored
+ * and produced by `npm run generate-tests`, which this runner calls first for such runs in both
+ * modes (and up front when the files are missing, so their suites can be listed).
  *
  * The test-run argument also accepts a name prefix that matches several test runs at once,
  * e.g. `json-schema` matches `json-schema-suite`, `json-schema-diffs-suite`,
@@ -40,6 +46,11 @@ const SAMPLES_DIR_IGNORE = new Set(['fixtures', 'src']);
 // Strips the file extension, plus an optional legacy "-samples" suffix some suites still use
 // (kept only so existing suite names / CLI invocations stay stable — it is not required).
 const IT_TEST_SUFFIX_RE = /(-samples)?\.it-test\.ts$/;
+const GENERATED_IT_TEST_SUFFIX = '.generated.it-test.ts';
+const COMPATIBILITY_SUITE_DIR = 'compatibility-suite';
+// One test run per compatibility-suite spec type, named after the generator's file prefix
+// (`makeFilePrefix` in bin/compatibility-suite-generation-utils.mjs).
+const COMPATIBILITY_TEST_RUN_IDS = ['ddlapi-compatibility-suite'];
 
 /**
  * Finds the on-disk IT test filename for a suite id, trying the plain name first and
@@ -104,7 +115,7 @@ function resolveUiMode() {
 const uiMode = resolveUiMode();
 
 /**
- * @returns {Array<{ samplesDir: string, itSuiteId: string, layout: 'folder' | 'flat', itDir?: string, prefix?: string }>}
+ * @returns {Array<{ samplesDir: string, itSuiteId: string, layout: 'folder' | 'flat' | 'compatibility', itDir?: string, prefix?: string }>}
  */
 function discoverTestRuns() {
   if (!fs.existsSync(samplesRoot)) {
@@ -181,7 +192,56 @@ function discoverTestRuns() {
     knownIds.add(itSuiteId);
   }
 
+  // Listed even when the generated files are absent (gitignored); see ensureCompatibilityTests().
+  for (const itSuiteId of COMPATIBILITY_TEST_RUN_IDS) {
+    if (knownIds.has(itSuiteId)) {
+      continue;
+    }
+    testRuns.push({
+      samplesDir: `${COMPATIBILITY_SUITE_DIR} (generated)`,
+      itSuiteId,
+      layout: 'compatibility',
+      itDir: path.join(itRoot, COMPATIBILITY_SUITE_DIR),
+      prefix: `${itSuiteId}-`,
+    });
+    knownIds.add(itSuiteId);
+  }
+
   return testRuns.sort((a, b) => a.itSuiteId.localeCompare(b.itSuiteId));
+}
+
+/**
+ * @param {{ layout: string, itDir?: string, prefix?: string }} testRun
+ * @returns {string[]}
+ */
+function listCompatibilityTestFiles(testRun) {
+  if (!fs.existsSync(testRun.itDir)) {
+    return [];
+  }
+  return fs.readdirSync(testRun.itDir)
+    .filter((file) => file.startsWith(testRun.prefix) && file.endsWith(GENERATED_IT_TEST_SUFFIX));
+}
+
+/**
+ * Generates the compatibility-suite ITs when none exist yet for this test run, so its suites
+ * can be listed and targeted.
+ *
+ * @param {{ layout: string, itSuiteId: string, itDir?: string, prefix?: string }} testRun
+ */
+function ensureCompatibilityTests(testRun) {
+  if (testRun.layout !== 'compatibility' || listCompatibilityTestFiles(testRun).length > 0) {
+    return;
+  }
+  console.log(`No generated ITs found for ${testRun.itSuiteId} — running "npm run generate-tests".`);
+  const result = spawnSync('npm run generate-tests', {
+    cwd: packageRoot,
+    stdio: 'inherit',
+    shell: true,
+    env: process.env,
+  });
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
 }
 
 /**
@@ -189,6 +249,12 @@ function discoverTestRuns() {
  * @returns {string[]}
  */
 function discoverSuites(testRun) {
+  if (testRun.layout === 'compatibility') {
+    return listCompatibilityTestFiles(testRun)
+      .map((file) => file.slice(testRun.prefix.length, -GENERATED_IT_TEST_SUFFIX.length))
+      .sort();
+  }
+
   if (testRun.layout === 'folder') {
     return fs.readdirSync(testRun.itDir)
       .filter((file) => file.endsWith('.it-test.ts'))
@@ -210,6 +276,9 @@ function discoverSuites(testRun) {
  * @returns {string}
  */
 function testRunPatternSegment(testRun) {
+  if (testRun.layout === 'compatibility') {
+    return `src/it/${COMPATIBILITY_SUITE_DIR}/${testRun.prefix}`;
+  }
   return testRun.layout === 'folder'
     ? `src/it/${testRun.itSuiteId}/`
     : `src/it/${testRun.prefix.replace('.', '\\.')}`;
@@ -258,6 +327,12 @@ function resolveTestRunSelection(raw, testRuns) {
  * @returns {string}
  */
 function resolveJestTarget(testRun, suiteChoice) {
+  if (testRun.layout === 'compatibility') {
+    return suiteChoice === WHOLE_SUITE_VALUE
+      ? testRunPatternSegment(testRun)
+      : `src/it/${COMPATIBILITY_SUITE_DIR}/${testRun.prefix}${suiteChoice}${GENERATED_IT_TEST_SUFFIX}`;
+  }
+
   if (suiteChoice === WHOLE_SUITE_VALUE) {
     if (testRun.layout === 'folder') {
       return `src/it/${testRun.itSuiteId}`;
@@ -274,12 +349,14 @@ function resolveJestTarget(testRun, suiteChoice) {
 
 /**
  * @param {string} jestTarget
+ * @param {boolean} [includesCompatibilityRun] regenerate mode refreshes the generated
+ *   compatibility-suite ITs too when one of the selected test runs relies on them
  * @returns {number}
  */
-function runScreenshotCommand(jestTarget) {
+function runScreenshotCommand(jestTarget, includesCompatibilityRun = false) {
   const jestCommand = mode === 'test'
     ? `npm run generate-tests && jest --maxWorkers 1 --verbose -c .config/it/it-test-docker.jest.config.cjs ${jestTarget}`
-    : `jest --maxWorkers 1 --verbose --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs ${jestTarget}`;
+    : `${includesCompatibilityRun ? 'npm run generate-tests && ' : ''}jest --maxWorkers 1 --verbose --updateSnapshot -c .config/it/it-test-docker.jest.config.cjs ${jestTarget}`;
 
   const command = `npx start-server-and-test development:local-server:static http://localhost:9009 "${jestCommand}"`;
   const actionLabel = mode === 'test' ? 'Running screenshot test suite' : 'Regenerating screenshots';
@@ -324,7 +401,10 @@ function runMultipleTestRuns(matchedTestRuns) {
   const runSpinner = spinner();
   runSpinner.start(`Starting ${runLabel}`);
 
-  const exitCode = runScreenshotCommand(jestTarget);
+  const exitCode = runScreenshotCommand(
+    jestTarget,
+    matchedTestRuns.some((testRun) => testRun.layout === 'compatibility'),
+  );
 
   if (exitCode === 0) {
     runSpinner.stop(`Finished ${runLabel}`);
@@ -567,6 +647,7 @@ if (testRunSelection.type === 'multiple') {
 }
 
 const testRun = testRunSelection.testRun;
+ensureCompatibilityTests(testRun);
 const suites = discoverSuites(testRun);
 
 if (suites.length === 0) {
@@ -608,7 +689,7 @@ const runLabel = selectedSuite === WHOLE_SUITE_VALUE
 const runSpinner = spinner();
 runSpinner.start(`Starting ${runLabel}`);
 
-const exitCode = runScreenshotCommand(jestTarget);
+const exitCode = runScreenshotCommand(jestTarget, testRun.layout === 'compatibility');
 
 if (exitCode === 0) {
   runSpinner.stop(`Finished ${runLabel}`);

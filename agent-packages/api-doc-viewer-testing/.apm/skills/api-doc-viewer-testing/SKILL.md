@@ -69,6 +69,10 @@ build-showcase → start-static-server → jest pipeline for one suite, so you d
 hand-build a `--testPathPattern`/file-path Jest target. Prefer it over constructing the
 `npx jest … src/it/…` invocation by hand for a single suite; drop to raw Jest only when you
 need flags it doesn't expose (e.g. `--maxWorkers 1 --verbose` against a suite already running).
+The `ddlapi-compatibility-suite` test run (`regenerate ddlapi-compatibility-suite [column|column-type|constraints|table]`)
+targets the gitignored `src/it/compatibility-suite/ddlapi-compatibility-suite-*.generated.it-test.ts`;
+the runner calls `npm run generate-tests` before Jest for it in both modes (and generates the
+files up front when they are missing). Add further spec types to `COMPATIBILITY_TEST_RUN_IDS`.
 
 ## Screenshot test troubleshooting (read first)
 
