@@ -7,7 +7,7 @@ type StoryArgs = ComponentProps<typeof AsyncApiOperationDiffsViewer> & {
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import('..').AsyncApiOperationDiffsViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer').AsyncApiOperationDiffsViewerProps>;
     argTypes: {
         mergedSource: {
             control: {

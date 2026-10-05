@@ -3,7 +3,7 @@ import { DdlTableViewer } from '../../components/DdlTableViewer/DdlTableViewer';
 declare const meta: {
     id: string;
     title: string;
-    component: import('../../../../../node_modules/react').FC<import('../..').DdlTableViewerProps>;
+    component: import('../../../../../node_modules/react').FC<import('../../components/DdlTableViewer/DdlTableViewer').DdlTableViewerProps>;
     parameters: {
         controls: {
             disable: boolean;
