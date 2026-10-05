@@ -18,10 +18,6 @@
     "ts-node": "10.7.0"
   },
   "dependencies": {
-    "@netcracker/qubership-apihub-api-diff": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-api-unifier": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-graphapi": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-json-crawl": "bugfix-update-infrastructure",
     "graphql": "16.12.0"
   }
 }

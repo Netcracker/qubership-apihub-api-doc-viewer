@@ -5,7 +5,6 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "@netcracker/qubership-apihub-api-data-model": "*",
-    "@netcracker/qubership-apihub-graphapi": "bugfix-update-infrastructure"
+    "@netcracker/qubership-apihub-api-data-model": "*"
   }
 }

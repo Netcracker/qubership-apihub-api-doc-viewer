@@ -16,10 +16,6 @@
     "ts-jest": "29.4.12"
   },
   "dependencies": {
-    "@asyncapi/parser": "3.6.0",
-    "@netcracker/qubership-apihub-api-diff": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-api-unifier": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-ddlapi": "bugfix-update-infrastructure",
-    "@netcracker/qubership-apihub-json-crawl": "bugfix-update-infrastructure"
+    "@asyncapi/parser": "3.6.0"
   }
 }
