@@ -1,0 +1,19 @@
+import"./AsyncApiOperationViewer-908de172.js";import"./DdlTableDiffsViewer-fd6285f4.js";import"./DdlTableViewer-628f1b1b.js";import"./GraphQLOperationDiffViewer-8a73b026.js";import"./GraphQLOperationViewer-d1208066.js";import"./UxBadge-190a23d2.js";import{D as U,g as e,T as a}from"./compatibility-suite-utils-5c0f2f72.js";import"./_commonjs-dynamic-modules-6308e768.js";import"./index-f46741a2.js";import"./IndexesNodeViewer-fee5cd8c.js";/* empty css              */import"./GraphPropNodeViewer-687f278e.js";import"./index-415bee12.js";import"./graph-api-transformers-d314e9cc.js";import"./buildASTSchema-f14864f0.js";import"./ddl-story-navigation-f02fad16.js";import"./test-diff-meta-keys-5677f54d.js";import"./build-from-ddl-browser-8639db24.js";import"./iframe-b8cab779.js";import"../sb-preview/runtime.js";import"./resolve-debug-table-key-39ff4741.js";import"./ddl-story-realm-utils-c0692776.js";const W={id:"ddlapi-compatibility-suite-table",title:"DDL API Compatibility Suite/table",render:U},r="table",t={name:"add-table",args:e(a,r,"add-table")},m={name:"add-table-comment",args:e(a,r,"add-table-comment")},o={name:"remove-table",args:e(a,r,"remove-table")},s={name:"remove-table-comment",args:e(a,r,"remove-table-comment")},n={name:"rename-table",args:e(a,r,"rename-table")},d={name:"update-table-comment",args:e(a,r,"update-table-comment")};var c,l,p;t.parameters={...t.parameters,docs:{...(c=t.parameters)==null?void 0:c.docs,source:{originalSource:`{
+  name: 'add-table',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'add-table')
+}`,...(p=(l=t.parameters)==null?void 0:l.docs)==null?void 0:p.source}}};var i,b,T;m.parameters={...m.parameters,docs:{...(i=m.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  name: 'add-table-comment',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'add-table-comment')
+}`,...(T=(b=m.parameters)==null?void 0:b.docs)==null?void 0:T.source}}};var _,S,g;o.parameters={...o.parameters,docs:{...(_=o.parameters)==null?void 0:_.docs,source:{originalSource:`{
+  name: 'remove-table',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'remove-table')
+}`,...(g=(S=o.parameters)==null?void 0:S.docs)==null?void 0:g.source}}};var D,E,u;s.parameters={...s.parameters,docs:{...(D=s.parameters)==null?void 0:D.docs,source:{originalSource:`{
+  name: 'remove-table-comment',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'remove-table-comment')
+}`,...(u=(E=s.parameters)==null?void 0:E.docs)==null?void 0:u.source}}};var I,P,A;n.parameters={...n.parameters,docs:{...(I=n.parameters)==null?void 0:I.docs,source:{originalSource:`{
+  name: 'rename-table',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'rename-table')
+}`,...(A=(P=n.parameters)==null?void 0:P.docs)==null?void 0:A.source}}};var C,v,y;d.parameters={...d.parameters,docs:{...(C=d.parameters)==null?void 0:C.docs,source:{originalSource:`{
+  name: 'update-table-comment',
+  args: getDdlStoryArgs(TEST_SPEC_TYPE_DDL_API, SUITE_ID, 'update-table-comment')
+}`,...(y=(v=d.parameters)==null?void 0:v.docs)==null?void 0:y.source}}};const X=["AddTable","AddTableComment","RemoveTable","RemoveTableComment","RenameTable","UpdateTableComment"];export{t as AddTable,m as AddTableComment,o as RemoveTable,s as RemoveTableComment,n as RenameTable,d as UpdateTableComment,X as __namedExportsOrder,W as default};

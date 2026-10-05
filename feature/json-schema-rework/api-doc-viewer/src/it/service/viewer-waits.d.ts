@@ -31,3 +31,5 @@ export declare function waitForJsonSchemaViewer(page: Page, options?: JsonSchema
 export declare function waitForJsonSchemaDiffsViewer(page: Page, options?: JsonSchemaViewerWaitOptions): Promise<void>;
 export declare function waitForDdlTableViewer(page: Page): Promise<void>;
 export declare function waitForDdlTableDiffsViewer(page: Page): Promise<void>;
+/** Waits for an optional viewer selector (compatibility-suite generated ITs pass one per spec type). */
+export declare function waitForVisibleSelector(page: Page, selector: string | undefined): Promise<void>;
