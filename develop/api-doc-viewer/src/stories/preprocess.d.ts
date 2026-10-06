@@ -31,6 +31,8 @@ type JsonDiffSchemaFromOASOptions = {
     circular?: boolean;
 };
 export declare function prepareJsonDiffSchemaFromOAS(options: JsonDiffSchemaFromOASOptions): unknown;
+/** Merged `apiDiff` document of two whole OpenAPI documents, diffs stored under `DIFF_META_KEY`. */
+export declare function mergeOpenApiDocuments(beforeDocument: unknown, afterDocument: unknown): unknown;
 export type JsonDiffSchemaOptions = {
     beforeSchema?: unknown;
     afterSchema: unknown;
@@ -38,8 +40,11 @@ export type JsonDiffSchemaOptions = {
     afterAdditionalComponents?: Record<PropertyKey, unknown>;
     target: OASTarget;
     circular?: boolean;
+    /** When true, inline schemas in the OAS template instead of $ref to __Substitution__. */
+    disableSubstitutionTitle?: boolean;
 };
 export declare function prepareJsonDiffSchema(options: JsonDiffSchemaOptions): unknown;
+export declare function prepareJsonDiffSchemaOas31(options: JsonDiffSchemaOptions): unknown;
 export type GraphApiSchemaOptions = {
     source: unknown;
     circular?: boolean;

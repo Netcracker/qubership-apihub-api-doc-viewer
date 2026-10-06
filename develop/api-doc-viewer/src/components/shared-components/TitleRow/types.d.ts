@@ -8,12 +8,15 @@ export declare enum TitleRowUsage {
     AsyncApiJsoSection = "async-api-jso-section",
     JsoProperty = "jso-property",
     DdlApiSection = "ddlapi-section",
-    DdlApiProperty = "ddlapi-property"
+    DdlApiProperty = "ddlapi-property",
+    JsonSchemaProperty = "json-schema-property"
 }
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
     value?: string;
+    titleContent?: ReactElement | ((layoutSide: LayoutSide) => ReactElement | null);
     expandable: boolean;
     expanded?: boolean;
+    isRoot?: boolean;
     onClickExpander?: () => void;
     variant: TextValueVariant;
     enableHeader?: boolean;

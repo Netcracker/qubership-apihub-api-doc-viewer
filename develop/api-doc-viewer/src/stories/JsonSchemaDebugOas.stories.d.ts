@@ -16,6 +16,14 @@ declare const meta: {
         refToSchema: {
             control: "text";
         };
+        schema: {
+            control: {
+                disable: true;
+            };
+            table: {
+                disable: true;
+            };
+        };
     };
     args: {
         oasText: string;

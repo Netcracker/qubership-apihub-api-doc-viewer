@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{i as t,n}from"./sample-cases-DDoAHGgD.js";var r,i;function a(){return(a=e((()=>{t(),r={schemaName:`public`,name:`t`},i=(e,t=r)=>n(e,[`/sample.sql`]).map(({caseId:e,source:n})=>({caseId:e,ddl:n,tableKey:t}))})))()}export{a as n,i as t};

@@ -9,6 +9,7 @@ export declare enum PrecededBy {
     MESSAGE_SECTION_HEADER_HIGH_LEVEL = "message-section-header-high-level",
     MESSAGE_SECTION_HEADER_LOW_LEVEL = "message-section-header-low-level",
     JSON_SCHEMA_VIEWER = "json-schema-viewer",
+    JSON_SCHEMA_PROPERTY = "json-schema-property",
     JSO_VIEWER = "jso-viewer",
     JSO_PROPERTY = "jso-property",
     BINDING_VERSION_ROW = "binding-version-row",
@@ -26,6 +27,8 @@ export declare enum PrecededBy {
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;
 };
-export type WithDdlListLastRowProps = {
+export type WithListLastRowProps = {
     [ATTRIBUTE_DDL_LIST_LAST_ROW]?: boolean;
 };
+/** @deprecated Use {@link WithListLastRowProps} */
+export type WithDdlListLastRowProps = WithListLastRowProps;

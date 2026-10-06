@@ -1,4 +1,4 @@
-import { GraphNodeTitleDataOptions, JsonNodeTitleDataOptions, NodeTitleData } from '../types/NodeTitleData';
-import { GraphNodeTypeDataOptions, JsonNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData';
-export declare function buildNodeTitleData(options: JsonNodeTitleDataOptions | GraphNodeTitleDataOptions): NodeTitleData;
-export declare function buildNodeTypeData(options: JsonNodeTypeDataOptions | GraphNodeTypeDataOptions): NodeTypeData | null;
+import { GraphNodeTitleDataOptions, NodeTitleData } from '../types/NodeTitleData';
+import { GraphNodeTypeDataOptions, NodeTypeData } from '../types/NodeTypeData';
+export declare function buildNodeTitleData(options: GraphNodeTitleDataOptions): NodeTitleData;
+export declare function buildNodeTypeData(options: GraphNodeTypeDataOptions): NodeTypeData | null;

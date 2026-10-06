@@ -1,13 +1,13 @@
+import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 import { StoryObj } from '@storybook/react-vite';
 import { ComponentProps } from '../../../../node_modules/react';
-import { JsonSchemaViewer } from '../components/JsonSchemaViewer/JsonSchemaViewer';
 type StoryArgs = ComponentProps<typeof JsonSchemaViewer> & {
     schemaText: string;
     componentsText?: string;
 };
 declare const meta: {
     title: string;
-    component: import('../../../../node_modules/react').FC<import('..').JsonSchemaViewerProps>;
+    component: import('../../../../node_modules/react').FC<import('../components/JsonSchemaViewer/JsonSchemaViewer').JsonSchemaViewerProps>;
     parameters: {};
     argTypes: {
         schemaText: {

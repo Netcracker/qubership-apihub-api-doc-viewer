@@ -5,5 +5,6 @@ export type ExpanderProps = {
     isExpandable?: boolean;
     expanded: boolean;
     onToggleExpander: () => void;
+    testId?: string;
 };
 export declare const Expander: FC<ExpanderProps>;

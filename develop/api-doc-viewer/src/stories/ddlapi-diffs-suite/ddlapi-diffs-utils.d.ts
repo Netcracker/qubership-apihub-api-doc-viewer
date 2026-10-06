@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { RawSampleSources } from '../utils/sample-cases';
 export type DdlDiffSampleCase = {
     caseId: string;
     beforeSql: string;
@@ -70,8 +71,7 @@ export declare const ddlDiffsSamplesStoryMetaBase: {
         };
     };
 };
-export type RawSqlSources = Record<string, string>;
+export type RawSqlSources = RawSampleSources;
 export declare const collectDdlDiffSampleCases: (beforeFiles: RawSqlSources, afterFiles: RawSqlSources) => DdlDiffSampleCase[];
-export declare const createDdlDiffSampleById: <TSample extends DdlDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const resolveTableKey: (caseId: string) => TableKey;
 export declare const createDdlDiffCaseStoryFactory: (sampleById: Record<string, DdlDiffSampleCase>) => (caseId: string) => DdlDiffsSamplesStoryObj;

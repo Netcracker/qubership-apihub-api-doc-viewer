@@ -34,6 +34,5 @@ type JsoCaseStoryArgs = {
     render: (args: JsoCaseStoryComponentProps) => JSX.Element;
 };
 export declare const createJsoViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsoDiffsViewerProps;
-export declare const createJsoSampleById: <TSample extends JsoDiffSampleCase>(sampleCases: readonly TSample[]) => Record<string, TSample>;
 export declare const createJsoCaseStoryFactory: (StoryComponent: (props: JsoCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsoDiffSampleCase>) => (caseId: string) => JsoCaseStoryArgs;
 export {};
