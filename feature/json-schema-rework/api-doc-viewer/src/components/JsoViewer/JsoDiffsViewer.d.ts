@@ -1,9 +1,9 @@
 import { DiffMetaKeys } from '../../../../api-data-model/src';
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { FC } from '../../../../../node_modules/react';
-import { DisplayMode } from "../..";
-import { WithPrecededByProps } from "../shared-components/WithPrecededByProps";
-import { JsoEmbeddedSchemaDiffsComponent } from "./embedding/jso-embedding-types";
+import { DisplayMode } from '../..';
+import { WithPrecededByProps } from '../shared-components/WithPrecededByProps';
+import { JsoEmbeddedSchemaDiffsComponent } from './embedding/jso-embedding-types';
 type JsoDiffsViewerProps = WithPrecededByProps & {
     mergedSource: unknown;
     displayMode?: DisplayMode;

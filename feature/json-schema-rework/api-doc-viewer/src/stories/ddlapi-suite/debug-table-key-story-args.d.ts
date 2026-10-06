@@ -1,4 +1,4 @@
-import type { DebugTableKeyControls } from "./resolve-debug-table-key";
+import { DebugTableKeyControls } from './resolve-debug-table-key';
 export declare const DEBUG_TABLE_KEY_ARG_TYPES: {
     useCustomTableKey: {
         control: "boolean";

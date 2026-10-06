@@ -1,5 +1,5 @@
-import type { ValueRangeDiffProgrammaticSampleCase } from "./value-range-diff-samples";
-import type { ValueRangeDiffSampleListOptions, ValueRangeDiffSampleResolveOptions } from "./value-range-diff-samples.types";
+import { ValueRangeDiffProgrammaticSampleCase } from './value-range-diff-samples';
+import { ValueRangeDiffSampleListOptions, ValueRangeDiffSampleResolveOptions } from './value-range-diff-samples.types';
 /**
  * Converts an OAS 3.0 / Draft-04 style value-range schema
  * (boolean exclusiveMinimum / exclusiveMaximum paired with minimum / maximum)

@@ -1,12 +1,7 @@
-/**
- * Programmatic combiner (oneOf) diff stories.
- * See src/stories/json-schema-diffs-suite/combiner-diff-case-definitions.ts and packages/samples/json-schema-diffs/{oneOf,anyOf,allOf}/README.md.
- * Regenerate: node --experimental-strip-types bin/generate-combiner-diffs-suite-stories.mjs
- */
-import type { StoryObj } from "@storybook/react";
+import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: import("./json-schema-diffs-utils").JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: import('./json-schema-diffs-utils').JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

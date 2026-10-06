@@ -1,7 +1,7 @@
 import { SelectorOption } from '../../shared-components/Selector/Selector';
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { JsonSchemaTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
-import { DiffAction } from "@netcracker/qubership-apihub-api-diff";
+import { DiffAction } from '@netcracker/qubership-apihub-api-diff';
 export type CombinerSelectorRowProps<N extends JsonSchemaTreeNode = JsonSchemaTreeNode> = {
     combinerKindLabel?: string;
     showSelector?: boolean;

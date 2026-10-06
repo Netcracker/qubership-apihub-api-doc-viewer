@@ -1,8 +1,8 @@
-import { type DdlSamplesStoryObj } from "./ddl-samples-common";
+import { DdlSamplesStoryObj } from './ddl-samples-common';
 declare const meta: {
     id: string;
     title: string;
-    component: (_props: import("./ddl-samples-utils").DdlCaseStoryComponentProps) => null;
+    component: (_props: import('./ddl-samples-utils').DdlCaseStoryComponentProps) => null;
     argTypes: {
         caseId: {
             control: {

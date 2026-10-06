@@ -1,5 +1,5 @@
-import { type RawSampleSources } from "./sample-cases";
-import type { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { RawSampleSources } from './sample-cases';
+import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
 export type RawDdlSources = RawSampleSources;
 export type DdlSampleCase = {
     caseId: string;

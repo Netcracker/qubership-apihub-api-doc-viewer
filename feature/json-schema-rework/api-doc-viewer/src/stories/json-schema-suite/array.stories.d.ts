@@ -1,8 +1,8 @@
-import { type JsonSchemaSamplesStoryObj } from "./json-schema-samples-common";
+import { JsonSchemaSamplesStoryObj } from './json-schema-samples-common';
 declare const meta: {
     id: string;
     title: string;
-    component: (_props: import("./json-schema-samples-common").JsonSchemaCaseStoryComponentProps) => null;
+    component: (_props: import('./json-schema-samples-common').JsonSchemaCaseStoryComponentProps) => null;
     argTypes: {
         caseId: {
             control: {

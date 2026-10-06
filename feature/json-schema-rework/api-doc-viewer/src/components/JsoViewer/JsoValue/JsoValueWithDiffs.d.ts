@@ -1,6 +1,6 @@
 import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
-import { JsoValueWithDiffsAppearance } from "./useJsoValueWithDiffsStyles";
+import { JsoValueWithDiffsAppearance } from './useJsoValueWithDiffsStyles';
 export type JsoValueWithDiffsProps = {
     isVisible: boolean;
     value: unknown;

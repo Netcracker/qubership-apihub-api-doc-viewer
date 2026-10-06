@@ -1,4 +1,4 @@
-import { AdditionalInfoRowLayoutOverrides, AdditionalInfoRowUsage } from "./types";
+import { AdditionalInfoRowLayoutOverrides, AdditionalInfoRowUsage } from './types';
 export type AdditionalInfoRowResolvedLayout = {
     xPaddingClass: string;
     bodyClass: string;

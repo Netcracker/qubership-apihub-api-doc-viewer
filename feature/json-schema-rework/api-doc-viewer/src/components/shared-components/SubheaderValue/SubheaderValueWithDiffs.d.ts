@@ -1,6 +1,6 @@
 import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
-import { SubheaderValueAppearance } from "./types";
+import { SubheaderValueAppearance } from './types';
 export type SubheaderValueWithDiffsProps = {
     isVisible: boolean;
     value: unknown;

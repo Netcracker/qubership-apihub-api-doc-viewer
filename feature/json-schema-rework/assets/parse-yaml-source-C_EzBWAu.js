@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{r as t,t as n}from"./browser-B0udhz_W.js";var r;function i(){return(i=e((()=>{n(),r=e=>{let n;try{n=JSON.parse(e)}catch(e){console.warn(`Cannot parse JSON:`,e),n=void 0}try{n||=t(e)}catch(e){console.warn(`Cannot parse YAML:`,e),n=void 0}return!n||typeof n!=`object`?{}:n}})))()}export{r as n,i as t};

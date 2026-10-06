@@ -1,4 +1,4 @@
-import type { StoryObj } from "@storybook/react";
+import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     id: string;
     title: string;

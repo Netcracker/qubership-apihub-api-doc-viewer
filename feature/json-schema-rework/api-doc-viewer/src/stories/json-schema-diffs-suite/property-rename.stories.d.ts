@@ -1,8 +1,8 @@
-import type { StoryObj } from "@storybook/react";
-import { type JsonSchemaDiffCaseStoryComponentProps } from "./json-schema-diffs-utils";
+import { StoryObj } from '@storybook/react-vite';
+import { JsonSchemaDiffCaseStoryComponentProps } from './json-schema-diffs-utils';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, hideUnchangedNodes }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    component: ({ beforeYaml, afterYaml, hideUnchangedNodes }: JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {

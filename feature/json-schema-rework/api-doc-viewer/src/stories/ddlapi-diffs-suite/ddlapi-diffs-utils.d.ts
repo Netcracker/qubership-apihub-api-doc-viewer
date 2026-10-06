@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
-import { type RawSampleSources } from "../utils/sample-cases";
+import { RawSampleSources } from '../utils/sample-cases';
 export type DdlDiffSampleCase = {
     caseId: string;
     beforeSql: string;

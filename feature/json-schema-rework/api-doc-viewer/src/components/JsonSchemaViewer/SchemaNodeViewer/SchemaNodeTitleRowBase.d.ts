@@ -2,10 +2,10 @@ import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { JsonSchemaViewerTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
 import { JsonSchemaTreeNodeStoredValue, JsonSchemaTreeNodeValue } from '../../../../../next-data-model/src/model/json-schema/types/node-value';
 import { JsonSchemaPropertyRowVisibility } from '../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types';
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
+import { Diff } from '@netcracker/qubership-apihub-api-diff';
 import { FC, ReactElement } from '../../../../../../node_modules/react';
-import { TitleRowProps } from "../../shared-components/TitleRow/types";
-import { WithPrecededByProps } from "../../shared-components/WithPrecededByProps";
+import { TitleRowProps } from '../../shared-components/TitleRow/types';
+import { WithPrecededByProps } from '../../shared-components/WithPrecededByProps';
 export type SchemaNodeTitleRowBaseProps = WithPrecededByProps & {
     ownerNode: JsonSchemaViewerTreeNode;
     displayNode: JsonSchemaViewerTreeNode;

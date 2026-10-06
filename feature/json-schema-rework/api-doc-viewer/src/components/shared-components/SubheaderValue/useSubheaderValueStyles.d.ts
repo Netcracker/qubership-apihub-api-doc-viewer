@@ -1,4 +1,4 @@
-import { SubheaderValueAppearance } from "./types";
+import { SubheaderValueAppearance } from './types';
 export type UseSubheaderValueStylesInput = {
     appearance: SubheaderValueAppearance;
 };

@@ -1,5 +1,5 @@
 import { JsonSchemaTreeNode, JsonSchemaTreeNodeWithDiffs } from '../../../../next-data-model/src/model/json-schema/types/aliases';
-import { TopLevelPropsMediaTypesMap } from "./utils/top-level-props-media-types";
+import { TopLevelPropsMediaTypesMap } from './utils/top-level-props-media-types';
 export type JsonSchemaViewerContextValue = {
     expandedDepth: number;
     materializeChildren: (node: JsonSchemaTreeNode | JsonSchemaTreeNodeWithDiffs) => void;

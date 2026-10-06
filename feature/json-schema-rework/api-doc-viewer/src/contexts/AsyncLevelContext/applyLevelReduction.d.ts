@@ -1,4 +1,4 @@
-import { DiffAction } from "@netcracker/qubership-apihub-api-diff";
+import { DiffAction } from '@netcracker/qubership-apihub-api-diff';
 import { LayoutSide } from '../../types/internal/LayoutSide';
 /**
  * Reduces `baseLevel` by 1 (clamped to >= 0) on the side where `reductionAction`-described

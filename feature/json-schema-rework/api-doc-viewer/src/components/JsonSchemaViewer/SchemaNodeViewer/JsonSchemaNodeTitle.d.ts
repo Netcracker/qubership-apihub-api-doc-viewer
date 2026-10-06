@@ -1,5 +1,5 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
+import { Diff } from '@netcracker/qubership-apihub-api-diff';
 import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
 import { JsonSchemaNodeTitleDisplay } from '../utils/resolve-json-schema-node-title';

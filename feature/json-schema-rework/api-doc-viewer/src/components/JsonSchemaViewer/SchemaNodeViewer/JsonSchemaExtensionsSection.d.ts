@@ -1,4 +1,4 @@
-import { Diff, DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { Diff, DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { OpenApiExtensionKey } from '../../../../../next-data-model/src/shared/json-schema/types/extension-key';
 import { FC } from '../../../../../../node_modules/react';

@@ -1,4 +1,4 @@
-import { JsonSchemaExtensionsJsoComponent, JsonSchemaExtensionsJsoDiffsComponent } from "./json-schema-embedding-types";
+import { JsonSchemaExtensionsJsoComponent, JsonSchemaExtensionsJsoDiffsComponent } from './json-schema-embedding-types';
 export type JsonSchemaEmbeddingContextValue = {
     ExtensionsJsoComponent: JsonSchemaExtensionsJsoComponent;
     ExtensionsJsoDiffsComponent: JsonSchemaExtensionsJsoDiffsComponent;

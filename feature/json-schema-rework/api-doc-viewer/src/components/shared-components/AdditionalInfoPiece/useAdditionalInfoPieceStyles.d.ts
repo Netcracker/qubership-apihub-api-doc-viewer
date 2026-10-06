@@ -1,5 +1,5 @@
 import { HighlightVariant } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-import { AdditionalInfoPieceUsage } from "./types";
+import { AdditionalInfoPieceUsage } from './types';
 export type AdditionalInfoPieceStyles = {
     blockClassName: string;
     valueClassName: string;

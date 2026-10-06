@@ -1,3 +1,3 @@
 import { FC } from '../../../../../../node_modules/react';
-import type { MarkdownTextRowContentProps } from "./types";
+import { MarkdownTextRowContentProps } from './types';
 export declare const MarkdownTextRowContent: FC<MarkdownTextRowContentProps>;

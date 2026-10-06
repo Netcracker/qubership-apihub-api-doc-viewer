@@ -1,5 +1,5 @@
 import { NodeId } from '../../../../next-data-model/src/utility-types';
-import { JsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode";
+import { JsonSchemaDiffsNodesVisibilityMode } from './JsonSchemaDiffsNodesVisibilityMode';
 export type UnchangedBlocksContextValue = {
     /** Source of truth - see JsonSchemaDiffsNodesVisibilityMode.ts for why this is a mode, not a bare boolean. */
     mode: JsonSchemaDiffsNodesVisibilityMode;

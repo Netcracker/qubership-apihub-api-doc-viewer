@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import type { JsonSchemaSampleCase } from "../utils/json-schema-samples-cases";
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { JsonSchemaSampleCase } from '../utils/json-schema-samples-cases';
 export type JsonSchemaCaseStoryComponentProps = {
     caseId: string;
     sampleYaml: string;

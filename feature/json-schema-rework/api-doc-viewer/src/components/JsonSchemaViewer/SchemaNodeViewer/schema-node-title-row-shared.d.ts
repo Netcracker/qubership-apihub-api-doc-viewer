@@ -1,5 +1,5 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
+import { Diff } from '@netcracker/qubership-apihub-api-diff';
 import { JsonSchemaPropertyRowVisibility } from '../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types';
 import { ChangedPropertyMetaData } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { JsonSchemaViewerTreeNode } from '../../../../../next-data-model/src/model/json-schema/types/aliases';
@@ -27,6 +27,6 @@ export declare function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSha
         readonly isCycle: boolean;
     }>;
     listLastRowFlags: import('../../../../../next-data-model/src/building-service/json-schema/tree/node-visibility-data/types').JsonSchemaPropertyListLastRowFlags;
-    titleContent: (layoutSide: LayoutSide) => import('../../../../../../node_modules/react/jsx-runtime').JSX.Element | null;
+    titleContent: (layoutSide: LayoutSide) => import("react").JSX.Element | null;
     showTypeSubheader: boolean;
 };

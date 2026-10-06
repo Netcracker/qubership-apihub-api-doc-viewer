@@ -1,5 +1,5 @@
-import type { Realm } from "@netcracker/qubership-apihub-ddlapi";
-import type { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { Realm } from '@netcracker/qubership-apihub-ddlapi';
+import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
 export type DebugTableKeyControls = {
     useCustomTableKey?: boolean;
     tableSchemaName?: string;

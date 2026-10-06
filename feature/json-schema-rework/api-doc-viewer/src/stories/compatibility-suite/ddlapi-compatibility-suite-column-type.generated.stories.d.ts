@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { DdlCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
 declare const meta: Meta<DdlCompatibilitySuiteStoryArgs>;
 export default meta;

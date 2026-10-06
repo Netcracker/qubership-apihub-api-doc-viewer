@@ -1,15 +1,10 @@
-/**
- * Fixture: packages/samples/json-schema-diffs/node-changes-summary/case-4-array-items-case-2/
- * Array whose `items` schema is Case 2 - see
- * packages/samples/json-schema-diffs/node-changes-summary/README.md.
- */
-import type { StoryObj } from "@storybook/react";
+import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
     component: ({ beforeYaml, afterYaml }: {
         beforeYaml: string;
         afterYaml: string;
-    }) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+    }) => import("react").JSX.Element;
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

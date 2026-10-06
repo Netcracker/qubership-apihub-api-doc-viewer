@@ -1,5 +1,5 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-import { Diff } from "@netcracker/qubership-apihub-api-diff";
+import { Diff } from '@netcracker/qubership-apihub-api-diff';
 import { FC } from '../../../../../../node_modules/react';
 export type JsonSchemaRequiredDiffIndicatorProps = {
     required: boolean;

@@ -1,4 +1,4 @@
-import { type DiffMetaRecord, DIFF_META_KEY } from "@netcracker/qubership-apihub-api-diff";
+import { DiffMetaRecord, DIFF_META_KEY } from '@netcracker/qubership-apihub-api-diff';
 type SynthesizedSchema = {
     type: "object";
     properties: Record<PropertyKey, unknown>;

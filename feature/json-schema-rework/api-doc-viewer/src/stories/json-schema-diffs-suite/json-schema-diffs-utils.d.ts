@@ -1,6 +1,6 @@
 import { JsonSchemaDiffsViewer } from '../../components/JsonSchemaViewer/JsonSchemaDiffsViewer';
-import type { ComponentProps } from '../../../../../node_modules/react';
-import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
+import { ComponentProps } from '../../../../../node_modules/react';
+import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff';
 export declare const JSON_SCHEMA_DIFF_META_KEYS: {
     readonly diffsMetaKey: typeof DIFF_META_KEY;
     readonly aggregatedDiffsMetaKey: typeof DIFFS_AGGREGATED_META_KEY;
@@ -85,16 +85,16 @@ type JsonSchemaDiffCaseStoryArgsWithChangedVariant = JsonSchemaDiffCaseStoryArgs
  * `page.evaluate`.
  */
 export declare const createJsonSchemaDiffCaseStoryFactoryWithChangedVariant: (StoryComponent: (props: JsonSchemaDiffCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsonSchemaDiffSampleCase>, defaultHideUnchangedNodes?: boolean) => (caseId: string) => JsonSchemaDiffCaseStoryArgsWithChangedVariant;
-export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStory: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
 /**
  * Same as JsonSchemaDiffSamplesStory, but inlines schemas in the OAS template instead of $ref-ing
  * to __Substitution__ (disableSubstitutionTitle) -- needed for combiner suites, where the
  * substitution $ref would otherwise be the thing labeled at the diff root instead of the combiner.
  */
-export declare const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStoryWithDisabledSubstitutionTitle: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
 /**
  * Same as JsonSchemaDiffSamplesStory, but wraps the pair in the OAS 3.1 template - needed for
  * keywords the OAS 3.0 dialect strips during `apiDiff` validation (see JsonSchemaDiffsViewerArgsOptions).
  */
-export declare const JsonSchemaDiffSamplesStoryOas31: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import('../../../../../node_modules/react/jsx-runtime').JSX.Element;
+export declare const JsonSchemaDiffSamplesStoryOas31: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
 export {};

@@ -1,5 +1,5 @@
 import { FC } from '../../../../../../node_modules/react';
-import type { ShowUnchangedRowProps } from "./ShowUnchangedRow";
+import { ShowUnchangedRowProps } from './ShowUnchangedRow';
 type ShowUnchangedRowContentProps = ShowUnchangedRowProps & {
     layoutSide: "before" | "after";
     level: number;

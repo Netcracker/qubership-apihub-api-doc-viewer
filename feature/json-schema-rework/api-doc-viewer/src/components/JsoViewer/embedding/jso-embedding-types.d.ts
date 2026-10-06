@@ -1,7 +1,7 @@
 import { CustomizationOptions } from '../../../contexts/CustomizationOptionsContext';
 import { DiffMetaKeys } from '../../../types/DiffMetaKeys';
 import { DisplayMode } from '../../../types/DisplayMode';
-import { DiffType } from "@netcracker/qubership-apihub-api-diff";
+import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { FC } from '../../../../../../node_modules/react';
 export type JsoEmbeddedSchemaComponentProps = {
     schema: unknown;

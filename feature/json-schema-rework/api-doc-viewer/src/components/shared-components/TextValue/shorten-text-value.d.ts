@@ -1,4 +1,4 @@
-import { TextValueVariant } from "./types";
+import { TextValueVariant } from './types';
 export declare const OVERFLOW_LINES_AMOUNT = 5;
 export declare const OVERFLOW_CHARACTERS_AMOUNT = 300;
 /** Shared by TextValue and MarkdownTextValue - a value overflows when it's too long by either measure. */

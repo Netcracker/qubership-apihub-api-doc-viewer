@@ -1,3 +1,3 @@
 import { FC } from '../../../../../../node_modules/react';
-import type { TitleRowProps } from "./types";
+import { TitleRowProps } from './types';
 export declare const TitleRow: FC<TitleRowProps>;

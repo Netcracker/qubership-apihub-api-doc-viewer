@@ -1,5 +1,5 @@
-import type { Realm } from '@netcracker/qubership-apihub-ddlapi';
-import type { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
+import { Realm } from '@netcracker/qubership-apihub-ddlapi';
+import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
 /** Parse before/after SQL and merge them with apiDiff. */
 export declare function prepareDdlCompatibilitySuiteMergedSource(beforeSql: string, afterSql: string): Promise<Realm>;
 /**

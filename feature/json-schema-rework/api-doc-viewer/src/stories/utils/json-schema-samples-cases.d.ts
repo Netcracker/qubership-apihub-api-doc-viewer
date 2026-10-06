@@ -1,4 +1,4 @@
-import { type RawSampleSources } from "./sample-cases";
+import { RawSampleSources } from './sample-cases';
 export type RawJsonSchemaSources = RawSampleSources;
 export type JsonSchemaSampleCase = {
     caseId: string;

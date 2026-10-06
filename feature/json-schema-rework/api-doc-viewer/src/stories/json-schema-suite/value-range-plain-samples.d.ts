@@ -1,6 +1,6 @@
-import type { ValueRangePlainSampleResolveOptions } from "./value-range-plain-case-definitions";
-export type { ValueRangePlainCase, ValueRangePlainCaseDefinition, ValueRangePlainSampleListOptions, ValueRangePlainSampleResolveOptions, } from "./value-range-plain-case-definitions";
-export { getValueRangePlainCaseDefinitions, listValueRangePlainCases, resolveValueRangePlainSchema, toValueRangePlainCaseExportName, } from "./value-range-plain-case-definitions";
+import { ValueRangePlainSampleResolveOptions } from './value-range-plain-case-definitions';
+export type { ValueRangePlainCase, ValueRangePlainCaseDefinition, ValueRangePlainSampleListOptions, ValueRangePlainSampleResolveOptions, } from './value-range-plain-case-definitions';
+export { getValueRangePlainCaseDefinitions, listValueRangePlainCases, resolveValueRangePlainSchema, toValueRangePlainCaseExportName, } from './value-range-plain-case-definitions';
 export type ValueRangePlainProgrammaticSampleCase = {
     caseId: string;
     schema: Record<string, unknown>;
