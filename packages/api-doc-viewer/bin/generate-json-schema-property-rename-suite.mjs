@@ -41,7 +41,7 @@ const printStoryFile = (caseIds) => `/**
  * Edit together with src/it/json-schema-diffs-suite/property-rename.it-test.ts
  */
 import { JsonSchemaDiffsViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import { createSampleById } from "../utils/sample-cases";
 import {
@@ -60,12 +60,12 @@ import { createParametersSchemaFromOpenApiPair } from "./parameters-schema-synth
  */
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/property-rename/*/before.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const afterFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/property-rename/*/after.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleById = createSampleById(collectSampleCases(beforeFiles, afterFiles));

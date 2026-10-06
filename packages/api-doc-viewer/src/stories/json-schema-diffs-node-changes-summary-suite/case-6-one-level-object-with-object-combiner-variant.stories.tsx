@@ -9,7 +9,7 @@
  * `createNodeChangesSummaryCaseStory` (no switch) - it doesn't expand far enough to show any
  * combiner anyway.
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   NodeChangesSummarySampleStory,
   createNodeChangesSummaryCaseStory,

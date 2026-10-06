@@ -3,7 +3,7 @@
  * Array whose `items` schema is Case 1 - see
  * packages/samples/json-schema-diffs/node-changes-summary/README.md.
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { NodeChangesSummarySampleStory, createNodeChangesSummaryCaseStory } from "./node-changes-summary-utils";
 
 const CASE_SLUG = "3-array-items-case-1";

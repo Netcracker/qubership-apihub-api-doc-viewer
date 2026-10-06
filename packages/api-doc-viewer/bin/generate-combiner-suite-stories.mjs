@@ -41,7 +41,7 @@ const printStoryFile = (suite, cases) => {
  * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and packages/samples/json-schema/{oneOf,anyOf,allOf}/README.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,

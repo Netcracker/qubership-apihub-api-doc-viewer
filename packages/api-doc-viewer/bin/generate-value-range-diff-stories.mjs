@@ -55,7 +55,7 @@ const printStoryFile = (suite, cases) => {
  * Programmatic value-range diff stories (see src/stories/json-schema-diffs-suite/value-range-diff-case-definitions.ts).
  * Regenerate: node --experimental-strip-types bin/generate-value-range-diff-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   ${suite.storyComponent},
   createJsonSchemaDiffCaseStoryFactoryWithChangedVariant,

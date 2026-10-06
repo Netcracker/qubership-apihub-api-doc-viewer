@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import {
   JsonSchemaDiffSamplesStory,
@@ -12,12 +12,12 @@ const HIDE_UNCHANGED_NODES_BY_DEFAULT = true;
 
 const beforeFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/hiding-unchanged-rows/simple-object/*/before.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const afterFiles = import.meta.glob(
   "../../../../samples/json-schema-diffs/hiding-unchanged-rows/simple-object/*/after.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleCases = collectSampleCases(beforeFiles, afterFiles);

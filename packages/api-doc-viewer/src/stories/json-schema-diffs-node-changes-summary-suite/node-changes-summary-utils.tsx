@@ -15,12 +15,12 @@ import { switchCombinerNodesToChangedVariant } from '@apihub/utils/combiner-chan
 
 const beforeFiles = import.meta.glob(
   '../../../../samples/json-schema-diffs/node-changes-summary/*/before.yaml',
-  { as: 'raw', eager: true },
+  { query: '?raw', import: 'default', eager: true },
 ) as Record<string, string>
 
 const afterFiles = import.meta.glob(
   '../../../../samples/json-schema-diffs/node-changes-summary/*/after.yaml',
-  { as: 'raw', eager: true },
+  { query: '?raw', import: 'default', eager: true },
 ) as Record<string, string>
 
 const CASE_SLUG_PATTERN = /node-changes-summary\/case-([^/]+)\//

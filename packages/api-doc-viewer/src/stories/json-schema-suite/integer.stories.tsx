@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   collectJsonSchemaSampleCases,
 } from "../utils/json-schema-samples-cases";
@@ -12,7 +12,7 @@ import {
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/integer/*/sample.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);

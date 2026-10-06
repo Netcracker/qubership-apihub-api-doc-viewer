@@ -1,4 +1,4 @@
-import type { Meta } from "@storybook/react"
+import type { Meta } from "@storybook/react-vite"
 import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer"
 import { prepareJsonSchema, REQUEST_BODY_TARGET } from "../preprocess"
 import {

@@ -3,7 +3,7 @@
  * Regenerate: node bin/generate-json-schema-validation-suite-stories.mjs
  */
 import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
-import type { Meta } from "@storybook/react";
+import type { Meta } from "@storybook/react-vite";
 import {
   JsonSchemaSampleStory,
   jsonSchemaSamplesStoryMetaBase,

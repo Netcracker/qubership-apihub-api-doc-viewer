@@ -3,7 +3,7 @@
  * Object with 4 simple properties (wholly added / wholly removed / description changed / type
  * changed) - see packages/samples/json-schema-diffs/node-changes-summary/README.md.
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { NodeChangesSummarySampleStory, createNodeChangesSummaryCaseStory } from "./node-changes-summary-utils";
 
 const CASE_SLUG = "1-simple-properties";

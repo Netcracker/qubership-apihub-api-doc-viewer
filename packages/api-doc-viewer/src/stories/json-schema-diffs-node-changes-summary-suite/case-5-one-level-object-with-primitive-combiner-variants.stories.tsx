@@ -4,7 +4,7 @@
  * `number` variant / loses a `number` variant) - see
  * packages/samples/json-schema-diffs/node-changes-summary/README.md.
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   NodeChangesSummarySampleStory,
   createNodeChangesSummaryCaseStoryWithChangedVariant,

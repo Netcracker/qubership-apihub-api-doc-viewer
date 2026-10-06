@@ -5,7 +5,7 @@
  * source texts returned here onto their own typed case shape.
  */
 
-/** `import.meta.glob(..., { as: "raw", eager: true })` result: file path -> file text. */
+/** `import.meta.glob(..., { query: "?raw", import: "default", eager: true })` result: file path -> file text. */
 export type RawSampleSources = Record<string, string>;
 
 export type SampleSource = {

@@ -14,7 +14,7 @@
  * never gets an expandable `items` child in the current JsonSchemaViewer (see the IT test's
  * comment), so "expanded items" and "collapsed items" are expected to render identically for now.
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   NodeChangesSummarySampleStory,
   createNodeChangesSummaryCaseStory,

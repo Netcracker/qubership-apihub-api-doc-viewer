@@ -1,5 +1,5 @@
 import { stringify as stringifyYaml } from "yaml";
-import type { ArgTypes, Meta, StoryObj } from "@storybook/react";
+import type { ArgTypes, Meta, StoryObj } from "@storybook/react-vite";
 import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer"
 import type { JsonSchemaSampleCase } from "../utils/json-schema-samples-cases"
 

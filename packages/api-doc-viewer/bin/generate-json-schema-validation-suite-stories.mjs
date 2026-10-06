@@ -32,7 +32,7 @@ const printYamlStoryFile = ({ group, title, metaId }) => {
  * Regenerate YAML samples: node bin/generate-json-schema-validation-samples.mjs
  * Regenerate this file: node bin/generate-json-schema-validation-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   collectJsonSchemaSampleCases,
 } from "../utils/json-schema-samples-cases";
@@ -46,7 +46,7 @@ import {
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/${group}/*/${sampleFileName}",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);
@@ -81,7 +81,7 @@ const printValueRangeStoryFile = (suite) => {
  * Programmatic value-range plain stories (see value-range-plain-case-definitions.ts).
  * Regenerate: node bin/generate-json-schema-validation-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { JsonSchemaViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaViewer";
 import {
   JsonSchemaSampleStory,

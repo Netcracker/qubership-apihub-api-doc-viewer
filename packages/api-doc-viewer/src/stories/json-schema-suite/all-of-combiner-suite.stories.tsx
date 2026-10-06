@@ -3,7 +3,7 @@
  * See src/stories/json-schema-suite/combiner-plain-case-definitions.ts and packages/samples/json-schema/{oneOf,anyOf,allOf}/README.md.
  * Regenerate: node --experimental-strip-types bin/generate-combiner-suite-stories.mjs
  */
-import type { Meta } from '@storybook/react'
+import type { Meta } from '@storybook/react-vite'
 import {
   jsonSchemaSamplesStoryMetaBase,
   type JsonSchemaSamplesStoryObj,

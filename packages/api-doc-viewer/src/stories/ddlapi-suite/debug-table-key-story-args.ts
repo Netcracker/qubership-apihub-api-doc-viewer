@@ -1,4 +1,4 @@
-import type { InputType } from "@storybook/types";
+import type { ArgTypes } from "@storybook/react-vite";
 import type { DebugTableKeyControls } from "./resolve-debug-table-key";
 
 export const DEBUG_TABLE_KEY_ARG_TYPES = {
@@ -16,7 +16,7 @@ export const DEBUG_TABLE_KEY_ARG_TYPES = {
     if: { arg: "useCustomTableKey" },
     description: "Table name for tableKey (e.g. users).",
   },
-} satisfies Record<keyof Required<DebugTableKeyControls>, InputType>;
+} satisfies ArgTypes<Required<DebugTableKeyControls>>;
 
 export const DEBUG_TABLE_KEY_DEFAULT_ARGS: Required<DebugTableKeyControls> = {
   useCustomTableKey: false,

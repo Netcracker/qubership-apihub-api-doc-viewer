@@ -2,7 +2,7 @@
  * Regenerate YAML samples: node bin/generate-json-schema-validation-samples.mjs
  * Regenerate this file: node bin/generate-json-schema-validation-suite-stories.mjs
  */
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   collectJsonSchemaSampleCases,
 } from "../utils/json-schema-samples-cases";
@@ -16,7 +16,7 @@ import {
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/array-validations/*/sample.yaml",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);

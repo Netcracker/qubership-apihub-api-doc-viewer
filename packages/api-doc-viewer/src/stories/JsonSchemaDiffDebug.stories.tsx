@@ -17,7 +17,7 @@
 import { JsonSchemaDiffsViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer';
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff';
 import { isObject } from '@netcracker/qubership-apihub-json-crawl';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
 import { prepareJsonDiffSchema, REQUEST_BODY_TARGET } from './preprocess';
 import { parseYamlSource } from './utils/parse-yaml-source';

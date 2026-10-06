@@ -1,5 +1,5 @@
 import { JsonSchemaDiffsViewer } from "@apihub/components/JsonSchemaViewer/JsonSchemaDiffsViewer";
-import type { ArgTypes } from "@storybook/react";
+import type { ArgTypes } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from "@netcracker/qubership-apihub-api-diff";
 import {

@@ -27,7 +27,7 @@ const printStoryFile = ({ schemaType, title, metaId }) => {
     )
     .join("\n");
 
-  return `import type { Meta, StoryObj } from "@storybook/react";
+  return `import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   collectJsonSchemaSampleCases,
 } from "../utils/json-schema-samples-cases";
@@ -41,7 +41,7 @@ import {
 
 const sampleFiles = import.meta.glob(
   "../../../../samples/json-schema/${schemaType}/*/${sampleFileName}",
-  { as: "raw", eager: true },
+  { query: "?raw", import: "default", eager: true },
 ) as Record<string, string>;
 
 const sampleCases = collectJsonSchemaSampleCases(sampleFiles);
