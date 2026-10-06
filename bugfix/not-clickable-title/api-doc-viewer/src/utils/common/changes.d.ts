@@ -1,0 +1,41 @@
+import { DiffRecord, NodeChange, NodeChangesSummary } from '../../../../api-data-model/src';
+import { Diff, DiffAdd, DiffRemove, DiffRename, DiffReplace, DiffType } from '@netcracker/qubership-apihub-api-diff';
+import { IModelStateNode } from '../../../../api-state-model/src';
+import { LayoutSide } from '../../types/internal/LayoutSide';
+import { LayoutMode } from '../../types/LayoutMode';
+import { JsonPath } from '@netcracker/qubership-apihub-json-crawl';
+export declare function diffAdd(diff?: Diff): diff is DiffAdd;
+export declare function diffRemove(diff?: Diff): diff is DiffRemove;
+export declare function diffReplace(diff?: Diff): diff is DiffReplace;
+export declare function diffRename(diff?: Diff): diff is DiffRename;
+/** @deprecated Use buildDiffCauseByPathCausedAt instead */
+export declare function buildOpenApiDiffCause(diff: Diff | undefined): string | undefined;
+export declare function buildDiffCauseByPathCausedAt(path: JsonPath | undefined): string | undefined;
+export declare function maxDiffType(diffTypes: Set<DiffType> | DiffType[]): DiffType | undefined;
+export declare function maxDiffTypeFromDiffs(...changes: Array<Diff | undefined>): [DiffType | undefined, string | undefined];
+export declare function maxDiffTypeFromNodeSummary(summary?: NodeChangesSummary): DiffType | undefined;
+export declare function maxDiffTypeFromNestedNodesSummary(summaries?: Record<string, NodeChangesSummary>): DiffType | undefined;
+export declare function compareDiffTypes(a: DiffType | undefined, b: DiffType | undefined): number;
+export declare const DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR: [DiffType | undefined, string | undefined];
+export declare function getLayoutModeFlags(mode?: LayoutMode): {
+    isDocumentLayoutMode: boolean;
+    isInlineDiffsLayoutMode: boolean;
+    isSideBySideDiffsLayoutMode: boolean;
+};
+export declare function getLayoutSideFlags(side?: LayoutSide): {
+    originSide: boolean;
+    changedSide: boolean;
+};
+export declare const API_TYPE_REST = "rest";
+export declare const API_TYPE_GRAPHQL = "graphql";
+export type ApiType = typeof API_TYPE_REST | typeof API_TYPE_GRAPHQL;
+export declare function toChangesList($changes: DiffRecord | undefined, $metaChanges: DiffRecord | undefined, apiType: ApiType): Diff[];
+export declare function takeNodeChangeIfAllChildrenChanged(children: IModelStateNode<any>[]): NodeChange | undefined;
+export declare function takeNodeChangeIfWholeNodeChanged(nodeChange: NodeChange | undefined): NodeChange | undefined;
+export declare function inferRowChange(itemsCount: number, $rowChanges: Diff | DiffRecord | undefined): Diff | undefined;
+export declare function isDiffTypeIncluded(diffType: DiffType | undefined, filters: readonly DiffType[]): boolean;
+export declare function filterChangesList(changesList: Diff[], filters: readonly DiffType[]): Diff[];
+export declare function getDiffTypesFromSummary(summary: NodeChangesSummary | undefined): DiffType[] | undefined;
+export declare function hasBeforeDeclarationPaths(diff: Diff | undefined): diff is DiffRemove | DiffReplace | DiffRename;
+export declare function hasAfterDeclarationPaths(diff: Diff | undefined): diff is DiffAdd | DiffReplace | DiffRename;
+export declare function filterChangeKeys(data: Record<PropertyKey, unknown> | undefined, originalChangeKeys: string[]): string[];
