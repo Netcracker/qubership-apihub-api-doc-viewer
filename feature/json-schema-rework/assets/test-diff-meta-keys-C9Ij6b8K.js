@@ -1,1 +1,0 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";var t;function n(){return(n=e((()=>{t={diffsMetaKey:Symbol(`test-diffs-meta-key`),aggregatedDiffsMetaKey:Symbol(`test-aggregated-diffs-meta-key`)}})))()}export{n,t};
