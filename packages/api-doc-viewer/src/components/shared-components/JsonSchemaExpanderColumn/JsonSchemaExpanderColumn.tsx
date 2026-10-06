@@ -27,6 +27,8 @@ export type JsonSchemaExpanderColumnProps = {
   onClick?: () => void
 }
 
+const EXPANDER_VERTICAL_INDENT = 'pt-0.5'
+
 export const JsonSchemaExpanderColumn: FC<JsonSchemaExpanderColumnProps> = (props) => {
   const { isRoot, expandable, expanded, onClick } = props
 
@@ -36,7 +38,7 @@ export const JsonSchemaExpanderColumn: FC<JsonSchemaExpanderColumnProps> = (prop
 
   if (isRoot && expandable) {
     return (
-      <div className={`flex flex-row items-center justify-center pt-1`}>
+      <div className={`flex flex-row items-center justify-center ${EXPANDER_VERTICAL_INDENT}`}>
         {expanded !== undefined && (
           <ExpandingCaret onToggle={onClick ?? (() => {})} expanded={expanded} />
         )}
@@ -46,14 +48,14 @@ export const JsonSchemaExpanderColumn: FC<JsonSchemaExpanderColumnProps> = (prop
 
   if (!expandable) {
     return (
-      <div className={`flex flex-row items-center justify-center pt-1 ${JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS}`}>
+      <div className={`flex flex-row items-center justify-center ${EXPANDER_VERTICAL_INDENT} ${JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS}`}>
         <NestingHorizontalIndicator />
       </div>
     )
   }
 
   return (
-    <div className={`flex flex-row items-center justify-center pt-1 gap-0.5 ${JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS}`}>
+    <div className={`flex flex-row items-center justify-center ${EXPANDER_VERTICAL_INDENT} gap-0.5 ${JSON_SCHEMA_EXPANDER_COLUMN_WIDTH_CLASS}`}>
       <NestingHorizontalIndicator short />
       {expanded !== undefined && (
         <ExpandingCaret onToggle={onClick ?? (() => {})} expanded={expanded} />
