@@ -1,8 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import {
-  DEBUG_TABLE_KEY_ARG_TYPES,
-  DEBUG_TABLE_KEY_DEFAULT_ARGS,
-} from "./debug-table-key-story-args";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BuildFromDdlDebug, DEFAULT_DDL } from "./BuildFromDdlDebug";
 
 const meta = {
@@ -12,12 +8,9 @@ const meta = {
     ddlText: {
       control: "text",
     },
-    ...DEBUG_TABLE_KEY_ARG_TYPES,
   },
   args: {
     ddlText: DEFAULT_DDL,
-    ...DEBUG_TABLE_KEY_DEFAULT_ARGS,
-    tableName: "users",
   },
 } satisfies Meta<typeof BuildFromDdlDebug>;
 

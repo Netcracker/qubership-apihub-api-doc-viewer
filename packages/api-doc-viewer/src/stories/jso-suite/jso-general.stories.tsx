@@ -16,7 +16,7 @@
 
 import { JsonSchemaViewer } from '@apihub/components/JsonSchemaViewer/JsonSchemaViewer';
 import { JsoViewer } from '@apihub/components/JsoViewer/JsoViewer';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 // It's necessary because storybook doesn't render nested stories without this empty story
 // eslint-disable-next-line storybook/story-exports
