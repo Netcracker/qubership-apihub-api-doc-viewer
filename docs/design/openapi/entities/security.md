@@ -1,0 +1,204 @@
+# Security
+
+The **Security** section: effective security requirements, the alternatives selector (logical
+**OR**), and one card per security scheme of the selected alternative (logical **AND**). Status:
+**planned**.
+
+## OpenAPI semantics
+
+| Concept | Specification | Viewer |
+| --- | --- | --- |
+| `security` (list of Security Requirement Objects) | Any **one** requirement satisfies the request. | Alternatives selector (OR). |
+| Security Requirement Object (`{ schemeName: [scopes] }`) | **All** schemes of one object must be satisfied. | One card per scheme (AND). |
+| Empty requirement `{}` | Anonymous access is allowed. | An alternative titled `No authentication` (Q7). |
+| Operation `security` absent | The document-level `security` applies. | Effective security = document `security`. |
+| Operation `security: []` | Overrides the document: no security. | No Security section. |
+| Scheme reference | By **name**, into `components.securitySchemes`; not a `$ref`. | The transformer resolves names (D11). |
+| Scopes list | OAuth2 / OpenID Connect: required scopes. OAS 3.1 also: role names for every other type. OAS 3.0: must be empty for other types. | `Required scopes` / `Required roles` row — [../features/oas-versions.md](../features/oas-versions.md#security). |
+
+## Effective security (`OpenApiSpecTransformer.resolveEffectiveSecurity`)
+
+```text
+operation.security !== undefined  →  operation.security     (isInheritedFromDocument = false)
+otherwise                         →  document.security ?? []  (isInheritedFromDocument = true)
+```
+
+`isInheritedFromDocument` is kept on the `security` node value (`ndm-reserved`; a hint row is a
+possible follow-up). The with-diffs variant is below ([With diffs](#with-diffs)).
+
+## Transformed shape
+
+```typescript
+// data.security in the operation-oriented spec
+type OpenApiSecuritySpec = {
+  isInheritedFromDocument: boolean
+  alternatives: OpenApiSecurityAlternativeSpec[]          // index = node key
+}
+type OpenApiSecurityAlternativeSpec = {
+  schemes: Record<string, OpenApiSecuritySchemeSpec>     // key = scheme name, requirement order
+}
+type OpenApiSecuritySchemeSpec = {
+  name: string
+  isResolved: boolean                                     // false: name not in components.securitySchemes
+  type?: string                                           // apiKey | http | oauth2 | openIdConnect | mutualTLS (3.1) | unknown string
+  description?: string
+  in?: string                                             // apiKey
+  parameterName?: string                                  // apiKey `name` (renamed: `name` is the scheme key)
+  scheme?: string                                         // http
+  bearerFormat?: string                                   // http bearer
+  openIdConnectUrl?: string                               // openIdConnect
+  requiredScopes: string[]                                // from the requirement
+  requiredScopesKind: 'scopes' | 'roles' | 'ignored'      // dialect decision
+  flows?: Record<OpenApiOAuthFlowType, OpenApiOAuthFlowSpec> // oauth2
+}
+type OpenApiOAuthFlowSpec = {
+  flowType: 'implicit' | 'password' | 'clientCredentials' | 'authorizationCode'
+  authorizationUrl?: string
+  tokenUrl?: string
+  refreshUrl?: string
+  scopes: Record<string, string>                          // available scopes: name → description
+}
+```
+
+The scheme spec is a **merge** of the requirement entry (name, scopes) and the scheme definition
+(everything else). Unknown scheme fields (including `x-*`) are not copied.
+
+## Nodes
+
+| Kind | Complexity | Key | Value | Children / nested |
+| --- | --- | --- | --- | --- |
+| `security` | complex | `security` | `{ isInheritedFromDocument }`¹ | nested: `securityRequirement` per alternative |
+| `securityRequirement` | simple | alternative index | `{ schemeNames: string[]; isAnonymous: boolean }` | children: `securityScheme` per scheme |
+| `securityScheme` | simple | scheme name | the scheme spec without `flows` | children: `oauthFlow` per flow |
+| `oauthFlow` | simple | flow type | `OpenApiOAuthFlowSpec` | — |
+
+¹ Complex AsyncAPI nodes carry `value: null`; `security` needs a value, so `createNodeFromRaw`
+must create values for complex kinds listed in an allow-list (`OPENAPI_COMPLEX_KINDS_WITH_VALUE`).
+Alternatively keep `security` simple with one complex child `securityAlternatives`; pick one in
+implementation and record it in the diagram. The rest of this document is neutral to the choice.
+
+`meta.unresolvedSecurityScheme = name` is set when `isResolved` is false.
+
+## Section header
+
+`TitleRow` "Security", **h2**, `expandable={false}`. Shown when the effective list has at least one
+alternative (with diffs: on either side). An anonymous-only list (`[{}]`) still shows the section
+with the `No authentication` content.
+
+## Alternatives selector
+
+| Item | Rule |
+| --- | --- |
+| Shown when | ≥2 alternatives (Q6). With one alternative the cards follow the header directly. |
+| Row | standalone selector row under the header — copy `MessageSectionsViewer.renderSelectorRow` (selector inside `OneSideLayout` / `SideBySideLayout` + `DiffFloatingBadgeWrapper`), `SelectorVariant.Secondary`, default tone |
+| Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}`. Resolved in next-data-model (`OpenApiSecurityRequirementTitle.resolve(value)`). |
+| Option test id | `security-alternative-<index>` |
+| Diffs | option `diffs` / `diffsSummary` / `descendantDiffsSummary` from the `securityRequirement` node (selector markers and per-side visibility are already handled by `Selector`); row severity: new placement `SelectorRow` from the `security` node |
+
+## Scheme card
+
+One card per `securityScheme` child of the selected alternative, in requirement order. v1 look:
+an indented row group (level + 1) introduced by an **h4** title row, like AsyncAPI server blocks
+(Q8). Component `SecuritySchemeCard`, test id `security-scheme-<name>`.
+
+Rows, top to bottom (each row has its own severity placement, D7):
+
+| Row | Component | Shown when | Content | Severity placement |
+| --- | --- | --- | --- | --- |
+| Title (h4) | `TitleRow` | always | scheme name; subheader: `UxBadge` (`default`) with the type label | `TitleRow` |
+| Unresolved | `TextRow` (muted) | `!isResolved` | `Security scheme is not defined in components.` | — |
+| Description | `MarkdownTextRow` | `description` | markdown | `DescriptionRow` |
+| `In` | `AdditionalInfoRow` | apiKey, `in` | `header` / `query` / `cookie` chip | `SecuritySchemeLocationRow` |
+| `Name` | `AdditionalInfoRow` | apiKey, `parameterName` | chip | `SecuritySchemeParameterNameRow` |
+| `Scheme` | `AdditionalInfoRow` | http, `scheme` | chip (`basic`, `bearer`, …) | `SecuritySchemeHttpSchemeRow` |
+| `Bearer format` | `AdditionalInfoRow` | http, `bearerFormat` | chip | `SecuritySchemeBearerFormatRow` |
+| `OpenID Connect URL` | `AdditionalInfoRow` | openIdConnect, `openIdConnectUrl` | chip with the URL | `SecuritySchemeOpenIdConnectUrlRow` |
+| `Required scopes` / `Required roles` | `AdditionalInfoRow` | `requiredScopes.length > 0` and `requiredScopesKind !== 'ignored'` | one chip per scope | `SecurityRequiredScopesRow` |
+| OAuth flows | `OAuthFlowRows` × n | oauth2 | see below | per flow node |
+
+Type labels (`OpenApiSecuritySchemeTypeLabel.resolve(type)`): `apiKey` → `API key`, `http` →
+`HTTP`, `oauth2` → `OAuth 2.0`, `openIdConnect` → `OpenID Connect`, `mutualTLS` → `Mutual TLS`;
+any other string is shown as is. An `http` scheme shows `HTTP` in the badge and the concrete scheme
+in the `Scheme` row.
+
+Label of the scopes row: `requiredScopesKind === 'scopes'` → `Required scopes`; `'roles'` →
+`Required roles`.
+
+### OAuth flow rows (`OAuthFlowRows`)
+
+Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizationCode`.
+
+| Row | Shown when | Content | Severity placement |
+| --- | --- | --- | --- |
+| Flow title (h5) | always | `Implicit flow`, `Password flow`, `Client credentials flow`, `Authorization code flow` | `TitleRow` |
+| `Authorization URL` | `authorizationUrl` | chip | `OAuthFlowAuthorizationUrlRow` |
+| `Token URL` | `tokenUrl` | chip | `OAuthFlowTokenUrlRow` |
+| `Refresh URL` | `refreshUrl` | chip | `OAuthFlowRefreshUrlRow` |
+| `Available scopes` | non-empty `scopes` | one chip per scope **name**; the scope description is the chip tooltip (`title` attribute) | `OAuthFlowScopesRow` |
+
+### Anonymous alternative content
+
+When the selected alternative is `{}`: one `TextRow` (muted, body2) `Authentication is not
+required.` instead of cards (Q7).
+
+## Display modes
+
+| Row | `simple` | `detailed` |
+| --- | --- | --- |
+| Section header, selector, card titles, flow titles | shown | shown |
+| Descriptions, all `AdditionalInfoRow`s | hidden | shown |
+
+Rules live in `OpenApiNodeVisibilityManagerKindSecurityScheme` / `…KindOAuthFlow`
+(`resolveNodeVisibility(node, displayMode)`), not in JSX.
+
+## With diffs
+
+### Where diffs come from
+
+Measured on the fixtures (E7, E8, E9 in [../notes/2026-10-design-analysis.md](../notes/2026-10-design-analysis.md)):
+
+| Change | Diff location in the merged document | Becomes |
+| --- | --- | --- |
+| Alternative added / removed | `operation.security[diffsMetaKey][index]` (`add` / `remove`); `apiDiff` maps alternatives **by index** | `securityRequirement` node-level diff (via `security` descendant diffs) |
+| `security` set to `[]` | one `remove` per alternative (not a whole-list diff) | same as above |
+| Scheme added to / removed from an alternative | `operation.security[i][diffsMetaKey][name]` (`add` / `remove`, value `[]` or the scopes) | `securityScheme` node-level diff |
+| Scope added / removed | `operation.security[i][name][diffsMetaKey][j]` | list-item diffs of `requiredScopes` |
+| Scheme definition field changed | `components.securitySchemes[name][diffsMetaKey][field]` and deeper (`flows.<type>[diffsMetaKey].tokenUrl`, `flows.<type>.scopes[diffsMetaKey][scope]`) | field diffs on `securityScheme` / `oauthFlow` |
+| Scheme definition added / removed | `components.securitySchemes[diffsMetaKey][name]` | the card's field rows are painted added / removed; title row unchanged unless the requirement entry changed too |
+| Operation starts overriding the document (`security` absent → present) | `operation[diffsMetaKey].security` (`add`, `afterValue` = the operation list) | synthetic alternative diffs (below) |
+| Operation stops overriding | `operation[diffsMetaKey].security` (`remove`) | synthetic alternative diffs (below) |
+| No override on either side | the document-level `security[diffsMetaKey]…` records | same relocation as for the operation list |
+
+The with-diffs transformer copies every relocated record onto the transformed spec under
+`diffsMetaKey` (scheme definition diffs onto the scheme spec, flow diffs onto the flow spec,
+scope list diffs onto `requiredScopes`) — the aggregators then read only the transformed spec.
+
+### Synthetic alternative diffs on override changes (Q15)
+
+When the effective list switches between the document list `D` and the operation list `O`:
+
+1. `before = D`, `after = O` for an `add` of `operation.security` (reverse for `remove`). Both are
+   read from the merged document: the operation list from the diff's `afterValue` / `beforeValue`,
+   the document list from the merged root `security` (with its own diffs ignored for this step).
+2. Match alternatives by **deep equality** of the requirement objects (scheme-name set and scope
+   sets, order-insensitive).
+3. Merged list = `after` in order; every `before` alternative without a match is appended.
+4. Matched alternatives carry no diff; unmatched `after` ones get an `add`, appended `before` ones a
+   `remove`. The synthetic diffs reuse `type`, `scope`, and declaration paths of the
+   `operation.security` diff.
+
+### Painting
+
+| Element | Rule |
+| --- | --- |
+| Section header | shared colorizing rule over the alternatives ([../features/diffs.md](../features/diffs.md#section-headers)) |
+| Selector option | `Selector` hides the option on the side where its alternative does not exist and shows the change marker from `diffsSummary` ∪ `descendantDiffsSummary` |
+| Card of an added / removed scheme | every row inherits the whole-node diff (KindAny inheritance) — green / red rows on one side, hidden on the other |
+| Field rows | `colorizingDiff` = the field diff (add green, remove red, replace yellow); chip highlight per the DDL / JSON Schema chip contract: replace → yellow `textHighlighterColor`, add / remove → row background only |
+| Scope rows | side items from `resolveListSideItems` (`model/abstract/tree-with-diffs/list-side-display.ts`); a whole-list add / remove paints the row and keeps chips plain (JSON Schema "whole-list add/remove" rule) |
+
+## Related documents
+
+- [../features/oas-versions.md](../features/oas-versions.md#security) — 3.0 vs 3.1 differences
+- [../features/diffs.md](../features/diffs.md) — aggregators and severities
+- Fixtures: `packages/samples/openapi/oas30/03-security-alternatives/`, `oas31/03-security-mutual-tls-and-roles/`, `packages/samples/openapi-diffs/security/`

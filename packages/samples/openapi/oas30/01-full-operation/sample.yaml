@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Pet store (full operation, OAS 3.0)
+  version: 1.0.0
+security:
+  - api_key: []
+paths:
+  /pets/{petId}/photos:
+    parameters:
+      - name: petId
+        in: path
+        required: true
+        description: Identifier of the pet. Declared on the **path item**; the unifier merges it into the operation.
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+    post:
+      operationId: uploadPetPhoto
+      summary: Upload a photo of a pet
+      description: |
+        Uploads a new photo and attaches it to the pet.
+
+        * Accepts PNG images or a multipart form.
+        * Returns the stored photo metadata.
+      externalDocs:
+        description: Photo upload guide
+        url: https://example.com/docs/photos
+      x-rate-limit: 100
+      x-audience:
+        visibility: public
+        owners: [pets-team]
+      security:
+        - petstore_auth: [write:pets, read:pets]
+        - api_key: []
+          request_signature: []
+      parameters:
+        - name: dryRun
+          in: query
+          description: Validate the request without storing the photo.
+          schema:
+            type: boolean
+            default: false
+        - name: tags
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [portrait, outdoor, vet]
+        - name: X-Request-Id
+          in: header
+          required: true
+          description: Correlation identifier.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Legacy-Client
+          in: header
+          deprecated: true
+          schema:
+            type: string
+            nullable: true
+        - name: session
+          in: cookie
+          description: Browser session cookie.
+          schema:
+            type: string
+            minLength: 16
+      requestBody:
+        required: true
+        description: Photo binary **or** a multipart form with metadata.
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                caption:
+                  type: string
+                  maxLength: 140
+                takenAt:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Photo stored.
+          headers:
+            Location:
+              description: URL of the stored photo.
+              required: true
+              schema:
+                type: string
+                format: uri
+            X-Rate-Limit-Remaining:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '303':
+          description: The same photo already exists; see the `Location` header.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: Invalid image.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Pet not found.
+        '5XX':
+          description: Server error.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: Unexpected error.
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-API-Key
+      in: header
+      description: Static API key issued per tenant.
+    request_signature:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    petstore_auth:
+      type: oauth2
+      description: OAuth 2.0 with **authorization code** and client credentials flows.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/authorize
+          tokenUrl: https://auth.example.com/token
+          refreshUrl: https://auth.example.com/refresh
+          scopes:
+            read:pets: Read pets
+            write:pets: Modify pets
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            read:pets: Read pets
+  schemas:
+    Photo:
+      type: object
+      required: [id, url]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        url:
+          type: string
+          format: uri
+        caption:
+          type: string
+          nullable: true
+        size:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer

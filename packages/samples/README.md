@@ -23,6 +23,8 @@ its output folder must not share it with hand-written files.
 | `json-schema/` | JSON Schema | plain | [json-schema/README.md](json-schema/README.md) |
 | `json-schema-diffs/` | JSON Schema | with diffs | [json-schema-diffs/README.md](json-schema-diffs/README.md) |
 | `async-api-diffs/` | AsyncAPI | with diffs | [async-api-diffs/README.md](async-api-diffs/README.md) |
+| `openapi/` | OpenAPI (3.0, 3.1) | plain | [openapi/README.md](openapi/README.md) |
+| `openapi-diffs/` | OpenAPI (3.0, 3.1) | with diffs | [openapi-diffs/README.md](openapi-diffs/README.md) |
 | `ddlapi/` | DDL API | plain | [ddlapi/README.md](ddlapi/README.md) |
 | `ddlapi-diffs/` | DDL API | with diffs | [ddlapi-diffs/README.md](ddlapi-diffs/README.md) |
 | `jso-diffs/` | JSO | with diffs | [jso-diffs/README.md](jso-diffs/README.md) |

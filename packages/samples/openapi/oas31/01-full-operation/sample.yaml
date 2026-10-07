@@ -1,0 +1,110 @@
+openapi: 3.1.0
+info:
+  title: Pet store (full operation, OAS 3.1)
+  version: 1.0.0
+paths:
+  /pets/{petId}:
+    patch:
+      operationId: patchPet
+      summary: Partially update a pet
+      description: Applies a JSON merge patch. Nullable fields use **type arrays** (OAS 3.1 / JSON Schema 2020-12).
+      externalDocs:
+        url: https://example.com/docs/pets#patch
+      x-internal: false
+      security:
+        - petstore_auth: [write:pets]
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            exclusiveMinimum: 0
+        - name: If-Match
+          in: header
+          required: true
+          description: ETag of the pet version being modified.
+          schema:
+            type: string
+        - name: fields
+          in: query
+          schema:
+            type: [array, 'null']
+            items:
+              type: string
+            examples:
+              - [name, status]
+      requestBody:
+        description: Merge patch document.
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/PetPatch'
+          application/octet-stream:
+            schema:
+              type: string
+              contentMediaType: image/png
+              contentEncoding: base64
+      responses:
+        '200':
+          description: The updated pet.
+          headers:
+            ETag:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '412':
+          description: The `If-Match` precondition failed.
+        '422':
+          description: The patch is not applicable.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+components:
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://auth.example.com/authorize
+          scopes:
+            write:pets: Modify pets
+            read:pets: Read pets
+  schemas:
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          enum: [available, pending, sold]
+        nickname:
+          type: [string, 'null']
+        weight:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 200
+    PetPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          const: sold
+        nickname:
+          type: [string, 'null']

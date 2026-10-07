@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  title: Security alternatives (OAS 3.0)
+  version: 1.0.0
+security:
+  - api_key: []
+paths:
+  /reports:
+    get:
+      summary: Inherits the root security (the operation has no `security`)
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Three alternatives, one of them anonymous
+      security:
+        - oidc: [reports.write]
+        - api_key: []
+          basic: []
+        - {}
+      responses:
+        '201':
+          description: Created
+    delete:
+      summary: Explicitly public (`security` set to an empty list overrides the root)
+      security: []
+      responses:
+        '204':
+          description: Deleted
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: query
+    basic:
+      type: http
+      scheme: basic
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration

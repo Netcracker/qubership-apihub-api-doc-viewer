@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Parameter sources (OAS 3.0)
+  version: 1.0.0
+paths:
+  /orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: X-Tenant
+        in: header
+        description: Path-item header; the operation-level parameter with the same name and location wins.
+        schema:
+          type: string
+    get:
+      summary: Parameters from the path item, a $ref, and content
+      parameters:
+        - name: X-Tenant
+          in: header
+          required: true
+          description: Operation-level header; overrides the path-item one.
+          schema:
+            type: string
+            enum: [eu, us]
+        - $ref: '#/components/parameters/PageSize'
+        - name: filter
+          in: query
+          description: JSON-encoded filter, described with `content` instead of `schema`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  createdAfter:
+                    type: string
+                    format: date
+        - name: Accept
+          in: header
+          description: The specification says Accept, Content-Type and Authorization header parameters are ignored.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+components:
+  parameters:
+    PageSize:
+      name: pageSize
+      in: query
+      description: Page size (from `components.parameters`).
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20

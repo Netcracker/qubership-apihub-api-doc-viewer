@@ -1,0 +1,32 @@
+openapi: 3.1.0
+info:
+  title: mutualTLS and role scopes (OAS 3.1)
+  version: 1.0.0
+paths:
+  /admin/keys:
+    post:
+      summary: Rotate signing keys
+      description: |
+        OAS 3.1 only:
+        * `mutualTLS` security scheme type;
+        * requirement scopes on non-OAuth schemes (role names).
+      security:
+        - mtls: []
+          bearer: [admin, key-manager]
+        - api_key: [admin]
+      responses:
+        '204':
+          description: Keys rotated.
+components:
+  securitySchemes:
+    mtls:
+      type: mutualTLS
+      description: Client certificate issued by the internal CA.
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    api_key:
+      type: apiKey
+      in: cookie
+      name: ADMIN_KEY

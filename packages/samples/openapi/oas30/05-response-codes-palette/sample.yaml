@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Response code palette (OAS 3.0)
+  version: 1.0.0
+paths:
+  /palette:
+    get:
+      summary: Every response code class
+      responses:
+        '500':
+          description: Declared first on purpose - the selector uses canonical order, not document order.
+        '101':
+          description: Switching protocols (1XX - grey).
+        '200':
+          description: OK (2XX - green).
+          content:
+            application/json:
+              schema:
+                type: string
+        '2XX':
+          description: Any other success (range - green).
+        '302':
+          description: Found (3XX - blue).
+        '404':
+          description: Not found (4XX - orange).
+        '4XX':
+          description: Any other client error (range - orange).
+        '503':
+          description: Unavailable (5XX - red).
+        default:
+          description: Anything else (grey).

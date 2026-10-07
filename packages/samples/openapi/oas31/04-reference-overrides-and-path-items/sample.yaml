@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: Reference overrides and components.pathItems (OAS 3.1)
+  version: 1.0.0
+paths:
+  /invoices/{invoiceId}:
+    $ref: '#/components/pathItems/Invoice'
+components:
+  pathItems:
+    Invoice:
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+      get:
+        summary: Path item resolved from components.pathItems
+        parameters:
+          - $ref: '#/components/parameters/Locale'
+            description: Overridden description (a Reference Object sibling - OAS 3.1 only).
+        requestBody:
+          $ref: '#/components/requestBodies/Empty'
+        responses:
+          '200':
+            $ref: '#/components/responses/Invoice'
+            description: Overridden response description (a Reference Object sibling - OAS 3.1 only).
+  parameters:
+    Locale:
+      name: locale
+      in: query
+      description: Original description from components.parameters.
+      schema:
+        type: string
+  requestBodies:
+    Empty:
+      description: Unused body declared for completeness.
+      content:
+        text/plain:
+          schema:
+            type: string
+            maxLength: 0
+  responses:
+    Invoice:
+      description: Original response description from components.responses.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            contentMediaType: application/pdf
+        application/json:
+          schema:
+            type: object
+            properties:
+              total:
+                type: number

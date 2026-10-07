@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: Minimal operation (OAS 3.0)
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      responses:
+        '204':
+          description: Service is healthy.

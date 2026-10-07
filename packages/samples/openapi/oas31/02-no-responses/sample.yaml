@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info:
+  title: Operation without responses (OAS 3.1)
+  version: 1.0.0
+paths:
+  /events:
+    post:
+      summary: Fire-and-forget event
+      description: OAS 3.1 makes `responses` optional; the Responses section is not rendered.
+      requestBody:
+        content:
+          application/cloudevents+json:
+            schema:
+              type: object
+              required: [id, type]
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                data: true
