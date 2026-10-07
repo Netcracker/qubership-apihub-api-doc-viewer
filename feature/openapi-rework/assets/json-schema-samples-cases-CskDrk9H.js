@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{n as t,t as n}from"./parse-yaml-source-C_EzBWAu.js";import{i as r,n as i}from"./sample-cases-DDoAHGgD.js";var a;function o(){return(o=e((()=>{n(),r(),a=e=>i(e,[`/sample.yaml`,`/sample.json`]).map(({caseId:e,source:n})=>({caseId:e,schema:t(n)}))})))()}export{o as n,a as t};
