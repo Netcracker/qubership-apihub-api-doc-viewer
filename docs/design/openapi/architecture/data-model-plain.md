@@ -24,7 +24,7 @@ flowchart TB
     Kinds["types/node-kind.ts<br/>operation · security · securityRequirement · securityScheme · oauthFlow ·<br/>extensions · request · parameters · requestBody · content · mediaType ·<br/>responses · response · responseHeaders"]
     Values["types/node-value.ts · node-meta.ts · aliases.ts"]
     TreeImpl["tree/{tree,simple-node,complex-node}.impl.ts · OpenApiTree"]
-    Labels["display/ · OpenApiOperationTitle · OpenApiSecurityRequirementTitle ·<br/>OpenApiSecuritySchemeTypeLabel"]
+    Labels["display/ · OpenApiSecurityRequirementTitle ·<br/>OpenApiSecuritySchemeTypeLabel"]
   end
 
   subgraph BS["building-service/openapi"]

@@ -29,7 +29,7 @@ export interface OpenApiTreeNodeValueTypeOperation {
   readonly operationId?: string
   readonly description?: string
   readonly externalDocs?: OpenApiExternalDocs   // { url: string; description?: string }
-  readonly deprecated?: boolean                 // ndm-reserved in v1
+  readonly deprecated?: boolean                 // tag in the title subheader
 }
 ```
 
@@ -38,9 +38,31 @@ export interface OpenApiTreeNodeValueTypeOperation {
 | Item | Rule |
 | --- | --- |
 | Component | `TitleRow`, `variant={TextValueVariant.h1}`, `expandable={false}`, `data-precededby={ROOT}` |
-| Text | `title` (operation `summary`); else `operationId`; else `` `${METHOD} ${path}` `` (Q10). The fallback is resolved in next-data-model (`OpenApiOperationTitle.resolveDisplay(value)`), not in JSX. |
-| Hidden | `noHeading` |
-| Diff (diffs viewer) | `summary` diff on `title` key → `TitleRow` `diff`; severity `TitleRow`. A whole-operation add / remove paints the row through the node-level diff (`buildRowDiffProps` with the default fallback). |
+| Text | `title` (operation `summary`) — **no fallback** (Q10) |
+| Shown when | `summary` exists (diffs: on either side, or a `title` diff exists) and not `noHeading` |
+| Subheader | **deprecated** tag when `deprecated === true` (below) |
+| Diff (diffs viewer) | `summary` diff on `title` key → `TitleRow` `diff`; severity `TitleRow`. A whole-operation add / remove paints the row through the node-level diff. A `deprecated` change paints the row as a synthetic yellow replace (JSON Schema meta-flag rule). |
+
+## Operation ID row
+
+Secondary information directly under the title (Q10).
+
+| Item | Rule |
+| --- | --- |
+| Component | `TextRow`, `variant={TextValueVariant.body2}`, `textFontWeight='normal'`, secondary grey text color (`#626D82`, the address-row text color) — small and muted, never a heading |
+| Text | `operationId` as is (no label) |
+| Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
+| `data-precededby` | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` after the title row; `ROOT` when it is the first row. The address row below it uses the new member `OPERATION_ID_ROW`. |
+| Diff | `operationId` key; severity: new placement `OperationIdRow` |
+
+## Deprecated tag
+
+| Item | Rule |
+| --- | --- |
+| Where | title-row subheader, `TagsWithDiffs` with the single tag `deprecated` (`UxBadge` kind `tag-amber`, as JSON Schema) |
+| No title row | the tag moves to the address row, after the path (`AddressRow` `trailing` slot) |
+| Plain | shown when `deprecated === true` |
+| Diffs | shown on a side where `deprecated` is `true` or where it has its own diff; highlighted only by its own diff (JSON Schema "Flag tags" rule); a wholly added / removed operation shows a plain tag |
 
 ## Address row
 
@@ -56,6 +78,8 @@ export type AddressRowBadge = {
 export type AddressRowProps = WithPrecededByProps & {
   badge: AddressRowBadge | null
   address: string
+  /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */
+  trailing?: (layoutSide: LayoutSide) => ReactElement | null
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
@@ -73,14 +97,29 @@ ACTION_COLOR_MAP[action] }`; its screenshot ITs must stay unchanged after the mo
 | Address text | `path` exactly as in the document (`/pets/{petId}/photos`); server URLs are not prefixed (`servers` is out of v1 scope). |
 | Diff | `address` key of the operation node. The with-diffs transformer converts the `paths` **rename** diff (`beforeKey` → `afterKey`) into a `replace` with `beforeValue = beforeKey`, `afterValue = afterKey`, so the existing partial-replace highlighting works ([../features/diffs.md](../features/diffs.md#operation)). Severity `AddressRow`. |
 
-HTTP method badge colors (Q9, `utils/openapi/http-method-badge.ts`):
+### HTTP method badge config
 
-| Method | Class | Method | Class |
-| --- | --- | --- | --- |
-| `get` | `bg-sky-500` | `delete` | `bg-red-500` |
-| `post` | `bg-green-500` | `head` | `bg-purple-500` |
-| `put` | `bg-orange-400` | `options` | `bg-indigo-500` |
-| `patch` | `bg-teal-500` | `trace` | `bg-slate-500` |
+One exported config map (D13, Q9) in `packages/api-doc-viewer/src/utils/openapi/http-method-badge-config.ts`;
+`resolveHttpMethodBadge(method)` reads it and falls back to `DEFAULT` for an unknown method.
+Changing a color is a one-line edit of this map; no component holds method colors.
+
+```typescript
+export const OPENAPI_HTTP_METHOD_BADGE_CONFIG: Readonly<Record<OpenApiHttpMethod | 'DEFAULT', { colorClass: string }>> = {
+  get:     { colorClass: 'bg-green-500' },
+  post:    { colorClass: 'bg-sky-500' },
+  put:     { colorClass: 'bg-orange-400' },
+  patch:   { colorClass: 'bg-teal-500' },
+  delete:  { colorClass: 'bg-red-500' },
+  head:    { colorClass: 'bg-purple-500' },
+  options: { colorClass: 'bg-indigo-500' },
+  trace:   { colorClass: 'bg-slate-500' },
+  DEFAULT: { colorClass: 'bg-slate-500' },
+}
+```
+
+Tailwind keeps only class names it finds in source files: the classes must stay literal strings in
+this file (never built by concatenation), or they disappear from the CSS bundle. A host-level
+override prop is not part of v1; the map is the extension point.
 
 ## External docs row
 

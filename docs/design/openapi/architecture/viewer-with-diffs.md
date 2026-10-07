@@ -12,7 +12,7 @@ from `OpenApiRowDiffs`. Only the root, providers, nested viewers, and visibility
 ```mermaid
 flowchart TB
   RootD["OpenApiOperationDiffsViewer.tsx<br/>OpenApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>OpenApiViewerContext (hideUnchangedNodes) · LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
-  Containers["Operation / Security / SecuritySchemeCard / Request / Parameters /<br/>RequestBody / Responses / Response / MediaTypeSchema containers<br/>(shared with plain)"]
+  Containers["Operation / Security / SecuritySchemeCard / Request / Parameters /<br/>RequestBody / MediaTypeContentHeader / Responses / Response / MediaTypeSchema<br/>containers (shared with plain)"]
   Guards["shared-utilities/tree-node-guards.ts<br/>isOpenApi*NodeWithDiffs"]
   RowDiffs["next-data-model<br/>OpenApiRowDiffs · with-diffs visibility managers"]
   DiffState["shared-components/diffs/node-diff-props.ts<br/>useNodeDiffState · toNodeDiffState · buildRowDiffProps"]

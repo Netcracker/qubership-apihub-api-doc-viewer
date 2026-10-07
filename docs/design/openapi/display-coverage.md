@@ -60,13 +60,15 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 
 | Area | UI element | Condition | Design |
 | --- | --- | --- | --- |
-| Header | Title (h1) | unless `noHeading`; `summary` → `operationId` → `METHOD path` | [entities/operation.md](entities/operation.md#title-row) |
+| Header | Title (h1) | `summary` exists and not `noHeading`; no fallback | [entities/operation.md](entities/operation.md#title-row) |
+| Header | **deprecated** tag | `deprecated: true`; in the title subheader, on the address row when there is no title | [entities/operation.md](entities/operation.md#deprecated-tag) |
+| Header | Operation ID (secondary text) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
 | Header | External docs link | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
 | Header | Description (markdown) | `description` | [entities/operation.md](entities/operation.md#description-row) |
 | Security | Section (h2) | ≥1 effective alternative | [entities/security.md](entities/security.md) |
-| Security | Alternatives selector | ≥2 alternatives | [entities/security.md](entities/security.md#alternatives-selector) |
-| Security | Scheme card: title (h4) + type badge, description, `In`, `Name`, `Scheme`, `Bearer format`, `OpenID Connect URL`, `Required scopes` / `Required roles` | per scheme of the selected alternative; detail rows in `detailed` mode | [entities/security.md](entities/security.md#scheme-card) |
+| Security | Alternatives selector | ≥1 alternative (always with the section) | [entities/security.md](entities/security.md#alternatives-selector) |
+| Security | Framed scheme card: title (h4) + type badge, description, `In`, `Name`, `Scheme`, `Bearer format`, `OpenID Connect URL`, `Required scopes` / `Required roles` | per scheme of the selected alternative; detail rows in `detailed` mode | [entities/security.md](entities/security.md#scheme-card) |
 | Security | OAuth flow rows: title (h5), `Authorization URL`, `Token URL`, `Refresh URL`, `Available scopes` | oauth2 | [entities/security.md](entities/security.md#oauth-flow-rows-oauthflowrows) |
 | Security | `No authentication` alternative | `{}` requirement | [entities/security.md](entities/security.md#anonymous-alternative-content) |
 | Extensions | Section (h2) + JSO tree | `x-*` keys on the operation | [entities/operation.md](entities/operation.md#extensions-section) |
@@ -74,13 +76,13 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Request | Path / Query Parameters, Headers, Cookies (h3) + synthesized schema | parameters of that `in` | [entities/parameters.md](entities/parameters.md#groups) |
 | Request | `Media type` custom annotation on a parameter | `content`-described parameter | [entities/parameters.md](entities/parameters.md#property-schema-of-one-entry) |
 | Request | Body (h3) + media-type selector | `requestBody` | [entities/request-body.md](entities/request-body.md) |
+| Request | Required `*` on the Body title | `requestBody.required: true` | [entities/request-body.md](entities/request-body.md#required-marker) |
 | Request | Body description (markdown) | `requestBody.description` | [entities/request-body.md](entities/request-body.md#description-row) |
 | Request | Body schema (wrapped root `Type`) | selected media type has `schema` | [entities/request-body.md](entities/request-body.md#schema) |
 | Responses | Section (h2) + toned code selector | `responses` | [entities/responses.md](entities/responses.md), [features/response-code-selector.md](features/response-code-selector.md) |
-| Responses | Media-type selector row | the selected response has content | [entities/responses.md](entities/responses.md#media-type-selector-row) |
 | Responses | Response description (markdown) | `description` | [entities/responses.md](entities/responses.md#description-row) |
 | Responses | Headers (h3) + synthesized schema | ≥1 header | [entities/responses.md](entities/responses.md#headers) |
-| Responses | Body (h3) + schema | the selected response has content | [entities/responses.md](entities/responses.md#body) |
+| Responses | Body (h3) + media-type selector in the subheader + schema | the selected response has content | [entities/responses.md](entities/responses.md#body) |
 
 ## Displayed (with diffs)
 
@@ -89,7 +91,10 @@ shows when it has content on either side or a diff of its own.
 
 | Area | Diff | Severity placement |
 | --- | --- | --- |
-| Title | `title` (summary), whole operation | `title-row` |
+| Title | `title` (summary), whole operation, `deprecated` change (synthetic replace) | `title-row` |
+| Deprecated tag | its own `deprecated` diff | — (tag chrome) |
+| Operation ID | `operationId` | `operation-id-row` |
+| Request Body title | `required` change: side-exclusive `*`, diff-colored `required` tag, synthetic replace | `title-row` |
 | Address | path rename → partial replace | `address-row` |
 | External docs | whole add / remove, `url` / `description` replace | `external-docs-row` |
 | Descriptions (operation, body, response, scheme) | `description` | `description-row` |
@@ -105,14 +110,12 @@ shows when it has content on either side or a diff of its own.
 
 | Item | Tag | Notes |
 | --- | --- | --- |
-| `operation.deprecated` | `planned` | Kept on the value (`ndm-reserved` until then); a deprecated tag next to the title is the natural place. |
-| `requestBody.required` | `planned` | Kept on the value. |
 | `servers` (document, path item, operation) | `planned` | The address row shows the path only. |
 | Parameter / header `style`, `explode`, `allowEmptyValue`, `allowReserved` | `intentional-gap` | `api-unifier` injects defaults; showing them would add noise to every parameter. |
 | Parameter / header / media type `example`, `examples` | `planned` | Schema-level examples are shown by the JSON Schema stack. |
 | Media type `encoding` | `planned` | multipart details. |
 | Parameter / header / response / media type `x-*` | `planned` | Only operation-level extensions are shown. |
-| `tags`, `operationId` as its own row | `intentional-gap` | `operationId` is a title fallback only. |
+| `tags` | `intentional-gap` | Not part of the operation view. |
 | `callbacks`, `links`, `webhooks` | `intentional-gap` | Out of the operation-viewer scope. |
 | Security requirement inherited from the document (hint) | `ndm-reserved` | `isInheritedFromDocument` on the `security` node. |
 | Schema keywords `const`, `contentMediaType`, `contentEncoding` | — | JSON Schema stack topic; triage against [../json-schema/display-coverage.md](../json-schema/display-coverage.md). |

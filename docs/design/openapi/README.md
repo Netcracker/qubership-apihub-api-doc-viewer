@@ -53,29 +53,36 @@ tree, and lays the rows out.
 | D9 | `AddressRow` moves to `shared-components/` and takes a badge descriptor; AsyncAPI passes its action badge, OpenAPI its HTTP method badge. | One partial-replace implementation for both stacks. |
 | D10 | `Selector` gains an optional per-option **tone**; the default tone keeps today's grey look. | The response-code selector is the same control with colors ([features/response-code-selector.md](features/response-code-selector.md)). |
 | D11 | Security schemes are resolved from `components.securitySchemes` of the **same** document the viewer receives. | Security requirements reference schemes by name, not by `$ref`; nothing else carries the scheme definition. |
+| D12 | Shared rows (`TitleRow`, `TextRow`, `MarkdownTextRow`, `AdditionalInfoRow`) gain an optional per-side `framePosition`; a framed card is a run of rows whose positions the card container precomputes. | Each row renders its own two halves in side-by-side layout, so a frame must be drawn per row and per side (Q8). |
+| D13 | HTTP method badge colors are one exported config map, not a `switch` in a component. | Easy to adjust later (Q9). |
 
 ## Open questions
 
-Each question has a recommended default; implementation may proceed with it until the product
-owner decides otherwise.
-
-| Id | Question | Recommended default |
+| Id | Question | Working default (until decided) |
 | --- | --- | --- |
-| Q1 | Folder and identifier spelling: `openapi` (spec's own name, used here) or `open-api` (mirrors `async-api`)? | `openapi` for folders, `OpenApi` for identifiers. |
-| Q2 | Response media-type selector: its own row above the response description (as requested) or a subheader of the response **Body** title (as in the request)? | Own row, as requested; the response **Body** title has no selector. |
-| Q3 | A Media Type Object has no `description`. The row under the media-type selector shows `response.description`, which does not change with the selected media type. Accept? | Yes. |
-| Q4 | Body schemas: wrap the root under a synthetic property (AsyncAPI payload parity, title `Type`) or render the raw root? | Wrap, title `Type`, root nesting indicator suppressed — identical to AsyncAPI payload. |
-| Q5 | Request header parameters `Accept`, `Content-Type`, `Authorization` and the response header `Content-Type` are ignored by the specification. Hide them? | Show them unchanged (no silent filtering); revisit if users complain. |
-| Q6 | Show the security alternatives selector when there is only one alternative? | No — render the cards directly; show the selector from two alternatives (union of both sides in diffs). |
-| Q7 | Label and content of an anonymous alternative (`{}`)? | Option title `No authentication`; content is one muted text row `Authentication is not required.` |
-| Q8 | "Card" look: a framed box per scheme needs a frame slot in `SideBySideLayout` (each row draws its own two halves). v1 look? | v1: an indented row group with an `h4` title, like AsyncAPI server blocks. A framed card is a follow-up. |
-| Q9 | HTTP method badge colors. | Table in [entities/operation.md](entities/operation.md#address-row). |
-| Q10 | Title when `summary` is absent. | `operationId`, else `METHOD path`. |
-| Q11 | Out of v1 scope: `requestBody.required`, operation `deprecated`, `servers`, parameter `style` / `explode` / `allowReserved` / `example(s)`, media type `examples` / `encoding`, `callbacks`, `links`. | Not displayed in v1 (`planned` / `intentional-gap` in [display-coverage.md](display-coverage.md)). |
-| Q12 | Media type of a `content`-described parameter: `customAnnotations` row (works with diffs) or the plain-only `topLevelPropsMediaTypes` badge? | `customAnnotations` row `Media type`, in both modes. |
-| Q13 | Initially selected response code. | First `2XX` code in canonical order, else the first code. |
-| Q14 | Diffs viewer `operationKeys.path`: the merged-document key (the **after** path of a renamed path)? | Yes — the merged key; documented in [features/operation-viewer.md](features/operation-viewer.md#public-api). |
-| Q15 | Effective security when an operation starts / stops overriding the document-level `security` (synthetic alternative diffs). v1 or follow-up? | v1 — the algorithm is small ([entities/security.md](entities/security.md#with-diffs)). |
+| Q12 | Media type of a `content`-described parameter: `customAnnotations` row `Media type` (works with diffs) or the plain-only `topLevelPropsMediaTypes` badge next to the name? | `customAnnotations` row, in both modes — the only option that works in the diffs viewer. Revisit before step 3. |
+
+## Resolved questions
+
+Answered by the product owner on 2026-10-07; the design documents already reflect the answers.
+
+| Id | Question | Answer |
+| --- | --- | --- |
+| Q1 | Folder spelling: `openapi` or `open-api`? | `openapi` for folders and paths; `OpenApi` for identifiers. |
+| Q2 | Response media-type selector: own row, or subheader of the response **Body** title? | **Subheader of the response Body title**, as in the request. No standalone selector row in Responses. |
+| Q3 | A Media Type Object has no `description`; the response row shows `response.description`, independent of the selected media type. Accept? | Yes. |
+| Q4 | Body schemas: wrap under a synthetic `Type` property or render the raw root? | Wrap, title `Type`, root nesting indicator suppressed (AsyncAPI payload parity). |
+| Q5 | Header parameters ignored by the specification (`Accept`, `Content-Type`, `Authorization`; response `Content-Type`): hide? | Show them unchanged. |
+| Q6 | Security alternatives selector with only one alternative? | **Always shown** (from one alternative), like the AsyncAPI bindings selector. |
+| Q7 | Anonymous alternative (`{}`)? | Option `No authentication`; content: muted row `Authentication is not required.` |
+| Q8 | Security card look in v1? | **Framed box in v1**, drawn by per-row frame segments ([entities/security.md](entities/security.md#card-frame)). |
+| Q9 | HTTP method badge colors? | Proposed table with **GET and POST swapped**, kept as **one config map** ([entities/operation.md](entities/operation.md#http-method-badge-config)). |
+| Q10 | Title when `summary` is absent? | **No title row.** New: a secondary **operation ID row** (`TextRow`, small grey text) under the title, shown whenever `operationId` exists ([entities/operation.md](entities/operation.md#operation-id-row)). |
+| Q11 | Which out-of-scope items enter v1? | **Operation `deprecated`** (tag in the title subheader) and **`requestBody.required`** (asterisk on the request Body title; diff-colored `required` tag in diffs). Still out: `servers`, parameter / media type examples, `style` / `explode` / `allowReserved`, `encoding`, `callbacks`, `links`. |
+| Q13 | Initially selected response code? | First `2XX` in canonical order, else the first code. |
+| Q14 | Diffs viewer `operationKeys.path`? | The merged-document key (after path for mapped / renamed paths, before path for removed ones). |
+| Q15 | Synthetic alternative diffs on security override changes: v1? | v1. |
+| — | `operationId` row when there is no `operationId`? | Hidden (rendered only when present on either side). |
 
 ## Implementation plan
 
@@ -86,7 +93,7 @@ Test-first, per [../README.md](../README.md#workflow). Each step lists its exit 
 | 1 | Fixtures and catalogues: `packages/samples/openapi/` (plain, OAS 3.0 + 3.1) and `packages/samples/openapi-diffs/` (pairs). A first set exists. | testing | Catalogues list every case; cases cover every row of [display-coverage.md](display-coverage.md). |
 | 2 | Plain stories `OpenAPI Operation Suite/*`, screenshot ITs, `waitForOpenApiOperationViewer`. | testing | Stories build; ITs fail only because the viewer is missing. |
 | 3 | next-data-model plain: model types, dialects, `OpenApiSpecTransformer`, schema synthesizer, crawl rules, `OpenApiTreeBuilder`, visibility managers, unit tests. | ndm-authoring | Unit tests green: lookup, effective security, synthesis, dialect, response-code order. |
-| 4 | Shared UI: `Selector` tone, shared `AddressRow`, `ExternalDocsRow`, shared extensions section. | viewer-authoring | AsyncAPI and JSON Schema screenshot ITs unchanged. |
+| 4 | Shared UI: `Selector` tone, shared `AddressRow`, `ExternalDocsRow`, shared extensions section, row `framePosition` + `shared-styles/frame.css`. | viewer-authoring | AsyncAPI, JSON Schema, and DDL screenshot ITs unchanged (frame is opt-in). |
 | 5 | Plain viewer `OpenApiOperationViewer`. | viewer-authoring | Plain ITs green; snapshots reviewed. |
 | 6 | Diff stories `OpenAPI Operation Diffs Suite/*` and ITs. | testing | Stories build. |
 | 7 | next-data-model with diffs: with-diffs transformer, with-diffs synthesizer, five aggregator families, severities, `OpenApiRowDiffs`, unit tests. | ndm-authoring | Unit tests green for every row of the diff-source table in [features/diffs.md](features/diffs.md). |

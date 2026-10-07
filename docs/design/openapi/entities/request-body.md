@@ -11,14 +11,15 @@ description, and the schema of the selected media type. Status: **planned**.
 | `content` | complex | `content` | `null` | nested: `mediaType` per media type, document order |
 | `mediaType` | simple | the media type (`application/json`) | `{ mediaType: string; schema?: object \| boolean }` | — |
 
-`required` is `ndm-reserved` in v1 (Q11). `content` and `mediaType` are shared with responses.
+`required` is displayed in v1 ([Required marker](#required-marker), Q11). `content` and `mediaType`
+are shared with responses.
 Media type `examples` / `example` / `encoding` / `x-*` are not copied (Q11).
 
 ## Header row (h3) with the media-type selector
 
 | Item | Rule |
 | --- | --- |
-| Component | `TitleRow` "Body", **h3**, `expandable={false}`, `subheader={(side) => <Selector …/>}` — the `BindingsNodeViewer` pattern |
+| Component | `TitleRow` "Body" (+ required `*`, [below](#required-marker)), **h3**, `expandable={false}`, `subheader={(side) => <><Selector …/>{requiredTag}</>}` — the `BindingsNodeViewer` pattern |
 | Selector | options = nested `mediaType` nodes of `content`; title = media type text; `SelectorVariant.Secondary`; default tone; `layoutSide` forwarded |
 | No media types | the subheader is empty; the header is still shown when `requestBody` exists (e.g. only a description) |
 | Option test id | `request-media-type-<index>` |
@@ -29,6 +30,21 @@ A renamed media type (`apiDiff` maps `application/json` ↔ `application/json; c
 wildcard-compatible keys, E6) has one option whose title differs per side: the option `title` is a
 `(layoutSide) => ReactNode` returning `OpenApiRowDiffs.MediaType.resolveSideTitle(node, side)` —
 `beforeKey` on the origin side, `afterKey` on the changed side, yellow text highlighter on both.
+
+## Required marker
+
+Mirrors JSON Schema's `required` rendering ([meta flags and required](../../json-schema/features/meta-flags-and-required.md)).
+
+| Element | Plain | With diffs |
+| --- | --- | --- |
+| Red `*` after "Body" (shared `RequiredStar`, via `TitleRow` `titleContent` per side) | shown when `required === true` | **side-exclusive**: shown only on the side where the body is required (`OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)`); unchanged required → both sides |
+| **required** tag in the subheader, after the media-type selector (`TagsWithDiffs`) | never | shown only when the required status changed **and** the body was not wholly added / removed; colored by its own diff (`OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)`) — green when it became required, red when it became optional |
+| Title row background | — | yellow synthetic replace when the required status changed (JSON Schema title-row priority: whole add / remove wins) |
+
+Diff shape: `requestBody[M].required`. A missing `required` is `false` (`api-unifier` default, E5),
+so "became optional" can arrive as `true → false` replace **or** as a `remove` of `required: true`;
+normalize both to boolean semantics in `KindRequestBody` (`add` → became required, `remove` →
+became optional) and drop diffs whose effective value did not change. Severity: `TitleRow`.
 
 ## Description row
 

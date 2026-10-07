@@ -11,9 +11,9 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 
 | Category | Cases | Covers |
 | --- | ---: | --- |
-| `operation/` | 7 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions |
+| `operation/` | 10 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions, operation ID, deprecated (with and without a title row) |
 | `security/` | 6 | alternative added, scope added, scheme added to an alternative, scheme definition changed, document security overridden, security removed |
-| `request/` | 9 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added |
+| `request/` | 10 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added, body became optional |
 | `responses/` | 6 | response added, code case rename, description, header added, media type removed, body schema property added |
 | `oas31/` | 3 | OAS 3.1 base: nullable via type array, `mutualTLS` alternative added, role scopes on an API key |
 
@@ -28,7 +28,11 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | `operation/05-path-parameter-renamed` | path `/orders/{orderId}` → `/orders/{id}` | address row partial replace; `orderId` → `id` property rename in Path Parameters |
 | `operation/06-whole-operation-added` | `POST` added next to an existing `GET` | every row green on the changed side |
 | `operation/07-extensions-changed` | `x-rate-limit` replaced, `x-audience` added | Extensions header uncolored (mixed); JSO rows |
-| `security/01-alternative-added` | second alternative | selector shown; new option green on the changed side |
+| `operation/08-operation-id-changed` | `operationId` replaced | operation ID row yellow |
+| `operation/09-deprecated-added` | `deprecated: true` added | `deprecated` tag green on the changed side; title row yellow |
+| `operation/10-deprecated-added-without-summary` | as 09, no `summary` on either side | no title row; `deprecated` tag on the address row |
+| `request/10-request-body-became-optional` | `requestBody.required` `true` → `false` | `*` on the origin side only; red `required` tag; Body title row yellow |
+| `security/01-alternative-added` | second alternative | new option green on the changed side (selector shown on both sides) |
 | `security/02-scope-added` | `orders:read` added to the OAuth requirement | `Required scopes` chip added |
 | `security/03-scheme-added-to-alternative` | `basic` added to the first alternative | new card green |
 | `security/04-scheme-definition-changed` | token URL replaced, scope added in `components` | `Token URL` row yellow, `Available scopes` chip added |

@@ -89,7 +89,7 @@ with the `No authentication` content.
 
 | Item | Rule |
 | --- | --- |
-| Shown when | ≥2 alternatives (Q6). With one alternative the cards follow the header directly. |
+| Shown when | ≥1 alternative — always, also for a single alternative (Q6), like the AsyncAPI bindings selector |
 | Row | standalone selector row under the header — copy `MessageSectionsViewer.renderSelectorRow` (selector inside `OneSideLayout` / `SideBySideLayout` + `DiffFloatingBadgeWrapper`), `SelectorVariant.Secondary`, default tone |
 | Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}`. Resolved in next-data-model (`OpenApiSecurityRequirementTitle.resolve(value)`). |
 | Option test id | `security-alternative-<index>` |
@@ -97,9 +97,9 @@ with the `No authentication` content.
 
 ## Scheme card
 
-One card per `securityScheme` child of the selected alternative, in requirement order. v1 look:
-an indented row group (level + 1) introduced by an **h4** title row, like AsyncAPI server blocks
-(Q8). Component `SecuritySchemeCard`, test id `security-scheme-<name>`.
+One card per `securityScheme` child of the selected alternative, in requirement order: a
+**framed box** (Q8, [Card frame](#card-frame)) whose first row is the **h4** title. Component
+`SecuritySchemeCard`, test id `security-scheme-<name>`.
 
 Rows, top to bottom (each row has its own severity placement, D7):
 
@@ -135,6 +135,33 @@ Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizatio
 | `Token URL` | `tokenUrl` | chip | `OAuthFlowTokenUrlRow` |
 | `Refresh URL` | `refreshUrl` | chip | `OAuthFlowRefreshUrlRow` |
 | `Available scopes` | non-empty `scopes` | one chip per scope **name**; the scope description is the chip tooltip (`title` attribute) | `OAuthFlowScopesRow` |
+
+### Card frame
+
+Every shared row renders its own origin and changed halves (`SideBySideLayout`), so no single DOM
+element wraps "the card" on one side. The frame is therefore drawn **per row and per side** (D12):
+
+```text
+ origin side                         changed side
+┌───────────────────────────┐       ┌───────────────────────────┐   ← framePosition 'first'  (top + sides, top radius)
+│ petstore_auth  [OAuth 2.0]│       │ petstore_auth  [OAuth 2.0]│
+│ Required scopes  write:…  │       │ Required scopes  write:…  │   ← 'middle' (sides only)
+│   Token URL  https://…    │       │   Token URL  https://…    │
+└───────────────────────────┘       └───────────────────────────┘   ← 'last' (bottom + sides, bottom radius)
+```
+
+| Piece | Rule |
+| --- | --- |
+| Row API | `TitleRow`, `TextRow`, `MarkdownTextRow`, `AdditionalInfoRow` get an optional prop `framePosition?: (layoutSide: LayoutSide) => FramePosition \| undefined`, `FramePosition = 'single' \| 'first' \| 'middle' \| 'last'` (type in `shared-components/Frame/types.ts`). Undefined = no frame; existing callers are unaffected. |
+| DOM | the row's per-side content div gets `data-frame-position="<position>"`; nothing else changes |
+| CSS | `shared-styles/frame.css`: every position draws left / right borders (`1px solid #D5DCE3`, the selector border tone); `first` adds the top border and top radius (4px), `last` the bottom border and bottom radius, `single` both. Inner padding: a horizontal inset on the row body so text does not touch the border. |
+| Positions | precomputed in **one pass** by `SecuritySchemeCard` over the rows it will actually render on that side (title, unresolved, description, detail rows, every OAuth flow row) — the DDL `buildColumnViewerContexts` pattern. Positions come from the visibility manager result, not from JSX order guesses. |
+| Per side | a card absent on one side (scheme wholly added / removed) gets **no** frame on that side: `OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)`; rows there keep their whole-node diff styles (grey, hidden content). |
+| Diff backgrounds | the row diff background fills the area **inside** the frame; the frame is drawn on the content div that already carries `flex w-full` (width contract), so the background still spans the full width. |
+| Floating badges | `DiffFloatingBadgeWrapper` sits outside `SideBySideLayout` and is unaffected. |
+| Spacing | gap between cards: the card title row uses `data-precededby={SECURITY_SCHEME_CARD}`; rows inside a card use their normal `data-precededby`. Vertical gaps inside the frame must be padding on the row body, never margin on the row (a margin would break the side borders — same reason as the DDL level-indicator rule). |
+| OAuth flows | flow rows stay inside the scheme's frame; the flow title (h5) is a `middle` row. |
+| Tests | a story with two cards, one wholly added (frame on the changed side only); DOM check that each side's frame width equals the column width. |
 
 ### Anonymous alternative content
 

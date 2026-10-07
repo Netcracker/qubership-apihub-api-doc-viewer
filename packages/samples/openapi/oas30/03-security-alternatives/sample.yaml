@@ -23,6 +23,7 @@ paths:
           description: Created
     delete:
       summary: Explicitly public (`security` set to an empty list overrides the root)
+      deprecated: true
       security: []
       responses:
         '204':

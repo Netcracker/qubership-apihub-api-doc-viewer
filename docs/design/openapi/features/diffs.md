@@ -34,7 +34,8 @@ Paths are inside the merged document; `M` = `diffsMetaKey`, `op` = `paths[path][
 | Whole operation added / removed | `paths[path][M][method]` (`add` / `remove`); else `paths[M][path]` (`add` / `remove` of the whole path item — default `apiDiff`; with `openApiPathItemPerOperationDiffs: true` it is per method instead, E2) | root `M[""]` (node-level) |
 | Address (path renamed) | `paths[M][path]` with `action: rename` (`beforeKey` → `afterKey`, E1) | root `M.address` as a **`replace`** with `beforeValue = beforeKey`, `afterValue = afterKey`, same `type` / declaration paths |
 | Title | `op[M].summary` | root `M.title` |
-| Operation id (title fallback only) | `op[M].operationId` | root `M.operationId` |
+| Operation ID row | `op[M].operationId` | root `M.operationId` |
+| Deprecated tag (title row, or address row without a title) | `op[M].deprecated` (a missing value is the unifier default `false`; normalize like `required`) | root `M.deprecated` → tag diff + synthetic yellow replace on the title row |
 | Description | `op[M].description` | root `M.description` |
 | External docs | `op[M].externalDocs` (whole), or `op.externalDocs[M].url` / `op.externalDocs[M].description` | root `M.externalDocs` (whole), or `externalDocs[M].url` / `externalDocs[M].description` |
 | Extensions | `op[M]['x-…']` | `data.extensions[M]['x-…']` |
@@ -58,6 +59,7 @@ properties.
 | --- | --- | --- |
 | Request body added / removed | `op[M].requestBody` | `data.request[M].requestBody` → `requestBody` node-level |
 | Request body description | `op.requestBody[M].description` | `requestBody[M].description` |
+| Request body required | `op.requestBody[M].required` | `requestBody[M].required` → side-exclusive `*`, `required` tag, title-row synthetic replace ([request-body.md](../entities/request-body.md#required-marker)) |
 | Media type added / removed / renamed | `….content[M][mediaType]` (`rename` keyed by the after key, E6) | `content[M][mediaType]` → `mediaType` node-level |
 | Schema inside a media type | `….content[mt].schema` and deeper | untouched (merged schema object is passed on) |
 | Response added / removed / renamed (case) | `op.responses[M][code]` (`rename` keyed by the after key, E6) | `responses[M][code]` → `response` node-level |
@@ -73,7 +75,7 @@ kind aggregator extends `KindAny` and calls `super.aggregate()` first.
 
 | Family | `KindAny` | Kind-specific aggregators |
 | --- | --- | --- |
-| `node-diffs/` | inheritance (below) + text fields `title`, `description` | `KindOperation` (`address`, `operationId`, `externalDocs`), `KindSecurity` / `KindResponses` / `KindExtensions` / `KindParameters` / `KindResponseHeaders` / `KindRequest` (section rule in `aggregateByDescendantDiffs`), `KindSecurityScheme` (field diffs, `requiredScopes` list), `KindOAuthFlow` (URL fields, `scopes` list), `KindResponse` (code rename) |
+| `node-diffs/` | inheritance (below) + text fields `title`, `description` | `KindOperation` (`address`, `operationId`, `externalDocs`, `deprecated` flag + title-row synthetic replace), `KindRequestBody` (`required` normalized to boolean semantics + title-row synthetic replace), `KindSecurity` / `KindResponses` / `KindExtensions` / `KindParameters` / `KindResponseHeaders` / `KindRequest` (section rule in `aggregateByDescendantDiffs`), `KindSecurityScheme` (field diffs, `requiredScopes` list), `KindOAuthFlow` (URL fields, `scopes` list), `KindResponse` (code rename) |
 | `node-descendant-diffs/` | child-key → diff from the node's own diff record | `KindSecurity` (index keys), `KindContent` (media-type keys), `KindResponses` (code keys), `KindRequest` (location keys + `requestBody`) |
 | `node-diffs-summary/` | node's own diff types | — |
 | `node-descendant-diffs-summary/` | local descendants | forward aggregators reading `aggregatedDiffsMetaKey` for kinds whose content another viewer renders: `parameters`, `responseHeaders`, `mediaType`, `extensions`, and their containers `content`, `requestBody`, `request`, `response`, `responses` (selector markers must see changes deep inside schemas) |
@@ -124,7 +126,8 @@ each with a doc comment naming its row:
 | Member | Value | Row |
 | --- | --- | --- |
 | `ExternalDocsRow` | `external-docs-row` | external docs link |
-| `SelectorRow` | `selector-row` | standalone selector rows (security alternatives, response media types) |
+| `OperationIdRow` | `operation-id-row` | operation ID row under the title |
+| `SelectorRow` | `selector-row` | the standalone security alternatives selector row (media-type selectors sit in Body title subheaders and use `TitleRow`) |
 | `SecuritySchemeLocationRow` | `security-scheme-location-row` | apiKey `In` |
 | `SecuritySchemeParameterNameRow` | `security-scheme-parameter-name-row` | apiKey `Name` |
 | `SecuritySchemeHttpSchemeRow` | `security-scheme-http-scheme-row` | http `Scheme` |
@@ -150,7 +153,12 @@ never read `node.diffs[...]` directly.
 | Accessor | Returns |
 | --- | --- |
 | `NodeLevel.takeWholeNodeDiff(node)` | node-level diff unless it is a `rename` |
-| `Operation.takeTitleRowDiff(node)` | `title` diff, else whole-node diff |
+| `Operation.takeTitleRowDiff(node)` | whole-node diff, else `title` diff, else synthetic replace for a `deprecated` change |
+| `Operation.takeOperationIdRowDiff(node)` | `operationId` diff, else whole-node diff |
+| `Operation.takeDeprecatedTagDiff(node)` | the tag's own `deprecated` diff (never a borrowed node-level diff) |
+| `RequestBody.isRequiredStarVisibleOnSide(node, side)` | required on that side (side-exclusive) |
+| `RequestBody.takeRequiredTagDiff(node)` | normalized `required` diff, `undefined` when the body is wholly added / removed |
+| `SecurityScheme.isCardPresentOnSide(node, side)` | `false` on the side where the scheme does not exist (no frame there) |
 | `Operation.takeAddressRowDiff(node)` | `address` diff, else whole-node diff |
 | `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff / `{ url, text, textHighlighterColor }` per side |
 | `Section.takeHeaderRowDiff(node)` | the section-rule diff on `""` |

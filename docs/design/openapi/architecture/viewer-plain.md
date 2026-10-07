@@ -8,16 +8,17 @@ Status: **planned**. Paths are relative to
 ```mermaid
 flowchart TB
   Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext"]
-  Operation["OperationNodeViewer.tsx<br/>title (h1) · AddressRow · ExternalDocsRow · description<br/>section data-precededby (one pass)"]
-  Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row"]
-  Card["SecuritySchemeCard/SecuritySchemeCard.tsx<br/>title (h4) + type badge · description · detail AdditionalInfoRows"]
+  Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · operation ID (TextRow) · AddressRow ·<br/>ExternalDocsRow · description · section data-precededby (one pass)"]
+  Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row (always)"]
+  Card["SecuritySchemeCard/SecuritySchemeCard.tsx<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
   Flow["SecuritySchemeCard/OAuthFlowRows.tsx<br/>flow title (h5) · URL rows · Available scopes"]
   Extensions["shared-components/ExtensionsSection<br/>Extensions (h2)"]
   Request["RequestNodeViewer.tsx<br/>Request (h2)"]
   Params["ParametersNodeViewer.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies (h3)"]
-  Body["RequestBodyNodeViewer.tsx<br/>Body (h3) + media-type Selector · description"]
+  Body["RequestBodyNodeViewer.tsx<br/>Body header · description"]
+  BodyHeader["MediaTypeContentHeader.tsx<br/>Body (h3) + required * · media-type Selector (+ required tag)"]
   Responses["ResponsesNodeViewer.tsx<br/>Responses (h2) + toned code Selector"]
-  Response["ResponseNodeViewer.tsx<br/>media-type Selector row · description · Headers (h3) · Body (h3)"]
+  Response["ResponseNodeViewer.tsx<br/>description · Headers (h3) · Body header"]
   MediaSchema["MediaTypeSchemaViewer.tsx<br/>wrapJsonSchemaForViewer('Type', …)"]
   Visibility["next-data-model<br/>OpenApiNodeVisibilityManagerKind* · display labels"]
   JsonSchema["JsonSchemaViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]
@@ -33,9 +34,11 @@ flowchart TB
   Card --> Flow
   Request --> Params
   Request --> Body
+  Body --> BodyHeader
   Body --> MediaSchema
   Responses --> Response
   Response --> Params
+  Response --> BodyHeader
   Response --> MediaSchema
   Params --> JsonSchema
   MediaSchema --> JsonSchema

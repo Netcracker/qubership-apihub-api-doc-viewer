@@ -1,8 +1,7 @@
 # Responses
 
-The **Responses** section: the toned response-code selector, the media-type selector of the
-selected response, the response description, response headers, and the response body. Status:
-**planned**.
+The **Responses** section: the toned response-code selector, then for the selected response its
+description, headers, and body (whose header carries the media-type selector). Status: **planned**.
 
 ## Nodes
 
@@ -60,25 +59,12 @@ purpose — fixture `oas30/05-response-codes-palette` declares `500` first.
 | Initial selection | first `2XX` option, else the first option (Q13) |
 | Diff | header from the `responses` node (section colorizing over the codes); options carry `response` node diffs and summaries |
 
-## Media-type selector row
-
-Directly under the section header, for the **selected** response (Q2).
-
-| Item | Rule |
-| --- | --- |
-| Shown when | the selected response has ≥1 media type (either side in diffs) |
-| Row | standalone selector row (`MessageSectionsViewer.renderSelectorRow` pattern), default tone, `SelectorVariant.Secondary` |
-| Options | nested `mediaType` nodes of the response's `content`; renamed media types as in [request-body.md](request-body.md#header-row-h3-with-the-media-type-selector) |
-| Option test id | `response-media-type-<index>` |
-| Selection | per response, kept when switching codes ([../features/operation-viewer.md](../features/operation-viewer.md#view-state)) |
-| Severity | `SelectorRow` from the `content` node |
-
 ## Description row
 
-`MarkdownTextRow`, body2, `response.description` (required by the specification; may still be
-missing). It belongs to the **response**, not to the media type: the Media Type Object has no
-description (Q3), so the row does not change with the media-type selection. Diff key
-`description`, severity `DescriptionRow`. Not the schema description.
+Directly under the section header. `MarkdownTextRow`, body2, `response.description` (required by
+the specification; may still be missing). It belongs to the **response**, not to the media type:
+the Media Type Object has no description (Q3), so the row does not change with the media-type
+selection. Diff key `description`, severity `DescriptionRow`. Not the schema description.
 
 ## Headers
 
@@ -94,19 +80,25 @@ description (Q3), so the row does not change with the media-type selection. Diff
 
 | Item | Rule |
 | --- | --- |
-| Header row | `TitleRow` "Body", **h3**, **no** subheader selector (the selector is the row above, Q2), test id `openapi-response-body` |
-| Shown when | the response has ≥1 media type |
+| Header row | `TitleRow` "Body", **h3**, test id `openapi-response-body`, media-type `Selector` in the subheader (Q2) — identical to the request Body header ([request-body.md](request-body.md#header-row-h3-with-the-media-type-selector)) except that responses have no `required` marker |
+| Selector options | nested `mediaType` nodes of the response's `content`, document order; renamed media types show a per-side title; default tone, `SelectorVariant.Secondary`; option test id `response-media-type-<index>` |
+| Selection | per response, kept when switching codes ([../features/operation-viewer.md](../features/operation-viewer.md#view-state)) |
+| Shown when | the response has ≥1 media type (either side in diffs) |
+| Diff | header from the `content` node's section diff (whole content added / removed); options carry `mediaType` node diffs and summaries |
 | Schema | `MediaTypeSchemaViewer` for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
+
+The request and response Body headers are one component, `MediaTypeContentHeader`
+(`OpenApiOperationViewer/MediaTypeContentHeader.tsx`): title, optional required marker, media-type
+selector. `RequestBodyNodeViewer` and `ResponseNodeViewer` own the selection state and pass it in.
 
 ## Response without content
 
-`204`-style responses: no media-type selector row, no Body subsection; the description and headers
-still render.
+`204`-style responses: no Body subsection; the description and headers still render.
 
 ## Visibility
 
 `OpenApiNodeVisibilityManagerKindResponse` (plain and with-diffs variants) returns
-`{ showMediaTypeSelector, showDescription, showHeaders, showBody }` for the selected response;
+`{ showDescription, showHeaders, showBody }` for the selected response;
 `…KindResponses` returns `{ showSection }`.
 
 ## Related documents
