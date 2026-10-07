@@ -13,6 +13,8 @@ export type SchemaNodeTitleRowSharedInput = {
     requiredDiff?: Diff;
     withRequiredDiffIndicator?: boolean;
     titleRowDiff?: ChangedPropertyMetaData;
+    /** Same handler as the row's expander; the title toggles expansion when it is set. */
+    onClickTitle?: () => void;
 };
 export declare function useSchemaNodeTitleRowShared(input: SchemaNodeTitleRowSharedInput): {
     displayValueResolved: import('../../../../../next-data-model/src/model/json-schema/types/node-value').JsonSchemaTreeNodeValue | null | undefined;

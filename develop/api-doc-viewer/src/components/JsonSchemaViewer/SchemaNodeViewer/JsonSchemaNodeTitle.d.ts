@@ -10,6 +10,8 @@ export type JsonSchemaNodeTitleProps = {
     layoutSide?: LayoutSide;
     /** Diff of the title text itself (e.g. a renamed property key), highlighted on `layoutSide`. */
     textDiff?: ChangedPropertyMetaData;
+    /** Makes the title clickable (e.g. toggles the row's expander); omit for a non-interactive title. */
+    onClick?: () => void;
 };
 export type JsonSchemaNodeTitlePlainProps = Omit<JsonSchemaNodeTitleProps, "requiredDiff" | "layoutSide" | "textDiff">;
 export declare const JsonSchemaNodeTitlePlain: FC<JsonSchemaNodeTitlePlainProps>;
