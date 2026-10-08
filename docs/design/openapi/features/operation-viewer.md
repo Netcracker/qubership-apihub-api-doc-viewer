@@ -81,7 +81,7 @@ titles, **h5** OAuth flow titles.
 | # | Row | Component | Node | Shown when (plain) | Details |
 | ---: | --- | --- | --- | --- | --- |
 | 1 | Operation title (h1) + **deprecated** tag | `TitleRow` | `operation` | `summary` exists and not `noHeading` | [operation](../entities/operation.md#title-row) |
-| 2 | Operation ID (secondary text) | `TextRow` | `operation` | `operationId` exists | [operation](../entities/operation.md#operation-id-row) |
+| 2 | `Operation ID:` label + `operationId` (secondary text, one line) | `TextRow` (`label` + `value`) | `operation` | `operationId` exists | [operation](../entities/operation.md#operation-id-row) |
 | 3 | Address: method badge + path (+ **deprecated** tag when row 1 is absent) | shared `AddressRow` | `operation` | always | [operation](../entities/operation.md#address-row) |
 | 4 | External docs link | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
 | 5 | Description | `MarkdownTextRow` | `operation` | `description` | [operation](../entities/operation.md#description-row) |
@@ -111,7 +111,7 @@ of its own ([diffs.md](diffs.md#row-visibility)). The JSON Schema viewers become
 
 ```text
 Upload a photo of a pet  [deprecated]                                h1 + deprecated tag (when deprecated)
-uploadPetPhoto                                                       operation ID (small, grey)
+Operation ID: uploadPetPhoto                                         operation ID row: static label + value (small, grey)
 [POST] /pets/{petId}/photos                                          address row
 ↗ Photo upload guide                                                 external docs
 Uploads a new photo and attaches it to the pet. …                    description (markdown)

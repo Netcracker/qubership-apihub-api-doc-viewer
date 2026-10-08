@@ -45,15 +45,23 @@ export interface OpenApiTreeNodeValueTypeOperation {
 
 ## Operation ID row
 
-Secondary information directly under the title (Q10).
+Secondary information directly under the title (Q10): a static label followed by the value, on
+**one line**.
+
+```text
+Upload a photo of a pet                    h1
+Operation ID: uploadPetPhoto               operation ID row (small, grey)
+[POST] /pets/{petId}/photos                address row
+```
 
 | Item | Rule |
 | --- | --- |
-| Component | `TextRow`, `variant={TextValueVariant.body2}`, `textFontWeight='normal'`, secondary grey text color (`#626D82`, the address-row text color) — small and muted, never a heading |
-| Text | `operationId` as is (no label) |
+| Component | `TextRow`, `variant={TextValueVariant.body2}` — small and muted, never a heading. Label and value are rendered by the row's existing `label` + `value` props (same mechanism as the AsyncAPI binding `Version` row), so they share one line. |
+| Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OPERATION_ID_ROW_LABEL = 'Operation ID'`) in the container. `labelFontWeight='normal'`, `labelColor` = secondary grey (`#626D82`). |
+| Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
 | `data-precededby` | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` after the title row; `ROOT` when it is the first row. The address row below it uses the new member `OPERATION_ID_ROW`. |
-| Diff | `operationId` key; severity: new placement `OperationIdRow` |
+| Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). The **label is never highlighted** — on a replace only the value gets the yellow text highlighter (`TextValue` puts diff classes on the value span only). On add / remove the side where `operationId` does not exist renders **no text at all**, label included (`TextValue` returns `null` for an invisible side), so a bare `Operation ID:` never appears. |
 
 ## Deprecated tag
 

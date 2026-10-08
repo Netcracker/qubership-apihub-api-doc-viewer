@@ -62,7 +62,7 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | --- | --- | --- | --- |
 | Header | Title (h1) | `summary` exists and not `noHeading`; no fallback | [entities/operation.md](entities/operation.md#title-row) |
 | Header | **deprecated** tag | `deprecated: true`; in the title subheader, on the address row when there is no title | [entities/operation.md](entities/operation.md#deprecated-tag) |
-| Header | Operation ID (secondary text) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
+| Header | `Operation ID: <operationId>` (secondary text, static label + value on one line) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
 | Header | External docs link | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
 | Header | Description (markdown) | `description` | [entities/operation.md](entities/operation.md#description-row) |

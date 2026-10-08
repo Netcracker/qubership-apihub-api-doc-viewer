@@ -8,7 +8,7 @@ Status: **planned**. Paths are relative to
 ```mermaid
 flowchart TB
   Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext"]
-  Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · operation ID (TextRow) · AddressRow ·<br/>ExternalDocsRow · description · section data-precededby (one pass)"]
+  Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · 'Operation ID:' + value (TextRow label) · AddressRow ·<br/>ExternalDocsRow · description · section data-precededby (one pass)"]
   Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row (always)"]
   Card["SecuritySchemeCard/SecuritySchemeCard.tsx<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
   Flow["SecuritySchemeCard/OAuthFlowRows.tsx<br/>flow title (h5) · URL rows · Available scopes"]
