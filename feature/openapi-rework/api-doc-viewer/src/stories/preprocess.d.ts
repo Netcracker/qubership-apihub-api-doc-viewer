@@ -80,4 +80,6 @@ type JsoDiffsDocumentOptions = {
     diffMetaKeys?: DiffMetaKeys;
 };
 export declare function prepareJsoDiffsDocument(options: JsoDiffsDocumentOptions): unknown;
+/** Plain OpenAPI document as `OpenApiOperationViewer` expects it: `normalize` + `denormalize`, `components` kept. */
+export declare function prepareOpenApiDocument(source: unknown): unknown;
 export {};

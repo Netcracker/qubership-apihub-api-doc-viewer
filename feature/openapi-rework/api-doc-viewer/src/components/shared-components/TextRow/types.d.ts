@@ -1,6 +1,7 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { TextValueVariant } from '../TextValue/types';
+import { WithFramePositionProps } from '../Frame/types';
 import { WithPrecededByProps } from '../WithPrecededByProps';
 export declare enum TextRowUsage {
     Default = "default",
@@ -8,7 +9,7 @@ export declare enum TextRowUsage {
     /** JsonSchemaViewer description and deprecation-reason typography. */
     JsonSchemaDescription = "json-schema-description"
 }
-export type TextRowProps = WithPrecededByProps & {
+export type TextRowProps = WithPrecededByProps & WithFramePositionProps & {
     value?: string;
     variant: TextValueVariant;
     label?: string;

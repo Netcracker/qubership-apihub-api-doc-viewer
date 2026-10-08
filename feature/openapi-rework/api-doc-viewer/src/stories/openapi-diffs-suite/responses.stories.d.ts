@@ -1,0 +1,20 @@
+import { StoryObj } from '@storybook/react-vite';
+declare const meta: {
+    title: string;
+    component: ({ beforeYaml, afterYaml, hideUnchangedNodes }: import('./OpenApiDiffSampleStory').OpenApiDiffSampleStoryProps) => import("react").JSX.Element;
+};
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const Case_01_response_added: Story;
+export declare const Case_02_response_code_case_renamed: Story;
+export declare const Case_03_response_description_changed: Story;
+export declare const Case_04_response_header_added: Story;
+export declare const Case_05_response_media_type_removed: Story;
+export declare const Case_06_response_schema_property_added: Story;
+export declare const Case_07_response_body_only_media_type_removed: Story;
+export declare const Case_08_response_body_only_schema_removed: Story;
+export declare const Case_09_response_all_headers_removed: Story;
+export declare const Case_10_response_added_with_headers_and_body: Story;
+export declare const Case_11_response_code_renamed_and_description_changed: Story;
+export declare const Case_12_response_changes_of_different_severity: Story;
+export declare const Case_13_responses_and_response_extensions_changed: Story;

@@ -2,12 +2,14 @@ import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ITreeNode } from '../../../../../next-data-model/src/model/abstract/tree/tree-node.interface';
 import { NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { ReactNode } from '../../../../../../node_modules/react';
-import { SelectorVariant } from './types';
+import { SelectorOptionTone, SelectorVariant } from './types';
 export type SelectorOption<N extends ITreeNode, V extends object | null = object | null> = {
     /** Plain content, or a `(layoutSide) => ReactNode` for content that differs per diff side (see `NestingIndicatorTitleRow`'s `title` prop for the same pattern). */
     title: ReactNode | ((layoutSide: LayoutSide) => ReactNode);
     node: N;
     testId?: string;
+    /** Option color; omitted = `SelectorOptionTone.Neutral` (unchanged grey markup). */
+    tone?: SelectorOptionTone;
     diffs?: NodeDiffs<V>;
     diffsSummary?: NodeDiffsSummary;
     descendantDiffsSummary?: NodeDescendantDiffsSummary;

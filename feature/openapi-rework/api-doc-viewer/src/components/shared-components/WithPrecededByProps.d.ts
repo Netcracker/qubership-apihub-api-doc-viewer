@@ -22,7 +22,11 @@ export declare enum PrecededBy {
     DDL_COLUMN_ROW = "ddl-column-row",
     /** Follows a sibling column block that ended with an additional-info row. */
     DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = "ddl-column-after-additional-info-row",
-    DDL_INDEX_ROW = "ddl-index-row"
+    DDL_INDEX_ROW = "ddl-index-row",
+    OPERATION_ID_ROW = "operation-id-row",
+    EXTERNAL_DOCS_ROW = "external-docs-row",
+    SECTION_SELECTOR_ROW = "section-selector-row",
+    SECURITY_SCHEME_CARD = "security-scheme-card"
 }
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;

@@ -18,3 +18,7 @@ export declare function waitForDdlTableViewer(page: Page): Promise<void>;
 export declare function waitForDdlTableDiffsViewer(page: Page): Promise<void>;
 /** Waits for an optional viewer selector (compatibility-suite generated ITs pass one per spec type). */
 export declare function waitForVisibleSelector(page: Page, selector: string | undefined): Promise<void>;
+/** `OpenApiOperationViewer` root visible and painted (nested JSON Schema viewers render synchronously). */
+export declare function waitForOpenApiOperationViewer(page: Page): Promise<void>;
+/** `OpenApiOperationDiffsViewer` root visible and painted. */
+export declare function waitForOpenApiOperationDiffsViewer(page: Page): Promise<void>;

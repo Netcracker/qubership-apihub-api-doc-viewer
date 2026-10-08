@@ -1,6 +1,7 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { ReactElement } from '../../../../../../node_modules/react';
+import { WithFramePositionProps } from '../Frame/types';
 import { WithListLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
 export declare enum AdditionalInfoRowUsage {
     Default = "default",
@@ -12,7 +13,7 @@ export type AdditionalInfoRowLayoutOverrides = {
     bodyClass?: string;
     minHeightClass?: string;
 };
-export type AdditionalInfoRowProps = WithPrecededByProps & WithListLastRowProps & AdditionalInfoRowLayoutOverrides & {
+export type AdditionalInfoRowProps = WithPrecededByProps & WithListLastRowProps & WithFramePositionProps & AdditionalInfoRowLayoutOverrides & {
     label: string;
     subheader?: (layoutSide: LayoutSide) => ReactElement;
     diff?: ChangedPropertyMetaData;
