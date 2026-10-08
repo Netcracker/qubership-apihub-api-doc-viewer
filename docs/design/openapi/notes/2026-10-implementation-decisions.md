@@ -56,9 +56,11 @@ Paths: `ndm/` = `packages/next-data-model/src/`, `viewer/` =
 ## Disagreements found (not changed)
 
 - `AGENTS.md` says `generate-stories` / `generate-tests` must call only the compatibility-suite
-  generators, but `packages/api-doc-viewer/package.json` also runs
-  `bin/generate-ddl-suite-stories.mjs` / `bin/generate-ddl-suite-tests.mjs`. This predates the
-  OpenAPI work and was left as is.
+  generators, but `packages/api-doc-viewer/package.json` also ran
+  `bin/generate-ddl-suite-stories.mjs` / `bin/generate-ddl-suite-tests.mjs` (since `aed5117aa`).
+  **Resolved 2026-10-09:** removed from the npm scripts. The generators stay and are run by hand
+  after changing `packages/samples/ddlapi/` (as `AGENTS.md`, the testing skill, and the DDL
+  catalogue already describe); regenerating showed no drift in the committed output.
 - `JsoPropertyNodeViewer` logs React's "unique key" warning for array values (seen in the smoke
   render of `oas30/01-full-operation` extensions). This is an existing JSO component; it was not
   changed (legacy rule).
