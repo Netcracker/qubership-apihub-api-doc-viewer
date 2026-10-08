@@ -132,18 +132,71 @@ override prop is not part of v1; the map is the extension point.
 ## External docs row
 
 New shared component `shared-components/ExternalDocsRow/ExternalDocsRow.tsx` — generic, usable by
-AsyncAPI later (AsyncAPI objects have `externalDocs` too).
+AsyncAPI later (AsyncAPI objects have `externalDocs` too). The row is **one link** with a static
+text; the URL is never shown as text, and `externalDocs.description` lives in a hover tooltip.
+
+```text
+View external documentation ↗            ← link; hover shows the description in a UxTooltip
+```
+
+### Props
+
+```typescript
+export type ExternalDocsRowProps = WithPrecededByProps & {
+  /** Per side: the url and description of that side (diff-aware, resolved in next-data-model). */
+  resolveSide: (layoutSide: LayoutSide) => { url: string; description?: string } | null
+  diff?: ChangedPropertyMetaData
+  diffsSeverities?: NodeDiffsSeverities
+}
+```
+
+`resolveSide` is fed by `OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, side)`; `null`
+means "no external docs on this side" (nothing rendered on that side).
+
+### Plain
 
 | Item | Rule |
 | --- | --- |
-| Shown when | `externalDocs.url` is a non-empty string (merged value or either diff side) |
-| Content | an anchor `<a href={url} target="_blank" rel="noopener noreferrer">` with an external-link icon; text = `description` if present, else `url` |
-| Typography | body2, link color; same horizontal padding as `AddressRow` (`X_AXIS_PADDING_ROWS_ASYNC_API`) |
+| Shown when | `externalDocs.url` is a non-empty string |
+| Element | `<a href={url} target="_blank" rel="noopener noreferrer">` — a real link, keyboard-focusable |
+| Link text | static **`View external documentation`** (constant `EXTERNAL_DOCS_LINK_TEXT` in the component), never the URL or the description |
+| Arrow | an up-right arrow icon **after** the text, inside the link (so it is clickable too): new `kit/icons/ArrowUpRightIcon.tsx`, same shape as the existing `ArrowRightIcon` / `ArrowUpIcon` (inline SVG, `currentColor`, ~12px, `aria-hidden="true"`), small gap before it |
+| Description | when `externalDocs.description` is non-empty, the link is wrapped in `UxTooltip` (`kit/ux/UxTooltip`) with `text={description}` — shown on hover. No description → no tooltip wrapper. The description is CommonMark in the specification but `UxTooltip` takes plain `text: string`: render it as plain text (markdown source as is). |
+| Accessibility | no `title` attribute (it would show a second, native tooltip); when a description exists, set `aria-label` to `View external documentation: <description>` so screen readers get the hover-only text |
+| Typography | body2, link color, underline on hover; same horizontal padding as `AddressRow` (`X_AXIS_PADDING_ROWS_ASYNC_API`) |
 | Layout | `OneSideLayout` / `SideBySideLayout` + `DiffFloatingBadgeWrapper`, like `AddressRow`; the row content div carries `flex w-full` (width contract, `api-doc-viewer-authoring`) |
-| Diff | `externalDocs` key: whole add / remove → row background green / red, link hidden on the absent side; `url` or `description` replace → yellow row background and yellow text highlighter on the link text. Side text per [../features/diffs.md](../features/diffs.md#operation). Severity: new placement `ExternalDocsRow`. |
 
-The `description` of External Documentation is CommonMark in the specification; the row renders
-it as plain text (it is a link label).
+**`UxTooltip` constraint.** Its popup is `w-max` with no wrapping, positioned to the right of the
+child. A long description becomes one very long line that can overflow the viewer. Before
+implementation, give `UxTooltip` an optional max width with wrapping (e.g. a `maxWidthClass` prop,
+default unchanged so existing tooltips do not move) and use it here.
+
+### With diffs
+
+| Diff | Row | Link | Tooltip |
+| --- | --- | --- | --- |
+| `externalDocs` added / removed (whole object) | green / red background | rendered only on the side where it exists | that side's description |
+| `externalDocs.url` replaced | yellow background | yellow text highlighter on the static text; each side's link points to **its own** URL (`href` = before URL on the origin side, after URL on the changed side) | unchanged |
+| `externalDocs.description` added / removed / replaced | **open — Q16** | **open — Q16** | **open — Q16** |
+
+Severity: new placement `ExternalDocsRow`, built from the same diff that colors the row. Because
+the link text is static, a URL change is visible only through the highlight and the per-side
+`href`.
+
+### Q16 — description diffs (open)
+
+How to show a change of `externalDocs.description` when the description is only visible on hover.
+Not decided; candidates for the product owner:
+
+| Option | Idea | Trade-off |
+| --- | --- | --- |
+| A | Each side's tooltip shows that side's description; the row is painted (yellow on replace, green / red on add / remove of the description) and the floating badge appears | Simple; the change is announced by the row color, but *what* changed is visible only by hovering both sides |
+| B | As A, plus the tooltip text itself carries diff styling (yellow highlighter on replace; the tooltip of the side without a description is absent) | Needs `UxTooltip` to accept styled content (today `text: string`) |
+| C | As A, plus a small change marker (round dot, `UxDiffMarker` style) next to the arrow, meaning "the hidden description changed" | Makes a hover-only change discoverable without hovering; one more visual element |
+| D | In the diffs viewer only, show the description as a visible secondary text row under the link (with normal text diffs); plain mode keeps the tooltip | Most explicit; plain and diffs layouts differ |
+
+Until decided, implement plain mode only for the tooltip and keep description diffs out of the row
+coloring (URL and whole-object diffs are unaffected).
 
 ## Description row
 

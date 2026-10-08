@@ -64,7 +64,7 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Header | **deprecated** tag | `deprecated: true`; in the title subheader, on the address row when there is no title | [entities/operation.md](entities/operation.md#deprecated-tag) |
 | Header | `Operation ID: <operationId>` (secondary text, static label + value on one line) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
-| Header | External docs link | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
+| Header | External docs link: static `View external documentation ↗`; `externalDocs.description` in a hover `UxTooltip` | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
 | Header | Description (markdown) | `description` | [entities/operation.md](entities/operation.md#description-row) |
 | Security | Section (h2) | ≥1 effective alternative | [entities/security.md](entities/security.md) |
 | Security | Alternatives selector | ≥1 alternative (always with the section) | [entities/security.md](entities/security.md#alternatives-selector) |
@@ -96,7 +96,7 @@ shows when it has content on either side or a diff of its own.
 | Operation ID | `operationId` | `operation-id-row` |
 | Request Body title | `required` change: side-exclusive `*`, diff-colored `required` tag, synthetic replace | `title-row` |
 | Address | path rename → partial replace | `address-row` |
-| External docs | whole add / remove, `url` / `description` replace | `external-docs-row` |
+| External docs | whole add / remove, `url` replace (highlight + per-side `href`); `description` diffs open (Q16) | `external-docs-row` |
 | Descriptions (operation, body, response, scheme) | `description` | `description-row` |
 | Section and subsection headers | [section rule](features/diffs.md#section-headers) | `title-row` |
 | Security alternatives | add / remove (index-mapped), override switch (synthetic) | selector markers, `selector-row` |

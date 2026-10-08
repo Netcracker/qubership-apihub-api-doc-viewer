@@ -61,6 +61,7 @@ tree, and lays the rows out.
 | Id | Question | Working default (until decided) |
 | --- | --- | --- |
 | Q12 | Media type of a `content`-described parameter: `customAnnotations` row `Media type` (works with diffs) or the plain-only `topLevelPropsMediaTypes` badge next to the name? | `customAnnotations` row, in both modes — the only option that works in the diffs viewer. Revisit before step 3. |
+| Q16 | How to show diffs of `externalDocs.description`, which is visible only in a hover tooltip? Options A–D in [entities/operation.md](entities/operation.md#q16--description-diffs-open). | None chosen. Until decided: tooltip shows each side's own description; description diffs do not color the row. Decide before step 8. |
 
 ## Resolved questions
 
@@ -93,7 +94,7 @@ Test-first, per [../README.md](../README.md#workflow). Each step lists its exit 
 | 1 | Fixtures and catalogues: `packages/samples/openapi/` (plain, OAS 3.0 + 3.1) and `packages/samples/openapi-diffs/` (pairs). A first set exists. | testing | Catalogues list every case; cases cover every row of [display-coverage.md](display-coverage.md). |
 | 2 | Plain stories `OpenAPI Operation Suite/*`, screenshot ITs, `waitForOpenApiOperationViewer`. | testing | Stories build; ITs fail only because the viewer is missing. |
 | 3 | next-data-model plain: model types, dialects, `OpenApiSpecTransformer`, schema synthesizer, crawl rules, `OpenApiTreeBuilder`, visibility managers, unit tests. | ndm-authoring | Unit tests green: lookup, effective security, synthesis, dialect, response-code order. |
-| 4 | Shared UI: `Selector` tone, shared `AddressRow`, `ExternalDocsRow`, shared extensions section, row `framePosition` + `shared-styles/frame.css`. | viewer-authoring | AsyncAPI, JSON Schema, and DDL screenshot ITs unchanged (frame is opt-in). |
+| 4 | Shared UI: `Selector` tone, shared `AddressRow`, `ExternalDocsRow` + `ArrowUpRightIcon` + optional `UxTooltip` max width, shared extensions section, row `framePosition` + `shared-styles/frame.css`. | viewer-authoring | AsyncAPI, JSON Schema, and DDL screenshot ITs unchanged (frame is opt-in). |
 | 5 | Plain viewer `OpenApiOperationViewer`. | viewer-authoring | Plain ITs green; snapshots reviewed. |
 | 6 | Diff stories `OpenAPI Operation Diffs Suite/*` and ITs. | testing | Stories build. |
 | 7 | next-data-model with diffs: with-diffs transformer, with-diffs synthesizer, five aggregator families, severities, `OpenApiRowDiffs`, unit tests. | ndm-authoring | Unit tests green for every row of the diff-source table in [features/diffs.md](features/diffs.md). |

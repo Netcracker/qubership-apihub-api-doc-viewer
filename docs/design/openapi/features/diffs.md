@@ -160,7 +160,7 @@ never read `node.diffs[...]` directly.
 | `RequestBody.takeRequiredTagDiff(node)` | normalized `required` diff, `undefined` when the body is wholly added / removed |
 | `SecurityScheme.isCardPresentOnSide(node, side)` | `false` on the side where the scheme does not exist (no frame there) |
 | `Operation.takeAddressRowDiff(node)` | `address` diff, else whole-node diff |
-| `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff / `{ url, text, textHighlighterColor }` per side |
+| `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff (whole object or `url`; `description` per Q16) / `{ url, description } \| null` per side — the link text is static |
 | `Section.takeHeaderRowDiff(node)` | the section-rule diff on `""` |
 | `SecurityScheme.takeFieldRowDiff(node, field)` | field diff for one detail row |
 | `SecurityScheme.resolveRequiredScopesSideItems(node, side)` | chips per side (`resolveListSideItems`) |
