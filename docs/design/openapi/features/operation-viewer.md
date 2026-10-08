@@ -89,22 +89,25 @@ titles, **h5** OAuth flow titles.
 | 7 | Alternatives selector | `Selector` row | `security` | ≥1 alternative (always with the section) | [security](../entities/security.md#alternatives-selector) |
 | 8 | Framed scheme cards of the selected alternative | `SecuritySchemeCard` × n | `securityScheme` | selected alternative | [security](../entities/security.md#scheme-card) |
 | 9 | **Extensions** (h2) + JSO tree | shared extensions section | `extensions` | ≥1 `x-*` key on the operation | [operation](../entities/operation.md#extensions-section) |
-| 10 | **Request** (h2) | `TitleRow` | `request` | rows 11–15 have content | [parameters](../entities/parameters.md) |
+| 10 | **Request** (h2) | `TitleRow` | `request` | a parameter group or the Body is present | [parameters](../entities/parameters.md) |
 | 11 | **Path Parameters** (h3) + schema | `TitleRow` + `JsonSchemaViewer` | `parameters` (`path`) | ≥1 path parameter | [parameters](../entities/parameters.md) |
 | 12 | **Query Parameters** (h3) + schema | same | `parameters` (`query`) | ≥1 query parameter | same |
 | 13 | **Headers** (h3) + schema | same | `parameters` (`header`) | ≥1 header parameter | same |
 | 14 | **Cookies** (h3) + schema | same | `parameters` (`cookie`) | ≥1 cookie parameter | same |
-| 15 | **Body** (h3) + required `*`; subheader: media-type selector (+ `required` tag in diffs) | `MediaTypeContentHeader` | `requestBody` / `content` | `requestBody` | [request body](../entities/request-body.md) |
+| 15 | **Body** (h3) + required `*`; subheader: media-type selector (+ `required` tag in diffs) | `MediaTypeContentHeader` | `requestBody` / `content` | Body present: `description` or ≥1 media type with `schema` | [request body](../entities/request-body.md) |
 | 16 | Request body description | `MarkdownTextRow` | `requestBody` | `description` | [request body](../entities/request-body.md#description-row) |
-| 17 | Request body schema | `JsonSchemaViewer` | `mediaType` (selected) | selected media type has `schema` | [request body](../entities/request-body.md#schema) |
+| 17 | Request body schema | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected (options = media types with `schema`) | [request body](../entities/request-body.md#schema) |
 | 18 | **Responses** (h2), response-code selector in the subheader | `TitleRow` + toned `Selector` | `responses` | ≥1 response | [responses](../entities/responses.md), [response-code-selector.md](response-code-selector.md) |
 | 19 | Response description | `MarkdownTextRow` | `response` | `description` | [responses](../entities/responses.md#description-row) |
 | 20 | **Headers** (h3) + schema | `TitleRow` + `JsonSchemaViewer` | `responseHeaders` | ≥1 header | [responses](../entities/responses.md#headers) |
-| 21 | **Body** (h3); subheader: media-type selector | `MediaTypeContentHeader` | `response` / `content` | the response has ≥1 media type | [responses](../entities/responses.md#body) |
-| 22 | Response body schema | `JsonSchemaViewer` | `mediaType` (selected) | selected media type has `schema` | same |
+| 21 | **Body** (h3); subheader: media-type selector | `MediaTypeContentHeader` | `response` / `content` | ≥1 media type with `schema` | [responses](../entities/responses.md#body) |
+| 22 | Response body schema | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected | same |
 
 In the diffs viewer every row is rendered when it has content on **either** side or carries a diff
-of its own ([diffs.md](diffs.md#row-visibility)). The JSON Schema viewers become
+of its own ([diffs.md](diffs.md#row-visibility)); per side, a section header and its rows follow the
+section's **presence** on that side — a section whose content appears or disappears as a whole is
+painted wholly added / removed even when no diff sits on its own object
+([diffs.md](diffs.md#section-presence-and-whole-section-changes)). The JSON Schema viewers become
 `JsonSchemaDiffsViewer`, the JSO viewer `JsoDiffsViewer`.
 
 ### Layout sketch (plain, detailed mode)

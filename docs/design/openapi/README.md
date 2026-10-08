@@ -55,6 +55,7 @@ tree, and lays the rows out.
 | D11 | Security schemes are resolved from `components.securitySchemes` of the **same** document the viewer receives. | Security requirements reference schemes by name, not by `$ref`; nothing else carries the scheme definition. |
 | D12 | Shared rows (`TitleRow`, `TextRow`, `MarkdownTextRow`, `AdditionalInfoRow`) gain an optional per-side `framePosition`; a framed card is a run of rows whose positions the card container precomputes. | Each row renders its own two halves in side-by-side layout, so a frame must be drawn per row and per side (Q8). |
 | D13 | HTTP method badge colors are one exported config map, not a `switch` in a component. | Easy to adjust later (Q9). |
+| D14 | Whole-section add / remove is decided by **presence per side** (does the section display anything there), computed by `OpenApiSectionPresenceResolver` and written as a synthetic node-level diff; a media type without `schema` is not content. | `apiDiff` attaches the same intent at different depths (E19); the raw object of a section can exist while showing nothing ([features/diffs.md](features/diffs.md#section-presence-and-whole-section-changes)). |
 
 ## Open questions
 

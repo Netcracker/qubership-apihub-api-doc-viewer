@@ -286,7 +286,7 @@ Not wholly added / removed (header stays uncolored; property rows show their own
 
 **Consequences on screen** (the shared [section header colorizing](../../shared/features/section-header-colorizing.md)
 rule, implemented in `KindParameters.aggregateByDescendantDiffs` over the synthesized properties —
-[../features/diffs.md](../features/diffs.md#section-headers)):
+[../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)):
 
 | Group state | Origin side | Changed side |
 | --- | --- | --- |
@@ -297,8 +297,16 @@ rule, implemented in `KindParameters.aggregateByDescendantDiffs` over the synthe
 The header's floating severity badge is built from the same synthetic group diff (one of the
 property diffs — they are all the same direction; `type` = the max severity among them).
 
-The **Request** section header (h2) applies the same rule one level up: wholly added / removed when
-every group **and** the request body are wholly added / removed in the same direction.
+This is the presence rule of
+[../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes) for a group
+(present on a side = ≥1 entry on that side): "every property `add`" is exactly "no entry before,
+≥1 after". The resolver computes presence from the reconstructed sides, so it also covers diffs
+that land on a container instead of each entry.
+
+The **Request** section header (h2) uses the same presence rule one level up: present on a side when
+at least one parameter group **or** the request Body is present there. It is wholly added / removed
+only when that flips — e.g. the last header parameter removed while the request Body stays keeps
+**Request** uncolored, only **Headers** turns red.
 
 ## Related documents
 

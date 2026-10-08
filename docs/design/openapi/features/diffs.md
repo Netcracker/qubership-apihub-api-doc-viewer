@@ -14,13 +14,14 @@ merged apiDiff document (whole documents, components kept)
       1. super.transform(...)                       plain operation-oriented spec
       2. relocate diff records onto the spec        (tables below) under diffsMetaKey
       3. synthesize parameter / header schemas with diffs (OpenApiObjectSchemaWithDiffsSynthesizer)
-      4. aggregateDiffsWithRollup(spec, diffsMetaKey, aggregatedDiffsMetaKey)   ← on the TRANSFORMED spec
+      4. resolve section presence per side → synthetic section add / remove (OpenApiSectionPresenceResolver)
+      5. aggregateDiffsWithRollup(spec, diffsMetaKey, aggregatedDiffsMetaKey)   ← on the TRANSFORMED spec
   → OpenApiTreeWithDiffsBuilder (assignNodeDiffs per node, five aggregator families)
   → OpenApiOperationDiffsViewer → containers read OpenApiRowDiffs accessors
   → nested JsonSchemaDiffsViewer / JsoDiffsViewer continue inside schemas and extensions
 ```
 
-Step 4 must run on the transformed spec (AsyncAPI comment: "It is IMPORTANT to aggregate diffs on
+Step 5 must run on the transformed spec (AsyncAPI comment: "It is IMPORTANT to aggregate diffs on
 TRANSFORMED DOCUMENT"), otherwise rollups miss relocated and synthesized records.
 
 ## Diff sources
@@ -75,7 +76,7 @@ kind aggregator extends `KindAny` and calls `super.aggregate()` first.
 
 | Family | `KindAny` | Kind-specific aggregators |
 | --- | --- | --- |
-| `node-diffs/` | inheritance (below) + text fields `title`, `description` | `KindOperation` (`address`, `operationId`, `externalDocs`, `deprecated` flag + title-row synthetic replace), `KindRequestBody` (`required` normalized to boolean semantics + title-row synthetic replace), `KindSecurity` / `KindResponses` / `KindExtensions` / `KindParameters` / `KindResponseHeaders` / `KindRequest` (section rule in `aggregateByDescendantDiffs`), `KindSecurityScheme` (field diffs, `requiredScopes` list), `KindOAuthFlow` (URL fields, `scopes` list), `KindResponse` (code rename) |
+| `node-diffs/` | inheritance (below) + text fields `title`, `description` | `KindOperation` (`address`, `operationId`, `externalDocs`, `deprecated` flag + title-row synthetic replace), `KindRequestBody` (`required` normalized to boolean semantics + title-row synthetic replace), section kinds read the synthetic whole-section diff written by `OpenApiSectionPresenceResolver` ([below](#section-presence-and-whole-section-changes)) — no section logic in `aggregateByDescendantDiffs`, `KindSecurityScheme` (field diffs, `requiredScopes` list), `KindOAuthFlow` (URL fields, `scopes` list), `KindResponse` (code rename) |
 | `node-descendant-diffs/` | child-key → diff from the node's own diff record | `KindSecurity` (index keys), `KindContent` (media-type keys), `KindResponses` (code keys), `KindRequest` (location keys + `requestBody`) |
 | `node-diffs-summary/` | node's own diff types | — |
 | `node-descendant-diffs-summary/` | local descendants | forward aggregators reading `aggregatedDiffsMetaKey` for kinds whose content another viewer renders: `parameters`, `responseHeaders`, `mediaType`, `extensions`, and their containers `content`, `requestBody`, `request`, `response`, `responses` (selector markers must see changes deep inside schemas) |
@@ -94,29 +95,83 @@ Copy AsyncAPI `AsyncApiNodeDiffsAggregatorKindAny`:
    node-key-rename rule). Consumers that need "whole node changed" use
    `OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff` (node-level diff except `rename`).
 
-### Section headers
+### Section presence and whole-section changes
 
-Rule: [section header colorizing](../../shared/features/section-header-colorizing.md). Applies to
-**Security** (alternatives), **Extensions** (keys), **Request** (groups + body), each parameter
-group and response **Headers** (synthesized properties), **Responses** (codes).
+In the diffs viewer every row exists in both columns. What a section shows on **one side** depends
+on whether it has displayable content on that side — not on whether its raw OpenAPI object exists,
+and not on where `apiDiff` attached a diff. The same intent lands at different depths (E19):
+removing the only media type is a `content[M][mt]` remove, removing a response's whole `content` is
+one `content` remove, deleting a `headers` map is one `remove` **per header** (the unifier default
+`headers: {}` exists on the after side), and in none of these cases does the diff sit on the
+section's own object.
 
-Implementation in `aggregateByDescendantDiffs` (mutates `nodeDiffs`; the return value is
-discarded):
+**Presence.** Each section kind has a presence predicate `present(side)` over the reconstructed
+side values (per-side reconstruction: [parameters.md, step 1](../entities/parameters.md#step-1--reconstruct-each-side-from-the-merged-entry)):
 
-```text
-if nodeDiffs[""] is add/remove (own or inherited)  → keep it (rule a)
-children = enumerate the real child keys of the transformed value      // not Object.keys(descendantDiffs)
-diffs    = children.map(key => descendant diff record[key])
-if every child has a diff AND all are add      → synthetic add   (rule b)
-if every child has a diff AND all are remove   → synthetic remove (rule b)
-otherwise                                      → no header color
-```
+| Section (node) | `present(side)` — the section has on that side… | Not counted |
+| --- | --- | --- |
+| Security (`security`) | ≥1 effective alternative (operation list, or the document list when not overridden) | — |
+| Security card (`securityScheme`) | the scheme in the selected alternative | — |
+| Extensions (`extensions`) | ≥1 `x-*` key | — |
+| Request (`request`) | a present parameter group **or** a present request Body | — |
+| Parameter group (`parameters`), response Headers (`responseHeaders`) | ≥1 entry | — |
+| Request Body (`requestBody`) | a non-empty `description` **or** ≥1 media type option (below) | `required` alone; media types without `schema` |
+| Media type option (`mediaType`, request and response) | `schema` (any value, incl. `true` / `false` / `{}`) | the media-type key alone |
+| Response Body (part of `response`) | ≥1 media type option | — |
+| Responses (`responses`) | ≥1 response code | — |
+| Response option (`response`) | the code exists | — |
 
-The direction check is mandatory: AsyncAPI `kind-parameters.ts` / `kind-extensions.ts` read only the
-first diff and would paint a mixed add + remove set (fixture `request/03-mixed-header-changes`).
-Removed children are present in merged values (E3), so the child count is the merged count.
+A media type without `schema` is **not** content (product decision, 2026-10-08): it is not a
+selector option in either mode, and a Body made only of such media types (and no description) is
+not rendered.
 
-The header severity (`TitleRow` placement) is built from the **same** diff object.
+**Whole-section diff.** `OpenApiSectionPresenceResolver` (with-diffs transformer, step 4) evaluates
+every section bottom-up (options → Body → group → Request; codes → Responses) and writes a
+**synthetic node-level diff** into the parent's diff record under the section key — the place
+`KindAny` reads it from (`parent.descendantDiffs[key]`):
+
+| `present(before)` | `present(after)` | Section | Synthetic diff |
+| :---: | :---: | --- | --- |
+| ✓ | ✗ | wholly **removed** | `remove`; `beforeValue` = the section's before value |
+| ✗ | ✓ | wholly **added** | `add`; `afterValue` = the section's after value |
+| ✓ | ✓ | changed inside (or unchanged) | none — inner diffs paint their own rows; the header stays uncolored |
+| ✗ | ✗ | not rendered at all | none — even if raw diffs exist inside (e.g. a schema-less media type added) |
+
+- A raw add / remove already on the section object (`requestBody` removed, a response removed, the
+  whole operation added) yields the same result; the resolver keeps the raw diff instead of a
+  synthetic one.
+- Synthetic diff metadata: `type` = the highest type among the raw diffs that caused the change;
+  declaration paths from those diffs.
+- Through `KindAny` inheritance every row of a wholly added / removed section takes the section
+  diff: header and rows green / red on the side that has them, hidden (grey, no content) on the
+  other. Inner raw diffs are not shown on top (aggregation stops on inherited add / remove).
+- The header severity (`TitleRow` placement) is built from the **same** diff object.
+
+**Relation to the shared rule.** This is the
+[section header colorizing](../../shared/features/section-header-colorizing.md) rule with
+"children" widened to **everything the section displays**: rule (a) = a raw add / remove on the
+section or an ancestor; rule (b) "every child uniformly added / removed" = `present` flips. It is
+stricter where it must be: a Body whose media types were all added while its description stayed is
+**not** wholly added (`present` is true on both sides). Mixed sets never flip `present` in one
+direction, so the AsyncAPI first-diff-only bug (`kind-parameters.ts` / `kind-extensions.ts`,
+fixture `request/03-mixed-header-changes`) cannot happen. Removed children are present in merged
+values (E3), so counts use the merged set reconstructed per side.
+
+Cases (fixtures in `packages/samples/openapi-diffs/`):
+
+| Fixture | Change | Result |
+| --- | --- | --- |
+| `request/23-body-removed` | `requestBody` removed | Body wholly removed (raw diff) |
+| `request/19-body-only-media-type-removed` | the only media type removed, no description | Body wholly removed (synthetic) |
+| `request/20-body-only-schema-removed` | the only media type loses its `schema`, no description | option wholly removed → Body wholly removed (synthetic) |
+| `request/21-body-only-schema-added` | symmetric | option and Body wholly added (synthetic) |
+| `request/22-body-media-type-removed-description-kept` | the only media type removed, description stays | Body present on both sides; option removed; header uncolored |
+| `responses/07-response-body-only-media-type-removed` | response `content` removed | response Body wholly removed; the response option itself unchanged (code still exists) |
+| `responses/08-response-body-only-schema-removed` | the only media type loses its `schema` | response Body wholly removed |
+| `responses/09-response-all-headers-removed` | `headers` map deleted (arrives as per-header removes) | response Headers wholly removed |
+| `request/02-all-headers-removed` | every header parameter removed | Headers group wholly removed |
+| `request/03-mixed-header-changes` | one header removed, one added | present on both sides → header uncolored |
+| `security/06-security-removed` | `security: []` | Security wholly removed |
 
 ### Severity placements
 
@@ -171,9 +226,15 @@ never read `node.diffs[...]` directly.
 ## Row visibility
 
 With-diffs visibility managers (`tree-with-diffs/node-visibility-data/kind-*.ts`) delegate diff-free
-rules to the plain managers and add: a row is visible when the merged value has content **or** the
-row's own diff exists (a removed description has no merged value but must render on the origin
-side). Never derive this in JSX.
+rules to the plain managers. Two separate questions, never mixed:
+
+| Question | Rule |
+| --- | --- |
+| Is the row **rendered** (in both columns)? | `present(before) \|\| present(after)` for section headers ([presence](#section-presence-and-whole-section-changes)); for a single-field row: the field has content on either side **or** its own diff exists (a removed description has no merged value but must render on the origin side) |
+| What does each **side** show? | the row's diff styles: a wholly added / removed section's synthetic or raw diff hides the header and content on the side where `present` is false (`isHeaderVisible` / `isContentVisible`), the other side is green / red |
+
+So a header is never shown on a side merely because the section's raw object exists there (e.g.
+`requestBody: {}` after its only media type was removed). Never derive any of this in JSX.
 
 ## Nested viewers
 
@@ -192,7 +253,7 @@ side). Never derive this in JSX.
 | `openapi-spec-transformer.test.ts` | lookup, defaults, effective security, synthesis (plain), code order, dialect per fixture |
 | `openapi-spec-with-diffs-transformer.test.ts` | every row of the diff-source tables above, one case per fixture under `openapi-diffs/` |
 | `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / whole-group stamping / description and schema sources (every scenario of `parameters.md` → "Description and schema sources", fixtures `request/11`–`18`) |
-| `openapi-section-header-diffs.test.ts` | rule (a), rule (b), mixed directions, unchanged sibling |
+| `openapi-section-presence.test.ts` | `OpenApiSectionPresenceResolver`: every row of the presence table and the fixture table in [Section presence](#section-presence-and-whole-section-changes) (raw vs synthetic whole diffs, schema-less media types, description keeps the Body present, mixed directions, unchanged sibling, neither side present → nothing rendered) |
 | `openapi-security-override-diffs.test.ts` | synthetic alternative diffs (`security/05-root-security-overridden`, reverse) |
 | `openapi-severities.test.ts` | one placement per row; whole-node fills all placements |
 

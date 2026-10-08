@@ -212,7 +212,7 @@ coloring (URL and whole-object diffs are unaffected).
 | Source | every `x-*` key of the operation object, copied by the transformer into `data.extensions` (AsyncAPI `copyExtensions`) |
 | Node | kind `extensions`, value `{ rawValues }` via the `collectRawValues` crawl transformer |
 | Component | shared `ExtensionsSection` (extracted from AsyncAPI `ExtensionsNodeViewer`): `TitleRow` "Extensions" **h2** with `TitleRowUsage.AsyncApiJsoSection`, then `JsoViewer` / `JsoDiffsViewer` over `rawValues`, `initialLevel={1}`. AsyncAPI keeps h3; the heading variant is a prop. |
-| Diff | per-key diffs move into `extensions[diffsMetaKey]`; the section header follows the shared colorizing rule ([../features/diffs.md](../features/diffs.md#section-headers)) |
+| Diff | per-key diffs move into `extensions[diffsMetaKey]`; the section header follows the shared colorizing rule ([../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
 
 **Trap — path-item extensions.** `api-unifier` copies path-item `x-*` keys into each operation
 (unless the operation defines the same key), but **only when the path item also declares

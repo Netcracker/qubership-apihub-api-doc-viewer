@@ -81,9 +81,21 @@ implementation and record it in the diagram. The rest of this document is neutra
 
 ## Section header
 
-`TitleRow` "Security", **h2**, `expandable={false}`. Shown when the effective list has at least one
-alternative (with diffs: on either side). An anonymous-only list (`[{}]`) still shows the section
-with the `No authentication` content.
+`TitleRow` "Security", **h2**, `expandable={false}`. **Present** on a side when the effective list
+has at least one alternative there; an anonymous-only list (`[{}]`) is present (it shows the
+`No authentication` content). With diffs the section is rendered when present on either side and,
+per side, follows the [presence rule](../features/diffs.md#section-presence-and-whole-section-changes):
+
+| Before | After | Section |
+| --- | --- | --- |
+| ≥1 alternative | `security: []` (one `remove` per alternative, E7) | wholly removed — `security/06` |
+| no operation `security`, document list empty | operation `security` with alternatives | wholly added |
+| document list inherited | operation override with other alternatives | present on both sides; synthetic alternative diffs ([below](#synthetic-alternative-diffs-on-override-changes-q15)); header uncolored |
+
+A **card** is present on a side when its scheme is in the selected alternative there; a scheme
+added to / removed from an alternative makes the card wholly added / removed. A scheme whose
+definition is missing from `components.securitySchemes` is still present (it renders the
+`unresolved` row).
 
 ## Alternatives selector
 
@@ -218,7 +230,7 @@ When the effective list switches between the document list `D` and the operation
 
 | Element | Rule |
 | --- | --- |
-| Section header | shared colorizing rule over the alternatives ([../features/diffs.md](../features/diffs.md#section-headers)) |
+| Section header | presence rule over the alternatives ([Section header](#section-header), [../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
 | Selector option | `Selector` hides the option on the side where its alternative does not exist and shows the change marker from `diffsSummary` ∪ `descendantDiffsSummary` |
 | Card of an added / removed scheme | every row inherits the whole-node diff (KindAny inheritance) — green / red rows on one side, hidden on the other |
 | Field rows | `colorizingDiff` = the field diff (add green, remove red, replace yellow); chip highlight per the DDL / JSON Schema chip contract: replace → yellow `textHighlighterColor`, add / remove → row background only |

@@ -75,14 +75,14 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Request | Section (h2) | parameters or body | [entities/parameters.md](entities/parameters.md) |
 | Request | Path / Query Parameters, Headers, Cookies (h3) + synthesized schema | parameters of that `in` | [entities/parameters.md](entities/parameters.md#groups) |
 | Request | `Media type` custom annotation on a parameter | `content`-described parameter | [entities/parameters.md](entities/parameters.md#property-schema-of-one-entry) |
-| Request | Body (h3) + media-type selector | `requestBody` | [entities/request-body.md](entities/request-body.md) |
+| Request | Body (h3) + media-type selector | Body present: `description` or ≥1 media type with `schema` | [entities/request-body.md](entities/request-body.md) |
 | Request | Required `*` on the Body title | `requestBody.required: true` | [entities/request-body.md](entities/request-body.md#required-marker) |
 | Request | Body description (markdown) | `requestBody.description` | [entities/request-body.md](entities/request-body.md#description-row) |
 | Request | Body schema (wrapped root `Type`) | selected media type has `schema` | [entities/request-body.md](entities/request-body.md#schema) |
 | Responses | Section (h2) + toned code selector | `responses` | [entities/responses.md](entities/responses.md), [features/response-code-selector.md](features/response-code-selector.md) |
 | Responses | Response description (markdown) | `description` | [entities/responses.md](entities/responses.md#description-row) |
 | Responses | Headers (h3) + synthesized schema | ≥1 header | [entities/responses.md](entities/responses.md#headers) |
-| Responses | Body (h3) + media-type selector in the subheader + schema | the selected response has content | [entities/responses.md](entities/responses.md#body) |
+| Responses | Body (h3) + media-type selector in the subheader + schema | the selected response has ≥1 media type with `schema` | [entities/responses.md](entities/responses.md#body) |
 
 ## Displayed (with diffs)
 
@@ -98,7 +98,7 @@ shows when it has content on either side or a diff of its own.
 | Address | path rename → partial replace | `address-row` |
 | External docs | whole add / remove, `url` replace (highlight + per-side `href`); `description` diffs open (Q16) | `external-docs-row` |
 | Descriptions (operation, body, response, scheme) | `description` | `description-row` |
-| Section and subsection headers | [section rule](features/diffs.md#section-headers) | `title-row` |
+| Section and subsection headers | [section presence rule](features/diffs.md#section-presence-and-whole-section-changes) | `title-row` |
 | Security alternatives | add / remove (index-mapped), override switch (synthetic) | selector markers, `selector-row` |
 | Scheme card | whole add / remove, field diffs, scope list diffs | `security-scheme-*-row`, `security-required-scopes-row` |
 | OAuth flow | URL fields, available scopes | `oauth-flow-*-row` |

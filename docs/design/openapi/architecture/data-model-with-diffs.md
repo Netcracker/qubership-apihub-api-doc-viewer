@@ -25,6 +25,7 @@ flowchart TB
   subgraph BSD["building-service/openapi"]
     TransformerD["shared/openapi-spec-with-diffs-transformer.ts<br/>OpenApiSpecWithDiffsTransformer<br/>relocate diff records · effective security diffs · rollup"]
     SynthD["shared/object-schema-with-diffs-synthesizer.ts<br/>OpenApiObjectSchemaWithDiffsSynthesizer"]
+    Presence["shared/section-presence-resolver.ts<br/>OpenApiSectionPresenceResolver<br/>presence per side → synthetic section add / remove"]
     BuilderD["tree-with-diffs/builder.ts<br/>OpenApiTreeWithDiffsBuilder · assignNodeDiffs"]
     NodeDataD["tree-with-diffs/node-data/builder.ts<br/>OpenApiNodeDataWithDiffsBuilder"]
     VisD["tree-with-diffs/node-visibility-data/kind-*"]
@@ -49,6 +50,7 @@ flowchart TB
   VisPlain -.->|delegates diff-free rules| VisD
   BuilderD --> TransformerD
   TransformerD --> SynthD
+  TransformerD --> Presence
   TransformerD --> Aggregated
   BuilderD --> NodeDataD
   BuilderD --> Diffs
@@ -88,4 +90,4 @@ No type assertions between plain and with-diffs node types; guards only.
   those trees still mark selector options and section headers.
 - Section headers follow
   [../../shared/features/section-header-colorizing.md](../../shared/features/section-header-colorizing.md)
-  with the direction check described in [../features/diffs.md](../features/diffs.md#section-headers).
+  evaluated over section presence per side, [../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes).

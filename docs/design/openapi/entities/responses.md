@@ -57,7 +57,7 @@ purpose — fixture `oas30/05-response-codes-palette` declares `500` first.
 | Tone | `resolveResponseCodeTone(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md) |
 | Option test id | `response-code-<code>` |
 | Initial selection | first `2XX` option, else the first option (Q13) |
-| Diff | header from the `responses` node (section colorizing over the codes); options carry `response` node diffs and summaries |
+| Diff | header from the `responses` node: wholly added / removed only when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); options carry `response` node diffs and summaries. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |
 
 ## Description row
 
@@ -73,7 +73,7 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Source | `response.headers` (map name → Header Object); synthesized by the same `OpenApiObjectSchemaSynthesizer` as parameters ([parameters.md](parameters.md#schema-synthesizer)) — entry name = map key, no `in` |
 | Header row | `TitleRow` "Headers", **h3**, test id `openapi-response-headers` |
 | Content | `ParametersNodeViewer` (same component as request parameter groups) |
-| Shown when | ≥1 header (either side in diffs); `api-unifier` drops the default `headers: {}` from denormalized / merged documents (E13), but an explicit empty map must hide the section too |
+| Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`responses/09`) |
 | `Content-Type` header | shown (Q5) |
 
 ## Body
@@ -81,10 +81,11 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Item | Rule |
 | --- | --- |
 | Header row | `TitleRow` "Body", **h3**, test id `openapi-response-body`, media-type `Selector` in the subheader (Q2) — identical to the request Body header ([request-body.md](request-body.md#header-row-h3-with-the-media-type-selector)) except that responses have no `required` marker |
-| Selector options | nested `mediaType` nodes of the response's `content`, document order; renamed media types show a per-side title; default tone, `SelectorVariant.Secondary`; option test id `response-media-type-<index>` |
+| Selector options | nested `mediaType` nodes of the response's `content` that **have a `schema`**, document order; renamed media types show a per-side title; default tone, `SelectorVariant.Secondary`; option test id `response-media-type-<index>` |
 | Selection | per response, kept when switching codes ([../features/operation-viewer.md](../features/operation-viewer.md#view-state)) |
-| Shown when | the response has ≥1 media type (either side in diffs) |
-| Diff | header from the `content` node's section diff (whole content added / removed); options carry `mediaType` node diffs and summaries |
+| Presence | the response Body is present on a side when it has ≥1 option there (the response description belongs to the response, not to the Body) |
+| Shown when | present on either side |
+| Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `responses/07`) or synthetic (the only media type removed, or the only schema removed, `responses/08`); options carry `mediaType` node diffs and summaries |
 | Schema | `MediaTypeSchemaViewer` for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
 
 The request and response Body headers are one component, `MediaTypeContentHeader`
@@ -93,13 +94,18 @@ selector. `RequestBodyNodeViewer` and `ResponseNodeViewer` own the selection sta
 
 ## Response without content
 
-`204`-style responses: no Body subsection; the description and headers still render.
+`204`-style responses, and responses whose media types all lack `schema`: no Body subsection; the
+description and headers still render.
 
 ## Visibility
 
 `OpenApiNodeVisibilityManagerKindResponse` (plain and with-diffs variants) returns
 `{ showDescription, showHeaders, showBody }` for the selected response;
-`…KindResponses` returns `{ showSection }`.
+`…KindResponses` returns `{ showSection }`. With diffs, each flag means "rendered" (present on
+either side); what each side shows comes from the whole-section diff of `responseHeaders` /
+`content` / `responses` — a section is hidden on the side where it is not present, never shown
+there just because its raw object exists
+([../features/diffs.md](../features/diffs.md#row-visibility)).
 
 ## Related documents
 

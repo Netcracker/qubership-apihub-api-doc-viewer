@@ -13,8 +13,8 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | --- | ---: | --- |
 | `operation/` | 10 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions, operation ID, deprecated (with and without a title row) |
 | `security/` | 6 | alternative added, scope added, scheme added to an alternative, scheme definition changed, document security overridden, security removed |
-| `request/` | 18 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes |
-| `responses/` | 6 | response added, code case rename, description, header added, media type removed, body schema property added |
+| `request/` | 23 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added / removed, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes, Body presence flips (only media type / only schema removed or added) |
+| `responses/` | 9 | response added, code case rename, description, header added, media type removed, body schema property added, response Body / Headers presence flips |
 | `oas31/` | 3 | OAS 3.1 base: nullable via type array, `mutualTLS` alternative added, role scopes on an API key |
 
 ### Cases
@@ -40,6 +40,14 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | `request/16-parameter-schema-to-content` | `schema: boolean` → `content: application/json` (`object`) | description `replace`, `type` replace, `properties` add, `Media type` add |
 | `request/17-parameter-content-media-type-renamed` | `application/json` → `application/json; charset=utf-8`, same schema | only `Media type` value `replace` |
 | `request/18-parameter-content-media-type-replaced` | `application/json` (`object`) → `text/plain` (`string`) | description `replace`, `type` replace, `Media type` value `replace` |
+| `request/19-body-only-media-type-removed` | the only media type removed; no body description | Body wholly removed (synthetic) |
+| `request/20-body-only-schema-removed` | the only media type loses its `schema`; no body description | option and Body wholly removed (synthetic) |
+| `request/21-body-only-schema-added` | the only media type gains a `schema`; no body description | option and Body wholly added (synthetic) |
+| `request/22-body-media-type-removed-description-kept` | the only media type removed; description kept | Body on both sides, header uncolored; option removed |
+| `request/23-body-removed` | `requestBody` removed | Body wholly removed (raw diff) |
+| `responses/07-response-body-only-media-type-removed` | `200` `content` removed | response Body wholly removed; `200` option still present |
+| `responses/08-response-body-only-schema-removed` | the only `200` media type loses its `schema` | response Body wholly removed (synthetic) |
+| `responses/09-response-all-headers-removed` | `200` `headers` deleted (arrives as per-header removes) | response Headers wholly removed |
 | `security/01-alternative-added` | second alternative | new option green on the changed side (selector shown on both sides) |
 | `security/02-scope-added` | `orders:read` added to the OAuth requirement | `Required scopes` chip added |
 | `security/03-scheme-added-to-alternative` | `basic` added to the first alternative | new card green |
