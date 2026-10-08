@@ -96,12 +96,17 @@ titles, **h5** OAuth flow titles.
 | 14 | **Cookies** (h3) + schema | same | `parameters` (`cookie`) | ≥1 cookie parameter | same |
 | 15 | **Body** (h3) + required `*`; subheader: media-type selector (+ `required` tag in diffs) | `MediaTypeContentHeader` | `requestBody` / `content` | Body present: `description` or ≥1 media type with `schema` | [request body](../entities/request-body.md) |
 | 16 | Request body description | `MarkdownTextRow` | `requestBody` | `description` | [request body](../entities/request-body.md#description-row) |
-| 17 | Request body schema | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected (options = media types with `schema`) | [request body](../entities/request-body.md#schema) |
+| 17 | Request body schema (incl. cloned request-body and media-type `x-*` in its Extensions sub-tree) | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected (options = media types with `schema`) | [request body](../entities/request-body.md#schema) |
 | 18 | **Responses** (h2), response-code selector in the subheader | `TitleRow` + toned `Selector` | `responses` | ≥1 response | [responses](../entities/responses.md), [response-code-selector.md](response-code-selector.md) |
 | 19 | Response description | `MarkdownTextRow` | `response` | `description` | [responses](../entities/responses.md#description-row) |
 | 20 | **Headers** (h3) + schema | `TitleRow` + `JsonSchemaViewer` | `responseHeaders` | ≥1 header | [responses](../entities/responses.md#headers) |
-| 21 | **Body** (h3); subheader: media-type selector | `MediaTypeContentHeader` | `response` / `content` | ≥1 media type with `schema` | [responses](../entities/responses.md#body) |
-| 22 | Response body schema | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected | same |
+| 21 | **Extensions** (h3) of the selected response + JSO tree | shared `ExtensionsSection` | `extensions` (child of `response`) | ≥1 `x-*` on the Response Object | [responses](../entities/responses.md#response-extensions) |
+| 22 | **Body** (h3); subheader: media-type selector | `MediaTypeContentHeader` | `response` / `content` | ≥1 media type with `schema` | [responses](../entities/responses.md#body) |
+| 23 | Response body schema (incl. cloned media-type `x-*` in its Extensions sub-tree) | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected | same |
+| 24 | **Extensions** (h3) of the Responses Object (code-independent) + JSO tree | shared `ExtensionsSection` | `extensions`, key `responsesExtensions` (child of `operation`, **not** of the complex `responses` node) | ≥1 `x-*` on the Responses Object | [responses](../entities/responses.md#responses-extensions) |
+
+The order of the sections in this table is not hard-coded in containers: it comes from one config
+map ([Section order](#section-order)). The row numbers above follow the default config.
 
 In the diffs viewer every row is rendered when it has content on **either** side or carries a diff
 of its own ([diffs.md](diffs.md#row-visibility)); per side, a section header and its rows follow the
@@ -153,9 +158,76 @@ Responses     [201] [303] [400] [404] [5XX] [default]                h2 + toned 
 Photo stored.                                                        response description
 Headers                                                              h3
   Location*   string<uri>   …
+Extensions                                                           h3, Response Object x-*
+  x-cache: public
 Body                         [application/json] [application/xml]    h3 + media-type selector
   Type   object …                                                    JSON Schema (wrapped root)
+    Extensions                                                       cloned media-type x-* (JSON Schema sub-tree)
+      x-codec: br
+Extensions                                                           h3, Responses Object x-* (code-independent)
+  x-rate-limited: true
 ```
+
+## Section order
+
+Every block that the OpenAPI layer renders as a section or subsection is ordered by **one config
+map**, so the order can be changed in one place later. Nested JSON Schema / JSO viewers are out of
+scope: their internal row order belongs to those stacks.
+
+File: `packages/api-doc-viewer/src/components/OpenApiOperationViewer/config/section-order.ts`
+(CSS-free, unit-testable).
+
+```typescript
+export const OpenApiSectionIds = {
+  // operation level (after the header rows: title, operation ID, address, external docs, description)
+  SECURITY: 'security',
+  OPERATION_EXTENSIONS: 'operationExtensions',
+  REQUEST: 'request',
+  RESPONSES: 'responses',
+  // inside Request
+  PATH_PARAMETERS: 'pathParameters',
+  QUERY_PARAMETERS: 'queryParameters',
+  HEADER_PARAMETERS: 'headerParameters',
+  COOKIE_PARAMETERS: 'cookieParameters',
+  REQUEST_BODY: 'requestBody',
+  // inside Responses
+  SELECTED_RESPONSE: 'selectedResponse',
+  RESPONSES_EXTENSIONS: 'responsesExtensions',
+  // inside the selected response
+  RESPONSE_DESCRIPTION: 'responseDescription',
+  RESPONSE_HEADERS: 'responseHeaders',
+  RESPONSE_EXTENSIONS: 'responseExtensions',
+  RESPONSE_BODY: 'responseBody',
+} as const
+export type OpenApiSectionId = typeof OpenApiSectionIds[keyof typeof OpenApiSectionIds]
+
+export const OPENAPI_SECTION_ORDER = {
+  operation: ['security', 'operationExtensions', 'request', 'responses'],
+  request:   ['pathParameters', 'queryParameters', 'headerParameters', 'cookieParameters', 'requestBody'],
+  responses: ['selectedResponse', 'responsesExtensions'],
+  response:  ['responseDescription', 'responseHeaders', 'responseExtensions', 'responseBody'],
+} as const satisfies {
+  operation: readonly OpenApiSectionId[]
+  request:   readonly OpenApiSectionId[]
+  responses: readonly OpenApiSectionId[]
+  response:  readonly OpenApiSectionId[]
+}
+```
+
+| Rule | Detail |
+| --- | --- |
+| Scope | one list per container level: `OperationNodeViewer` (`operation`), `RequestNodeViewer` (`request`), `ResponsesNodeViewer` (`responses`), `ResponseNodeViewer` (`response`) |
+| Containers | iterate their list and render the section whose id they meet, skipping sections that are not visible; no container has a hard-coded sequence of sections |
+| Fixed, not configurable | the operation header rows (title, operation ID, address, external docs, description) and the rows **inside** a section (e.g. Body header → description → schema; Security header → selector → cards). The Responses header with its code selector always comes first in the Responses section — it is the section header, not a section of the list. |
+| Moving between levels | not supported: a section id stays in its own list (a response section cannot move into `request`) |
+| Spacing | `data-precededby` is computed from the **configured** order over the visible sections (`utils/openapi/section-preceded-by.ts`), never from a hard-coded predecessor — changing the order must not need CSS changes |
+| Test ids, change markers, diffs | independent of the order |
+| Unit test | each list contains exactly its allowed ids, each once (a reordered list is valid, a missing or foreign id fails) |
+| Public API | not exposed to hosts in v1; the map is the extension point |
+
+The default order reflects the agreed layout: the response **Extensions** subsection is always
+after **Headers** and before **Body**; the code-independent Responses **Extensions** comes after the
+selected response.
 
 ## Spacing (`data-precededby`)
 
@@ -181,8 +253,8 @@ the closest existing member).
 | Section header after a nested viewer | `JSON_SCHEMA_VIEWER` / `JSO_VIEWER` |
 
 Precompute the `data-precededby` of each section in the parent container (one pass over the
-visible sections, as `buildColumnViewerContexts` does for DDL) — a section must not inspect its
-previous sibling.
+visible sections **in the configured order** — [Section order](#section-order) — as
+`buildColumnViewerContexts` does for DDL) — a section must not inspect its previous sibling.
 
 ## View state
 
@@ -214,12 +286,13 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | `SecuritySchemeCard/SecuritySchemeCard.tsx` | one framed card | rows in [security](../entities/security.md#scheme-card); precomputes per-side frame positions |
 | `SecuritySchemeCard/OAuthFlowRows.tsx` | one OAuth flow | child of the card, inside its frame |
 | `RequestNodeViewer.tsx` | row 10, dispatch of rows 11–17 | |
-| `ParametersNodeViewer.tsx` | rows 11–14 (one instance per location) and row 20 | same component for request parameters and response headers |
+| `ParametersNodeViewer.tsx` | rows 11–14 (one instance per location) and row 20 |
+| shared `ExtensionsSection` | rows 9, 21, 24 | heading variant per call site (h2 operation, h3 response / Responses) | same component for request parameters and response headers |
 | `RequestBodyNodeViewer.tsx` | rows 15–17 | owns request media-type selection |
-| `MediaTypeContentHeader.tsx` | rows 15 and 21 | Body title, optional required marker / tag, media-type selector |
-| `ResponsesNodeViewer.tsx` | row 18, then `ResponseNodeViewer` for the selected code | owns code and per-response media-type selection |
-| `ResponseNodeViewer.tsx` | rows 19–22 | receives the selected media type from the parent |
-| `MediaTypeSchemaViewer.tsx` | rows 17 and 22 | wraps the schema ([request body](../entities/request-body.md#schema)) and picks the plain / diffs JSON Schema viewer |
+| `MediaTypeContentHeader.tsx` | rows 15 and 22 | Body title, optional required marker / tag, media-type selector |
+| `ResponsesNodeViewer.tsx` | row 18, then `ResponseNodeViewer` for the selected code, then row 24 (order from `OPENAPI_SECTION_ORDER.responses`) | owns code and per-response media-type selection |
+| `ResponseNodeViewer.tsx` | rows 19–23 | receives the selected media type from the parent; renders its sections in `OPENAPI_SECTION_ORDER.response` order |
+| `MediaTypeSchemaViewer.tsx` | rows 17 and 23 | wraps the schema ([request body](../entities/request-body.md#schema)) and picks the plain / diffs JSON Schema viewer |
 
 Shared components (`packages/api-doc-viewer/src/components/shared-components/`): `AddressRow/`
 (moved from AsyncAPI, D9, with a `trailing` slot), `ExternalDocsRow/` (new), `ExtensionsSection/`
@@ -245,7 +318,7 @@ the AsyncAPI ones.
 | Element | `data-testid` |
 | --- | --- |
 | Root | `openapi-operation-viewer` / `openapi-operation-diffs-viewer` |
-| Sections | `openapi-security-section`, `openapi-extensions-section`, `openapi-request-section`, `openapi-responses-section` |
+| Sections | `openapi-security-section`, `openapi-extensions-section`, `openapi-request-section`, `openapi-responses-section`, `openapi-response-extensions`, `openapi-responses-extensions` |
 | Subsections | `openapi-parameters-path`, `-query`, `-header`, `-cookie`; `openapi-request-body`; `openapi-response-headers`; `openapi-response-body` |
 | Selector options | `security-alternative-<index>`, `request-media-type-<index>`, `response-code-<code>`, `response-media-type-<index>` |
 | Scheme card | `security-scheme-<name>` |

@@ -8,13 +8,17 @@ description, headers, and body (whose header carries the media-type selector). S
 | Kind | Complexity | Key | Value | Children / nested |
 | --- | --- | --- | --- | --- |
 | `responses` | complex | `responses` | `null` | nested: `response` per code, **canonical order** |
-| `response` | simple | the code as in the document (`200`, `2XX`, `default`) | `{ code: string; codeClass: OpenApiResponseCodeClass; description?: string }` | children: `responseHeaders`?, `content`? |
+| `response` | simple | the code as in the document (`200`, `2XX`, `default`) | `{ code: string; codeClass: OpenApiResponseCodeClass; description?: string }` | children: `responseHeaders`?, `extensions`?, `content`? |
 | `responseHeaders` | simple | `headers` | `{ schema: OpenApiSynthesizedObjectSchema }` | — |
+| `extensions` (of a response) | simple | `extensions` | `{ rawValues }` — Response Object `x-*` | — |
 | `content` / `mediaType` | as in [request-body.md](request-body.md#nodes) | | | |
+| `extensions` (of the Responses Object) | simple, child of **`operation`** | `responsesExtensions` | `{ rawValues }` | — |
 
 `responses` is absent when the operation has no `responses` (allowed in OAS 3.1; invalid but
 tolerated in OAS 3.0 — [../features/oas-versions.md](../features/oas-versions.md#responses)).
-`x-*` keys of the Responses Object are not response codes and are skipped.
+`x-*` keys of the Responses Object are not response codes: they are moved to
+`data.responsesExtensions`, **outside** the complex `responses` node (anything under it would become
+a code option) — [Responses extensions](#responses-extensions).
 
 ## Response codes
 
@@ -69,7 +73,7 @@ selector) when the response changed **inside**.
 | --- | --- |
 | Counted | every **displayed** change inside the response: description, headers (added / removed / changed, incl. inside header schemas), media types (added / removed / renamed), body schemas and everything nested in them, synthetic whole-section diffs of its Headers / Body ([presence](../features/diffs.md#section-presence-and-whole-section-changes)) |
 | Not counted | the response code itself: wholly added, wholly removed, renamed (`4xx` → `4XX`), and anything **inferred** from a whole change — inherited from an ancestor (whole operation, whole `responses`) or stamped by the synthesizer onto header properties of a wholly added / removed response ([parameters.md](parameters.md#with-diffs), rule 4). Those are shown by the option's visibility / border shadow / per-side title, never by the marker. |
-| Not displayed → not counted | changes the viewer does not show (header `style` / `explode`, media type `examples` / `encoding`, `x-*` of responses / media types (header `x-*` **is** displayed and counted — [parameters.md](parameters.md#entry-extensions)), a shadowed schema-root description of a header) are absent from the transformed spec, so they never reach the marker |
+| Not displayed → not counted | changes the viewer does not show (header `style` / `explode`, media type `examples` / `encoding`, shadowed `x-*` values (header, Response Object, and media-type `x-*` **are** displayed and counted — [parameters.md](parameters.md#entry-extensions), [Extensions](#extensions)), a shadowed schema-root description of a header) are absent from the transformed spec, so they never reach the marker |
 | Several changes | the **strongest** diff type wins: `maxDiffType` (`utils/common/changes.ts`) over the set — breaking > … > non-breaking > annotation > unclassified |
 | Same on both sides | the marker is a property of the option, drawn identically in the origin and the changed column |
 
@@ -135,6 +139,40 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`responses/09`) |
 | `Content-Type` header | shown (Q5) |
 | Header `x-*` | moved flat into the header's synthetic property schema and shown in its **Extensions** sub-tree — same rules as parameters ([parameters.md](parameters.md#entry-extensions)) |
+
+## Extensions
+
+Approved split (2026-10-08):
+
+| Level | Extensible? | Meaning of its `x-*` | Placement |
+| --- | --- | --- | --- |
+| `responses` — Responses Object | yes | all responses | **separate section** [Responses extensions](#responses-extensions) |
+| `responses[code]` — Response Object | yes | the whole response, **including its headers** — not only the media types | **separate section** [Response extensions](#response-extensions) |
+| `responses[code].content` — map | **no** (map of media types) | — | ignored, as for the request ([request-body.md](request-body.md#extensions)) |
+| `responses[code].content[mt]` — Media Type Object | yes | this media type only | **cloned into this** media type's schema root — same rules as the request ([request-body.md](request-body.md#extensions), rules 1–6; precedence: Media Type Object > schema root) |
+
+Unlike the Request Body Object, the Response Object is **not** cloned into the body schemas: a
+response also has headers (and links), so its extensions are not "about every media type".
+
+### Response extensions
+
+| Item | Rule |
+| --- | --- |
+| Component | shared `ExtensionsSection`, title **Extensions**, **h3**, test id `openapi-response-extensions`, then `JsoViewer` / `JsoDiffsViewer` over the Response Object's `x-*` (`rawValues`) |
+| Position | inside the selected response, **after Headers and before Body** — from the config `OPENAPI_SECTION_ORDER.response` ([../features/operation-viewer.md](../features/operation-viewer.md#section-order)) |
+| Diffs | raw `responses[code][M]['x-…']` (E22) relocated to the `extensions` node; the subsection follows the presence rule (present = ≥1 `x-*` on that side) |
+| Change markers | **counted** in the response-code marker: they are changes inside the response ([Change markers](#change-markers-on-response-code-options)) |
+
+### Responses extensions
+
+| Item | Rule |
+| --- | --- |
+| Component | shared `ExtensionsSection`, title **Extensions**, **h3**, test id `openapi-responses-extensions` |
+| Position | inside the **Responses** section, after the selected response's rows — config `OPENAPI_SECTION_ORDER.responses`; independent of the selected code |
+| Node | `extensions` with key `responsesExtensions`, a child of `operation` (see [Nodes](#nodes)); `ResponsesNodeViewer` renders it in the configured position |
+| Diffs | raw `responses[M]['x-…']` (E22); presence rule as above |
+| Change markers | **not** counted in any response-code marker (not inside a code) |
+| Responses presence | counts: the Responses section is present on a side with ≥1 code **or** ≥1 Responses-level `x-*`; a Responses Object with only `x-*` keys renders the section header (empty code selector) and this subsection |
 
 ## Body
 

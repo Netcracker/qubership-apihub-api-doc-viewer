@@ -13,8 +13,8 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | --- | ---: | --- |
 | `operation/` | 10 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions, operation ID, deprecated (with and without a title row) |
 | `security/` | 6 | alternative added, scope added, scheme added to an alternative, scheme definition changed, document security overridden, security removed |
-| `request/` | 26 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added / removed, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes, Body presence flips (only media type / only schema removed or added), parameter `x-*` extensions |
-| `responses/` | 12 | response added, code case rename, description, header added, media type removed, body schema property added, response Body / Headers presence flips, response-code change markers |
+| `request/` | 28 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added / removed, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes, Body presence flips (only media type / only schema removed or added), parameter, request body, and media type `x-*` extensions |
+| `responses/` | 13 | response added, code case rename, description, header added, media type removed, body schema property added, response Body / Headers presence flips, response-code change markers, Responses / Response / media type extensions |
 | `oas31/` | 3 | OAS 3.1 base: nullable via type array, `mutualTLS` alternative added, role scopes on an API key |
 
 ### Cases
@@ -51,6 +51,9 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | `request/24-parameter-extension-added-and-changed` | `dryRun`: `x-owner` replaced, `x-internal` added on the entry | property Extensions sub-tree: replace + add |
 | `request/25-parameter-extension-moved-to-schema` | `x-owner` moved from the entry to the schema root, same value | no diff |
 | `request/26-parameter-extension-nested-change` | item added inside `x-audience.owners` | nested add in the property's Extensions sub-tree |
+| `request/27-body-and-media-type-extensions-changed` | Request Body `x-max-size` replaced, media type `x-codec` added, `x-not-a-media-type` string key in `content` | body root Extensions: replace + add; the `content` key dropped by the unifier |
+| `request/28-media-type-extension-shadows-schema-root` | media type `x-codec: gzip` added over schema root `x-codec: none` | `x-codec` replace `none` → `gzip` |
+| `responses/13-responses-and-response-extensions-changed` | Responses `x-rate-limited` added; `200` `x-cache` replaced; `200` media type `x-codec` added | Responses Extensions: add; response Extensions (between Headers and Body): replace; body root Extensions: add; `200` marker counts `x-cache` and `x-codec` (inside the response), not the Responses-level `x-rate-limited` |
 | `responses/10-response-added-with-headers-and-body` | `404` added with headers and a body | `404` option green, **no** change marker |
 | `responses/11-response-code-renamed-and-description-changed` | `4xx` → `4XX` and its description replaced | per-side title; `annotation` marker (description only) |
 | `responses/12-response-changes-of-different-severity` | `200`: header added, body property removed, `application/xml` removed, description replaced | `breaking` marker on `200` (strongest) |

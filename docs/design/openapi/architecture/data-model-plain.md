@@ -90,8 +90,10 @@ export interface OpenApiOperationOrientedSpec {
       codeClass: OpenApiResponseCodeClass
       description?: string
       headers?: { schema: OpenApiSynthesizedObjectSchema }
-      content?: Record<string, { mediaType: string; schema?: unknown }>
+      extensions?: Record<SpecificationExtensionKey, unknown>   // Response Object x-*
+      content?: Record<string, { mediaType: string; schema?: unknown }>   // media-type and (request: body-level) x-* already cloned into schema roots
     }>
+    responsesExtensions?: Record<SpecificationExtensionKey, unknown>   // Responses Object x-*; OUTSIDE `responses`
   }
 }
 ```
@@ -124,11 +126,13 @@ entries) so visibility can rely on presence.
     '/responses': {
       '/*': {
         '/headers': { kind: RESPONSE_HEADERS },
+        '/extensions': { kind: EXTENSIONS, transformers: [collectRawValues] },
         '/content': { '/*': { kind: MEDIA_TYPE }, kind: CONTENT, complex: true },
         kind: RESPONSE,
       },
       kind: RESPONSES, complex: true,
     },
+    '/responsesExtensions': { kind: EXTENSIONS, transformers: [collectRawValues] },
   },
   kind,
 }
@@ -140,6 +144,9 @@ Notes:
   `/parameters`) only route the crawl: `createTreeBuildingHooks`
   (`abstract/json-crawl-entities/hooks/builder.ts`) returns without creating a node when
   `rules.kind` is missing and keeps crawling.
+- The Responses Object's extensions live in `data.responsesExtensions`, a sibling of
+  `data.responses`: `responses` is a **complex** node, and anything crawled under it becomes a
+  nested node — i.e. an extra option of the response-code selector.
 - Leaf kinds (`parameters`, `responseHeaders`, `mediaType`, `extensions`, `oauthFlow`) declare no
   sub-rules: the same hook returns `{ done: true }` for a key without rules, so schemas and raw
   values stay on the node value and are rendered by nested viewers.

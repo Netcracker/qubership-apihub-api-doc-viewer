@@ -13,7 +13,8 @@ description, and the schema of the selected media type. Status: **planned**.
 
 `required` is displayed in v1 ([Required marker](#required-marker), Q11). `content` and `mediaType`
 are shared with responses.
-Media type `examples` / `example` / `encoding` / `x-*` are not copied (Q11).
+Media type `examples` / `example` / `encoding` are not copied (Q11). Request Body and Media Type
+`x-*` are cloned into the body schemas ([Extensions](#extensions)).
 
 ## Header row (h3) with the media-type selector
 
@@ -61,6 +62,48 @@ message and section descriptions; only security card detail rows are `detailed`-
 | Shown when | an option is selected — every option has a `schema` on at least one side by definition |
 | Wrapping | `wrapJsonSchemaForViewer('Type', schema)` / `wrapJsonSchemaForDiffsViewer('Type', schema, mediaTypeNode.diffs[NODE_LEVEL_DIFF_KEY], diffMetaKeys)` from `utils/jso/prepare-json-schema-to-jso-viewers.ts`, `SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS` — exactly the AsyncAPI payload rendering (Q4). Extract the `'Type'` title into one shared constant used by both stacks. |
 | Diffs | a wholly added / removed / renamed media type passes its node-level diff to the wrapper so the root property is painted; diffs inside the schema are already on the merged schema |
+## Extensions
+
+Approved split (2026-10-08). The request side has **no separate Extensions subsection**: every
+request-level extension describes the body or one of its media types, so it is cloned into the body
+schemas and shown in the JSON Schema **Extensions** sub-tree of the body's root (`Type`) row —
+the same mechanism as parameter extensions ([parameters.md](parameters.md#entry-extensions)).
+
+| Level | Extensible? | Meaning of its `x-*` | Placement |
+| --- | --- | --- | --- |
+| `requestBody` — Request Body Object | yes | the whole body: holds equally for every media type | **cloned into every** media type's schema root |
+| `requestBody.content` — map | **no** (a map of media types) | — | ignored: an `x-*` key there is a media type name, not an extension; the unifier's validation drops it when its value is not an object (E22); with an object value it is a (strange) media type and follows the media-type rules |
+| `requestBody.content[mt]` — Media Type Object | yes | this media type only | **cloned into this** media type's schema root |
+
+Rules (shared with response media types, [responses.md](responses.md#body)):
+
+1. **Flat keys on the schema root.** The `x-*` keys are written as flat keys on a shallow copy of the
+   media type's schema (never mutate the resolved source schema — it may be shared through
+   `$ref`). `transformJsonSchemaExtensions` gathers them into the root node's `extensions`.
+2. **Precedence on a name collision** (same `x-k` on several levels): Media Type Object > Request Body
+   Object > schema root — OpenAPI objects beat the schema root (as a parameter entry does), and the
+   more specific object wins. Shadowed values are not shown.
+3. **Diffs**, per key, from the value **shown** on each side (per-side reconstruction as in
+   [parameters.md, step 1](parameters.md#step-1--reconstruct-each-side-from-the-merged-entry)):
+   equal → no diff (a key moved between levels with the same value), absent → value `add`, value →
+   absent `remove`, otherwise `replace`; written to the schema root's diff record under the key.
+   Keys that exist on one level only keep their raw diff as is; diffs nested inside a value pass
+   through. Raw diffs arrive per level (E22): `requestBody[M]['x-…']`, `content[mt][M]['x-…']`.
+4. **One raw change, several schemas.** A Request Body `x-*` change is written to every media type's
+   schema. Only one media type is visible at a time; change markers count diff **types**, so the
+   repetition never shows.
+5. **No schema, no extensions.** A media type without `schema` is not content
+   ([Presence](#presence)), so its extensions — and Request Body extensions, when no media type has
+   a schema — are not shown. An OAS 3.1 `schema: true` becomes `{}` to hold the keys; on
+   `schema: false` the extensions are not shown.
+6. **Not counted for presence.** Extensions never make the Body present on their own: they only
+   decorate a schema that is already shown.
+
+| Fixture | Change | Shown |
+| --- | --- | --- |
+| `request/27-body-and-media-type-extensions-changed` | Request Body `x-max-size` replaced; media type `x-codec` added; an `x-not-a-media-type` string key added to `content` | root row Extensions: `x-max-size` replace, `x-codec` add; the `content` key is dropped by the unifier |
+| `request/28-media-type-extension-shadows-schema-root` | schema root `x-codec: none` on both sides; media type `x-codec: gzip` added | `x-codec` replace `none` → `gzip` (the shown value changed) |
+
 ## Presence
 
 The Body is **present on a side** when it has, on that side, a non-empty `description` **or** at

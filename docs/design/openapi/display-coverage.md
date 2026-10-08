@@ -76,6 +76,10 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Request | Path / Query Parameters, Headers, Cookies (h3) + synthesized schema | parameters of that `in` | [entities/parameters.md](entities/parameters.md#groups) |
 | Request | `Media type` custom annotation on a parameter | `content`-described parameter | [entities/parameters.md](entities/parameters.md#property-schema-of-one-entry) |
 | Request, Responses | Parameter / response-header `x-*` in the property's **Extensions** sub-tree (detailed mode) | entry-level `x-*` keys | [entities/parameters.md](entities/parameters.md#entry-extensions) |
+| Request, Responses | Request Body and Media Type `x-*` cloned into the body schema root's **Extensions** sub-tree | `x-*` on those objects and a schema to attach to | [entities/request-body.md](entities/request-body.md#extensions) |
+| Responses | **Extensions** (h3) of the selected response, after Headers and before Body | Response Object `x-*` | [entities/responses.md](entities/responses.md#response-extensions) |
+| Responses | **Extensions** (h3) of the Responses Object, after the selected response | Responses Object `x-*` | [entities/responses.md](entities/responses.md#responses-extensions) |
+| All | Section order from one config map | — | [features/operation-viewer.md](features/operation-viewer.md#section-order) |
 | Request | Body (h3) + media-type selector | Body present: `description` or ≥1 media type with `schema` | [entities/request-body.md](entities/request-body.md) |
 | Request | Required `*` on the Body title | `requestBody.required: true` | [entities/request-body.md](entities/request-body.md#required-marker) |
 | Request | Body description (markdown) | `requestBody.description` | [entities/request-body.md](entities/request-body.md#description-row) |
@@ -115,7 +119,7 @@ shows when it has content on either side or a diff of its own.
 | Parameter / header `style`, `explode`, `allowEmptyValue`, `allowReserved` | `intentional-gap` | `api-unifier` injects defaults; showing them would add noise to every parameter. |
 | Parameter / header / media type `example`, `examples` | `planned` | Schema-level examples are shown by the JSON Schema stack. |
 | Media type `encoding` | `planned` | multipart details. |
-| Response / media type / request body `x-*` | `planned` | Operation-level extensions are a section; parameter and response-header extensions are shown inside their property row ([entities/parameters.md](entities/parameters.md#entry-extensions)). |
+| `x-*` keys inside a `content` map | `intentional-gap` | `content` is a map of media types, not an extensible object; such a key is not an extension (dropped by the unifier when its value is not an object). |
 | `tags` | `intentional-gap` | Not part of the operation view. |
 | `callbacks`, `links`, `webhooks` | `intentional-gap` | Out of the operation-viewer scope. |
 | Security requirement inherited from the document (hint) | `ndm-reserved` | `isInheritedFromDocument` on the `security` node. |

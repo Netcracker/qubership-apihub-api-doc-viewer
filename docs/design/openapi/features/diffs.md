@@ -67,6 +67,10 @@ properties.
 | Response description | `op.responses[code][M].description` | `response[M].description` |
 | Response headers added as a whole | `op.responses[code][M].headers` | synthesizer stamps every header property |
 | Response header added / removed | `op.responses[code].headers[M][name]` | synthesizer → `properties[M][name]` |
+| Request Body Object `x-*` | `op.requestBody[M]['x-…']` | cloned into every request media type's schema root, per-key precedence ([request-body.md](../entities/request-body.md#extensions)) |
+| Media Type Object `x-*` (request, response) | `….content[mt][M]['x-…']` | cloned into that schema root, per-key precedence |
+| Response Object `x-*` | `op.responses[code][M]['x-…']` | `response.extensions[M]` → response **Extensions** subsection |
+| Responses Object `x-*` | `op.responses[M]['x-…']` | `data.responsesExtensions[M]` → Responses **Extensions** subsection |
 
 ## Node diff aggregation
 
@@ -118,7 +122,8 @@ side values (per-side reconstruction: [parameters.md, step 1](../entities/parame
 | Request Body (`requestBody`) | a non-empty `description` **or** ≥1 media type option (below) | `required` alone; media types without `schema` |
 | Media type option (`mediaType`, request and response) | `schema` (any value, incl. `true` / `false` / `{}`) | the media-type key alone |
 | Response Body (part of `response`) | ≥1 media type option | — |
-| Responses (`responses`) | ≥1 response code | — |
+| Responses (`responses`) | ≥1 response code **or** ≥1 Responses Object `x-*` | — |
+| Response / Responses Extensions (`extensions` under `response` / `responsesExtensions`) | ≥1 `x-*` key | — |
 | Response option (`response`) | the code exists | — |
 
 A media type without `schema` is **not** content (product decision, 2026-10-08): it is not a
