@@ -1,7 +1,7 @@
 # Responses
 
 The **Responses** section: the toned response-code selector, then for the selected response its
-description, headers, and body (whose header carries the media-type selector). Status: **planned**.
+description, headers, and body (whose header carries the media-type selector). Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Nodes
 

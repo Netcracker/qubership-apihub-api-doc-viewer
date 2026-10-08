@@ -84,10 +84,12 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 
 ## Storybook and screenshot tests
 
-Planned (implementation plan step 6): `OpenAPI Operation Diffs Suite/<Category> Samples`, stories
-under `packages/api-doc-viewer/src/stories/openapi-diffs-suite/`, ITs under
-`packages/api-doc-viewer/src/it/openapi-diffs-suite/`. Story ids come from the built
-`index.json`, not from case folder names.
+`OpenAPI Operation Diffs Suite/<Category> Samples` (Operation, Security, Request, Responses,
+OAS 3.1): stories under `packages/api-doc-viewer/src/stories/openapi-diffs-suite/` (one file per
+category, globbing this folder; export `Case_<case id>`), ITs
+`packages/api-doc-viewer/src/it/openapi-diffs-suite.<category>.it-test.ts`. Stories pick `POST` and
+the first `paths` key of the after document. When adding a case, add the story export and the
+matching `it(...)`; check the story id in the built `index.json`.
 
 ## Regenerate
 

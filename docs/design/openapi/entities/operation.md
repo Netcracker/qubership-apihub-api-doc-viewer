@@ -1,7 +1,7 @@
 # Operation
 
 The root of the viewer: operation lookup, the header rows (title, address, external docs,
-description), and the **Extensions** section. Status: **planned**.
+description), and the **Extensions** section. Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Lookup (`OpenApiSpecTransformer.resolveOperation`)
 

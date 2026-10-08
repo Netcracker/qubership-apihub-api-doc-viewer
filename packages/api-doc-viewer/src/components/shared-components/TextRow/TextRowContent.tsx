@@ -83,6 +83,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
+      data-frame-position={props.framePosition?.(layoutSide)}
       className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {showsLevelIndent && (

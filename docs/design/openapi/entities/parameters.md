@@ -2,7 +2,7 @@
 
 The **Request** section header and its four parameter subsections, plus the schema synthesizer that
 turns parameters — and response headers ([responses.md](responses.md#headers)) — into one JSON
-Schema object per group. Status: **planned**.
+Schema object per group. Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Request section header
 

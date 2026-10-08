@@ -1,0 +1,15 @@
+.external-docs-row-content {
+  min-height: 28px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.external-docs-row-link {
+  font-size: 14px;
+  color: #0068FF;
+  text-decoration: none;
+}
+
+.external-docs-row-link:hover {
+  text-decoration: underline;
+}

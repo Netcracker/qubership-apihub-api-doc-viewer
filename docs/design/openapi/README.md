@@ -1,10 +1,12 @@
 # OpenAPI operation viewer — design
 
 Technical design of `OpenApiOperationViewer` / `OpenApiOperationDiffsViewer` and their
-next-data-model stack (`OpenApiTreeBuilder` / `OpenApiTreeWithDiffsBuilder`). Status: **planned**
-— nothing here is implemented yet. This folder is the source of truth for the implementation;
-skills (`next-data-model-authoring`, `api-doc-viewer-authoring`, `api-doc-viewer-testing`) are
-updated from it once the implementation lands.
+next-data-model stack (`OpenApiTreeBuilder` / `OpenApiTreeWithDiffsBuilder`). Status:
+**implemented** (first iteration, 2026-10-08) — decisions taken during implementation, rejected
+alternatives, and the places where the code deviates from older statements here are in
+[notes/2026-10-implementation-decisions.md](notes/2026-10-implementation-decisions.md), which wins
+until step 9 below rewrites the affected documents. Skills (`next-data-model-authoring`,
+`api-doc-viewer-authoring`, `api-doc-viewer-testing`) are not updated yet.
 
 The viewer reuses what already exists: the JSON Schema viewers render every schema (parameters,
 headers, bodies), the JSO viewers render extensions, and the shared rows (`TitleRow`,
@@ -35,8 +37,9 @@ tree, and lays the rows out.
 | 4 | [features/diffs.md](features/diffs.md) | With-diffs data layer and viewer: where each diff comes from, how it is aggregated and painted. |
 | 5 | [features/response-code-selector.md](features/response-code-selector.md) | The multicolor response-code selector and the `Selector` tone extension. |
 | 6 | [architecture/](architecture/) | Class and component diagrams (data model and viewer, plain and with diffs). |
-| 7 | [display-coverage.md](display-coverage.md) | Planned display baseline; triage of what is shown, omitted, or planned. |
+| 7 | [display-coverage.md](display-coverage.md) | Display baseline; triage of what is shown, omitted, or planned. |
 | 8 | [notes/2026-10-design-analysis.md](notes/2026-10-design-analysis.md) | Evidence: how `api-unifier` and `apiDiff` actually shape OpenAPI documents (measured on the fixtures). |
+| 9 | [notes/2026-10-implementation-decisions.md](notes/2026-10-implementation-decisions.md) | Decisions taken during the first implementation, rejected alternatives, deviations from the documents above. |
 
 ## Decisions
 
@@ -103,6 +106,13 @@ Test-first, per [../README.md](../README.md#workflow). Each step lists its exit 
 | 7 | next-data-model with diffs: with-diffs transformer, with-diffs synthesizer, five aggregator families, severities, `OpenApiRowDiffs`, unit tests. | ndm-authoring | Unit tests green for every row of the diff-source table in [features/diffs.md](features/diffs.md). |
 | 8 | Diffs viewer `OpenApiOperationDiffsViewer`. | viewer-authoring | Diff ITs green; DOM width check for near-white row backgrounds (testing skill, pixel-diff blind spot). |
 | 9 | Refresh [display-coverage.md](display-coverage.md) and diagrams to `implemented`; update skills and `AGENTS.md`; add an `api-doc-viewer-using` section. | review-session | Docs match code. |
+
+Progress (2026-10-08): steps 1–8 are implemented. Exceptions: screenshot baselines for steps 2, 5,
+6 and 8 are not generated yet (Docker was not available), and IT story ids were not checked against
+a running Storybook. Step 9 is partly done: status lines and
+[display-coverage.md](display-coverage.md) are refreshed, while entity / architecture rewrites,
+skills, and `AGENTS.md` are pending
+([notes/2026-10-implementation-decisions.md](notes/2026-10-implementation-decisions.md)).
 
 ## Related documents
 

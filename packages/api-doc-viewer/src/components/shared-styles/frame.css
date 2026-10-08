@@ -1,0 +1,29 @@
+/* =============================================================================
+   Framed row groups (OpenAPI security cards).
+   Every row of a card carries data-frame-position on its per-side content element; each row draws
+   its own segment, so the frame stays continuous through side-by-side layouts. Vertical spacing
+   inside a frame must be padding (data-precededby rules), never margin - a margin would cut the
+   side borders. The gap between two cards is a separate spacer element.
+   ============================================================================= */
+
+[data-frame-position] {
+  border-left: 1px solid #D5DCE3;
+  border-right: 1px solid #D5DCE3;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+[data-frame-position="first"],
+[data-frame-position="single"] {
+  border-top: 1px solid #D5DCE3;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+[data-frame-position="last"],
+[data-frame-position="single"] {
+  border-bottom: 1px solid #D5DCE3;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding-bottom: 8px;
+}

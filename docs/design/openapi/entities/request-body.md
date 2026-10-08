@@ -1,7 +1,7 @@
 # Request body
 
 The request **Body** subsection: header with the media-type selector, the request body
-description, and the schema of the selected media type. Status: **planned**.
+description, and the schema of the selected media type. Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Nodes
 

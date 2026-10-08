@@ -65,6 +65,7 @@ export const AdditionalInfoRowContent: FC<AdditionalInfoRowContentProps> = memo<
       data-testid="additional-info-row-content"
       data-precededby={precededBy}
       data-ddl-list-last-row={listLastRow ? true : undefined}
+      data-frame-position={props.framePosition?.(layoutSide)}
       className={[
         'additional-info-row-content flex w-full items-stretch h-full gap-2',
         layout.xPaddingClass,

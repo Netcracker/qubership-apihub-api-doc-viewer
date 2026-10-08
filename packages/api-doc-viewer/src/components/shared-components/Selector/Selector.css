@@ -34,3 +34,63 @@ button.button-selector-option.selected {
   background-color: #D5DCE3;
   color: #626D82;
 }
+
+/* ─── Tones (OpenAPI response codes). Selected = solid fill, never a pale tint: pale green / red
+   backgrounds mean "added" / "removed" in diffs. Diff chrome (box-shadow borders, round markers)
+   stays on top of the tone border. ──────────────────────────────────────────────────────── */
+
+button.button-selector-option_tone-success {
+  border-color: rgb(22 163 74);
+  color: rgb(22 163 74);
+}
+
+button.button-selector-option_tone-success:hover {
+  background-color: rgb(240 253 244);
+}
+
+button.button-selector-option_tone-success.selected {
+  background-color: rgb(22 163 74);
+  color: white;
+}
+
+button.button-selector-option_tone-info {
+  border-color: rgb(37 99 235);
+  color: rgb(37 99 235);
+}
+
+button.button-selector-option_tone-info:hover {
+  background-color: rgb(239 246 255);
+}
+
+button.button-selector-option_tone-info.selected {
+  background-color: rgb(37 99 235);
+  color: white;
+}
+
+button.button-selector-option_tone-warning {
+  border-color: rgb(234 88 12);
+  color: rgb(234 88 12);
+}
+
+button.button-selector-option_tone-warning:hover {
+  background-color: rgb(255 247 237);
+}
+
+button.button-selector-option_tone-warning.selected {
+  background-color: rgb(234 88 12);
+  color: white;
+}
+
+button.button-selector-option_tone-danger {
+  border-color: rgb(220 38 38);
+  color: rgb(220 38 38);
+}
+
+button.button-selector-option_tone-danger:hover {
+  background-color: rgb(254 242 242);
+}
+
+button.button-selector-option_tone-danger.selected {
+  background-color: rgb(220 38 38);
+  color: white;
+}

@@ -32,12 +32,11 @@ named in the case table. Design: `docs/design/openapi/`.
 
 ## Storybook and screenshot tests
 
-Planned (implementation plan step 2): `OpenAPI Operation Suite/OAS 3.0` and
-`OpenAPI Operation Suite/OAS 3.1`, stories under
-`packages/api-doc-viewer/src/stories/openapi-suite/`, ITs under
-`packages/api-doc-viewer/src/it/openapi-suite/`. Cases with several operations export one story
-per operation. Non-default selections (other response code, other alternative) are captured by ITs
-clicking the selector test ids.
+`OpenAPI Operation Suite/OAS 3.0` and `OpenAPI Operation Suite/OAS 3.1`: stories under
+`packages/api-doc-viewer/src/stories/openapi-suite/` (one story per operation; `01-full-operation`
+also in *simple mode* and *no heading*), ITs `packages/api-doc-viewer/src/it/openapi-suite.*.it-test.ts`.
+Non-default selections (other response code, other alternative) are captured by ITs clicking the
+selector test ids.
 
 ## Regenerate
 

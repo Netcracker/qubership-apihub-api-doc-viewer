@@ -95,3 +95,15 @@ export async function waitForVisibleSelector(page: Page, selector: string | unde
   await page.waitForSelector(selector, { visible: true })
   await waitForRenderingComplete(page)
 }
+
+/** `OpenApiOperationViewer` root visible and painted (nested JSON Schema viewers render synchronously). */
+export async function waitForOpenApiOperationViewer(page: Page): Promise<void> {
+  await page.waitForSelector('[data-testid="openapi-operation-viewer"]', { visible: true })
+  await waitForRenderingComplete(page)
+}
+
+/** `OpenApiOperationDiffsViewer` root visible and painted. */
+export async function waitForOpenApiOperationDiffsViewer(page: Page): Promise<void> {
+  await page.waitForSelector('[data-testid="openapi-operation-diffs-viewer"]', { visible: true })
+  await waitForRenderingComplete(page)
+}

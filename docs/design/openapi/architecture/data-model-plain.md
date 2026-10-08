@@ -1,6 +1,6 @@
 # OpenAPI — data model, plain
 
-Status: **planned**. Paths are relative to `packages/next-data-model/src/`. Abstract layer:
+Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Paths are relative to `packages/next-data-model/src/`. Abstract layer:
 [../../shared/architecture/data-model-plain.md](../../shared/architecture/data-model-plain.md).
 
 ```mermaid

@@ -1,6 +1,6 @@
 # OpenAPI — viewer, with diffs
 
-Status: **planned**. Paths are relative to
+Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Paths are relative to
 `packages/api-doc-viewer/src/components/OpenApiOperationViewer/`. Abstract layer:
 [../../shared/architecture/viewer-with-diffs.md](../../shared/architecture/viewer-with-diffs.md).
 Rules: [../features/diffs.md](../features/diffs.md).

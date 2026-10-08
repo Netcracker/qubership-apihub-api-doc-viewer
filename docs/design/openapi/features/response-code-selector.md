@@ -1,7 +1,7 @@
 # Response-code selector (Selector tones)
 
 The response codes in the **Responses** header are the shared `Selector` with a per-option
-**tone**. Status: **planned**.
+**tone**. Status: **implemented** (first iteration; see [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Why not a new component
 

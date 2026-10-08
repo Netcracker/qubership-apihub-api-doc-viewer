@@ -1,6 +1,6 @@
 # OpenAPI operation diffs
 
-How `OpenApiOperationDiffsViewer` gets and paints diffs. Status: **planned**. Shared contracts:
+How `OpenApiOperationDiffsViewer` gets and paints diffs. Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Shared contracts:
 [data model with diffs](../../shared/architecture/data-model-with-diffs.md),
 [viewer with diffs](../../shared/architecture/viewer-with-diffs.md),
 [section header colorizing](../../shared/features/section-header-colorizing.md). Measured diff

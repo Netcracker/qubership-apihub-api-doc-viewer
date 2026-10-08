@@ -1,8 +1,7 @@
 # Security
 
 The **Security** section: effective security requirements, the alternatives selector (logical
-**OR**), and one card per security scheme of the selected alternative (logical **AND**). Status:
-**planned**.
+**OR**), and one card per security scheme of the selected alternative (logical **AND**). Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## OpenAPI semantics
 

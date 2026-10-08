@@ -1,15 +1,16 @@
 # OpenAPI — display coverage
 
-Planned baseline for the OpenAPI stack (`OpenApiOperationViewer` / `OpenApiOperationDiffsViewer` +
-`OpenApiTreeBuilder` / `OpenApiTreeWithDiffsBuilder`). Status: **planned** — every `viewer` tag
-below is the target of the first implementation; switch this document to "current behaviour" and
-refresh the date when it lands.
+Baseline for the OpenAPI stack (`OpenApiOperationViewer` / `OpenApiOperationDiffsViewer` +
+`OpenApiTreeBuilder` / `OpenApiTreeWithDiffsBuilder`). Status: **implemented** (first iteration) —
+every `viewer` tag below is implemented; deviations from the original design are recorded in
+[notes/2026-10-implementation-decisions.md](notes/2026-10-implementation-decisions.md). Screenshot
+baselines are not committed yet (T4 there).
 
-Last reviewed against the design: 2026-10-07.
+Last reviewed against the code: 2026-10-08.
 
 ## Sources
 
-Planned locations; keep in sync when the code lands.
+Keep in sync with the code.
 
 | Layer | Location |
 | --- | --- |
@@ -18,8 +19,8 @@ Planned locations; keep in sync when the code lands.
 | Merged diffs → operation-oriented spec | `packages/next-data-model/src/building-service/openapi/shared/openapi-spec-with-diffs-transformer.ts` |
 | Schema synthesizer | `packages/next-data-model/src/building-service/openapi/shared/object-schema-*synthesizer.ts` |
 | Crawl rules | `packages/next-data-model/src/building-service/openapi/json-crawl-entities/` |
-| Builders, aggregators, visibility | `packages/next-data-model/src/building-service/openapi/{tree,tree-with-diffs}/` |
-| Tree model, accessors | `packages/next-data-model/src/model/openapi/` |
+| Builders, aggregators | `packages/next-data-model/src/building-service/openapi/{tree,tree-with-diffs}/` |
+| Tree model, accessors (`OpenApiRowDiffs`), visibility (`OpenApiNodeVisibility`), labels | `packages/next-data-model/src/model/openapi/` |
 | Shared types | `packages/next-data-model/src/shared/openapi/` |
 | Viewers | `packages/api-doc-viewer/src/components/OpenApiOperationViewer/` |
 | Fixture catalogues | `packages/samples/openapi/README.md`, `packages/samples/openapi-diffs/README.md` |
@@ -141,8 +142,11 @@ shows when it has content on either side or a diff of its own.
 
 ## Regression coverage
 
-Planned suites (fixtures exist; stories and ITs are step 2 / 6 of the
-[implementation plan](README.md#implementation-plan)):
+Suites (stories under `packages/api-doc-viewer/src/stories/openapi-suite/` and
+`…/openapi-diffs-suite/`, ITs `src/it/openapi-suite.*.it-test.ts` and
+`src/it/openapi-diffs-suite.*.it-test.ts`; unit tests in
+`packages/next-data-model/tests/unit-tests/openapi-*.test.ts` and
+`packages/api-doc-viewer/tests/openapi-viewer-config.test.ts`):
 
 | Suite | Fixtures |
 | --- | --- |

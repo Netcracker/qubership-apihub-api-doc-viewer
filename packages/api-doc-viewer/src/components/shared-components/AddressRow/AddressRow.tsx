@@ -8,16 +8,25 @@ import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { FC, useCallback, useMemo } from "react"
-import { OneSideLayout } from "../../shared-components/Layout/OneSideLayout"
-import { SideBySideLayout } from "../../shared-components/Layout/SideBySideLayout"
-import { TextValue } from "../../shared-components/TextValue/TextValue"
-import { TextValueVariant } from "../../shared-components/TextValue/types"
+import { FC, ReactElement, useCallback, useMemo } from "react"
+import { OneSideLayout } from "../Layout/OneSideLayout"
+import { SideBySideLayout } from "../Layout/SideBySideLayout"
+import { TextValue } from "../TextValue/TextValue"
+import { TextValueVariant } from "../TextValue/types"
 import "./AddressRow.css"
 
+/** Badge before the address: AsyncAPI action (SEND / RECEIVE), OpenAPI HTTP method. */
+export type AddressRowBadge = {
+  text: string
+  /** Tailwind background class (must be a literal class name in the caller's source). */
+  colorClass: string
+}
+
 export type AddressRowProps = WithPrecededByProps & {
-  action: string
+  badge: AddressRowBadge | null
   address: string
+  /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */
+  trailing?: (layoutSide: LayoutSide) => ReactElement | null
   // diffs
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs
@@ -61,17 +70,12 @@ export const AddressRow: FC<AddressRowProps> = (props) => {
   }
 }
 
-const ACTION_COLOR_MAP: Record<string, string> = {
-  send: 'bg-sky-400',
-  receive: 'bg-green-500',
-}
-
 type AddressRowContentProps = AddressRowProps & {
   layoutSide: LayoutSide
 }
 
 const AddressRowContent: FC<AddressRowContentProps> = (props) => {
-  const { action, address, layoutSide, diff } = props
+  const { badge, address, trailing, layoutSide, diff } = props
 
   // indent-specific
   const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
@@ -79,11 +83,11 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   const renderAddress = useCallback(() => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
 
-    let actionElement: React.ReactNode = (
-      <div className={`font-bold px-1 py-0 ${ACTION_COLOR_MAP[action]} text-white rounded-md`}>
-        {action.toUpperCase()}
+    let actionElement: React.ReactNode = badge ? (
+      <div className={`font-bold px-1 py-0 ${badge.colorClass} text-white rounded-md`}>
+        {badge.text}
       </div>
-    )
+    ) : null
     if (diff) {
       if (isDiffAdd(diff.data) && layoutSide === ORIGIN_LAYOUT_SIDE) {
         actionElement = null
@@ -128,7 +132,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
         />
       </div>
     </>
-  }, [action, address, diff, layoutSide])
+  }, [badge, address, diff, layoutSide])
 
   const diffStyles = useMemo(() => {
     const diffStyles: Set<string> = new Set()
@@ -154,6 +158,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
       >
         {renderAddress()}
       </div>
+      {trailing && <div className="flex items-center pl-2">{trailing(layoutSide)}</div>}
     </div>
   )
 }

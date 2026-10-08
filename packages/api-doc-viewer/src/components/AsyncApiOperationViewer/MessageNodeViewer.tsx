@@ -14,8 +14,18 @@ import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { buildRowDiffProps, useNodeDiffState } from "../shared-components/diffs/node-diff-props";
 import { isMessageNodeWithDiffs } from "../shared-utilities/tree-node-guards";
-import { AddressRow, AddressRowProps } from "./AddressRow/AddressRow";
+import { AddressRow, AddressRowBadge, AddressRowProps } from "../shared-components/AddressRow/AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
+
+// Literal class names: Tailwind keeps only classes it finds in source files.
+const ACTION_COLOR_MAP: Record<string, string> = {
+  send: 'bg-sky-400',
+  receive: 'bg-green-500',
+}
+
+function toActionBadge(action: string): AddressRowBadge {
+  return { text: action.toUpperCase(), colorClass: ACTION_COLOR_MAP[action] ?? '' }
+}
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -89,7 +99,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       <AddressRow
         data-precededby={addressRowPrecededBy}
-        action={value?.action ?? ''}
+        badge={toActionBadge(value?.action ?? '')}
         address={value?.address ?? ''}
         // diffs
         {...addressRowDiffsProps}

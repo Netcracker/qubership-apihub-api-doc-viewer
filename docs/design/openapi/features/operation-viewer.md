@@ -1,7 +1,7 @@
 # OpenAPI operation viewer
 
 Public API, the full row stack, and local view state of `OpenApiOperationViewer` and
-`OpenApiOperationDiffsViewer`. Status: **planned**. Per-area rules are in [../entities/](../entities/);
+`OpenApiOperationDiffsViewer`. Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Per-area rules are in [../entities/](../entities/);
 diff rules in [diffs.md](diffs.md); version rules in [oas-versions.md](oas-versions.md).
 
 ## Public API

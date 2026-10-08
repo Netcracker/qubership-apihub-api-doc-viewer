@@ -140,6 +140,32 @@ export enum NodeDiffsSeverityPlacemennt {
    * accepted v1 limitation on multiple simultaneous entries in `JsonSchemaKindAnyNodeDiffs.customAnnotationDiffs`.
    */
   CustomAnnotationRow = 'custom-annotation-row',
+  /** OpenAPI operation ID row under the title. */
+  OperationIdRow = 'operation-id-row',
+  /** OpenAPI external docs link row. */
+  ExternalDocsRow = 'external-docs-row',
+  /** OpenAPI standalone selector row (security alternatives). */
+  SelectorRow = 'selector-row',
+  /** OpenAPI security scheme card `In` row (apiKey). */
+  SecuritySchemeLocationRow = 'security-scheme-location-row',
+  /** OpenAPI security scheme card `Name` row (apiKey). */
+  SecuritySchemeParameterNameRow = 'security-scheme-parameter-name-row',
+  /** OpenAPI security scheme card `Scheme` row (http). */
+  SecuritySchemeHttpSchemeRow = 'security-scheme-http-scheme-row',
+  /** OpenAPI security scheme card `Bearer format` row (http bearer). */
+  SecuritySchemeBearerFormatRow = 'security-scheme-bearer-format-row',
+  /** OpenAPI security scheme card `OpenID Connect URL` row. */
+  SecuritySchemeOpenIdConnectUrlRow = 'security-scheme-openid-connect-url-row',
+  /** OpenAPI security scheme card `Required scopes` / `Required roles` row. */
+  SecurityRequiredScopesRow = 'security-required-scopes-row',
+  /** OpenAPI OAuth flow `Authorization URL` row. */
+  OAuthFlowAuthorizationUrlRow = 'oauth-flow-authorization-url-row',
+  /** OpenAPI OAuth flow `Token URL` row. */
+  OAuthFlowTokenUrlRow = 'oauth-flow-token-url-row',
+  /** OpenAPI OAuth flow `Refresh URL` row. */
+  OAuthFlowRefreshUrlRow = 'oauth-flow-refresh-url-row',
+  /** OpenAPI OAuth flow `Available scopes` row. */
+  OAuthFlowScopesRow = 'oauth-flow-scopes-row',
 }
 export type NodeDiffsSeverity = {
   type: DiffType

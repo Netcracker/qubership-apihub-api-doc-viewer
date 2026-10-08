@@ -374,3 +374,30 @@
   padding-top: 8px;
   padding-bottom: 8px;
 }
+/* ─── OpenAPI operation viewer ─────────────────────────────────────────────── */
+
+.address-row-content[data-precededby="operation-id-row"] {
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.text-row-content[data-precededby="external-docs-row"],
+.markdown-text-row-content[data-precededby="external-docs-row"] {
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.title-row-content[data-precededby="external-docs-row"] {
+  padding-top: 12px;
+}
+
+.title-row-content[data-precededby="section-selector-row"],
+.text-row-content[data-precededby="section-selector-row"],
+.markdown-text-row-content[data-precededby="section-selector-row"] {
+  padding-top: 4px;
+}
+
+/* First row of a framed security card: the gap between cards is a spacer element, not padding. */
+.title-row-content[data-precededby="security-scheme-card"] {
+  padding-top: 8px;
+}

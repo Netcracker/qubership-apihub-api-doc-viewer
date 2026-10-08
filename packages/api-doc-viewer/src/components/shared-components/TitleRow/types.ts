@@ -7,6 +7,7 @@ import type {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
+import { WithFramePositionProps } from "../Frame/types"
 import { WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TitleRowUsage {
@@ -18,7 +19,7 @@ export enum TitleRowUsage {
   JsonSchemaProperty = 'json-schema-property',
 }
 
-export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & {
+export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithFramePositionProps & {
   value?: string // Document Mode
   titleContent?: ReactElement | ((layoutSide: LayoutSide) => ReactElement | null)
   expandable: boolean

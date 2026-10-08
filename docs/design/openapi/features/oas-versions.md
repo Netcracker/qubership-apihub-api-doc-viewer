@@ -1,7 +1,7 @@
 # OAS 3.0 and OAS 3.1
 
 What the OpenAPI stack shares between OAS 3.0.x and 3.1.x, what differs, and where each
-difference is implemented. Status: **planned**.
+difference is implemented. Status: **implemented** (first iteration; see [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)).
 
 ## Principle
 

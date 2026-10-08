@@ -1,6 +1,6 @@
 # OpenAPI — viewer, plain
 
-Status: **planned**. Paths are relative to
+Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Paths are relative to
 `packages/api-doc-viewer/src/components/OpenApiOperationViewer/`. Abstract layer:
 [../../shared/architecture/viewer-plain.md](../../shared/architecture/viewer-plain.md). Row stack:
 [../features/operation-viewer.md](../features/operation-viewer.md#row-stack).

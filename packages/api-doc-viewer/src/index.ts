@@ -19,6 +19,8 @@ export type { NavigationLinkBuilder } from '@netcracker/qubership-apihub-next-da
 export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer'
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer'
+export * from './components/OpenApiOperationViewer/OpenApiOperationDiffsViewer'
+export * from './components/OpenApiOperationViewer/OpenApiOperationViewer'
 export * from './components/DdlTableViewer/DdlTableDiffsViewer'
 export * from './components/DdlTableViewer/DdlTableViewer'
 export * from './components/GraphQLOperationViewer/GraphQLOperationDiffViewer'
