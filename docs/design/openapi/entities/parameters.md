@@ -131,18 +131,61 @@ Rules:
    description if present on that side, else the schema description of that side. If the two sides
    resolve to different sources, emit one synthetic diff on `description` (`add` / `remove` /
    `replace`) built from the per-side values and the entry diff's metadata.
-4. **Whole group changed.** When the whole operation (or request) is added / removed, the inherited
-   node-level diff is stamped as `properties[diffsMetaKey][name]` for **every** entry — never as a
-   synthetic diff on the wrapper's own top-level keys. (AsyncAPI stamps the top-level keys of the
-   parameters object, which hijacks JSON Schema's nesting-indicator detection; see the comment in
-   `MessageChannelParametersNodeViewer.tsx`.)
+4. **Container changed as a whole.** When an ancestor that holds the entries is added / removed as
+   a whole, its diff is stamped as `properties[diffsMetaKey][name]` for **every** entry — never as
+   a synthetic diff on the wrapper's own top-level keys. Ancestors: the operation (inherited
+   node-level diff), the whole `parameters` array (`op[diffsMetaKey].parameters`), for response
+   headers the whole `headers` map (`response[diffsMetaKey].headers`) or the response. (AsyncAPI
+   stamps the top-level keys of the parameters object, which hijacks JSON Schema's
+   nesting-indicator detection; see the comment in `MessageChannelParametersNodeViewer.tsx`.)
 5. **Moved between locations.** A parameter whose `in` changed is a `remove` in one group and an
    `add` in another (E4) — no cross-group logic.
 6. **Content media type.** A media-type key change of a `content` parameter becomes a diff on
    `customAnnotations` (JSON Schema already aggregates custom-annotation diffs).
 
-The group's section header (h3) follows the shared colorizing rule over its **properties**
-([../features/diffs.md](../features/diffs.md#section-headers)).
+### Whole group added / removed
+
+A parameter group (**Path Parameters**, **Query Parameters**, **Headers**, **Cookies**, response
+**Headers**) is **not an object of the OpenAPI document** — it is derived by splitting `parameters`
+by `in` (or from a `headers` map). It therefore never has an add / remove diff of its own.
+
+**Definition.** A group is wholly added (removed) **if and only if every property of its synthetic
+schema carries an `add` (`remove`) diff in `properties[diffsMetaKey]`.** Counted over all
+properties of the merged schema — removed parameters are present in it (rule 1), unchanged ones
+have no record and therefore break the condition.
+
+The synthesizer makes both sources of "everything added / removed" end in this same state, so the
+section rule needs only one check:
+
+| Source | Example | How every property gets its `add` / `remove` |
+| --- | --- | --- |
+| Each entry added / removed individually | every header parameter removed (`request/02-all-headers-removed`); before had no query parameters, after has two | the per-entry array-item diffs (first row of the table above) |
+| An ancestor added / removed as a whole | whole operation added (`operation/06-whole-operation-added`); `parameters` array added; response `headers` map removed | stamping (rule 4) |
+
+Not wholly added / removed (header stays uncolored; property rows show their own diffs):
+
+| Case | Why |
+| --- | --- |
+| One entry added, another removed (`request/03-mixed-header-changes`) | directions differ |
+| All but one entry added, one unchanged | the unchanged property has no diff record |
+| Every entry renamed / changed inside (`required`, `description`, schema) | `rename` / field diffs are not `add` / `remove` |
+| Mix of whole-entry adds and field changes on another entry | the changed entry has no `add` |
+
+**Consequences on screen** (the shared [section header colorizing](../../shared/features/section-header-colorizing.md)
+rule, implemented in `KindParameters.aggregateByDescendantDiffs` over the synthesized properties —
+[../features/diffs.md](../features/diffs.md#section-headers)):
+
+| Group state | Origin side | Changed side |
+| --- | --- | --- |
+| Wholly added | header row hidden (grey, no content) | header row green; every property row green |
+| Wholly removed | header row red; every property row red | header row hidden (grey, no content) |
+| Otherwise | header uncolored on both sides | header uncolored on both sides |
+
+The header's floating severity badge is built from the same synthetic group diff (one of the
+property diffs — they are all the same direction; `type` = the max severity among them).
+
+The **Request** section header (h2) applies the same rule one level up: wholly added / removed when
+every group **and** the request body are wholly added / removed in the same direction.
 
 ## Related documents
 
