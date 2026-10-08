@@ -13,7 +13,7 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | --- | ---: | --- |
 | `operation/` | 10 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions, operation ID, deprecated (with and without a title row) |
 | `security/` | 6 | alternative added, scope added, scheme added to an alternative, scheme definition changed, document security overridden, security removed |
-| `request/` | 10 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added, body became optional |
+| `request/` | 18 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes |
 | `responses/` | 6 | response added, code case rename, description, header added, media type removed, body schema property added |
 | `oas31/` | 3 | OAS 3.1 base: nullable via type array, `mutualTLS` alternative added, role scopes on an API key |
 
@@ -32,6 +32,14 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | `operation/09-deprecated-added` | `deprecated: true` added | `deprecated` tag green on the changed side; title row yellow |
 | `operation/10-deprecated-added-without-summary` | as 09, no `summary` on either side | no title row; `deprecated` tag on the address row |
 | `request/10-request-body-became-optional` | `requestBody.required` `true` → `false` | `*` on the origin side only; red `required` tag; Body title row yellow |
+| `request/11-description-moved-entry-to-schema` | `dryRun` description moved from the entry to the schema root, same text | **no** description diff |
+| `request/12-description-entry-removed-schema-added` | entry text removed, other text added to the schema root | description `replace` |
+| `request/13-description-schema-removed-entry-added` | schema-root text removed, other text added to the entry | description `replace` |
+| `request/14-description-both-places-changed` | entry and schema-root texts both changed | description `replace` of the entry text; schema change shadowed |
+| `request/15-description-schema-changed-under-entry` | only the schema-root text changed; entry text unchanged | **no** description diff (shadowed) |
+| `request/16-parameter-schema-to-content` | `schema: boolean` → `content: application/json` (`object`) | description `replace`, `type` replace, `properties` add, `Media type` add |
+| `request/17-parameter-content-media-type-renamed` | `application/json` → `application/json; charset=utf-8`, same schema | only `Media type` value `replace` |
+| `request/18-parameter-content-media-type-replaced` | `application/json` (`object`) → `text/plain` (`string`) | description `replace`, `type` replace, `Media type` value `replace` |
 | `security/01-alternative-added` | second alternative | new option green on the changed side (selector shown on both sides) |
 | `security/02-scope-added` | `orders:read` added to the OAuth requirement | `Required scopes` chip added |
 | `security/03-scheme-added-to-alternative` | `basic` added to the first alternative | new card green |

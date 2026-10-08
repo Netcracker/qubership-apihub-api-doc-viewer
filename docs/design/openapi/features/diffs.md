@@ -191,7 +191,7 @@ side). Never derive this in JSX.
 | --- | --- |
 | `openapi-spec-transformer.test.ts` | lookup, defaults, effective security, synthesis (plain), code order, dialect per fixture |
 | `openapi-spec-with-diffs-transformer.test.ts` | every row of the diff-source tables above, one case per fixture under `openapi-diffs/` |
-| `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / description precedence / whole-group stamping |
+| `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / whole-group stamping / description and schema sources (every scenario of `parameters.md` → "Description and schema sources", fixtures `request/11`–`18`) |
 | `openapi-section-header-diffs.test.ts` | rule (a), rule (b), mixed directions, unchanged sibling |
 | `openapi-security-override-diffs.test.ts` | synthetic alternative diffs (`security/05-root-security-overridden`, reverse) |
 | `openapi-severities.test.ts` | one placement per row; whole-node fills all placements |
