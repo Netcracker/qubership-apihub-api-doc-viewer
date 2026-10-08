@@ -13,7 +13,7 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | --- | ---: | --- |
 | `operation/` | 10 | summary, description, external docs, path rename (address partial replace), whole operation added, extensions, operation ID, deprecated (with and without a title row) |
 | `security/` | 6 | alternative added, scope added, scheme added to an alternative, scheme definition changed, document security overridden, security removed |
-| `request/` | 23 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added / removed, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes, Body presence flips (only media type / only schema removed or added) |
+| `request/` | 26 | parameters added / removed / moved / required, uniform vs mixed header changes, request body media types, body description and schema, whole body added / removed, body became optional, parameter description moved between the entry and the schema root, parameter `schema` ↔ `content` and `content` media-type changes, Body presence flips (only media type / only schema removed or added), parameter `x-*` extensions |
 | `responses/` | 12 | response added, code case rename, description, header added, media type removed, body schema property added, response Body / Headers presence flips, response-code change markers |
 | `oas31/` | 3 | OAS 3.1 base: nullable via type array, `mutualTLS` alternative added, role scopes on an API key |
 
@@ -48,6 +48,9 @@ recorded in `docs/design/openapi/notes/2026-10-design-analysis.md`.
 | `responses/07-response-body-only-media-type-removed` | `200` `content` removed | response Body wholly removed; `200` option still present |
 | `responses/08-response-body-only-schema-removed` | the only `200` media type loses its `schema` | response Body wholly removed (synthetic) |
 | `responses/09-response-all-headers-removed` | `200` `headers` deleted (arrives as per-header removes) | response Headers wholly removed |
+| `request/24-parameter-extension-added-and-changed` | `dryRun`: `x-owner` replaced, `x-internal` added on the entry | property Extensions sub-tree: replace + add |
+| `request/25-parameter-extension-moved-to-schema` | `x-owner` moved from the entry to the schema root, same value | no diff |
+| `request/26-parameter-extension-nested-change` | item added inside `x-audience.owners` | nested add in the property's Extensions sub-tree |
 | `responses/10-response-added-with-headers-and-body` | `404` added with headers and a body | `404` option green, **no** change marker |
 | `responses/11-response-code-renamed-and-description-changed` | `4xx` → `4XX` and its description replaced | per-side title; `annotation` marker (description only) |
 | `responses/12-response-changes-of-different-severity` | `200`: header added, body property removed, `application/xml` removed, description replaced | `breaking` marker on `200` (strongest) |

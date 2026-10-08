@@ -89,8 +89,9 @@ type OpenApiSynthesizedObjectSchema = {
 | `description` | `description` | the **entry** description wins over the schema's own `description`; without an entry description the schema description stays |
 | `deprecated` | `deprecated` | only when `true` (or when it carries a diff) — JSON Schema renders the deprecated tag |
 | `required` | parent `required` array | `true` → name appended; path parameters are required by the specification and must declare it |
+| `x-*` (entry-level extensions) | the same `x-*` keys, **flat** on the property schema | moved one by one, no grouping object — the JSON Schema stack groups them itself (`transformJsonSchemaExtensions` → node `extensions`) and renders them as the property's **Extensions** sub-tree, with diffs ([Entry extensions](#entry-extensions)). An entry key wins over a schema-root key with the same name. |
 | `name`, `in` | — | consumed by grouping and keys |
-| `style`, `explode`, `allowEmptyValue`, `allowReserved`, `example`, `examples`, `x-*` | — | not displayed in v1 (Q11) |
+| `style`, `explode`, `allowEmptyValue`, `allowReserved`, `example`, `examples` | — | not displayed in v1 (Q11) |
 
 A boolean schema (`true` / `false`, OAS 3.1) is kept as is; the JSON Schema stack renders boolean
 property schemas.
@@ -117,7 +118,8 @@ whole-group and description cases.
 | `deprecated`, `description` (entry level) | `properties[name][diffsMetaKey][key]` |
 | `schema` / `content` entry added or removed as a whole (the schema source switched) | per-key synthesized diffs between the two source schemas — [Description and schema sources](#description-and-schema-sources), step 2 |
 | Any diff inside `schema` | stays where it is — the property schema **is** the merged schema object |
-| Entry-level `x-*`, `style`, … | dropped (not displayed) |
+| Entry-level `x-*`: `parameters[i][diffsMetaKey]['x-…']` | `properties[name][diffsMetaKey]['x-…']`, after per-side precedence ([Entry extensions](#entry-extensions)); diffs nested inside an extension value stay on that value |
+| Entry-level `style`, `explode`, … | dropped (not displayed) |
 
 Rules:
 
@@ -183,7 +185,7 @@ unrelated schema objects. Build the property schema from them:
 
 1. Start from the **after** source's merged object; add the keys that exist only in the **before**
    source with their before values (merged-document convention, so the origin side can show them).
-2. For each top-level key **except `description`** (step 4 owns it): only in after → `add`; only in
+2. For each top-level key **except `description` and `x-*`** (steps 4 and 5 own them): only in after → `add`; only in
    before → `remove`; in both and not deep equal → `replace` (`beforeValue` / `afterValue` = the two
    values); deep equal → no diff.
 3. Diffs nested inside either source object are **dropped** — they are relative to other documents'
@@ -235,6 +237,11 @@ Rules:
 - The schema root description of a side is **shadowed** whenever that side has an entry
   description: its changes are not shown, because the reader never sees that text.
 
+#### Step 5 — extensions
+
+Same situation as the description: an `x-*` key can live on the entry and on the schema root; see
+[Entry extensions](#entry-extensions).
+
 #### Scenarios
 
 Fixtures `packages/samples/openapi-diffs/request/11-…` to `18-…`; raw diffs measured with `apiDiff`
@@ -255,6 +262,63 @@ Fixtures `packages/samples/openapi-diffs/request/11-…` to `18-…`; raw diffs 
 
 The row stays one property in all scenarios: a description or schema-source change never turns a
 parameter into a removed + added pair (that only happens when its name or `in` changes, E3 / E4).
+
+### Entry extensions
+
+Specification extensions of a Parameter Object (and of a Header Object, for response headers) are
+**moved into the synthetic property schema as flat `x-*` keys** — not wrapped into an object, not
+grouped per parameter. That reuses the JSON Schema extensions pipeline unchanged:
+
+| JSON Schema stack piece | What it does with the moved keys |
+| --- | --- |
+| `transformJsonSchemaExtensions` (crawl transformer) | collects every `x-*` key of the property schema into the node value's `extensions` |
+| `aggregateExtensionsDiffs` (`node-diffs/kind-any.ts`) | reads per-key diffs from the property schema's own diff record, keyed by the `x-*` name |
+| whole-node add / remove → `extensionsDiffs` | a wholly added / removed parameter paints all its extensions too |
+| `aggregateExtensionsUniformRowColorizingDiff` | colors the property's **Extensions** header when all extensions were added / removed uniformly |
+| `JsonSchemaExtensionsSection` + embedded `JsoViewer` / `JsoDiffsViewer` | renders the **Extensions** sub-tree of the property row (detailed display mode), diffs inside values included |
+
+So on screen a parameter's extensions appear exactly like a schema property's extensions — under
+the parameter's row, never as a separate OpenAPI section.
+
+**Plain synthesis.** For every `x-*` key of the entry: `property[key] = entry[key]` (value by
+reference; never mutate the source). Schema-root `x-*` keys stay as they are. On a name collision
+the **entry** value wins (the schema-root value is shadowed), as for `description`.
+
+**With diffs.** Per `x-*` key, using the per-side reconstruction of step 1 and the schema source of
+step 2:
+
+```text
+shown(side) = entry[key](side) ?? schemaRoot[key](side)          // undefined when absent on that side
+
+shown(before) deep-equals shown(after) → no diff (even if the key moved between entry and schema root)
+absent → value                         → property[M][key] = add
+value → absent                         → property[M][key] = remove    (property keeps the before value)
+value1 → value2                        → property[M][key] = replace
+```
+
+- Fast path: a key that exists only on the entry (on both sides) keeps the entry's own diff
+  object, copied as is to `property[M][key]`; a key that exists only on the schema root (same
+  source on both sides) is untouched — it already sits on the merged schema with its diff.
+- Diffs **inside** an extension value (e.g. an item added to `x-owners`) are not touched: the value
+  is the merged object by reference and carries its own nested diff records, which `JsoDiffsViewer`
+  renders.
+- Synthetic `add` / `remove` / `replace`: metadata from the contributing raw diffs (highest `type`,
+  declaration paths per side), as in step 4.
+- A wholly added / removed entry, and stamping of rule 4, need nothing extra: the property-level
+  `add` / `remove` reaches the extensions through the JSON Schema whole-node path.
+- Change markers and rollups count these diffs normally (they are displayed changes).
+
+Raw diffs (E21): an entry key change is `parameters[i][M]['x-…']`; moving a key to the schema root
+is an entry `remove` plus a `schema[M]['x-…']` `add`; a change inside a value stays inside it
+(`x-audience.owners[M][1]` `add`).
+
+| Case | Result on the parameter row |
+| --- | --- |
+| `x-internal: true` added, `x-owner` replaced on the entry (`request/24`) | Extensions sub-tree: `x-internal` added (green), `x-owner` replaced (yellow) |
+| `x-owner` moved from the entry to the schema root, same value (`request/25`) | no diff |
+| item added inside `x-audience.owners` (`request/26`) | nested add inside the `x-audience` JSO tree |
+| entry `x-owner: a`, schema root `x-owner: b`, entry key removed | `x-owner` replace `a` → `b` (the schema value becomes visible) |
+| parameter wholly added | every extension shown as added, with the property row |
 
 ### Whole group added / removed
 

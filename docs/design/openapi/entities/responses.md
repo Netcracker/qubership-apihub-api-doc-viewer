@@ -69,7 +69,7 @@ selector) when the response changed **inside**.
 | --- | --- |
 | Counted | every **displayed** change inside the response: description, headers (added / removed / changed, incl. inside header schemas), media types (added / removed / renamed), body schemas and everything nested in them, synthetic whole-section diffs of its Headers / Body ([presence](../features/diffs.md#section-presence-and-whole-section-changes)) |
 | Not counted | the response code itself: wholly added, wholly removed, renamed (`4xx` → `4XX`), and anything **inferred** from a whole change — inherited from an ancestor (whole operation, whole `responses`) or stamped by the synthesizer onto header properties of a wholly added / removed response ([parameters.md](parameters.md#with-diffs), rule 4). Those are shown by the option's visibility / border shadow / per-side title, never by the marker. |
-| Not displayed → not counted | changes the viewer does not show (header `style` / `explode`, media type `examples` / `encoding`, `x-*` of headers / responses / media types, a shadowed schema-root description of a header) are absent from the transformed spec, so they never reach the marker |
+| Not displayed → not counted | changes the viewer does not show (header `style` / `explode`, media type `examples` / `encoding`, `x-*` of responses / media types (header `x-*` **is** displayed and counted — [parameters.md](parameters.md#entry-extensions)), a shadowed schema-root description of a header) are absent from the transformed spec, so they never reach the marker |
 | Several changes | the **strongest** diff type wins: `maxDiffType` (`utils/common/changes.ts`) over the set — breaking > … > non-breaking > annotation > unclassified |
 | Same on both sides | the marker is a property of the option, drawn identically in the origin and the changed column |
 
@@ -134,6 +134,7 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Content | `ParametersNodeViewer` (same component as request parameter groups) |
 | Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`responses/09`) |
 | `Content-Type` header | shown (Q5) |
+| Header `x-*` | moved flat into the header's synthetic property schema and shown in its **Extensions** sub-tree — same rules as parameters ([parameters.md](parameters.md#entry-extensions)) |
 
 ## Body
 
