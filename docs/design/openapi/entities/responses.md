@@ -57,7 +57,66 @@ purpose — fixture `oas30/05-response-codes-palette` declares `500` first.
 | Tone | `resolveResponseCodeTone(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md) |
 | Option test id | `response-code-<code>` |
 | Initial selection | first `2XX` option, else the first option (Q13) |
-| Diff | header from the `responses` node: wholly added / removed only when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); options carry `response` node diffs and summaries. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |
+| Diff | header from the `responses` node: wholly added / removed only when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); options carry the `response` node-level diff (per-side visibility, border shadow, per-side title of a renamed code) and the **change marker** below. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |
+
+### Change markers on response-code options
+
+Each response-code option shows a colored round marker in its top-right corner (the same
+`DiffsClassesBuilder.roundMarker(diffType)` marker as the AsyncAPI section selector and bindings
+selector) when the response changed **inside**.
+
+| Rule | Detail |
+| --- | --- |
+| Counted | every **displayed** change inside the response: description, headers (added / removed / changed, incl. inside header schemas), media types (added / removed / renamed), body schemas and everything nested in them, synthetic whole-section diffs of its Headers / Body ([presence](../features/diffs.md#section-presence-and-whole-section-changes)) |
+| Not counted | the response code itself: wholly added, wholly removed, renamed (`4xx` → `4XX`), and anything **inferred** from a whole change — inherited from an ancestor (whole operation, whole `responses`) or stamped by the synthesizer onto header properties of a wholly added / removed response ([parameters.md](parameters.md#with-diffs), rule 4). Those are shown by the option's visibility / border shadow / per-side title, never by the marker. |
+| Not displayed → not counted | changes the viewer does not show (header `style` / `explode`, media type `examples` / `encoding`, `x-*` of headers / responses / media types, a shadowed schema-root description of a header) are absent from the transformed spec, so they never reach the marker |
+| Several changes | the **strongest** diff type wins: `maxDiffType` (`utils/common/changes.ts`) over the set — breaking > … > non-breaking > annotation > unclassified |
+| Same on both sides | the marker is a property of the option, drawn identically in the origin and the changed column |
+
+**Source — aggregated diff sets.** The data layer does not walk the response; it reads the
+document rollup that `aggregateDiffsWithRollup` writes under `aggregatedDiffsMetaKey` — a set of
+`Diff` objects for everything below an object. Measured (E20): the rollup at a response object holds
+only diffs **inside** it, because the response's own add / remove / rename sits in the parent
+`responses` diff record and `apiDiff` emits no diffs inside a wholly added / removed object.
+
+```text
+OpenApiNodeDescendantDiffsSummaryAggregatorKindResponse.aggregate(nodeDiffs, …, crawlValue, diffsMetaKeys):
+  wholeDiff = nodeDiffs[""]
+  if wholeDiff is add or remove (own or inherited)      → return ∅          // rule "not counted", incl. stamped diffs
+  diffs = takeAggregatedDiffs(crawlValue, diffsMetaKeys) // crawlValue = the TRANSFORMED response value
+  return { d.type | d ∈ diffs, d !== wholeDiff?.data }   // a rename is never in the rollup; guard anyway
+```
+
+- The rollup must be the one computed on the **transformed** spec (pipeline step 5 in
+  [../features/diffs.md](../features/diffs.md#pipeline)), so relocated, synthesized (header
+  properties, description precedence) and presence diffs are included and dropped / shadowed ones
+  are not.
+- The result is the node's `descendantDiffsSummary`. `OpenApiTreeWithDiffsBuilder.assignNodeDiffs`
+  must **not** call `mergeAggregatedDiffTypesIntoDescendantSummary` afterwards for a node whose
+  node-level diff is add / remove — it would re-add the stamped header diffs. (The response's own
+  `description` diff is in the rollup, so it is counted although it is the node's own field diff.)
+- Accessor: `OpenApiRowDiffs.Response.takeChangesMarkerSummary(node)` returns that set (empty for
+  plain nodes).
+
+**Viewer.** `ResponsesNodeViewer` builds each option with `descendantDiffsSummary:
+OpenApiRowDiffs.Response.takeChangesMarkerSummary(node)` and **without** `diffsSummary` — the
+node's `diffsSummary` contains the response's own whole add / remove, which `Selector` would turn
+into a marker for a non-inherited whole change. `Selector` itself is unchanged: it already draws
+`roundMarker(maxDiffType(diffsSummary ∪ descendantDiffsSummary))` and skips the marker for an
+inherited whole-node diff.
+
+| Fixture | Change | Marker on the code option |
+| --- | --- | --- |
+| `responses/01-response-added` | `404` added | none on `404` (border shadow + one-side visibility only) |
+| `responses/10-response-added-with-headers-and-body` | `404` added with headers and a body | none (stamped header diffs ignored) |
+| `responses/02-response-code-case-renamed` | `4xx` → `4XX` only | none (per-side title only) |
+| `responses/11-response-code-renamed-and-description-changed` | rename + description replaced | `annotation` |
+| `responses/03-response-description-changed` | `200` description replaced | `annotation` |
+| `responses/06-response-schema-property-added` | property added to the `200` body | `non-breaking` |
+| `responses/07-response-body-only-media-type-removed` | `200` `content` removed | `breaking` |
+| `responses/09-response-all-headers-removed` | `200` headers deleted | `breaking` |
+| `responses/12-response-changes-of-different-severity` | header added (non-breaking), body property removed (non-breaking), media type removed (breaking), description replaced (annotation) | `breaking` (strongest) |
+| `operation/06-whole-operation-added` | whole operation added | none on every code (inherited) |
 
 ## Description row
 

@@ -85,10 +85,10 @@ Unchanged `Selector` semantics, fed from `response` nodes:
 
 | Case | Origin side | Changed side |
 | --- | --- | --- |
-| Response added | option hidden | option shown, green border shadow |
-| Response removed | option shown, red border shadow | option hidden |
-| Code renamed (`4xx` → `4XX`) | `4xx` (title function per side) | `4XX` |
-| Changes inside the response | change marker from `diffsSummary` ∪ `descendantDiffsSummary` (includes nested schema changes via `aggregatedDiffsMetaKey`) | same |
+| Response added | option hidden | option shown, green border shadow, **no** change marker |
+| Response removed | option shown, red border shadow, **no** change marker | option hidden |
+| Code renamed (`4xx` → `4XX`) | `4xx` (title function per side), no marker for the rename itself | `4XX` |
+| Changes inside the response | change marker = strongest type of the inner changes only, from the aggregated diff set (`OpenApiRowDiffs.Response.takeChangesMarkerSummary`, passed as `descendantDiffsSummary`; `diffsSummary` is not passed) — rules in [../entities/responses.md](../entities/responses.md#change-markers-on-response-code-options) | same |
 
 ## Tests
 
