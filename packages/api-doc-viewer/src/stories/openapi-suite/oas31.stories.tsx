@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { OPENAPI_STORY_ARG_TYPES, OPENAPI_STORY_DEFAULT_ARGS } from "./openapi-story-args";
 import { OpenApiSampleStory } from "./OpenApiSampleStory";
 import { collectOpenApiSamples, takeOpenApiSample } from "./openapi-suite-utils";
 
@@ -13,6 +14,8 @@ const samples = collectOpenApiSamples(sampleFiles);
 const meta = {
   title: "OpenAPI Operation Suite/OAS 3.1",
   component: OpenApiSampleStory,
+  argTypes: OPENAPI_STORY_ARG_TYPES,
+  args: OPENAPI_STORY_DEFAULT_ARGS,
 } satisfies Meta<typeof OpenApiSampleStory>;
 
 export default meta;

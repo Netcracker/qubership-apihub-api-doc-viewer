@@ -59,7 +59,7 @@ export interface OpenApiDialect {
 | `mutualTLS` card | — (unknown type: shown as is, dev warning) | type label `Mutual TLS`, no detail rows | `securitySchemeTypes` |
 
 Fixtures: `oas30/03-security-alternatives`, `oas31/03-security-mutual-tls-and-roles`;
-diffs: `openapi-diffs/oas31/02-mutual-tls-alternative-added`, `oas31/03-role-scopes-on-api-key`.
+diffs: `openapi-diffs/oas31/02-mutual-tls-alternative-added`, `oas31/04-role-scopes-added`.
 
 ### Responses
 
@@ -100,7 +100,7 @@ JSON Schema stack topic.
 | Dialect unit tests | resolver returns `OpenApi30Dialect` for `3.0.0`–`3.0.4`; scope kinds | resolver returns `OpenApi31Dialect` for `3.1.0`–`3.1.1`; scope kinds incl. `mutualTLS` |
 | Transformer unit tests | every entity on `oas30/*` fixtures | every entity on `oas31/*` fixtures |
 | Stories / ITs | `OpenAPI Operation Suite/OAS 3.0` | `OpenAPI Operation Suite/OAS 3.1` |
-| Diff stories / ITs | `OpenAPI Operation Diffs Suite/*` (3.0 base) | `OpenAPI Operation Diffs Suite/OAS 3.1 Samples` |
+| Diff stories / ITs | `OpenAPI Operation Diffs Suite/*` (3.0 base) | `OpenAPI Operation Diffs Suite/OAS 3.1` |
 
 Never assume one dialect in a shared test — the validation-rows rule applies here too.
 

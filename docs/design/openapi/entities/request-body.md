@@ -101,8 +101,8 @@ Rules (shared with response media types, [responses.md](responses.md#body)):
 
 | Fixture | Change | Shown |
 | --- | --- | --- |
-| `request/27-body-and-media-type-extensions-changed` | Request Body `x-max-size` replaced; media type `x-codec` added; an `x-not-a-media-type` string key added to `content` | root row Extensions: `x-max-size` replace, `x-codec` add; the `content` key is dropped by the unifier |
-| `request/28-media-type-extension-shadows-schema-root` | schema root `x-codec: none` on both sides; media type `x-codec: gzip` added | `x-codec` replace `none` → `gzip` (the shown value changed) |
+| `request-body/24-extensions-changed` | Request Body `x-max-size` replaced; media type `x-codec` added; an `x-not-a-media-type` string key added to `content` | root row Extensions: `x-max-size` replace, `x-codec` add; the `content` key is dropped by the unifier |
+| `request-body/25-media-type-extension-shadows-schema-root` | schema root `x-codec: none` on both sides; media type `x-codec: gzip` added | `x-codec` replace `none` → `gzip` (the shown value changed) |
 
 ## Presence
 
@@ -113,11 +113,11 @@ media types without `schema`. Shared rule and resolver:
 
 | Before | After | Body |
 | --- | --- | --- |
-| media type with schema | `requestBody` removed | wholly removed (raw diff) — `request/23` |
-| one media type with schema, no description | `content: {}` (media type removed) | wholly removed (synthetic) — `request/19` |
-| one media type with schema, no description | the same media type without `schema` | wholly removed (synthetic); the option is removed too — `request/20` |
-| media type without schema, no description | the same media type with `schema` | wholly added (synthetic) — `request/21` |
-| media type with schema + description | `content: {}`, description kept | present on both sides: description unchanged, option removed, header uncolored — `request/22` |
+| media type with schema | `requestBody` removed | wholly removed (raw diff) — `request-body/02-body-removed` |
+| one media type with schema, no description | `content: {}` (media type removed) | wholly removed (synthetic) — `request-body/12-only-media-type-removed` |
+| one media type with schema, no description | the same media type without `schema` | wholly removed (synthetic); the option is removed too — `request-body/16-schema-removed` |
+| media type without schema, no description | the same media type with `schema` | wholly added (synthetic) — `request-body/15-schema-added` |
+| media type with schema + description | `content: {}`, description kept | present on both sides: description unchanged, option removed, header uncolored — `request-body/14-media-type-removed-description-kept` |
 | `required: true` + schema-less media type | anything that is still not present | Body not rendered on either side |
 
 A wholly added / removed Body paints every row through `KindAny` inheritance: header, required
@@ -140,4 +140,4 @@ A row is never rendered on a side just because `requestBody` exists there as an 
 
 - [responses.md](responses.md) — the same `content` / `mediaType` nodes
 - [../features/diffs.md](../features/diffs.md#request-body-and-responses)
-- Fixtures: `packages/samples/openapi-diffs/request/06-…` to `10-…`, `19-…` to `23-…`
+- Fixtures: `packages/samples/openapi-diffs/request-body/` and `response-body/` ([diffs-case-matrix.md](../features/diffs-case-matrix.md#bodies))

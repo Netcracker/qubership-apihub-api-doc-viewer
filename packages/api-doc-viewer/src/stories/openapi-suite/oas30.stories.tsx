@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { OPENAPI_STORY_ARG_TYPES, OPENAPI_STORY_DEFAULT_ARGS } from "./openapi-story-args";
 import { OpenApiSampleStory } from "./OpenApiSampleStory";
 import { collectOpenApiSamples, takeOpenApiSample } from "./openapi-suite-utils";
 
@@ -13,6 +14,8 @@ const samples = collectOpenApiSamples(sampleFiles);
 const meta = {
   title: "OpenAPI Operation Suite/OAS 3.0",
   component: OpenApiSampleStory,
+  argTypes: OPENAPI_STORY_ARG_TYPES,
+  args: OPENAPI_STORY_DEFAULT_ARGS,
 } satisfies Meta<typeof OpenApiSampleStory>;
 
 export default meta;
@@ -25,7 +28,6 @@ const createCaseStory = (caseId: string, path: string, method: string, extra: Pa
 });
 
 export const Case_01_full_operation: Story = createCaseStory("01-full-operation", "/pets/{petId}/photos", "post");
-export const Case_01_full_operation_simple_mode: Story = createCaseStory("01-full-operation", "/pets/{petId}/photos", "post", { displayMode: "simple" }, " (simple mode)");
 export const Case_01_full_operation_no_heading: Story = createCaseStory("01-full-operation", "/pets/{petId}/photos", "post", { noHeading: true }, " (no heading)");
 export const Case_02_minimal_operation: Story = createCaseStory("02-minimal-operation", "/health", "get");
 export const Case_03_security_inherited_from_document: Story = createCaseStory("03-security-alternatives", "/reports", "get");

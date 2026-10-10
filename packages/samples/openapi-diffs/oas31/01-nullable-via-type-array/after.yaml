@@ -24,6 +24,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -32,6 +36,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -52,14 +64,18 @@ paths:
                 note:
                   type:
                     - string
-                    - 'null'
+                    - "null"
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -69,7 +85,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -87,6 +103,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -95,3 +115,6 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration

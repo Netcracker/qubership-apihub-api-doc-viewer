@@ -46,11 +46,11 @@ Paths: `ndm/` = `packages/next-data-model/src/`, `viewer/` =
 
 | # | Decision | Rejected alternatives | Why |
 | --- | --- | --- | --- |
-| T1 | **Plain stories name the operation explicitly** (`path` + `method` per export). Multi-operation fixtures export one story per operation, and `01-full-operation` also has *simple mode* and *no heading* variants. | Relying on the default first operation. | The default logs an error by contract and would pick the wrong operation in `03-security-alternatives`. |
-| T2 | **Diff stories use `POST` and the first `paths` key of the after document** (before document if the after one has none). | A key table per case. | Every diff fixture changes `POST` of its only path (catalogue rule); the after key covers the renamed path (`operation/05`, E1). |
+| T1 | **Plain stories name the operation explicitly** (`path` + `method` per export); multi-operation fixtures export one story per operation. Display mode is a story control (default `detailed`); ITs capture every story in `detailed` and `simple` through the story arg (2026-10-10: the duplicated *simple mode* export was removed). | Relying on the default first operation; one export per display mode. | The default logs an error by contract and would pick the wrong operation in `03-security-alternatives`; a duplicated story per mode doubles sources. |
+| T2 | **The diffs suite is generated** (2026-10-10) by `bin/generate-openapi-diffs-suite.mjs` from `bin/openapi-diffs-case-definitions.mjs`: 251 cases in 11 folders, opposites adjacent, one shared case list per fragment family, the matrix in [../features/diffs-case-matrix.md](../features/diffs-case-matrix.md). Stories use `POST` and the first `paths` key of the after document. | Hand-written YAML pairs (the first 60 cases). | ~250 cases with shared ids across fragments cannot be kept consistent by hand. |
 | T3 | **Diff stories use api-diff's `DIFF_META_KEY` / `DIFFS_AGGREGATED_META_KEY`**, because `mergeOpenApiDocuments` already writes `DIFF_META_KEY`. | `TEST_DIFF_META_KEYS`. | One merge helper, no second `apiDiff` call. |
 | T4 | **IT story ids are derived from the Storybook title and export name** (`openapi-operation-suite-oas-3-0--case-01-full-operation`, …). They were not checked against a running `index.json`. **No baseline snapshots are committed**: Docker is not available in the implementing environment. | — | Run `npm run regenerate-screenshots` (or `regenerate-screenshots-single-suite`) and review the images before merging. |
-| T5 | **The runtime check without a browser was a smoke render**: an `esbuild` bundle + `react-dom/server` over all 11 plain operations and 60 diff fixtures (no throw, no React error). It is not committed. | Adding jsdom to the repository. | No DOM test environment exists in the package; adding one is out of scope. |
+| T5 | **The runtime check without a browser was a smoke render**: an `esbuild` bundle + `react-dom/server` over all 11 plain operations and 60 diff fixtures (2026-10-10: all 251 generated diff cases in both display modes) (no throw, no React error). It is not committed. | Adding jsdom to the repository. | No DOM test environment exists in the package; adding one is out of scope. |
 | T6 | **Viewer unit tests** (`packages/api-doc-viewer/tests/openapi-viewer-config.test.ts`) cover the section-order permutations, the Headers → Extensions → Body order, the response-code tones, and the HTTP method badge config. Data-layer tests cover the new side accessors. | — | CSS-free, fast, per the testing skill. |
 
 ## Disagreements found (not changed)
@@ -66,6 +66,12 @@ Paths: `ndm/` = `packages/next-data-model/src/`, `viewer/` =
   changed (legacy rule).
 - `npx eslint src` in `packages/api-doc-viewer` reports errors in existing files (DDL, GraphQL,
   generated JSON Schema ITs); every OpenAPI file lints clean.
+- Two generated cases, `oas31/04-role-scopes-added` / `05-role-scopes-removed`, produce no `apiDiff`
+  diff: role scopes on a non-OAuth scheme are not compared in OAS 3.1, so both sides show the after
+  roles. Recorded in the case titles; an api-diff issue, not a viewer one.
+- `bin/storybook-story-id-utils.mjs` imported `sanitize` from `@storybook/csf`, which is not
+  installed (Storybook 9 ships it as `storybook/internal/csf`); every generator importing the util
+  failed. Fixed to `storybook/internal/csf`.
 
 ## Still open
 

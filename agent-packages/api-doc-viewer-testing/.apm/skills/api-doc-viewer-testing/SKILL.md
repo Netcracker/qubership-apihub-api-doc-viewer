@@ -270,6 +270,15 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- OpenAPI Operation Diffs Suite — `node bin/generate-openapi-diffs-suite.mjs` (cases in
+  `bin/openapi-diffs-case-definitions.mjs`) → recreates `packages/samples/openapi-diffs/` (fixtures +
+  catalogues), `src/stories/openapi-diffs-suite/<category>.stories.tsx`,
+  `src/it/openapi-diffs-suite.<category>.it-test.ts`, and the generated block of
+  `docs/design/openapi/features/diffs-case-matrix.md`. Opposite cases (add ↔ remove, on ↔ off,
+  A → B ↔ B → A moves) are adjacent; parameter-like fragments and the two bodies share one case
+  list, so one id is one change in every folder (skipped slots stay unused). Display mode is a story
+  control: ITs capture every case in `detailed` and `simple` via `storyPageWithArgs` — never add a
+  per-mode story or fixture.
 - JSON Schema property rename — `node bin/generate-json-schema-property-rename-suite.mjs` →
   `src/stories/json-schema-diffs-suite/property-rename.stories.tsx` and
   `src/it/json-schema-diffs-suite/property-rename.it-test.ts` from the OpenAPI fixture pairs under

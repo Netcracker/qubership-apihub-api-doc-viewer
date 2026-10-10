@@ -151,7 +151,7 @@ Suites (stories under `packages/api-doc-viewer/src/stories/openapi-suite/` and
 | Suite | Fixtures |
 | --- | --- |
 | `OpenAPI Operation Suite/OAS 3.0`, `…/OAS 3.1` | `packages/samples/openapi/` |
-| `OpenAPI Operation Diffs Suite/<Category> Samples` | `packages/samples/openapi-diffs/` |
+| `OpenAPI Operation Diffs Suite/<Category>` (matrix: [features/diffs-case-matrix.md](features/diffs-case-matrix.md)) | `packages/samples/openapi-diffs/` |
 
 ## Related documents
 

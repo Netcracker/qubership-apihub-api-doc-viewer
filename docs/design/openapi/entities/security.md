@@ -87,7 +87,7 @@ per side, follows the [presence rule](../features/diffs.md#section-presence-and-
 
 | Before | After | Section |
 | --- | --- | --- |
-| ≥1 alternative | `security: []` (one `remove` per alternative, E7) | wholly removed — `security/06` |
+| ≥1 alternative | `security: []` (one `remove` per alternative, E7) | wholly removed — `security/02-security-removed` |
 | no operation `security`, document list empty | operation `security` with alternatives | wholly added |
 | document list inherited | operation override with other alternatives | present on both sides; synthetic alternative diffs ([below](#synthetic-alternative-diffs-on-override-changes-q15)); header uncolored |
 

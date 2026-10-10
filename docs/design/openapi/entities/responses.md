@@ -111,16 +111,16 @@ inherited whole-node diff.
 
 | Fixture | Change | Marker on the code option |
 | --- | --- | --- |
-| `responses/01-response-added` | `404` added | none on `404` (border shadow + one-side visibility only) |
-| `responses/10-response-added-with-headers-and-body` | `404` added with headers and a body | none (stamped header diffs ignored) |
-| `responses/02-response-code-case-renamed` | `4xx` → `4XX` only | none (per-side title only) |
-| `responses/11-response-code-renamed-and-description-changed` | rename + description replaced | `annotation` |
-| `responses/03-response-description-changed` | `200` description replaced | `annotation` |
-| `responses/06-response-schema-property-added` | property added to the `200` body | `non-breaking` |
-| `responses/07-response-body-only-media-type-removed` | `200` `content` removed | `breaking` |
-| `responses/09-response-all-headers-removed` | `200` headers deleted | `breaking` |
-| `responses/12-response-changes-of-different-severity` | header added (non-breaking), body property removed (non-breaking), media type removed (breaking), description replaced (annotation) | `breaking` (strongest) |
-| `operation/06-whole-operation-added` | whole operation added | none on every code (inherited) |
+| `responses/07-response-4xx-added` | `404` added with headers and a body | none on `404` (border shadow + one-side visibility only; stamped header diffs ignored) |
+| `responses/18-description-changed-non-initial-code` | `400` description replaced, `200` selected | `annotation` on `400` |
+| `responses/15-code-case-renamed` | `4xx` → `4XX` only | none (per-side title only) |
+| `responses/16-code-renamed-and-description-changed` | rename + description replaced | `annotation` |
+| `responses/17-description-changed` | `200` description replaced | `annotation` |
+| `response-body/17-schema-property-added` | property added to the `200` body | `non-breaking` |
+| `response-body/02-body-removed` | `200` `content` removed | `breaking` |
+| `response-headers/20-all-removed` | `200` headers deleted | `breaking` |
+| `responses/25-changes-of-different-severity` | header added (non-breaking), body property removed (non-breaking), media type removed (breaking), description replaced (annotation) | `breaking` (strongest) |
+| `operation/23-operation-added` | whole operation added | none on every code (inherited) |
 
 ## Description row
 
@@ -136,7 +136,7 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Source | `response.headers` (map name → Header Object); synthesized by the same `OpenApiObjectSchemaSynthesizer` as parameters ([parameters.md](parameters.md#schema-synthesizer)) — entry name = map key, no `in` |
 | Header row | `TitleRow` "Headers", **h3**, test id `openapi-response-headers` |
 | Content | `ParametersNodeViewer` (same component as request parameter groups) |
-| Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`responses/09`) |
+| Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`response-headers/20-all-removed`) |
 | `Content-Type` header | shown (Q5) |
 | Header `x-*` | moved flat into the header's synthetic property schema and shown in its **Extensions** sub-tree — same rules as parameters ([parameters.md](parameters.md#entry-extensions)) |
 
@@ -183,7 +183,7 @@ response also has headers (and links), so its extensions are not "about every me
 | Selection | per response, kept when switching codes ([../features/operation-viewer.md](../features/operation-viewer.md#view-state)) |
 | Presence | the response Body is present on a side when it has ≥1 option there (the response description belongs to the response, not to the Body) |
 | Shown when | present on either side |
-| Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `responses/07`) or synthetic (the only media type removed, or the only schema removed, `responses/08`); options carry `mediaType` node diffs and summaries |
+| Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `response-body/02-body-removed`) or synthetic (the only media type removed, or the only schema removed, `response-body/16-schema-removed`); options carry `mediaType` node diffs and summaries |
 | Schema | `MediaTypeSchemaViewer` for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
 
 The request and response Body headers are one component, `MediaTypeContentHeader`

@@ -244,7 +244,7 @@ Same situation as the description: an `x-*` key can live on the entry and on the
 
 #### Scenarios
 
-Fixtures `packages/samples/openapi-diffs/request/11-…` to `18-…`; raw diffs measured with `apiDiff`
+Fixtures `packages/samples/openapi-diffs/<fragment>/11-…` to `13-…` and `21-…` to `26-…` (every parameter fragment, [diffs-case-matrix.md](../features/diffs-case-matrix.md)); raw diffs measured with `apiDiff`
 (E17, E18).
 
 | # | Before | After | Raw diffs in the merged document | Shown (origin → changed) | Synthesized diff |
@@ -314,9 +314,9 @@ is an entry `remove` plus a `schema[M]['x-…']` `add`; a change inside a value 
 
 | Case | Result on the parameter row |
 | --- | --- |
-| `x-internal: true` added, `x-owner` replaced on the entry (`request/24`) | Extensions sub-tree: `x-internal` added (green), `x-owner` replaced (yellow) |
-| `x-owner` moved from the entry to the schema root, same value (`request/25`) | no diff |
-| item added inside `x-audience.owners` (`request/26`) | nested add inside the `x-audience` JSO tree |
+| `x-internal: true` added, `x-owner` replaced on the entry (`query-parameters/16-extension-changed`) | Extensions sub-tree: `x-internal` added (green), `x-owner` replaced (yellow) |
+| `x-owner` moved from the entry to the schema root, same value (`query-parameters/17-extension-moved-to-schema`) | no diff |
+| item added inside `x-audience.owners` (`query-parameters/16-extension-changed`) | nested add inside the `x-audience` JSO tree |
 | entry `x-owner: a`, schema root `x-owner: b`, entry key removed | `x-owner` replace `a` → `b` (the schema value becomes visible) |
 | parameter wholly added | every extension shown as added, with the property row |
 
@@ -336,14 +336,14 @@ section rule needs only one check:
 
 | Source | Example | How every property gets its `add` / `remove` |
 | --- | --- | --- |
-| Each entry added / removed individually | every header parameter removed (`request/02-all-headers-removed`); before had no query parameters, after has two | the per-entry array-item diffs (first row of the table above) |
-| An ancestor added / removed as a whole | whole operation added (`operation/06-whole-operation-added`); `parameters` array added; response `headers` map removed | stamping (rule 4) |
+| Each entry added / removed individually | every header parameter removed (`request-headers/20-all-removed`); before had no query parameters, after has two | the per-entry array-item diffs (first row of the table above) |
+| An ancestor added / removed as a whole | whole operation added (`operation/23-operation-added`); `parameters` array added; response `headers` map removed | stamping (rule 4) |
 
 Not wholly added / removed (header stays uncolored; property rows show their own diffs):
 
 | Case | Why |
 | --- | --- |
-| One entry added, another removed (`request/03-mixed-header-changes`) | directions differ |
+| One entry added, another removed (`request-headers/03-entry-renamed`) | directions differ |
 | All but one entry added, one unchanged | the unchanged property has no diff record |
 | Every entry renamed / changed inside (`required`, `description`, schema) | `rename` / field diffs are not `add` / `remove` |
 | Mix of whole-entry adds and field changes on another entry | the changed entry has no `add` |
@@ -376,4 +376,4 @@ only when that flips — e.g. the last header parameter removed while the reques
 
 - [responses.md](responses.md#headers) — response headers use the same synthesizer
 - [../features/diffs.md](../features/diffs.md)
-- Fixtures: `packages/samples/openapi/oas30/04-parameters-sources/`, `packages/samples/openapi-diffs/request/`
+- Fixtures: `packages/samples/openapi/oas30/04-parameters-sources/`, `packages/samples/openapi-diffs/{path-parameters,query-parameters,request-headers,cookies,response-headers}/`

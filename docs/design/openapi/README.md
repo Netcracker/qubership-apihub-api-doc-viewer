@@ -35,6 +35,7 @@ tree, and lays the rows out.
 | 2 | [entities/](entities/) | Implementing one area: [operation](entities/operation.md), [security](entities/security.md), [parameters](entities/parameters.md), [request body](entities/request-body.md), [responses](entities/responses.md). |
 | 3 | [features/oas-versions.md](features/oas-versions.md) | Anything that may differ between OAS 3.0 and OAS 3.1. |
 | 4 | [features/diffs.md](features/diffs.md) | With-diffs data layer and viewer: where each diff comes from, how it is aggregated and painted. |
+| 4a | [features/diffs-case-matrix.md](features/diffs-case-matrix.md) | Diff fixture case matrix: every covered change, its opposite, and the fragments it applies to. |
 | 5 | [features/response-code-selector.md](features/response-code-selector.md) | The multicolor response-code selector and the `Selector` tone extension. |
 | 6 | [architecture/](architecture/) | Class and component diagrams (data model and viewer, plain and with diffs). |
 | 7 | [display-coverage.md](display-coverage.md) | Display baseline; triage of what is shown, omitted, or planned. |

@@ -34,7 +34,8 @@ named in the case table. Design: `docs/design/openapi/`.
 
 `OpenAPI Operation Suite/OAS 3.0` and `OpenAPI Operation Suite/OAS 3.1`: stories under
 `packages/api-doc-viewer/src/stories/openapi-suite/` (one story per operation; `01-full-operation`
-also in *simple mode* and *no heading*), ITs `packages/api-doc-viewer/src/it/openapi-suite.*.it-test.ts`.
+also *no heading*; display mode is a story control, default `detailed`), ITs `packages/api-doc-viewer/src/it/openapi-suite.*.it-test.ts` capture
+every story in `detailed` and `simple` (story arg).
 Non-default selections (other response code, other alternative) are captured by ITs clicking the
 selector test ids.
 

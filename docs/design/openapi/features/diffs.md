@@ -159,24 +159,24 @@ section or an ancestor; rule (b) "every child uniformly added / removed" = `pres
 stricter where it must be: a Body whose media types were all added while its description stayed is
 **not** wholly added (`present` is true on both sides). Mixed sets never flip `present` in one
 direction, so the AsyncAPI first-diff-only bug (`kind-parameters.ts` / `kind-extensions.ts`,
-fixture `request/03-mixed-header-changes`) cannot happen. Removed children are present in merged
+fixture `request-headers/03-entry-renamed`) cannot happen. Removed children are present in merged
 values (E3), so counts use the merged set reconstructed per side.
 
 Cases (fixtures in `packages/samples/openapi-diffs/`):
 
 | Fixture | Change | Result |
 | --- | --- | --- |
-| `request/23-body-removed` | `requestBody` removed | Body wholly removed (raw diff) |
-| `request/19-body-only-media-type-removed` | the only media type removed, no description | Body wholly removed (synthetic) |
-| `request/20-body-only-schema-removed` | the only media type loses its `schema`, no description | option wholly removed → Body wholly removed (synthetic) |
-| `request/21-body-only-schema-added` | symmetric | option and Body wholly added (synthetic) |
-| `request/22-body-media-type-removed-description-kept` | the only media type removed, description stays | Body present on both sides; option removed; header uncolored |
-| `responses/07-response-body-only-media-type-removed` | response `content` removed | response Body wholly removed; the response option itself unchanged (code still exists) |
-| `responses/08-response-body-only-schema-removed` | the only media type loses its `schema` | response Body wholly removed |
-| `responses/09-response-all-headers-removed` | `headers` map deleted (arrives as per-header removes) | response Headers wholly removed |
-| `request/02-all-headers-removed` | every header parameter removed | Headers group wholly removed |
-| `request/03-mixed-header-changes` | one header removed, one added | present on both sides → header uncolored |
-| `security/06-security-removed` | `security: []` | Security wholly removed |
+| `request-body/02-body-removed` | `requestBody` removed | Body wholly removed (raw diff) |
+| `request-body/12-only-media-type-removed` | the only media type removed, no description | Body wholly removed (synthetic) |
+| `request-body/16-schema-removed` | the only media type loses its `schema`, no description | option wholly removed → Body wholly removed (synthetic) |
+| `request-body/15-schema-added` | symmetric | option and Body wholly added (synthetic) |
+| `request-body/14-media-type-removed-description-kept` | the only media type removed, description stays | Body present on both sides; option removed; header uncolored |
+| `response-body/02-body-removed` | response `content` removed | response Body wholly removed; the response option itself unchanged (code still exists) |
+| `response-body/16-schema-removed` | the only media type loses its `schema` | response Body wholly removed |
+| `response-headers/20-all-removed` | `headers` map deleted (arrives as per-header removes) | response Headers wholly removed |
+| `request-headers/20-all-removed` | every header parameter removed | Headers group wholly removed |
+| `request-headers/03-entry-renamed` | one header removed, one added | present on both sides → header uncolored |
+| `security/02-security-removed` | `security: []` | Security wholly removed |
 
 ### Severity placements
 
@@ -257,9 +257,9 @@ So a header is never shown on a side merely because the section's raw object exi
 | --- | --- |
 | `openapi-spec-transformer.test.ts` | lookup, defaults, effective security, synthesis (plain), code order, dialect per fixture |
 | `openapi-spec-with-diffs-transformer.test.ts` | every row of the diff-source tables above, one case per fixture under `openapi-diffs/` |
-| `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / whole-group stamping / description and schema sources (every scenario of `parameters.md` → "Description and schema sources", fixtures `request/11`–`18`) |
+| `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / whole-group stamping / description and schema sources (every scenario of `parameters.md` → "Description and schema sources", fixtures `query-parameters/21-description-moved-entry-to-schema`–`18`) |
 | `openapi-section-presence.test.ts` | `OpenApiSectionPresenceResolver`: every row of the presence table and the fixture table in [Section presence](#section-presence-and-whole-section-changes) (raw vs synthetic whole diffs, schema-less media types, description keeps the Body present, mixed directions, unchanged sibling, neither side present → nothing rendered) |
-| `openapi-security-override-diffs.test.ts` | synthetic alternative diffs (`security/05-root-security-overridden`, reverse) |
+| `openapi-security-override-diffs.test.ts` | synthetic alternative diffs (`security/03-document-security-overridden`, reverse) |
 | `openapi-response-change-markers.test.ts` | `KindResponse` descendant summary: every row of the fixture table in [responses.md](../entities/responses.md#change-markers-on-response-code-options) (whole add / remove / rename → ∅, stamped header diffs ignored, strongest type wins via the set) |
 | `openapi-severities.test.ts` | one placement per row; whole-node fills all placements |
 
