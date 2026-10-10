@@ -1,4 +1,4 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{a as t,i as n,n as r,r as i,t as a}from"./openapi-suite-utils-CXzw5vvh.js";var o;function s(){return(s=e((()=>{o=`openapi: 3.1.0
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{n as t,r as n,t as r}from"./openapi-story-args-BDyYngoO.js";import{a as i,i as a,n as o,r as s,t as c}from"./openapi-suite-utils-CXzw5vvh.js";var l;function u(){return(u=e((()=>{l=`openapi: 3.1.0
 info:
   title: Pet store (full operation, OAS 3.1)
   version: 1.0.0
@@ -108,7 +108,7 @@ components:
           const: sold
         nickname:
           type: [string, 'null']
-`})))()}var c;function l(){return(l=e((()=>{c=`openapi: 3.1.0
+`})))()}var d;function f(){return(f=e((()=>{d=`openapi: 3.1.0
 info:
   title: Operation without responses (OAS 3.1)
   version: 1.0.0
@@ -129,7 +129,7 @@ paths:
                 type:
                   type: string
                 data: true
-`})))()}var u;function d(){return(d=e((()=>{u=`openapi: 3.1.0
+`})))()}var p;function m(){return(m=e((()=>{p=`openapi: 3.1.0
 info:
   title: mutualTLS and role scopes (OAS 3.1)
   version: 1.0.0
@@ -161,7 +161,7 @@ components:
       type: apiKey
       in: cookie
       name: ADMIN_KEY
-`})))()}var f;function p(){return(p=e((()=>{f=`openapi: 3.1.0
+`})))()}var h;function g(){return(g=e((()=>{h=`openapi: 3.1.0
 info:
   title: Reference overrides and components.pathItems (OAS 3.1)
   version: 1.0.0
@@ -217,4 +217,4 @@ components:
             properties:
               total:
                 type: number
-`})))()}var m,h,g,_,v,y,b,x;function S(){return(S=e((()=>{s(),l(),d(),p(),t(),r(),m=a(Object.assign({"../../../../samples/openapi/oas31/01-full-operation/sample.yaml":o,"../../../../samples/openapi/oas31/02-no-responses/sample.yaml":c,"../../../../samples/openapi/oas31/03-security-mutual-tls-and-roles/sample.yaml":u,"../../../../samples/openapi/oas31/04-reference-overrides-and-path-items/sample.yaml":f})),h={title:`OpenAPI Operation Suite/OAS 3.1`,component:n},g=(e,t,n,r={},a=``)=>({name:`${e} ${n.toUpperCase()}${a}`,args:{caseId:e,sampleYaml:i(m,e),path:t,method:n,...r}}),_=g(`01-full-operation`,`/pets/{petId}`,`patch`),v=g(`02-no-responses`,`/events`,`post`),y=g(`03-security-mutual-tls-and-roles`,`/admin/keys`,`post`),b=g(`04-reference-overrides-and-path-items`,`/invoices/{invoiceId}`,`get`),_.parameters={..._.parameters,docs:{..._.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}", "patch")`,..._.parameters?.docs?.source}}},v.parameters={...v.parameters,docs:{...v.parameters?.docs,source:{originalSource:`createCaseStory("02-no-responses", "/events", "post")`,...v.parameters?.docs?.source}}},y.parameters={...y.parameters,docs:{...y.parameters?.docs,source:{originalSource:`createCaseStory("03-security-mutual-tls-and-roles", "/admin/keys", "post")`,...y.parameters?.docs?.source}}},b.parameters={...b.parameters,docs:{...b.parameters?.docs,source:{originalSource:`createCaseStory("04-reference-overrides-and-path-items", "/invoices/{invoiceId}", "get")`,...b.parameters?.docs?.source}}},x=[`Case_01_full_operation`,`Case_02_no_responses`,`Case_03_security_mutual_tls_and_roles`,`Case_04_reference_overrides_and_path_items`]})))()}S();export{_ as Case_01_full_operation,v as Case_02_no_responses,y as Case_03_security_mutual_tls_and_roles,b as Case_04_reference_overrides_and_path_items,x as __namedExportsOrder,h as default};
+`})))()}var _,v,y,b,x,S,C,w;function T(){return(T=e((()=>{u(),f(),m(),g(),n(),i(),o(),_=c(Object.assign({"../../../../samples/openapi/oas31/01-full-operation/sample.yaml":l,"../../../../samples/openapi/oas31/02-no-responses/sample.yaml":d,"../../../../samples/openapi/oas31/03-security-mutual-tls-and-roles/sample.yaml":p,"../../../../samples/openapi/oas31/04-reference-overrides-and-path-items/sample.yaml":h})),v={title:`OpenAPI Operation Suite/OAS 3.1`,component:a,argTypes:r,args:t},y=(e,t,n,r={},i=``)=>({name:`${e} ${n.toUpperCase()}${i}`,args:{caseId:e,sampleYaml:s(_,e),path:t,method:n,...r}}),b=y(`01-full-operation`,`/pets/{petId}`,`patch`),x=y(`02-no-responses`,`/events`,`post`),S=y(`03-security-mutual-tls-and-roles`,`/admin/keys`,`post`),C=y(`04-reference-overrides-and-path-items`,`/invoices/{invoiceId}`,`get`),b.parameters={...b.parameters,docs:{...b.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}", "patch")`,...b.parameters?.docs?.source}}},x.parameters={...x.parameters,docs:{...x.parameters?.docs,source:{originalSource:`createCaseStory("02-no-responses", "/events", "post")`,...x.parameters?.docs?.source}}},S.parameters={...S.parameters,docs:{...S.parameters?.docs,source:{originalSource:`createCaseStory("03-security-mutual-tls-and-roles", "/admin/keys", "post")`,...S.parameters?.docs?.source}}},C.parameters={...C.parameters,docs:{...C.parameters?.docs,source:{originalSource:`createCaseStory("04-reference-overrides-and-path-items", "/invoices/{invoiceId}", "get")`,...C.parameters?.docs?.source}}},w=[`Case_01_full_operation`,`Case_02_no_responses`,`Case_03_security_mutual_tls_and_roles`,`Case_04_reference_overrides_and_path_items`]})))()}T();export{b as Case_01_full_operation,x as Case_02_no_responses,S as Case_03_security_mutual_tls_and_roles,C as Case_04_reference_overrides_and_path_items,w as __namedExportsOrder,v as default};

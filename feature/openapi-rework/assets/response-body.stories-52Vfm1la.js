@@ -1,4 +1,4 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{i as t,r as ee}from"./sample-cases-DDoAHGgD.js";import{n as te,t as ne}from"./diffs-samples-cases-Bp0vvMWA.js";import{n as re,t as ie}from"./OpenApiDiffSampleStory-BEM122y8.js";var ae;function oe(){return(oe=e((()=>{ae=`openapi: 3.0.3
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{i as t,r as ee}from"./sample-cases-DDoAHGgD.js";import{n as te,t as ne}from"./diffs-samples-cases-Bp0vvMWA.js";import{n as re,r as ie,t as ae}from"./openapi-story-args-BDyYngoO.js";import{n as oe,t as se}from"./OpenApiDiffSampleStory-u6TV2Eia.js";var ce;function le(){return(le=e((()=>{ce=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -24,6 +24,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -32,6 +36,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -52,22 +64,17 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
-          content:
-            application/json:
+            X-Request-Id:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-        '400':
+                type: string
+                format: uuid
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -85,103 +92,10 @@ components:
     basic:
       type: http
       scheme: basic
-    oauth:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://auth.example.com/token
-          scopes:
-            orders:read: Read orders
-            orders:write: Modify orders
-`})))()}var se;function ce(){return(ce=e((()=>{se=`openapi: 3.0.3
-info:
-  title: Orders
-  version: 1.0.0
-security:
-  - api_key: []
-paths:
-  /orders/{orderId}:
-    post:
-      operationId: updateOrder
-      summary: Update an order
-      description: Replaces the order.
-      x-rate-limit: 100
-      security:
-        - oauth:
-            - orders:write
-      parameters:
-        - name: orderId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: dryRun
-          in: query
-          schema:
-            type: boolean
-        - name: X-Request-Id
-          in: header
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: X-Trace
-          in: header
-          schema:
-            type: string
-      requestBody:
-        description: New order state.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum:
-                    - new
-                    - paid
-                note:
-                  type: string
-      responses:
-        '200':
-          description: Updated order.
-          headers:
-            ETag:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-        '400':
-          description: Invalid request.
-          content:
-            application/problem+json:
-              schema:
-                type: object
-                properties:
-                  title:
-                    type: string
-        4xx:
-          description: Client error.
-components:
-  securitySchemes:
-    api_key:
-      type: apiKey
-      in: header
-      name: X-API-Key
-    basic:
+    bearer:
       type: http
-      scheme: basic
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -190,7 +104,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var le;function ue(){return(ue=e((()=>{le=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var ue;function de(){return(de=e((()=>{ue=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -216,6 +133,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -224,6 +145,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -244,12 +173,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -259,7 +192,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -277,6 +210,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -285,7 +222,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var de;function fe(){return(fe=e((()=>{de=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var fe;function pe(){return(pe=e((()=>{fe=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -311,6 +251,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -319,6 +263,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -339,12 +291,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -354,7 +310,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -372,6 +328,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -380,7 +340,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var pe;function me(){return(me=e((()=>{pe=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var me;function he(){return(he=e((()=>{me=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -406,6 +369,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -414,6 +381,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -434,12 +409,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -451,13 +430,8 @@ paths:
                     type: string
             application/xml:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-        '400':
+                type: string
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -475,6 +449,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -483,6 +461,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var n;function r(){return(r=e((()=>{n=`openapi: 3.0.3
 info:
   title: Orders
@@ -509,6 +490,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -517,6 +502,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -537,12 +530,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -552,7 +549,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -570,6 +567,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -578,6 +579,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var i;function a(){return(a=e((()=>{i=`openapi: 3.0.3
 info:
   title: Orders
@@ -604,6 +608,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -612,6 +620,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -632,22 +648,19 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
-          content:
-            application/json:
+            X-Request-Id:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-        '400':
+                type: string
+                format: uuid
+          content:
+            application/json: {}
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -665,6 +678,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -673,6 +690,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var o;function s(){return(s=e((()=>{o=`openapi: 3.0.3
 info:
   title: Orders
@@ -699,6 +719,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -707,6 +731,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -727,12 +759,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -742,7 +778,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -760,6 +796,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -768,6 +808,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var c;function l(){return(l=e((()=>{c=`openapi: 3.0.3
 info:
   title: Orders
@@ -794,6 +837,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -802,6 +849,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -822,12 +877,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -837,7 +896,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -855,6 +914,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -863,6 +926,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var u;function d(){return(d=e((()=>{u=`openapi: 3.0.3
 info:
   title: Orders
@@ -889,6 +955,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -897,6 +967,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -917,12 +995,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -932,7 +1014,9 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+                  total:
+                    type: number
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -950,6 +1034,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -958,6 +1046,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var f;function p(){return(p=e((()=>{f=`openapi: 3.0.3
 info:
   title: Orders
@@ -984,6 +1075,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -992,6 +1087,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1012,12 +1115,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1027,7 +1134,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1036,8 +1143,6 @@ paths:
                 properties:
                   title:
                     type: string
-        4xx:
-          description: Client error.
 components:
   securitySchemes:
     api_key:
@@ -1047,6 +1152,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1055,6 +1164,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var m;function h(){return(h=e((()=>{m=`openapi: 3.0.3
 info:
   title: Orders
@@ -1081,6 +1193,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1089,6 +1205,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1109,12 +1233,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1124,10 +1252,7 @@ paths:
                     type: string
                   status:
                     type: string
-            application/xml:
-              schema:
-                type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1145,6 +1270,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1153,6 +1282,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var g;function _(){return(_=e((()=>{g=`openapi: 3.0.3
 info:
   title: Orders
@@ -1179,6 +1311,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1187,6 +1323,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1207,12 +1351,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1222,8 +1370,8 @@ paths:
                     type: string
                   status:
                     type: string
-          x-cache: private
-        '400':
+              x-codec: gzip
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1241,6 +1389,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1249,6 +1401,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var v;function y(){return(y=e((()=>{v=`openapi: 3.0.3
 info:
   title: Orders
@@ -1275,6 +1430,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1283,6 +1442,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1303,12 +1470,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1318,7 +1489,8 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+                x-codec: none
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1327,8 +1499,6 @@ paths:
                 properties:
                   title:
                     type: string
-        '404':
-          description: Order not found.
 components:
   securitySchemes:
     api_key:
@@ -1338,6 +1508,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1346,6 +1520,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var b;function x(){return(x=e((()=>{b=`openapi: 3.0.3
 info:
   title: Orders
@@ -1372,6 +1549,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1380,6 +1561,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1400,12 +1589,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1415,7 +1608,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1424,8 +1617,6 @@ paths:
                 properties:
                   title:
                     type: string
-        4XX:
-          description: Client error.
 components:
   securitySchemes:
     api_key:
@@ -1435,6 +1626,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1443,6 +1638,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var S;function C(){return(C=e((()=>{S=`openapi: 3.0.3
 info:
   title: Orders
@@ -1469,6 +1667,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1477,6 +1679,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1497,22 +1707,17 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
-          description: The order after the update.
+        "200":
+          description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
-          content:
-            application/json:
+            X-Request-Id:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-        '400':
+                type: string
+                format: uuid
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1530,6 +1735,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1538,6 +1747,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var w;function T(){return(T=e((()=>{w=`openapi: 3.0.3
 info:
   title: Orders
@@ -1564,6 +1776,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1572,6 +1788,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1592,17 +1816,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
-            X-Rate-Limit-Remaining:
-              required: true
+            X-Request-Id:
               schema:
-                type: integer
-                minimum: 0
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1612,7 +1835,10 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+            application/xml:
+              schema:
+                type: string
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1630,6 +1856,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1638,6 +1868,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var E;function D(){return(D=e((()=>{E=`openapi: 3.0.3
 info:
   title: Orders
@@ -1664,6 +1897,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1672,6 +1909,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1692,12 +1937,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1707,7 +1956,7 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1725,6 +1974,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1733,6 +1986,9 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
 `})))()}var O;function k(){return(k=e((()=>{O=`openapi: 3.0.3
 info:
   title: Orders
@@ -1759,6 +2015,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1767,6 +2027,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1787,12 +2055,134 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+        "400":
+          description: Invalid request.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    basic:
+      type: http
+      scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            orders:read: Read orders
+            orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var A;function j(){return(j=e((()=>{A=`openapi: 3.0.3
+info:
+  title: Orders
+  version: 1.0.0
+security:
+  - api_key: []
+paths:
+  /orders/{orderId}:
+    post:
+      operationId: updateOrder
+      summary: Update an order
+      description: Replaces the order.
+      x-rate-limit: 100
+      security:
+        - oauth:
+            - orders:write
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: dryRun
+          in: query
+          schema:
+            type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
+        - name: X-Request-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Trace
+          in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
+          schema:
+            type: string
+      requestBody:
+        description: New order state.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - new
+                    - paid
+                note:
+                  type: string
+      responses:
+        "200":
+          description: Updated order.
+          headers:
+            ETag:
+              schema:
+                type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -1802,10 +2192,7 @@ paths:
                     type: string
                   status:
                     type: string
-                  updatedAt:
-                    type: string
-                    format: date-time
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1823,6 +2210,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -1831,7 +2222,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var he;function A(){return(A=e((()=>{he=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var M;function N(){return(N=e((()=>{M=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -1857,92 +2251,10 @@ paths:
           in: query
           schema:
             type: boolean
-        - name: X-Request-Id
-          in: header
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: X-Trace
-          in: header
-          schema:
-            type: string
-      requestBody:
-        description: New order state.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum:
-                    - new
-                    - paid
-                note:
-                  type: string
-      responses:
-        '200':
-          description: Updated order.
-          headers:
-            ETag:
-              schema:
-                type: string
-        '400':
-          description: Invalid request.
-          content:
-            application/problem+json:
-              schema:
-                type: object
-                properties:
-                  title:
-                    type: string
-components:
-  securitySchemes:
-    api_key:
-      type: apiKey
-      in: header
-      name: X-API-Key
-    basic:
-      type: http
-      scheme: basic
-    oauth:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://auth.example.com/token
-          scopes:
-            orders:read: Read orders
-            orders:write: Modify orders
-`})))()}var j;function M(){return(M=e((()=>{j=`openapi: 3.0.3
-info:
-  title: Orders
-  version: 1.0.0
-security:
-  - api_key: []
-paths:
-  /orders/{orderId}:
-    post:
-      operationId: updateOrder
-      summary: Update an order
-      description: Replaces the order.
-      x-rate-limit: 100
-      security:
-        - oauth:
-            - orders:write
-      parameters:
-        - name: orderId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: dryRun
+        - name: expand
           in: query
           schema:
-            type: boolean
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -1951,6 +2263,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -1971,15 +2291,19 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json: {}
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -1997,6 +2321,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -2005,7 +2333,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var N;function P(){return(P=e((()=>{N=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var P;function F(){return(F=e((()=>{P=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -2031,6 +2362,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -2039,6 +2374,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -2059,8 +2402,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
+          headers:
+            ETag:
+              schema:
+                type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -2070,7 +2421,9 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+                  total:
+                    type: number
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -2088,6 +2441,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -2096,7 +2453,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var F;function I(){return(I=e((()=>{F=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var I;function L(){return(L=e((()=>{I=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -2122,6 +2482,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -2130,6 +2494,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -2150,12 +2522,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -2165,21 +2541,8 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+        "400":
           description: Invalid request.
-          content:
-            application/problem+json:
-              schema:
-                type: object
-                properties:
-                  title:
-                    type: string
-        '404':
-          description: Order not found.
-          headers:
-            X-Trace:
-              schema:
-                type: string
           content:
             application/problem+json:
               schema:
@@ -2196,6 +2559,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -2204,7 +2571,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var L;function R(){return(R=e((()=>{L=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var R;function z(){return(z=e((()=>{R=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -2230,6 +2600,10 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -2238,6 +2612,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -2258,12 +2640,136 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    status:
+                      type: string
+        "400":
+          description: Invalid request.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    basic:
+      type: http
+      scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            orders:read: Read orders
+            orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var ge;function _e(){return(_e=e((()=>{ge=`openapi: 3.0.3
+info:
+  title: Orders
+  version: 1.0.0
+security:
+  - api_key: []
+paths:
+  /orders/{orderId}:
+    post:
+      operationId: updateOrder
+      summary: Update an order
+      description: Replaces the order.
+      x-rate-limit: 100
+      security:
+        - oauth:
+            - orders:write
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: dryRun
+          in: query
+          schema:
+            type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
+        - name: X-Request-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Trace
+          in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
+          schema:
+            type: string
+      requestBody:
+        description: New order state.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - new
+                    - paid
+                note:
+                  type: string
+      responses:
+        "200":
+          description: Updated order.
+          headers:
+            ETag:
+              schema:
+                type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -2273,7 +2779,8 @@ paths:
                     type: string
                   status:
                     type: string
-        '400':
+              x-codec: gzip
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -2282,8 +2789,6 @@ paths:
                 properties:
                   title:
                     type: string
-        4XX:
-          description: Any client error.
 components:
   securitySchemes:
     api_key:
@@ -2293,6 +2798,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -2301,7 +2810,10 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var z;function ge(){return(ge=e((()=>{z=`openapi: 3.0.3
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var ve;function ye(){return(ye=e((()=>{ve=`openapi: 3.0.3
 info:
   title: Orders
   version: 1.0.0
@@ -2327,102 +2839,10 @@ paths:
           in: query
           schema:
             type: boolean
-        - name: X-Request-Id
-          in: header
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: X-Trace
-          in: header
-          schema:
-            type: string
-      requestBody:
-        description: New order state.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum:
-                    - new
-                    - paid
-                note:
-                  type: string
-      responses:
-        '200':
-          description: The order after the update.
-          headers:
-            ETag:
-              schema:
-                type: string
-            X-Rate-Limit-Remaining:
-              schema:
-                type: integer
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-        '400':
-          description: Invalid request.
-          content:
-            application/problem+json:
-              schema:
-                type: object
-                properties:
-                  title:
-                    type: string
-components:
-  securitySchemes:
-    api_key:
-      type: apiKey
-      in: header
-      name: X-API-Key
-    basic:
-      type: http
-      scheme: basic
-    oauth:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://auth.example.com/token
-          scopes:
-            orders:read: Read orders
-            orders:write: Modify orders
-`})))()}var _e;function ve(){return(ve=e((()=>{_e=`openapi: 3.0.3
-info:
-  title: Orders
-  version: 1.0.0
-security:
-  - api_key: []
-paths:
-  /orders/{orderId}:
-    post:
-      operationId: updateOrder
-      summary: Update an order
-      description: Replaces the order.
-      x-rate-limit: 100
-      security:
-        - oauth:
-            - orders:write
-      parameters:
-        - name: orderId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: dryRun
+        - name: expand
           in: query
           schema:
-            type: boolean
+            type: string
         - name: X-Request-Id
           in: header
           required: true
@@ -2431,6 +2851,14 @@ paths:
             format: uuid
         - name: X-Trace
           in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
           schema:
             type: string
       requestBody:
@@ -2451,12 +2879,16 @@ paths:
                 note:
                   type: string
       responses:
-        '200':
+        "200":
           description: Updated order.
           headers:
             ETag:
               schema:
                 type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
           content:
             application/json:
               schema:
@@ -2466,9 +2898,7 @@ paths:
                     type: string
                   status:
                     type: string
-              x-codec: br
-          x-cache: public
-        '400':
+        "400":
           description: Invalid request.
           content:
             application/problem+json:
@@ -2477,7 +2907,6 @@ paths:
                 properties:
                   title:
                     type: string
-        x-rate-limited: true
 components:
   securitySchemes:
     api_key:
@@ -2487,6 +2916,10 @@ components:
     basic:
       type: http
       scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     oauth:
       type: oauth2
       flows:
@@ -2495,4 +2928,127 @@ components:
           scopes:
             orders:read: Read orders
             orders:write: Modify orders
-`})))()}var ye,be,B,V,H,U,W,G,K,q,J,Y,X,Z,Q,$,xe;function Se(){return(Se=e((()=>{oe(),ce(),ue(),fe(),me(),r(),a(),s(),l(),d(),p(),h(),_(),y(),x(),C(),T(),D(),k(),A(),M(),P(),I(),R(),ge(),ve(),te(),t(),re(),ye=ee(ne(Object.assign({"../../../../samples/openapi-diffs/responses/01-response-added/before.yaml":ae,"../../../../samples/openapi-diffs/responses/02-response-code-case-renamed/before.yaml":se,"../../../../samples/openapi-diffs/responses/03-response-description-changed/before.yaml":le,"../../../../samples/openapi-diffs/responses/04-response-header-added/before.yaml":de,"../../../../samples/openapi-diffs/responses/05-response-media-type-removed/before.yaml":pe,"../../../../samples/openapi-diffs/responses/06-response-schema-property-added/before.yaml":n,"../../../../samples/openapi-diffs/responses/07-response-body-only-media-type-removed/before.yaml":i,"../../../../samples/openapi-diffs/responses/08-response-body-only-schema-removed/before.yaml":o,"../../../../samples/openapi-diffs/responses/09-response-all-headers-removed/before.yaml":c,"../../../../samples/openapi-diffs/responses/10-response-added-with-headers-and-body/before.yaml":u,"../../../../samples/openapi-diffs/responses/11-response-code-renamed-and-description-changed/before.yaml":f,"../../../../samples/openapi-diffs/responses/12-response-changes-of-different-severity/before.yaml":m,"../../../../samples/openapi-diffs/responses/13-responses-and-response-extensions-changed/before.yaml":g}),Object.assign({"../../../../samples/openapi-diffs/responses/01-response-added/after.yaml":v,"../../../../samples/openapi-diffs/responses/02-response-code-case-renamed/after.yaml":b,"../../../../samples/openapi-diffs/responses/03-response-description-changed/after.yaml":S,"../../../../samples/openapi-diffs/responses/04-response-header-added/after.yaml":w,"../../../../samples/openapi-diffs/responses/05-response-media-type-removed/after.yaml":E,"../../../../samples/openapi-diffs/responses/06-response-schema-property-added/after.yaml":O,"../../../../samples/openapi-diffs/responses/07-response-body-only-media-type-removed/after.yaml":he,"../../../../samples/openapi-diffs/responses/08-response-body-only-schema-removed/after.yaml":j,"../../../../samples/openapi-diffs/responses/09-response-all-headers-removed/after.yaml":N,"../../../../samples/openapi-diffs/responses/10-response-added-with-headers-and-body/after.yaml":F,"../../../../samples/openapi-diffs/responses/11-response-code-renamed-and-description-changed/after.yaml":L,"../../../../samples/openapi-diffs/responses/12-response-changes-of-different-severity/after.yaml":z,"../../../../samples/openapi-diffs/responses/13-responses-and-response-extensions-changed/after.yaml":_e}))),be={title:`OpenAPI Operation Diffs Suite/Responses Samples`,component:ie},B=e=>{let t=ye[e];if(!t)throw Error(`Sample case not found: ${e}`);return{name:e,args:{caseId:e,beforeYaml:t.beforeYaml,afterYaml:t.afterYaml}}},V=B(`01-response-added`),H=B(`02-response-code-case-renamed`),U=B(`03-response-description-changed`),W=B(`04-response-header-added`),G=B(`05-response-media-type-removed`),K=B(`06-response-schema-property-added`),q=B(`07-response-body-only-media-type-removed`),J=B(`08-response-body-only-schema-removed`),Y=B(`09-response-all-headers-removed`),X=B(`10-response-added-with-headers-and-body`),Z=B(`11-response-code-renamed-and-description-changed`),Q=B(`12-response-changes-of-different-severity`),$=B(`13-responses-and-response-extensions-changed`),V.parameters={...V.parameters,docs:{...V.parameters?.docs,source:{originalSource:`createCaseStory("01-response-added")`,...V.parameters?.docs?.source}}},H.parameters={...H.parameters,docs:{...H.parameters?.docs,source:{originalSource:`createCaseStory("02-response-code-case-renamed")`,...H.parameters?.docs?.source}}},U.parameters={...U.parameters,docs:{...U.parameters?.docs,source:{originalSource:`createCaseStory("03-response-description-changed")`,...U.parameters?.docs?.source}}},W.parameters={...W.parameters,docs:{...W.parameters?.docs,source:{originalSource:`createCaseStory("04-response-header-added")`,...W.parameters?.docs?.source}}},G.parameters={...G.parameters,docs:{...G.parameters?.docs,source:{originalSource:`createCaseStory("05-response-media-type-removed")`,...G.parameters?.docs?.source}}},K.parameters={...K.parameters,docs:{...K.parameters?.docs,source:{originalSource:`createCaseStory("06-response-schema-property-added")`,...K.parameters?.docs?.source}}},q.parameters={...q.parameters,docs:{...q.parameters?.docs,source:{originalSource:`createCaseStory("07-response-body-only-media-type-removed")`,...q.parameters?.docs?.source}}},J.parameters={...J.parameters,docs:{...J.parameters?.docs,source:{originalSource:`createCaseStory("08-response-body-only-schema-removed")`,...J.parameters?.docs?.source}}},Y.parameters={...Y.parameters,docs:{...Y.parameters?.docs,source:{originalSource:`createCaseStory("09-response-all-headers-removed")`,...Y.parameters?.docs?.source}}},X.parameters={...X.parameters,docs:{...X.parameters?.docs,source:{originalSource:`createCaseStory("10-response-added-with-headers-and-body")`,...X.parameters?.docs?.source}}},Z.parameters={...Z.parameters,docs:{...Z.parameters?.docs,source:{originalSource:`createCaseStory("11-response-code-renamed-and-description-changed")`,...Z.parameters?.docs?.source}}},Q.parameters={...Q.parameters,docs:{...Q.parameters?.docs,source:{originalSource:`createCaseStory("12-response-changes-of-different-severity")`,...Q.parameters?.docs?.source}}},$.parameters={...$.parameters,docs:{...$.parameters?.docs,source:{originalSource:`createCaseStory("13-responses-and-response-extensions-changed")`,...$.parameters?.docs?.source}}},xe=[`Case_01_response_added`,`Case_02_response_code_case_renamed`,`Case_03_response_description_changed`,`Case_04_response_header_added`,`Case_05_response_media_type_removed`,`Case_06_response_schema_property_added`,`Case_07_response_body_only_media_type_removed`,`Case_08_response_body_only_schema_removed`,`Case_09_response_all_headers_removed`,`Case_10_response_added_with_headers_and_body`,`Case_11_response_code_renamed_and_description_changed`,`Case_12_response_changes_of_different_severity`,`Case_13_responses_and_response_extensions_changed`]})))()}Se();export{V as Case_01_response_added,H as Case_02_response_code_case_renamed,U as Case_03_response_description_changed,W as Case_04_response_header_added,G as Case_05_response_media_type_removed,K as Case_06_response_schema_property_added,q as Case_07_response_body_only_media_type_removed,J as Case_08_response_body_only_schema_removed,Y as Case_09_response_all_headers_removed,X as Case_10_response_added_with_headers_and_body,Z as Case_11_response_code_renamed_and_description_changed,Q as Case_12_response_changes_of_different_severity,$ as Case_13_responses_and_response_extensions_changed,xe as __namedExportsOrder,be as default};
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var be;function xe(){return(xe=e((()=>{be=`openapi: 3.0.3
+info:
+  title: Orders
+  version: 1.0.0
+security:
+  - api_key: []
+paths:
+  /orders/{orderId}:
+    post:
+      operationId: updateOrder
+      summary: Update an order
+      description: Replaces the order.
+      x-rate-limit: 100
+      security:
+        - oauth:
+            - orders:write
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: dryRun
+          in: query
+          schema:
+            type: boolean
+        - name: expand
+          in: query
+          schema:
+            type: string
+        - name: X-Request-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Trace
+          in: header
+          schema:
+            type: string
+        - name: session
+          in: cookie
+          schema:
+            type: string
+        - name: theme
+          in: cookie
+          schema:
+            type: string
+      requestBody:
+        description: New order state.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - new
+                    - paid
+                note:
+                  type: string
+      responses:
+        "200":
+          description: Updated order.
+          headers:
+            ETag:
+              schema:
+                type: string
+            X-Request-Id:
+              schema:
+                type: string
+                format: uuid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                x-codec: none
+              x-codec: gzip
+        "400":
+          description: Invalid request.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    basic:
+      type: http
+      scheme: basic
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/token
+          scopes:
+            orders:read: Read orders
+            orders:write: Modify orders
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
+`})))()}var Se,Ce,B,V,H,U,W,G,K,q,J,Y,X,Z,Q,$,we;function Te(){return(Te=e((()=>{le(),de(),pe(),he(),r(),a(),s(),l(),d(),p(),h(),_(),y(),x(),C(),T(),D(),k(),j(),N(),F(),L(),z(),_e(),ye(),xe(),te(),t(),ie(),oe(),Se=ee(ne(Object.assign({"../../../../samples/openapi-diffs/response-body/01-body-added/before.yaml":ce,"../../../../samples/openapi-diffs/response-body/02-body-removed/before.yaml":ue,"../../../../samples/openapi-diffs/response-body/08-media-type-added/before.yaml":fe,"../../../../samples/openapi-diffs/response-body/09-media-type-removed/before.yaml":me,"../../../../samples/openapi-diffs/response-body/10-media-type-renamed/before.yaml":n,"../../../../samples/openapi-diffs/response-body/15-schema-added/before.yaml":i,"../../../../samples/openapi-diffs/response-body/16-schema-removed/before.yaml":o,"../../../../samples/openapi-diffs/response-body/17-schema-property-added/before.yaml":c,"../../../../samples/openapi-diffs/response-body/18-schema-property-removed/before.yaml":u,"../../../../samples/openapi-diffs/response-body/19-schema-type-changed/before.yaml":f,"../../../../samples/openapi-diffs/response-body/22-media-type-extension-added/before.yaml":m,"../../../../samples/openapi-diffs/response-body/23-media-type-extension-removed/before.yaml":g,"../../../../samples/openapi-diffs/response-body/25-media-type-extension-shadows-schema-root/before.yaml":v}),Object.assign({"../../../../samples/openapi-diffs/response-body/01-body-added/after.yaml":b,"../../../../samples/openapi-diffs/response-body/02-body-removed/after.yaml":S,"../../../../samples/openapi-diffs/response-body/08-media-type-added/after.yaml":w,"../../../../samples/openapi-diffs/response-body/09-media-type-removed/after.yaml":E,"../../../../samples/openapi-diffs/response-body/10-media-type-renamed/after.yaml":O,"../../../../samples/openapi-diffs/response-body/15-schema-added/after.yaml":A,"../../../../samples/openapi-diffs/response-body/16-schema-removed/after.yaml":M,"../../../../samples/openapi-diffs/response-body/17-schema-property-added/after.yaml":P,"../../../../samples/openapi-diffs/response-body/18-schema-property-removed/after.yaml":I,"../../../../samples/openapi-diffs/response-body/19-schema-type-changed/after.yaml":R,"../../../../samples/openapi-diffs/response-body/22-media-type-extension-added/after.yaml":ge,"../../../../samples/openapi-diffs/response-body/23-media-type-extension-removed/after.yaml":ve,"../../../../samples/openapi-diffs/response-body/25-media-type-extension-shadows-schema-root/after.yaml":be}))),Ce={title:`OpenAPI Operation Diffs Suite/Response Body`,component:se,argTypes:ae,args:re},B=e=>{let t=Se[e];if(!t)throw Error(`Sample case not found: ${e}`);return{name:e,args:{caseId:e,beforeYaml:t.beforeYaml,afterYaml:t.afterYaml}}},V=B(`01-body-added`),H=B(`02-body-removed`),U=B(`08-media-type-added`),W=B(`09-media-type-removed`),G=B(`10-media-type-renamed`),K=B(`15-schema-added`),q=B(`16-schema-removed`),J=B(`17-schema-property-added`),Y=B(`18-schema-property-removed`),X=B(`19-schema-type-changed`),Z=B(`22-media-type-extension-added`),Q=B(`23-media-type-extension-removed`),$=B(`25-media-type-extension-shadows-schema-root`),V.parameters={...V.parameters,docs:{...V.parameters?.docs,source:{originalSource:`createCaseStory("01-body-added")`,...V.parameters?.docs?.source}}},H.parameters={...H.parameters,docs:{...H.parameters?.docs,source:{originalSource:`createCaseStory("02-body-removed")`,...H.parameters?.docs?.source}}},U.parameters={...U.parameters,docs:{...U.parameters?.docs,source:{originalSource:`createCaseStory("08-media-type-added")`,...U.parameters?.docs?.source}}},W.parameters={...W.parameters,docs:{...W.parameters?.docs,source:{originalSource:`createCaseStory("09-media-type-removed")`,...W.parameters?.docs?.source}}},G.parameters={...G.parameters,docs:{...G.parameters?.docs,source:{originalSource:`createCaseStory("10-media-type-renamed")`,...G.parameters?.docs?.source}}},K.parameters={...K.parameters,docs:{...K.parameters?.docs,source:{originalSource:`createCaseStory("15-schema-added")`,...K.parameters?.docs?.source}}},q.parameters={...q.parameters,docs:{...q.parameters?.docs,source:{originalSource:`createCaseStory("16-schema-removed")`,...q.parameters?.docs?.source}}},J.parameters={...J.parameters,docs:{...J.parameters?.docs,source:{originalSource:`createCaseStory("17-schema-property-added")`,...J.parameters?.docs?.source}}},Y.parameters={...Y.parameters,docs:{...Y.parameters?.docs,source:{originalSource:`createCaseStory("18-schema-property-removed")`,...Y.parameters?.docs?.source}}},X.parameters={...X.parameters,docs:{...X.parameters?.docs,source:{originalSource:`createCaseStory("19-schema-type-changed")`,...X.parameters?.docs?.source}}},Z.parameters={...Z.parameters,docs:{...Z.parameters?.docs,source:{originalSource:`createCaseStory("22-media-type-extension-added")`,...Z.parameters?.docs?.source}}},Q.parameters={...Q.parameters,docs:{...Q.parameters?.docs,source:{originalSource:`createCaseStory("23-media-type-extension-removed")`,...Q.parameters?.docs?.source}}},$.parameters={...$.parameters,docs:{...$.parameters?.docs,source:{originalSource:`createCaseStory("25-media-type-extension-shadows-schema-root")`,...$.parameters?.docs?.source}}},we=[`Case_01_body_added`,`Case_02_body_removed`,`Case_08_media_type_added`,`Case_09_media_type_removed`,`Case_10_media_type_renamed`,`Case_15_schema_added`,`Case_16_schema_removed`,`Case_17_schema_property_added`,`Case_18_schema_property_removed`,`Case_19_schema_type_changed`,`Case_22_media_type_extension_added`,`Case_23_media_type_extension_removed`,`Case_25_media_type_extension_shadows_schema_root`]})))()}Te();export{V as Case_01_body_added,H as Case_02_body_removed,U as Case_08_media_type_added,W as Case_09_media_type_removed,G as Case_10_media_type_renamed,K as Case_15_schema_added,q as Case_16_schema_removed,J as Case_17_schema_property_added,Y as Case_18_schema_property_removed,X as Case_19_schema_type_changed,Z as Case_22_media_type_extension_added,Q as Case_23_media_type_extension_removed,$ as Case_25_media_type_extension_shadows_schema_root,we as __namedExportsOrder,Ce as default};

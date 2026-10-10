@@ -2,6 +2,20 @@ import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
     component: ({ sampleYaml, path, method, displayMode, noHeading }: import('./OpenApiSampleStory').OpenApiSampleStoryProps) => import("react").JSX.Element;
+    argTypes: {
+        readonly displayMode: {
+            readonly control: {
+                readonly type: "select";
+            };
+            readonly options: readonly import('../..').DisplayMode[];
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
+    };
+    args: {
+        displayMode: import('../..').DisplayMode;
+    };
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

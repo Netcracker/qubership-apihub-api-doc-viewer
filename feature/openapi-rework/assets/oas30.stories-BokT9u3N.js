@@ -1,4 +1,4 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{a as t,i as n,n as r,r as i,t as a}from"./openapi-suite-utils-CXzw5vvh.js";var o;function s(){return(s=e((()=>{o=`openapi: 3.0.3
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{n as t,r as n,t as r}from"./openapi-story-args-BDyYngoO.js";import{a as i,i as a,n as o,r as s,t as c}from"./openapi-suite-utils-CXzw5vvh.js";var l;function u(){return(u=e((()=>{l=`openapi: 3.0.3
 info:
   title: Pet store (full operation, OAS 3.0)
   version: 1.0.0
@@ -189,7 +189,7 @@ components:
           type: string
         status:
           type: integer
-`})))()}var c;function l(){return(l=e((()=>{c=`openapi: 3.0.3
+`})))()}var d;function f(){return(f=e((()=>{d=`openapi: 3.0.3
 info:
   title: Minimal operation (OAS 3.0)
   version: 1.0.0
@@ -199,7 +199,7 @@ paths:
       responses:
         '204':
           description: Service is healthy.
-`})))()}var u;function d(){return(d=e((()=>{u=`openapi: 3.0.3
+`})))()}var p;function m(){return(m=e((()=>{p=`openapi: 3.0.3
 info:
   title: Security alternatives (OAS 3.0)
   version: 1.0.0
@@ -241,7 +241,7 @@ components:
     oidc:
       type: openIdConnect
       openIdConnectUrl: https://auth.example.com/.well-known/openid-configuration
-`})))()}var f;function p(){return(p=e((()=>{f=`openapi: 3.0.3
+`})))()}var h;function g(){return(g=e((()=>{h=`openapi: 3.0.3
 info:
   title: Parameter sources (OAS 3.0)
   version: 1.0.0
@@ -308,7 +308,7 @@ components:
         minimum: 1
         maximum: 100
         default: 20
-`})))()}var m;function h(){return(h=e((()=>{m=`openapi: 3.0.3
+`})))()}var _;function v(){return(v=e((()=>{_=`openapi: 3.0.3
 info:
   title: Response code palette (OAS 3.0)
   version: 1.0.0
@@ -339,8 +339,6 @@ paths:
           description: Unavailable (5XX - red).
         default:
           description: Anything else (grey).
-`})))()}var g,_,v,y,b,x,S,C,w,T,E,D,O;function k(){return(k=e((()=>{s(),l(),d(),p(),h(),t(),r(),g=a(Object.assign({"../../../../samples/openapi/oas30/01-full-operation/sample.yaml":o,"../../../../samples/openapi/oas30/02-minimal-operation/sample.yaml":c,"../../../../samples/openapi/oas30/03-security-alternatives/sample.yaml":u,"../../../../samples/openapi/oas30/04-parameters-sources/sample.yaml":f,"../../../../samples/openapi/oas30/05-response-codes-palette/sample.yaml":m})),_={title:`OpenAPI Operation Suite/OAS 3.0`,component:n},v=(e,t,n,r={},a=``)=>({name:`${e} ${n.toUpperCase()}${a}`,args:{caseId:e,sampleYaml:i(g,e),path:t,method:n,...r}}),y=v(`01-full-operation`,`/pets/{petId}/photos`,`post`),b=v(`01-full-operation`,`/pets/{petId}/photos`,`post`,{displayMode:`simple`},` (simple mode)`),x=v(`01-full-operation`,`/pets/{petId}/photos`,`post`,{noHeading:!0},` (no heading)`),S=v(`02-minimal-operation`,`/health`,`get`),C=v(`03-security-alternatives`,`/reports`,`get`),w=v(`03-security-alternatives`,`/reports`,`post`),T=v(`03-security-alternatives`,`/reports`,`delete`),E=v(`04-parameters-sources`,`/orders/{orderId}`,`get`),D=v(`05-response-codes-palette`,`/palette`,`get`),y.parameters={...y.parameters,docs:{...y.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}/photos", "post")`,...y.parameters?.docs?.source}}},b.parameters={...b.parameters,docs:{...b.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}/photos", "post", {
-  displayMode: "simple"
-}, " (simple mode)")`,...b.parameters?.docs?.source}}},x.parameters={...x.parameters,docs:{...x.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}/photos", "post", {
+`})))()}var y,b,x,S,C,w,T,E,D,O,k,A;function j(){return(j=e((()=>{u(),f(),m(),g(),v(),n(),i(),o(),y=c(Object.assign({"../../../../samples/openapi/oas30/01-full-operation/sample.yaml":l,"../../../../samples/openapi/oas30/02-minimal-operation/sample.yaml":d,"../../../../samples/openapi/oas30/03-security-alternatives/sample.yaml":p,"../../../../samples/openapi/oas30/04-parameters-sources/sample.yaml":h,"../../../../samples/openapi/oas30/05-response-codes-palette/sample.yaml":_})),b={title:`OpenAPI Operation Suite/OAS 3.0`,component:a,argTypes:r,args:t},x=(e,t,n,r={},i=``)=>({name:`${e} ${n.toUpperCase()}${i}`,args:{caseId:e,sampleYaml:s(y,e),path:t,method:n,...r}}),S=x(`01-full-operation`,`/pets/{petId}/photos`,`post`),C=x(`01-full-operation`,`/pets/{petId}/photos`,`post`,{noHeading:!0},` (no heading)`),w=x(`02-minimal-operation`,`/health`,`get`),T=x(`03-security-alternatives`,`/reports`,`get`),E=x(`03-security-alternatives`,`/reports`,`post`),D=x(`03-security-alternatives`,`/reports`,`delete`),O=x(`04-parameters-sources`,`/orders/{orderId}`,`get`),k=x(`05-response-codes-palette`,`/palette`,`get`),S.parameters={...S.parameters,docs:{...S.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}/photos", "post")`,...S.parameters?.docs?.source}}},C.parameters={...C.parameters,docs:{...C.parameters?.docs,source:{originalSource:`createCaseStory("01-full-operation", "/pets/{petId}/photos", "post", {
   noHeading: true
-}, " (no heading)")`,...x.parameters?.docs?.source}}},S.parameters={...S.parameters,docs:{...S.parameters?.docs,source:{originalSource:`createCaseStory("02-minimal-operation", "/health", "get")`,...S.parameters?.docs?.source}}},C.parameters={...C.parameters,docs:{...C.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "get")`,...C.parameters?.docs?.source}}},w.parameters={...w.parameters,docs:{...w.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "post")`,...w.parameters?.docs?.source}}},T.parameters={...T.parameters,docs:{...T.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "delete")`,...T.parameters?.docs?.source}}},E.parameters={...E.parameters,docs:{...E.parameters?.docs,source:{originalSource:`createCaseStory("04-parameters-sources", "/orders/{orderId}", "get")`,...E.parameters?.docs?.source}}},D.parameters={...D.parameters,docs:{...D.parameters?.docs,source:{originalSource:`createCaseStory("05-response-codes-palette", "/palette", "get")`,...D.parameters?.docs?.source}}},O=[`Case_01_full_operation`,`Case_01_full_operation_simple_mode`,`Case_01_full_operation_no_heading`,`Case_02_minimal_operation`,`Case_03_security_inherited_from_document`,`Case_03_security_three_alternatives`,`Case_03_security_disabled_deprecated`,`Case_04_parameters_sources`,`Case_05_response_codes_palette`]})))()}k();export{y as Case_01_full_operation,x as Case_01_full_operation_no_heading,b as Case_01_full_operation_simple_mode,S as Case_02_minimal_operation,T as Case_03_security_disabled_deprecated,C as Case_03_security_inherited_from_document,w as Case_03_security_three_alternatives,E as Case_04_parameters_sources,D as Case_05_response_codes_palette,O as __namedExportsOrder,_ as default};
+}, " (no heading)")`,...C.parameters?.docs?.source}}},w.parameters={...w.parameters,docs:{...w.parameters?.docs,source:{originalSource:`createCaseStory("02-minimal-operation", "/health", "get")`,...w.parameters?.docs?.source}}},T.parameters={...T.parameters,docs:{...T.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "get")`,...T.parameters?.docs?.source}}},E.parameters={...E.parameters,docs:{...E.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "post")`,...E.parameters?.docs?.source}}},D.parameters={...D.parameters,docs:{...D.parameters?.docs,source:{originalSource:`createCaseStory("03-security-alternatives", "/reports", "delete")`,...D.parameters?.docs?.source}}},O.parameters={...O.parameters,docs:{...O.parameters?.docs,source:{originalSource:`createCaseStory("04-parameters-sources", "/orders/{orderId}", "get")`,...O.parameters?.docs?.source}}},k.parameters={...k.parameters,docs:{...k.parameters?.docs,source:{originalSource:`createCaseStory("05-response-codes-palette", "/palette", "get")`,...k.parameters?.docs?.source}}},A=[`Case_01_full_operation`,`Case_01_full_operation_no_heading`,`Case_02_minimal_operation`,`Case_03_security_inherited_from_document`,`Case_03_security_three_alternatives`,`Case_03_security_disabled_deprecated`,`Case_04_parameters_sources`,`Case_05_response_codes_palette`]})))()}j();export{S as Case_01_full_operation,C as Case_01_full_operation_no_heading,w as Case_02_minimal_operation,D as Case_03_security_disabled_deprecated,T as Case_03_security_inherited_from_document,E as Case_03_security_three_alternatives,O as Case_04_parameters_sources,k as Case_05_response_codes_palette,A as __namedExportsOrder,b as default};
