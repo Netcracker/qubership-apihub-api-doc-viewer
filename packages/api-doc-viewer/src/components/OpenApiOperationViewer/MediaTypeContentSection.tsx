@@ -27,6 +27,8 @@ export const WRAPPED_BODY_SCHEMA_TITLE = 'Type'
 type MediaTypeContentSectionProps = {
   precededBy: PrecededBy
   testId: string
+  /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */
+  optionTestIdPrefix: string
   mediaTypes: readonly MediaTypeNode[]
   /** Selected media-type node id; `undefined` = the first option. */
   selectedId: string | undefined
@@ -48,7 +50,7 @@ type MediaTypeContentSectionProps = {
  */
 export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props) => {
   const {
-    precededBy, testId, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
+    precededBy, testId, optionTestIdPrefix, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
     isRequiredOnSide, requiredTagDiff, renderBeforeSchema,
   } = props
   const layoutMode = useLayoutMode()
@@ -57,11 +59,11 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
   const options: SelectorOption<MediaTypeNode>[] = useMemo(() => mediaTypes.map(mediaType => ({
     node: mediaType,
     title: (side: LayoutSide) => OpenApiRowDiffs.MediaType.resolveSideTitle(mediaType, side),
-    testId: `media-type-${String(mediaType.key)}`,
+    testId: `${optionTestIdPrefix}-${String(mediaType.key)}`,
     ...(isOpenApiTreeNodeWithDiffs(mediaType)
       ? { diffs: mediaType.diffs, diffsSummary: mediaType.diffsSummary, descendantDiffsSummary: mediaType.descendantDiffsSummary }
       : {}),
-  })), [mediaTypes])
+  })), [mediaTypes, optionTestIdPrefix])
   const selectedOption = options.find(option => option.node.id === selectedId) ?? options[0] ?? null
   const selected = selectedOption?.node
 

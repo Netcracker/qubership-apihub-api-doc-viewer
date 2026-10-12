@@ -11,6 +11,10 @@ export type OpenApiSampleStoryProps = {
   method: string;
   displayMode?: DisplayMode;
   noHeading?: boolean;
+  /** Selector options the case covers (security alternative, response code, media type), in order. */
+  switchTo?: readonly string[];
+  /** Select `switchTo` on mount (story `play`); off = the viewer's initial selection. */
+  autoSwitch?: boolean;
 };
 
 export const OpenApiSampleStory = ({ sampleYaml, path, method, displayMode, noHeading }: OpenApiSampleStoryProps) => {

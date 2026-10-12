@@ -239,4 +239,4 @@ When the effective list switches between the document list `D` and the operation
 
 - [../features/oas-versions.md](../features/oas-versions.md#security) — 3.0 vs 3.1 differences
 - [../features/diffs.md](../features/diffs.md) — aggregators and severities
-- Fixtures: `packages/samples/openapi/oas30/03-security-alternatives/`, `oas31/03-security-mutual-tls-and-roles/`, `packages/samples/openapi-diffs/security/`
+- Fixtures: `packages/samples/openapi/oas30/fields/security/*` (one per scheme type), `oas30/structure/05–07-security-*`, `oas31/fields/security/*`, `packages/samples/openapi-diffs/security/`

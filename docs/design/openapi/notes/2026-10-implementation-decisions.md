@@ -46,10 +46,10 @@ Paths: `ndm/` = `packages/next-data-model/src/`, `viewer/` =
 
 | # | Decision | Rejected alternatives | Why |
 | --- | --- | --- | --- |
-| T1 | **Plain stories name the operation explicitly** (`path` + `method` per export); multi-operation fixtures export one story per operation. Display mode is a story control (default `detailed`); ITs capture every story in `detailed` and `simple` through the story arg (2026-10-10: the duplicated *simple mode* export was removed). | Relying on the default first operation; one export per display mode. | The default logs an error by contract and would pick the wrong operation in `03-security-alternatives`; a duplicated story per mode doubles sources. |
+| T1 | **The plain suite is generated** (2026-10-12) by `bin/generate-openapi-suite.mjs` from `bin/openapi-plain-case-definitions.mjs`: E2E section combinations (all pairs + consecutive windows + all sections), minimal operations, one field per case, document structure, and OAS 3.1 differences ([../features/plain-case-matrix.md](../features/plain-case-matrix.md)). Each story names its operation (`path` + `method`). Display mode, auto-switch, and no-heading are story controls; ITs capture every case in `detailed` and `simple` and select the case's options with `switchOpenApiOptions` (the combiner auto-switch pattern). | Nine hand-written multi-concern fixtures; one export per display mode. | Mixed fixtures were hard to review and hid ordering bugs (see the response-code order below). |
 | T2 | **The diffs suite is generated** (2026-10-10) by `bin/generate-openapi-diffs-suite.mjs` from `bin/openapi-diffs-case-definitions.mjs`: 251 cases in 11 folders, opposites adjacent, one shared case list per fragment family, the matrix in [../features/diffs-case-matrix.md](../features/diffs-case-matrix.md). Stories use `POST` and the first `paths` key of the after document. | Hand-written YAML pairs (the first 60 cases). | ~250 cases with shared ids across fragments cannot be kept consistent by hand. |
 | T3 | **Diff stories use api-diff's `DIFF_META_KEY` / `DIFFS_AGGREGATED_META_KEY`**, because `mergeOpenApiDocuments` already writes `DIFF_META_KEY`. | `TEST_DIFF_META_KEYS`. | One merge helper, no second `apiDiff` call. |
-| T4 | **IT story ids are derived from the Storybook title and export name** (`openapi-operation-suite-oas-3-0--case-01-full-operation`, …). They were not checked against a running `index.json`. **No baseline snapshots are committed**: Docker is not available in the implementing environment. | — | Run `npm run regenerate-screenshots` (or `regenerate-screenshots-single-suite`) and review the images before merging. |
+| T4 | **IT story ids are derived from the Storybook title and export name** (`openapi-operation-suite-oas-3-0-e2e--case-168-all-sections`, …). They were not checked against a running `index.json`. **No baseline snapshots are committed**: Docker is not available in the implementing environment. | — | Run `npm run regenerate-screenshots` (or `regenerate-screenshots-single-suite`) and review the images before merging. |
 | T5 | **The runtime check without a browser was a smoke render**: an `esbuild` bundle + `react-dom/server` over all 11 plain operations and 60 diff fixtures (2026-10-10: all 251 generated diff cases in both display modes) (no throw, no React error). It is not committed. | Adding jsdom to the repository. | No DOM test environment exists in the package; adding one is out of scope. |
 | T6 | **Viewer unit tests** (`packages/api-doc-viewer/tests/openapi-viewer-config.test.ts`) cover the section-order permutations, the Headers → Extensions → Body order, the response-code tones, and the HTTP method badge config. Data-layer tests cover the new side accessors. | — | CSS-free, fast, per the testing skill. |
 
@@ -72,6 +72,12 @@ Paths: `ndm/` = `packages/next-data-model/src/`, `viewer/` =
 - `bin/storybook-story-id-utils.mjs` imported `sanitize` from `@storybook/csf`, which is not
   installed (Storybook 9 ships it as `storybook/internal/csf`); every generator importing the util
   failed. Fixed to `storybook/internal/csf`.
+
+- **Response-code order bug (found by `oas30/structure/04-response-code-order`, fixed 2026-10-12).**
+  The transformer sorted codes canonically into an object, but JS enumerates integer-like keys
+  (`200`, `500`) before all other keys, so ranges (`2XX`) and `default` always came after every
+  numeric code. `OpenApiTreeBuilder` now sorts the `responses` node children with
+  `OpenApiResponseCode.compare` after the crawl (with-diffs inherits it); a unit test covers it.
 
 ## Still open
 

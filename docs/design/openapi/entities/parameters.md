@@ -376,4 +376,4 @@ only when that flips — e.g. the last header parameter removed while the reques
 
 - [responses.md](responses.md#headers) — response headers use the same synthesizer
 - [../features/diffs.md](../features/diffs.md)
-- Fixtures: `packages/samples/openapi/oas30/04-parameters-sources/`, `packages/samples/openapi-diffs/{path-parameters,query-parameters,request-headers,cookies,response-headers}/`
+- Fixtures: `packages/samples/openapi/oas30/fields/parameters/*` (one case per location), `oas30/structure/01-path-item-parameters-with-override/`, `packages/samples/openapi-diffs/{path-parameters,query-parameters,request-headers,cookies,response-headers}/`

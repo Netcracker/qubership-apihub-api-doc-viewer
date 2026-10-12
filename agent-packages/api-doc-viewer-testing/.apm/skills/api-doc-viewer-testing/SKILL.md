@@ -270,6 +270,17 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- OpenAPI Operation Suite (plain) — `node bin/generate-openapi-suite.mjs` (cases in
+  `bin/openapi-plain-case-definitions.mjs`) → recreates `packages/samples/openapi/`,
+  `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx` (Fields is split into semantic sub-groups),
+  `src/it/openapi-suite.<dialect>-<group>.it-test.ts`, and the generated block of
+  `docs/design/openapi/features/plain-case-matrix.md`. Groups: E2E section combinations, minimal,
+  fields, document structure (OAS 3.1: fields + structure, only what differs from 3.0). Cases list
+  `switchTo` option test ids (security alternative, response code, `request-media-type-*` /
+  `response-media-type-*`); `switchOpenApiOptions` (`src/utils/openapi/`) selects them from the story
+  `play` and from ITs via `waitForOpenApiOperationViewer(page, { switchTo })` — pure DOM, every
+  helper inside the function body (the combiner auto-switch contract). Story URL args encode
+  booleans as `!true` / `!false`.
 - OpenAPI Operation Diffs Suite — `node bin/generate-openapi-diffs-suite.mjs` (cases in
   `bin/openapi-diffs-case-definitions.mjs`) → recreates `packages/samples/openapi-diffs/` (fixtures +
   catalogues), `src/stories/openapi-diffs-suite/<category>.stories.tsx`,

@@ -13,6 +13,12 @@ change too. `M` = `diffsMetaKey`; `op` = `paths[path][method]`.
 
 ## Findings
 
+
+> The plain fixtures named in the evidence column below (`oas30/01-…`, `oas31/01-…` and similar)
+> were replaced on 2026-10-12 by the generated suite ([../features/plain-case-matrix.md](../features/plain-case-matrix.md)).
+> The behaviour they measured is covered there: E10 by `oas31/fields/schemas/01`–`02`, E11 by
+> `oas30/structure/01`, E12 by `oas31/structure/01`–`02`, E15 by `oas31/fields/schemas/08`.
+
 | Id | Finding | Fixture | Design consequence |
 | --- | --- | --- | --- |
 | E1 | A renamed path (`/orders/{orderId}` → `/orders/{id}`) is one `rename` in `paths[M]['/orders/{id}']` (`beforeKey`, `afterKey`); the merged document keys the path item by the **after** path. The renamed path parameter is a separate `name` `replace` on the parameter. | `path-parameters/03-entry-renamed` | Diffs viewer `operationKeys.path` is the merged key (Q14); the transformer turns the rename into an `address` replace. |

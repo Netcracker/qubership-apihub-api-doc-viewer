@@ -58,7 +58,7 @@ export interface OpenApiDialect {
 | Scopes of any other type | must be empty | MAY list **role names** | 3.0 → `'ignored'` (non-empty list: dev-mode warning, row hidden); 3.1 → `'roles'` (row `Required roles`) |
 | `mutualTLS` card | — (unknown type: shown as is, dev warning) | type label `Mutual TLS`, no detail rows | `securitySchemeTypes` |
 
-Fixtures: `oas30/03-security-alternatives`, `oas31/03-security-mutual-tls-and-roles`;
+Fixtures: `oas30/fields/security/*`, `oas31/fields/security/*`;
 diffs: `openapi-diffs/oas31/02-mutual-tls-alternative-added`, `oas31/04-role-scopes-added`.
 
 ### Responses
@@ -67,7 +67,7 @@ diffs: `openapi-diffs/oas31/02-mutual-tls-alternative-added`, `oas31/04-role-sco
 | --- | --- | --- | --- |
 | `responses` on an operation | required | optional | Section hidden when absent in both versions; 3.0 additionally logs a dev-mode warning (`isResponsesObjectRequired`). |
 
-Fixture: `oas31/02-no-responses`.
+Fixture: `oas31/fields/responses/01-no-responses`.
 
 ## Differences absorbed upstream (no OpenAPI-stack code)
 
@@ -75,15 +75,15 @@ Listed so that nobody adds code for them; each needs only a fixture.
 
 | Concern | OAS 3.0 | OAS 3.1 | Handled by | Fixture |
 | --- | --- | --- | --- | --- |
-| Reference Object siblings | ignored | `summary` / `description` override the target | `api-unifier` (`referenceObjectResolver(allowedOverrides)`) — the merged parameter / response already has the overriding description (E12) | `oas31/04-reference-overrides-and-path-items` |
+| Reference Object siblings | ignored | `summary` / `description` override the target | `api-unifier` (`referenceObjectResolver(allowedOverrides)`) — the merged parameter / response already has the overriding description (E12) | `oas31/structure/01-reference-description-overrides`, `02-components-path-items` |
 | `components.pathItems` | invalid (removed by the unifier with a validation error) | allowed | `api-unifier` | same |
 | Path-item `$ref` | allowed | allowed | `api-unifier` | same |
-| Nullable | `nullable: true` | `type: [T, 'null']` → unified to `anyOf: [T, {type: null}]` (E10) | JSON Schema stack (combiner selector) | `oas30/01-full-operation`, `oas31/01-full-operation` |
-| Exclusive bounds | boolean flags | numbers | JSON Schema value-range dialects | same |
-| Examples in schemas | `example` | `examples` (array) | JSON Schema `transformExample` | `oas31/01-full-operation` |
-| `const`, `contentMediaType`, `contentEncoding` | — | allowed | JSON Schema stack (`const` and `contentMediaType` are not displayed there: triage against JSON Schema coverage) | `oas31/01-full-operation` |
-| Enum without `type` | rare | common | unified to `type: any` with `enum` | `oas31/01-full-operation` |
-| Boolean schemas (`true` / `false`) | invalid | allowed | JSON Schema stack | `oas31/02-no-responses` (`data: true`) |
+| Nullable | `nullable: true` | `type: [T, 'null']` → unified to `anyOf: [T, {type: null}]` (E10) | JSON Schema stack (combiner selector) | `oas31/fields/schemas/01-nullable-type-array-parameter`, `02-nullable-type-array-body` |
+| Exclusive bounds | boolean flags | numbers | JSON Schema value-range dialects | `oas31/fields/schemas/03-numeric-exclusive-bounds` |
+| Examples in schemas | `example` | `examples` (array) | JSON Schema `transformExample` | `oas31/fields/schemas/04-examples-array` |
+| `const`, `contentMediaType`, `contentEncoding` | — | allowed | JSON Schema stack (`const` and `contentMediaType` are not displayed there: triage against JSON Schema coverage) | `oas31/fields/schemas/05-const`, `08-content-media-type-encoding` |
+| Enum without `type` | rare | common | unified to `type: any` with `enum` | `oas31/fields/schemas/06-enum-without-type` |
+| Boolean schemas (`true` / `false`) | invalid | allowed | JSON Schema stack | `oas31/fields/schemas/07-boolean-schema` |
 | `requestBody` on `GET` / `HEAD` / `DELETE` | "not supported" semantics | allowed | rendered as is in both | — |
 | `webhooks`, `jsonSchemaDialect`, `$schema` | — | allowed | out of scope (operation viewer) | — |
 

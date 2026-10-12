@@ -101,6 +101,7 @@ export const ResponseNodeViewer: FC<ResponseNodeViewerProps> = (props) => {
                   key={sectionId}
                   precededBy={sectionPrecededBy}
                   testId="openapi-response-body-section"
+                  optionTestIdPrefix="response-media-type"
                   mediaTypes={mediaTypes}
                   selectedId={selectedMediaTypeId}
                   onSelect={onSelectMediaType}

@@ -50,7 +50,7 @@ next-data-model (the transformer orders the nested nodes); the viewer only maps 
 
 **Canonical order** (`compare`): by class `1XX` → `5XX`; inside a class explicit codes ascending,
 then the range; then `unknown` keys in document order; `default` last. Document order is ignored on
-purpose — fixture `oas30/05-response-codes-palette` declares `500` first.
+purpose — fixture `oas30/structure/04-response-code-order` declares `500` first.
 
 ## Section header with the code selector
 
@@ -209,4 +209,4 @@ there just because its raw object exists
 
 - [../features/response-code-selector.md](../features/response-code-selector.md)
 - [../features/diffs.md](../features/diffs.md#request-body-and-responses)
-- Fixtures: `packages/samples/openapi/oas30/05-response-codes-palette/`, `packages/samples/openapi-diffs/responses/`
+- Fixtures: `packages/samples/openapi/oas30/fields/responses/{2xx,3xx,4xx,5xx}/*` (per code kind), `oas30/structure/04-response-code-order/`, `packages/samples/openapi-diffs/responses/`

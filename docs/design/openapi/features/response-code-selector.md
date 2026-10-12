@@ -93,7 +93,7 @@ Unchanged `Selector` semantics, fed from `response` nodes:
 ## Tests
 
 - Unit test (`packages/api-doc-viewer/tests/`): every class → tone; CSS-free module.
-- Story `OpenAPI Operation Suite/OAS 3.0/Response Codes Palette` (`oas30/05-response-codes-palette`):
+- Stories `OpenAPI Operation Suite/OAS 3.0/Document Structure` (`oas30/structure/04-response-code-order`) and `…/OAS 3.0/Fields/Responses/*` (`oas30/fields/responses/{2xx,3xx,4xx,5xx}/*`, one sub-group per code kind):
   all classes, ranges, `default`, canonical order; ITs click `response-code-404` and
   `response-code-default` to capture selected Warning and Neutral states.
 - Regression: AsyncAPI section / bindings and JSON Schema combiner screenshot ITs must not change.

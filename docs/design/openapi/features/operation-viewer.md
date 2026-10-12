@@ -327,7 +327,7 @@ Screenshot ITs click the selector options by these ids to cover non-default sele
 `waitForRenderingComplete(page)` (`api-doc-viewer-testing` skill → Flaky rendering). Add
 `waitForOpenApiOperationViewer(page)` / `waitForOpenApiOperationDiffsViewer(page)` to
 `src/it/service/viewer-waits.ts`: wait for the root test id, then paint settle. Do not wait for a
-nested JSON Schema node — an operation can have no schema at all (`oas30/02-minimal-operation`).
+nested JSON Schema node — an operation can have no schema at all (`oas30/minimal/*`).
 
 ## Related documents
 

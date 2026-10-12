@@ -7,6 +7,7 @@ import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds, OpenApiTreeNodeKindsList } f
 import { OpenApiTreeNodeMeta } from "../../../model/openapi/types/node-meta"
 import { OpenApiAnyTreeNodeValue } from "../../../model/openapi/types/node-value"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
+import { OpenApiResponseCode } from "../../../shared/openapi/types/response-code"
 import { OpenApiTreeBuilderParams } from "../../../shared/openapi/types/tree-builder-params"
 import { isObject } from "../../../utilities"
 import { NodeId, NodeKey } from "../../../utility-types"
@@ -93,8 +94,19 @@ export class OpenApiTreeBuilder extends TreeBuilder<OpenApiAnyTreeNodeValue | nu
       state: initialState,
       rules: initialRules,
     })
+    this.sortResponseCodes()
 
     return this.tree
+  }
+
+  /**
+   * Canonical response-code order (`OpenApiResponseCode.compare`). The spec keeps responses in an
+   * object, and JS enumerates integer-like keys (`200`, `500`) before every other key, so ranges
+   * (`2XX`) and `default` would otherwise always come after the numeric codes.
+   */
+  private sortResponseCodes(): void {
+    const responses = this.tree.root?.childrenNodes().find(child => child.kind === OpenApiTreeNodeKinds.RESPONSES)
+    responses?.childrenNodes().sort((a, b) => OpenApiResponseCode.compare(String(a.key), String(b.key)))
   }
 
   /* Extension points for descendant builders */

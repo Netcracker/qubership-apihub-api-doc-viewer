@@ -106,6 +106,7 @@ const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = (props) => {
     <MediaTypeContentSection
       precededBy={precededBy ?? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
       testId="openapi-request-body-section"
+      optionTestIdPrefix="request-media-type"
       mediaTypes={mediaTypes}
       selectedId={selectedId}
       onSelect={setSelectedId}
