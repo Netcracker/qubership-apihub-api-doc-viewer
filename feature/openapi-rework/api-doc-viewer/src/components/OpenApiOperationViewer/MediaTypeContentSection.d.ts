@@ -11,6 +11,8 @@ export declare const WRAPPED_BODY_SCHEMA_TITLE = "Type";
 type MediaTypeContentSectionProps = {
     precededBy: PrecededBy;
     testId: string;
+    /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */
+    optionTestIdPrefix: string;
     mediaTypes: readonly MediaTypeNode[];
     /** Selected media-type node id; `undefined` = the first option. */
     selectedId: string | undefined;
