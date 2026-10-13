@@ -20,6 +20,11 @@ type SelectorProps<N extends ITreeNode, V extends object | null = object | null>
     onSelectOption: (option: SelectorOption<N, V>) => void;
     variant: SelectorVariant;
     layoutSide?: LayoutSide;
+    /**
+     * One non-wrapping line of options for a scrolling container (security toolbar); each option is
+     * cropped with an ellipsis down to one character. Omitted = today's wrapping layout.
+     */
+    noWrap?: boolean;
 };
 export declare function Selector<N extends ITreeNode, V extends object | null = object | null>(props: SelectorProps<N, V>): JSX.Element | null;
 export {};

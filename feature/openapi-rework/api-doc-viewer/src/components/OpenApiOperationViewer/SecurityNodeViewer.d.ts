@@ -6,6 +6,6 @@ export declare const SECURITY_SECTION_TITLE = "Security";
 type SecurityNodeViewerProps = WithPrecededByProps & {
     node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
 };
-/** "Security" (h2), the alternatives selector (OR, always shown), framed scheme cards (AND). */
+/** "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND). */
 export declare const SecurityNodeViewer: FC<SecurityNodeViewerProps>;
 export {};
