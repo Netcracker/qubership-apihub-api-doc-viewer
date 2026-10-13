@@ -1,0 +1,38 @@
+/* Security scheme card rows. Spacing is padding inside each row only (no margins, no gaps between
+   rows): neighbouring highlighted rows then form one continuous colored block. */
+
+.security-row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  min-height: 26px;
+}
+
+.security-prop-text {
+  font-size: 13px;
+  color: #353C4E;
+}
+
+a.security-prop-link {
+  font-size: 13px;
+  color: #0068FF;
+  word-break: break-all;
+}
+
+a.security-prop-link:hover {
+  text-decoration: underline;
+}
+
+.security-flow-header {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background-color: #EDF1F5;
+  font-size: 13px;
+  color: #353C4E;
+}
+
+/* Gap between flow parts: a spacer row, painted like the block that follows it. */
+.security-row.security-row_spacer {
+  min-height: 12px;
+  padding: 0;
+}

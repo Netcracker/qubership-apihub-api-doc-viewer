@@ -34,7 +34,7 @@ const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacem
   [OpenApiTreeNodeKinds.SECURITY_SCHEME]: {
     type: Placement.TitleRow,
     description: Placement.DescriptionRow,
-    in: Placement.SecuritySchemeLocationRow,
+    in: Placement.SecuritySchemeParameterNameRow,
     parameterName: Placement.SecuritySchemeParameterNameRow,
     scheme: Placement.SecuritySchemeHttpSchemeRow,
     bearerFormat: Placement.SecuritySchemeBearerFormatRow,
@@ -58,7 +58,6 @@ const NODE_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly Nod
   [OpenApiTreeNodeKinds.SECURITY_SCHEME]: [
     Placement.TitleRow,
     Placement.DescriptionRow,
-    Placement.SecuritySchemeLocationRow,
     Placement.SecuritySchemeParameterNameRow,
     Placement.SecuritySchemeHttpSchemeRow,
     Placement.SecuritySchemeBearerFormatRow,

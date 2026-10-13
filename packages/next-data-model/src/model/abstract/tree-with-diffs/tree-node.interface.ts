@@ -147,7 +147,6 @@ export enum NodeDiffsSeverityPlacemennt {
   /** OpenAPI standalone selector row (security alternatives). */
   SelectorRow = 'selector-row',
   /** OpenAPI security scheme card `In` row (apiKey). */
-  SecuritySchemeLocationRow = 'security-scheme-location-row',
   /** OpenAPI security scheme card `Name` row (apiKey). */
   SecuritySchemeParameterNameRow = 'security-scheme-parameter-name-row',
   /** OpenAPI security scheme card `Scheme` row (http). */

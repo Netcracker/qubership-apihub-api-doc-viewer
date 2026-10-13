@@ -301,6 +301,62 @@ describe('OpenAPI with diffs: side accessors', () => {
     const scheme = child(security(build('security/09-scheme-added-to-alternative')).childrenNodes()[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', ORIGIN_LAYOUT_SIDE)).toBeUndefined()
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', CHANGED_LAYOUT_SIDE)).toBe('http')
-    expect(OpenApiRowDiffs.SecurityScheme.takeTypeBadgeDiff(scheme)).toBeUndefined()
+    expect(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(scheme)).toBeUndefined()
+  })
+})
+
+describe('OpenAPI with diffs: security card accessors', () => {
+  const scheme = (caseId: string): OpenApiTreeNodeWithDiffs => security(build(caseId)).childrenNodes()[0].childrenNodes()[0]
+  const flows = (node: OpenApiTreeNodeWithDiffs): OpenApiTreeNodeWithDiffs[] => node.childrenNodes()
+
+  it('scope added to a flow: added row, absent on the origin side', () => {
+    const oauth = scheme('security/29-flow-scope-added')
+    const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:delete')
+    expect(row?.origin).toBeUndefined()
+    expect(row?.changed).toEqual({ description: 'Delete orders', required: false })
+    expect(row?.rowDiff?.data.action).toBe(DiffAction.add)
+    expect(row?.requiredDiff).toBeUndefined()
+  })
+
+  it('scope description replaced: replace row with a text highlighter', () => {
+    const oauth = scheme('security/31-flow-scope-description-changed')
+    const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:read')
+    expect(row?.rowDiff?.data.action).toBe(DiffAction.replace)
+    expect(row?.rowDiff?.styles.after.textHighlighterColor).toBeDefined()
+  })
+
+  it('required scope added: a required diff on a scope present on both sides', () => {
+    const oauth = scheme('security/11-required-scope-added')
+    const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth)
+    const read = rows.find(r => r.name === 'orders:read')
+    expect(read?.origin?.required).toBe(false)
+    expect(read?.changed?.required).toBe(true)
+    expect(read?.requiredDiff?.data.action).toBe(DiffAction.add)
+    expect(read?.rowDiff).toBeUndefined()
+    expect(rows.find(r => r.name === 'orders:write')?.origin?.required).toBe(true)
+    expect(OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(oauth)).toEqual([])
+  })
+
+  it('wholly added flow: its scope rows inherit the whole add', () => {
+    const oauth = scheme('security/24-oauth-flow-added')
+    const added = flows(oauth).find(flow => flow.key === 'authorizationCode')
+    expect(added).toBeDefined()
+    const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(added!, oauth)
+    expect(rows.map(r => [r.name, r.origin, r.rowDiff?.data.action])).toEqual([['orders:read', undefined, DiffAction.add]])
+  })
+
+  it('apiKey location change: per-side label, yellow row without a value highlighter', () => {
+    const apiKey = scheme('security/18-api-key-location-changed')
+    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE)).toBe('Header parameter name')
+    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE)).toBe('Query parameter name')
+    const rowDiff = OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(apiKey)
+    expect(rowDiff?.styles.after.backgroundColor).toBe('yellow')
+    expect(rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
+  })
+
+  it('alternative added: yellow toolbar row', () => {
+    const toolbar = OpenApiRowDiffs.Security.takeToolbarRowDiff(security(build('security/05-alternative-added')))
+    expect(toolbar?.styles.before.backgroundColor).toBe('yellow')
+    expect(OpenApiRowDiffs.Security.takeToolbarRowDiff(security(build('security/11-required-scope-added')))).toBeUndefined()
   })
 })

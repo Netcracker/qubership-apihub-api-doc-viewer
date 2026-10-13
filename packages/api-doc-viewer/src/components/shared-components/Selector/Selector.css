@@ -94,3 +94,14 @@ button.button-selector-option_tone-danger.selected {
   background-color: rgb(220 38 38);
   color: white;
 }
+
+/* ─── No-wrap strip (security toolbar). An option never grows wider than the strip and is cropped
+   with an ellipsis; min-width keeps one character + "…" visible (2.5ch + 2 × 8px padding + border). */
+button.button-selector-option.button-selector-option_cropped {
+  flex: 0 0 auto;
+  max-width: 100%;
+  min-width: calc(2.5ch + 18px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

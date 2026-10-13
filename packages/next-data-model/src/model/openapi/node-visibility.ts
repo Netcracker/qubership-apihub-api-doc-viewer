@@ -17,7 +17,6 @@ export type OpenApiOperationRowVisibility = {
 
 export type OpenApiSecuritySchemeRowVisibility = {
   readonly showDescription: boolean
-  readonly showLocation: boolean
   readonly showParameterName: boolean
   readonly showHttpScheme: boolean
   readonly showBearerFormat: boolean
@@ -57,12 +56,12 @@ export class OpenApiNodeVisibility {
     const detailed = isDetailedDisplayMode(displayMode)
     return {
       showDescription: detailed && hasText(value?.description),
-      showLocation: detailed && value?.type === 'apiKey' && hasText(value.in),
       showParameterName: detailed && value?.type === 'apiKey' && hasText(value.parameterName),
       showHttpScheme: detailed && value?.type === 'http' && hasText(value.scheme),
       showBearerFormat: detailed && value?.type === 'http' && hasText(value.bearerFormat),
       showOpenIdConnectUrl: detailed && value?.type === 'openIdConnect' && hasText(value.openIdConnectUrl),
-      showRequiredScopes: detailed && !!value && value.requiredScopesKind !== 'ignored' && value.requiredScopes.length > 0,
+      // oauth2 marks required scopes inside its flows' scope lists instead of a separate prop
+      showRequiredScopes: detailed && !!value && value.type !== 'oauth2' && value.requiredScopesKind !== 'ignored' && value.requiredScopes.length > 0,
       showUnresolved: !!value && !value.isResolved,
     }
   }

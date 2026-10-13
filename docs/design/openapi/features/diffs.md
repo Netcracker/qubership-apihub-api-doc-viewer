@@ -187,17 +187,16 @@ each with a doc comment naming its row:
 | --- | --- | --- |
 | `ExternalDocsRow` | `external-docs-row` | external docs link |
 | `OperationIdRow` | `operation-id-row` | operation ID row under the title |
-| `SelectorRow` | `selector-row` | the standalone security alternatives selector row (media-type selectors sit in Body title subheaders and use `TitleRow`) |
-| `SecuritySchemeLocationRow` | `security-scheme-location-row` | apiKey `In` |
-| `SecuritySchemeParameterNameRow` | `security-scheme-parameter-name-row` | apiKey `Name` |
-| `SecuritySchemeHttpSchemeRow` | `security-scheme-http-scheme-row` | http `Scheme` |
-| `SecuritySchemeBearerFormatRow` | `security-scheme-bearer-format-row` | http `Bearer format` |
+| `SelectorRow` | `selector-row` | the security toolbar (media-type selectors sit in Body title subheaders and use `TitleRow`) |
+| `SecuritySchemeParameterNameRow` | `security-scheme-parameter-name-row` | apiKey `<Place> parameter name` (`name` and `in` changes) |
+| `SecuritySchemeHttpSchemeRow` | `security-scheme-http-scheme-row` | `HTTP Authorization Scheme` |
+| `SecuritySchemeBearerFormatRow` | `security-scheme-bearer-format-row` | `Bearer Format` |
 | `SecuritySchemeOpenIdConnectUrlRow` | `security-scheme-openid-connect-url-row` | `OpenID Connect URL` |
 | `SecurityRequiredScopesRow` | `security-required-scopes-row` | `Required scopes` / `Required roles` |
 | `OAuthFlowAuthorizationUrlRow` | `oauth-flow-authorization-url-row` | `Authorization URL` |
 | `OAuthFlowTokenUrlRow` | `oauth-flow-token-url-row` | `Token URL` |
 | `OAuthFlowRefreshUrlRow` | `oauth-flow-refresh-url-row` | `Refresh URL` |
-| `OAuthFlowScopesRow` | `oauth-flow-scopes-row` | `Available scopes` |
+| `OAuthFlowScopesRow` | `oauth-flow-scopes-row` | flow `scopes` map (scope rows carry their own derived diff types) |
 
 Reused: `TitleRow` (every title / section header), `AddressRow`, `DescriptionRow` (operation,
 request body, response, scheme descriptions — one per node, so no collision). A whole-node add /

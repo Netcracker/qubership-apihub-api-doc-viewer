@@ -7,7 +7,7 @@ The **Security** section: effective security requirements, the alternatives sele
 
 | Concept | Specification | Viewer |
 | --- | --- | --- |
-| `security` (list of Security Requirement Objects) | Any **one** requirement satisfies the request. | Alternatives selector (OR). |
+| `security` (list of Security Requirement Objects) | Any **one** requirement satisfies the request. | Security toolbar (OR). |
 | Security Requirement Object (`{ schemeName: [scopes] }`) | **All** schemes of one object must be satisfied. | One card per scheme (AND). |
 | Empty requirement `{}` | Anonymous access is allowed. | An alternative titled `No authentication` (Q7). |
 | Operation `security` absent | The document-level `security` applies. | Effective security = document `security`. |
@@ -96,56 +96,70 @@ added to / removed from an alternative makes the card wholly added / removed. A 
 definition is missing from `components.securitySchemes` is still present (it renders the
 `unresolved` row).
 
-## Alternatives selector
+## Security toolbar
+
+Sketches: [../features/security-redesign.md](../features/security-redesign.md) §1 (approved 2026-10-13).
 
 | Item | Rule |
 | --- | --- |
-| Shown when | ≥1 alternative — always, also for a single alternative (Q6), like the AsyncAPI bindings selector |
-| Row | standalone selector row under the header — copy `MessageSectionsViewer.renderSelectorRow` (selector inside `OneSideLayout` / `SideBySideLayout` + `DiffFloatingBadgeWrapper`), `SelectorVariant.Secondary`, default tone |
-| Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}`. Resolved in next-data-model (`OpenApiSecurityRequirementTitle.resolve(value)`). |
-| Option test id | `security-alternative-<index>` |
-| Diffs | option `diffs` / `diffsSummary` / `descendantDiffsSummary` from the `securityRequirement` node (selector markers and per-side visibility are already handled by `Selector`); row severity: new placement `SelectorRow` from the `security` node |
+| Shown when | ≥1 alternative — always, also for a single alternative (Q6) |
+| Row | shared `SecurityToolbar` (`shared-components/Security/`): `‹ [option] [option] … ›` — the options are one non-wrapping line (`Selector` `noWrap`) in a horizontally scrolling strip |
+| Arrows | `‹` / `›` scroll the strip by exactly one option (`resolveStripScrollTarget`, `utils/common/strip-scroll.ts`). At the left / right edge the arrow is disabled: gray, no hover, no pointer, not clickable; otherwise blue, hoverable, clickable. Both arrows are always shown (disabled when everything fits) so the row never jumps (Q-S5). |
+| Long titles | an option never grows wider than the strip and is cropped with an ellipsis; `min-width` keeps one character + `…` visible |
+| Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}` (`OpenApiDisplayLabels.securityRequirementTitle`) |
+| Option test id | `security-alternative-<index>`; arrows `security-toolbar-arrow-{left,right}` |
+| Diffs | option `diffs` / `diffsSummary` / `descendantDiffsSummary` from the `securityRequirement` node (border shadow, markers, per-side visibility by `Selector`). Row background: `OpenApiRowDiffs.Security.takeToolbarRowDiff` — the section's whole add / remove, else a yellow `replace` row when any alternative was wholly added / removed. Severity placement `SelectorRow`. |
+| Reuse | the same toolbar, cards, and rows serve AsyncAPI server security later (smaller section header there); the AsyncAPI data layer does not exist yet |
 
 ## Scheme card
 
 One card per `securityScheme` child of the selected alternative, in requirement order: a
-**framed box** (Q8, [Card frame](#card-frame)) whose first row is the **h4** title. Component
-`SecuritySchemeCard`, test id `security-scheme-<name>`.
+**framed box** (Q8, [Card frame](#card-frame)). Component `SecuritySchemeCard`, test id
+`security-scheme-<name>`; its rows are the shared blocks of `shared-components/Security/SecurityRows.tsx`.
+Sketches: [../features/security-redesign.md](../features/security-redesign.md) §2–§4.
 
-Rows, top to bottom (each row has its own severity placement, D7):
+| Row | Shown when (`detailed`) | Content | Severity placement |
+| --- | --- | --- | --- |
+| Title (h4) | always | scheme name; subheader: **gray type text** (JSON Schema / DDL type-label look), not a badge | `TitleRow` |
+| Unresolved | `!isResolved` | muted `Security scheme is not defined in components.` | — |
+| Description | `description` | markdown, right after the title | `DescriptionRow` |
+| `<Place> parameter name` | apiKey, `name` | value `name`; the label prefix comes from `in` per side: `Header` / `Query` / `Cookie` / `Path` (`OpenApiDisplayLabels.apiKeyParameterNameLabel`) — the former `In` and `Name` rows merged | `SecuritySchemeParameterNameRow` (an `in` change counts here) |
+| `HTTP Authorization Scheme` | http, `scheme` | `basic`, `bearer`, … from the scheme, never hard-coded | `SecuritySchemeHttpSchemeRow` |
+| `Bearer Format` | http, `bearerFormat` | `JWT`, `PAT`, … | `SecuritySchemeBearerFormatRow` |
+| `OpenID Connect URL` | openIdConnect | link | `SecuritySchemeOpenIdConnectUrlRow` |
+| `Required scopes` / `Required roles` | non-oauth2, `requiredScopes` non-empty, kind not `ignored` | comma-separated list; in diffs added items green / removed items red (Q-S3) | `SecurityRequiredScopesRow` |
+| Flow parts | oauth2 | [OAuth flow parts](#oauth-flow-parts) | per flow node |
+| Trailing `Scopes` | oauth2, required scopes that no flow declares | 2nd-level scope rows, all required (`resolveUndeclaredRequiredScopeRows`) | — |
 
-| Row | Component | Shown when | Content | Severity placement |
-| --- | --- | --- | --- | --- |
-| Title (h4) | `TitleRow` | always | scheme name; subheader: `UxBadge` (`default`) with the type label | `TitleRow` |
-| Unresolved | `TextRow` (muted) | `!isResolved` | `Security scheme is not defined in components.` | — |
-| Description | `MarkdownTextRow` | `description` | markdown | `DescriptionRow` |
-| `In` | `AdditionalInfoRow` | apiKey, `in` | `header` / `query` / `cookie` chip | `SecuritySchemeLocationRow` |
-| `Name` | `AdditionalInfoRow` | apiKey, `parameterName` | chip | `SecuritySchemeParameterNameRow` |
-| `Scheme` | `AdditionalInfoRow` | http, `scheme` | chip (`basic`, `bearer`, …) | `SecuritySchemeHttpSchemeRow` |
-| `Bearer format` | `AdditionalInfoRow` | http, `bearerFormat` | chip | `SecuritySchemeBearerFormatRow` |
-| `OpenID Connect URL` | `AdditionalInfoRow` | openIdConnect, `openIdConnectUrl` | chip with the URL | `SecuritySchemeOpenIdConnectUrlRow` |
-| `Required scopes` / `Required roles` | `AdditionalInfoRow` | `requiredScopes.length > 0` and `requiredScopesKind !== 'ignored'` | one chip per scope | `SecurityRequiredScopesRow` |
-| OAuth flows | `OAuthFlowRows` × n | oauth2 | see below | per flow node |
+`mutualTLS` cards have title, type, and description only.
 
-Type labels (`OpenApiSecuritySchemeTypeLabel.resolve(type)`): `apiKey` → `API key`, `http` →
-`HTTP`, `oauth2` → `OAuth 2.0`, `openIdConnect` → `OpenID Connect`, `mutualTLS` → `Mutual TLS`;
-any other string is shown as is. An `http` scheme shows `HTTP` in the badge and the concrete scheme
-in the `Scheme` row.
+**Security props** (label / value rows) use one grid shape per card: `grid-template-columns:
+var(--security-label-width) minmax(0, 1fr)` with a fixed 40px column gap (Q-S1). The card sets
+`--security-label-width` to the longest label of its props in `ch`, so values of every prop of the
+card start at the same x. Labels use the JSON Schema node-title font (`TextValue` `body2`).
 
-Label of the scopes row: `requiredScopesKind === 'scopes'` → `Required scopes`; `'roles'` →
-`Required roles`.
+Type labels (`OpenApiDisplayLabels.securitySchemeType`): `apiKey` → `API key`, `http` → `HTTP`,
+`oauth2` → `OAuth 2.0`, `openIdConnect` → `OpenID Connect`, `mutualTLS` → `Mutual TLS`; any
+other string is shown as is.
 
-### OAuth flow rows (`OAuthFlowRows`)
+### OAuth flow parts
 
-Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizationCode`.
+Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizationCode`; a fixed
+spacer row separates flow parts.
 
 | Row | Shown when | Content | Severity placement |
 | --- | --- | --- | --- |
-| Flow title (h5) | always | `Implicit flow`, `Password flow`, `Client credentials flow`, `Authorization code flow` | `TitleRow` |
-| `Authorization URL` | `authorizationUrl` | chip | `OAuthFlowAuthorizationUrlRow` |
-| `Token URL` | `tokenUrl` | chip | `OAuthFlowTokenUrlRow` |
-| `Refresh URL` | `refreshUrl` | chip | `OAuthFlowRefreshUrlRow` |
-| `Available scopes` | non-empty `scopes` | one chip per scope **name**; the scope description is the chip tooltip (`title` attribute) | `OAuthFlowScopesRow` |
+| Flow header | always (`detailed`) | `Flow type **Authorization Code**` on a `#EDF1F5` plate (`OpenApiDisplayLabels.oauthFlowName`) | `TitleRow` of the flow (not when the whole diff is inherited from the card) |
+| `Authorization URL` / `Token URL` / `Refresh URL` | the field exists | link | `OAuthFlow*UrlRow` |
+| `Scopes ▾` | non-empty `scopes` | label + expander, no value; expanded by default; collapsing hides the scope rows | — |
+| Scope (2nd level) | expanded | `<20px indent> name <* if required> <gap> <gray description> [required badge in diffs]`, own grid `--security-scope-width` | the scope's own diff type |
+
+A scope is **required** when the selected requirement lists it (Q-S2): the separate
+`Required scopes` row is not shown for oauth2. Scope rows come from
+`OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme)`: the union of both sides' scopes, each
+with per-side description and required status, a row diff (scope added / removed / description
+replaced — derived from the flow's `scopes` map diff), and a required diff (status changed on a
+scope present on both sides — derived from the scheme's `requiredScopes` diff).
 
 ### Card frame
 
@@ -183,11 +197,11 @@ required.` instead of cards (Q7).
 
 | Row | `simple` | `detailed` |
 | --- | --- | --- |
-| Section header, selector, card titles, flow titles | shown | shown |
-| Descriptions, all `AdditionalInfoRow`s | hidden | shown |
+| Section header, toolbar, card titles with type text | shown | shown |
+| Descriptions, security props, flow parts, scopes | hidden | shown |
 
-Rules live in `OpenApiNodeVisibilityManagerKindSecurityScheme` / `…KindOAuthFlow`
-(`resolveNodeVisibility(node, displayMode)`), not in JSX.
+Rules live in `OpenApiNodeVisibility.resolveSecurityScheme` / `resolveOAuthFlow`
+(`model/openapi/node-visibility.ts`), not in JSX (Q-S4).
 
 ## With diffs
 
@@ -229,11 +243,13 @@ When the effective list switches between the document list `D` and the operation
 
 | Element | Rule |
 | --- | --- |
-| Section header | presence rule over the alternatives ([Section header](#section-header), [../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
-| Selector option | `Selector` hides the option on the side where its alternative does not exist and shows the change marker from `diffsSummary` ∪ `descendantDiffsSummary` |
-| Card of an added / removed scheme | every row inherits the whole-node diff (KindAny inheritance) — green / red rows on one side, hidden on the other |
-| Field rows | `colorizingDiff` = the field diff (add green, remove red, replace yellow); chip highlight per the DDL / JSON Schema chip contract: replace → yellow `textHighlighterColor`, add / remove → row background only |
-| Scope rows | side items from `resolveListSideItems` (`model/abstract/tree-with-diffs/list-side-display.ts`); a whole-list add / remove paints the row and keeps chips plain (JSON Schema "whole-list add/remove" rule) |
+| Section header | presence rule over the alternatives ([../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
+| Toolbar | yellow (`replace`) row when an alternative was wholly added / removed; the option keeps its green / red border; selecting it shows its content on one side only (the other side empty and gray) |
+| Whole card / whole flow part added or removed | every row of the block (title or flow header, props, scopes toggle, scope rows, the spacer before it) is green / red on the present side and empty gray on the other; only the block's head row carries the severity badge |
+| Prop rows | the row only: add green, remove red, replace yellow; a replaced **value** gets the `textHighlighterColor`, added / removed values do not |
+| Type change | the gray type text is highlighted on both sides; the title row is not painted (the origin title would otherwise read the before type) (Q-S8) |
+| Scope rows | scope added / removed: green / red row on one side; description replaced: yellow row + highlighted description; required changed: `*` on the origin side when removed, on the changed side when added, and the diff-colored `required` badge **after** the description |
+| Spacing | vertical spacing is padding inside rows only (`SecurityRows.css`), so adjacent highlighted rows form one block without white seams |
 
 ## Related documents
 

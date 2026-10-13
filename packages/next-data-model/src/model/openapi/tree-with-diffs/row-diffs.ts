@@ -1,11 +1,14 @@
-import { Diff, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../abstract/layout-side"
 import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
+import { OpenApiDisplayLabels } from "../display/labels"
 import { OpenApiChangedPropertyMetaData } from "./changed-property-metadata"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
+
+const BOTH_LAYOUT_SIDES: readonly LayoutSide[] = [ORIGIN_LAYOUT_SIDE, CHANGED_LAYOUT_SIDE]
 
 /** One chip of a side-aware list. */
 export type OpenApiSideListItem = {
@@ -66,6 +69,24 @@ function toExternalDocs(value: unknown): OpenApiExternalDocs | null {
   return typeof url === 'string'
     ? { url, ...(typeof description === 'string' ? { description } : {}) }
     : null
+}
+
+/**
+ * A row diff derived from a list / map diff (one scope out of a `scopes` map replace): same type and
+ * declaration paths as the parent, the row's own action and values.
+ */
+function deriveDiff(parent: Diff, action: 'add' | 'remove' | 'replace', beforeValue: unknown, afterValue: unknown): Diff {
+  const beforeDeclarationPaths = 'beforeDeclarationPaths' in parent ? parent.beforeDeclarationPaths : []
+  const afterDeclarationPaths = 'afterDeclarationPaths' in parent ? parent.afterDeclarationPaths : []
+  const base = { type: parent.type, scope: parent.scope }
+  switch (action) {
+    case 'add':
+      return { ...base, action: DiffAction.add, afterValue, afterDeclarationPaths }
+    case 'remove':
+      return { ...base, action: DiffAction.remove, beforeValue, beforeDeclarationPaths }
+    case 'replace':
+      return { ...base, action: DiffAction.replace, beforeValue, afterValue, beforeDeclarationPaths, afterDeclarationPaths }
+  }
 }
 
 function sideItems(before: readonly string[], after: readonly string[], side: LayoutSide, hints: Record<string, string> = {}): OpenApiSideListItem[] {
@@ -247,17 +268,99 @@ class Response {
   }
 }
 
+class Security {
+  /**
+   * Security toolbar row: a whole section add / remove, else a yellow row when any alternative
+   * (toolbar option) was wholly added or removed - the option itself keeps its green / red border.
+   */
+  public static takeToolbarRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    const header = Section.takeHeaderRowDiff(node)
+    if (header) {
+      return header
+    }
+    const changedOption = node.childrenNodes()
+      .map(alternative => Section.takeHeaderRowDiff(alternative))
+      .find(diff => diff !== undefined)
+    return changedOption ? OpenApiChangedPropertyMetaData.buildRowReplace(changedOption.data) : undefined
+  }
+}
+
+/** One side of a scope row; absent = the scope does not exist on that side. */
+export type OpenApiScopeRowSide = {
+  readonly description: string
+  readonly required: boolean
+}
+
+/** A 2nd-level security prop: one OAuth scope (or a required scope no flow declares). */
+export type OpenApiScopeRow = {
+  readonly name: string
+  readonly origin?: OpenApiScopeRowSide
+  readonly changed?: OpenApiScopeRowSide
+  /** Row background: scope added / removed / description replaced (text highlighter), or the inherited whole-block diff. */
+  readonly rowDiff?: ChangedPropertyMetaData
+  /** `required` badge + side-exclusive `*`: the scope exists on both sides and its required status changed. */
+  readonly requiredDiff?: ChangedPropertyMetaData
+}
+
+function requiredScopesOnSide(scheme: AnyOpenApiNode, side: LayoutSide): ReadonlySet<string> {
+  return NodeLevel.isPresentOnSide(scheme, side)
+    ? new Set(SecurityScheme.resolveRequiredScopesSideItems(scheme, side).map(item => item.text))
+    : new Set()
+}
+
+function buildScopeRow(
+  name: string,
+  origin: OpenApiScopeRowSide | undefined,
+  changed: OpenApiScopeRowSide | undefined,
+  scopesDiff: Diff | undefined,
+  requiredScopesDiff: Diff | undefined,
+  inheritedDiff: ChangedPropertyMetaData | undefined,
+): OpenApiScopeRow {
+  let ownRowDiff: Diff | undefined
+  if (scopesDiff && origin && !changed) {
+    ownRowDiff = deriveDiff(scopesDiff, 'remove', origin.description, undefined)
+  } else if (scopesDiff && !origin && changed) {
+    ownRowDiff = deriveDiff(scopesDiff, 'add', undefined, changed.description)
+  } else if (scopesDiff && origin && changed && origin.description !== changed.description) {
+    ownRowDiff = deriveDiff(scopesDiff, 'replace', origin.description, changed.description)
+  }
+  const requiredChanged = !!origin && !!changed && origin.required !== changed.required
+  const requiredDiff = requiredChanged && requiredScopesDiff
+    ? deriveDiff(requiredScopesDiff, changed.required ? 'add' : 'remove', origin.required || undefined, changed.required || undefined)
+    : undefined
+  return {
+    name,
+    ...(origin ? { origin } : {}),
+    ...(changed ? { changed } : {}),
+    ...(ownRowDiff ? { rowDiff: OpenApiChangedPropertyMetaData.build(ownRowDiff) } : inheritedDiff ? { rowDiff: inheritedDiff } : {}),
+    ...(requiredDiff ? { requiredDiff: OpenApiChangedPropertyMetaData.build(requiredDiff) } : {}),
+  }
+}
+
 class SecurityScheme {
   public static takeFieldRowDiff(node: AnyOpenApiNode, field: string): ChangedPropertyMetaData | undefined {
     return NodeLevel.takeRowDiff(node, field)
   }
 
   /**
-   * The type badge's own diff. A type change is shown on the badge only: painting the title row with
-   * it would make the origin side's title read the before TYPE instead of the scheme name.
+   * The gray type text's own diff (highlighter). A type change is shown on that text only: painting
+   * the title row with it would make the origin side's title read the before TYPE instead of the name.
    */
-  public static takeTypeBadgeDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+  public static takeTypeTextDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
     return Section.takeHeaderRowDiff(node) ? undefined : fieldDiff(node, 'type')
+  }
+
+  /** apiKey prop label per side, from `in`: `Header parameter name`, `Query parameter name`, … */
+  public static resolveParameterNameLabel(node: AnyOpenApiNode, side: LayoutSide): string {
+    return OpenApiDisplayLabels.apiKeyParameterNameLabel(NodeLevel.resolveSideField(node, 'in', side))
+  }
+
+  /** apiKey prop row: a name change (highlighted value), else a location change (label only), else the whole card. */
+  public static takeParameterNameRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    const location = fieldDiff(node, 'in')
+    return fieldDiff(node, 'parameterName')
+      ?? (location ? OpenApiChangedPropertyMetaData.buildRowReplace(location.data) : undefined)
+      ?? NodeLevel.takeWholeNodeDiff(node)
   }
 
   /** Whether the card exists on a side (no frame on the side where it was wholly added / removed). */
@@ -274,6 +377,31 @@ class SecurityScheme {
     }
     return sideItems(toStringList(sideValue(diff, ORIGIN_LAYOUT_SIDE)), toStringList(sideValue(diff, CHANGED_LAYOUT_SIDE)), side)
   }
+
+  /**
+   * oauth2: required scopes that no flow of the scheme declares (on either side). They are shown in a
+   * trailing scope list, because flows mark required scopes inside their own scope lists.
+   */
+  public static resolveUndeclaredRequiredScopeRows(scheme: AnyOpenApiNode): OpenApiScopeRow[] {
+    const declared = new Set<string>()
+    for (const flow of scheme.childrenNodes()) {
+      for (const side of BOTH_LAYOUT_SIDES) {
+        Object.keys(OAuthFlow.resolveSideScopes(flow, side) ?? {}).forEach(name => declared.add(name))
+      }
+    }
+    const origin = requiredScopesOnSide(scheme, ORIGIN_LAYOUT_SIDE)
+    const changed = requiredScopesOnSide(scheme, CHANGED_LAYOUT_SIDE)
+    const names = [...new Set([...changed, ...origin])].filter(name => !declared.has(name))
+    const requiredScopesDiff = fieldDiff(scheme, 'requiredScopes')?.data
+    return names.map(name => buildScopeRow(
+      name,
+      origin.has(name) ? { description: '', required: true } : undefined,
+      changed.has(name) ? { description: '', required: true } : undefined,
+      requiredScopesDiff,
+      undefined,
+      NodeLevel.takeWholeNodeDiff(scheme),
+    ))
+  }
 }
 
 class OAuthFlow {
@@ -281,16 +409,40 @@ class OAuthFlow {
     return NodeLevel.takeRowDiff(node, field)
   }
 
-  public static resolveScopesSideItems(node: AnyOpenApiNode, side: LayoutSide): OpenApiSideListItem[] {
-    const value = node.value()
-    const merged = toStringMap(value && 'scopes' in value ? value.scopes : undefined)
-    const diff = fieldDiff(node, 'scopes')?.data
-    if (!diff || isDiffRename(diff)) {
-      return Object.keys(merged).map(text => ({ text, hint: merged[text] }))
+  /** Scope map of the flow on a side; `undefined` where the flow does not exist. */
+  public static resolveSideScopes(node: AnyOpenApiNode, side: LayoutSide): Record<string, string> | undefined {
+    if (!NodeLevel.isPresentOnSide(node, side)) {
+      return undefined
     }
-    const before = toStringMap(sideValue(diff, ORIGIN_LAYOUT_SIDE))
-    const after = toStringMap(sideValue(diff, CHANGED_LAYOUT_SIDE))
-    return sideItems(Object.keys(before), Object.keys(after), side, side === ORIGIN_LAYOUT_SIDE ? before : after)
+    const diff = fieldDiff(node, 'scopes')?.data
+    if (diff && !isDiffRename(diff)) {
+      return toStringMap(sideValue(diff, side))
+    }
+    const value = node.value()
+    return toStringMap(value && 'scopes' in value ? value.scopes : undefined)
+  }
+
+  /**
+   * 2nd-level scope rows of a flow: the union of both sides' scopes (after-side order, removed
+   * scopes after them), each with its per-side description and required status (from the scheme's
+   * requirement), its row diff, and its required diff.
+   */
+  public static resolveScopeRows(flow: AnyOpenApiNode, scheme: AnyOpenApiNode): OpenApiScopeRow[] {
+    const originScopes = OAuthFlow.resolveSideScopes(flow, ORIGIN_LAYOUT_SIDE)
+    const changedScopes = OAuthFlow.resolveSideScopes(flow, CHANGED_LAYOUT_SIDE)
+    const originRequired = requiredScopesOnSide(scheme, ORIGIN_LAYOUT_SIDE)
+    const changedRequired = requiredScopesOnSide(scheme, CHANGED_LAYOUT_SIDE)
+    const names = [...new Set([...Object.keys(changedScopes ?? {}), ...Object.keys(originScopes ?? {})])]
+    const scopesDiff = fieldDiff(flow, 'scopes')?.data
+    const requiredScopesDiff = fieldDiff(scheme, 'requiredScopes')?.data
+    return names.map(name => buildScopeRow(
+      name,
+      originScopes && name in originScopes ? { description: originScopes[name], required: originRequired.has(name) } : undefined,
+      changedScopes && name in changedScopes ? { description: changedScopes[name], required: changedRequired.has(name) } : undefined,
+      scopesDiff && !isDiffRename(scopesDiff) ? scopesDiff : undefined,
+      requiredScopesDiff && !isDiffRename(requiredScopesDiff) ? requiredScopesDiff : undefined,
+      NodeLevel.takeWholeNodeDiff(flow),
+    ))
   }
 }
 
@@ -306,6 +458,7 @@ export class OpenApiRowDiffs {
   public static readonly RequestBody = RequestBody
   public static readonly MediaType = MediaType
   public static readonly Response = Response
+  public static readonly Security = Security
   public static readonly SecurityScheme = SecurityScheme
   public static readonly OAuthFlow = OAuthFlow
 }

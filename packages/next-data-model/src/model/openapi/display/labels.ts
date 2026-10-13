@@ -8,12 +8,33 @@ const SECURITY_SCHEME_TYPE_LABELS: Readonly<Record<string, string>> = {
   mutualTLS: 'Mutual TLS',
 }
 
-const OAUTH_FLOW_TITLES: Readonly<Record<OpenApiOAuthFlowType, string>> = {
-  implicit: 'Implicit flow',
-  password: 'Password flow',
-  clientCredentials: 'Client credentials flow',
-  authorizationCode: 'Authorization code flow',
+const OAUTH_FLOW_NAMES: Readonly<Record<OpenApiOAuthFlowType, string>> = {
+  implicit: 'Implicit',
+  password: 'Password',
+  clientCredentials: 'Client Credentials',
+  authorizationCode: 'Authorization Code',
 }
+
+const API_KEY_LOCATION_LABELS: Readonly<Record<string, string>> = {
+  header: 'Header',
+  query: 'Query',
+  cookie: 'Cookie',
+  path: 'Path',
+}
+
+/** Labels of the security props (label / value rows of a security scheme card). */
+export const OPENAPI_SECURITY_PROP_LABELS = {
+  httpAuthorizationScheme: 'HTTP Authorization Scheme',
+  bearerFormat: 'Bearer Format',
+  openIdConnectUrl: 'OpenID Connect URL',
+  authorizationUrl: 'Authorization URL',
+  tokenUrl: 'Token URL',
+  refreshUrl: 'Refresh URL',
+  scopes: 'Scopes',
+} as const
+
+/** Plain text before the bold flow name in a flow part header: `Flow type **Authorization Code**`. */
+export const OPENAPI_OAUTH_FLOW_HEADER_PREFIX = 'Flow type'
 
 const PARAMETER_GROUP_TITLES: Readonly<Record<OpenApiParameterLocation, string>> = {
   path: 'Path Parameters',
@@ -41,8 +62,15 @@ export class OpenApiDisplayLabels {
     return kind === 'roles' ? 'Required roles' : 'Required scopes'
   }
 
-  public static oauthFlowTitle(flowType: OpenApiOAuthFlowType): string {
-    return OAUTH_FLOW_TITLES[flowType]
+  /** Bold part of a flow part header (`Flow type **Authorization Code**`). */
+  public static oauthFlowName(flowType: OpenApiOAuthFlowType): string {
+    return OAUTH_FLOW_NAMES[flowType]
+  }
+
+  /** apiKey prop label from `in`: `Header parameter name`, `Query parameter name`, … */
+  public static apiKeyParameterNameLabel(location: string | undefined): string {
+    const place = location === undefined ? undefined : API_KEY_LOCATION_LABELS[location]
+    return `${place ?? 'API key'} parameter name`
   }
 
   public static parameterGroupTitle(location: OpenApiParameterLocation): string {

@@ -1,0 +1,187 @@
+import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
+import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
+import {
+  ChangedPropertyMetaData,
+  HighlightVariant,
+  NodeDiffsSeverity,
+} from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { FC, ReactElement, ReactNode } from "react"
+import { ArrowDownIcon } from "../../kit/icons/ArrowDownIcon"
+import { TagsWithDiffs } from "../diffs/TagsWithDiffs"
+import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
+import { WithFramePositionProps } from "../Frame/types"
+import { OneSideLayout } from "../Layout/OneSideLayout"
+import { SideBySideLayout } from "../Layout/SideBySideLayout"
+import { TextValue } from "../TextValue/TextValue"
+import { TextValueVariant } from "../TextValue/types"
+import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import "../../shared-styles/frame.css"
+import "../SubheaderValue/SubheaderValue.css"
+import "./SecurityRows.css"
+
+/**
+ * Building blocks of a security scheme card: one per-side row frame plus the contents that go into
+ * it (label / value prop, flow header, scopes toggle, scope row). Shared by every security section
+ * (OpenAPI operations now, AsyncAPI servers later); containers pass precomputed diffs only.
+ * Design: docs/design/openapi/entities/security.md -> "Scheme card".
+ */
+
+type SecurityRowProps = WithFramePositionProps & {
+  /** Content of one side; called only on a side where the row has content. */
+  renderSide: (layoutSide: LayoutSide) => ReactNode
+  /** Row background; a whole add / remove leaves the absent side empty and gray. */
+  diff?: ChangedPropertyMetaData
+  /** Floating severity badge of this row (own changes only, never an inherited block diff). */
+  severity?: NodeDiffsSeverity
+  testId?: string
+  /** `spacer`: the fixed gap before a flow part, painted like the block that follows it. */
+  variant?: 'default' | 'spacer'
+}
+
+/**
+ * One card row on both sides. Vertical spacing is padding inside the row (never margins between
+ * rows), so neighbouring highlighted rows join into one colored block without white seams.
+ */
+export const SecurityRow: FC<SecurityRowProps> = (props) => {
+  const { renderSide, diff, severity, framePosition, testId, variant = 'default' } = props
+  const layoutMode = useLayoutMode()
+
+  const renderContent = (layoutSide: LayoutSide): ReactElement => {
+    const styles = layoutSide === ORIGIN_LAYOUT_SIDE ? diff?.styles.before : diff?.styles.after
+    const visible = styles?.isContentVisible ?? true
+    return (
+      <div
+        data-testid={testId}
+        data-frame-position={framePosition?.(layoutSide)}
+        className={`security-row ${variant === 'spacer' ? 'security-row_spacer' : ''} flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+      >
+        {visible && renderSide(layoutSide)}
+      </div>
+    )
+  }
+
+  if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
+    return (
+      <DiffFloatingBadgeWrapper diffType={severity?.type} diffTypeCause={buildDiffCauseByPathCausedAt(severity?.causedAt)} hidden={false}>
+        <SideBySideLayout left={renderContent(ORIGIN_LAYOUT_SIDE)} right={renderContent(CHANGED_LAYOUT_SIDE)} />
+      </DiffFloatingBadgeWrapper>
+    )
+  }
+  return <OneSideLayout content={renderContent(CHANGED_LAYOUT_SIDE)} />
+}
+
+type SecurityPropContentProps = {
+  label: string
+  value: ReactNode
+  layoutSide: LayoutSide
+}
+
+/**
+ * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The card sets
+ * `--security-label-width`, so values of every prop of the card start at the same x.
+ */
+export const SecurityPropContent: FC<SecurityPropContentProps> = ({ label, value, layoutSide }) => (
+  <div className="security-prop grid w-full grid-cols-[var(--security-label-width)_minmax(0,1fr)] items-baseline gap-x-10">
+    <div className="security-prop-label whitespace-nowrap">
+      <TextValue value={label} variant={TextValueVariant.body2} layoutSide={layoutSide} />
+    </div>
+    <div className="security-prop-value min-w-0 break-words">{value}</div>
+  </div>
+)
+
+type SecurityPropValueProps = {
+  text: string
+  /** Renders the value as a link (URLs). */
+  href?: boolean
+  highlighterClass?: string
+}
+
+export const SecurityPropValue: FC<SecurityPropValueProps> = ({ text, href = false, highlighterClass = '' }) => (
+  href
+    ? <a className={`security-prop-link ${highlighterClass}`} href={text} target="_blank" rel="noopener noreferrer">{text}</a>
+    : <span className={`security-prop-text ${highlighterClass}`}>{text}</span>
+)
+
+/** One item of a list value (`Required scopes`, `Required roles`); `change` marks a side-exclusive item. */
+export type SecurityListValueItem = {
+  readonly text: string
+  readonly change?: 'added' | 'removed'
+}
+
+export const SecurityListValue: FC<{ items: readonly SecurityListValueItem[] }> = ({ items }) => (
+  <span className="security-prop-text">
+    {items.map((item, index) => (
+      <span key={item.text}>
+        {index > 0 && ', '}
+        <span className={item.change === 'added'
+          ? DiffsClassesBuilder.highlighter(HighlightVariant.Green)
+          : item.change === 'removed' ? DiffsClassesBuilder.highlighter(HighlightVariant.Red) : ''}
+        >
+          {item.text}
+        </span>
+      </span>
+    ))}
+  </span>
+)
+
+/** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
+export const SecurityFlowHeaderContent: FC<{ prefix: string, name: string }> = ({ prefix, name }) => (
+  <span className="security-flow-header">
+    {prefix} <b>{name}</b>
+  </span>
+)
+
+/** `Scopes ▾` - label and expander only (no value); toggles the scope rows below it. */
+export const SecurityScopesToggleContent: FC<{ label: string, expanded: boolean, onToggle: () => void, layoutSide: LayoutSide }> = (props) => {
+  const { label, expanded, onToggle, layoutSide } = props
+  return (
+    <button
+      type="button"
+      data-testid="security-scopes-toggle"
+      aria-expanded={expanded}
+      onClick={onToggle}
+      className="security-scopes-toggle flex items-center gap-2"
+    >
+      <TextValue value={label} variant={TextValueVariant.body2} layoutSide={layoutSide} />
+      <span className="flex items-center" style={{ transform: expanded ? undefined : 'rotate(-90deg)' }}>
+        <ArrowDownIcon />
+      </span>
+    </button>
+  )
+}
+
+type SecurityScopeContentProps = {
+  name: string
+  description: string
+  required: boolean
+  /** Text highlighter of a replaced description. */
+  descriptionHighlighterClass: string
+  /** Diffs mode: the `required` badge after the description when the required status changed. */
+  requiredDiff?: ChangedPropertyMetaData
+  layoutSide: LayoutSide
+}
+
+/**
+ * 2nd-level security prop (one scope): `<20px indent> name * <gap> description [required]`. Its own
+ * grid (`--security-scope-width`) so scope names align without moving the 1st-level columns.
+ */
+export const SecurityScopeContent: FC<SecurityScopeContentProps> = (props) => {
+  const { name, description, required, descriptionHighlighterClass, requiredDiff, layoutSide } = props
+  return (
+    <div className="security-scope grid w-full grid-cols-[var(--security-scope-width)_minmax(0,1fr)] items-baseline gap-x-10 pl-5">
+      <div className="whitespace-nowrap">
+        <span className="security-prop-text">{name}</span>
+        {required && <sup className="ml-0.5 text-red-500">*</sup>}
+      </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <span className={`title-row-subheader-value subheader text ${descriptionHighlighterClass}`}>{description}</span>
+        {requiredDiff && (
+          <TagsWithDiffs requiredChanged={true} requiredDiff={requiredDiff} readOnly={false} writeOnly={false} layoutSide={layoutSide} />
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,10 +1,12 @@
 import { getOpenApiChildren, isOpenApiSecurityRequirementNode, isOpenApiSecuritySchemeNode } from "@apihub/utils/openapi/node-type-checkers"
+import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OPENAPI_NO_AUTHENTICATION_TEXT, OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
 import { FC, Fragment, useEffect, useMemo, useState } from "react"
+import { SecurityToolbar } from "../shared-components/Security/SecurityToolbar"
 import { SelectorOption } from "../shared-components/Selector/Selector"
 import { TextRow } from "../shared-components/TextRow/TextRow"
 import { TextValueVariant } from "../shared-components/TextValue/types"
@@ -12,7 +14,6 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
 import { SecuritySchemeCard } from "./SecuritySchemeCard/SecuritySchemeCard"
-import { StandaloneSelectorRow } from "./StandaloneSelectorRow"
 
 export const SECURITY_SECTION_TITLE = 'Security'
 
@@ -22,7 +23,7 @@ type SecurityNodeViewerProps = WithPrecededByProps & {
 
 type AlternativeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_REQUIREMENT>
 
-/** "Security" (h2), the alternatives selector (OR, always shown), framed scheme cards (AND). */
+/** "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND). */
 export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = (props) => {
   const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const alternatives = useMemo(() => getOpenApiChildren(node, isOpenApiSecurityRequirementNode), [node])
@@ -59,13 +60,13 @@ export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = (props) => {
         diff={headerDiff}
         diffsSeverities={severities}
       />
-      <StandaloneSelectorRow
+      <SecurityToolbar
         data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
         options={options}
         selectedOption={selectedOption}
         onSelectOption={(option) => setSelectedId(option.node.id)}
-        diff={headerDiff}
-        diffsSeverities={severities}
+        diff={OpenApiRowDiffs.Security.takeToolbarRowDiff(node)}
+        severity={severities?.[NodeDiffsSeverityPlacemennt.SelectorRow]}
       />
       {selected && selected.value()?.isAnonymous && (
         <TextRow

@@ -11,7 +11,7 @@ flowchart TB
   Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · 'Operation ID:' + value (TextRow label) · AddressRow ·<br/>ExternalDocsRow · description · section data-precededby (one pass)"]
   Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row (always)"]
   Card["SecuritySchemeCard/SecuritySchemeCard.tsx<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
-  Flow["SecuritySchemeCard/OAuthFlowRows.tsx<br/>flow title (h5) · URL rows · Available scopes"]
+  Flow["shared-components/Security/SecurityRows.tsx<br/>flow header · URL props (links) · Scopes toggle · scope rows"]
   Extensions["shared-components/ExtensionsSection<br/>Extensions (h2)"]
   Request["RequestNodeViewer.tsx<br/>Request (h2)"]
   Params["ParametersNodeViewer.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies (h3)"]

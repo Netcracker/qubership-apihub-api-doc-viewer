@@ -86,7 +86,7 @@ titles, **h5** OAuth flow titles.
 | 4 | External docs link `View external documentation ↗`, description in a `UxTooltip` | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
 | 5 | Description | `MarkdownTextRow` | `operation` | `description` | [operation](../entities/operation.md#description-row) |
 | 6 | **Security** (h2) | `TitleRow` | `security` | ≥1 effective alternative | [security](../entities/security.md) |
-| 7 | Alternatives selector | `Selector` row | `security` | ≥1 alternative (always with the section) | [security](../entities/security.md#alternatives-selector) |
+| 7 | Security toolbar (alternatives) | shared `SecurityToolbar` | `security` | ≥1 alternative (always with the section) | [security](../entities/security.md#security-toolbar) |
 | 8 | Framed scheme cards of the selected alternative | `SecuritySchemeCard` × n | `securityScheme` | selected alternative | [security](../entities/security.md#scheme-card) |
 | 9 | **Extensions** (h2) + JSO tree | shared extensions section | `extensions` | ≥1 `x-*` key on the operation | [operation](../entities/operation.md#extensions-section) |
 | 10 | **Request** (h2) | `TitleRow` | `request` | a parameter group or the Body is present | [parameters](../entities/parameters.md) |
@@ -284,7 +284,7 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | precomputes header-row and section `data-precededby`; decides where the deprecated tag goes (title or address row) |
 | `SecurityNodeViewer.tsx` | rows 6–8 | owns alternative selection |
 | `SecuritySchemeCard/SecuritySchemeCard.tsx` | one framed card | rows in [security](../entities/security.md#scheme-card); precomputes per-side frame positions |
-| `SecuritySchemeCard/OAuthFlowRows.tsx` | one OAuth flow | child of the card, inside its frame |
+| `shared-components/Security/` | `SecurityToolbar`, `SecurityRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with AsyncAPI server security later; flow parts are built inside `SecuritySchemeCard` |
 | `RequestNodeViewer.tsx` | row 10, dispatch of rows 11–17 | |
 | `ParametersNodeViewer.tsx` | rows 11–14 (one instance per location) and row 20 |
 | shared `ExtensionsSection` | rows 9, 21, 24 | heading variant per call site (h2 operation, h3 response / Responses) | same component for request parameters and response headers |

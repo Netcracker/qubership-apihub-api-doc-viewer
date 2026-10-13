@@ -1,32 +1,39 @@
-import { BLOCK_CONTENT_DIFF_COLOR_MAP } from "../../../consts/changes"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiOAuthFlowNode } from "@apihub/utils/openapi/node-type-checkers"
+import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
 import {
   ChangedPropertyMetaData,
-  HighlightVariant,
-  NodeDiffsSeverities,
+  NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT, OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
+import {
+  OPENAPI_OAUTH_FLOW_HEADER_PREFIX,
+  OPENAPI_SECURITY_PROP_LABELS,
+  OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT,
+  OpenApiDisplayLabels,
+} from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
-import { OpenApiRowDiffs, OpenApiSideListItem } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
+import { OpenApiRowDiffs, OpenApiScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { FC, Fragment, ReactElement } from "react"
-import { getUxBadgeColorSchema } from "../../kit/ux/UxBadge/consts"
-import { BADGE_KIND_DEFAULT } from "../../kit/ux/UxBadge/types"
-import { UxBadge } from "../../kit/ux/UxBadge/UxBadge"
-import { UxTooltip } from "../../kit/ux/UxTooltip/UxTooltip"
-import { AdditionalInfoPiece } from "../../shared-components/AdditionalInfoPiece/AdditionalInfoPiece"
-import { AdditionalInfoRow } from "../../shared-components/AdditionalInfoRow/AdditionalInfoRow"
+import { CSSProperties, FC, Fragment, ReactElement, useState } from "react"
 import { FramePosition } from "../../shared-components/Frame/types"
 import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
+import {
+  SecurityFlowHeaderContent,
+  SecurityListValue,
+  SecurityPropContent,
+  SecurityPropValue,
+  SecurityRow,
+  SecurityScopeContent,
+  SecurityScopesToggleContent,
+} from "../../shared-components/Security/SecurityRows"
+import { resolveValueHighlighter } from "../../shared-components/Security/value-highlighter"
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../../shared-components/WithPrecededByProps"
-import '../../shared-styles/frame.css'
 import { takeOpenApiSeverities } from "../diff-state"
 
 type SchemeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_SCHEME>
@@ -34,16 +41,20 @@ type FlowNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OAUTH_FLOW>
 
 type SecuritySchemeCardProps = {
   node: SchemeNode
-  /** What the card title row follows: the selector row for the first card, a card for the next ones. */
+  /** What the card title row follows: the toolbar for the first card, a card for the next ones. */
   precededBy: PrecededBy
 }
 
 const MUTED_TEXT_COLOR = '#8F9EB4'
+/** Extra width of a scope name column: the required `*`. */
+const SCOPE_NAME_EXTRA_CH = 2
+
+type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
 /** One row of the card: rendered by `render(framePosition)` once its frame position is known. */
 type CardRow = {
   readonly key: string
-  readonly render: (framePosition: (side: LayoutSide) => FramePosition | undefined) => ReactElement
+  readonly render: (framePosition: FramePositionResolver) => ReactElement
 }
 
 /**
@@ -60,17 +71,63 @@ function resolveFramePosition(index: number, count: number): FramePosition {
   return index === count - 1 ? 'last' : 'middle'
 }
 
+const severityOf = (diff: ChangedPropertyMetaData | undefined): NodeDiffsSeverity | undefined =>
+  diff ? { type: diff.data.type, causedAt: [] } : undefined
+
+/** Collects card rows and the label / scope-name lengths that size the shared grid columns. */
+class CardRows {
+  public readonly rows: CardRow[] = []
+  private labelLength = 0
+  private scopeNameLength = 0
+
+  public add(row: CardRow): void {
+    this.rows.push(row)
+  }
+
+  public measureLabels(...labels: readonly string[]): void {
+    this.labelLength = Math.max(this.labelLength, ...labels.map(label => label.length))
+  }
+
+  public measureScopeNames(names: readonly string[]): void {
+    this.scopeNameLength = Math.max(this.scopeNameLength, ...names.map(name => name.length + SCOPE_NAME_EXTRA_CH))
+  }
+
+  /**
+   * Column widths in `ch` of the longest label / scope name: every prop of the card starts its value
+   * at the same x. `ch` is wider than an average proportional glyph, so labels always fit.
+   */
+  public get style(): CSSProperties & Record<`--${string}`, string> {
+    return {
+      '--security-label-width': `${this.labelLength}ch`,
+      '--security-scope-width': `${this.scopeNameLength}ch`,
+    }
+  }
+}
+
 /** Framed card of one security scheme of the selected alternative. Design: entities/security.md -> "Scheme card". */
 export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   const { node, precededBy } = props
   const displayMode = useDisplayMode()
+  const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
   const severities = takeOpenApiSeverities(node)
   const visibility = OpenApiNodeVisibility.resolveSecurityScheme(value, displayMode)
   const flows = getOpenApiChildren(node, isOpenApiOAuthFlowNode)
+  // A wholly added / removed card is one block: only its title row carries the severity badge.
+  const rowSeverities = OpenApiRowDiffs.Section.takeHeaderRowDiff(node) ? undefined : severities
+  const [collapsedScopes, setCollapsedScopes] = useState<ReadonlySet<string>>(new Set())
+  const toggleScopes = (key: string): void => setCollapsedScopes(current => {
+    const next = new Set(current)
+    if (next.has(key)) {
+      next.delete(key)
+    } else {
+      next.add(key)
+    }
+    return next
+  })
 
-  const rows: CardRow[] = []
-  rows.push({
+  const card = new CardRows()
+  card.add({
     key: 'title',
     render: (framePosition) => (
       <TitleRow
@@ -78,7 +135,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         value={value?.name ?? String(node.key)}
         expandable={false}
         variant={TextValueVariant.h4}
-        subheader={(side) => <SchemeTypeBadge node={node} layoutSide={side} />}
+        subheader={(side) => <SchemeTypeText node={node} layoutSide={side} />}
         diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
         diffsSeverities={severities}
         framePosition={framePosition}
@@ -86,7 +143,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     ),
   })
   if (visibility.showUnresolved) {
-    rows.push({
+    card.add({
       key: 'unresolved',
       render: (framePosition) => (
         <TextRow
@@ -102,7 +159,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     })
   }
   if (visibility.showDescription) {
-    rows.push({
+    card.add({
       key: 'description',
       render: (framePosition) => (
         <MarkdownTextRow
@@ -110,193 +167,260 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
           value={value?.description ?? ''}
           variant={TextValueVariant.body2}
           diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')}
-          diffsSeverities={severities}
+          diffsSeverities={rowSeverities}
           diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.DescriptionRow}
           framePosition={framePosition}
         />
       ),
     })
   }
-  const fieldRows: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt]> = [
-    [visibility.showLocation, 'in', 'In', NodeDiffsSeverityPlacemennt.SecuritySchemeLocationRow],
-    [visibility.showParameterName, 'parameterName', 'Name', NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
-    [visibility.showHttpScheme, 'scheme', 'Scheme', NodeDiffsSeverityPlacemennt.SecuritySchemeHttpSchemeRow],
-    [visibility.showBearerFormat, 'bearerFormat', 'Bearer format', NodeDiffsSeverityPlacemennt.SecuritySchemeBearerFormatRow],
-    [visibility.showOpenIdConnectUrl, 'openIdConnectUrl', 'OpenID Connect URL', NodeDiffsSeverityPlacemennt.SecuritySchemeOpenIdConnectUrlRow],
+
+  if (visibility.showParameterName) {
+    const labelOf = (side: LayoutSide): string => OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
+    card.measureLabels(labelOf(ORIGIN_LAYOUT_SIDE), labelOf(CHANGED_LAYOUT_SIDE))
+    card.add(fieldPropRow({
+      key: 'parameterName',
+      node,
+      field: 'parameterName',
+      label: labelOf,
+      rowDiff: OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(node),
+      severity: rowSeverities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
+    }))
+  }
+  const schemeFields: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt, boolean]> = [
+    [visibility.showHttpScheme, 'scheme', OPENAPI_SECURITY_PROP_LABELS.httpAuthorizationScheme, NodeDiffsSeverityPlacemennt.SecuritySchemeHttpSchemeRow, false],
+    [visibility.showBearerFormat, 'bearerFormat', OPENAPI_SECURITY_PROP_LABELS.bearerFormat, NodeDiffsSeverityPlacemennt.SecuritySchemeBearerFormatRow, false],
+    [visibility.showOpenIdConnectUrl, 'openIdConnectUrl', OPENAPI_SECURITY_PROP_LABELS.openIdConnectUrl, NodeDiffsSeverityPlacemennt.SecuritySchemeOpenIdConnectUrlRow, true],
   ]
-  for (const [shown, field, label, placement] of fieldRows) {
+  for (const [shown, field, label, placement, link] of schemeFields) {
     if (shown) {
-      rows.push({
+      card.measureLabels(label)
+      card.add(fieldPropRow({
         key: field,
-        render: (framePosition) => (
-          <FieldChipRow
-            node={node}
-            field={field}
-            label={label}
-            diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, field)}
-            diffsSeverities={severities}
-            placement={placement}
-            framePosition={framePosition}
-          />
-        ),
-      })
+        node,
+        field,
+        label: () => label,
+        rowDiff: OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, field),
+        severity: rowSeverities?.[placement],
+        link,
+      }))
     }
   }
   if (visibility.showRequiredScopes && value) {
-    rows.push({
+    const label = OpenApiDisplayLabels.requiredScopesLabel(value.requiredScopesKind)
+    card.measureLabels(label)
+    card.add({
       key: 'requiredScopes',
       render: (framePosition) => (
-        <ListChipRow
-          label={OpenApiDisplayLabels.requiredScopesLabel(value.requiredScopesKind)}
-          resolveItems={(side) => OpenApiRowDiffs.SecurityScheme.resolveRequiredScopesSideItems(node, side)}
-          diff={OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node)}
-          diffsSeverities={severities}
-          placement={NodeDiffsSeverityPlacemennt.SecurityRequiredScopesRow}
+        <SecurityRow
+          testId="security-prop-requiredScopes"
           framePosition={framePosition}
+          diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'requiredScopes')}
+          severity={rowSeverities?.[NodeDiffsSeverityPlacemennt.SecurityRequiredScopesRow]}
+          renderSide={(side) => (
+            <SecurityPropContent
+              label={label}
+              layoutSide={side}
+              value={<SecurityListValue items={OpenApiRowDiffs.SecurityScheme.resolveRequiredScopesSideItems(node, side)} />}
+            />
+          )}
         />
       ),
     })
   }
-  for (const flow of flows) {
-    rows.push(...buildFlowRows(flow, displayMode))
+
+  if (detailed) {
+    flows.forEach((flow, index) => {
+      if (index > 0) {
+        addSpacer(card, `flow-${String(flow.key)}-gap`, OpenApiRowDiffs.Section.takeHeaderRowDiff(flow))
+      }
+      addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes)
+    })
+    const undeclared = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node)
+    if (undeclared.length > 0) {
+      if (flows.length > 0) {
+        addSpacer(card, 'undeclared-scopes-gap', undefined)
+      }
+      addScopeRows(card, 'undeclared', undeclared, OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node), collapsedScopes, toggleScopes)
+    }
   }
 
   const isPresent = (side: LayoutSide): boolean => OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)
   return (
-    <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
-      {rows.map((row, index) => {
-        const position = resolveFramePosition(index, rows.length)
+    <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col" style={card.style}>
+      {card.rows.map((row, index) => {
+        const position = resolveFramePosition(index, card.rows.length)
         return <Fragment key={row.key}>{row.render(side => isPresent(side) ? position : undefined)}</Fragment>
       })}
     </div>
   )
 }
 
-function buildFlowRows(flow: FlowNode, displayMode: ReturnType<typeof useDisplayMode>): CardRow[] {
+type FieldPropRowParams = {
+  key: string
+  node: SchemeNode | FlowNode
+  field: string
+  label: (side: LayoutSide) => string
+  rowDiff: ChangedPropertyMetaData | undefined
+  severity: NodeDiffsSeverity | undefined
+  link?: boolean
+}
+
+/** `label <gap> value`: the value per side; a replaced value gets the text highlighter. */
+function fieldPropRow(params: FieldPropRowParams): CardRow {
+  const { key, node, field, label, rowDiff, severity, link = false } = params
+  const valueDiff = OpenApiRowDiffs.NodeLevel.takeRowDiff(node, field)
+  return {
+    key,
+    render: (framePosition) => (
+      <SecurityRow
+        testId={`security-prop-${key}`}
+        framePosition={framePosition}
+        diff={rowDiff}
+        severity={severity}
+        renderSide={(side) => {
+          const text = OpenApiRowDiffs.NodeLevel.resolveSideField(node, field, side)
+          return (
+            <SecurityPropContent
+              label={label(side)}
+              layoutSide={side}
+              value={text === undefined ? null : <SecurityPropValue text={text} href={link} highlighterClass={resolveValueHighlighter(valueDiff, side)} />}
+            />
+          )
+        }}
+      />
+    ),
+  }
+}
+
+function addSpacer(card: CardRows, key: string, diff: ChangedPropertyMetaData | undefined): void {
+  card.add({
+    key,
+    render: (framePosition) => <SecurityRow variant="spacer" framePosition={framePosition} diff={diff} renderSide={() => null} />,
+  })
+}
+
+function addFlowRows(
+  card: CardRows,
+  flow: FlowNode,
+  scheme: SchemeNode,
+  displayMode: ReturnType<typeof useDisplayMode>,
+  collapsedScopes: ReadonlySet<string>,
+  toggleScopes: (key: string) => void,
+): void {
   const value = flow.value()
   const severities = takeOpenApiSeverities(flow)
   const visibility = OpenApiNodeVisibility.resolveOAuthFlow(value, displayMode)
-  const rows: CardRow[] = [{
-    key: `flow-${String(flow.key)}`,
+  const blockDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(flow)
+  // Inside a wholly added / removed flow (or card), only the flow header carries the severity badge.
+  const rowSeverities = blockDiff ? undefined : severities
+  const flowKey = `flow-${String(flow.key)}`
+  card.add({
+    key: flowKey,
     render: (framePosition) => (
-      <TitleRow
-        data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_LOW_LEVEL}
-        value={value ? OpenApiDisplayLabels.oauthFlowTitle(value.flowType) : String(flow.key)}
-        expandable={false}
-        variant={TextValueVariant.h5}
-        diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(flow)}
-        diffsSeverities={severities}
+      <SecurityRow
+        testId={`security-${flowKey}`}
         framePosition={framePosition}
+        diff={blockDiff}
+        severity={blockDiff?.inherited ? undefined : severities?.[NodeDiffsSeverityPlacemennt.TitleRow]}
+        renderSide={() => (
+          <SecurityFlowHeaderContent
+            prefix={OPENAPI_OAUTH_FLOW_HEADER_PREFIX}
+            name={value ? OpenApiDisplayLabels.oauthFlowName(value.flowType) : String(flow.key)}
+          />
+        )}
       />
     ),
-  }]
-  const urlRows: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt]> = [
-    [visibility.showAuthorizationUrl, 'authorizationUrl', 'Authorization URL', NodeDiffsSeverityPlacemennt.OAuthFlowAuthorizationUrlRow],
-    [visibility.showTokenUrl, 'tokenUrl', 'Token URL', NodeDiffsSeverityPlacemennt.OAuthFlowTokenUrlRow],
-    [visibility.showRefreshUrl, 'refreshUrl', 'Refresh URL', NodeDiffsSeverityPlacemennt.OAuthFlowRefreshUrlRow],
+  })
+  const urlFields: ReadonlyArray<readonly [boolean, 'authorizationUrl' | 'tokenUrl' | 'refreshUrl', NodeDiffsSeverityPlacemennt]> = [
+    [visibility.showAuthorizationUrl, 'authorizationUrl', NodeDiffsSeverityPlacemennt.OAuthFlowAuthorizationUrlRow],
+    [visibility.showTokenUrl, 'tokenUrl', NodeDiffsSeverityPlacemennt.OAuthFlowTokenUrlRow],
+    [visibility.showRefreshUrl, 'refreshUrl', NodeDiffsSeverityPlacemennt.OAuthFlowRefreshUrlRow],
   ]
-  for (const [shown, field, label, placement] of urlRows) {
+  for (const [shown, field, placement] of urlFields) {
     if (shown) {
-      rows.push({
-        key: `flow-${String(flow.key)}-${field}`,
-        render: (framePosition) => (
-          <FieldChipRow
-            node={flow}
-            field={field}
-            label={label}
-            diff={OpenApiRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field)}
-            diffsSeverities={severities}
-            placement={placement}
-            framePosition={framePosition}
-          />
-        ),
-      })
+      const label = OPENAPI_SECURITY_PROP_LABELS[field]
+      card.measureLabels(label)
+      card.add(fieldPropRow({
+        key: `${flowKey}-${field}`,
+        node: flow,
+        field,
+        label: () => label,
+        rowDiff: OpenApiRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field),
+        severity: rowSeverities?.[placement],
+        link: true,
+      }))
     }
   }
   if (visibility.showScopes) {
-    rows.push({
-      key: `flow-${String(flow.key)}-scopes`,
+    addScopeRows(card, flowKey, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, collapsedScopes, toggleScopes)
+  }
+}
+
+/** `Scopes ▾` toggle (expanded by default) and the 2nd-level scope rows under it. */
+function addScopeRows(
+  card: CardRows,
+  key: string,
+  scopes: readonly OpenApiScopeRow[],
+  blockDiff: ChangedPropertyMetaData | undefined,
+  collapsedScopes: ReadonlySet<string>,
+  toggleScopes: (key: string) => void,
+): void {
+  const expanded = !collapsedScopes.has(key)
+  card.measureScopeNames(scopes.map(scope => scope.name))
+  card.add({
+    key: `${key}-scopes`,
+    render: (framePosition) => (
+      <SecurityRow
+        framePosition={framePosition}
+        diff={blockDiff}
+        renderSide={(side) => (
+          <SecurityScopesToggleContent label={OPENAPI_SECURITY_PROP_LABELS.scopes} expanded={expanded} onToggle={() => toggleScopes(key)} layoutSide={side} />
+        )}
+      />
+    ),
+  })
+  if (!expanded) {
+    return
+  }
+  for (const scope of scopes) {
+    // A whole-block diff colors every row of the block; only a scope's own change gets a badge.
+    const ownRowDiff = scope.rowDiff !== blockDiff ? scope.rowDiff : undefined
+    card.add({
+      key: `${key}-scope-${scope.name}`,
       render: (framePosition) => (
-        <ListChipRow
-          label="Available scopes"
-          resolveItems={(side) => OpenApiRowDiffs.OAuthFlow.resolveScopesSideItems(flow, side)}
-          diff={OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(flow)}
-          diffsSeverities={severities}
-          placement={NodeDiffsSeverityPlacemennt.OAuthFlowScopesRow}
+        <SecurityRow
+          testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
+          diff={scope.rowDiff}
+          severity={severityOf(ownRowDiff ?? scope.requiredDiff)}
+          renderSide={(side) => {
+            const sideScope = side === ORIGIN_LAYOUT_SIDE ? scope.origin : scope.changed
+            return sideScope
+              ? (
+                <SecurityScopeContent
+                  name={scope.name}
+                  description={sideScope.description}
+                  required={sideScope.required}
+                  descriptionHighlighterClass={resolveValueHighlighter(ownRowDiff, side)}
+                  requiredDiff={scope.requiredDiff}
+                  layoutSide={side}
+                />
+              )
+              : null
+          }}
         />
       ),
     })
   }
-  return rows
 }
 
-const SchemeTypeBadge: FC<{ node: SchemeNode, layoutSide: LayoutSide }> = ({ node, layoutSide }) => {
+/** Gray type text in the title row (JSON Schema / DDL type-label look); a type change highlights it. */
+const SchemeTypeText: FC<{ node: SchemeNode, layoutSide: LayoutSide }> = ({ node, layoutSide }) => {
   const label = OpenApiDisplayLabels.securitySchemeType(OpenApiRowDiffs.NodeLevel.resolveSideField(node, 'type', layoutSide))
   if (!label) {
     return <></>
   }
-  const diff = OpenApiRowDiffs.SecurityScheme.takeTypeBadgeDiff(node)?.data
-  const colorSchema = diff
-    ? `${getUxBadgeColorSchema(BADGE_KIND_DEFAULT)} ${BLOCK_CONTENT_DIFF_COLOR_MAP[diff.action] ?? ''}`
-    : undefined
-  return <UxBadge text={label} colorSchema={colorSchema} />
-}
-
-type FramedRowProps = {
-  diff?: ChangedPropertyMetaData
-  diffsSeverities?: NodeDiffsSeverities
-  placement: NodeDiffsSeverityPlacemennt
-  framePosition: (side: LayoutSide) => FramePosition | undefined
-}
-
-/** `Label: [value]` - the value per side, with the diff's text highlighter on a replaced value. */
-const FieldChipRow: FC<FramedRowProps & { node: SchemeNode | FlowNode, field: string, label: string }> = (props) => {
-  const { node, field, label, diff, diffsSeverities, placement, framePosition } = props
-  return (
-    <AdditionalInfoRow
-      data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_LOW_LEVEL}
-      label={label}
-      colorizingDiff={diff}
-      diffsSeverities={diffsSeverities}
-      diffsSeverityPlacement={placement}
-      framePosition={framePosition}
-      subheader={(side) => {
-        const text = OpenApiRowDiffs.NodeLevel.resolveSideField(node, field, side)
-        const styles = side === ORIGIN_LAYOUT_SIDE ? diff?.styles.before : diff?.styles.after
-        return <AdditionalInfoPiece isVisible={text !== undefined} value={text ?? ''} textHighlighterColor={styles?.textHighlighterColor} />
-      }}
-    />
-  )
-}
-
-/** `Label: [a] [b] …` - added / removed items get a green / red border; a hint becomes a tooltip. */
-const ListChipRow: FC<FramedRowProps & { label: string, resolveItems: (side: LayoutSide) => OpenApiSideListItem[] }> = (props) => {
-  const { label, resolveItems, diff, diffsSeverities, placement, framePosition } = props
-  return (
-    <AdditionalInfoRow
-      data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_LOW_LEVEL}
-      label={label}
-      colorizingDiff={diff}
-      diffsSeverities={diffsSeverities}
-      diffsSeverityPlacement={placement}
-      framePosition={framePosition}
-      subheader={(side) => (
-        <div className="flex flex-row flex-wrap gap-1">
-          {resolveItems(side).map(item => {
-            const chip = (
-              <AdditionalInfoPiece
-                isVisible={true}
-                value={item.text}
-                borderShadowColor={item.change === 'added' ? HighlightVariant.Green : item.change === 'removed' ? HighlightVariant.Red : undefined}
-              />
-            )
-            return item.hint
-              ? <UxTooltip key={item.text} text={item.hint} maxWidthClass="max-w-sm">{chip}</UxTooltip>
-              : <div key={item.text}>{chip}</div>
-          })}
-        </div>
-      )}
-    />
-  )
+  const highlighter = resolveValueHighlighter(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(node), layoutSide)
+  return <span className={`title-row-subheader-value subheader text ${highlighter}`}>{label}</span>
 }
