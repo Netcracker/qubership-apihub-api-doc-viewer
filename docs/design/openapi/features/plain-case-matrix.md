@@ -26,6 +26,28 @@ What the `OpenAPI Operation Suite` covers, and why. Fixtures:
 | Display modes | One story per case; ITs capture every case in `detailed` and `simple` via the `displayMode` story arg. |
 | Generated | Fixtures, catalogues, stories, ITs, and the matrix below come from `packages/api-doc-viewer/bin/openapi-plain-case-definitions.mjs` via `node bin/generate-openapi-suite.mjs`. |
 
+## E2E approach (decision, 2026-10-12 — keep)
+
+E2E cases review **section adjacency**: spacing, preceded-by rules, heading levels, and selector
+and frame rows meeting each other. All subsets of 15 sections would be 2¹⁵ cases, so the group is
+built from three kinds of combinations over one section list in **display order**:
+
+| Kind | Covers | Why it is enough |
+| --- | --- | --- |
+| **Pairs** (every 2 sections) | Every possible "A directly above B" adjacency. | With only two sections present, A is immediately followed by B whatever sits between them in display order. Any page is a chain of such adjacencies. |
+| **Consecutive windows** (k ≥ 3 sections in display order) | How adjacencies compose: cumulative spacing, nested levels (Request h2 → parameter h3 → Body h3), a page growing one section at a time. | O(n²) cases. Reviewing windows top-down shows the page build up section by section. |
+| **All sections** (+ `noHeading`) | The full page. | The only place where both response codes with headers and body meet every other section. |
+
+Constraints:
+- A 1-code and a 2-codes responses section are never combined. As a result, windows never reach
+  the 2-codes sections; they appear only in pairs and in all-sections. This is intended.
+- The section list must follow the viewer's display order (`OPENAPI_SECTION_ORDER` and the
+  header rows). If sections are reordered or added, update the list and regenerate; pairs and
+  windows are derived from it.
+
+How to extend and maintain the suites:
+`agent-packages/api-doc-viewer-testing/.apm/skills/api-doc-viewer-testing/openapi-suites.md`.
+
 ## Matrix
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-suite.mjs -->

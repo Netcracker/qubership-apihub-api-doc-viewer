@@ -270,6 +270,9 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- **OpenAPI suites — read [openapi-suites.md](openapi-suites.md) before touching OpenAPI fixtures,
+  stories, or ITs** (generators, E2E pairs + windows, fields sub-groups, opposites, auto-switch,
+  display-mode args, maintenance workflow, traps). Summary:
 - OpenAPI Operation Suite (plain) — `node bin/generate-openapi-suite.mjs` (cases in
   `bin/openapi-plain-case-definitions.mjs`) → recreates `packages/samples/openapi/`,
   `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx` (Fields is split into semantic sub-groups),
