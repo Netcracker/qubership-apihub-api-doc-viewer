@@ -2,6 +2,7 @@ import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiOAuthFlowNode } from "@apihub/utils/openapi/node-type-checkers"
+import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
 import {
   ChangedPropertyMetaData,
@@ -118,7 +119,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         expandable={false}
         variant={TextValueVariant.h4}
         subheader={(side) => <SchemeTypeText node={node} layoutSide={side} />}
-        diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
+        diff={OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(node)}
         diffsSeverities={severities}
         framePosition={framePosition}
       />
@@ -398,12 +399,12 @@ function addScopeRows(
   }
 }
 
-/** Gray type text in the title row (JSON Schema / DDL type-label look); a type change highlights it. */
+/** Gray type text in the title row (JSON Schema / DDL type-label look); marked yellow / green / red when the type was replaced / appeared / disappeared. */
 const SchemeTypeText: FC<{ node: SchemeNode, layoutSide: LayoutSide }> = ({ node, layoutSide }) => {
   const label = OpenApiDisplayLabels.securitySchemeType(OpenApiRowDiffs.NodeLevel.resolveSideField(node, 'type', layoutSide))
   if (!label) {
     return <></>
   }
-  const highlighter = resolveValueHighlighter(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(node), layoutSide)
+  const highlighter = DiffsClassesBuilder.highlighter(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, layoutSide))
   return <span className={`title-row-subheader-value subheader text ${highlighter}`}>{label}</span>
 }

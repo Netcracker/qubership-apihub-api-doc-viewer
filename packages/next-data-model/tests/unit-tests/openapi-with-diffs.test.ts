@@ -332,7 +332,11 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(read?.origin?.required).toBe(false)
     expect(read?.changed?.required).toBe(true)
     expect(read?.requiredDiff?.data.action).toBe(DiffAction.add)
-    expect(read?.rowDiff).toBeUndefined()
+    // synthetic row replace: yellow on both sides, no text highlighter
+    expect(read?.rowDiff?.styles.before.backgroundColor).toBe('yellow')
+    expect(read?.rowDiff?.styles.after.backgroundColor).toBe('yellow')
+    expect(read?.rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(rows.find(r => r.name === 'orders:write')?.rowDiff).toBeUndefined()
     expect(rows.find(r => r.name === 'orders:write')?.origin?.required).toBe(true)
     expect(OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(oauth)).toEqual([])
   })
@@ -343,6 +347,26 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(added).toBeDefined()
     const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(added!, oauth)
     expect(rows.map(r => [r.name, r.origin, r.rowDiff?.data.action])).toEqual([['orders:read', undefined, DiffAction.add]])
+  })
+
+  it('scheme type change: yellow title row that keeps the scheme name, highlighted type text', () => {
+    const apiKey = scheme('security/15-scheme-type-changed')
+    const title = OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(apiKey)
+    expect(title?.styles.before.backgroundColor).toBe('yellow')
+    expect(title?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(title?.data.action).toBe(DiffAction.replace)
+    expect(title && 'beforeValue' in title.data ? title.data.beforeValue : 'absent').toBeUndefined()
+    expect(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(apiKey)?.styles.after.textHighlighterColor).toBe('yellow')
+  })
+
+  it.each([
+    ['security/16-scheme-definition-added', undefined, 'green'],
+    ['security/17-scheme-definition-removed', 'red', undefined],
+    ['security/15-scheme-type-changed', 'yellow', 'yellow'],
+  ])('type text marker of %s: origin %s, changed %s', (caseId, origin, changed) => {
+    const node = scheme(caseId)
+    expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, ORIGIN_LAYOUT_SIDE)).toBe(origin)
+    expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, CHANGED_LAYOUT_SIDE)).toBe(changed)
   })
 
   it('apiKey location change: per-side label, yellow row without a value highlighter', () => {

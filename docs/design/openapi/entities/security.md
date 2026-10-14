@@ -259,8 +259,8 @@ When the effective list switches between the document list `D` and the operation
 | Whole card / whole flow part added or removed | every row of the block (title or flow header, props, scopes toggle, scope rows, the spacer before it) is green / red on the present side and empty gray on the other |
 | Floating badges | **every** highlighted row carries a diffs floating badge with the strongest severity of that row's diffs; the content-less spacer row is painted but has no badge |
 | Prop rows | the row only: add green, remove red, replace yellow; a replaced **value** gets the `textHighlighterColor`, added / removed values do not |
-| Type change | the gray type text is highlighted on both sides; the title row is not painted (the origin title would otherwise read the before type) (Q-S8) |
-| Scope rows | scope added / removed: green / red row on one side; description replaced: yellow row + highlighted description; required changed: `*` on the origin side when removed, on the changed side when added, and the diff-colored `required` badge **after** the description |
+| Type change | the title row gets a synthetic yellow `replace` background (`OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff`, built from a value-less copy of the type diff, so the origin title still reads the scheme name) and the gray type text is highlighted on both sides (Q-S8). Type text marker (`resolveTypeTextHighlight`): yellow on both sides for a replaced type; green on the changed side when the type appears (scheme definition added to `components`), red on the origin side when it disappears (definition removed) |
+| Scope rows | scope added / removed: green / red row on one side; description replaced: yellow row + highlighted description; required changed: the whole row gets a synthetic yellow `replace` background (no text highlighter), `*` on the origin side when removed, on the changed side when added, and the diff-colored `required` badge **after** the description |
 | Spacing | vertical spacing is padding inside rows only (`SecurityRows.css`), so adjacent highlighted rows form one block without white seams |
 
 ## Related documents

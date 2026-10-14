@@ -1,6 +1,6 @@
 import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../abstract/layout-side"
-import { ChangedPropertyMetaData, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "../../abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
 import { OpenApiDisplayLabels } from "../display/labels"
@@ -292,7 +292,10 @@ export type OpenApiScopeRow = {
   readonly name: string
   readonly origin?: OpenApiScopeRowSide
   readonly changed?: OpenApiScopeRowSide
-  /** Row background: scope added / removed / description replaced (text highlighter), or the inherited whole-block diff. */
+  /**
+   * Row background: scope added / removed / description replaced (text highlighter); a synthetic
+   * yellow `replace` when only the required status changed; or the inherited whole-block diff.
+   */
   readonly rowDiff?: ChangedPropertyMetaData
   /** `required` badge + side-exclusive `*`: the scope exists on both sides and its required status changed. */
   readonly requiredDiff?: ChangedPropertyMetaData
@@ -324,11 +327,16 @@ function buildScopeRow(
   const requiredDiff = requiredChanged && requiredScopesDiff
     ? deriveDiff(requiredScopesDiff, changed.required ? 'add' : 'remove', origin.required || undefined, changed.required || undefined)
     : undefined
+  // Row background: the scope's own change; else a synthetic yellow `replace` (no text highlighter)
+  // when only its required status changed; else the inherited whole-block diff.
+  const rowDiff = ownRowDiff
+    ? OpenApiChangedPropertyMetaData.build(ownRowDiff)
+    : requiredDiff ? OpenApiChangedPropertyMetaData.buildRowReplace(requiredDiff) : inheritedDiff
   return {
     name,
     ...(origin ? { origin } : {}),
     ...(changed ? { changed } : {}),
-    ...(ownRowDiff ? { rowDiff: OpenApiChangedPropertyMetaData.build(ownRowDiff) } : inheritedDiff ? { rowDiff: inheritedDiff } : {}),
+    ...(rowDiff ? { rowDiff } : {}),
     ...(requiredDiff ? { requiredDiff: OpenApiChangedPropertyMetaData.build(requiredDiff) } : {}),
   }
 }
@@ -339,11 +347,41 @@ class SecurityScheme {
   }
 
   /**
+   * Card title row: a whole card add / remove, else a synthetic yellow `replace` (no text
+   * highlighter) when the scheme type changed. Built from a value-less copy of the type diff, so the
+   * origin title keeps the scheme name (a string `beforeValue` would be shown in its place).
+   */
+  public static takeTitleRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    const type = SecurityScheme.takeTypeTextDiff(node)?.data
+    return Section.takeHeaderRowDiff(node)
+      ?? (type ? OpenApiChangedPropertyMetaData.buildRowReplace(deriveDiff(type, 'replace', undefined, undefined)) : undefined)
+  }
+
+  /**
    * The gray type text's own diff (highlighter). A type change is shown on that text only: painting
    * the title row with it would make the origin side's title read the before TYPE instead of the name.
    */
   public static takeTypeTextDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
     return Section.takeHeaderRowDiff(node) ? undefined : fieldDiff(node, 'type')
+  }
+
+  /**
+   * Text highlighter of the gray type text on a side: yellow for a replaced type; green on the
+   * changed side when the type appeared (e.g. the scheme definition was added to `components`);
+   * red on the origin side when it disappeared. `undefined` = no marker.
+   */
+  public static resolveTypeTextHighlight(node: AnyOpenApiNode, side: LayoutSide): Exclude<HighlightVariant, HighlightVariant.Gray> | undefined {
+    const diff = SecurityScheme.takeTypeTextDiff(node)
+    if (!diff) {
+      return undefined
+    }
+    if (isDiffAdd(diff.data)) {
+      return side === CHANGED_LAYOUT_SIDE ? HighlightVariant.Green : undefined
+    }
+    if (isDiffRemove(diff.data)) {
+      return side === ORIGIN_LAYOUT_SIDE ? HighlightVariant.Red : undefined
+    }
+    return (side === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after).textHighlighterColor
   }
 
   /** apiKey prop label per side, from `in`: `Header parameter name`, `Query parameter name`, … */
