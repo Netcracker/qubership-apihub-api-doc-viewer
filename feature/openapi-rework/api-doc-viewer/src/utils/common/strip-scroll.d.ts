@@ -13,4 +13,6 @@ export declare function resolveStripScrollState(scrollLeft: number, clientWidth:
  * fully visible past the right edge is aligned to the right edge; the last option cut by the left
  * edge is aligned to the left edge. `undefined` when nothing is hidden in that direction.
  */
-export declare function resolveStripScrollTarget(items: readonly StripItemBox[], scrollLeft: number, clientWidth: number, direction: 'left' | 'right'): number | undefined;
+export declare function resolveStripScrollTarget(items: readonly StripItemBox[], scrollLeft: number, clientWidth: number, direction: 'left' | 'right', 
+/** Room kept between a revealed option and the strip edge (option markers / border shadows). */
+edgeInset?: number): number | undefined;

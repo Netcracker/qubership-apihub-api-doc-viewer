@@ -16,8 +16,11 @@ type SecurityRowProps = WithFramePositionProps & {
     /** Floating severity badge of this row (own changes only, never an inherited block diff). */
     severity?: NodeDiffsSeverity;
     testId?: string;
-    /** `spacer`: the fixed gap before a flow part, painted like the block that follows it. */
-    variant?: 'default' | 'spacer';
+    /**
+     * `spacer`: the fixed gap before a flow part, painted like the block that follows it.
+     * `frame-end`: the closing row of a card (bottom indent + border), always last.
+     */
+    variant?: 'default' | 'spacer' | 'frame-end';
 };
 /**
  * One card row on both sides. Vertical spacing is padding inside the row (never margins between
@@ -27,10 +30,10 @@ export declare const SecurityRow: FC<SecurityRowProps>;
 type SecurityPropContentProps = {
     label: string;
     value: ReactNode;
-    layoutSide: LayoutSide;
 };
 /**
- * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The card sets
+ * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The label uses the JSON
+ * Schema property-title text (`NODE_TITLE_TEXT_CLASSES`). The card sets
  * `--security-label-width`, so values of every prop of the card start at the same x.
  */
 export declare const SecurityPropContent: FC<SecurityPropContentProps>;
@@ -54,12 +57,14 @@ export declare const SecurityFlowHeaderContent: FC<{
     prefix: string;
     name: string;
 }>;
-/** `Scopes ▾` - label and expander only (no value); toggles the scope rows below it. */
+/**
+ * `Scopes ▾` - label and expander only (no value), JSON Schema title pattern: the text and the
+ * expander are both clickable; the expander comes after the text.
+ */
 export declare const SecurityScopesToggleContent: FC<{
     label: string;
     expanded: boolean;
     onToggle: () => void;
-    layoutSide: LayoutSide;
 }>;
 type SecurityScopeContentProps = {
     name: string;
