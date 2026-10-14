@@ -32,9 +32,8 @@ type SecurityPropContentProps = {
     value: ReactNode;
 };
 /**
- * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The label uses the JSON
- * Schema property-title text (`NODE_TITLE_TEXT_CLASSES`). The card sets
- * `--security-label-width`, so values of every prop of the card start at the same x.
+ * 1st-level security prop: `label <20px> value`. The label uses the JSON Schema property-title text
+ * (`NODE_TITLE_TEXT_CLASSES`) and wraps inside its column when longer than 40% of the card.
  */
 export declare const SecurityPropContent: FC<SecurityPropContentProps>;
 type SecurityPropValueProps = {
@@ -44,14 +43,6 @@ type SecurityPropValueProps = {
     highlighterClass?: string;
 };
 export declare const SecurityPropValue: FC<SecurityPropValueProps>;
-/** One item of a list value (`Required scopes`, `Required roles`); `change` marks a side-exclusive item. */
-export type SecurityListValueItem = {
-    readonly text: string;
-    readonly change?: 'added' | 'removed';
-};
-export declare const SecurityListValue: FC<{
-    items: readonly SecurityListValueItem[];
-}>;
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
 export declare const SecurityFlowHeaderContent: FC<{
     prefix: string;
@@ -77,8 +68,9 @@ type SecurityScopeContentProps = {
     layoutSide: LayoutSide;
 };
 /**
- * 2nd-level security prop (one scope): `<20px indent> name * <gap> description [required]`. Its own
- * grid (`--security-scope-width`) so scope names align without moving the 1st-level columns.
+ * 2nd-level security prop (one scope): `<20px offset> name * <20px> description [required]`. Same
+ * grid as 1st-level props; the 20px offset is padding inside the first cell, so the name gets 40% of
+ * the card minus the offset and the description starts where 1st-level values start.
  */
 export declare const SecurityScopeContent: FC<SecurityScopeContentProps>;
 export {};
