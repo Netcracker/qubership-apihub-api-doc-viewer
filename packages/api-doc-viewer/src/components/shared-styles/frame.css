@@ -23,6 +23,12 @@ div[data-frame-position] {
   padding-right: 16px;
 }
 
+/* Diffs mode (side-by-side): a card is never narrower than 80% of its side. The plain-mode 500px
+   cap does not apply here - it would push the card below 80% on wide screens. */
+.side-by-side-layout div[data-frame-position] {
+  width: 80%;
+}
+
 div[data-frame-position="first"],
 div[data-frame-position="single"] {
   border-top: 1px solid #D5DCE3;

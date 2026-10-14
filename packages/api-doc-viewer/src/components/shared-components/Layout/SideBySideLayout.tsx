@@ -8,7 +8,9 @@ type SideBySideLayoutProps = {
 export const SideBySideLayout: FC<SideBySideLayoutProps> = memo<SideBySideLayoutProps>((props) => {
   const { left, right } = props
   return (
-    <div className="flex w-full flex-row items-stretch">
+    // `side-by-side-layout`: a style hook only (no rules of its own) - e.g. frame.css widens framed
+    // cards in diffs mode.
+    <div className="side-by-side-layout flex w-full flex-row items-stretch">
       <div className="flex w-1/2">
         {left}
       </div>
