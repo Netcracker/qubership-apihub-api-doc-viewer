@@ -375,8 +375,9 @@ class SecurityScheme {
   }
 
   /**
-   * oauth2: required scopes that no flow of the scheme declares (on either side). They are shown in a
-   * trailing scope list, because flows mark required scopes inside their own scope lists.
+   * The scheme's own list of required scopes (rows with `*`): required scopes that no flow of the
+   * scheme declares on either side - for oauth2 the undeclared ones (flows mark the rest), for
+   * openIdConnect and OAS 3.1 roles (no flows) all of them.
    */
   public static resolveUndeclaredRequiredScopeRows(scheme: AnyOpenApiNode): OpenApiScopeRow[] {
     const declared = new Set<string>()

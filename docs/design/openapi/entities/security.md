@@ -127,9 +127,8 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 | `HTTP Authorization Scheme` | http, `scheme` | `basic`, `bearer`, … from the scheme, never hard-coded | `SecuritySchemeHttpSchemeRow` |
 | `Bearer Format` | http, `bearerFormat` | `JWT`, `PAT`, … | `SecuritySchemeBearerFormatRow` |
 | `OpenID Connect URL` | openIdConnect | link | `SecuritySchemeOpenIdConnectUrlRow` |
-| `Required scopes` / `Required roles` | non-oauth2, `requiredScopes` non-empty, kind not `ignored` | comma-separated list; in diffs added items green / removed items red (Q-S3) | `SecurityRequiredScopesRow` |
+| `Scopes ▾` / `Roles ▾` (own list) | required scopes no flow declares — all of them for openIdConnect and OAS 3.1 roles; kind not `ignored` | 2nd-level scope rows, each with `*` (same rows as in flow parts) | the scope row's own diff |
 | Flow parts | oauth2 | [OAuth flow parts](#oauth-flow-parts) | per flow node |
-| Trailing `Scopes` | oauth2, required scopes that no flow declares | 2nd-level scope rows, all required (`resolveUndeclaredRequiredScopeRows`) | — |
 
 `mutualTLS` cards have title, type, and description only.
 
@@ -157,8 +156,15 @@ spacer row separates flow parts.
 | `Scopes ▾` | non-empty `scopes` | JSON Schema title pattern: clickable text + clickable `Expander` **after** the text, no value; expanded by default; collapsing hides the scope rows | the block's severity when the flow / card is wholly added / removed |
 | Scope (2nd level) | expanded | `<20px indent> name <* if required> <gap> <gray description> [required badge in diffs]`, own grid `--security-scope-width` | strongest of the scope's own diffs (added / removed / description, required); the block's severity when painted by a whole block |
 
-A scope is **required** when the selected requirement lists it (Q-S2): the separate
-`Required scopes` row is not shown for oauth2. Scope rows come from
+A scope is **required** when the selected requirement lists it (Q-S2). Required scopes are shown
+**only** as `*` on scope rows — there is no `Required scopes` / `Required roles` prop row for any
+scheme type (decided 2026-10-14):
+- oauth2: `*` on the scope rows of every flow that declares the scope; required scopes no flow
+  declares are listed in the scheme's own `Scopes ▾` list after the flow parts;
+- openIdConnect and OAS 3.1 roles on other types (no flows): every requirement scope is a row with
+  `*` in the scheme's own `Scopes ▾` (openIdConnect) / `Roles ▾` (roles) list
+  (`OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows`,
+  `OpenApiDisplayLabels.requiredScopeListLabel`, `OpenApiNodeVisibility` `showRequiredScopeList`). Scope rows come from
 `OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme)`: the union of both sides' scopes, each
 with per-side description and required status, a row diff (scope added / removed / description
 replaced — derived from the flow's `scopes` map diff), and a required diff (status changed on a

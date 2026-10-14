@@ -5,7 +5,6 @@ import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import {
   ChangedPropertyMetaData,
-  HighlightVariant,
   NodeDiffsSeverity,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, ReactElement, ReactNode } from "react"
@@ -104,28 +103,6 @@ export const SecurityPropValue: FC<SecurityPropValueProps> = ({ text, href = fal
   href
     ? <a className={`security-prop-link ${highlighterClass}`} href={text} target="_blank" rel="noopener noreferrer">{text}</a>
     : <span className={`security-prop-text ${highlighterClass}`}>{text}</span>
-)
-
-/** One item of a list value (`Required scopes`, `Required roles`); `change` marks a side-exclusive item. */
-export type SecurityListValueItem = {
-  readonly text: string
-  readonly change?: 'added' | 'removed'
-}
-
-export const SecurityListValue: FC<{ items: readonly SecurityListValueItem[] }> = ({ items }) => (
-  <span className="security-prop-text">
-    {items.map((item, index) => (
-      <span key={item.text}>
-        {index > 0 && ', '}
-        <span className={item.change === 'added'
-          ? DiffsClassesBuilder.highlighter(HighlightVariant.Green)
-          : item.change === 'removed' ? DiffsClassesBuilder.highlighter(HighlightVariant.Red) : ''}
-        >
-          {item.text}
-        </span>
-      </span>
-    ))}
-  </span>
 )
 
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */

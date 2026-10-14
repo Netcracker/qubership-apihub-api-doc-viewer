@@ -31,6 +31,7 @@ export const OPENAPI_SECURITY_PROP_LABELS = {
   tokenUrl: 'Token URL',
   refreshUrl: 'Refresh URL',
   scopes: 'Scopes',
+  roles: 'Roles',
 } as const
 
 /** Plain text before the bold flow name in a flow part header: `Flow type **Authorization Code**`. */
@@ -58,9 +59,11 @@ export class OpenApiDisplayLabels {
     return type === undefined ? undefined : SECURITY_SCHEME_TYPE_LABELS[type] ?? type
   }
 
-  public static requiredScopesLabel(kind: OpenApiRequiredScopesKind): string {
-    return kind === 'roles' ? 'Required roles' : 'Required scopes'
+  /** Label of a scheme's own list of required scopes: `Roles` for OAS 3.1 roles, else `Scopes`. */
+  public static requiredScopeListLabel(kind: OpenApiRequiredScopesKind): string {
+    return kind === 'roles' ? OPENAPI_SECURITY_PROP_LABELS.roles : OPENAPI_SECURITY_PROP_LABELS.scopes
   }
+
 
   /** Bold part of a flow part header (`Flow type **Authorization Code**`). */
   public static oauthFlowName(flowType: OpenApiOAuthFlowType): string {

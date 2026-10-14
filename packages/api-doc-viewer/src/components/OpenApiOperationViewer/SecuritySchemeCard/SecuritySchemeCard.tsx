@@ -23,7 +23,6 @@ import { FramePosition } from "../../shared-components/Frame/types"
 import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
 import {
   SecurityFlowHeaderContent,
-  SecurityListValue,
   SecurityPropContent,
   SecurityPropValue,
   SecurityRow,
@@ -212,28 +211,6 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       }))
     }
   }
-  if (visibility.showRequiredScopes && value) {
-    const label = OpenApiDisplayLabels.requiredScopesLabel(value.requiredScopesKind)
-    card.measureLabels(label)
-    card.add({
-      key: 'requiredScopes',
-      render: (framePosition) => (
-        <SecurityRow
-          testId="security-prop-requiredScopes"
-          framePosition={framePosition}
-          diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'requiredScopes')}
-          severity={severities?.[NodeDiffsSeverityPlacemennt.SecurityRequiredScopesRow]}
-          renderSide={(side) => (
-            <SecurityPropContent
-              label={label}
-              value={<SecurityListValue items={OpenApiRowDiffs.SecurityScheme.resolveRequiredScopesSideItems(node, side)} />}
-            />
-          )}
-        />
-      ),
-    })
-  }
-
   if (detailed) {
     flows.forEach((flow, index) => {
       if (index > 0) {
@@ -241,12 +218,26 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       }
       addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes)
     })
-    const undeclared = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node)
-    if (undeclared.length > 0) {
-      if (flows.length > 0) {
-        addSpacer(card, 'undeclared-scopes-gap', undefined)
+  }
+
+  // The scheme's own list of required scopes (rows with `*`): every required scope for openIdConnect
+  // and OAS 3.1 roles (no flows), the ones no flow declares for oauth2. No separate prop row.
+  if (visibility.showRequiredScopeList && value) {
+    const requiredOnly = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node)
+    if (requiredOnly.length > 0) {
+      if (detailed && flows.length > 0) {
+        addSpacer(card, 'required-scopes-gap', undefined)
       }
-      addScopeRows(card, 'undeclared', undeclared, OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node), severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
+      addScopeRows(
+        card,
+        'required',
+        OpenApiDisplayLabels.requiredScopeListLabel(value.requiredScopesKind),
+        requiredOnly,
+        OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node),
+        severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
+        collapsedScopes,
+        toggleScopes,
+      )
     }
   }
 
@@ -364,14 +355,15 @@ function addFlowRows(
     }
   }
   if (visibility.showScopes) {
-    addScopeRows(card, flowKey, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
+    addScopeRows(card, flowKey, OPENAPI_SECURITY_PROP_LABELS.scopes, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
   }
 }
 
-/** `Scopes ▾` toggle (expanded by default) and the 2nd-level scope rows under it. */
+/** `Scopes ▾` / `Roles ▾` toggle (expanded by default) and the 2nd-level scope rows under it. */
 function addScopeRows(
   card: CardRows,
   key: string,
+  label: string,
   scopes: readonly OpenApiScopeRow[],
   blockDiff: ChangedPropertyMetaData | undefined,
   /** Severity of the whole block (flow / card): the badge of rows painted only by the block diff. */
@@ -389,7 +381,7 @@ function addScopeRows(
         diff={blockDiff}
         severity={blockDiff ? blockSeverity : undefined}
         renderSide={() => (
-          <SecurityScopesToggleContent label={OPENAPI_SECURITY_PROP_LABELS.scopes} expanded={expanded} onToggle={() => toggleScopes(key)} />
+          <SecurityScopesToggleContent label={label} expanded={expanded} onToggle={() => toggleScopes(key)} />
         )}
       />
     ),

@@ -21,7 +21,8 @@ export type OpenApiSecuritySchemeRowVisibility = {
   readonly showHttpScheme: boolean
   readonly showBearerFormat: boolean
   readonly showOpenIdConnectUrl: boolean
-  readonly showRequiredScopes: boolean
+  /** The scheme's own `Scopes ▾` / `Roles ▾` list of required scopes (rows with `*`); hidden for `ignored` kinds. */
+  readonly showRequiredScopeList: boolean
   readonly showUnresolved: boolean
 }
 
@@ -60,8 +61,7 @@ export class OpenApiNodeVisibility {
       showHttpScheme: detailed && value?.type === 'http' && hasText(value.scheme),
       showBearerFormat: detailed && value?.type === 'http' && hasText(value.bearerFormat),
       showOpenIdConnectUrl: detailed && value?.type === 'openIdConnect' && hasText(value.openIdConnectUrl),
-      // oauth2 marks required scopes inside its flows' scope lists instead of a separate prop
-      showRequiredScopes: detailed && !!value && value.type !== 'oauth2' && value.requiredScopesKind !== 'ignored' && value.requiredScopes.length > 0,
+      showRequiredScopeList: detailed && !!value && value.requiredScopesKind !== 'ignored',
       showUnresolved: !!value && !value.isResolved,
     }
   }
