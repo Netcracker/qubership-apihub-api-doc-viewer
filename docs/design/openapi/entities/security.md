@@ -103,18 +103,18 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 | Item | Rule |
 | --- | --- |
 | Shown when | ≥1 alternative — always, also for a single alternative (Q6) |
-| Row | shared `SecurityToolbar` (`shared-components/Security/`): `‹ [option] [option] … ›` — the options are one non-wrapping line (`Selector` `noWrap`) in a horizontally scrolling strip |
-| Arrows | `‹` / `›` scroll the strip by exactly one option (`resolveStripScrollTarget`, `utils/common/strip-scroll.ts`). At the left / right edge the arrow is disabled: gray, no hover, no pointer, not clickable; otherwise blue, hoverable, clickable. Both arrows are always shown (disabled when everything fits) so the row never jumps (Q-S5). |
-| Long titles | an option never grows wider than the strip and is cropped with an ellipsis; `min-width` keeps one character + `…` visible |
+| Row | shared `SecurityToolbar` (`shared-components/Security/`): `‹ [option] [option] … ›` — the options are one non-wrapping line (`Selector` `noWrap`) in a horizontally scrolling strip; 8px vertical padding inside the row. The strip keeps a 6px inset around the options so diff round markers and border shadows (they overhang the option box) are never clipped. |
+| Arrows | `‹` / `›` scroll the strip by exactly one option (`resolveStripScrollTarget`, `utils/common/strip-scroll.ts`). The arrow buttons reset the package-wide `button` rule of `index.css` (padding, border, background) — without it the 24px button has no room for its icon. At the left / right edge the arrow is disabled: gray, no hover, no pointer, not clickable; otherwise blue, hoverable, clickable. Both arrows are always shown (disabled when everything fits) so the row never jumps (Q-S5). |
+| Long titles | an option never grows wider than the strip; its label (inner span, not the button, so markers stay visible) is cropped with an ellipsis; `min-width` keeps one character + `…` visible |
 | Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}` (`OpenApiDisplayLabels.securityRequirementTitle`) |
 | Option test id | `security-alternative-<index>`; arrows `security-toolbar-arrow-{left,right}` |
-| Diffs | option `diffs` / `diffsSummary` / `descendantDiffsSummary` from the `securityRequirement` node (border shadow, markers, per-side visibility by `Selector`). Row background: `OpenApiRowDiffs.Security.takeToolbarRowDiff` — the section's whole add / remove, else a yellow `replace` row when any alternative was wholly added / removed. Severity placement `SelectorRow`. |
+| Diffs | a wholly added / removed option: green / red border shadow only (`diffs`); any other changed option: the **round marker** of its strongest change (`diffsSummary` ∪ `descendantDiffsSummary`), as in the AsyncAPI section selectors. Row background: `OpenApiRowDiffs.Security.takeToolbarRowDiff` — the section's whole add / remove, else a yellow `replace` row from the synthetic `alternatives` field diff that the with-diffs transformer writes when any alternative was wholly added / removed. Floating badge: `SelectorRow` placement (the strongest of those option changes). |
 | Reuse | the same toolbar, cards, and rows serve AsyncAPI server security later (smaller section header there); the AsyncAPI data layer does not exist yet |
 
 ## Scheme card
 
 One card per `securityScheme` child of the selected alternative, in requirement order: a
-**framed box** (Q8, [Card frame](#card-frame)). Component `SecuritySchemeCard`, test id
+**framed box** (Q8, [Card frame](#card-frame)). Card width (`shared-styles/frame.css`): **not full width** — `min(40%, 500px)` of its side, in plain and side-by-side modes alike; in diffs the percentage is of each half, so a card never crosses the vertical separator. Every row of the card gets this same fixed width, so the card is one solid block. The card starts 16px in (= `px-4`), its border under the `Security` title text. Inner indents are the same on all four sides: 16px (the first row's top and the last row's bottom padding override the rows' own spacing). The last row is always a content-less **closing row** (`SecurityRow` `frame-end`, painted with the whole-card diff): it carries the bottom indent and border, so toggling `Scopes` — which changes which content row comes last — never changes a row's height. Every framed row fills its side (`flex: 1 1 0%` inside the flex layout wrappers), so all rows of a card have the same width and read as one solid block. Component `SecuritySchemeCard`, test id
 `security-scheme-<name>`; its rows are the shared blocks of `shared-components/Security/SecurityRows.tsx`.
 Sketches: [../features/security-redesign.md](../features/security-redesign.md) §2–§4.
 
@@ -136,7 +136,10 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 **Security props** (label / value rows) use one grid shape per card: `grid-template-columns:
 var(--security-label-width) minmax(0, 1fr)` with a fixed 40px column gap (Q-S1). The card sets
 `--security-label-width` to the longest label of its props in `ch`, so values of every prop of the
-card start at the same x. Labels use the JSON Schema node-title font (`TextValue` `body2`).
+card start at the same x. Labels, the `Scopes` text, and scope names use exactly the JSON Schema
+property-title text, `NODE_TITLE_TEXT_CLASSES` (`text-xs text-black font-Inter-Medium`: the medium
+look comes from the static "Inter Medium" family at weight 400, not from `font-weight`); values are
+12px secondary gray (the subheader / type-label gray), URLs stay link-blue; scope descriptions gray.
 
 Type labels (`OpenApiDisplayLabels.securitySchemeType`): `apiKey` → `API key`, `http` → `HTTP`,
 `oauth2` → `OAuth 2.0`, `openIdConnect` → `OpenID Connect`, `mutualTLS` → `Mutual TLS`; any
@@ -151,8 +154,8 @@ spacer row separates flow parts.
 | --- | --- | --- | --- |
 | Flow header | always (`detailed`) | `Flow type **Authorization Code**` on a `#EDF1F5` plate (`OpenApiDisplayLabels.oauthFlowName`) | `TitleRow` of the flow (not when the whole diff is inherited from the card) |
 | `Authorization URL` / `Token URL` / `Refresh URL` | the field exists | link | `OAuthFlow*UrlRow` |
-| `Scopes ▾` | non-empty `scopes` | label + expander, no value; expanded by default; collapsing hides the scope rows | — |
-| Scope (2nd level) | expanded | `<20px indent> name <* if required> <gap> <gray description> [required badge in diffs]`, own grid `--security-scope-width` | the scope's own diff type |
+| `Scopes ▾` | non-empty `scopes` | JSON Schema title pattern: clickable text + clickable `Expander` **after** the text, no value; expanded by default; collapsing hides the scope rows | the block's severity when the flow / card is wholly added / removed |
+| Scope (2nd level) | expanded | `<20px indent> name <* if required> <gap> <gray description> [required badge in diffs]`, own grid `--security-scope-width` | strongest of the scope's own diffs (added / removed / description, required); the block's severity when painted by a whole block |
 
 A scope is **required** when the selected requirement lists it (Q-S2): the separate
 `Required scopes` row is not shown for oauth2. Scope rows come from
@@ -245,7 +248,8 @@ When the effective list switches between the document list `D` and the operation
 | --- | --- |
 | Section header | presence rule over the alternatives ([../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
 | Toolbar | yellow (`replace`) row when an alternative was wholly added / removed; the option keeps its green / red border; selecting it shows its content on one side only (the other side empty and gray) |
-| Whole card / whole flow part added or removed | every row of the block (title or flow header, props, scopes toggle, scope rows, the spacer before it) is green / red on the present side and empty gray on the other; only the block's head row carries the severity badge |
+| Whole card / whole flow part added or removed | every row of the block (title or flow header, props, scopes toggle, scope rows, the spacer before it) is green / red on the present side and empty gray on the other |
+| Floating badges | **every** highlighted row carries a diffs floating badge with the strongest severity of that row's diffs; the content-less spacer row is painted but has no badge |
 | Prop rows | the row only: add green, remove red, replace yellow; a replaced **value** gets the `textHighlighterColor`, added / removed values do not |
 | Type change | the gray type text is highlighted on both sides; the title row is not painted (the origin title would otherwise read the before type) (Q-S8) |
 | Scope rows | scope added / removed: green / red row on one side; description replaced: yellow row + highlighted description; required changed: `*` on the origin side when removed, on the changed side when added, and the diff-colored `required` badge **after** the description |

@@ -30,3 +30,10 @@ describe("strip-scroll", () => {
     expect(resolveStripScrollTarget([{ left: 0, width: 50 }, { left: 58, width: 400 }], 0, 200, "right")).toBe(58)
   })
 })
+
+describe("strip-scroll with an edge inset", () => {
+  it("keeps room for option markers at both edges", () => {
+    expect(resolveStripScrollTarget(items, 0, 250, "right", 6)).toBe(72)
+    expect(resolveStripScrollTarget(items, 180, 250, "left", 6)).toBe(102)
+  })
+})

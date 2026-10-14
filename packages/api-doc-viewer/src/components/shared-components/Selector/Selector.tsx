@@ -79,7 +79,7 @@ export function Selector<
               onSelectOption(option)
             }}
           >
-            {resolvedTitle}
+            {noWrap ? <span className="button-selector-option-label">{resolvedTitle}</span> : resolvedTitle}
           </button>
         )
       })}

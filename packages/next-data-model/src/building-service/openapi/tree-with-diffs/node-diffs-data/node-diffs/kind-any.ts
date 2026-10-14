@@ -1,7 +1,7 @@
 import { Diff, isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDiffs } from "../../../../../model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiChangedPropertyMetaData } from "../../../../../model/openapi/tree-with-diffs/changed-property-metadata"
-import { OpenApiTreeNodeKind } from "../../../../../model/openapi/types/node-kind"
+import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../../model/openapi/types/node-kind"
 import { OpenApiTreeNodeMeta } from "../../../../../model/openapi/types/node-meta"
 import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node-value"
 import { isObjective, takeIfDiffsRecord } from "../../../../../utilities"
@@ -9,6 +9,12 @@ import { NodeKey } from "../../../../../utility-types"
 import { DiffMetaKeys } from "../../../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { AbstractNodeDiffsAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 import { OPENAPI_NODE_VALUE_PROPS } from "../../../tree/node-data/builder"
+import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
+
+/** Field diffs that are not value props: synthetic row diffs written by the with-diffs transformer. */
+const SYNTHETIC_FIELD_DIFF_KEYS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly string[]>>> = {
+  [OpenApiTreeNodeKinds.SECURITY]: [OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY],
+}
 
 type OpenApiValue = OpenApiAnyTreeNodeValue | null
 export type OpenApiTreeNodeWithDiffsForAggregation = ITreeNodeWithDiffs<OpenApiValue, OpenApiTreeNodeKind, OpenApiTreeNodeMeta, OpenApiValue>
@@ -68,10 +74,10 @@ export class OpenApiNodeDiffsAggregatorKindAny extends AbstractNodeDiffsAggregat
   }
 
   protected aggregateFields(record: Partial<Record<string, Diff>>, nodeDiffs: NodeDiffs<OpenApiValue>): void {
-    for (const key of OPENAPI_NODE_VALUE_PROPS[this.kind]) {
+    for (const key of [...OPENAPI_NODE_VALUE_PROPS[this.kind], ...(SYNTHETIC_FIELD_DIFF_KEYS[this.kind] ?? [])]) {
       const diff = record[key]
       if (diff) {
-        // Keys come from the kind's value-prop list, i.e. they are keys of the node value.
+        // Keys come from the kind's value-prop list (keys of the node value) or its synthetic row keys.
         Reflect.set(nodeDiffs, key, OpenApiChangedPropertyMetaData.build(diff))
       }
     }

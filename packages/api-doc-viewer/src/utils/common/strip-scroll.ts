@@ -25,16 +25,20 @@ export function resolveStripScrollTarget(
   scrollLeft: number,
   clientWidth: number,
   direction: 'left' | 'right',
+  /** Room kept between a revealed option and the strip edge (option markers / border shadows). */
+  edgeInset = 0,
 ): number | undefined {
   if (direction === 'right') {
     const viewportRight = scrollLeft + clientWidth
-    const next = items.find(item => item.left + item.width > viewportRight + EDGE_TOLERANCE)
+    const next = items.find(item => item.left + item.width + edgeInset > viewportRight + EDGE_TOLERANCE)
     if (!next) {
       return undefined
     }
     // An option wider than the strip (cropped by its max-width anyway) is aligned to its start.
-    return next.width >= clientWidth ? next.left : Math.max(0, next.left + next.width - clientWidth)
+    return next.width + 2 * edgeInset >= clientWidth
+      ? Math.max(0, next.left - edgeInset)
+      : Math.max(0, next.left + next.width + edgeInset - clientWidth)
   }
-  const previous = [...items].reverse().find(item => item.left < scrollLeft - EDGE_TOLERANCE)
-  return previous ? previous.left : undefined
+  const previous = [...items].reverse().find(item => item.left - edgeInset < scrollLeft - EDGE_TOLERANCE)
+  return previous ? Math.max(0, previous.left - edgeInset) : undefined
 }

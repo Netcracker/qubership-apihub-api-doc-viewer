@@ -9,6 +9,7 @@ import {
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../../model/openapi/types/node-kind"
 import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node-value"
 import { AbstractNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
 
 type FieldPlacements = Readonly<Record<string, NodeDiffsSeverityPlacemennt>>
 
@@ -16,6 +17,9 @@ const Placement = NodeDiffsSeverityPlacemennt
 
 /** Field diff -> the row it belongs to. One placement per row instance (D7). */
 const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacements>>> = {
+  [OpenApiTreeNodeKinds.SECURITY]: {
+    [OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY]: Placement.SelectorRow,
+  },
   [OpenApiTreeNodeKinds.OPERATION]: {
     title: Placement.TitleRow,
     deprecated: Placement.TitleRow,

@@ -7,8 +7,9 @@ import { ChangedPropertyMetaData } from "@netcracker/qubership-apihub-next-data-
 import { FC, ReactNode } from "react"
 import { JsonSchemaNodeTitleDisplay, JsonSchemaNodeTitleVariants } from '../utils/resolve-json-schema-node-title'
 import { JsonSchemaRequiredDiffIndicator } from "./JsonSchemaRequiredDiffIndicator"
+import { NODE_TITLE_TEXT_CLASSES } from "../../shared-styles/tailwind-classnames"
 
-const JSON_SCHEMA_NODE_TITLE_CLASS = "text-xs text-black font-Inter-Medium"
+const JSON_SCHEMA_NODE_TITLE_CLASS = NODE_TITLE_TEXT_CLASSES
 
 export type JsonSchemaNodeTitleProps = {
   display: JsonSchemaNodeTitleDisplay

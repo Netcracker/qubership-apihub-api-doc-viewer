@@ -9,15 +9,13 @@ import {
   NodeDiffsSeverity,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, ReactElement, ReactNode } from "react"
-import { ArrowDownIcon } from "../../kit/icons/ArrowDownIcon"
 import { TagsWithDiffs } from "../diffs/TagsWithDiffs"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
+import { Expander } from "../Expander"
 import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
-import { TextValue } from "../TextValue/TextValue"
-import { TextValueVariant } from "../TextValue/types"
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
 import "../../shared-styles/frame.css"
 import "../SubheaderValue/SubheaderValue.css"
 import "./SecurityRows.css"
@@ -37,8 +35,11 @@ type SecurityRowProps = WithFramePositionProps & {
   /** Floating severity badge of this row (own changes only, never an inherited block diff). */
   severity?: NodeDiffsSeverity
   testId?: string
-  /** `spacer`: the fixed gap before a flow part, painted like the block that follows it. */
-  variant?: 'default' | 'spacer'
+  /**
+   * `spacer`: the fixed gap before a flow part, painted like the block that follows it.
+   * `frame-end`: the closing row of a card (bottom indent + border), always last.
+   */
+  variant?: 'default' | 'spacer' | 'frame-end'
 }
 
 /**
@@ -56,7 +57,7 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
       <div
         data-testid={testId}
         data-frame-position={framePosition?.(layoutSide)}
-        className={`security-row ${variant === 'spacer' ? 'security-row_spacer' : ''} flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={`security-row ${variant === 'default' ? '' : `security-row_${variant}`} flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
         {visible && renderSide(layoutSide)}
       </div>
@@ -76,17 +77,17 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
 type SecurityPropContentProps = {
   label: string
   value: ReactNode
-  layoutSide: LayoutSide
 }
 
 /**
- * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The card sets
+ * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The label uses the JSON
+ * Schema property-title text (`NODE_TITLE_TEXT_CLASSES`). The card sets
  * `--security-label-width`, so values of every prop of the card start at the same x.
  */
-export const SecurityPropContent: FC<SecurityPropContentProps> = ({ label, value, layoutSide }) => (
+export const SecurityPropContent: FC<SecurityPropContentProps> = ({ label, value }) => (
   <div className="security-prop grid w-full grid-cols-[var(--security-label-width)_minmax(0,1fr)] items-baseline gap-x-10">
     <div className="security-prop-label whitespace-nowrap">
-      <TextValue value={label} variant={TextValueVariant.body2} layoutSide={layoutSide} />
+      <span className={NODE_TITLE_TEXT_CLASSES}>{label}</span>
     </div>
     <div className="security-prop-value min-w-0 break-words">{value}</div>
   </div>
@@ -134,22 +135,19 @@ export const SecurityFlowHeaderContent: FC<{ prefix: string, name: string }> = (
   </span>
 )
 
-/** `Scopes ▾` - label and expander only (no value); toggles the scope rows below it. */
-export const SecurityScopesToggleContent: FC<{ label: string, expanded: boolean, onToggle: () => void, layoutSide: LayoutSide }> = (props) => {
-  const { label, expanded, onToggle, layoutSide } = props
+/**
+ * `Scopes ▾` - label and expander only (no value), JSON Schema title pattern: the text and the
+ * expander are both clickable; the expander comes after the text.
+ */
+export const SecurityScopesToggleContent: FC<{ label: string, expanded: boolean, onToggle: () => void }> = (props) => {
+  const { label, expanded, onToggle } = props
   return (
-    <button
-      type="button"
-      data-testid="security-scopes-toggle"
-      aria-expanded={expanded}
-      onClick={onToggle}
-      className="security-scopes-toggle flex items-center gap-2"
-    >
-      <TextValue value={label} variant={TextValueVariant.body2} layoutSide={layoutSide} />
-      <span className="flex items-center" style={{ transform: expanded ? undefined : 'rotate(-90deg)' }}>
-        <ArrowDownIcon />
+    <div data-testid="security-scopes-toggle" className="security-scopes-toggle flex items-center gap-1">
+      <span className={`inline-flex hover:cursor-pointer ${NODE_TITLE_TEXT_CLASSES}`} onClick={onToggle}>
+        {label}
       </span>
-    </button>
+      <Expander expandable={true} expanded={expanded} onClick={onToggle} level={0} />
+    </div>
   )
 }
 
@@ -173,7 +171,7 @@ export const SecurityScopeContent: FC<SecurityScopeContentProps> = (props) => {
   return (
     <div className="security-scope grid w-full grid-cols-[var(--security-scope-width)_minmax(0,1fr)] items-baseline gap-x-10 pl-5">
       <div className="whitespace-nowrap">
-        <span className="security-prop-text">{name}</span>
+        <span className={NODE_TITLE_TEXT_CLASSES}>{name}</span>
         {required && <sup className="ml-0.5 text-red-500">*</sup>}
       </div>
       <div className="flex min-w-0 flex-wrap items-center gap-2">

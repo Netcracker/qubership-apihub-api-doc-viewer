@@ -6,24 +6,46 @@
    side borders. The gap between two cards is a separate spacer element.
    ============================================================================= */
 
-[data-frame-position] {
+/* `div[…]` outranks the rows' own `w-full` / `px-4` utilities.
+   Card width: not full width — min(40%, 500px) of its side. The layout wrappers are flex rows and
+   the percentage resolves against the row's side (in side-by-side diffs each half), so a card never
+   crosses the vertical separator. Every row of a card gets this same fixed width (no content-based
+   sizing), so the card reads as one solid block. The 16px left margin (= px-4,
+   X_AXIS_PADDING_ROWS_ASYNC_API) puts the frame border under the section title text. */
+div[data-frame-position] {
+  flex: 0 0 auto;
+  width: min(40%, 500px);
+  min-width: 0;
+  margin-left: 16px;
   border-left: 1px solid #D5DCE3;
   border-right: 1px solid #D5DCE3;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-[data-frame-position="first"],
-[data-frame-position="single"] {
+div[data-frame-position="first"],
+div[data-frame-position="single"] {
   border-top: 1px solid #D5DCE3;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
-[data-frame-position="last"],
-[data-frame-position="single"] {
+div[data-frame-position="last"],
+div[data-frame-position="single"] {
   border-bottom: 1px solid #D5DCE3;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-  padding-bottom: 8px;
+}
+
+/* Inner indents: the same 16px vertically as horizontally (padding-left / -right above). The
+   doubled attribute outranks the rows' own data-precededby spacing (e.g. the title row's
+   padding-top), which would otherwise decide the card's top / bottom indent. */
+div[data-frame-position="first"][data-frame-position],
+div[data-frame-position="single"][data-frame-position] {
+  padding-top: 16px;
+}
+
+div[data-frame-position="last"][data-frame-position],
+div[data-frame-position="single"][data-frame-position] {
+  padding-bottom: 16px;
 }

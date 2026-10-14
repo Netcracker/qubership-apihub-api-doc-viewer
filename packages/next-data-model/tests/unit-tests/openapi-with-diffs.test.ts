@@ -1,6 +1,6 @@
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
-import { NODE_LEVEL_DIFF_KEY } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
+import { NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from '../../src/model/abstract/layout-side'
 import { OpenApiRowDiffs } from '../../src/model/openapi/tree-with-diffs/row-diffs'
 import { OpenApiTreeWithDiffs } from '../../src/model/openapi/tree-with-diffs/tree.impl'
@@ -354,9 +354,12 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
   })
 
-  it('alternative added: yellow toolbar row', () => {
-    const toolbar = OpenApiRowDiffs.Security.takeToolbarRowDiff(security(build('security/05-alternative-added')))
+  it('alternative added: yellow toolbar row with the severity of the option; the option gets a green border', () => {
+    const node = security(build('security/05-alternative-added'))
+    const toolbar = OpenApiRowDiffs.Security.takeToolbarRowDiff(node)
     expect(toolbar?.styles.before.backgroundColor).toBe('yellow')
+    expect(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]?.type).toBe('non-breaking')
+    expect(node.childrenNodes()[1].diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.borderShadowColor).toBe('green')
     expect(OpenApiRowDiffs.Security.takeToolbarRowDiff(security(build('security/11-required-scope-added')))).toBeUndefined()
   })
 })

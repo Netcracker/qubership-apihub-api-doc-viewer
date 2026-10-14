@@ -1,4 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { maxDiffType } from "@apihub/utils/common/changes"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiOAuthFlowNode } from "@apihub/utils/openapi/node-type-checkers"
 import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
@@ -74,6 +75,13 @@ function resolveFramePosition(index: number, count: number): FramePosition {
 const severityOf = (diff: ChangedPropertyMetaData | undefined): NodeDiffsSeverity | undefined =>
   diff ? { type: diff.data.type, causedAt: [] } : undefined
 
+/** The diff with the strongest type (floating badge of a row with several diffs). */
+function strongestDiff(...diffs: (ChangedPropertyMetaData | undefined)[]): ChangedPropertyMetaData | undefined {
+  const present = diffs.filter((diff): diff is ChangedPropertyMetaData => diff !== undefined)
+  const strongest = maxDiffType(new Set(present.map(diff => diff.data.type)))
+  return present.find(diff => diff.data.type === strongest)
+}
+
 /** Collects card rows and the label / scope-name lengths that size the shared grid columns. */
 class CardRows {
   public readonly rows: CardRow[] = []
@@ -113,8 +121,6 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   const severities = takeOpenApiSeverities(node)
   const visibility = OpenApiNodeVisibility.resolveSecurityScheme(value, displayMode)
   const flows = getOpenApiChildren(node, isOpenApiOAuthFlowNode)
-  // A wholly added / removed card is one block: only its title row carries the severity badge.
-  const rowSeverities = OpenApiRowDiffs.Section.takeHeaderRowDiff(node) ? undefined : severities
   const [collapsedScopes, setCollapsedScopes] = useState<ReadonlySet<string>>(new Set())
   const toggleScopes = (key: string): void => setCollapsedScopes(current => {
     const next = new Set(current)
@@ -167,7 +173,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
           value={value?.description ?? ''}
           variant={TextValueVariant.body2}
           diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')}
-          diffsSeverities={rowSeverities}
+          diffsSeverities={severities}
           diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.DescriptionRow}
           framePosition={framePosition}
         />
@@ -184,7 +190,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       field: 'parameterName',
       label: labelOf,
       rowDiff: OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(node),
-      severity: rowSeverities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
+      severity: severities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
     }))
   }
   const schemeFields: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt, boolean]> = [
@@ -201,7 +207,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         field,
         label: () => label,
         rowDiff: OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, field),
-        severity: rowSeverities?.[placement],
+        severity: severities?.[placement],
         link,
       }))
     }
@@ -216,11 +222,10 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
           testId="security-prop-requiredScopes"
           framePosition={framePosition}
           diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'requiredScopes')}
-          severity={rowSeverities?.[NodeDiffsSeverityPlacemennt.SecurityRequiredScopesRow]}
+          severity={severities?.[NodeDiffsSeverityPlacemennt.SecurityRequiredScopesRow]}
           renderSide={(side) => (
             <SecurityPropContent
               label={label}
-              layoutSide={side}
               value={<SecurityListValue items={OpenApiRowDiffs.SecurityScheme.resolveRequiredScopesSideItems(node, side)} />}
             />
           )}
@@ -241,9 +246,18 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       if (flows.length > 0) {
         addSpacer(card, 'undeclared-scopes-gap', undefined)
       }
-      addScopeRows(card, 'undeclared', undeclared, OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node), collapsedScopes, toggleScopes)
+      addScopeRows(card, 'undeclared', undeclared, OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node), severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
     }
   }
+
+  // Closing row: keeps the card's bottom indent and border off the content rows, so toggling
+  // `Scopes` (which changes which content row is last) never changes a row's height.
+  card.add({
+    key: 'frame-end',
+    render: (framePosition) => (
+      <SecurityRow variant="frame-end" framePosition={framePosition} diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)} renderSide={() => null} />
+    ),
+  })
 
   const isPresent = (side: LayoutSide): boolean => OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)
   return (
@@ -283,7 +297,6 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
           return (
             <SecurityPropContent
               label={label(side)}
-              layoutSide={side}
               value={text === undefined ? null : <SecurityPropValue text={text} href={link} highlighterClass={resolveValueHighlighter(valueDiff, side)} />}
             />
           )
@@ -312,8 +325,6 @@ function addFlowRows(
   const severities = takeOpenApiSeverities(flow)
   const visibility = OpenApiNodeVisibility.resolveOAuthFlow(value, displayMode)
   const blockDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(flow)
-  // Inside a wholly added / removed flow (or card), only the flow header carries the severity badge.
-  const rowSeverities = blockDiff ? undefined : severities
   const flowKey = `flow-${String(flow.key)}`
   card.add({
     key: flowKey,
@@ -322,7 +333,7 @@ function addFlowRows(
         testId={`security-${flowKey}`}
         framePosition={framePosition}
         diff={blockDiff}
-        severity={blockDiff?.inherited ? undefined : severities?.[NodeDiffsSeverityPlacemennt.TitleRow]}
+        severity={severities?.[NodeDiffsSeverityPlacemennt.TitleRow]}
         renderSide={() => (
           <SecurityFlowHeaderContent
             prefix={OPENAPI_OAUTH_FLOW_HEADER_PREFIX}
@@ -347,13 +358,13 @@ function addFlowRows(
         field,
         label: () => label,
         rowDiff: OpenApiRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field),
-        severity: rowSeverities?.[placement],
+        severity: severities?.[placement],
         link: true,
       }))
     }
   }
   if (visibility.showScopes) {
-    addScopeRows(card, flowKey, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, collapsedScopes, toggleScopes)
+    addScopeRows(card, flowKey, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
   }
 }
 
@@ -363,6 +374,8 @@ function addScopeRows(
   key: string,
   scopes: readonly OpenApiScopeRow[],
   blockDiff: ChangedPropertyMetaData | undefined,
+  /** Severity of the whole block (flow / card): the badge of rows painted only by the block diff. */
+  blockSeverity: NodeDiffsSeverity | undefined,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
 ): void {
@@ -374,8 +387,9 @@ function addScopeRows(
       <SecurityRow
         framePosition={framePosition}
         diff={blockDiff}
-        renderSide={(side) => (
-          <SecurityScopesToggleContent label={OPENAPI_SECURITY_PROP_LABELS.scopes} expanded={expanded} onToggle={() => toggleScopes(key)} layoutSide={side} />
+        severity={blockDiff ? blockSeverity : undefined}
+        renderSide={() => (
+          <SecurityScopesToggleContent label={OPENAPI_SECURITY_PROP_LABELS.scopes} expanded={expanded} onToggle={() => toggleScopes(key)} />
         )}
       />
     ),
@@ -384,8 +398,12 @@ function addScopeRows(
     return
   }
   for (const scope of scopes) {
-    // A whole-block diff colors every row of the block; only a scope's own change gets a badge.
+    // A row painted only by the whole-block diff takes the block's severity; otherwise the strongest
+    // of the scope's own diffs (added / removed / description replaced, required changed).
     const ownRowDiff = scope.rowDiff !== blockDiff ? scope.rowDiff : undefined
+    const rowSeverity = ownRowDiff || scope.requiredDiff
+      ? severityOf(strongestDiff(ownRowDiff, scope.requiredDiff))
+      : scope.rowDiff ? blockSeverity : undefined
     card.add({
       key: `${key}-scope-${scope.name}`,
       render: (framePosition) => (
@@ -393,7 +411,7 @@ function addScopeRows(
           testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
           diff={scope.rowDiff}
-          severity={severityOf(ownRowDiff ?? scope.requiredDiff)}
+          severity={rowSeverity}
           renderSide={(side) => {
             const sideScope = side === ORIGIN_LAYOUT_SIDE ? scope.origin : scope.changed
             return sideScope

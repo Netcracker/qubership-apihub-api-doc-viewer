@@ -11,15 +11,15 @@ const ABSENT: DiffStyles = { isContentVisible: false, isHeaderVisible: false, ba
 
 /**
  * Diff -> per-side styles for OpenAPI rows. Whole add / remove: the absent side shows nothing (grey),
- * the present side is green / red. Replace / rename: yellow on both sides, text highlighted.
+ * the present side is green / red (and selector options of the node get a green / red border). Replace / rename: yellow on both sides, text highlighted.
  */
 export class OpenApiChangedPropertyMetaData {
   public static build(diff: Diff): ChangedPropertyMetaData {
     if (isDiffAdd(diff)) {
-      return OpenApiChangedPropertyMetaData.create(diff, ABSENT, { ...VISIBLE, backgroundColor: HighlightVariant.Green })
+      return OpenApiChangedPropertyMetaData.create(diff, ABSENT, { ...VISIBLE, backgroundColor: HighlightVariant.Green, borderShadowColor: HighlightVariant.Green })
     }
     if (isDiffRemove(diff)) {
-      return OpenApiChangedPropertyMetaData.create(diff, { ...VISIBLE, backgroundColor: HighlightVariant.Red }, ABSENT)
+      return OpenApiChangedPropertyMetaData.create(diff, { ...VISIBLE, backgroundColor: HighlightVariant.Red, borderShadowColor: HighlightVariant.Red }, ABSENT)
     }
     const changed: DiffStyles = { ...VISIBLE, backgroundColor: HighlightVariant.Yellow, textHighlighterColor: HighlightVariant.Yellow }
     return OpenApiChangedPropertyMetaData.create(diff, changed, changed)

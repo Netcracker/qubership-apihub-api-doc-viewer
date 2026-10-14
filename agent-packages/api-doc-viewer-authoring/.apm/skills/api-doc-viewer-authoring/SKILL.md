@@ -851,3 +851,13 @@ by subpath — mirror existing import paths when adding builders or types.
 
 The JSO diffs contract is specified in `docs/design/jso/features/diffs.md` —
 read it before diffs-viewer refactors.
+
+## Global `button` styles (session lesson)
+
+`src/index.css` styles **every** `<button>` (padding `0.6em 1.2em`, 8px radius, a border and a
+background). A small icon button (e.g. a 24px arrow) keeps its box but its icon disappears — the
+padding leaves no content width. Reset it on new buttons with utilities (`p-0 border-0
+bg-transparent`; class selectors outrank the element rule), or use a non-button clickable element
+where the JSON Schema pattern applies (clickable text + `Expander`). Also: never put
+`overflow: hidden` on a selector option or its scrolling container edge without an inset — diff
+round markers and border shadows overhang the option box and get clipped.

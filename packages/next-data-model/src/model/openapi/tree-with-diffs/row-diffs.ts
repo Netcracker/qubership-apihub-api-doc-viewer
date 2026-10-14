@@ -5,6 +5,7 @@ import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
 import { OpenApiDisplayLabels } from "../display/labels"
 import { OpenApiChangedPropertyMetaData } from "./changed-property-metadata"
+import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
 
@@ -274,15 +275,10 @@ class Security {
    * (toolbar option) was wholly added or removed - the option itself keeps its green / red border.
    */
   public static takeToolbarRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
-    const header = Section.takeHeaderRowDiff(node)
-    if (header) {
-      return header
-    }
-    const changedOption = node.childrenNodes()
-      .map(alternative => Section.takeHeaderRowDiff(alternative))
-      .find(diff => diff !== undefined)
-    return changedOption ? OpenApiChangedPropertyMetaData.buildRowReplace(changedOption.data) : undefined
+    const options = fieldDiff(node, OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY)
+    return Section.takeHeaderRowDiff(node) ?? (options ? OpenApiChangedPropertyMetaData.buildRowReplace(options.data) : undefined)
   }
+
 }
 
 /** One side of a scope row; absent = the scope does not exist on that side. */

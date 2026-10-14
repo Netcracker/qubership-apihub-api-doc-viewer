@@ -7,13 +7,17 @@
   min-height: 26px;
 }
 
+/* Labels and scope names use the JSON Schema property-title text (NODE_TITLE_TEXT_CLASSES). */
+
+/* Values: secondary gray (the subheader / type-label gray), title-sized. Links stay link-blue. */
 .security-prop-text {
-  font-size: 13px;
-  color: #353C4E;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgb(100 116 139);
 }
 
 a.security-prop-link {
-  font-size: 13px;
+  font-size: 12px;
   color: #0068FF;
   word-break: break-all;
 }
@@ -35,4 +39,12 @@ a.security-prop-link:hover {
 .security-row.security-row_spacer {
   min-height: 12px;
   padding: 0;
+}
+
+/* Closing row of a card: always the card's last row, so the bottom indent and border never move to
+   a content row (collapsing `Scopes` would otherwise make its row "last" and change its height).
+   Its height is only the frame's bottom padding. */
+.security-row.security-row_frame-end {
+  min-height: 0;
+  padding-top: 0;
 }

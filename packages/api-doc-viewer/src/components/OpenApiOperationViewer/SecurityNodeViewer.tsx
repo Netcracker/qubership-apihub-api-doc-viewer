@@ -32,12 +32,12 @@ export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = (props) => {
     node: alternative,
     title: OpenApiDisplayLabels.securityRequirementTitle(alternative.value()?.schemeNames ?? []),
     testId: `security-alternative-${index}`,
+    // A wholly added / removed option shows only its green / red border; any other changed option
+    // gets the round marker of its strongest change.
     ...(isOpenApiTreeNodeWithDiffs(alternative)
-      ? {
-        diffs: alternative.diffs,
-        diffsSummary: alternative.diffsSummary,
-        descendantDiffsSummary: alternative.descendantDiffsSummary,
-      }
+      ? OpenApiRowDiffs.Section.takeHeaderRowDiff(alternative)
+        ? { diffs: alternative.diffs }
+        : { diffs: alternative.diffs, diffsSummary: alternative.diffsSummary, descendantDiffsSummary: alternative.descendantDiffsSummary }
       : {}),
   })), [alternatives])
 

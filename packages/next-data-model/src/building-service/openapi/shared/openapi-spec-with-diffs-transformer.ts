@@ -1,6 +1,7 @@
 import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { BuildingServiceLogger } from "../../../loggers"
 import { NODE_LEVEL_DIFF_KEY } from "../../../model/abstract/tree-with-diffs/tree-node.interface"
+import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../model/openapi/tree-with-diffs/diff-keys"
 import { OPENAPI_OAUTH_FLOW_TYPES, OPENAPI_PARAMETER_LOCATIONS, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
 import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
@@ -206,6 +207,17 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     return security
   }
 
+  /**
+   * Security toolbar: one synthetic `alternatives` replace when any alternative was wholly added or
+   * removed, typed by the strongest of them (row color + `SelectorRow` severity of the toolbar).
+   */
+  private writeAlternativesDiff(securityRecord: DiffsRecord): void {
+    const optionDiffs = Object.values(securityRecord).filter(OpenApiSideReader.isWholeChange)
+    if (optionDiffs.length > 0) {
+      securityRecord[OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY] = this.reader.createDiff(DiffAction.replace, {}, optionDiffs)
+    }
+  }
+
   /** The document list is shared by every operation: limit its sides to where the operation exists. */
   private restrictToOperation(context: OpenApiSideContext): OpenApiSideContext {
     return { before: context.before && this.operationSides.before, after: context.after && this.operationSides.after }
@@ -243,6 +255,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       return undefined
     }
     const security: OpenApiSecuritySpec = { isInheritedFromDocument, alternatives }
+    this.writeAlternativesDiff(securityRecord)
     this.reader.writeRecord(security, securityRecord)
     this.presence.set(security, presence)
     return security
@@ -281,6 +294,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       return undefined
     }
     const security: OpenApiSecuritySpec = { isInheritedFromDocument, alternatives }
+    this.writeAlternativesDiff(securityRecord)
     this.reader.writeRecord(security, securityRecord)
     this.presence.set(security, { before: before.length > 0, after: after.length > 0 })
     return security

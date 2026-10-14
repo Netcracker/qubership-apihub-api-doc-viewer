@@ -95,12 +95,24 @@ button.button-selector-option_tone-danger.selected {
   color: white;
 }
 
-/* ─── No-wrap strip (security toolbar). An option never grows wider than the strip and is cropped
-   with an ellipsis; min-width keeps one character + "…" visible (2.5ch + 2 × 8px padding + border). */
+/* ─── No-wrap strip (security toolbar). An option never grows wider than the strip; its label is
+   cropped with an ellipsis down to one character + "…" (min-width: 2.5ch + 2 × 8px padding + border).
+   The button itself must not clip: diff round markers and border shadows sit outside its box. */
 button.button-selector-option.button-selector-option_cropped {
+  display: inline-flex;
   flex: 0 0 auto;
   max-width: 100%;
   min-width: calc(2.5ch + 18px);
+}
+
+/* Room after the last option for its round marker when the strip is scrolled to the end. */
+button.button-selector-option.button-selector-option_cropped:last-child {
+  margin-right: 6px;
+}
+
+.button-selector-option_cropped .button-selector-option-label {
+  display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

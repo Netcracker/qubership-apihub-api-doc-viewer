@@ -44,7 +44,7 @@ export function SecurityToolbar<N extends ITreeNode>(props: SecurityToolbarProps
       <div
         data-precededby={precededBy}
         data-testid="security-toolbar"
-        className={`security-toolbar flex w-full h-full items-center gap-1 ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={`security-toolbar flex w-full h-full items-center gap-1 py-2 ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
         <SecurityOptionsStrip {...props} layoutSide={layoutSide} />
       </div>
@@ -86,15 +86,15 @@ function SecurityOptionsStrip<N extends ITreeNode>(props: SecurityToolbarProps<N
 
   const scrollBy = (direction: 'left' | 'right'): void => {
     const strip = stripRef.current
-    // The options line is the strip's only child; its children are the option buttons.
-    const buttons = strip?.firstElementChild?.children
+    // strip > inset wrapper > options line > option buttons
+    const buttons = strip?.firstElementChild?.firstElementChild?.children
     if (!strip || !buttons) {
       return
     }
     const items: StripItemBox[] = Array.from(buttons)
       .filter((button): button is HTMLElement => button instanceof HTMLElement)
       .map(button => ({ left: button.offsetLeft, width: button.offsetWidth }))
-    const target = resolveStripScrollTarget(items, strip.scrollLeft, strip.clientWidth, direction)
+    const target = resolveStripScrollTarget(items, strip.scrollLeft, strip.clientWidth, direction, OPTION_DECORATION_INSET)
     if (target !== undefined) {
       strip.scrollTo({ left: target, behavior: 'smooth' })
     }
@@ -109,20 +109,31 @@ function SecurityOptionsStrip<N extends ITreeNode>(props: SecurityToolbarProps<N
         className="security-toolbar-strip relative min-w-0 flex-1 overflow-x-auto"
         style={{ scrollbarWidth: 'none' }}
       >
-        <Selector
-          options={options}
-          selectedOption={selectedOption}
-          onSelectOption={onSelectOption}
-          variant={SelectorVariant.Secondary}
-          layoutSide={layoutSide}
-          noWrap={true}
-        />
+        {/* Inset: round markers and border shadows sit outside the option boxes; the scrolling strip
+            would clip them at its edges otherwise. A block wrapper, so an option's max-width (100%)
+            is the strip's width; the right inset is the last option's margin (Selector.css). */}
+        <div className="security-toolbar-strip-inset" style={{ padding: `${OPTION_DECORATION_INSET}px 0 ${OPTION_DECORATION_INSET}px ${OPTION_DECORATION_INSET}px` }}>
+          <Selector
+            options={options}
+            selectedOption={selectedOption}
+            onSelectOption={onSelectOption}
+            variant={SelectorVariant.Secondary}
+            layoutSide={layoutSide}
+            noWrap={true}
+          />
+        </div>
       </div>
       <StripArrow direction="right" enabled={scrollState.canScrollRight} onClick={() => scrollBy('right')} />
     </>
   )
 }
 
+/** Px around the options inside the strip: a diff round marker overhangs its option by 5px. */
+const OPTION_DECORATION_INSET = 6
+
+// `p-0 border-0 bg-transparent`: the package's global `button` rule (index.css) adds padding,
+// a border, and a background that would squeeze the 24px arrow to nothing.
+const ARROW_RESET_CLASSES = 'p-0 border-0 bg-transparent'
 const ENABLED_ARROW_CLASSES = 'text-blue-600 hover:bg-blue-50 cursor-pointer'
 const DISABLED_ARROW_CLASSES = 'text-gray-300 cursor-default pointer-events-none'
 
@@ -139,7 +150,7 @@ function StripArrow(props: { direction: 'left' | 'right', enabled: boolean, onCl
         event.stopPropagation()
         onClick()
       }}
-      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded ${enabled ? ENABLED_ARROW_CLASSES : DISABLED_ARROW_CLASSES}`}
+      className={`${ARROW_RESET_CLASSES} flex h-6 w-6 shrink-0 items-center justify-center rounded ${enabled ? ENABLED_ARROW_CLASSES : DISABLED_ARROW_CLASSES}`}
     >
       <ChevronIcon direction={direction} />
     </button>
