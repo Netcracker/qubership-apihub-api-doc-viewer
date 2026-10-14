@@ -79,13 +79,19 @@ type SecurityPropContentProps = {
 }
 
 /**
- * 1st-level security prop: `label <fixed gap> value` in a two-column grid. The label uses the JSON
- * Schema property-title text (`NODE_TITLE_TEXT_CLASSES`). The card sets
- * `--security-label-width`, so values of every prop of the card start at the same x.
+ * Grid of every security prop (1st and 2nd level): label column = 40% of the card, then a 20px gap
+ * and the value. Cells align to the top. One template for both levels, so all values of a card
+ * start at the same x.
+ */
+const SECURITY_PROP_GRID_CLASSES = 'grid w-full grid-cols-[40%_minmax(0,1fr)] items-start gap-x-5'
+
+/**
+ * 1st-level security prop: `label <20px> value`. The label uses the JSON Schema property-title text
+ * (`NODE_TITLE_TEXT_CLASSES`) and wraps inside its column when longer than 40% of the card.
  */
 export const SecurityPropContent: FC<SecurityPropContentProps> = ({ label, value }) => (
-  <div className="security-prop grid w-full grid-cols-[var(--security-label-width)_minmax(0,1fr)] items-baseline gap-x-10">
-    <div className="security-prop-label whitespace-nowrap">
+  <div className={`security-prop ${SECURITY_PROP_GRID_CLASSES}`}>
+    <div className="security-prop-label min-w-0 break-words">
       <span className={NODE_TITLE_TEXT_CLASSES}>{label}</span>
     </div>
     <div className="security-prop-value min-w-0 break-words">{value}</div>
@@ -140,18 +146,19 @@ type SecurityScopeContentProps = {
 }
 
 /**
- * 2nd-level security prop (one scope): `<20px indent> name * <gap> description [required]`. Its own
- * grid (`--security-scope-width`) so scope names align without moving the 1st-level columns.
+ * 2nd-level security prop (one scope): `<20px offset> name * <20px> description [required]`. Same
+ * grid as 1st-level props; the 20px offset is padding inside the first cell, so the name gets 40% of
+ * the card minus the offset and the description starts where 1st-level values start.
  */
 export const SecurityScopeContent: FC<SecurityScopeContentProps> = (props) => {
   const { name, description, required, descriptionHighlighterClass, requiredDiff, layoutSide } = props
   return (
-    <div className="security-scope grid w-full grid-cols-[var(--security-scope-width)_minmax(0,1fr)] items-baseline gap-x-10 pl-5">
-      <div className="whitespace-nowrap">
+    <div className={`security-scope ${SECURITY_PROP_GRID_CLASSES}`}>
+      <div className="min-w-0 break-words pl-5">
         <span className={NODE_TITLE_TEXT_CLASSES}>{name}</span>
         {required && <sup className="ml-0.5 text-red-500">*</sup>}
       </div>
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <div className="flex min-w-0 flex-wrap items-start gap-2">
         <span className={`title-row-subheader-value subheader text ${descriptionHighlighterClass}`}>{description}</span>
         {requiredDiff && (
           <TagsWithDiffs requiredChanged={true} requiredDiff={requiredDiff} readOnly={false} writeOnly={false} layoutSide={layoutSide} />

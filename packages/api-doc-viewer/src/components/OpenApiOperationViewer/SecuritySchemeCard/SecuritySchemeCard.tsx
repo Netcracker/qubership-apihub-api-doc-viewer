@@ -1,6 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { maxDiffType } from "@apihub/utils/common/changes"
-import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
+import { LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiOAuthFlowNode } from "@apihub/utils/openapi/node-type-checkers"
 import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
 import {
@@ -18,7 +18,7 @@ import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-mo
 import { OpenApiRowDiffs, OpenApiScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { CSSProperties, FC, Fragment, ReactElement, useState } from "react"
+import { FC, Fragment, ReactElement, useState } from "react"
 import { FramePosition } from "../../shared-components/Frame/types"
 import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
 import {
@@ -46,8 +46,6 @@ type SecuritySchemeCardProps = {
 }
 
 const MUTED_TEXT_COLOR = '#8F9EB4'
-/** Extra width of a scope name column: the required `*`. */
-const SCOPE_NAME_EXTRA_CH = 2
 
 type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
@@ -81,33 +79,12 @@ function strongestDiff(...diffs: (ChangedPropertyMetaData | undefined)[]): Chang
   return present.find(diff => diff.data.type === strongest)
 }
 
-/** Collects card rows and the label / scope-name lengths that size the shared grid columns. */
+/** Collects card rows (the grid columns are fixed fractions of the card, nothing to measure). */
 class CardRows {
   public readonly rows: CardRow[] = []
-  private labelLength = 0
-  private scopeNameLength = 0
 
   public add(row: CardRow): void {
     this.rows.push(row)
-  }
-
-  public measureLabels(...labels: readonly string[]): void {
-    this.labelLength = Math.max(this.labelLength, ...labels.map(label => label.length))
-  }
-
-  public measureScopeNames(names: readonly string[]): void {
-    this.scopeNameLength = Math.max(this.scopeNameLength, ...names.map(name => name.length + SCOPE_NAME_EXTRA_CH))
-  }
-
-  /**
-   * Column widths in `ch` of the longest label / scope name: every prop of the card starts its value
-   * at the same x. `ch` is wider than an average proportional glyph, so labels always fit.
-   */
-  public get style(): CSSProperties & Record<`--${string}`, string> {
-    return {
-      '--security-label-width': `${this.labelLength}ch`,
-      '--security-scope-width': `${this.scopeNameLength}ch`,
-    }
   }
 }
 
@@ -182,7 +159,6 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
 
   if (visibility.showParameterName) {
     const labelOf = (side: LayoutSide): string => OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
-    card.measureLabels(labelOf(ORIGIN_LAYOUT_SIDE), labelOf(CHANGED_LAYOUT_SIDE))
     card.add(fieldPropRow({
       key: 'parameterName',
       node,
@@ -199,7 +175,6 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   ]
   for (const [shown, field, label, placement, link] of schemeFields) {
     if (shown) {
-      card.measureLabels(label)
       card.add(fieldPropRow({
         key: field,
         node,
@@ -252,7 +227,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
 
   const isPresent = (side: LayoutSide): boolean => OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)
   return (
-    <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col" style={card.style}>
+    <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
       {card.rows.map((row, index) => {
         const position = resolveFramePosition(index, card.rows.length)
         return <Fragment key={row.key}>{row.render(side => isPresent(side) ? position : undefined)}</Fragment>
@@ -342,7 +317,6 @@ function addFlowRows(
   for (const [shown, field, placement] of urlFields) {
     if (shown) {
       const label = OPENAPI_SECURITY_PROP_LABELS[field]
-      card.measureLabels(label)
       card.add(fieldPropRow({
         key: `${flowKey}-${field}`,
         node: flow,
@@ -372,7 +346,6 @@ function addScopeRows(
   toggleScopes: (key: string) => void,
 ): void {
   const expanded = !collapsedScopes.has(key)
-  card.measureScopeNames(scopes.map(scope => scope.name))
   card.add({
     key: `${key}-scopes`,
     render: (framePosition) => (

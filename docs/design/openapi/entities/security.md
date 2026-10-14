@@ -132,10 +132,12 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 
 `mutualTLS` cards have title, type, and description only.
 
-**Security props** (label / value rows) use one grid shape per card: `grid-template-columns:
-var(--security-label-width) minmax(0, 1fr)` with a fixed 40px column gap (Q-S1). The card sets
-`--security-label-width` to the longest label of its props in `ch`, so values of every prop of the
-card start at the same x. Labels, the `Scopes` text, and scope names use exactly the JSON Schema
+**Security props** (label / value rows, 1st and 2nd level) share one grid: `grid-template-columns:
+40% minmax(0, 1fr)` with a 20px column gap, cells aligned to the top (`items-start`). The label column
+is therefore 40% of the card plus 20px before the value, the same in every prop of every card; a
+longer label wraps inside its column. 2nd-level scope rows keep their 20px left offset as padding in
+the first cell, so the scope name gets 40% of the card minus the offset and the description starts
+where 1st-level values start. Labels, the `Scopes` text, and scope names use exactly the JSON Schema
 property-title text, `NODE_TITLE_TEXT_CLASSES` (`text-xs text-black font-Inter-Medium`: the medium
 look comes from the static "Inter Medium" family at weight 400, not from `font-weight`); values are
 12px secondary gray (the subheader / type-label gray), URLs stay link-blue; scope descriptions gray.
@@ -154,7 +156,7 @@ spacer row separates flow parts.
 | Flow header | always (`detailed`) | `Flow type **Authorization Code**` on a `#EDF1F5` plate (`OpenApiDisplayLabels.oauthFlowName`) | `TitleRow` of the flow (not when the whole diff is inherited from the card) |
 | `Authorization URL` / `Token URL` / `Refresh URL` | the field exists | link | `OAuthFlow*UrlRow` |
 | `Scopes ▾` | non-empty `scopes` | JSON Schema title pattern: clickable text + clickable `Expander` **after** the text, no value; expanded by default; collapsing hides the scope rows | the block's severity when the flow / card is wholly added / removed |
-| Scope (2nd level) | expanded | `<20px indent> name <* if required> <gap> <gray description> [required badge in diffs]`, own grid `--security-scope-width` | strongest of the scope's own diffs (added / removed / description, required); the block's severity when painted by a whole block |
+| Scope (2nd level) | expanded | `<20px offset> name <* if required> <20px> <gray description> [required badge in diffs]`, same 40% grid as 1st-level props | strongest of the scope's own diffs (added / removed / description, required); the block's severity when painted by a whole block |
 
 A scope is **required** when the selected requirement lists it (Q-S2). Required scopes are shown
 **only** as `*` on scope rows — there is no `Required scopes` / `Required roles` prop row for any
