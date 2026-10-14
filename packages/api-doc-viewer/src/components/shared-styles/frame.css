@@ -1,51 +1,72 @@
 /* =============================================================================
    Framed row groups (OpenAPI security cards).
-   Every row of a card carries data-frame-position on its per-side content element; each row draws
-   its own segment, so the frame stays continuous through side-by-side layouts. Vertical spacing
-   inside a frame must be padding (data-precededby rules), never margin - a margin would cut the
-   side borders. The gap between two cards is a separate spacer element.
+
+   A card is NOT a block: it is a stack of full-width rows. Every row of a card carries
+   data-frame-position on its per-side content element. That element stays as wide as its side, so a
+   diff background (row highlight, wholly added / removed card) fills the whole side up to the
+   side-by-side separator. The card itself is an illusion: each row draws its own frame segment as an
+   absolutely positioned ::before box (left / right border; top on the first row, bottom on the last),
+   and pads its content into that box. Segments of consecutive rows line up into one card.
+
+   Vertical spacing inside a frame must be padding (data-precededby rules), never margin - a margin
+   would cut the side borders. The gap between two cards is a separate spacer row.
    ============================================================================= */
 
-/* `div[…]` outranks the rows' own `w-full` / `px-4` utilities.
-   Card width: not full width — min(40%, 500px) of its side. The layout wrappers are flex rows and
-   the percentage resolves against the row's side (in side-by-side diffs each half), so a card never
-   crosses the vertical separator. Every row of a card gets this same fixed width (no content-based
-   sizing), so the card reads as one solid block. The 16px left margin (= px-4,
-   X_AXIS_PADDING_ROWS_ASYNC_API) puts the frame border under the section title text. */
+/* `div[…]` outranks the rows' own `w-full` / `px-4` utilities. */
 div[data-frame-position] {
-  flex: 0 0 auto;
-  width: min(40%, 500px);
+  /* Frame box: starts 16px in (= px-4, X_AXIS_PADDING_ROWS_ASYNC_API), under the section title text.
+     Plain mode: 40% of the side, at most 500px, at least 320px - but never wider than the side
+     allows (100% minus the 16px indents on both sides). */
+  --frame-left: 16px;
+  --frame-width: min(calc(100% - 32px), max(320px, min(40%, 500px)));
+  --frame-inner-padding: 16px;
+
+  position: relative;
+  flex: 1 1 0%;
   min-width: 0;
-  margin-left: 16px;
+  width: auto;
+  /* Content inside the frame box: frame offset + inner padding on the left; on the right everything
+     outside the frame box + inner padding. Percentages resolve against the side width. */
+  padding-left: calc(var(--frame-left) + var(--frame-inner-padding));
+  padding-right: calc(100% - var(--frame-left) - var(--frame-width) + var(--frame-inner-padding));
+}
+
+/* Diffs mode (side-by-side): the frame box is 80% of its side (at least 320px, never past the
+   separator); no 500px cap - it would push the card below 80% on wide screens. */
+.side-by-side-layout div[data-frame-position] {
+  --frame-width: min(calc(100% - 32px), max(320px, 80%));
+}
+
+div[data-frame-position]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--frame-left);
+  width: var(--frame-width);
+  box-sizing: border-box;
   border-left: 1px solid #D5DCE3;
   border-right: 1px solid #D5DCE3;
-  padding-left: 16px;
-  padding-right: 16px;
+  pointer-events: none;
 }
 
-/* Diffs mode (side-by-side): a card is never narrower than 80% of its side. The plain-mode 500px
-   cap does not apply here - it would push the card below 80% on wide screens. */
-.side-by-side-layout div[data-frame-position] {
-  width: 80%;
-}
-
-div[data-frame-position="first"],
-div[data-frame-position="single"] {
+div[data-frame-position="first"]::before,
+div[data-frame-position="single"]::before {
   border-top: 1px solid #D5DCE3;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
-div[data-frame-position="last"],
-div[data-frame-position="single"] {
+div[data-frame-position="last"]::before,
+div[data-frame-position="single"]::before {
   border-bottom: 1px solid #D5DCE3;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
 
-/* Inner indents: the same 16px vertically as horizontally (padding-left / -right above). The
-   doubled attribute outranks the rows' own data-precededby spacing (e.g. the title row's
-   padding-top), which would otherwise decide the card's top / bottom indent. */
+/* Inner indents: the same 16px vertically as horizontally. The doubled attribute outranks the rows'
+   own data-precededby spacing (e.g. the title row's padding-top), which would otherwise decide the
+   card's top / bottom indent. */
 div[data-frame-position="first"][data-frame-position],
 div[data-frame-position="single"][data-frame-position] {
   padding-top: 16px;

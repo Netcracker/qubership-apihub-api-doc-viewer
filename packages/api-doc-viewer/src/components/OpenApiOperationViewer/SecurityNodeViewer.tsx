@@ -6,6 +6,7 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
 import { FC, Fragment, useEffect, useMemo, useState } from "react"
+import { SecurityRow } from "../shared-components/Security/SecurityRows"
 import { SecurityToolbar } from "../shared-components/Security/SecurityToolbar"
 import { SelectorOption } from "../shared-components/Selector/Selector"
 import { TextRow } from "../shared-components/TextRow/TextRow"
@@ -45,6 +46,7 @@ export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = (props) => {
   useEffect(() => setSelectedId(null), [node])
   const selectedOption = options.find(option => option.node.id === selectedId) ?? options[0] ?? null
   const selected = selectedOption?.node
+  const cardGapDiff = selected ? OpenApiRowDiffs.Section.takeHeaderRowDiff(selected) : undefined
 
   const schemes = useMemo(() => getOpenApiChildren(selected, isOpenApiSecuritySchemeNode), [selected])
   const headerDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
@@ -80,7 +82,11 @@ export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = (props) => {
       )}
       {schemes.map((scheme, index) => (
         <Fragment key={scheme.id}>
-          {index > 0 && <div className="openapi-security-card-gap h-3" aria-hidden="true" />}
+          {/* Gap between cards: a full-width spacer row, painted like a wholly added / removed
+              alternative so the whole side stays one colored block. */}
+          {index > 0 && (
+            <SecurityRow variant="spacer" diff={cardGapDiff} renderSide={() => null} />
+          )}
           <SecuritySchemeCard
             node={scheme}
             precededBy={index > 0 ? PrecededBy.SECURITY_SCHEME_CARD : selected?.value()?.isAnonymous ? PrecededBy.DESCRIPTION_ROW : PrecededBy.SECTION_SELECTOR_ROW}
