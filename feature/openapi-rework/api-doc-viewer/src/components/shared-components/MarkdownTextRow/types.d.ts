@@ -3,8 +3,8 @@ import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, Node
 import { TextRowUsage } from '../TextRow/types';
 import { TextValueVariant } from '../TextValue/types';
 import { WithFramePositionProps } from '../Frame/types';
-import { WithPrecededByProps } from '../WithPrecededByProps';
-export type MarkdownTextRowProps = WithPrecededByProps & WithFramePositionProps & {
+import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
+export type MarkdownTextRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
     value: string;
     variant?: TextValueVariant;
     usage?: TextRowUsage;

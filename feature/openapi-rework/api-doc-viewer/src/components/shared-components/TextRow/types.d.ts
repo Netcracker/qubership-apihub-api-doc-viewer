@@ -2,14 +2,14 @@ import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { TextValueVariant } from '../TextValue/types';
 import { WithFramePositionProps } from '../Frame/types';
-import { WithPrecededByProps } from '../WithPrecededByProps';
+import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
 export declare enum TextRowUsage {
     Default = "default",
     DdlApiProperty = "ddlapi-property",
     /** JsonSchemaViewer description and deprecation-reason typography. */
     JsonSchemaDescription = "json-schema-description"
 }
-export type TextRowProps = WithPrecededByProps & WithFramePositionProps & {
+export type TextRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
     value?: string;
     variant: TextValueVariant;
     label?: string;

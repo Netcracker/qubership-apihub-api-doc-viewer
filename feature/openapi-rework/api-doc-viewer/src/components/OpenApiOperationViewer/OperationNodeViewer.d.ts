@@ -6,6 +6,6 @@ type OperationNodeViewerProps = {
     node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>;
     noHeading: boolean;
 };
-/** Header rows (title, operation ID, address, external docs, description), then sections in config order. */
+/** Header rows (title, operation ID, address, description, external docs), then sections in config order. */
 export declare const OperationNodeViewer: FC<OperationNodeViewerProps>;
 export {};

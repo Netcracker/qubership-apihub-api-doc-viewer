@@ -1,7 +1,7 @@
 import { FC } from '../../../../../../node_modules/react';
 import { TextValueVariant } from '../TextValue/types';
 import { TitleRowProps } from '../TitleRow/types';
-import { WithPrecededByProps } from '../WithPrecededByProps';
+import { PrecededBy, WithPrecededByProps } from '../WithPrecededByProps';
 export declare const EXTENSIONS_SECTION_TITLE = "Extensions";
 export type ExtensionsSectionProps = WithPrecededByProps & {
     /** `x-*` map; in diffs mode it carries its own diff record. */
@@ -10,6 +10,8 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
     testId?: string;
     /** Header diff props (whole-section add / remove). */
     titleRowDiffProps?: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'>;
+    /** `data-precededby` of the JSO viewer's first row; defaults to the AsyncAPI section-header spacing. */
+    contentPrecededBy?: PrecededBy;
 };
 /**
  * "Extensions" header + JSO tree of `x-*` values. Shared by AsyncAPI (message / channel / operation)

@@ -1,5 +1,7 @@
 export declare const ATTRIBUTE_PRECEDED_BY = "data-precededby";
 export declare const ATTRIBUTE_DDL_LIST_LAST_ROW = "data-ddl-list-last-row";
+/** OpenAPI: the row ends its block, so the gap below it is a block gap (see the `OPENAPI_*` members). */
+export declare const ATTRIBUTE_BLOCK_LAST_ROW = "data-block-last-row";
 export declare enum PrecededBy {
     ROOT = "root",
     ADDRESS_ROW = "address-row",
@@ -23,13 +25,22 @@ export declare enum PrecededBy {
     /** Follows a sibling column block that ended with an additional-info row. */
     DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = "ddl-column-after-additional-info-row",
     DDL_INDEX_ROW = "ddl-index-row",
-    OPERATION_ID_ROW = "operation-id-row",
-    EXTERNAL_DOCS_ROW = "external-docs-row",
-    SECTION_SELECTOR_ROW = "section-selector-row",
-    SECURITY_SCHEME_CARD = "security-scheme-card"
+    /** The first row of the viewer. */
+    OPENAPI_VIEWER_START = "openapi-viewer-start",
+    /** Follows a row of the same block. */
+    OPENAPI_BLOCK_ROW = "openapi-block-row",
+    /** Starts a block: follows the last row of the previous block. */
+    OPENAPI_BLOCK_START = "openapi-block-start",
+    /** Starts a block after a block that ended with a nested JSON Schema / JSO viewer. */
+    OPENAPI_AFTER_NESTED_VIEWER = "openapi-after-nested-viewer",
+    /** The first row of a nested JSON Schema / JSO viewer, under a row of the same block. */
+    OPENAPI_NESTED_VIEWER_START = "openapi-nested-viewer-start"
 }
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;
+};
+export type WithBlockLastRowProps = {
+    [ATTRIBUTE_BLOCK_LAST_ROW]?: boolean;
 };
 export type WithListLastRowProps = {
     [ATTRIBUTE_DDL_LIST_LAST_ROW]?: boolean;

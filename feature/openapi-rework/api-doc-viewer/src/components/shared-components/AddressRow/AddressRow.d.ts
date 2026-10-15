@@ -1,4 +1,4 @@
-import { WithPrecededByProps } from '../WithPrecededByProps';
+import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC, ReactElement } from '../../../../../../node_modules/react';
@@ -8,7 +8,7 @@ export type AddressRowBadge = {
     /** Tailwind background class (must be a literal class name in the caller's source). */
     colorClass: string;
 };
-export type AddressRowProps = WithPrecededByProps & {
+export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
     badge: AddressRowBadge | null;
     address: string;
     /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */

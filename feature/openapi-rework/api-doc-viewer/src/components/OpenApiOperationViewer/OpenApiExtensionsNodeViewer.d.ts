@@ -8,6 +8,6 @@ type OpenApiExtensionsNodeViewerProps = WithPrecededByProps & {
     variant: TextValueVariant;
     testId: string;
 };
-/** Operation (h2), Response (h3) and Responses Object (h3) extensions. */
+/** Operation (h2), Response (h3) and Responses Object (h3) extensions; always ends with the JSO viewer. */
 export declare const OpenApiExtensionsNodeViewer: FC<OpenApiExtensionsNodeViewerProps>;
 export {};

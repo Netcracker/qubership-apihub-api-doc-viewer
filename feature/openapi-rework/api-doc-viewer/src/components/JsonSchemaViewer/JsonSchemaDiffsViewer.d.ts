@@ -3,6 +3,7 @@ import { DiffMetaKeys } from '../../types/DiffMetaKeys';
 import { DisplayMode } from '../../types/DisplayMode';
 import { DiffType } from '@netcracker/qubership-apihub-api-diff';
 import { FC } from '../../../../../node_modules/react';
+import { PrecededBy } from '../shared-components/WithPrecededByProps';
 export type JsonSchemaDiffsViewerProps = {
     schema: unknown;
     expandedDepth?: number;
@@ -24,5 +25,11 @@ export type JsonSchemaDiffsViewerProps = {
      * refactoring-notes.md (agent-packages/api-doc-viewer-authoring) for the design analysis.
      */
     hideUnchangedNodes?: boolean;
+    /**
+     * Opt-in `data-precededby` of the first row (the root's title row, or with a suppressed root nesting
+     * indicator its first child): lets an embedding viewer control the gap above the schema (OpenAPI).
+     * Without it the rows keep their own spacing.
+     */
+    firstRowPrecededBy?: PrecededBy;
 };
 export declare const JsonSchemaDiffsViewer: FC<JsonSchemaDiffsViewerProps>;

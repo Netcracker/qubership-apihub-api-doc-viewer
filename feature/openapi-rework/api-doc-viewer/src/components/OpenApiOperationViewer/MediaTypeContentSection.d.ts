@@ -4,12 +4,15 @@ import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/t
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC, ReactElement } from '../../../../../node_modules/react';
 import { PrecededBy } from '../shared-components/WithPrecededByProps';
+import { OpenApiRowSpacing, OpenApiSectionTail } from './section-preceded-by';
 export type MediaTypeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>;
 export declare const BODY_SECTION_TITLE = "Body";
 /** Root property name of a wrapped body schema (AsyncAPI parity). */
 export declare const WRAPPED_BODY_SCHEMA_TITLE = "Type";
 type MediaTypeContentSectionProps = {
     precededBy: PrecededBy;
+    /** What the row after the section assumes about its end (see `OpenApiSectionEntry`). */
+    closing: OpenApiSectionTail;
     testId: string;
     /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */
     optionTestIdPrefix: string;
@@ -23,8 +26,8 @@ type MediaTypeContentSectionProps = {
     isRequiredOnSide?: (layoutSide: LayoutSide) => boolean;
     /** Request body only: the `required` tag of a required change. */
     requiredTagDiff?: ChangedPropertyMetaData;
-    /** Rows between the header and the schema (the body description). */
-    renderBeforeSchema?: () => ReactElement | null;
+    /** The row between the header and the schema (the body description); omitted when hidden. */
+    renderDescription?: (spacing: OpenApiRowSpacing) => ReactElement;
 };
 /**
  * "Body" (h3) with the media-type selector in its subheader, then the selected media type's schema
