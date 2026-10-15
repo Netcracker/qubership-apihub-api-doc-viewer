@@ -3,7 +3,7 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../abstr
 import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
-import { OpenApiDisplayLabels } from "../display/labels"
+import { OpenApiApiKeyParameterNameLabel, OpenApiDisplayLabels } from "../display/labels"
 import { OpenApiChangedPropertyMetaData } from "./changed-property-metadata"
 import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
@@ -385,8 +385,16 @@ class SecurityScheme {
   }
 
   /** apiKey prop label per side, from `in`: `Header parameter name`, `Query parameter name`, … */
-  public static resolveParameterNameLabel(node: AnyOpenApiNode, side: LayoutSide): string {
+  public static resolveParameterNameLabel(node: AnyOpenApiNode, side: LayoutSide): OpenApiApiKeyParameterNameLabel {
     return OpenApiDisplayLabels.apiKeyParameterNameLabel(NodeLevel.resolveSideField(node, 'in', side))
+  }
+
+  /**
+   * The apiKey location's own diff: its text highlighter marks the place word of the label
+   * (`Header` / `Query` …) on a replace; ` parameter name` and the value are never marked by it.
+   */
+  public static takeParameterLocationTextDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    return fieldDiff(node, 'in')
   }
 
   /** apiKey prop row: a name change (highlighted value), else a location change (label only), else the whole card. */

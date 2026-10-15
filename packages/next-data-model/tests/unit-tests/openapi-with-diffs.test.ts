@@ -369,13 +369,19 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, CHANGED_LAYOUT_SIDE)).toBe(changed)
   })
 
-  it('apiKey location change: per-side label, yellow row without a value highlighter', () => {
+  it('apiKey location change: per-side label, yellow row, highlighter on the place word only', () => {
     const apiKey = scheme('security/18-api-key-location-changed')
-    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE)).toBe('Header parameter name')
-    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE)).toBe('Query parameter name')
+    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE)).toEqual({ place: 'Header', suffix: ' parameter name' })
+    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE)).toEqual({ place: 'Query', suffix: ' parameter name' })
     const rowDiff = OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(apiKey)
     expect(rowDiff?.styles.after.backgroundColor).toBe('yellow')
     expect(rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
+    const locationDiff = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(apiKey)
+    expect(locationDiff?.styles.before.textHighlighterColor).toBe('yellow')
+    expect(locationDiff?.styles.after.textHighlighterColor).toBe('yellow')
+    // `in` removed with the type change: no highlighter on the place word (replace only).
+    const removedLocation = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(scheme('security/15-scheme-type-changed'))
+    expect(removedLocation?.styles.before.textHighlighterColor).toBeUndefined()
   })
 
   it('alternative added: yellow toolbar row with the severity of the option; the option gets a green border', () => {

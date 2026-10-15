@@ -34,6 +34,14 @@ export const OPENAPI_SECURITY_PROP_LABELS = {
   roles: 'Roles',
 } as const
 
+/** apiKey prop label split into the place word (from `in`) and the common rest: `Header` + ` parameter name`. */
+export type OpenApiApiKeyParameterNameLabel = {
+  readonly place: string
+  readonly suffix: string
+}
+
+const API_KEY_PARAMETER_NAME_LABEL_SUFFIX = ' parameter name'
+
 /** Plain text before the bold flow name in a flow part header: `Flow type **Authorization Code**`. */
 export const OPENAPI_OAUTH_FLOW_HEADER_PREFIX = 'Flow type'
 
@@ -71,9 +79,9 @@ export class OpenApiDisplayLabels {
   }
 
   /** apiKey prop label from `in`: `Header parameter name`, `Query parameter name`, … */
-  public static apiKeyParameterNameLabel(location: string | undefined): string {
+  public static apiKeyParameterNameLabel(location: string | undefined): OpenApiApiKeyParameterNameLabel {
     const place = location === undefined ? undefined : API_KEY_LOCATION_LABELS[location]
-    return `${place ?? 'API key'} parameter name`
+    return { place: place ?? 'API key', suffix: API_KEY_PARAMETER_NAME_LABEL_SUFFIX }
   }
 
   public static parameterGroupTitle(location: OpenApiParameterLocation): string {

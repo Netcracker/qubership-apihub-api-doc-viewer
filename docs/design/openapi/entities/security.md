@@ -123,7 +123,7 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 | Title (h4) | always | scheme name; subheader: **gray type text** (JSON Schema / DDL type-label look), not a badge | `TitleRow` |
 | Unresolved | `!isResolved` | muted `Security scheme is not defined in components.` | — |
 | Description | `description` | markdown, right after the title | `DescriptionRow` |
-| `<Place> parameter name` | apiKey, `name` | value `name`; the label prefix comes from `in` per side: `Header` / `Query` / `Cookie` / `Path` (`OpenApiDisplayLabels.apiKeyParameterNameLabel`) — the former `In` and `Name` rows merged | `SecuritySchemeParameterNameRow` (an `in` change counts here) |
+| `<Place> parameter name` | apiKey, `name` | value `name`; the label prefix comes from `in` per side: `Header` / `Query` / `Cookie` / `Path` (`OpenApiDisplayLabels.apiKeyParameterNameLabel`) — the former `In` and `Name` rows merged. An `in` replace paints the row yellow and puts the yellow text highlighter on the place word only (`Header` / `Query` …), never on ` parameter name` | `SecuritySchemeParameterNameRow` (an `in` change counts here) |
 | `HTTP Authorization Scheme` | http, `scheme` | `basic`, `bearer`, … from the scheme, never hard-coded | `SecuritySchemeHttpSchemeRow` |
 | `Bearer Format` | http, `bearerFormat` | `JWT`, `PAT`, … | `SecuritySchemeBearerFormatRow` |
 | `OpenID Connect URL` | openIdConnect | link | `SecuritySchemeOpenIdConnectUrlRow` |

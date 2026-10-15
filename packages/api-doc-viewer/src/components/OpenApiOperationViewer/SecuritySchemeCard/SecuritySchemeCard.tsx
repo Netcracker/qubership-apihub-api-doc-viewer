@@ -19,7 +19,7 @@ import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-mo
 import { OpenApiRowDiffs, OpenApiScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { FC, Fragment, ReactElement, useState } from "react"
+import { FC, Fragment, ReactElement, ReactNode, useState } from "react"
 import { FramePosition } from "../../shared-components/Frame/types"
 import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
 import {
@@ -159,7 +159,12 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   }
 
   if (visibility.showParameterName) {
-    const labelOf = (side: LayoutSide): string => OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
+    // Only the place word (`Header` / `Query` …) takes the location's highlighter, never ` parameter name`.
+    const locationDiff = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(node)
+    const labelOf = (side: LayoutSide): ReactNode => {
+      const { place, suffix } = OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
+      return <><span className={`security-prop-label-place ${resolveValueHighlighter(locationDiff, side)}`}>{place}</span>{suffix}</>
+    }
     card.add(fieldPropRow({
       key: 'parameterName',
       node,
@@ -241,7 +246,7 @@ type FieldPropRowParams = {
   key: string
   node: SchemeNode | FlowNode
   field: string
-  label: (side: LayoutSide) => string
+  label: (side: LayoutSide) => ReactNode
   rowDiff: ChangedPropertyMetaData | undefined
   severity: NodeDiffsSeverity | undefined
   link?: boolean
