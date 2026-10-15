@@ -158,7 +158,7 @@ export const SecurityPropValue: FC<SecurityPropValueProps> = ({ text, href = fal
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
 export const SecurityFlowHeaderContent: FC<{ prefix: string, name: string }> = ({ prefix, name }) => (
   <span className="security-flow-header">
-    {prefix} <b>{name}</b>
+    {prefix} <span className="security-flow-header-name">{name}</span>
   </span>
 )
 

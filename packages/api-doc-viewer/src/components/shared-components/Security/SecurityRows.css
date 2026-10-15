@@ -36,6 +36,12 @@ a.security-prop-link:hover {
   color: #353C4E;
 }
 
+/* The static `Inter` face has one weight and `font-synthesis` is off, so 500 needs the variable face. */
+.security-flow-header-name {
+  font-family: 'Inter Variable', sans-serif;
+  font-weight: 500;
+}
+
 /* Card opening / closing rows: content-less, a fixed height from the layout data. Always the card's
    first / last row, so toggling `Scopes` never moves the border onto a content row. */
 .security-frame-row {

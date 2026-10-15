@@ -155,7 +155,7 @@ props at the in-block 8px.
 
 | Row | Shown when | Content | Severity placement |
 | --- | --- | --- | --- |
-| Flow header | always (`detailed`) | `Flow type **Authorization Code**` on a `#EDF1F5` plate (`OpenApiDisplayLabels.oauthFlowName`) | `TitleRow` of the flow (not when the whole diff is inherited from the card) |
+| Flow header | always (`detailed`) | `Flow type **Authorization Code**` on a `#EDF1F5` plate: plain prefix `Flow type`, flow name (`OpenApiDisplayLabels.oauthFlowName`) at `font-weight: 500` | `TitleRow` of the flow (not when the whole diff is inherited from the card) |
 | `Authorization URL` / `Token URL` / `Refresh URL` | the field exists | link | `OAuthFlow*UrlRow` |
 | `Scopes ▾` | non-empty `scopes` | JSON Schema title pattern: clickable text + clickable `Expander` **after** the text, no value; expanded by default; collapsing hides the scope rows | the block's severity when the flow / card is wholly added / removed |
 | Scope (2nd level) | expanded | `<20px offset> name <* if required> <20px> <gray description> [required badge in diffs]`, same 40% grid as 1st-level props | strongest of the scope's own diffs (added / removed / description, required); the block's severity when painted by a whole block |
