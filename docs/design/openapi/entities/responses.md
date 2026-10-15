@@ -184,7 +184,7 @@ response also has headers (and links), so its extensions are not "about every me
 | Presence | the response Body is present on a side when it has ≥1 option there (the response description belongs to the response, not to the Body) |
 | Shown when | present on either side |
 | Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `response-body/02-body-removed`) or synthetic (the only media type removed, or the only schema removed, `response-body/16-schema-removed`); options carry `mediaType` node diffs and summaries |
-| Schema | `MediaTypeSchemaViewer` for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
+| Schema | `OpenApiSchemaViewer` (inside `MediaTypeContentSection`) for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
 
 The request and response Body are one component, `MediaTypeContentSection`
 (`OpenApiOperationViewer/MediaTypeContentSection.tsx`): title, optional required marker, media-type

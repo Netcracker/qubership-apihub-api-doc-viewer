@@ -15,11 +15,13 @@ flowchart TB
   Extensions["shared-components/ExtensionsSection<br/>Extensions (h2)"]
   Request["RequestNodeViewer.tsx<br/>Request (h2)"]
   Params["ParametersNodeViewer.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies (h3)"]
-  Body["RequestBodyNodeViewer.tsx<br/>Body header · description"]
-  BodyHeader["MediaTypeContentHeader.tsx<br/>Body (h3) + required * · media-type Selector (+ required tag)"]
+  Body["RequestNodeViewer.tsx (request body viewer)<br/>media-type selection from OpenApiViewStateContext"]
+  BodyHeader["MediaTypeContentSection.tsx<br/>Body (h3) + required * · media-type Selector (+ required tag) · description · schema"]
   Responses["ResponsesNodeViewer.tsx<br/>Responses (h2) + toned code Selector"]
   Response["response-blocks.tsx<br/>description · Headers (h3) · Body header"]
-  MediaSchema["MediaTypeSchemaViewer.tsx<br/>wrapJsonSchemaForViewer('Type', …)"]
+  MediaSchema["OpenApiSchemaViewer.tsx<br/>wrapJsonSchemaForViewer('Type', …) in MediaTypeContentSection"]
+  Layout["OpenApiLayout.tsx · SeparatorRow · BadgeStub<br/>one container level: blocks + separator rows"]
+  LayoutData["next-data-model model/openapi/layout<br/>OpenApiSpacingConfig · OpenApiBlockEdges · OpenApiLayoutPlanner"]
   Visibility["next-data-model<br/>OpenApiNodeVisibilityManagerKind* · display labels"]
   JsonSchema["JsonSchemaViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]
   Jso["JsoViewer"]
@@ -50,6 +52,12 @@ flowchart TB
   Operation --> SharedRows
   Card --> SharedRows
   Response --> SharedRows
+  Operation --> Layout
+  Request --> Layout
+  Responses --> Layout
+  Security --> Layout
+  Card --> Layout
+  Layout --> LayoutData
 ```
 
 ## Notes

@@ -94,14 +94,14 @@ titles, **h5** OAuth flow titles.
 | 12 | **Query Parameters** (h3) + schema | same | `parameters` (`query`) | ≥1 query parameter | same |
 | 13 | **Headers** (h3) + schema | same | `parameters` (`header`) | ≥1 header parameter | same |
 | 14 | **Cookies** (h3) + schema | same | `parameters` (`cookie`) | ≥1 cookie parameter | same |
-| 15 | **Body** (h3) + required `*`; subheader: media-type selector (+ `required` tag in diffs) | `MediaTypeContentHeader` | `requestBody` / `content` | Body present: `description` or ≥1 media type with `schema` | [request body](../entities/request-body.md) |
+| 15 | **Body** (h3) + required `*`; subheader: media-type selector (+ `required` tag in diffs) | `MediaTypeContentSection` | `requestBody` / `content` | Body present: `description` or ≥1 media type with `schema` | [request body](../entities/request-body.md) |
 | 16 | Request body description | `MarkdownTextRow` | `requestBody` | `description` | [request body](../entities/request-body.md#description-row) |
 | 17 | Request body schema (incl. cloned request-body and media-type `x-*` in its Extensions sub-tree) | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected (options = media types with `schema`) | [request body](../entities/request-body.md#schema) |
 | 18 | **Responses** (h2), response-code selector in the subheader | `TitleRow` + toned `Selector` | `responses` | ≥1 response | [responses](../entities/responses.md), [response-code-selector.md](response-code-selector.md) |
 | 19 | Response description | `MarkdownTextRow` | `response` | `description` | [responses](../entities/responses.md#description-row) |
 | 20 | **Headers** (h3) + schema | `TitleRow` + `JsonSchemaViewer` | `responseHeaders` | ≥1 header | [responses](../entities/responses.md#headers) |
 | 21 | **Extensions** (h3) of the selected response + JSO tree | shared `ExtensionsSection` | `extensions` (child of `response`) | ≥1 `x-*` on the Response Object | [responses](../entities/responses.md#response-extensions) |
-| 22 | **Body** (h3); subheader: media-type selector | `MediaTypeContentHeader` | `response` / `content` | ≥1 media type with `schema` | [responses](../entities/responses.md#body) |
+| 22 | **Body** (h3); subheader: media-type selector | `MediaTypeContentSection` | `response` / `content` | ≥1 media type with `schema` | [responses](../entities/responses.md#body) |
 | 23 | Response body schema (incl. cloned media-type `x-*` in its Extensions sub-tree) | `JsonSchemaViewer` | `mediaType` (selected) | an option is selected | same |
 | 24 | **Extensions** (h3) of the Responses Object (code-independent) + JSO tree | shared `ExtensionsSection` | `extensions`, key `responsesExtensions` (child of `operation`, **not** of the complex `responses` node) | ≥1 `x-*` on the Responses Object | [responses](../entities/responses.md#responses-extensions) |
 

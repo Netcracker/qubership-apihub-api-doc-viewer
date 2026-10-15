@@ -642,7 +642,10 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   `beforeValue` / `afterValue` of the row diff into the shown text. Painting a title row with a field
   diff (e.g. a scheme `type` replace) would make the origin title read the old field value. Build the
   synthetic row diff from a copy without values (`deriveDiff(parent, 'replace', undefined, undefined)`
-  → `buildRowReplace`) — the same idea as DDL `asReplaceFlagDiffForTitleRow`.
+  → `buildRowReplace`) — the same idea as DDL `asReplaceFlagDiffForTitleRow`. The same holds for
+  an **add / remove** field diff used to paint another row: `TextValue` hides the value on the side
+  where the diff's action says it does not exist (session 2026-10-15: the operation ID row painted with
+  the `deprecated` add lost its text on the origin side). Always derive a value-less `replace`.
 - **Synthetic row diffs on derived rows.** Rows that have no diff object of their own (one scope out
   of a `scopes` map replace; a scope whose only change is `required`) get diffs derived in the model
   from the parent diff (type + declaration paths kept); a required-only change gets a yellow
@@ -650,7 +653,9 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
 - **Synthetic field diffs need an allow-list.** The `KindAny` node-diffs aggregator copies only the
   kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
   `alternatives`) must be listed in `SYNTHETIC_FIELD_DIFF_KEYS` and mapped in the severities
-  aggregator. The model layer does not import `building-service`, so severity math belongs in the
+  aggregator. OpenAPI model files (`model/openapi/`) do not import `building-service` (some other
+  specs' model files do — DDL node visibility, JSON Schema combiner row diffs — but keep OpenAPI's
+  boundary), so severity math belongs in the
   transformer / aggregators, not in `row-diffs.ts`.
 - **A row that may move needs one placement per host, written by the aggregator.** The operation
   `deprecated` tag sits on the title row, else the operation ID row, else the address row — which

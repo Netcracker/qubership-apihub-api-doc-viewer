@@ -55,7 +55,7 @@ message and section descriptions; only security card detail rows are `detailed`-
 
 ## Schema
 
-`MediaTypeSchemaViewer` (shared with responses):
+`OpenApiSchemaViewer` inside `MediaTypeContentSection` (shared with responses):
 
 | Item | Rule |
 | --- | --- |

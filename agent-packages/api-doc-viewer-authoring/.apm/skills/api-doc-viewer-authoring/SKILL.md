@@ -934,6 +934,15 @@ that holds the value** (the element with the diff background) — no margins, no
   with its own padding gets its own `PrecededBy` member (`OPENAPI_OPERATION_ID_ROW`) and CSS custom
   property set on the viewer root.
 - **CSS custom properties in `style`** are typed by `src/types/css-custom-properties.d.ts` — no casts.
+- **"Symmetric" means per row (session lesson).** The first rework split every gap in half between
+  the rows around it (8 → 4 + 4, 20 → 10 + 10), which left block-edge rows asymmetric (4 / 10) — the
+  user rejected it. "Symmetric indentation" here means **each row's top padding equals its bottom
+  padding**; larger gaps between blocks are separator rows. When proposing a spacing model, show the
+  concrete top / bottom padding of every row kind, block-edge rows included, not only the gap sizes.
+- **Big layout changes go design-first with approval.** For this kind of change the user asked for a
+  drawn proposal in `docs/design/`, then the algorithm (data computed in next-data-model, every number
+  and rule in one config), then a cost estimate — each approved before any code. Expect the same for
+  comparable requests.
 - **Verify by measuring**, not by eye (testing skill → vertical spacing audit): row paddings 4/4,
   separators 12 or 6 + 6 with the right tones per side, frame rows 24 with the border at 12.
 
@@ -946,3 +955,11 @@ font-Inter-Medium` — the static "Inter Medium" font family (`src/index.css`) a
 title. For any label that must look like a property title (security prop labels, `Scopes`, scope
 names), reuse `NODE_TITLE_TEXT_CLASSES` on a plain span instead of tuning weights.
 
+## Session tooling traps (Windows / Git Bash harness)
+
+- **Long multi-line edits:** a Bash heredoc (`python - <<'EOF' … EOF`) carrying JSX/TS text with
+  backticks or quotes repeatedly failed with `unexpected EOF while looking for matching '` even with
+  a quoted delimiter. Write the edit script to the scratchpad with the Write tool and run
+  `python <file> <repo-root>` instead.
+- **Deleting tracked files:** use `rm`, not `git rm` — `git rm` stages the deletion, and the user
+  manages the index themselves (unstage with `git reset -q HEAD -- <paths>` if it happened).
