@@ -1,0 +1,21 @@
+import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
+import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
+/**
+ * View-state selection of the OpenAPI operation viewer: owner node id -> selected child node id
+ * (security -> alternative, responses -> response, request body / response -> media type). An owner
+ * without an entry shows its default option. CSS-free so it can be unit tested.
+ * Design: docs/design/openapi/features/operation-viewer.md -> "View state".
+ */
+export type OpenApiSelection = ReadonlyMap<string, string>;
+type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
+type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>;
+type MediaTypeOwnerNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST_BODY> | OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>;
+/** The selected security alternative: the chosen one, else the first (index 0 of the merged list). */
+export declare function resolveSelectedAlternative(security: SecurityNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_REQUIREMENT> | undefined;
+/** The selected response: the chosen one, else the first 2XX, else the first (features/response-code-selector.md). */
+export declare function resolveSelectedResponse(responses: ResponsesNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE> | undefined;
+/** Media types of a body owner (request body, or a response for its body), in document order. */
+export declare function getOpenApiMediaTypes(owner: MediaTypeOwnerNode): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>[];
+/** The selected media type of a body owner: the chosen one, else the first. */
+export declare function resolveSelectedMediaType(owner: MediaTypeOwnerNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE> | undefined;
+export {};

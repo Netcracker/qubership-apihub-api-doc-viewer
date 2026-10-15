@@ -2,8 +2,8 @@ import { ITreeNode } from '../../../../../next-data-model/src/model/abstract/tre
 import { ChangedPropertyMetaData, NodeDiffsSeverity } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { ReactElement } from '../../../../../../node_modules/react';
 import { SelectorOption } from '../Selector/Selector';
-import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
-type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & WithBlockLastRowProps & {
+import { WithPrecededByProps } from '../WithPrecededByProps';
+type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
     options: SelectorOption<N>[];
     selectedOption: SelectorOption<N> | null;
     onSelectOption: (option: SelectorOption<N>) => void;

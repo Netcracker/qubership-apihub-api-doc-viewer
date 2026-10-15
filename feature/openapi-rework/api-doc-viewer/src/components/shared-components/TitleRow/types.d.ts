@@ -3,7 +3,7 @@ import { ChangedPropertyMetaData, DiffHighlightingApplicationMode, DiffHiglighti
 import { ReactElement } from '../../../../../../node_modules/react';
 import { TextValueVariant } from '../TextValue/types';
 import { WithFramePositionProps } from '../Frame/types';
-import { WithBlockLastRowProps, WithDdlListLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
+import { WithDdlListLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
 export declare enum TitleRowUsage {
     Default = "default",
     AsyncApiJsoSection = "async-api-jso-section",
@@ -12,7 +12,7 @@ export declare enum TitleRowUsage {
     DdlApiProperty = "ddlapi-property",
     JsonSchemaProperty = "json-schema-property"
 }
-export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithBlockLastRowProps & WithFramePositionProps & {
+export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithFramePositionProps & {
     value?: string;
     titleContent?: ReactElement | ((layoutSide: LayoutSide) => ReactElement | null);
     expandable: boolean;

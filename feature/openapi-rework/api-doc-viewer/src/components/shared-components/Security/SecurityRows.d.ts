@@ -1,15 +1,16 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDiffsSeverity } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { OpenApiFrameRow } from '../../../../../next-data-model/src/model/openapi/layout';
 import { FC, ReactNode } from '../../../../../../node_modules/react';
 import { WithFramePositionProps } from '../Frame/types';
-import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
+import { WithPrecededByProps } from '../WithPrecededByProps';
 /**
  * Building blocks of a security scheme card: one per-side row frame plus the contents that go into
  * it (label / value prop, flow header, scopes toggle, scope row). Shared by every security section
  * (OpenAPI operations now, AsyncAPI servers later); containers pass precomputed diffs only.
  * Design: docs/design/openapi/entities/security.md -> "Scheme card".
  */
-type SecurityRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
+type SecurityRowProps = WithPrecededByProps & WithFramePositionProps & {
     /** Content of one side; called only on a side where the row has content. */
     renderSide: (layoutSide: LayoutSide) => ReactNode;
     /** Row background; a whole add / remove leaves the absent side empty and gray. */
@@ -17,15 +18,27 @@ type SecurityRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFrameP
     /** Floating severity badge of this row (own changes only, never an inherited block diff). */
     severity?: NodeDiffsSeverity;
     testId?: string;
-    /** `frame-end`: the content-less closing row of a card (bottom indent + border), always last. */
-    variant?: 'default' | 'frame-end';
 };
 /**
- * One card row on both sides. Vertical spacing is padding inside the row only (`data-precededby` for
- * the top, `data-block-last-row` for the bottom; never margins between rows), so neighbouring
- * highlighted rows join into one colored block without white seams.
+ * One card row on both sides. Vertical spacing is padding inside the row only (`data-precededby`;
+ * never margins between rows), so neighbouring highlighted rows join into one colored block without
+ * white seams.
  */
 export declare const SecurityRow: FC<SecurityRowProps>;
+type SecurityFrameRowProps = {
+    /** Height, border offset and whole-card tones (next-data-model `OpenApiLayoutPlanner.frameRow`). */
+    frameRow: OpenApiFrameRow;
+    /** `first`: the card's opening row (top border), `last`: its closing row (bottom border). */
+    position: 'first' | 'last';
+    /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */
+    isPresentOnSide: (layoutSide: LayoutSide) => boolean;
+};
+/**
+ * A card's content-less opening / closing row: the horizontal border runs at `borderOffset` from
+ * the row top (the middle by default), the rest of the row is space inside / outside the card.
+ * Painted with the whole-card diff only. Design: docs/design/openapi/features/block-separators.md
+ */
+export declare const SecurityFrameRow: FC<SecurityFrameRowProps>;
 type SecurityPropContentProps = {
     /** Plain text, or composed text with its own highlighted segments (apiKey `<Place> parameter name`). */
     label: ReactNode;

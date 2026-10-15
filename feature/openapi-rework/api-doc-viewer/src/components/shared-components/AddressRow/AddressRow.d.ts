@@ -1,6 +1,6 @@
-import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
+import { WithPrecededByProps } from '../WithPrecededByProps';
 import { LayoutSide } from '../../../types/internal/LayoutSide';
-import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC, ReactElement } from '../../../../../../node_modules/react';
 /** Badge before the address: AsyncAPI action (SEND / RECEIVE), OpenAPI HTTP method. */
 export type AddressRowBadge = {
@@ -8,7 +8,7 @@ export type AddressRowBadge = {
     /** Tailwind background class (must be a literal class name in the caller's source). */
     colorClass: string;
 };
-export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
+export type AddressRowProps = WithPrecededByProps & {
     badge: AddressRowBadge | null;
     address: string;
     /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */
@@ -16,5 +16,7 @@ export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
     diff?: ChangedPropertyMetaData;
     descendantDiffs?: NodeDescendantDiffs;
     diffsSeverities?: NodeDiffsSeverities;
+    /** Placement of this row's severity; the address row's own by default. */
+    diffsSeverityPlacement?: NodeDiffsSeverityPlacemennt;
 };
 export declare const AddressRow: FC<AddressRowProps>;

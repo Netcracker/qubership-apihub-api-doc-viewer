@@ -1,17 +1,17 @@
 import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-import { WithPrecededByProps } from '../shared-components/WithPrecededByProps';
-import { OpenApiSectionTail } from './section-preceded-by';
+import { OpenApiBlock } from './OpenApiLayout';
+import { OpenApiViewState } from './OpenApiViewStateContext';
 export declare const REQUEST_SECTION_TITLE = "Request";
 type RequestNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST>;
-type RequestNodeViewerProps = WithPrecededByProps & {
+/** The Request section as a layout block: its h2 title row, then its sub-blocks. */
+export declare function buildRequestBlock(node: RequestNode, view: OpenApiViewState): OpenApiBlock;
+type RequestNodeViewerProps = {
     node: RequestNode;
-    /** What the row after the Request section assumes about its end (see `OpenApiSectionEntry`). */
-    closing: OpenApiSectionTail;
+    /** Its sub-blocks, built by `buildRequestBlock` (the parent needs them for the Request's own edges). */
+    blocks: readonly OpenApiBlock[];
 };
-/** How the Request section ends (its last sub-section, or its own title row when it has none). */
-export declare function resolveRequestTail(node: RequestNode): OpenApiSectionTail;
 /** "Request" (h2): parameter groups and the Body in config order. Design: entities/parameters.md, entities/request-body.md. */
 export declare const RequestNodeViewer: FC<RequestNodeViewerProps>;
 export {};

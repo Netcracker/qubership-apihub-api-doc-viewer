@@ -1,13 +1,13 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { FC } from '../../../../../../node_modules/react';
-import { WithBlockLastRowProps, WithPrecededByProps } from '../WithPrecededByProps';
+import { WithPrecededByProps } from '../WithPrecededByProps';
 export declare const EXTERNAL_DOCS_LINK_TEXT = "View external documentation";
 export type ExternalDocsSide = {
     url: string;
     description?: string;
 };
-export type ExternalDocsRowProps = WithPrecededByProps & WithBlockLastRowProps & {
+export type ExternalDocsRowProps = WithPrecededByProps & {
     /** URL and description shown on a side; `null` = nothing on that side. */
     resolveSide: (layoutSide: LayoutSide) => ExternalDocsSide | null;
     diff?: ChangedPropertyMetaData;

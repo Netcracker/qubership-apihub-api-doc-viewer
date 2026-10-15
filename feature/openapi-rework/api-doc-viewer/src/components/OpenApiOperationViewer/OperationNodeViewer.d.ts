@@ -2,10 +2,15 @@ import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/t
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
 export declare const OPERATION_ID_ROW_LABEL = "Operation ID";
+type OperationNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>;
 type OperationNodeViewerProps = {
-    node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>;
+    node: OperationNode;
     noHeading: boolean;
 };
-/** Header rows (title, operation ID, address, description, external docs), then sections in config order. */
+/**
+ * The operation: the header block (title, operation ID, address, description, external docs), then
+ * the sections in config order, planned as one level (separator rows between blocks). Owns the view
+ * state (selections) every level reads. Design: features/operation-viewer.md, features/block-separators.md.
+ */
 export declare const OperationNodeViewer: FC<OperationNodeViewerProps>;
 export {};

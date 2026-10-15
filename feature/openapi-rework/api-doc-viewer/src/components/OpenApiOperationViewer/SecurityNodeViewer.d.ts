@@ -1,18 +1,18 @@
 import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-import { WithPrecededByProps } from '../shared-components/WithPrecededByProps';
-import { OpenApiSectionTail } from './section-preceded-by';
+import { OpenApiBlock } from './OpenApiLayout';
+import { OpenApiViewState } from './OpenApiViewStateContext';
 export declare const SECURITY_SECTION_TITLE = "Security";
-type SecurityNodeViewerProps = WithPrecededByProps & {
-    node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
-    /** What the row after the section assumes about its end (see `OpenApiSectionEntry`). */
-    closing: OpenApiSectionTail;
-};
+type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
 /**
- * "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND).
- * Title and toolbar form one block; the "No authentication" text and every card are blocks of their
- * own (a card keeps the outer half-gaps inside its first / last row, frame.css).
+ * The Security section as a layout block. Its sub-blocks: the title + toolbar, then the selected
+ * alternative's "No authentication" text or its scheme cards (each card a block of its own, framed:
+ * no separators next to it).
  */
-export declare const SecurityNodeViewer: FC<SecurityNodeViewerProps>;
+export declare function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): OpenApiBlock;
+/** "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND). */
+export declare const SecurityNodeViewer: FC<{
+    blocks: readonly OpenApiBlock[];
+}>;
 export {};
