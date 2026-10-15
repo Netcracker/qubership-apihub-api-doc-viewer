@@ -93,6 +93,14 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
 
   const renderSubheader = (layoutSide: LayoutSide): ReactElement => (
     <div className="flex flex-row flex-wrap items-center gap-2">
+      <Selector
+        options={options}
+        selectedOption={selectedOption}
+        onSelectOption={(option) => onSelect(option.node.id)}
+        variant={SelectorVariant.Secondary}
+        layoutSide={layoutSide}
+      />
+      {/* After every media-type option (design: request-body.md -> header row). */}
       {requiredTagDiff && (
         <TagsWithDiffs
           requiredChanged={true}
@@ -102,13 +110,6 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
           layoutSide={layoutSide}
         />
       )}
-      <Selector
-        options={options}
-        selectedOption={selectedOption}
-        onSelectOption={(option) => onSelect(option.node.id)}
-        variant={SelectorVariant.Secondary}
-        layoutSide={layoutSide}
-      />
     </div>
   )
 

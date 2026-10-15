@@ -260,14 +260,13 @@ class Operation {
   }
 
   /**
-   * A deprecated change as a yellow row (no text highlighter) on the row that carries the tag. Built
-   * from a value-less `replace` copy: the deprecated add / remove itself would hide the row's text on
-   * one side, and a boolean before / after value would be shown in place of the text.
+   * A deprecated change as a yellow row (no text highlighter) on the row that carries the tag
+   * (`buildRowReplace` keeps the row's text on both sides).
    */
   private static takeDeprecatedRowReplace(node: AnyOpenApiNode, deprecatedTagRow: OpenApiDeprecatedTagRow, row: OpenApiDeprecatedTagRow): ChangedPropertyMetaData | undefined {
     const deprecated = fieldDiff(node, 'deprecated')?.data
     return deprecated && deprecatedTagRow === row
-      ? OpenApiChangedPropertyMetaData.buildRowReplace(deriveDiff(deprecated, 'replace', undefined, undefined))
+      ? OpenApiChangedPropertyMetaData.buildRowReplace(deprecated)
       : undefined
   }
 
@@ -481,13 +480,13 @@ class SecurityScheme {
 
   /**
    * Card title row: a whole card add / remove, else a synthetic yellow `replace` (no text
-   * highlighter) when the scheme type changed. Built from a value-less copy of the type diff, so the
-   * origin title keeps the scheme name (a string `beforeValue` would be shown in its place).
+   * highlighter) when the scheme type changed. `buildRowReplace` drops the type values, so the origin
+   * title keeps the scheme name (a string `beforeValue` would be shown in its place).
    */
   public static takeTitleRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
     const type = SecurityScheme.takeTypeTextDiff(node)?.data
     return Section.takeHeaderRowDiff(node)
-      ?? (type ? OpenApiChangedPropertyMetaData.buildRowReplace(deriveDiff(type, 'replace', undefined, undefined)) : undefined)
+      ?? (type ? OpenApiChangedPropertyMetaData.buildRowReplace(type) : undefined)
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Diff, isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
+import { Diff, DiffAction, isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import {
   ChangedPropertyMetaData,
   DIFF_HIGHLIGHTING_MODES_DEFAULT,
@@ -25,10 +25,26 @@ export class OpenApiChangedPropertyMetaData {
     return OpenApiChangedPropertyMetaData.create(diff, changed, changed)
   }
 
-  /** Yellow row on both sides without text highlight: a title row painted for a flag change. */
+  /**
+   * Yellow row on both sides without text highlight: a title row painted for a flag change. Built from
+   * a value-less `replace` copy (same type and declaration paths): rows read the action, and an add /
+   * remove would hide the row's text on one side, a string before / after value would replace it.
+   */
   public static buildRowReplace(diff: Diff): ChangedPropertyMetaData {
     const changed: DiffStyles = { ...VISIBLE, backgroundColor: HighlightVariant.Yellow }
-    return OpenApiChangedPropertyMetaData.create(diff, changed, changed)
+    return OpenApiChangedPropertyMetaData.create(OpenApiChangedPropertyMetaData.toValuelessReplace(diff), changed, changed)
+  }
+
+  private static toValuelessReplace(diff: Diff): Diff {
+    return {
+      type: diff.type,
+      scope: diff.scope,
+      action: DiffAction.replace,
+      beforeValue: undefined,
+      afterValue: undefined,
+      beforeDeclarationPaths: 'beforeDeclarationPaths' in diff ? diff.beforeDeclarationPaths : [],
+      afterDeclarationPaths: 'afterDeclarationPaths' in diff ? diff.afterDeclarationPaths : [],
+    }
   }
 
   private static create(diff: Diff, before: DiffStyles, after: DiffStyles): ChangedPropertyMetaData {

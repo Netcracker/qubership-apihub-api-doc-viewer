@@ -264,6 +264,21 @@ describe('OpenAPI with diffs: request body', () => {
     expect([...OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(option)]).toEqual(['non-breaking'])
   })
 
+  it.each([
+    ['request-body/03-required-added', DiffAction.add],
+    ['request-body/04-required-removed', DiffAction.remove],
+  ])('required change (%s): yellow Body row that keeps the title on both sides', (caseId, requiredAction) => {
+    const node = requestBody(build(caseId))
+    const header = OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node)
+    // A value-less replace: an add / remove here would hide the `Body` title on the opposite side.
+    expect(header?.data).toMatchObject({ action: DiffAction.replace, beforeValue: undefined, afterValue: undefined })
+    expect(header?.styles.before.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.textHighlighterColor).toBeUndefined()
+    // The `required` tag keeps its side-exclusive add / remove.
+    expect(OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)?.data.action).toBe(requiredAction)
+  })
+
   it('required became false', () => {
     expect(requestBody(build('request-body/04-required-removed')).diffs.required?.data.action).toBe(DiffAction.remove)
   })
