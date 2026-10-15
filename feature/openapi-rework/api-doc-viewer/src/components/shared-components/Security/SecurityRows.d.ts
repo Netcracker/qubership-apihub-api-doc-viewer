@@ -28,7 +28,8 @@ type SecurityRowProps = WithFramePositionProps & {
  */
 export declare const SecurityRow: FC<SecurityRowProps>;
 type SecurityPropContentProps = {
-    label: string;
+    /** Plain text, or composed text with its own highlighted segments (apiKey `<Place> parameter name`). */
+    label: ReactNode;
     value: ReactNode;
 };
 /**
