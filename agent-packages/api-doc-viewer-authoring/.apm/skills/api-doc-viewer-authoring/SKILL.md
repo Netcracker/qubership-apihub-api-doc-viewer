@@ -880,53 +880,53 @@ of several review rounds:
 
 - Never shrink or margin the highlighted element to draw a card — the diff color then stops at the
   card edge and the rest of the side stays white.
-- The card's bottom indent / border belongs to a dedicated, content-less **closing row**; if it sits
-  on the last content row, collapsing an expandable row (e.g. `Scopes`) changes which row is last and
-  the row visibly "jumps".
+- The card's top and bottom edges are dedicated, content-less **frame rows** (`SecurityFrameRow`,
+  24px, border in the middle via `--frame-border-top` / `--frame-border-bottom`), coloured by the
+  whole-card diff only. If the border sat on a content row, collapsing an expandable row (e.g.
+  `Scopes`) would change which row is last and the row would visibly "jump"; a yellow title row would
+  also colour the space above the border.
 - Vertical spacing inside a card is padding, never margin (margins cut the side borders and leave
-  white seams between highlighted rows). There are **no spacer rows** (2026-10-15): a card is a block,
-  and the frame keeps the outer half of the 20px block gap (`--frame-outer-gap`) as padding of the
-  first / last row **outside** the border box (`::before` `top` / `bottom` offset). See the OpenAPI
-  spacing section below.
+  white seams between highlighted rows). Gaps between card segments (flow parts) are separator rows
+  with `data-frame-position="middle"`; `SeparatorRow.css` drops the frame padding so the bands still
+  fill the side. See the OpenAPI spacing section below.
 - Verify geometry in a live browser (testing skill → live Storybook check); SSR / HTML checks cannot
   see widths or `::before` boxes.
 
-## OpenAPI vertical spacing: split gaps (session lesson)
+## OpenAPI vertical spacing: symmetric rows + separator rows (session lesson)
 
-Design: `docs/design/openapi/features/operation-viewer.md` → "Spacing". Main rule: every vertical
-offset of the OpenAPI viewers is **padding inside the per-side row element that holds the value**
-(the element with the diff background) — no margins, no padding on wrappers (section divs, layouts,
-`DiffFloatingBadgeWrapper`), no spacer rows, no `min-height` centring.
+Design: `docs/design/openapi/features/block-separators.md` (rule, colouring, algorithm, config, cost).
+Main rule: every vertical offset of the OpenAPI viewers is **padding inside the per-side row element
+that holds the value** (the element with the diff background) — no margins, no padding on wrappers
+(section divs, layouts, `DiffFloatingBadgeWrapper`), no `min-height` centring.
 
-- **Split gaps.** Rows form blocks; each gap is split in half between the row above
-  (`padding-bottom`) and the row below (`padding-top`): 8px inside a block (4 + 4), 20px between
-  blocks (10 + 10). A highlighted row then reaches to the middle of each gap in diffs mode.
-- **Top = `data-precededby`, bottom = `data-block-last-row`.** `precededBy` alone cannot express a
-  bottom half; `ATTRIBUTE_BLOCK_LAST_ROW` (DDL `data-ddl-list-last-row` analogue) marks the last row of
-  a block. Rules in `preceded-by.css` → "OpenAPI operation viewer"; row components that forward the
-  attribute: `TitleRow`, `TextRow`, `MarkdownTextRow`, `AddressRow`, `ExternalDocsRow`,
-  `SecurityToolbar`, `SecurityRow`.
-- **Use only `OPENAPI_*` members on OpenAPI rows.** Reusing AsyncAPI members
-  (`MESSAGE_SECTION_HEADER_HIGH_LEVEL`, `DESCRIPTION_ROW`, …) pulls in their shared rules (e.g. a
-  12px top with the default 4px bottom) and breaks the split. All OpenAPI values start with
-  `openapi-` (the markdown first/last-child margin reset matches the prefix).
-- **Nested viewers: boundary only.** `JsonSchemaViewer` / `JsonSchemaDiffsViewer` **ignored** the
-  `data-precededby` passed to them (a dead attribute, AsyncAPI still passes one) — honouring it would
-  shift AsyncAPI rows, so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first
-  child under a suppressed root). JSO: `ExtensionsSection` `contentPrecededBy`. The row **after** a
-  nested viewer compensates for its last row's own 4px (`OPENAPI_AFTER_NESTED_VIEWER`, 16px top).
-- **Tails before render.** A section's `tail` (how it ends) must be known by its container's one
-  pass. When the end depends on view state the container cannot see (selected media type without a
-  schema; the selected response at the operation level), the section promises
-  `OPENAPI_AFTER_NESTED_VIEWER` and keeps the promise through the `closing` render argument: its last
-  OpenAPI row stays at 4px instead of taking `data-block-last-row`. Build sub-sections in pure
-  builders (`buildRequestSections`, `buildResponseSections`) so the parent can read the real tail.
+- **Symmetric rows.** Every OpenAPI row has `data-precededby="openapi-row"` → padding
+  `var(--openapi-row-padding)` top and bottom (4px; set on the viewer root from
+  `OpenApiSpacingConfig.rowPadding`). Rows of one block touch (8px between contents).
+- **Separators between blocks.** A content-less `SeparatorRow` (12px) between two blocks; per side one
+  band, or two 6px bands when the rows around it have different tones. The **data layer** computes it
+  (next-data-model `model/openapi/layout/`: `OpenApiBlockEdges`, `OpenApiLayoutPlanner`,
+  `OpenApiSpacingConfig`); the viewer only renders the plan (`OpenApiLayout`). Never decide a colour,
+  height or "separator here?" in React.
+- **Blocks, not sections.** Each container exports a pure builder (`buildRequestBlock`,
+  `buildResponsesBlock`, `buildSecurityBlock`, `buildParametersBlock`, `buildExtensionsBlock`,
+  `buildResponseBlocks`) returning `{ id, head, tail, payload }`; a container's edges are its header
+  row and the tail of its last child (`OpenApiBlockEdges.container`), so the parent level can plan
+  before rendering. Pass the built child blocks to the container component — do not build twice.
+- **View state is one store.** Selections live in `OpenApiViewStateContext` (owner node id → selected
+  node id), owned by `OperationNodeViewer`: a Body's selected media type decides where Request ends,
+  which the operation level needs. Per-container `useState` for a selection breaks the plan.
+  Resolvers with the defaults: `src/utils/openapi/view-selection.ts`.
+- **Nested viewers: boundary only.** `JsonSchemaViewer` / `JsonSchemaDiffsViewer` **ignore** a
+  `data-precededby` passed to them (AsyncAPI still passes one; honouring it would shift AsyncAPI rows),
+  so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first child under a
+  suppressed root). JSO: `ExtensionsSection` `contentPrecededBy`. Next to a nested viewer the layout
+  uses the owning block's whole add / remove only (its inner rows are invisible to the OpenAPI layer).
 - **Line-height struts are offsets too.** A 12px value in a cell that inherits the page's 24px line
   height sits in a taller line box — an offset outside the row padding. Pin the cell's line height to
   its text (`.security-prop` / `.security-scope` `line-height: 1rem`).
-- **Verify by measuring**, not by eye: per row, computed `padding-top/bottom` plus the distance from
-  the row edge to the content's ink (text ranges, boxed elements) on both sides, and every non-row
-  element with vertical margin / padding (testing skill → live Storybook check).
+- **CSS custom properties in `style`** are typed by `src/types/css-custom-properties.d.ts` — no casts.
+- **Verify by measuring**, not by eye (testing skill → vertical spacing audit): row paddings 4/4,
+  separators 12 or 6 + 6 with the right tones per side, frame rows 24 with the border at 12.
 
 ## Typography: the JSON Schema property-title look (session lesson)
 

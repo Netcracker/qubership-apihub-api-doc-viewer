@@ -1,6 +1,13 @@
 import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../../abstract/layout-side"
-import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "../../abstract/tree-with-diffs/tree-node.interface"
+import {
+  ChangedPropertyMetaData,
+  HighlightVariant,
+  NODE_LEVEL_DIFF_KEY,
+  NodeDescendantDiffsSummary,
+  NodeDiffsSeverityPlacemennt,
+} from "../../abstract/tree-with-diffs/tree-node.interface"
+import { OpenApiDeprecatedTagRow, OpenApiOperationHeaderRow } from "../node-visibility"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
 import { OpenApiApiKeyParameterNameLabel, OpenApiDisplayLabels } from "../display/labels"
@@ -164,18 +171,64 @@ class Section {
 class Operation {
   /** Whole operation -> summary -> a deprecated change painted as a yellow title row. */
   public static takeTitleRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
-    const deprecated = fieldDiff(node, 'deprecated')
     return NodeLevel.takeWholeNodeDiff(node)
       ?? fieldDiff(node, 'title')
-      ?? (deprecated ? OpenApiChangedPropertyMetaData.buildRowReplace(deprecated.data) : undefined)
+      ?? Operation.takeDeprecatedRowReplace(node, 'title', 'title')
   }
 
-  public static takeOperationIdRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
-    return NodeLevel.takeRowDiff(node, 'operationId')
+  /** Whole operation -> operation ID -> a deprecated change when this row carries the tag (no title row). */
+  public static takeOperationIdRowDiff(node: AnyOpenApiNode, deprecatedTagRow: OpenApiDeprecatedTagRow): ChangedPropertyMetaData | undefined {
+    return NodeLevel.takeRowDiff(node, 'operationId') ?? Operation.takeDeprecatedRowReplace(node, deprecatedTagRow, 'operationId')
   }
 
-  public static takeAddressRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
-    return NodeLevel.takeRowDiff(node, 'path')
+  /** Whole operation -> path -> a deprecated change when this row carries the tag (no title, no operation ID). */
+  public static takeAddressRowDiff(node: AnyOpenApiNode, deprecatedTagRow: OpenApiDeprecatedTagRow): ChangedPropertyMetaData | undefined {
+    return NodeLevel.takeRowDiff(node, 'path') ?? Operation.takeDeprecatedRowReplace(node, deprecatedTagRow, 'address')
+  }
+
+  /**
+   * Severity placement of the operation ID row: with the `deprecated` tag merged in when the row
+   * carries the tag (the severities aggregator writes both variants; the strongest diff wins).
+   */
+  public static resolveOperationIdRowSeverityPlacement(deprecatedTagRow: OpenApiDeprecatedTagRow): NodeDiffsSeverityPlacemennt {
+    return deprecatedTagRow === 'operationId'
+      ? NodeDiffsSeverityPlacemennt.OperationIdRowWithDeprecatedTag
+      : NodeDiffsSeverityPlacemennt.OperationIdRow
+  }
+
+  /** Severity placement of the address row, as {@link resolveOperationIdRowSeverityPlacement}. */
+  public static resolveAddressRowSeverityPlacement(deprecatedTagRow: OpenApiDeprecatedTagRow): NodeDiffsSeverityPlacemennt {
+    return deprecatedTagRow === 'address'
+      ? NodeDiffsSeverityPlacemennt.AddressRowWithDeprecatedTag
+      : NodeDiffsSeverityPlacemennt.AddressRow
+  }
+
+  /** The row diff of one operation header row (the diff that paints it). */
+  public static takeHeaderRowDiff(node: AnyOpenApiNode, row: OpenApiOperationHeaderRow, deprecatedTagRow: OpenApiDeprecatedTagRow): ChangedPropertyMetaData | undefined {
+    switch (row) {
+      case 'title':
+        return Operation.takeTitleRowDiff(node)
+      case 'operationId':
+        return Operation.takeOperationIdRowDiff(node, deprecatedTagRow)
+      case 'address':
+        return Operation.takeAddressRowDiff(node, deprecatedTagRow)
+      case 'description':
+        return Operation.takeDescriptionRowDiff(node)
+      case 'externalDocs':
+        return Operation.takeExternalDocsRowDiff(node)
+    }
+  }
+
+  /**
+   * A deprecated change as a yellow row (no text highlighter) on the row that carries the tag. Built
+   * from a value-less `replace` copy: the deprecated add / remove itself would hide the row's text on
+   * one side, and a boolean before / after value would be shown in place of the text.
+   */
+  private static takeDeprecatedRowReplace(node: AnyOpenApiNode, deprecatedTagRow: OpenApiDeprecatedTagRow, row: OpenApiDeprecatedTagRow): ChangedPropertyMetaData | undefined {
+    const deprecated = fieldDiff(node, 'deprecated')?.data
+    return deprecated && deprecatedTagRow === row
+      ? OpenApiChangedPropertyMetaData.buildRowReplace(deriveDiff(deprecated, 'replace', undefined, undefined))
+      : undefined
   }
 
   public static takeDescriptionRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
@@ -197,17 +250,12 @@ class Operation {
   }
 
   /**
-   * Row diff of the external docs link: a whole add / remove, or a changed URL. A description-only
-   * change does not paint the row (open question Q16); each side still shows its own description.
+   * Row diff of the external docs link: a whole add / remove, or a replace of the URL or of the
+   * description (Q16, option A: the row is yellow and the link text highlighted; each side's tooltip
+   * shows its own description).
    */
   public static takeExternalDocsRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
-    const diff = fieldDiff(node, 'externalDocs')
-    if (diff && isDiffReplace(diff.data)) {
-      const before = Operation.resolveExternalDocsSide(node, ORIGIN_LAYOUT_SIDE)
-      const after = Operation.resolveExternalDocsSide(node, CHANGED_LAYOUT_SIDE)
-      return before?.url !== after?.url ? diff : undefined
-    }
-    return diff ?? NodeLevel.takeWholeNodeDiff(node)
+    return fieldDiff(node, 'externalDocs') ?? NodeLevel.takeWholeNodeDiff(node)
   }
 
   public static resolveExternalDocsSide(node: AnyOpenApiNode, side: LayoutSide): OpenApiExternalDocs | null {

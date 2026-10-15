@@ -2,6 +2,7 @@ import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
 import { NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from '../../src/model/abstract/layout-side'
+import { OpenApiNodeVisibility } from '../../src/model/openapi/node-visibility'
 import { OpenApiRowDiffs } from '../../src/model/openapi/tree-with-diffs/row-diffs'
 import { OpenApiTreeWithDiffs } from '../../src/model/openapi/tree-with-diffs/tree.impl'
 import { OpenApiTreeNodeWithDiffs } from '../../src/model/openapi/types/aliases'
@@ -99,6 +100,46 @@ describe('OpenAPI with diffs: operation', () => {
   it('deprecated and operation ID changes are field diffs', () => {
     expect(root(build('operation/14-deprecated-added')).diffs.deprecated?.data.action).toBe(DiffAction.add)
     expect(root(build('operation/06-operation-id-changed')).diffs.operationId?.data.action).toBe(DiffAction.replace)
+  })
+
+  it('the deprecated tag row is the title row, else the operation ID row, else the address row', () => {
+    const value = { method: 'post', path: '/orders' }
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, false).deprecatedTagRow).toBe('title')
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, true).deprecatedTagRow).toBe('operationId')
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value }, false).deprecatedTagRow).toBe('address')
+  })
+
+  it.each([
+    ['operation/16-deprecated-added-without-summary'],
+    ['operation/17-deprecated-removed-without-summary'],
+  ])('%s: a yellow operation ID row and its badge carry the deprecated change', (caseId) => {
+    const operation = root(build(caseId))
+    const rowDiff = OpenApiRowDiffs.Operation.takeOperationIdRowDiff(operation, 'operationId')
+    expect(rowDiff?.styles.before.backgroundColor).toBe('yellow')
+    expect(rowDiff?.styles.after.backgroundColor).toBe('yellow')
+    expect(rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(OpenApiRowDiffs.Operation.takeAddressRowDiff(operation, 'operationId')).toBeUndefined()
+    const placement = OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement('operationId')
+    expect(placement).toBe(NodeDiffsSeverityPlacemennt.OperationIdRowWithDeprecatedTag)
+    expect(operation.diffsSeverities?.[placement]?.type).toBe(operation.diffs.deprecated?.data.type)
+    expect(operation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.OperationIdRow]).toBeUndefined()
+  })
+
+  it('with a title row the deprecated change keeps painting and badging the title row', () => {
+    const operation = root(build('operation/14-deprecated-added'))
+    expect(OpenApiRowDiffs.Operation.takeTitleRowDiff(operation)?.styles.after.backgroundColor).toBe('yellow')
+    expect(OpenApiRowDiffs.Operation.takeOperationIdRowDiff(operation, 'title')).toBeUndefined()
+    expect(OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement('title')).toBe(NodeDiffsSeverityPlacemennt.OperationIdRow)
+    expect(operation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type).toBe(operation.diffs.deprecated?.data.type)
+  })
+
+  it('an external docs description change paints the row yellow and highlights the link (Q16, option A)', () => {
+    const operation = root(build('operation/13-external-docs-description-changed'))
+    const rowDiff = OpenApiRowDiffs.Operation.takeExternalDocsRowDiff(operation)
+    expect(rowDiff?.styles.after.backgroundColor).toBe('yellow')
+    expect(rowDiff?.styles.after.textHighlighterColor).toBe('yellow')
+    expect(rowDiff?.styles.before.textHighlighterColor).toBe('yellow')
+    expect(operation.diffsSeverities?.[NodeDiffsSeverityPlacemennt.ExternalDocsRow]).toBeDefined()
   })
 })
 

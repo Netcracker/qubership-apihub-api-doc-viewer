@@ -490,14 +490,14 @@ export const OPERATION_CASES = [
   },
   {
     change: 'external-docs-description-changed',
-    title: 'external docs description replaced (row not painted, Q16)',
+    title: 'external docs description replaced (yellow row, highlighted link; each tooltip shows its own side)',
     setup: () => doc => { operation(doc).externalDocs = { url: 'https://docs.example.com/orders', description: 'Orders guide' } },
     after: () => doc => { operation(doc).externalDocs.description = 'Orders guide v2' },
   },
   { pair: ['deprecated-added', 'deprecated-removed'], titles: ['operation became deprecated', 'operation is no longer deprecated'], apply: () => doc => { operation(doc).deprecated = true } },
   {
     pair: ['deprecated-added-without-summary', 'deprecated-removed-without-summary'],
-    titles: ['became deprecated, no summary (tag on the address row)', 'no longer deprecated, no summary'],
+    titles: ['became deprecated, no summary (tag and yellow row on the operation ID row)', 'no longer deprecated, no summary (tag and yellow row on the operation ID row)'],
     setup: () => doc => { delete operation(doc).summary },
     apply: () => doc => { operation(doc).deprecated = true },
   },

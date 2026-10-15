@@ -1,50 +1,64 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
 import { resolveResponseCodeTone } from "@apihub/utils/openapi/response-code-tone"
+import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
+import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
-import { OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useMemo } from "react"
 import { Selector, SelectorOption } from "../shared-components/Selector/Selector"
 import { SelectorVariant } from "../shared-components/Selector/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
-import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiExtensionsNodeViewer } from "./OpenApiExtensionsNodeViewer"
-import { buildResponseSections, ResponseNodeViewer } from "./ResponseNodeViewer"
-import { chainSectionsPrecededBy, isBlockClosing, OpenApiSectionEntry, OpenApiSectionTail, resolveSectionsTail } from "./section-preceded-by"
+import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
+import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { useOpenApiViewerContext } from "./OpenApiViewerContext"
+import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
+import { buildResponseBlocks } from "./response-blocks"
 
 export const RESPONSES_SECTION_TITLE = 'Responses'
 
+type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
+type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
 
-type ResponsesNodeViewerProps = WithPrecededByProps & {
-  node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
-  /**
-   * What the row after the Responses section assumes about its end (see `OpenApiSectionEntry`). The
-   * operation cannot know the selected response, so it promises `OPENAPI_AFTER_NESTED_VIEWER` unless
-   * Responses is its last section.
-   */
-  closing: OpenApiSectionTail
-  /** Responses Object `x-*`: a child of the operation node, rendered inside this section. */
-  extensionsNode?: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
+/** The Responses section as a layout block: its h2 title row with the code selector, then its sub-blocks. */
+export function buildResponsesBlock(node: ResponsesNode, extensionsNode: ExtensionsNode | undefined, view: OpenApiViewState): OpenApiBlock {
+  const children = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiBlock[] => {
+    if (sectionId === 'selectedResponse') {
+      const selected = resolveSelectedResponse(node, view.selection)
+      return selected ? buildResponseBlocks(selected, view) : []
+    }
+    return extensionsNode
+      ? [buildExtensionsBlock(sectionId, { node: extensionsNode, variant: TextValueVariant.h3, testId: 'openapi-responses-extensions-section' })]
+      : []
+  })
+  return {
+    id: 'responses',
+    ...OpenApiBlockEdges.container(OpenApiRowDiffs.Section.takeHeaderRowDiff(node), children),
+    payload: () => <ResponsesNodeViewer key="responses" node={node} blocks={children} />,
+  }
 }
 
-/** First 2XX response, else the first one (design: features/response-code-selector.md). */
-function resolveInitialResponse(responses: readonly ResponseNode[]): ResponseNode | undefined {
-  return responses.find(response => response.value()?.codeClass === OpenApiResponseCodeClasses.SUCCESS) ?? responses[0]
+type ResponsesNodeViewerProps = {
+  node: ResponsesNode
+  /** Its sub-blocks, built by `buildResponsesBlock` (the parent needs them for the section's own edges). */
+  blocks: readonly OpenApiBlock[]
 }
 
 /**
- * "Responses" (h2) with the toned response-code selector in its subheader, the selected response,
- * and the Responses Object extensions - in config order.
+ * "Responses" (h2) with the toned response-code selector in its subheader, the selected response's
+ * sections, and the Responses Object extensions - in config order.
  */
 export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
-  const { node, extensionsNode, closing, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { node, blocks } = props
+  const { spacing } = useOpenApiViewerContext()
+  const { selection, select } = useOpenApiViewState()
   const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
 
   const options: SelectorOption<ResponseNode>[] = useMemo(() => responses.map(response => ({
@@ -57,72 +71,13 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
       ? { diffs: response.diffs, descendantDiffsSummary: OpenApiRowDiffs.Response.takeChangesMarkerSummary(response) }
       : {}),
   })), [responses])
-
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
-  // Media-type selection per response: switching codes back and forth keeps each choice.
-  const [mediaTypeSelection, setMediaTypeSelection] = useState<Readonly<Record<string, string>>>({})
-  useEffect(() => {
-    setSelectedId(undefined)
-    setMediaTypeSelection({})
-  }, [node])
-
-  const initialResponse = useMemo(() => resolveInitialResponse(responses), [responses])
-  const selectedOption = options.find(option => option.node.id === (selectedId ?? initialResponse?.id)) ?? null
-  const selected = selectedOption?.node
-  const onSelectMediaType = useCallback((mediaTypeId: string) => {
-    if (selected) {
-      setMediaTypeSelection(current => ({ ...current, [selected.id]: mediaTypeId }))
-    }
-  }, [selected])
-
-  // The selected response's own sections: their tail is known here (the selection is view state).
-  const responseSections = selected
-    ? buildResponseSections({ node: selected, selectedMediaTypeId: mediaTypeSelection[selected.id], onSelectMediaType })
-    : []
-  const sectionEntries = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiSectionEntry[] => {
-    if (sectionId === 'selectedResponse') {
-      // A response with nothing to show (status only) renders no rows: no section at all.
-      return selected && responseSections.length > 0
-        ? [{
-          id: sectionId,
-          tail: resolveSectionsTail(responseSections),
-          render: (sectionPrecededBy, sectionClosing) => (
-            <ResponseNodeViewer
-              key={selected.id}
-              data-precededby={sectionPrecededBy}
-              closing={sectionClosing}
-              node={selected}
-              selectedMediaTypeId={mediaTypeSelection[selected.id]}
-              onSelectMediaType={onSelectMediaType}
-            />
-          ),
-        }]
-        : []
-    }
-    return extensionsNode
-      ? [{
-        id: sectionId,
-        tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER,
-        render: (sectionPrecededBy) => (
-          <OpenApiExtensionsNodeViewer
-            key={sectionId}
-            data-precededby={sectionPrecededBy}
-            node={extensionsNode}
-            variant={TextValueVariant.h3}
-            testId="openapi-responses-extensions-section"
-          />
-        ),
-      }]
-      : []
-  })
-  // The h2 title row heads the first sub-block (in-block gap); sub-blocks are a block gap apart.
-  const sections = chainSectionsPrecededBy(sectionEntries, PrecededBy.OPENAPI_BLOCK_ROW, closing)
+  const selected = resolveSelectedResponse(node, selection)
+  const selectedOption = options.find(option => option.node.id === selected?.id) ?? null
 
   return (
     <div data-testid="openapi-responses-section" className="flex flex-col">
       <TitleRow
-        data-precededby={precededBy}
-        data-block-last-row={sectionEntries.length === 0 && isBlockClosing(closing)}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         value={RESPONSES_SECTION_TITLE}
         expandable={false}
         variant={TextValueVariant.h2}
@@ -130,7 +85,7 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
           <Selector
             options={options}
             selectedOption={selectedOption}
-            onSelectOption={(option) => setSelectedId(option.node.id)}
+            onSelectOption={(option) => select(node.id, option.node.id)}
             variant={SelectorVariant.Secondary}
             layoutSide={layoutSide}
           />
@@ -138,7 +93,7 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
         diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
         diffsSeverities={takeOpenApiSeverities(node)}
       />
-      {sections}
+      <OpenApiLayout blocks={blocks} spacing={spacing} />
     </div>
   )
 }

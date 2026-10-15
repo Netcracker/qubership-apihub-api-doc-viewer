@@ -186,9 +186,11 @@ response also has headers (and links), so its extensions are not "about every me
 | Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `response-body/02-body-removed`) or synthetic (the only media type removed, or the only schema removed, `response-body/16-schema-removed`); options carry `mediaType` node diffs and summaries |
 | Schema | `MediaTypeSchemaViewer` for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
 
-The request and response Body headers are one component, `MediaTypeContentHeader`
-(`OpenApiOperationViewer/MediaTypeContentHeader.tsx`): title, optional required marker, media-type
-selector. `RequestBodyNodeViewer` and `ResponseNodeViewer` own the selection state and pass it in.
+The request and response Body are one component, `MediaTypeContentSection`
+(`OpenApiOperationViewer/MediaTypeContentSection.tsx`): title, optional required marker, media-type
+selector, description, schema. The selection lives in the operation's view-state store
+([operation-viewer.md](../features/operation-viewer.md#view-state)); the request body viewer and the
+response Body read and write it.
 
 ## Response without content
 

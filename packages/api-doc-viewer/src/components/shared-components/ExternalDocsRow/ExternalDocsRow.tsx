@@ -15,7 +15,7 @@ import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-clas
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../WithPrecededByProps"
 import "./ExternalDocsRow.css"
 
 export const EXTERNAL_DOCS_LINK_TEXT = 'View external documentation'
@@ -25,7 +25,7 @@ export type ExternalDocsSide = {
   description?: string
 }
 
-export type ExternalDocsRowProps = WithPrecededByProps & WithBlockLastRowProps & {
+export type ExternalDocsRowProps = WithPrecededByProps & {
   /** URL and description shown on a side; `null` = nothing on that side. */
   resolveSide: (layoutSide: LayoutSide) => ExternalDocsSide | null
   diff?: ChangedPropertyMetaData
@@ -61,7 +61,7 @@ type ExternalDocsRowContentProps = ExternalDocsRowProps & {
 }
 
 const ExternalDocsRowContent: FC<ExternalDocsRowContentProps> = (props) => {
-  const { resolveSide, diff, layoutSide, [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
+  const { resolveSide, diff, layoutSide, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const side = resolveSide(layoutSide)
   const styles = diff ? (layoutSide === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after) : undefined
   const backgroundClass = styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''
@@ -83,7 +83,6 @@ const ExternalDocsRowContent: FC<ExternalDocsRowContentProps> = (props) => {
   return (
     <div
       data-precededby={precededBy}
-      data-block-last-row={blockLastRow ? true : undefined}
       data-testid="external-docs-row"
       className={`external-docs-row-content flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${backgroundClass}`}
     >

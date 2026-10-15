@@ -7,6 +7,7 @@ import {
   ChangedPropertyMetaData,
   NodeDiffsSeverity,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { OpenApiFrameRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { FC, ReactElement, ReactNode } from "react"
 import { TagsWithDiffs } from "../diffs/TagsWithDiffs"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
@@ -15,7 +16,7 @@ import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../WithPrecededByProps"
 import "../../shared-styles/frame.css"
 import "../SubheaderValue/SubheaderValue.css"
 import "./SecurityRows.css"
@@ -27,7 +28,7 @@ import "./SecurityRows.css"
  * Design: docs/design/openapi/entities/security.md -> "Scheme card".
  */
 
-type SecurityRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
+type SecurityRowProps = WithPrecededByProps & WithFramePositionProps & {
   /** Content of one side; called only on a side where the row has content. */
   renderSide: (layoutSide: LayoutSide) => ReactNode
   /** Row background; a whole add / remove leaves the absent side empty and gray. */
@@ -35,18 +36,16 @@ type SecurityRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFrameP
   /** Floating severity badge of this row (own changes only, never an inherited block diff). */
   severity?: NodeDiffsSeverity
   testId?: string
-  /** `frame-end`: the content-less closing row of a card (bottom indent + border), always last. */
-  variant?: 'default' | 'frame-end'
 }
 
 /**
- * One card row on both sides. Vertical spacing is padding inside the row only (`data-precededby` for
- * the top, `data-block-last-row` for the bottom; never margins between rows), so neighbouring
- * highlighted rows join into one colored block without white seams.
+ * One card row on both sides. Vertical spacing is padding inside the row only (`data-precededby`;
+ * never margins between rows), so neighbouring highlighted rows join into one colored block without
+ * white seams.
  */
 export const SecurityRow: FC<SecurityRowProps> = (props) => {
-  const { renderSide, diff, severity, framePosition, testId, variant = 'default' } = props
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
+  const { renderSide, diff, severity, framePosition, testId } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const layoutMode = useLayoutMode()
 
   const renderContent = (layoutSide: LayoutSide): ReactElement => {
@@ -56,9 +55,8 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
       <div
         data-testid={testId}
         data-precededby={precededBy}
-        data-block-last-row={blockLastRow ? true : undefined}
         data-frame-position={framePosition?.(layoutSide)}
-        className={`security-row ${variant === 'default' ? '' : `security-row_${variant}`} flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={`security-row flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
         {visible && renderSide(layoutSide)}
       </div>
@@ -73,6 +71,42 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
     )
   }
   return <OneSideLayout content={renderContent(CHANGED_LAYOUT_SIDE)} />
+}
+
+type SecurityFrameRowProps = {
+  /** Height, border offset and whole-card tones (next-data-model `OpenApiLayoutPlanner.frameRow`). */
+  frameRow: OpenApiFrameRow
+  /** `first`: the card's opening row (top border), `last`: its closing row (bottom border). */
+  position: 'first' | 'last'
+  /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */
+  isPresentOnSide: (layoutSide: LayoutSide) => boolean
+}
+
+/**
+ * A card's content-less opening / closing row: the horizontal border runs at `borderOffset` from
+ * the row top (the middle by default), the rest of the row is space inside / outside the card.
+ * Painted with the whole-card diff only. Design: docs/design/openapi/features/block-separators.md
+ */
+export const SecurityFrameRow: FC<SecurityFrameRowProps> = (props) => {
+  const { frameRow, position, isPresentOnSide } = props
+  const layoutMode = useLayoutMode()
+  const { height, borderOffset, tones } = frameRow
+
+  const renderSide = (layoutSide: LayoutSide): ReactElement => (
+    <div
+      data-testid={`security-frame-${position === 'first' ? 'start' : 'end'}`}
+      data-frame-position={isPresentOnSide(layoutSide) ? position : undefined}
+      className={`security-frame-row flex w-full ${DiffsClassesBuilder.background(layoutSide === ORIGIN_LAYOUT_SIDE ? tones.before : tones.after)}`}
+      style={position === 'first'
+        ? { height, '--frame-border-top': `${borderOffset}px` }
+        : { height, '--frame-border-bottom': `${height - borderOffset}px` }}
+    />
+  )
+
+  if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
+    return <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
+  }
+  return <OneSideLayout content={renderSide(CHANGED_LAYOUT_SIDE)} />
 }
 
 type SecurityPropContentProps = {

@@ -108,11 +108,11 @@ One case list for the request body and the body of the initially selected respon
 | `10-external-docs-added` | external docs added | `11-external-docs-removed` |
 | `11-external-docs-removed` | external docs removed | `10-external-docs-added` |
 | `12-external-docs-url-changed` | external docs URL replaced (row painted) | — |
-| `13-external-docs-description-changed` | external docs description replaced (row not painted, Q16) | — |
+| `13-external-docs-description-changed` | external docs description replaced (yellow row, highlighted link; each tooltip shows its own side) | — |
 | `14-deprecated-added` | operation became deprecated | `15-deprecated-removed` |
 | `15-deprecated-removed` | operation is no longer deprecated | `14-deprecated-added` |
-| `16-deprecated-added-without-summary` | became deprecated, no summary (tag on the address row) | `17-deprecated-removed-without-summary` |
-| `17-deprecated-removed-without-summary` | no longer deprecated, no summary | `16-deprecated-added-without-summary` |
+| `16-deprecated-added-without-summary` | became deprecated, no summary (tag and yellow row on the operation ID row) | `17-deprecated-removed-without-summary` |
+| `17-deprecated-removed-without-summary` | no longer deprecated, no summary (tag and yellow row on the operation ID row) | `16-deprecated-added-without-summary` |
 | `18-extension-added` | one more `x-*` added | `19-extension-removed` |
 | `19-extension-removed` | one of several `x-*` removed | `18-extension-added` |
 | `20-extension-changed` | `x-*` replaced | — |

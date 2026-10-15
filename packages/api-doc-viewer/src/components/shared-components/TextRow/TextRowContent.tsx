@@ -7,7 +7,7 @@ import { FC, memo, useMemo } from "react"
 import '../../shared-styles/preceded-by.css'
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TextRowUsage, type TextRowContentProps } from "./types"
 
 const TEXT_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TextRowUsage, string>> = {
@@ -25,13 +25,13 @@ function getTextRowClassesByUsage(usage: TextRowUsage): string {
 }
 
 export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>((props) => {
-  const { value, variant, layoutSide, usage = TextRowUsage.Default, hideLevelIndicatorWhenSideEmpty = false } = props
+  const { value, variant, layoutSide, usage = TextRowUsage.Default, hideLevelIndicatorWhenSideEmpty = false, trailing } = props
 
   // value/font specific
   const { label, labelFontWeight, textFontWeight, labelColor, textColor } = props
 
   // indents specific
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
@@ -83,9 +83,8 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
-      data-block-last-row={blockLastRow ? true : undefined}
       data-frame-position={props.framePosition?.(layoutSide)}
-      className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : trailing ? 'items-center' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {showsLevelIndent && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
@@ -100,6 +99,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
       ) : (
         textValue
       )}
+      {trailing && <div className="flex items-center">{trailing(layoutSide)}</div>}
     </div>
   )
 })

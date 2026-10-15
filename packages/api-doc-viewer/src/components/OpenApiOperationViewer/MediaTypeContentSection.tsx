@@ -17,7 +17,6 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
-import { isBlockClosing, OpenApiRowSpacing, OpenApiSectionTail, resolveBlockRowsSpacing } from "./section-preceded-by"
 
 export type MediaTypeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>
 
@@ -26,9 +25,6 @@ export const BODY_SECTION_TITLE = 'Body'
 export const WRAPPED_BODY_SCHEMA_TITLE = 'Type'
 
 type MediaTypeContentSectionProps = {
-  precededBy: PrecededBy
-  /** What the row after the section assumes about its end (see `OpenApiSectionEntry`). */
-  closing: OpenApiSectionTail
   testId: string
   /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */
   optionTestIdPrefix: string
@@ -43,7 +39,7 @@ type MediaTypeContentSectionProps = {
   /** Request body only: the `required` tag of a required change. */
   requiredTagDiff?: ChangedPropertyMetaData
   /** The row between the header and the schema (the body description); omitted when hidden. */
-  renderDescription?: (spacing: OpenApiRowSpacing) => ReactElement
+  renderDescription?: () => ReactElement
 }
 
 /**
@@ -53,7 +49,7 @@ type MediaTypeContentSectionProps = {
  */
 export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props) => {
   const {
-    precededBy, closing, testId, optionTestIdPrefix, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
+    testId, optionTestIdPrefix, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
     isRequiredOnSide, requiredTagDiff, renderDescription,
   } = props
   const layoutMode = useLayoutMode()
@@ -108,13 +104,10 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
     </div>
   )
 
-  // Header and description form the block with the schema; without a schema (a media type may have
-  // none) the last of them ends the section.
-  const spacing = resolveBlockRowsSpacing(renderDescription ? 2 : 1, precededBy, schema === undefined && isBlockClosing(closing))
   return (
     <div data-testid={testId} className="flex flex-col">
       <TitleRow
-        {...spacing[0]}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         value={BODY_SECTION_TITLE}
         titleContent={renderTitle}
         expandable={false}
@@ -123,7 +116,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
         diff={headerDiff}
         diffsSeverities={diffsSeverities}
       />
-      {renderDescription?.(spacing[1])}
+      {renderDescription?.()}
       <OpenApiSchemaViewer schema={schema} />
     </div>
   )

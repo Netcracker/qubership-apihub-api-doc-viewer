@@ -9,6 +9,7 @@ import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isOpenApiOperationNode } from "@apihub/utils/openapi/node-type-checkers"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { createOpenApiLogger, OpenApiTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model"
+import { DEFAULT_OPENAPI_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiOperationKeys } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/operation-keys"
 import { FC, memo, useMemo } from "react"
 import '../../index.css'
@@ -71,7 +72,7 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
   )
   const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
   const viewerContext: OpenApiViewerContextValue = useMemo(
-    () => ({ devMode, expandedDepth, hideUnchangedNodes }),
+    () => ({ devMode, expandedDepth, hideUnchangedNodes, spacing: DEFAULT_OPENAPI_SPACING_CONFIG }),
     [devMode, expandedDepth, hideUnchangedNodes],
   )
 
@@ -90,7 +91,7 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
               <LevelContext.Provider value={0}>
-                <div data-testid="openapi-operation-diffs-viewer">
+                <div data-testid="openapi-operation-diffs-viewer" style={{ '--openapi-row-padding': `${viewerContext.spacing.rowPadding}px` }}>
                   <OperationNodeViewer node={operationNode} noHeading={noHeading} />
                 </div>
               </LevelContext.Provider>

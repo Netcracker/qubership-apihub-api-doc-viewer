@@ -36,7 +36,7 @@ Paths are inside the merged document; `M` = `diffsMetaKey`, `op` = `paths[path][
 | Address (path renamed) | `paths[M][path]` with `action: rename` (`beforeKey` → `afterKey`, E1) | root `M.address` as a **`replace`** with `beforeValue = beforeKey`, `afterValue = afterKey`, same `type` / declaration paths |
 | Title | `op[M].summary` | root `M.title` |
 | Operation ID row | `op[M].operationId` | root `M.operationId` |
-| Deprecated tag (title row, or address row without a title) | `op[M].deprecated` (a missing value is the unifier default `false`; normalize like `required`) | root `M.deprecated` → tag diff + synthetic yellow replace on the title row |
+| Deprecated tag (title row; without a title the operation ID row, else the address row) | `op[M].deprecated` (a missing value is the unifier default `false`; normalize like `required`) | root `M.deprecated` → tag diff + synthetic yellow replace on the row that carries the tag; its severity merged into that row's placement (`TitleRow` / `OperationIdRowWithDeprecatedTag` / `AddressRowWithDeprecatedTag`) |
 | Description | `op[M].description` | root `M.description` |
 | External docs | `op[M].externalDocs` (whole), or `op.externalDocs[M].url` / `op.externalDocs[M].description` | root `M.externalDocs` (whole), or `externalDocs[M].url` / `externalDocs[M].description` |
 | Extensions | `op[M]['x-…']` | `data.extensions[M]['x-…']` |
@@ -219,7 +219,7 @@ never read `node.diffs[...]` directly.
 | `RequestBody.takeRequiredTagDiff(node)` | normalized `required` diff, `undefined` when the body is wholly added / removed |
 | `SecurityScheme.isCardPresentOnSide(node, side)` | `false` on the side where the scheme does not exist (no frame there) |
 | `Operation.takeAddressRowDiff(node)` | `address` diff, else whole-node diff |
-| `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff (whole object or `url`; `description` per Q16) / `{ url, description } \| null` per side — the link text is static |
+| `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff (whole object, `url`, or `description` — Q16 option A) / `{ url, description } \| null` per side — the link text is static |
 | `Section.takeHeaderRowDiff(node)` | the section-rule diff on `""` |
 | `SecurityScheme.takeFieldRowDiff(node, field)` | field diff for one detail row |
 | `SecurityScheme.resolveRequiredScopesSideItems(node, side)` | chips per side (`resolveListSideItems`) |

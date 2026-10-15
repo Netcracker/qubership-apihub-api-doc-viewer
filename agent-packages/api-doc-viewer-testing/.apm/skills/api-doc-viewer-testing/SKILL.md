@@ -83,13 +83,16 @@ before a browser check caught them in minutes. Instead:
 Puppeteer script (the repo-root `node_modules/puppeteer`, no Docker) over many story ids beats
 clicking through stories. Per row element (`.title-row-content`, `.text-row-content`,
 `.markdown-text-row-content`, `.address-row-content`, `.security-row`, …) print the computed
-`padding-top/bottom`, `data-precededby` / `data-block-last-row`, the diff background class, and the
+`padding-top/bottom`, `data-precededby`, the diff background class, and the
 **ink insets** — distance from the row edge to the union of its text ranges
 (`Range.getClientRects()`) and boxed elements, skipping `.level-indicator-column`. Then list every
 non-row element with non-zero vertical margin / padding: those are wrapper-chain offsets (markdown
 `<ul>` margins, an inner `py-*`). Insets larger than the padding reveal hidden offsets such as an
-inherited line-height strut. Run it on plain and diffs stories (changed side) and on edge cases
-(status-only response, anonymous alternative, no responses).
+inherited line-height strut. Also list the synthetic rows: `.layout-separator` (each band's height
+and `diffs-background_*` class — print the full tone, `g` alone is ambiguous between green and
+gray) and `.security-frame-row` (`getComputedStyle(el, '::before').top / bottom` for the border).
+Run it on plain and diffs stories (both sides) and on edge cases (status-only response, anonymous
+alternative, no responses, wholly added / removed sections and cards).
 
 **Targeted single-suite runner:** `node bin/run-screenshot-test-suite.mjs test|regenerate
 [test-run] [suite]` (e.g. `regenerate json-schema-diffs-suite description-changes`) wraps the

@@ -9,7 +9,7 @@ import { LevelIndicator } from "../LevelIndicator"
 import { JsonSchemaRootExpanderOffset } from "../JsonSchemaExpanderColumn/JsonSchemaExpanderColumn"
 import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { MarkdownTextValue } from "../TextValue/MarkdownTextValue"
 import type { MarkdownTextRowContentProps } from "./types"
 
@@ -53,7 +53,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
     diff,
   } = props
 
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const level = useEffectiveLevel(layoutSide)
   const isDdlApiPropertyRow = usage === TextRowUsage.DdlApiProperty
@@ -97,7 +97,6 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
   return (
     <div
       data-precededby={precededBy}
-      data-block-last-row={blockLastRow ? true : undefined}
       data-frame-position={props.framePosition?.(layoutSide)}
       className={[
         "markdown-text-row-content flex w-full h-full gap-2",

@@ -60,7 +60,7 @@ Operation ID: uploadPetPhoto               operation ID row (small, grey)
 | Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OPERATION_ID_ROW_LABEL = 'Operation ID'`) in the container. `labelFontWeight='normal'`, `labelColor` = secondary grey (`#626D82`). |
 | Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
-| Spacing | the header rows (title, operation ID, address, description, external docs) are one block: `OPENAPI_VIEWER_START` on the first visible row, `OPENAPI_BLOCK_ROW` on the others, `data-block-last-row` on the last one ([Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
+| Spacing | the header rows (title, operation ID, address, description, external docs) are one block: symmetric row padding (`PrecededBy.OPENAPI_ROW`), a separator row before the first section ([block-separators.md](../features/block-separators.md)) |
 | Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). The **label is never highlighted** — on a replace only the value gets the yellow text highlighter (`TextValue` puts diff classes on the value span only). On add / remove the side where `operationId` does not exist renders **no text at all**, label included (`TextValue` returns `null` for an invisible side), so a bare `Operation ID:` never appears. |
 
 ## Deprecated tag
@@ -68,9 +68,9 @@ Operation ID: uploadPetPhoto               operation ID row (small, grey)
 | Item | Rule |
 | --- | --- |
 | Where | title-row subheader, `TagsWithDiffs` with the single tag `deprecated` (`UxBadge` kind `tag-amber`, as JSON Schema) |
-| No title row | the tag moves to the address row, after the path (`AddressRow` `trailing` slot) |
+| No title row | the tag moves to the operation ID row, after the value (`TextRow` `trailing` slot); without an operation ID too, to the address row, after the path (`AddressRow` `trailing` slot). The host row is `OpenApiOperationRowVisibility.deprecatedTagRow` (`title` / `operationId` / `address`) |
 | Plain | shown when `deprecated === true` |
-| Diffs | shown on a side where `deprecated` is `true` or where it has its own diff; highlighted only by its own diff (JSON Schema "Flag tags" rule); a wholly added / removed operation shows a plain tag |
+| Diffs | shown on a side where `deprecated` is `true` or where it has its own diff; highlighted only by its own diff (JSON Schema "Flag tags" rule); a wholly added / removed operation shows a plain tag. A `deprecated` change paints the **host row** with a synthetic yellow `replace` (no text highlighter; built from a value-less copy so both sides keep their text) when the row has no diff of its own, and its severity joins the host row's floating badge: the severities aggregator writes a merged placement per candidate host (`TitleRow`, `OperationIdRowWithDeprecatedTag`, `AddressRowWithDeprecatedTag`) and the viewer reads the one `OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement` / `resolveAddressRowSeverityPlacement` returns |
 
 ## Address row
 
@@ -177,16 +177,18 @@ default unchanged so existing tooltips do not move) and use it here.
 | --- | --- | --- | --- |
 | `externalDocs` added / removed (whole object) | green / red background | rendered only on the side where it exists | that side's description |
 | `externalDocs.url` replaced | yellow background | yellow text highlighter on the static text; each side's link points to **its own** URL (`href` = before URL on the origin side, after URL on the changed side) | unchanged |
-| `externalDocs.description` added / removed / replaced | **open — Q16** | **open — Q16** | **open — Q16** |
+| `externalDocs.description` added / removed / replaced | yellow background (Q16, option A) | yellow text highlighter on the static text | each side shows its own description |
 
 Severity: new placement `ExternalDocsRow`, built from the same diff that colors the row. Because
 the link text is static, a URL change is visible only through the highlight and the per-side
 `href`.
 
-### Q16 — description diffs (open)
+### Q16 — description diffs (decided 2026-10-15: option A)
 
 How to show a change of `externalDocs.description` when the description is only visible on hover.
-Not decided; candidates for the product owner:
+**Decision: option A** — the row is painted with `diff replace` (yellow background) and the static
+link text gets the yellow text highlighter; each side's tooltip shows that side's description; the
+`ExternalDocsRow` floating badge appears. Candidates that were considered:
 
 | Option | Idea | Trade-off |
 | --- | --- | --- |
@@ -195,8 +197,7 @@ Not decided; candidates for the product owner:
 | C | As A, plus a small change marker (round dot, `UxDiffMarker` style) next to the arrow, meaning "the hidden description changed" | Makes a hover-only change discoverable without hovering; one more visual element |
 | D | In the diffs viewer only, show the description as a visible secondary text row under the link (with normal text diffs); plain mode keeps the tooltip | Most explicit; plain and diffs layouts differ |
 
-Until decided, implement plain mode only for the tooltip and keep description diffs out of the row
-coloring (URL and whole-object diffs are unaffected).
+B–D stay possible refinements on top of A.
 
 ## Description row
 

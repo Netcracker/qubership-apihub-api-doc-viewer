@@ -6,6 +6,7 @@ import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isOpenApiOperationNode } from "@apihub/utils/openapi/node-type-checkers"
 import { createOpenApiLogger, OpenApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model"
+import { DEFAULT_OPENAPI_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiOperationKeys } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/operation-keys"
 import { FC, memo, useMemo } from "react"
 import '../../index.css'
@@ -60,7 +61,10 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
     [source, operationKeys, logger],
   )
   const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
-  const viewerContext: OpenApiViewerContextValue = useMemo(() => ({ devMode, expandedDepth }), [devMode, expandedDepth])
+  const viewerContext: OpenApiViewerContextValue = useMemo(
+    () => ({ devMode, expandedDepth, spacing: DEFAULT_OPENAPI_SPACING_CONFIG }),
+    [devMode, expandedDepth],
+  )
 
   logger.debug('[OpenAPI] Source:', source)
   logger.debug('[OpenAPI] Tree:', tree)
@@ -75,7 +79,7 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
           <LevelContext.Provider value={0}>
-            <div data-testid="openapi-operation-viewer">
+            <div data-testid="openapi-operation-viewer" style={{ '--openapi-row-padding': `${viewerContext.spacing.rowPadding}px` }}>
               <OperationNodeViewer node={operationNode} noHeading={noHeading} />
             </div>
           </LevelContext.Provider>

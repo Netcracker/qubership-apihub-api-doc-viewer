@@ -1,5 +1,5 @@
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -7,7 +7,7 @@ import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
 import { isDiffAdd, isDiffRemove, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, NodeDescendantDiffs, NodeDiffsSeverities, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC, ReactElement, useCallback, useMemo } from "react"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
@@ -22,7 +22,7 @@ export type AddressRowBadge = {
   colorClass: string
 }
 
-export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
+export type AddressRowProps = WithPrecededByProps & {
   badge: AddressRowBadge | null
   address: string
   /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */
@@ -31,6 +31,8 @@ export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
   diff?: ChangedPropertyMetaData
   descendantDiffs?: NodeDescendantDiffs
   diffsSeverities?: NodeDiffsSeverities
+  /** Placement of this row's severity; the address row's own by default. */
+  diffsSeverityPlacement?: NodeDiffsSeverityPlacemennt
 }
 
 export const AddressRow: FC<AddressRowProps> = (props) => {
@@ -38,9 +40,9 @@ export const AddressRow: FC<AddressRowProps> = (props) => {
 
   // diffs
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { diff, descendantDiffs, diffsSeverities } = props
+  const { diff, descendantDiffs, diffsSeverities, diffsSeverityPlacement = NodeDiffsSeverityPlacemennt.AddressRow } = props
 
-  const diffSeverityRecord = useMemo(() => diffsSeverities?.["address-row"], [diffsSeverities])
+  const diffSeverityRecord = useMemo(() => diffsSeverities?.[diffsSeverityPlacement], [diffsSeverities, diffsSeverityPlacement])
   const diffType = useMemo(() => diff?.data.type, [diff])
   const diffTypeCause = useMemo(
     () => buildDiffCauseByPathCausedAt(diffSeverityRecord?.causedAt),
@@ -78,7 +80,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   const { badge, address, trailing, layoutSide, diff } = props
 
   // indent-specific
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   const renderAddress = useCallback(() => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
@@ -150,7 +152,6 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   return (
     <div
       data-precededby={precededBy}
-      data-block-last-row={blockLastRow ? true : undefined}
       className={`address-row address-row-content font-Inter-Medium flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffStyles.join(' ')}`}
     >
       <div

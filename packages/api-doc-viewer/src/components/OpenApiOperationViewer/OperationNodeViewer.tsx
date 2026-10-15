@@ -7,12 +7,17 @@ import {
   isOpenApiResponsesNode,
   isOpenApiSecurityNode,
 } from "@apihub/utils/openapi/node-type-checkers"
-import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
+import { OpenApiSelection } from "@apihub/utils/openapi/view-selection"
+import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import {
+  OpenApiNodeVisibility,
+  OpenApiOperationHeaderRow,
+  OpenApiOperationRowVisibility,
+} from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { FC, ReactElement, useCallback, useMemo } from "react"
+import { FC, ReactElement, useCallback, useEffect, useMemo, useState } from "react"
 import { AddressRow } from "../shared-components/AddressRow/AddressRow"
 import { TagsWithDiffs } from "../shared-components/diffs/TagsWithDiffs"
 import { ExternalDocsRow } from "../shared-components/ExternalDocsRow/ExternalDocsRow"
@@ -24,32 +29,97 @@ import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import '../shared-styles/preceded-by.css'
 import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiExtensionsNodeViewer } from "./OpenApiExtensionsNodeViewer"
-import { RequestNodeViewer, resolveRequestTail } from "./RequestNodeViewer"
-import { ResponsesNodeViewer } from "./ResponsesNodeViewer"
-import { SecurityNodeViewer } from "./SecurityNodeViewer"
-import { chainSectionsPrecededBy, OpenApiRowSpacing, OpenApiSectionEntry, resolveBlockRowsSpacing } from "./section-preceded-by"
+import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
+import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { useOpenApiViewerContext } from "./OpenApiViewerContext"
+import { OpenApiViewState, OpenApiViewStateContext } from "./OpenApiViewStateContext"
+import { buildRequestBlock } from "./RequestNodeViewer"
+import { buildResponsesBlock } from "./ResponsesNodeViewer"
+import { buildSecurityBlock } from "./SecurityNodeViewer"
 
 export const OPERATION_ID_ROW_LABEL = 'Operation ID'
 const SECONDARY_TEXT_COLOR = '#626D82'
 
-type HeaderRow = {
-  readonly key: string
-  readonly render: (spacing: OpenApiRowSpacing) => ReactElement
-}
+type OperationNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>
 
 type OperationNodeViewerProps = {
-  node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>
+  node: OperationNode
   noHeading: boolean
 }
 
-/** Header rows (title, operation ID, address, description, external docs), then sections in config order. */
+/**
+ * The operation: the header block (title, operation ID, address, description, external docs), then
+ * the sections in config order, planned as one level (separator rows between blocks). Owns the view
+ * state (selections) every level reads. Design: features/operation-viewer.md, features/block-separators.md.
+ */
 export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const { node, noHeading } = props
-  const value = node.value()
-  const severities = takeOpenApiSeverities(node)
-  const visibility = useMemo(() => OpenApiNodeVisibility.resolveOperation(value, noHeading), [value, noHeading])
+  const { spacing } = useOpenApiViewerContext()
+  const visibility = useMemo(() => OpenApiNodeVisibility.resolveOperation(node.value(), noHeading), [node, noHeading])
 
+  // View state of the whole operation; a rebuilt tree (new source) starts fresh.
+  const [selection, setSelection] = useState<OpenApiSelection>(new Map())
+  useEffect(() => setSelection(new Map()), [node])
+  const select = useCallback((ownerNodeId: string, selectedNodeId: string) => {
+    setSelection(current => new Map(current).set(ownerNodeId, selectedNodeId))
+  }, [])
+  const view: OpenApiViewState = useMemo(() => ({ selection, select }), [selection, select])
+
+  const blocks = useMemo(() => buildOperationBlocks(node, visibility, view), [node, visibility, view])
+
+  return (
+    <OpenApiViewStateContext.Provider value={view}>
+      <div className="flex flex-col">
+        <OpenApiLayout blocks={blocks} spacing={spacing} />
+      </div>
+    </OpenApiViewStateContext.Provider>
+  )
+}
+
+function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationRowVisibility, view: OpenApiViewState): OpenApiBlock[] {
+  const security = findOpenApiChild(node, isOpenApiSecurityNode)
+  const operationExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'extensions')
+  const request = findOpenApiChild(node, isOpenApiRequestNode)
+  const responses = findOpenApiChild(node, isOpenApiResponsesNode)
+  const responsesExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'responsesExtensions')
+
+  const sections = OPENAPI_SECTION_ORDER.operation.flatMap((sectionId): OpenApiBlock[] => {
+    switch (sectionId) {
+      case 'security':
+        return security ? [buildSecurityBlock(security, view)] : []
+      case 'operationExtensions':
+        return operationExtensions
+          ? [buildExtensionsBlock(sectionId, { node: operationExtensions, variant: TextValueVariant.h2, testId: 'openapi-extensions-section' })]
+          : []
+      case 'request':
+        return request ? [buildRequestBlock(request, view)] : []
+      case 'responses':
+        return responses ? [buildResponsesBlock(responses, responsesExtensions, view)] : []
+      default:
+        return []
+    }
+  })
+  return [
+    {
+      id: 'operation-header',
+      ...OpenApiBlockEdges.operationHeader(node, visibility),
+      payload: () => <OperationHeaderRows key="operation-header" node={node} visibility={visibility} />,
+    },
+    ...sections,
+  ]
+}
+
+type OperationHeaderRowsProps = {
+  node: OperationNode
+  visibility: OpenApiOperationRowVisibility
+}
+
+/** The header block: its visible rows in the data-layer order (`resolveOperationHeaderRows`). */
+const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility }) => {
+  const value = node.value()
+  // The deprecated tag (and its diff badge) sits on the title row, else the operation ID row, else the address row.
+  const deprecatedTagRow = visibility.deprecatedTagRow
+  const severities = takeOpenApiSeverities(node)
   const deprecatedDiff = OpenApiRowDiffs.Operation.takeDeprecatedTagDiff(node)
   const hasDeprecatedTag = value?.deprecated === true || !!deprecatedDiff
   const renderDeprecatedTag = useCallback((layoutSide: LayoutSide): ReactElement => (
@@ -65,117 +135,78 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       )
       : <></>
   ), [deprecatedDiff, hasDeprecatedTag, node])
+  const rowDiff = (row: OpenApiOperationHeaderRow): ReturnType<typeof OpenApiRowDiffs.Operation.takeHeaderRowDiff> =>
+    OpenApiRowDiffs.Operation.takeHeaderRowDiff(node, row, deprecatedTagRow)
 
-  const security = findOpenApiChild(node, isOpenApiSecurityNode)
-  const operationExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'extensions')
-  const request = findOpenApiChild(node, isOpenApiRequestNode)
-  const responses = findOpenApiChild(node, isOpenApiResponsesNode)
-  const responsesExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'responsesExtensions')
+  const renderRow = (row: OpenApiOperationHeaderRow): ReactElement => {
+    switch (row) {
+      case 'title':
+        return (
+          <TitleRow
+            key={row}
+            data-precededby={PrecededBy.OPENAPI_ROW}
+            value={value?.title ?? ''}
+            expandable={false}
+            variant={TextValueVariant.h1}
+            subheader={renderDeprecatedTag}
+            diff={rowDiff(row)}
+            diffsSeverities={severities}
+          />
+        )
+      case 'operationId':
+        return (
+          <TextRow
+            key={row}
+            data-precededby={PrecededBy.OPENAPI_ROW}
+            label={OPERATION_ID_ROW_LABEL}
+            value={value?.operationId ?? ''}
+            variant={TextValueVariant.body2}
+            labelFontWeight="normal"
+            textFontWeight="normal"
+            labelColor={SECONDARY_TEXT_COLOR}
+            textColor={SECONDARY_TEXT_COLOR}
+            trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
+            diff={rowDiff(row)}
+            diffsSeverities={severities}
+            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement(deprecatedTagRow)}
+          />
+        )
+      case 'address':
+        return (
+          <AddressRow
+            key={row}
+            data-precededby={PrecededBy.OPENAPI_ROW}
+            badge={resolveHttpMethodBadge(value?.method ?? '')}
+            address={value?.path ?? ''}
+            trailing={deprecatedTagRow === 'address' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
+            diff={rowDiff(row)}
+            diffsSeverities={severities}
+            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveAddressRowSeverityPlacement(deprecatedTagRow)}
+          />
+        )
+      case 'description':
+        return (
+          <MarkdownTextRow
+            key={row}
+            data-precededby={PrecededBy.OPENAPI_ROW}
+            value={value?.description ?? ''}
+            variant={TextValueVariant.body2}
+            diff={rowDiff(row)}
+            diffsSeverities={severities}
+          />
+        )
+      case 'externalDocs':
+        return (
+          <ExternalDocsRow
+            key={row}
+            data-precededby={PrecededBy.OPENAPI_ROW}
+            resolveSide={(layoutSide) => OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, layoutSide)}
+            diff={rowDiff(row)}
+            diffsSeverities={severities}
+          />
+        )
+    }
+  }
 
-  const sections = chainSectionsPrecededBy(
-    OPENAPI_SECTION_ORDER.operation.flatMap((sectionId): OpenApiSectionEntry[] => {
-      switch (sectionId) {
-        case 'security':
-          // Ends with an OpenAPI row: a card's closing row or the "No authentication" text.
-          return security ? [{ id: sectionId, tail: PrecededBy.OPENAPI_BLOCK_START, render: (precededBy, closing) => <SecurityNodeViewer key={sectionId} data-precededby={precededBy} closing={closing} node={security} /> }] : []
-        case 'operationExtensions':
-          return operationExtensions ? [{ id: sectionId, tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER, render: (precededBy) => <OpenApiExtensionsNodeViewer key={sectionId} data-precededby={precededBy} node={operationExtensions} variant={TextValueVariant.h2} testId="openapi-extensions-section" /> }] : []
-        case 'request':
-          return request ? [{ id: sectionId, tail: resolveRequestTail(request), render: (precededBy, closing) => <RequestNodeViewer key={sectionId} data-precededby={precededBy} closing={closing} node={request} /> }] : []
-        case 'responses':
-          // The selected response (view state) decides the real end: promise a nested viewer's end.
-          return responses ? [{ id: sectionId, tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER, render: (precededBy, closing) => <ResponsesNodeViewer key={sectionId} data-precededby={precededBy} closing={closing} node={responses} extensionsNode={responsesExtensions} /> }] : []
-        default:
-          return []
-      }
-    }),
-    PrecededBy.OPENAPI_BLOCK_START,
-    PrecededBy.OPENAPI_BLOCK_START,
-  )
-
-  // Header block (title, operation ID, address, description, external docs): one pass over the
-  // visible rows; the last one ends the block (sections or the end of the viewer follow).
-  const headerRows: HeaderRow[] = [
-    ...(visibility.showTitle ? [{
-      key: 'title',
-      render: (spacing: OpenApiRowSpacing) => (
-        <TitleRow
-          key="title"
-          {...spacing}
-          value={value?.title ?? ''}
-          expandable={false}
-          variant={TextValueVariant.h1}
-          subheader={renderDeprecatedTag}
-          diff={OpenApiRowDiffs.Operation.takeTitleRowDiff(node)}
-          diffsSeverities={severities}
-        />
-      ),
-    }] : []),
-    ...(visibility.showOperationId ? [{
-      key: 'operationId',
-      render: (spacing: OpenApiRowSpacing) => (
-        <TextRow
-          key="operationId"
-          {...spacing}
-          label={OPERATION_ID_ROW_LABEL}
-          value={value?.operationId ?? ''}
-          variant={TextValueVariant.body2}
-          labelFontWeight="normal"
-          textFontWeight="normal"
-          labelColor={SECONDARY_TEXT_COLOR}
-          textColor={SECONDARY_TEXT_COLOR}
-          diff={OpenApiRowDiffs.Operation.takeOperationIdRowDiff(node)}
-          diffsSeverities={severities}
-          diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.OperationIdRow}
-        />
-      ),
-    }] : []),
-    {
-      key: 'address',
-      render: (spacing: OpenApiRowSpacing) => (
-        <AddressRow
-          key="address"
-          {...spacing}
-          badge={resolveHttpMethodBadge(value?.method ?? '')}
-          address={value?.path ?? ''}
-          trailing={!visibility.showTitle && hasDeprecatedTag ? renderDeprecatedTag : undefined}
-          diff={OpenApiRowDiffs.Operation.takeAddressRowDiff(node)}
-          diffsSeverities={severities}
-        />
-      ),
-    },
-    ...(visibility.showDescription ? [{
-      key: 'description',
-      render: (spacing: OpenApiRowSpacing) => (
-        <MarkdownTextRow
-          key="description"
-          {...spacing}
-          value={value?.description ?? ''}
-          variant={TextValueVariant.body2}
-          diff={OpenApiRowDiffs.Operation.takeDescriptionRowDiff(node)}
-          diffsSeverities={severities}
-        />
-      ),
-    }] : []),
-    ...(visibility.showExternalDocs ? [{
-      key: 'externalDocs',
-      render: (spacing: OpenApiRowSpacing) => (
-        <ExternalDocsRow
-          key="externalDocs"
-          {...spacing}
-          resolveSide={(layoutSide) => OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, layoutSide)}
-          diff={OpenApiRowDiffs.Operation.takeExternalDocsRowDiff(node)}
-          diffsSeverities={severities}
-        />
-      ),
-    }] : []),
-  ]
-  const headerSpacing = resolveBlockRowsSpacing(headerRows.length, PrecededBy.OPENAPI_VIEWER_START, true)
-
-  return (
-    <div className="flex flex-col">
-      {headerRows.map((row, index) => row.render(headerSpacing[index]))}
-      {sections}
-    </div>
-  )
+  return <>{OpenApiNodeVisibility.resolveOperationHeaderRows(visibility).map(renderRow)}</>
 }

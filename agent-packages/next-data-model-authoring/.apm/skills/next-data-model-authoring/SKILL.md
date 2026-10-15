@@ -652,6 +652,18 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   `alternatives`) must be listed in `SYNTHETIC_FIELD_DIFF_KEYS` and mapped in the severities
   aggregator. The model layer does not import `building-service`, so severity math belongs in the
   transformer / aggregators, not in `row-diffs.ts`.
+- **A row that may move needs one placement per host, written by the aggregator.** The operation
+  `deprecated` tag sits on the title row, else the operation ID row, else the address row — which
+  depends on view options (`noHeading`) the aggregator cannot see. The severities aggregator writes the
+  merged severity for every candidate (`TitleRow`, `OperationIdRowWithDeprecatedTag`,
+  `AddressRowWithDeprecatedTag`; a field may map to several placements); the model only **picks** the
+  placement (`OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement`). Do not merge
+  severities in `row-diffs.ts` — that needs `building-service` diff-type ordering.
+- **Layout data lives in `model/openapi/layout/`.** Separator rows, card frame rows, block-edge tones
+  and the planner (`OpenApiSpacingConfig`, `OpenApiBlockEdges`, `OpenApiLayoutPlanner`) are pure model
+  code over the built tree and the view state passed in (selected nodes, `expanded`). Tones come from
+  the same `OpenApiRowDiffs` accessors that paint the rows; next to a nested JSON Schema / JSO viewer
+  only the owning block's whole add / remove counts. Design: `docs/design/openapi/features/block-separators.md`.
 - **Integer-like object keys enumerate first.** JS lists `200`, `500` before `2XX`, `default` no matter
   the insertion order, so a canonically sorted object cannot keep response codes in order; sort the
   tree children instead (`OpenApiTreeBuilder.sortResponseCodes`).

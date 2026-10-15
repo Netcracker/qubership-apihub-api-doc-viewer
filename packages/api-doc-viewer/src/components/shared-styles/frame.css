@@ -8,10 +8,14 @@
    absolutely positioned ::before box (left / right border; top on the first row, bottom on the last),
    and pads its content into that box. Segments of consecutive rows line up into one card.
 
+   The first and last rows are content-less frame rows (SecurityFrameRow): their height and the
+   border's offset come from the layout data (next-data-model OpenApiLayoutPlanner.frameRow), passed
+   as --frame-border-top (first row: border this far below the row top) and --frame-border-bottom
+   (last row: border this far above the row bottom). The space outside the border is part of those
+   rows, so neighbouring cards and rows need no separator next to them.
+
    Vertical spacing inside a frame must be padding (data-precededby rules), never margin - a margin
-   would cut the side borders. A frame is a block of its own: half of the block gap around it
-   (--frame-outer-gap) is padding of its first / last row, outside the border box, so two frames
-   (or a frame and the row above / below it) are a whole block gap apart with no spacer rows.
+   would cut the side borders.
    ============================================================================= */
 
 /* `div[…]` outranks the rows' own `w-full` / `px-4` utilities. */
@@ -23,11 +27,6 @@ div[data-frame-position] {
   --frame-width: min(calc(100% - 32px), max(320px, min(40%, 500px)));
   --frame-inner-padding: 16px;
   --frame-radius: 6px;
-  /* Half of the OpenAPI 20px block gap (preceded-by.css -> "OpenAPI operation viewer"). */
-  --frame-outer-gap: 10px;
-  /* The last row is a content-less closing row; the content row above it keeps its 4px in-block
-     half-gap, so the closing row adds the rest of the inner padding. */
-  --frame-closing-padding: calc(var(--frame-inner-padding) - 4px);
 
   position: relative;
   flex: 1 1 0%;
@@ -60,7 +59,7 @@ div[data-frame-position]::before {
 
 div[data-frame-position="first"]::before,
 div[data-frame-position="single"]::before {
-  top: var(--frame-outer-gap);
+  top: var(--frame-border-top, 0px);
   border-top: 1px solid #D5DCE3;
   border-top-left-radius: var(--frame-radius);
   border-top-right-radius: var(--frame-radius);
@@ -68,21 +67,8 @@ div[data-frame-position="single"]::before {
 
 div[data-frame-position="last"]::before,
 div[data-frame-position="single"]::before {
-  bottom: var(--frame-outer-gap);
+  bottom: var(--frame-border-bottom, 0px);
   border-bottom: 1px solid #D5DCE3;
   border-bottom-left-radius: var(--frame-radius);
   border-bottom-right-radius: var(--frame-radius);
-}
-
-/* Outer half-gap + inner indents (16px from the border to the content, as horizontally). The
-   repeated attribute outranks the rows' own data-precededby / data-block-last-row spacing, which
-   would otherwise decide the card's top / bottom indent. */
-div[data-frame-position="first"][data-frame-position][data-frame-position],
-div[data-frame-position="single"][data-frame-position][data-frame-position] {
-  padding-top: calc(var(--frame-outer-gap) + var(--frame-inner-padding));
-}
-
-div[data-frame-position="last"][data-frame-position][data-frame-position],
-div[data-frame-position="single"][data-frame-position][data-frame-position] {
-  padding-bottom: calc(var(--frame-outer-gap) + var(--frame-closing-padding));
 }

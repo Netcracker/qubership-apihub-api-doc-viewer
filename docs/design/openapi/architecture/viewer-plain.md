@@ -18,7 +18,7 @@ flowchart TB
   Body["RequestBodyNodeViewer.tsx<br/>Body header · description"]
   BodyHeader["MediaTypeContentHeader.tsx<br/>Body (h3) + required * · media-type Selector (+ required tag)"]
   Responses["ResponsesNodeViewer.tsx<br/>Responses (h2) + toned code Selector"]
-  Response["ResponseNodeViewer.tsx<br/>description · Headers (h3) · Body header"]
+  Response["response-blocks.tsx<br/>description · Headers (h3) · Body header"]
   MediaSchema["MediaTypeSchemaViewer.tsx<br/>wrapJsonSchemaForViewer('Type', …)"]
   Visibility["next-data-model<br/>OpenApiNodeVisibilityManagerKind* · display labels"]
   JsonSchema["JsonSchemaViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]

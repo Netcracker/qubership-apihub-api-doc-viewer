@@ -11,7 +11,8 @@ import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node
 import { AbstractNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
 
-type FieldPlacements = Readonly<Record<string, NodeDiffsSeverityPlacemennt>>
+/** A field diff badges one row, or several alternative rows (the viewer reads the one it renders). */
+type FieldPlacements = Readonly<Record<string, NodeDiffsSeverityPlacemennt | readonly NodeDiffsSeverityPlacemennt[]>>
 
 const Placement = NodeDiffsSeverityPlacemennt
 
@@ -22,9 +23,11 @@ const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacem
   },
   [OpenApiTreeNodeKinds.OPERATION]: {
     title: Placement.TitleRow,
-    deprecated: Placement.TitleRow,
-    operationId: Placement.OperationIdRow,
-    path: Placement.AddressRow,
+    // The `deprecated` tag sits on the title row, else the operation ID row, else the address row
+    // (view-dependent: `noHeading`): every candidate gets a placement with the tag merged in.
+    deprecated: [Placement.TitleRow, Placement.OperationIdRowWithDeprecatedTag, Placement.AddressRowWithDeprecatedTag],
+    operationId: [Placement.OperationIdRow, Placement.OperationIdRowWithDeprecatedTag],
+    path: [Placement.AddressRow, Placement.AddressRowWithDeprecatedTag],
     externalDocs: Placement.ExternalDocsRow,
     description: Placement.DescriptionRow,
   },
@@ -55,7 +58,15 @@ const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacem
 
 /** Rows a node renders: a whole add / remove badges each of them. */
 const NODE_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly NodeDiffsSeverityPlacemennt[]>>> = {
-  [OpenApiTreeNodeKinds.OPERATION]: [Placement.TitleRow, Placement.OperationIdRow, Placement.AddressRow, Placement.ExternalDocsRow, Placement.DescriptionRow],
+  [OpenApiTreeNodeKinds.OPERATION]: [
+    Placement.TitleRow,
+    Placement.OperationIdRow,
+    Placement.OperationIdRowWithDeprecatedTag,
+    Placement.AddressRow,
+    Placement.AddressRowWithDeprecatedTag,
+    Placement.ExternalDocsRow,
+    Placement.DescriptionRow,
+  ],
   [OpenApiTreeNodeKinds.SECURITY]: [Placement.TitleRow, Placement.SelectorRow],
   [OpenApiTreeNodeKinds.REQUEST_BODY]: [Placement.TitleRow, Placement.DescriptionRow],
   [OpenApiTreeNodeKinds.RESPONSE]: [Placement.DescriptionRow],
@@ -95,14 +106,16 @@ export class OpenApiNodeDiffsSeveritiesAggregatorKindAny extends AbstractNodeDif
       severities[Placement.TitleRow] = OpenApiNodeDiffsSeveritiesAggregatorKindAny.toSeverity(wholeDiff)
     }
     const placements = FIELD_PLACEMENTS[this.kind] ?? {}
-    for (const [field, placement] of Object.entries(placements)) {
+    for (const [field, fieldPlacements] of Object.entries(placements)) {
       const diff: Diff | undefined = Reflect.get(nodeDiffs, field)?.data
       if (!diff) {
         continue
       }
-      const current = severities[placement]
-      if (!current || AbstractNodeDiffsSeveritiesAggregator.compareDiffTypes(diff.type, current.type) > 0) {
-        severities[placement] = OpenApiNodeDiffsSeveritiesAggregatorKindAny.toSeverity(diff)
+      for (const placement of typeof fieldPlacements === 'string' ? [fieldPlacements] : fieldPlacements) {
+        const current = severities[placement]
+        if (!current || AbstractNodeDiffsSeveritiesAggregator.compareDiffTypes(diff.type, current.type) > 0) {
+          severities[placement] = OpenApiNodeDiffsSeveritiesAggregatorKindAny.toSeverity(diff)
+        }
       }
     }
     return Object.keys(severities).length > 0 ? severities : undefined

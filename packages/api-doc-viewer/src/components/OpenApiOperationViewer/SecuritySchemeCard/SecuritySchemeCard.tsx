@@ -15,6 +15,7 @@ import {
   OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT,
   OpenApiDisplayLabels,
 } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
+import { OpenApiBlockEdges, OpenApiLayoutPlanner } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
 import { OpenApiRowDiffs, OpenApiScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
@@ -24,6 +25,7 @@ import { FramePosition } from "../../shared-components/Frame/types"
 import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
 import {
   SecurityFlowHeaderContent,
+  SecurityFrameRow,
   SecurityPropContent,
   SecurityPropValue,
   SecurityRow,
@@ -34,9 +36,10 @@ import { resolveValueHighlighter } from "../../shared-components/Security/value-
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
-import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy } from "../../shared-components/WithPrecededByProps"
+import { PrecededBy } from "../../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "../diff-state"
-import { OpenApiRowSpacing } from "../section-preceded-by"
+import { OpenApiBlock, OpenApiLayout } from "../OpenApiLayout"
+import { useOpenApiViewerContext } from "../OpenApiViewerContext"
 
 type SchemeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_SCHEME>
 type FlowNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OAUTH_FLOW>
@@ -49,42 +52,21 @@ const MUTED_TEXT_COLOR = '#8F9EB4'
 
 type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
-/** One row of the card: rendered by `render(framePosition, spacing)` once both are known. */
+/** One content row of the card; `diff` is the diff that paints it (its tones end a segment). */
 type CardRow = {
   readonly key: string
-  /**
-   * Starts a sub-block of the card - a flow part after another one, the trailing list of required
-   * scopes: a block gap (10 + 10) above it instead of the in-block gap.
-   */
-  readonly startsBlock?: boolean
-  readonly render: (framePosition: FramePositionResolver, spacing: OpenApiRowSpacing) => ReactElement
+  readonly diff: ChangedPropertyMetaData | undefined
+  readonly render: (framePosition: FramePositionResolver) => ReactElement
 }
 
 /**
- * Frame positions of the rows in one pass over the rows that will be rendered (DDL
- * `buildColumnViewerContexts` pattern): rows never inspect their neighbours.
+ * A run of card rows planned as one block: the scheme rows with the first flow part, every further
+ * flow part, the trailing list of required scopes after flow parts. Separators between segments
+ * come from the layout plan.
  */
-function resolveFramePosition(index: number, count: number): FramePosition {
-  if (count === 1) {
-    return 'single'
-  }
-  if (index === 0) {
-    return 'first'
-  }
-  return index === count - 1 ? 'last' : 'middle'
-}
-
-/**
- * Spacing of the card rows in the same pass: the card is a block (its title row starts it; the frame
- * moves the outer half-gaps outside its border), sub-blocks are a block gap apart. The closing row
- * takes no spacing - its padding is the frame's (frame.css).
- */
-function resolveCardRowSpacing(rows: readonly CardRow[], index: number): OpenApiRowSpacing {
-  const startsBlock = index === 0 || rows[index].startsBlock === true
-  return {
-    [ATTRIBUTE_PRECEDED_BY]: startsBlock ? PrecededBy.OPENAPI_BLOCK_START : PrecededBy.OPENAPI_BLOCK_ROW,
-    ...(rows[index + 1]?.startsBlock ? { [ATTRIBUTE_BLOCK_LAST_ROW]: true } : {}),
-  }
+type CardSegment = {
+  readonly key: string
+  readonly rows: CardRow[]
 }
 
 const severityOf = (diff: ChangedPropertyMetaData | undefined): NodeDiffsSeverity | undefined =>
@@ -97,19 +79,38 @@ function strongestDiff(...diffs: (ChangedPropertyMetaData | undefined)[]): Chang
   return present.find(diff => diff.data.type === strongest)
 }
 
-/** Collects card rows (the grid columns are fixed fractions of the card, nothing to measure). */
+/** Collects card rows into segments (the grid columns are fixed fractions of the card, nothing to measure). */
 class CardRows {
-  public readonly rows: CardRow[] = []
+  public readonly segments: CardSegment[] = [{ key: 'scheme', rows: [] }]
 
   public add(row: CardRow): void {
-    this.rows.push(row)
+    this.segments[this.segments.length - 1].rows.push(row)
+  }
+
+  public startSegment(key: string): void {
+    this.segments.push({ key, rows: [] })
+  }
+
+  /** The segments as layout blocks: edges from their first / last rows (next-data-model). */
+  public toBlocks(framePosition: FramePositionResolver): OpenApiBlock[] {
+    return this.segments.filter(segment => segment.rows.length > 0).map(segment => ({
+      id: segment.key,
+      ...OpenApiBlockEdges.rows({ diff: segment.rows[0].diff }, { diff: segment.rows[segment.rows.length - 1].diff }),
+      payload: () => <>{segment.rows.map(row => <Fragment key={row.key}>{row.render(framePosition)}</Fragment>)}</>,
+    }))
   }
 }
 
-/** Framed card of one security scheme of the selected alternative. Design: entities/security.md -> "Scheme card". */
+/**
+ * Framed card of one security scheme of the selected alternative: an opening frame row, the content
+ * segments with the separators between them, a closing frame row (heights, border offset and tones
+ * from `OpenApiLayoutPlanner.frameRow`). Design: entities/security.md -> "Scheme card",
+ * features/block-separators.md.
+ */
 export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   const { node } = props
   const displayMode = useDisplayMode()
+  const { spacing } = useOpenApiViewerContext()
   const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
   const severities = takeOpenApiSeverities(node)
@@ -127,46 +128,52 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   })
 
   const card = new CardRows()
+  const titleDiff = OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(node)
   card.add({
     key: 'title',
-    render: (framePosition, spacing) => (
+    diff: titleDiff,
+    render: (framePosition) => (
       <TitleRow
-        {...spacing}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         value={value?.name ?? String(node.key)}
         expandable={false}
         variant={TextValueVariant.h4}
         subheader={(side) => <SchemeTypeText node={node} layoutSide={side} />}
-        diff={OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(node)}
+        diff={titleDiff}
         diffsSeverities={severities}
         framePosition={framePosition}
       />
     ),
   })
   if (visibility.showUnresolved) {
+    const unresolvedDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
     card.add({
       key: 'unresolved',
-      render: (framePosition, spacing) => (
+      diff: unresolvedDiff,
+      render: (framePosition) => (
         <TextRow
-          {...spacing}
+          data-precededby={PrecededBy.OPENAPI_ROW}
           value={OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
           textColor={MUTED_TEXT_COLOR}
-          diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
+          diff={unresolvedDiff}
           framePosition={framePosition}
         />
       ),
     })
   }
   if (visibility.showDescription) {
+    const descriptionDiff = OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')
     card.add({
       key: 'description',
-      render: (framePosition, spacing) => (
+      diff: descriptionDiff,
+      render: (framePosition) => (
         <MarkdownTextRow
-          {...spacing}
+          data-precededby={PrecededBy.OPENAPI_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body2}
-          diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')}
+          diff={descriptionDiff}
           diffsSeverities={severities}
           diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.DescriptionRow}
           framePosition={framePosition}
@@ -176,7 +183,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   }
 
   if (visibility.showParameterName) {
-    // Only the place word (`Header` / `Query` …) takes the location's highlighter, never ` parameter name`.
+    // Only the place word (`Header` / `Query` ...) takes the location's highlighter, never ` parameter name`.
     const locationDiff = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(node)
     const labelOf = (side: LayoutSide): ReactNode => {
       const { place, suffix } = OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
@@ -211,7 +218,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   }
   if (detailed) {
     flows.forEach((flow, index) => {
-      // Flow parts are a block gap apart; the first one follows the scheme props in-block.
+      // The first flow part follows the scheme props in-block; every further one is a segment.
       addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes, index > 0)
     })
   }
@@ -230,28 +237,21 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
         collapsedScopes,
         toggleScopes,
-        // After flow parts: a sub-block of its own.
+        // After flow parts: a segment of its own.
         detailed && flows.length > 0,
       )
     }
   }
 
-  // Closing row: keeps the card's bottom indent and border off the content rows, so toggling
-  // `Scopes` (which changes which content row is last) never changes a row's height.
-  card.add({
-    key: 'frame-end',
-    render: (framePosition) => (
-      <SecurityRow variant="frame-end" framePosition={framePosition} diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)} renderSide={() => null} />
-    ),
-  })
-
   const isPresent = (side: LayoutSide): boolean => OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)
+  const middle: FramePositionResolver = (side) => isPresent(side) ? 'middle' : undefined
+  const frameRow = OpenApiLayoutPlanner.frameRow(node, spacing)
   return (
     <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
-      {card.rows.map((row, index) => {
-        const position = resolveFramePosition(index, card.rows.length)
-        return <Fragment key={row.key}>{row.render(side => isPresent(side) ? position : undefined, resolveCardRowSpacing(card.rows, index))}</Fragment>
-      })}
+      <SecurityFrameRow frameRow={frameRow} position="first" isPresentOnSide={isPresent} />
+      <OpenApiLayout blocks={card.toBlocks(middle)} spacing={spacing} separatorFramePosition={middle} />
+      {/* Always the last row, so toggling `Scopes` never moves the border onto a content row. */}
+      <SecurityFrameRow frameRow={frameRow} position="last" isPresentOnSide={isPresent} />
     </div>
   )
 }
@@ -272,9 +272,10 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
   const valueDiff = OpenApiRowDiffs.NodeLevel.takeRowDiff(node, field)
   return {
     key,
-    render: (framePosition, spacing) => (
+    diff: rowDiff,
+    render: (framePosition) => (
       <SecurityRow
-        {...spacing}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         testId={`security-prop-${key}`}
         framePosition={framePosition}
         diff={rowDiff}
@@ -300,19 +301,22 @@ function addFlowRows(
   displayMode: ReturnType<typeof useDisplayMode>,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
-  startsBlock: boolean,
+  startsSegment: boolean,
 ): void {
   const value = flow.value()
   const severities = takeOpenApiSeverities(flow)
   const visibility = OpenApiNodeVisibility.resolveOAuthFlow(value, displayMode)
   const blockDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(flow)
   const flowKey = `flow-${String(flow.key)}`
+  if (startsSegment) {
+    card.startSegment(flowKey)
+  }
   card.add({
     key: flowKey,
-    startsBlock,
-    render: (framePosition, spacing) => (
+    diff: blockDiff,
+    render: (framePosition) => (
       <SecurityRow
-        {...spacing}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         testId={`security-${flowKey}`}
         framePosition={framePosition}
         diff={blockDiff}
@@ -361,15 +365,18 @@ function addScopeRows(
   blockSeverity: NodeDiffsSeverity | undefined,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
-  startsBlock: boolean,
+  startsSegment: boolean,
 ): void {
   const expanded = !collapsedScopes.has(key)
+  if (startsSegment) {
+    card.startSegment(`${key}-scopes`)
+  }
   card.add({
     key: `${key}-scopes`,
-    startsBlock,
-    render: (framePosition, spacing) => (
+    diff: blockDiff,
+    render: (framePosition) => (
       <SecurityRow
-        {...spacing}
+        data-precededby={PrecededBy.OPENAPI_ROW}
         framePosition={framePosition}
         diff={blockDiff}
         severity={blockDiff ? blockSeverity : undefined}
@@ -391,9 +398,10 @@ function addScopeRows(
       : scope.rowDiff ? blockSeverity : undefined
     card.add({
       key: `${key}-scope-${scope.name}`,
-      render: (framePosition, spacing) => (
+      diff: scope.rowDiff,
+      render: (framePosition) => (
         <SecurityRow
-          {...spacing}
+          data-precededby={PrecededBy.OPENAPI_ROW}
           testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
           diff={scope.rowDiff}

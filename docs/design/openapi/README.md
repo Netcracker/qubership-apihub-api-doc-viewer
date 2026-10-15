@@ -69,7 +69,7 @@ tree, and lays the rows out.
 | Id | Question | Working default (until decided) |
 | --- | --- | --- |
 | Q12 | Media type of a `content`-described parameter: `customAnnotations` row `Media type` (works with diffs) or the plain-only `topLevelPropsMediaTypes` badge next to the name? | `customAnnotations` row, in both modes — the only option that works in the diffs viewer. Revisit before step 3. |
-| Q16 | How to show diffs of `externalDocs.description`, which is visible only in a hover tooltip? Options A–D in [entities/operation.md](entities/operation.md#q16--description-diffs-open). | None chosen. Until decided: tooltip shows each side's own description; description diffs do not color the row. Decide before step 8. |
+| Q16 | How to show diffs of `externalDocs.description`, which is visible only in a hover tooltip? Options A–D in [entities/operation.md](entities/operation.md#q16--description-diffs-open). | **Decided 2026-10-15: option A** — yellow row and highlighted link text; each side's tooltip shows its own description. |
 
 ## Resolved questions
 

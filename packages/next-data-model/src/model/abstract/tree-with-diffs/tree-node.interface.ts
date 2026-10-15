@@ -142,6 +142,10 @@ export enum NodeDiffsSeverityPlacemennt {
   CustomAnnotationRow = 'custom-annotation-row',
   /** OpenAPI operation ID row under the title. */
   OperationIdRow = 'operation-id-row',
+  /** OpenAPI operation ID row that also carries the `deprecated` tag (no title row): the strongest of both. */
+  OperationIdRowWithDeprecatedTag = 'operation-id-row-with-deprecated-tag',
+  /** OpenAPI address row that also carries the `deprecated` tag (no title, no operation ID): the strongest of both. */
+  AddressRowWithDeprecatedTag = 'address-row-with-deprecated-tag',
   /** OpenAPI external docs link row. */
   ExternalDocsRow = 'external-docs-row',
   /** OpenAPI standalone selector row (security alternatives). */

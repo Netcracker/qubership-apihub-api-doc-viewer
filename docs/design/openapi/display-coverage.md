@@ -62,7 +62,7 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Area | UI element | Condition | Design |
 | --- | --- | --- | --- |
 | Header | Title (h1) | `summary` exists and not `noHeading`; no fallback | [entities/operation.md](entities/operation.md#title-row) |
-| Header | **deprecated** tag | `deprecated: true`; in the title subheader, on the address row when there is no title | [entities/operation.md](entities/operation.md#deprecated-tag) |
+| Header | **deprecated** tag | `deprecated: true`; in the title subheader; without a title on the operation ID row, else on the address row | [entities/operation.md](entities/operation.md#deprecated-tag) |
 | Header | `Operation ID: <operationId>` (secondary text, static label + value on one line) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
 | Header | External docs link: static `View external documentation ↗`; `externalDocs.description` in a hover `UxTooltip` | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
@@ -102,7 +102,7 @@ shows when it has content on either side or a diff of its own.
 | Operation ID | `operationId` | `operation-id-row` |
 | Request Body title | `required` change: side-exclusive `*`, diff-colored `required` tag, synthetic replace | `title-row` |
 | Address | path rename → partial replace | `address-row` |
-| External docs | whole add / remove, `url` replace (highlight + per-side `href`); `description` diffs open (Q16) | `external-docs-row` |
+| External docs | whole add / remove, `url` or `description` replace (yellow row + highlighted link text, per-side `href` / tooltip; Q16 option A) | `external-docs-row` |
 | Descriptions (operation, body, response, scheme) | `description` | `description-row` |
 | Section and subsection headers | [section presence rule](features/diffs.md#section-presence-and-whole-section-changes) | `title-row` |
 | Security alternatives | add / remove (index-mapped), override switch (synthetic) | selector markers, `selector-row` |
