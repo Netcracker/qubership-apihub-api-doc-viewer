@@ -843,6 +843,13 @@ actually matches the column's width — do not rely on a screenshot looking
 visually plausible for near-white diff-background colors (see the testing
 skill section referenced above).
 
+**CSS counts too (session 2026-10, OpenAPI security cards).** A stylesheet rule that resets the
+width of a row's per-side element (e.g. `div[data-frame-position] { width: auto }` to add margins)
+breaks the same contract: each row shrank to its own content and the "card" got ragged edges. Keep
+the element a full-width flex item (`flex: 1 1 0%; min-width: 0`) and inset the *content* instead.
+`SideBySideLayout`'s root carries the class `side-by-side-layout` purely as a style hook (no rules of
+its own) for diffs-only CSS such as wider cards.
+
 ## Monorepo paths
 
 Source imports use the `@apihub/` alias (maps to `packages/api-doc-viewer/src`).
@@ -861,3 +868,33 @@ bg-transparent`; class selectors outrank the element rule), or use a non-button 
 where the JSON Schema pattern applies (clickable text + `Expander`). Also: never put
 `overflow: hidden` on a selector option or its scrolling container edge without an inset — diff
 round markers and border shadows overhang the option box and get clipped.
+
+## Framed cards = stacks of full-width rows (session lesson)
+
+OpenAPI security cards (`shared-styles/frame.css`, design: `docs/design/openapi/entities/security.md`
+→ "Card frame") are **not blocks**. Every row of a card stays as wide as its side, so a diff background
+(highlighted row, wholly added / removed card) fills the side up to the separator; the frame is an
+illusion drawn per row as an absolutely positioned `::before` box (left / right border; top on the
+`first` row, bottom on the `last`), and the row pads its content into that box. Rules that came out
+of several review rounds:
+
+- Never shrink or margin the highlighted element to draw a card — the diff color then stops at the
+  card edge and the rest of the side stays white.
+- The card's bottom indent / border belongs to a dedicated, content-less **closing row**; if it sits
+  on the last content row, collapsing an expandable row (e.g. `Scopes`) changes which row is last and
+  the row visibly "jumps".
+- Vertical spacing inside a card is padding, never margin (margins cut the side borders and leave
+  white seams between highlighted rows); a gap between cards is a full-width spacer row painted with
+  the surrounding block's diff.
+- Verify geometry in a live browser (testing skill → live Storybook check); SSR / HTML checks cannot
+  see widths or `::before` boxes.
+
+## Typography: the JSON Schema property-title look (session lesson)
+
+The JSON Schema property title does **not** get its medium look from `font-weight`: it uses
+`NODE_TITLE_TEXT_CLASSES` (`shared-styles/tailwind-classnames.ts`) = `text-xs text-black
+font-Inter-Medium` — the static "Inter Medium" font family (`src/index.css`) at the normal 400 weight.
+`TextValue` renders "Inter Variable", so `TextValue` + `textFontWeight` never matches a JSON Schema
+title. For any label that must look like a property title (security prop labels, `Scopes`, scope
+names), reuse `NODE_TITLE_TEXT_CLASSES` on a plain span instead of tuning weights.
+

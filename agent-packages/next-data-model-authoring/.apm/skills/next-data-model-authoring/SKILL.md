@@ -624,3 +624,35 @@ Do not extract viewer JSX layout (Phase 2) before visibility rules live in
 next-data-model. Do not add `node-visibility-data/shared/` or per-kind utility
 files — kind managers in `tree/node-visibility-data/kind-*.ts` own protected
 visibility algorithms; with-diffs delegates diff-free rules to plain tree managers.
+
+## OpenAPI row diffs — traps (session lessons)
+
+Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accessors live in
+`model/openapi/tree-with-diffs/row-diffs.ts` (`OpenApiRowDiffs`); viewers never read `node.diffs`.
+
+- **Selector option borders come from `styles.borderShadowColor`.** `Selector` paints the green / red
+  border of a wholly added / removed option from the node-level diff's `borderShadowColor`. A
+  per-stack `ChangedPropertyMetaData` builder (here `OpenApiChangedPropertyMetaData.build`) must set it
+  for add / remove, or every option of that stack silently loses its border.
+- **A text highlighter is only set for `replace`.** Add / remove styles carry a background, not a
+  `textHighlighterColor`. When a value must still be marked on add / remove (e.g. the scheme type
+  text when a definition appears / disappears), resolve the marker per side in an accessor
+  (`resolveTypeTextHighlight`: replace → styles, add → green on changed, remove → red on origin).
+- **Row-colorizing `replace` diffs must be value-less.** `TextValue` substitutes a **string**
+  `beforeValue` / `afterValue` of the row diff into the shown text. Painting a title row with a field
+  diff (e.g. a scheme `type` replace) would make the origin title read the old field value. Build the
+  synthetic row diff from a copy without values (`deriveDiff(parent, 'replace', undefined, undefined)`
+  → `buildRowReplace`) — the same idea as DDL `asReplaceFlagDiffForTitleRow`.
+- **Synthetic row diffs on derived rows.** Rows that have no diff object of their own (one scope out
+  of a `scopes` map replace; a scope whose only change is `required`) get diffs derived in the model
+  from the parent diff (type + declaration paths kept); a required-only change gets a yellow
+  `buildRowReplace` so the whole row is painted.
+- **Synthetic field diffs need an allow-list.** The `KindAny` node-diffs aggregator copies only the
+  kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
+  `alternatives`) must be listed in `SYNTHETIC_FIELD_DIFF_KEYS` and mapped in the severities
+  aggregator. The model layer does not import `building-service`, so severity math belongs in the
+  transformer / aggregators, not in `row-diffs.ts`.
+- **Integer-like object keys enumerate first.** JS lists `200`, `500` before `2XX`, `default` no matter
+  the insertion order, so a canonically sorted object cannot keep response codes in order; sort the
+  tree children instead (`OpenApiTreeBuilder.sortResponseCodes`).
+

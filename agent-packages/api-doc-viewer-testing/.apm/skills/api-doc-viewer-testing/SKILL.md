@@ -63,6 +63,22 @@ story ids in a browser — this verifies the story renders and the fixture conte
 correctly, but it is **not** a substitute for the real IT run; say so explicitly and leave
 actual snapshot generation for an environment with Docker.
 
+**Faster live check while iterating on layout / CSS (session lesson).** A server-side render
+(esbuild + `react-dom/server`) proves a story renders without errors and lets you grep classes, but
+it cannot see geometry: widths, `::before` frames, overflow clipping, global-CSS side effects (the
+package-wide `button` rule), or font families. Several review rounds were spent on exactly those
+before a browser check caught them in minutes. Instead:
+
+1. `npx storybook dev -p 9099 --no-open --ci` from `packages/api-doc-viewer/` (no
+   `generate-stories` needed), run in the background; poll `http://localhost:9099/index.json` until
+   it returns 200.
+2. Open `http://localhost:9099/iframe.html?id=<story-id>&viewMode=story` with the browser tools;
+   drive selectors by test id from the page (`document.querySelector('[data-testid="…"]').click()`).
+3. Measure instead of eyeballing: `getBoundingClientRect().width` of each row,
+   `getComputedStyle(el, '::before')` for frame boxes, class lists for diff markers; then take a
+   screenshot of the region for the user-visible result.
+4. Stop the Storybook process and close the tab afterwards. This is still not a screenshot IT run.
+
 **Targeted single-suite runner:** `node bin/run-screenshot-test-suite.mjs test|regenerate
 [test-run] [suite]` (e.g. `regenerate json-schema-diffs-suite description-changes`) wraps the
 build-showcase → start-static-server → jest pipeline for one suite, so you don't have to
