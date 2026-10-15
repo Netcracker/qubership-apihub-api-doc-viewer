@@ -60,9 +60,17 @@ export class OpenApiBlockEdges {
     return { head, tail: children[children.length - 1]?.tail ?? head }
   }
 
-  /** A section container (Request, Responses, Security): its title row, then its children. */
+  /** A section container (Request, Security): its title row, then its children. */
   public static section(node: AnyOpenApiNode, children: readonly OpenApiBlockEdgePair[]): OpenApiBlockEdgePair {
     return OpenApiBlockEdges.container(OpenApiBlockEdges.titleRow(node), children)
+  }
+
+  /** The Responses section: its title row (yellow when a code option changed as an option), then its children. */
+  public static responses(node: AnyOpenApiNode, children: readonly OpenApiBlockEdgePair[]): OpenApiBlockEdgePair {
+    return OpenApiBlockEdges.container(
+      { diff: OpenApiRowDiffs.Responses.takeTitleRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) },
+      children,
+    )
   }
 
   /** Operation header block: its first and last visible header rows. */
@@ -106,7 +114,7 @@ export class OpenApiBlockEdges {
     return { head, tail: state.expanded === false ? head : OpenApiBlockEdges.nestedEdge(group) }
   }
 
-  /** Request body: its title (required change included), optional description, the selected media type's schema. */
+  /** Request body: its title (required and media-type option changes included), optional description, the selected media type's schema. */
   public static requestBody(node: AnyOpenApiNode, showDescription: boolean, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
     return OpenApiBlockEdges.body(
       { diff: OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) },
@@ -117,9 +125,13 @@ export class OpenApiBlockEdges {
     )
   }
 
-  /** Response Body (header painted by its `content` node), the selected media type's schema. */
+  /** Response Body (header painted by its `content` node, media-type option changes included), the selected media type's schema. */
   public static responseBody(content: AnyOpenApiNode, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.body(OpenApiBlockEdges.titleRow(content), undefined, selectedMediaType)
+    return OpenApiBlockEdges.body(
+      { diff: OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content), severity: OpenApiBlockEdges.severityOf(content, NodeDiffsSeverityPlacemennt.TitleRow) },
+      undefined,
+      selectedMediaType,
+    )
   }
 
   /**

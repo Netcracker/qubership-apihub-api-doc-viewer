@@ -58,10 +58,10 @@ purpose — fixture `oas30/structure/04-response-code-order` declares `500` firs
 | --- | --- |
 | Component | `TitleRow` "Responses", **h2**, `subheader={(side) => <Selector …/>}` |
 | Options | one per `response` node; title = the code text (`OpenApiRowDiffs.Response.resolveSideCode(node, side)` for a renamed code, e.g. `4xx` → `4XX`, E6) |
-| Tone | `resolveResponseCodeTone(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md) |
+| Tone | `resolveResponseCodeTone(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md); a code wholly added / removed **on its own** (not inherited) has no tone — default background and text, green / red border shadow only (`OpenApiRowDiffs.Response.keepsCodeTone`) |
 | Option test id | `response-code-<code>` |
 | Initial selection | first `2XX` option, else the first option (Q13) |
-| Diff | header from the `responses` node: wholly added / removed only when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); options carry the `response` node-level diff (per-side visibility, border shadow, per-side title of a renamed code) and the **change marker** below. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |
+| Diff | header = `OpenApiRowDiffs.Responses.takeTitleRowDiff`: wholly added / removed when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); else the whole title row is yellow (synthetic `replace`, background only) when any code option was wholly added / removed / renamed — the with-diffs transformer writes the synthetic `codes` field diff (`OPENAPI_RESPONSE_OPTIONS_DIFF_KEY`) on the `responses` node; floating badge `TitleRow`, the strongest of those option changes. A renamed code's text is highlighted yellow inside the button on both sides (`OpenApiRowDiffs.Response.resolveSideCodeHighlight`, `OptionKeyText`). Options carry the `response` node-level diff (per-side visibility, border shadow, per-side title of a renamed code) and the **change marker** below. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |
 
 ### Change markers on response-code options
 
@@ -113,7 +113,7 @@ inherited whole-node diff.
 | --- | --- | --- |
 | `responses/07-response-4xx-added` | `404` added with headers and a body | none on `404` (border shadow + one-side visibility only; stamped header diffs ignored) |
 | `responses/18-description-changed-non-initial-code` | `400` description replaced, `200` selected | `annotation` on `400` |
-| `responses/15-code-case-renamed` | `4xx` → `4XX` only | none (per-side title only) |
+| `responses/15-code-case-renamed` | `4xx` → `4XX` only | none (per-side highlighted title + yellow Responses row only) |
 | `responses/16-code-renamed-and-description-changed` | rename + description replaced | `annotation` |
 | `responses/17-description-changed` | `200` description replaced | `annotation` |
 | `response-body/17-schema-property-added` | property added to the `200` body | `non-breaking` |
@@ -179,11 +179,11 @@ response also has headers (and links), so its extensions are not "about every me
 | Item | Rule |
 | --- | --- |
 | Header row | `TitleRow` "Body", **h3**, test id `openapi-response-body`, media-type `Selector` in the subheader (Q2) — identical to the request Body header ([request-body.md](request-body.md#header-row-h3-with-the-media-type-selector)) except that responses have no `required` marker |
-| Selector options | nested `mediaType` nodes of the response's `content` that **have a `schema`**, document order; renamed media types show a per-side title; default tone, `SelectorVariant.Secondary`; option test id `response-media-type-<index>` |
+| Selector options | nested `mediaType` nodes of the response's `content` that **have a `schema`**, document order; renamed media types show a per-side highlighted title; border shadow / marker rules as the request Body ([request-body.md](request-body.md#header-row-h3-with-the-media-type-selector)); default tone, `SelectorVariant.Secondary`; option test id `response-media-type-<index>` |
 | Selection | per response, kept when switching codes ([../features/operation-viewer.md](../features/operation-viewer.md#view-state)) |
 | Presence | the response Body is present on a side when it has ≥1 option there (the response description belongs to the response, not to the Body) |
 | Shown when | present on either side |
-| Diff | header from the `content` node's whole-section diff: raw (`content` removed as a whole, `response-body/02-body-removed`) or synthetic (the only media type removed, or the only schema removed, `response-body/16-schema-removed`); options carry `mediaType` node diffs and summaries |
+| Diff | header = `OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content)`: the `content` node's whole-section diff — raw (`content` removed as a whole, `response-body/02-body-removed`) or synthetic (the only media type removed, or the only schema removed, `response-body/16-schema-removed`); else a yellow row when a media-type option was wholly added / removed / renamed (synthetic `mediaTypes` diff on `content`); options carry `mediaType` node diffs and `MediaType.takeChangesMarkerSummary` |
 | Schema | `OpenApiSchemaViewer` (inside `MediaTypeContentSection`) for the selected media type — same wrapping and diff rules as the request body ([request-body.md](request-body.md#schema)) |
 
 The request and response Body are one component, `MediaTypeContentSection`

@@ -12,7 +12,7 @@ import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiExternalDocs } from "../types/node-value"
 import { OpenApiApiKeyParameterNameLabel, OpenApiDisplayLabels } from "../display/labels"
 import { OpenApiChangedPropertyMetaData } from "./changed-property-metadata"
-import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
+import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY, OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
 
@@ -45,6 +45,12 @@ function fieldDiff(node: AnyOpenApiNode, key: string): ChangedPropertyMetaData |
 
 function isWholeChange(diff: Diff | undefined): boolean {
   return diff !== undefined && (isDiffAdd(diff) || isDiffRemove(diff))
+}
+
+/** A synthetic selector-options field diff as a yellow row on both sides, without a text highlighter. */
+function optionsRowReplace(node: AnyOpenApiNode, key: string): ChangedPropertyMetaData | undefined {
+  const options = fieldDiff(node, key)
+  return options ? OpenApiChangedPropertyMetaData.buildRowReplace(options.data) : undefined
 }
 
 function sideValue(diff: Diff, side: LayoutSide): unknown {
@@ -157,6 +163,21 @@ class NodeLevel {
       return String(side === ORIGIN_LAYOUT_SIDE ? diff.beforeKey : diff.afterKey)
     }
     return String(node.key)
+  }
+
+  /** Text highlighter of an option's key on a side: yellow for a renamed key, none otherwise. */
+  public static resolveSideKeyHighlight(node: AnyOpenApiNode, side: LayoutSide): Exclude<HighlightVariant, HighlightVariant.Gray> | undefined {
+    const diff = NodeLevel.takeNodeLevelDiff(node)
+    if (!diff || !isDiffRename(diff.data)) {
+      return undefined
+    }
+    return (side === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after).textHighlighterColor
+  }
+
+  /** Whether the node itself (not an ancestor) was wholly added / removed: an option with a green / red border. */
+  public static isOwnWholeChange(node: AnyOpenApiNode): boolean {
+    const diff = NodeLevel.takeNodeLevelDiff(node)
+    return !!diff && !diff.inherited && isWholeChange(diff.data)
   }
 }
 
@@ -291,11 +312,15 @@ class Operation {
 }
 
 class RequestBody {
-  /** Whole body add / remove -> a required change painted as a yellow header row. */
+  /**
+   * Whole body add / remove -> a required change or a media-type option wholly added / removed /
+   * renamed, painted as a yellow header row.
+   */
   public static takeHeaderRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
     const required = fieldDiff(node, 'required')
     return Section.takeHeaderRowDiff(node)
       ?? (required ? OpenApiChangedPropertyMetaData.buildRowReplace(required.data) : undefined)
+      ?? optionsRowReplace(node, OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY)
   }
 
   /** Side-exclusive required star. */
@@ -317,10 +342,38 @@ class RequestBody {
   }
 }
 
+class ResponseBody {
+  /** Response Body header (painted by its `content` node): whole add / remove -> a media-type option wholly added / removed / renamed (yellow row). */
+  public static takeHeaderRowDiff(content: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    return Section.takeHeaderRowDiff(content) ?? optionsRowReplace(content, OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY)
+  }
+}
+
 class MediaType {
   /** Title of a media-type option per side (rename aware). */
   public static resolveSideTitle(node: AnyOpenApiNode, side: LayoutSide): string {
     return NodeLevel.resolveSideKey(node, side)
+  }
+
+  /** Text highlighter of the option title: yellow on both sides of a renamed media type. */
+  public static resolveSideTitleHighlight(node: AnyOpenApiNode, side: LayoutSide): Exclude<HighlightVariant, HighlightVariant.Gray> | undefined {
+    return NodeLevel.resolveSideKeyHighlight(node, side)
+  }
+
+  /**
+   * Inner changes of the media type only (its schema and cloned extensions): the option's own add /
+   * remove / rename is shown by its border shadow / per-side title and the yellow Body row, never by
+   * the marker. Empty for a wholly added / removed / inherited option.
+   */
+  public static takeChangesMarkerSummary(node: AnyOpenApiNode): NodeDescendantDiffsSummary {
+    return isWithDiffs(node) ? node.descendantDiffsSummary : new Set()
+  }
+}
+
+class Responses {
+  /** Responses title row: whole add / remove -> a response-code option wholly added / removed / renamed (yellow row). */
+  public static takeTitleRowDiff(node: AnyOpenApiNode): ChangedPropertyMetaData | undefined {
+    return Section.takeHeaderRowDiff(node) ?? optionsRowReplace(node, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY)
   }
 }
 
@@ -328,6 +381,19 @@ class Response {
   /** Code of a response option per side (rename aware, e.g. `4xx` -> `4XX`). */
   public static resolveSideCode(node: AnyOpenApiNode, side: LayoutSide): string {
     return NodeLevel.resolveSideKey(node, side)
+  }
+
+  /** Text highlighter of the code: yellow on both sides of a renamed code. */
+  public static resolveSideCodeHighlight(node: AnyOpenApiNode, side: LayoutSide): Exclude<HighlightVariant, HighlightVariant.Gray> | undefined {
+    return NodeLevel.resolveSideKeyHighlight(node, side)
+  }
+
+  /**
+   * Whether the option keeps its response-code tone: false for a response wholly added / removed on
+   * its own (default look, green / red border shadow only). Inherited whole changes keep the tone.
+   */
+  public static keepsCodeTone(node: AnyOpenApiNode): boolean {
+    return !NodeLevel.isOwnWholeChange(node)
   }
 
   /** Inner changes of the response only - empty for a wholly added / removed / inherited response. */
@@ -566,7 +632,9 @@ export class OpenApiRowDiffs {
   public static readonly Section = Section
   public static readonly Operation = Operation
   public static readonly RequestBody = RequestBody
+  public static readonly ResponseBody = ResponseBody
   public static readonly MediaType = MediaType
+  public static readonly Responses = Responses
   public static readonly Response = Response
   public static readonly Security = Security
   public static readonly SecurityScheme = SecurityScheme

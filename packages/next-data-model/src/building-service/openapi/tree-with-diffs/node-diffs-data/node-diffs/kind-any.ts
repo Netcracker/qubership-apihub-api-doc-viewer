@@ -9,11 +9,18 @@ import { NodeKey } from "../../../../../utility-types"
 import { DiffMetaKeys } from "../../../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { AbstractNodeDiffsAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
 import { OPENAPI_NODE_VALUE_PROPS } from "../../../tree/node-data/builder"
-import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
+import {
+  OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY,
+  OPENAPI_RESPONSE_OPTIONS_DIFF_KEY,
+  OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY,
+} from "../../../../../model/openapi/tree-with-diffs/diff-keys"
 
 /** Field diffs that are not value props: synthetic row diffs written by the with-diffs transformer. */
 const SYNTHETIC_FIELD_DIFF_KEYS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly string[]>>> = {
   [OpenApiTreeNodeKinds.SECURITY]: [OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY],
+  [OpenApiTreeNodeKinds.REQUEST_BODY]: [OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY],
+  [OpenApiTreeNodeKinds.CONTENT]: [OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY],
+  [OpenApiTreeNodeKinds.RESPONSES]: [OPENAPI_RESPONSE_OPTIONS_DIFF_KEY],
 }
 
 type OpenApiValue = OpenApiAnyTreeNodeValue | null

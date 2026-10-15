@@ -229,6 +229,41 @@ describe('OpenAPI with diffs: request body', () => {
     ])
   })
 
+  it.each([
+    ['request-body/08-media-type-added', 'application/xml', 'non-breaking'],
+    ['request-body/09-media-type-removed', 'application/xml', 'breaking'],
+    ['request-body/10-media-type-renamed', 'application/json; charset=utf-8', undefined],
+  ])('media type option changed (%s): yellow Body row badged by the option, no change marker on the option', (caseId, mediaType, severity) => {
+    const node = requestBody(build(caseId))
+    const header = OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node)
+    expect(header?.styles.before.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.textHighlighterColor).toBeUndefined()
+    const titleRowSeverity = node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
+    if (severity) {
+      expect(titleRowSeverity).toBe(severity)
+    } else {
+      expect(titleRowSeverity).toBeDefined()
+    }
+    const option = child(child(node, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE, mediaType)
+    expect([...OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(option)]).toEqual([])
+  })
+
+  it('renamed media type: the option title is highlighted yellow on both sides; other options are not', () => {
+    const renamed = child(child(requestBody(build('request-body/10-media-type-renamed')), OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE)
+    expect(OpenApiRowDiffs.MediaType.resolveSideTitleHighlight(renamed, ORIGIN_LAYOUT_SIDE)).toBe('yellow')
+    expect(OpenApiRowDiffs.MediaType.resolveSideTitleHighlight(renamed, CHANGED_LAYOUT_SIDE)).toBe('yellow')
+    const added = child(child(requestBody(build('request-body/08-media-type-added')), OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE, 'application/xml')
+    expect(OpenApiRowDiffs.MediaType.resolveSideTitleHighlight(added, CHANGED_LAYOUT_SIDE)).toBeUndefined()
+  })
+
+  it('a schema change inside a media type keeps the plain Body row and the option marker', () => {
+    const node = requestBody(build('request-body/17-schema-property-added'))
+    expect(OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node)).toBeUndefined()
+    const option = child(node, OpenApiTreeNodeKinds.CONTENT).childrenNodes()[0]
+    expect([...OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(option)]).toEqual(['non-breaking'])
+  })
+
   it('required became false', () => {
     expect(requestBody(build('request-body/04-required-removed')).diffs.required?.data.action).toBe(DiffAction.remove)
   })
@@ -271,6 +306,57 @@ describe('OpenAPI with diffs: responses', () => {
   it('response option add / rename', () => {
     expect(wholeAction(response(build('responses/07-response-4xx-added'), '404'))).toBe(DiffAction.add)
     expect(wholeAction(response(build('responses/15-code-case-renamed'), '4XX'))).toBe(DiffAction.rename)
+  })
+
+  it.each([
+    ['responses/01-response-1xx-added', '101', 'green'],
+    ['responses/04-response-2xx-removed', '201', 'red'],
+    ['responses/11-response-range-added', '5XX', 'green'],
+    ['responses/14-response-default-removed', 'default', 'red'],
+  ])('response option wholly changed (%s): yellow Responses row, neutral option with a %s border', (caseId, code, border) => {
+    const tree = build(caseId)
+    const responses = responsesNode(tree)
+    const header = OpenApiRowDiffs.Responses.takeTitleRowDiff(responses)
+    expect(header?.styles.before.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.backgroundColor).toBe('yellow')
+    expect(header?.styles.after.textHighlighterColor).toBeUndefined()
+    expect(responses.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]).toBeDefined()
+    const option = response(tree, code)
+    expect(OpenApiRowDiffs.Response.keepsCodeTone(option)).toBe(false)
+    const shadow = option.diffs[NODE_LEVEL_DIFF_KEY]?.styles
+    expect(border === 'green' ? shadow?.after.borderShadowColor : shadow?.before.borderShadowColor).toBe(border)
+  })
+
+  it('renamed response code: yellow Responses row, toned option with a highlighted code', () => {
+    const tree = build('responses/15-code-case-renamed')
+    expect(OpenApiRowDiffs.Responses.takeTitleRowDiff(responsesNode(tree))?.styles.after.backgroundColor).toBe('yellow')
+    const renamed = response(tree, '4XX')
+    expect(OpenApiRowDiffs.Response.keepsCodeTone(renamed)).toBe(true)
+    expect(OpenApiRowDiffs.Response.resolveSideCodeHighlight(renamed, ORIGIN_LAYOUT_SIDE)).toBe('yellow')
+    expect(OpenApiRowDiffs.Response.resolveSideCodeHighlight(renamed, CHANGED_LAYOUT_SIDE)).toBe('yellow')
+    expect(OpenApiRowDiffs.Response.resolveSideCodeHighlight(response(tree, '200'), CHANGED_LAYOUT_SIDE)).toBeUndefined()
+  })
+
+  it('no option added / removed / renamed: plain Responses row; a wholly added operation keeps its green row', () => {
+    expect(OpenApiRowDiffs.Responses.takeTitleRowDiff(responsesNode(build('responses/17-description-changed')))).toBeUndefined()
+    const operationAdded = responsesNode(build('operation/23-operation-added'))
+    expect(OpenApiRowDiffs.Responses.takeTitleRowDiff(operationAdded)?.styles.after.backgroundColor).toBe('green')
+    // Inherited whole changes keep the code tone: the option has no border of its own.
+    for (const option of operationAdded.childrenNodes()) {
+      expect(OpenApiRowDiffs.Response.keepsCodeTone(option)).toBe(true)
+    }
+  })
+
+  it.each([
+    ['response-body/08-media-type-added', 'application/xml'],
+    ['response-body/09-media-type-removed', 'application/xml'],
+    ['response-body/10-media-type-renamed', 'application/json; charset=utf-8'],
+  ])('response media type option changed (%s): yellow Body row, no change marker on the option', (caseId, mediaType) => {
+    const content = child(response(build(caseId), '200'), OpenApiTreeNodeKinds.CONTENT)
+    expect(OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content)?.styles.before.backgroundColor).toBe('yellow')
+    expect(content.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]).toBeDefined()
+    const option = child(content, OpenApiTreeNodeKinds.MEDIA_TYPE, mediaType)
+    expect([...OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(option)]).toEqual([])
   })
 
   it('response sections presence: Body and Headers wholly removed', () => {

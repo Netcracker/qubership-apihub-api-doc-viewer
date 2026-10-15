@@ -9,7 +9,11 @@ import {
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../../model/openapi/types/node-kind"
 import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node-value"
 import { AbstractNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
-import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
+import {
+  OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY,
+  OPENAPI_RESPONSE_OPTIONS_DIFF_KEY,
+  OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY,
+} from "../../../../../model/openapi/tree-with-diffs/diff-keys"
 
 /** A field diff badges one row, or several alternative rows (the viewer reads the one it renders). */
 type FieldPlacements = Readonly<Record<string, NodeDiffsSeverityPlacemennt | readonly NodeDiffsSeverityPlacemennt[]>>
@@ -33,7 +37,16 @@ const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacem
   },
   [OpenApiTreeNodeKinds.REQUEST_BODY]: {
     required: Placement.TitleRow,
+    // The media-type selector sits in the Body title row.
+    [OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY]: Placement.TitleRow,
     description: Placement.DescriptionRow,
+  },
+  [OpenApiTreeNodeKinds.CONTENT]: {
+    [OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY]: Placement.TitleRow,
+  },
+  [OpenApiTreeNodeKinds.RESPONSES]: {
+    // The response-code selector sits in the Responses title row.
+    [OPENAPI_RESPONSE_OPTIONS_DIFF_KEY]: Placement.TitleRow,
   },
   [OpenApiTreeNodeKinds.RESPONSE]: {
     description: Placement.DescriptionRow,

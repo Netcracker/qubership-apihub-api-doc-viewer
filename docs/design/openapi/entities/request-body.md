@@ -25,12 +25,16 @@ Media type `examples` / `example` / `encoding` are not copied (Q11). Request Bod
 | No options | the subheader is empty; the header is still shown when the Body is present through its `description` alone |
 | Option test id | `request-media-type-<index>` |
 | Initial selection | first option (document order) |
-| Diff | header `diff` from the `requestBody` node: a raw whole-body add / remove, or the synthetic one written when the Body's presence flips; options carry the `mediaType` node diffs (add / remove / rename, incl. synthetic add / remove when only the `schema` appeared / disappeared) and summaries |
+| Diff | header `diff` = `OpenApiRowDiffs.RequestBody.takeHeaderRowDiff`: a raw whole-body add / remove, or the synthetic one written when the Body's presence flips; else a yellow row for a `required` change; else a yellow row when a media-type option was wholly added / removed / renamed (below). Options carry the `mediaType` node diffs (add / remove / rename, incl. synthetic add / remove when only the `schema` appeared / disappeared): a wholly added / removed option shows its green / red **border shadow only**; the round **change marker** counts inner changes only (`OpenApiRowDiffs.MediaType.takeChangesMarkerSummary` — the schema and cloned extensions; never the option's own add / remove / rename, same rule as the [response-code markers](responses.md#change-markers-on-response-code-options)) |
 
 A renamed media type (`apiDiff` maps `application/json` ↔ `application/json; charset=utf-8` and
 wildcard-compatible keys, E6) has one option whose title differs per side: the option `title` is a
 `(layoutSide) => ReactNode` returning `OpenApiRowDiffs.MediaType.resolveSideTitle(node, side)` —
-`beforeKey` on the origin side, `afterKey` on the changed side, yellow text highlighter on both.
+`beforeKey` on the origin side, `afterKey` on the changed side, yellow text highlighter on both
+(`OpenApiRowDiffs.MediaType.resolveSideTitleHighlight`, rendered by `OptionKeyText` inside the button —
+the JSON Schema combiner-option pattern); the Body header row is yellow.
+
+**Option-change row.** A media-type option wholly added / removed / renamed paints the whole Body header row yellow (synthetic `replace`, background only, no text highlighter — the security toolbar / AsyncAPI bindings pattern) unless the header has its own whole add / remove; floating badge: `TitleRow` placement, the strongest of those option changes. Data: the with-diffs transformer writes the synthetic `mediaTypes` field diff (`OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY`) on the node that owns the header row — `requestBody` for the request Body, `content` for a response Body.
 
 ## Required marker
 

@@ -76,6 +76,10 @@ Rules:
    `box-shadow`, toned borders are `border-color` — both stay visible together. The change marker
    (`roundMarker`) is unchanged. Verify every tone × {idle, selected} × {add, remove, replace marker}
    in a Storybook story before snapshotting.
+   **Exception — a wholly added / removed code** (its own diff, not inherited): no tone at all; the
+   option keeps the neutral look and shows only its green / red border shadow, so the change reads
+   as a change and not as a code class (`OpenApiRowDiffs.Response.keepsCodeTone`). A renamed code
+   keeps its tone; its text gets the yellow highlighter.
 3. **Font sizes stay with the variant** (`_primary` 20px, `_secondary` 15px); the Responses header
    uses `Secondary`.
 

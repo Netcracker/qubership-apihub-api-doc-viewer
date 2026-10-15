@@ -18,6 +18,7 @@ import { takeOpenApiSeverities } from "./diff-state"
 import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
 import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
 import { useOpenApiViewerContext } from "./OpenApiViewerContext"
+import { OptionKeyText } from "./OptionKeyText"
 import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
 import { buildResponseBlocks } from "./response-blocks"
 
@@ -40,7 +41,7 @@ export function buildResponsesBlock(node: ResponsesNode, extensionsNode: Extensi
   })
   return {
     id: 'responses',
-    ...OpenApiBlockEdges.section(node, children),
+    ...OpenApiBlockEdges.responses(node, children),
     payload: () => <ResponsesNodeViewer key="responses" node={node} blocks={children} />,
   }
 }
@@ -63,9 +64,15 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
 
   const options: SelectorOption<ResponseNode>[] = useMemo(() => responses.map(response => ({
     node: response,
-    title: (side: LayoutSide) => OpenApiRowDiffs.Response.resolveSideCode(response, side),
+    title: (side: LayoutSide) => (
+      <OptionKeyText
+        text={OpenApiRowDiffs.Response.resolveSideCode(response, side)}
+        highlight={OpenApiRowDiffs.Response.resolveSideCodeHighlight(response, side)}
+      />
+    ),
     testId: `response-code-${String(response.key)}`,
-    tone: resolveResponseCodeTone(response.value()?.codeClass),
+    // A wholly added / removed code keeps the default look: only its green / red border shadow.
+    tone: OpenApiRowDiffs.Response.keepsCodeTone(response) ? resolveResponseCodeTone(response.value()?.codeClass) : undefined,
     // Markers show inner changes only: no own-diff summary, the descendant summary of the accessor.
     ...(isOpenApiTreeNodeWithDiffs(response)
       ? { diffs: response.diffs, descendantDiffsSummary: OpenApiRowDiffs.Response.takeChangesMarkerSummary(response) }
@@ -90,7 +97,7 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
             layoutSide={layoutSide}
           />
         )}
-        diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
+        diff={OpenApiRowDiffs.Responses.takeTitleRowDiff(node)}
         diffsSeverities={takeOpenApiSeverities(node)}
       />
       <OpenApiLayout blocks={blocks} spacing={spacing} />

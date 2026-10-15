@@ -17,6 +17,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
+import { OptionKeyText } from "./OptionKeyText"
 
 export type MediaTypeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>
 
@@ -57,10 +58,17 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
 
   const options: SelectorOption<MediaTypeNode>[] = useMemo(() => mediaTypes.map(mediaType => ({
     node: mediaType,
-    title: (side: LayoutSide) => OpenApiRowDiffs.MediaType.resolveSideTitle(mediaType, side),
+    title: (side: LayoutSide) => (
+      <OptionKeyText
+        text={OpenApiRowDiffs.MediaType.resolveSideTitle(mediaType, side)}
+        highlight={OpenApiRowDiffs.MediaType.resolveSideTitleHighlight(mediaType, side)}
+      />
+    ),
     testId: `${optionTestIdPrefix}-${String(mediaType.key)}`,
+    // Markers show inner changes only: an added / removed / renamed option is shown by its border
+    // shadow / highlighted title and the yellow Body row.
     ...(isOpenApiTreeNodeWithDiffs(mediaType)
-      ? { diffs: mediaType.diffs, diffsSummary: mediaType.diffsSummary, descendantDiffsSummary: mediaType.descendantDiffsSummary }
+      ? { diffs: mediaType.diffs, descendantDiffsSummary: OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(mediaType) }
       : {}),
   })), [mediaTypes, optionTestIdPrefix])
   const selectedOption = options.find(option => option.node.id === selectedId) ?? options[0] ?? null

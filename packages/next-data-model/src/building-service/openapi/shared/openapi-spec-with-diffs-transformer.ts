@@ -1,7 +1,11 @@
 import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { BuildingServiceLogger } from "../../../loggers"
 import { NODE_LEVEL_DIFF_KEY } from "../../../model/abstract/tree-with-diffs/tree-node.interface"
-import { OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY } from "../../../model/openapi/tree-with-diffs/diff-keys"
+import {
+  OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY,
+  OPENAPI_RESPONSE_OPTIONS_DIFF_KEY,
+  OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY,
+} from "../../../model/openapi/tree-with-diffs/diff-keys"
 import { OPENAPI_OAUTH_FLOW_TYPES, OPENAPI_PARAMETER_LOCATIONS, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
 import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
@@ -212,10 +216,23 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
    * removed, typed by the strongest of them (row color + `SelectorRow` severity of the toolbar).
    */
   private writeAlternativesDiff(securityRecord: DiffsRecord): void {
-    const optionDiffs = Object.values(securityRecord).filter(OpenApiSideReader.isWholeChange)
+    this.writeOptionsDiff(securityRecord, OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY, securityRecord, OpenApiSideReader.isWholeChange)
+  }
+
+  /**
+   * Row of a selector: one synthetic `replace` under `key` of `target` when any option diff of
+   * `options` is an option change (`isOptionChange`), typed by the strongest of them.
+   */
+  private writeOptionsDiff(target: DiffsRecord, key: string, options: DiffsRecord, isOptionChange: (diff: Diff | undefined) => boolean): void {
+    const optionDiffs = Object.values(options).filter(isOptionChange)
     if (optionDiffs.length > 0) {
-      securityRecord[OPENAPI_SECURITY_ALTERNATIVES_DIFF_KEY] = this.reader.createDiff(DiffAction.replace, {}, optionDiffs)
+      target[key] = this.reader.createDiff(DiffAction.replace, {}, optionDiffs)
     }
+  }
+
+  /** Media-type / response-code options: a wholly added / removed or renamed option paints the selector's row. */
+  private static isKeyedOptionChange(diff: Diff | undefined): boolean {
+    return OpenApiSideReader.isWholeChange(diff) || OpenApiSideReader.isRename(diff)
   }
 
   /** The document list is shared by every operation: limit its sides to where the operation exists. */
@@ -513,7 +530,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       const contentField = this.reader.readField(requestBody, 'content', requestBodyContext)
       const optionsPresence = this.decorateContent(requestBodySpec.content, requestBody.content, this.reader.childContext(contentField), [
         { owner: requestBody, context: requestBodyContext },
-      ], contentField.diff)
+      ], contentField.diff, requestBodyRecord)
       this.mergePresence(presence, optionsPresence)
       this.writeSectionDiff(requestBodySpec, 'content', requestBodySpec.content, optionsPresence, contentField.diff)
     }
@@ -526,6 +543,9 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
    * Options are media types with a schema: option presence = schema presence. Writes option diffs
    * (raw add / remove / rename, else synthetic from schema presence) and the diffs of extensions
    * cloned into the schema root. Returns the presence of "≥1 option".
+   * A wholly added / removed or renamed option writes the synthetic media-type options diff of the
+   * Body header row into `headerRecord` (the request body's record), else into the content's own
+   * record (the response Body header is painted by its `content` node).
    */
   private decorateContent(
     contentSpec: OpenApiContentSpec,
@@ -533,6 +553,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     contentContext: OpenApiSideContext,
     owners: ReadonlyArray<{ owner: UnknownRecord, context: OpenApiSideContext }>,
     contentDiff: Diff | undefined,
+    headerRecord?: DiffsRecord,
   ): OpenApiSideContext {
     const presence = { before: false, after: false }
     const contentRecord: DiffsRecord = {}
@@ -556,6 +577,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       }
       this.decorateClonedExtensions(mediaTypeSpec, mediaTypeObject, [{ owner: mediaTypeObject, context: mediaTypeContext }, ...owners], optionPresence)
     }
+    this.writeOptionsDiff(headerRecord ?? contentRecord, OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, { ...contentRecord }, OpenApiSpecWithDiffsTransformer.isKeyedOptionChange)
     this.reader.writeRecord(contentSpec, contentRecord)
     return presence
   }
@@ -623,6 +645,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
         responsesRecord[code] = diff
       }
     }
+    this.writeOptionsDiff(responsesRecord, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY, { ...responsesRecord }, OpenApiSpecWithDiffsTransformer.isKeyedOptionChange)
     this.reader.writeRecord(responsesSpec, responsesRecord)
     this.presence.set(responsesSpec, presence)
     return responsesSpec

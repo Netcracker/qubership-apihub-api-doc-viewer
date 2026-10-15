@@ -224,8 +224,12 @@ never read `node.diffs[...]` directly.
 | `SecurityScheme.takeFieldRowDiff(node, field)` | field diff for one detail row |
 | `SecurityScheme.resolveRequiredScopesSideItems(node, side)` | chips per side (`resolveListSideItems`) |
 | `OAuthFlow.resolveScopesSideItems(node, side)` | chips per side |
-| `MediaType.resolveSideTitle(node, side)` | media type text per side (rename aware) |
-| `Response.resolveSideCode(node, side)` | code text per side (rename aware) |
+| `MediaType.resolveSideTitle(node, side)` / `resolveSideTitleHighlight(node, side)` | media type text per side (rename aware) / yellow text highlighter of a renamed media type |
+| `MediaType.takeChangesMarkerSummary(node)` | option change marker: inner changes only (∅ for its own add / remove / rename and inherited whole changes) |
+| `RequestBody.takeHeaderRowDiff(node)` / `ResponseBody.takeHeaderRowDiff(content)` | Body header: whole add / remove, else (request) `required` yellow row, else yellow row from the synthetic `mediaTypes` option diff |
+| `Responses.takeTitleRowDiff(node)` | Responses title: whole add / remove, else yellow row from the synthetic `codes` option diff |
+| `Response.resolveSideCode(node, side)` / `resolveSideCodeHighlight(node, side)` | code text per side (rename aware) / yellow text highlighter of a renamed code |
+| `Response.keepsCodeTone(node)` | `false` for a code wholly added / removed on its own: neutral option, border shadow only |
 
 ## Row visibility
 

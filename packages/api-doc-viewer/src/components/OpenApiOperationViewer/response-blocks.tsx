@@ -92,7 +92,7 @@ const ResponseBodyViewer: FC<{ node: ResponseNode }> = ({ node }) => {
       mediaTypes={getOpenApiMediaTypes(node)}
       selectedId={resolveSelectedMediaType(node, selection)?.id}
       onSelect={(mediaTypeId) => select(node.id, mediaTypeId)}
-      headerDiff={content ? OpenApiRowDiffs.Section.takeHeaderRowDiff(content) : undefined}
+      headerDiff={content ? OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content) : undefined}
       diffsSeverities={content ? takeOpenApiSeverities(content) : undefined}
     />
   )
