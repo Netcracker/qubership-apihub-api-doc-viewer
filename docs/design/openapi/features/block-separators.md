@@ -3,12 +3,15 @@
 Status: **approved and implemented 2026-10-15** — calculation (§1–§6), algorithm (§7),
 implementation map (§8). Replaced the earlier "split gaps" model; summary in
 [operation-viewer.md](operation-viewer.md#spacing-data-precededby).
+**§9 (operation ID row padding, badge stubs on synthetic rows): approved and implemented 2026-10-15**
+(decision points 9.3: all three as recommended).
 
 ## 1. Rule
 
-- Every row has **symmetric** vertical padding: **4px top, 4px bottom** — the title (h1), operation
-  ID, address, description, external docs, section headers (h2 / h3), the security toolbar, card
-  rows, descriptions. A highlighted row's band is always 4px above and 4px below its content.
+- Every row has **symmetric** vertical padding: **4px top, 4px bottom** — the title (h1), address,
+  description, external docs, section headers (h2 / h3), the security toolbar, card rows,
+  descriptions; the operation ID row **12px** (§9.1). A highlighted row's band is as tall above its
+  content as below it.
 - Inside a block, rows touch: the gap is 4 + 4 = **8px**.
 - Between blocks there is a **separator row**: a content-less, full-width row of **12px**, so the
   gap is 4 + 12 + 4 = **20px**.
@@ -201,7 +204,7 @@ type OpenApiSideTone = HighlightVariant | undefined
 type OpenApiEdgeTones = { readonly before: OpenApiSideTone, readonly after: OpenApiSideTone }
 
 /** The top or bottom edge of a block: a plain row, or a card frame row (already holds outer space). */
-type OpenApiBlockEdge = { readonly kind: 'row' | 'frame', readonly tones: OpenApiEdgeTones }
+type OpenApiBlockEdge = { readonly kind: 'row' | 'frame', readonly tones: OpenApiEdgeTones, readonly badge?: DiffType }
 
 /** What the planner needs to know about a block; `TPayload` is the viewer's render data. */
 type OpenApiLayoutBlock<TPayload> = {
@@ -213,11 +216,13 @@ type OpenApiLayoutBlock<TPayload> = {
 
 type OpenApiBand = { readonly height: number, readonly tone: OpenApiSideTone }
 
-/** A separator row: per side a stack of bands; both stacks always sum to the same height. */
-type OpenApiSeparatorRow = { readonly id: string, readonly before: readonly OpenApiBand[], readonly after: readonly OpenApiBand[] }
+type OpenApiBadgeSegment = { readonly height: number, readonly type?: DiffType }
 
-/** A card frame row (opening / closing): its height, where the border runs, its tones. */
-type OpenApiFrameRow = { readonly height: number, readonly borderOffset: number, readonly tones: OpenApiEdgeTones }
+/** A separator row: per side a stack of bands (both sum to the same height), one badge stub stack. */
+type OpenApiSeparatorRow = { readonly id: string, readonly before: readonly OpenApiBand[], readonly after: readonly OpenApiBand[], readonly badge: readonly OpenApiBadgeSegment[] }
+
+/** A card frame row (opening / closing): its height, where the border runs, its tones, its badge stub. */
+type OpenApiFrameRow = { readonly height: number, readonly borderOffset: number, readonly tones: OpenApiEdgeTones, readonly badge?: DiffType }
 
 type OpenApiLayoutItem<TPayload> =
   | { readonly type: 'block', readonly block: OpenApiLayoutBlock<TPayload> }
@@ -230,7 +235,7 @@ One object; numbers and rules side by side. Derived values are computed, never d
 
 ```typescript
 type OpenApiSpacingConfig = {
-  readonly rowPadding: number            // 4 — every row, top and bottom
+  readonly rowPadding: { default: number, operationId: number }   // 4 / 12 — top and bottom alike
   readonly blockGap: number              // 20 — between two blocks (text box to text box of rows)
   readonly frameRowHeight: number        // 24 — card opening / closing row
   readonly frameBorderOffset: number     // 12 — border position inside a frame row (middle)
@@ -238,11 +243,15 @@ type OpenApiSpacingConfig = {
   readonly needsSeparator: (above: OpenApiBlockEdge, below: OpenApiBlockEdge) => boolean
   /** Bands of one side of a separator (default: one band if the tones match, else two halves). */
   readonly splitBands: (above: OpenApiSideTone, below: OpenApiSideTone, height: number) => OpenApiBand[]
+  /** Badge stub of a separator (default: the band rule, by diff type) — §9.2. */
+  readonly splitBadge: (above?: DiffType, below?: DiffType, height: number) => OpenApiBadgeSegment[]
+  /** Card frame rows show the whole card's badge stub (§9.3-1). */
+  readonly frameRowBadge: boolean
 }
 
 const DEFAULT_OPENAPI_SPACING_CONFIG: OpenApiSpacingConfig = { … }
 
-/** separatorHeight = blockGap - 2 * rowPadding (12). */
+/** separatorHeight = blockGap - 2 * rowPadding.default (12). */
 class OpenApiSpacing { static separatorHeight(config): number }
 ```
 
@@ -387,7 +396,131 @@ collapsed scopes as input, so a collapsed flow part ends with its `Scopes` row.
 | Header row order | `OpenApiNodeVisibility.resolveOperationHeaderRows` (`OPENAPI_OPERATION_HEADER_ROWS`) and `OpenApiRowDiffs.Operation.takeHeaderRowDiff` |
 | Unit tests | next-data-model `tests/unit-tests/openapi-layout.test.ts`; api-doc-viewer `tests/openapi-view-selection.test.ts` |
 | View state | api-doc-viewer `OpenApiViewStateContext.ts` (store in `OperationNodeViewer`), `src/utils/openapi/view-selection.ts` (resolvers with the defaults) |
-| Rendering | `OpenApiLayout.tsx` (plans one level), `shared-components/Separator/SeparatorRow.tsx`, `SecurityFrameRow` in `shared-components/Security/SecurityRows.tsx` |
+| Rendering | `OpenApiLayout.tsx` (plans one level), `shared-components/Separator/SeparatorRow.tsx`, `shared-components/Separator/BadgeStub.tsx` (decorative badge stub), `SecurityFrameRow` in `shared-components/Security/SecurityRows.tsx` |
 | Block builders | `buildSecurityBlock`, `buildExtensionsBlock`, `buildRequestBlock`, `buildParametersBlock`, `buildResponsesBlock`, `buildResponseBlocks` (`response-blocks.tsx`), card segments in `SecuritySchemeCard` |
-| CSS | `preceded-by.css` → "OpenAPI operation viewer" (`--openapi-row-padding`, set on the viewer root from the config); `frame.css` (`--frame-border-top` / `--frame-border-bottom`); `SeparatorRow.css` |
+| CSS | `preceded-by.css` → "OpenAPI operation viewer" (`--openapi-row-padding`, `--openapi-row-padding-operation-id`, set on the viewer root from the config); `frame.css` (`--frame-border-top` / `--frame-border-bottom`); `SeparatorRow.css` |
+| Badge placements | `OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement` (header rows and their edges); other edges read the `TitleRow` / `DescriptionRow` / `SelectorRow` placement their row renders; card rows carry the severity they render (`CardRow.severity`) |
 | Config entry point | `OpenApiViewerContext.spacing` (= `DEFAULT_OPENAPI_SPACING_CONFIG`); not a public prop in v1 |
+
+## 9. Operation ID padding, badge stubs on synthetic rows (implemented 2026-10-15)
+
+### 9.1 Operation ID row: 12px padding
+
+The operation ID row (small grey text) looks glued to the title and the address row at 4px. It gets
+**12px top and bottom** (symmetric, so a highlighted row stays centred); every other row keeps 4px.
+
+```text
+Update an order                 (h1)    padding 4 / 4
+                                         4 + 12 = 16
+Operation ID: updateOrder               padding 12 / 12
+                                         12 + 4 = 16
+[POST] /orders/{orderId}                padding 4 / 4
+```
+
+How: the config gets per-row-kind padding instead of one number —
+`rowPadding: { default: 4, operationId: 12 }` (`OpenApiSpacingConfig`); the viewer root writes one
+CSS custom property per entry (`--openapi-row-padding`, `--openapi-row-padding-operation-id`) and
+the operation ID row uses a dedicated member `PrecededBy.OPENAPI_OPERATION_ID_ROW` whose rule reads
+the second one. Separators are unaffected: the operation ID row is never at a block edge (the address
+row always follows it), and only as the very first row of the viewer when there is no title.
+
+### 9.2 Diff floating badge stubs on separator and frame rows
+
+**Today.** A changed row carries a **floating badge**: a 4px vertical bar at the left edge of the
+whole row (one per row, not per side), as tall as the row, coloured by the **diff type**
+(breaking `#ED4A54`, risky `#E98554`, deprecated `#FFB02E`, non-breaking `#84CB7A`, annotation
+`#B866C9`, unclassified `#70A9EC`); hover shows the type and cause (`UxDiffFloatingBadge`). Badged
+rows of one block touch, so their bars form one line; a separator between two blocks breaks it.
+
+**Proposal.** Separator rows get a **badge stub**: the same 4px bar at the same x, **decorative
+only** — no hover, no tooltip, no text, `pointer-events: none`. It follows the band rule of §2, for
+the one bar instead of per side:
+
+| Badge of the row above | Badge of the row below | Stub |
+| --- | --- | --- |
+| none | none | none |
+| same diff type | | one full-height (12px) bar of that colour |
+| different types, or only one of them has a badge | | two 6px halves: the upper one like the row above (or nothing), the lower one like the row below (or nothing) |
+
+Legend: `▌b` breaking, `▌n` non-breaking, `▌a` annotation — the stub / badge column, leftmost.
+
+`operation/09-description-changed` (description replaced = annotation; the Security header has no
+badge):
+
+```text
+▌a ▒Y Replaces the order.             │ ▒Y Replaces the whole order.
+▌a ▒Y ┄┄ 6 ┄┄                          │ ▒Y ┄┄ 6 ┄┄        ← upper stub half: annotation
+      ┄┄ 6 ┄┄                          │    ┄┄ 6 ┄┄        ← lower half: no stub
+      Security                         │    Security
+```
+
+`query-parameters/19-all-added` (the whole section non-breaking; the rows around it unchanged):
+
+```text
+      orderId* string                  │    orderId* string
+      ┄┄ 6 ┄┄                          │    ┄┄ 6 ┄┄
+▌n ░░ ┄┄ 6 ┄┄                          │ ▒G ┄┄ 6 ┄┄
+▌n ░░                                  │ ▒G Query Parameters
+▌n ░░                                  │ ▒G dryRun boolean
+▌n ░░ ┄┄ 6 ┄┄                          │ ▒G ┄┄ 6 ┄┄
+      ┄┄ 6 ┄┄                          │    ┄┄ 6 ┄┄
+      Headers                          │    Headers
+```
+
+Neighbouring blocks with different types (a removed section — breaking — directly above an added
+one — non-breaking):
+
+```text
+▌b ▒R type string                     │ ░░
+▌b ▒R ┄┄ 6 ┄┄                          │ ░░ ┄┄ 6 ┄┄
+▌n ░░ ┄┄ 6 ┄┄                          │ ▒G ┄┄ 6 ┄┄
+▌n ░░                                  │ ▒G Extensions
+```
+
+**Card frame rows** (opening / closing, §3) are synthetic too: they get a stub over their full 24px
+when the **whole card** is added / removed (the card's own badge type), and none otherwise — the same
+whole-card-only rule as their background. Without it a wholly added card's badge line has 24px holes
+at both ends. *(Decision point 9.3-1.)*
+
+### 9.3 Decision points
+
+1. Frame rows get stubs too (whole card only) — recommended, see above.
+2. The stub split follows the band rule (one bar if the neighbours' types match, else halves).
+3. Next to a nested JSON Schema / JSO viewer the stub uses the **owning block's** whole add / remove
+   badge type only (as §2.6 for colours): a badged last property of an unchanged section meets no
+   stub half.
+
+### 9.4 Algorithm changes
+
+Data layer (`model/openapi/layout/`):
+
+| Piece | Change |
+| --- | --- |
+| `OpenApiBlockEdge` | `+ badge?: DiffType` — the diff type of the floating badge the edge row shows (absent = no badge) |
+| `OpenApiBlockEdges` accessors | read the badge type from the **same severity placement the row renders** (`node.diffsSeverities[placement]?.type`) via one helper `rowEdge(diff, severity)`; nested / frame edges: the owner's whole-block severity. The severity placement of each operation header row moves into one data-layer accessor (`Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)`) used by both the edges and the rows, so they cannot disagree |
+| `OpenApiSeparatorRow` | `+ badge: readonly OpenApiBadgeSegment[]` (`{ height, type?: DiffType }`), one stack for the whole row |
+| `OpenApiFrameRow` | `+ badge?: DiffType` |
+| `OpenApiSpacingConfig` | `rowPadding` becomes `{ default, operationId }` (§9.1); `+ splitBadge(above?, below?, height) => OpenApiBadgeSegment[]` (default = the band rule); `+ frameRowBadge: boolean` (decision 9.3-1) |
+| Planner | `separator(...)` also fills `badge` from `above.badge` / `below.badge` |
+
+Viewer:
+
+| Piece | Change |
+| --- | --- |
+| `SeparatorRow` | a `relative` wrapper with an absolutely positioned 4px stub column at the badge's x, stacked segments with `height` and `background-color: DIFF_TYPE_COLORS[type]`; `pointer-events: none`, no text |
+| `SecurityFrameRow` | the same stub over its full height when `frameRow.badge` is set |
+| Card segments | `CardRow` carries the severity it already renders, so segment edges get their badge |
+| Operation ID row | `PrecededBy.OPENAPI_OPERATION_ID_ROW`; one more CSS custom property on the viewer root |
+
+### 9.5 Cost estimate
+
+| Aspect | Estimate |
+| --- | --- |
+| Runtime | negligible: badge types are already computed by the severities aggregators during the tree build; each block edge reads one more value (O(1)), each separator gets one more 1–2 item list; the stub is 1–2 absolutely positioned divs per separator / frame row |
+| Data layer | small: 4 type additions, ~10 edge accessors gain a severity, one config rule, planner +3 lines; unit tests for the stub split and for edge badges on fixtures (`operation/09`, `query-parameters/19`, `security/09`, a breaking-above / non-breaking-below pair) |
+| Viewer | small: the stub element in `SeparatorRow` / `SecurityFrameRow`, severities on card rows, the operation ID member + CSS property |
+| Risk | an edge's badge must be the badge its row really shows — mitigated by one placement accessor for both, and checked by the Puppeteer audit (stub colours against the neighbouring rows' real badges) |
+| Screenshots | OpenAPI diffs cases with a change next to a separator or a whole card change again (they need regenerating anyway); plain suites change only through the operation ID padding |
+
+Overall: a few hours of work and no structural change — the plan already carries per-side tones;
+the badge type is one more value travelling the same path.

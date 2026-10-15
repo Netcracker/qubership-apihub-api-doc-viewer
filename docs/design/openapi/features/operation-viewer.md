@@ -235,10 +235,11 @@ Full design: [block-separators.md](block-separators.md) (rule, colouring, algori
 
 | Rule | Value |
 | --- | --- |
-| Every OpenAPI row | symmetric padding `--openapi-row-padding` (4px top and bottom), `data-precededby="openapi-row"` |
+| Every OpenAPI row | symmetric padding `--openapi-row-padding` (4px top and bottom), `data-precededby="openapi-row"`; the operation ID row 12px (`openapi-operation-id-row`, `--openapi-row-padding-operation-id`) |
 | Rows of one block | touch: 8px between their contents |
 | Between two blocks | a content-less **separator row** of 12px (20px between contents); one band, or two 6px bands when the rows around it are coloured differently (per side) |
 | Security cards | content-less opening / closing **frame rows** of 24px with the border in the middle, coloured by the whole-card diff only; no separators next to them |
+| Floating badges | separators and frame rows carry a decorative **badge stub** (no hover, no text) continuing the neighbouring rows' badges: one bar, or two halves when the badges above and below differ; frame rows: the whole card's badge only |
 | Nested JSON Schema / JSO viewers | their own rows; their first row gets `OPENAPI_NESTED_VIEWER_START` (opt-in hooks `firstRowPrecededBy`, `contentPrecededBy`) |
 
 All numbers and rules live in one config, `OpenApiSpacingConfig` (next-data-model

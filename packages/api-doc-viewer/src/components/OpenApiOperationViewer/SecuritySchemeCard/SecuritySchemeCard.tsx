@@ -52,10 +52,14 @@ const MUTED_TEXT_COLOR = '#8F9EB4'
 
 type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
-/** One content row of the card; `diff` is the diff that paints it (its tones end a segment). */
+/**
+ * One content row of the card; `diff` paints it and `severity` is its floating badge (both end a
+ * segment: its separator takes their tones and badge).
+ */
 type CardRow = {
   readonly key: string
   readonly diff: ChangedPropertyMetaData | undefined
+  readonly severity: NodeDiffsSeverity | undefined
   readonly render: (framePosition: FramePositionResolver) => ReactElement
 }
 
@@ -95,7 +99,7 @@ class CardRows {
   public toBlocks(framePosition: FramePositionResolver): OpenApiBlock[] {
     return this.segments.filter(segment => segment.rows.length > 0).map(segment => ({
       id: segment.key,
-      ...OpenApiBlockEdges.rows({ diff: segment.rows[0].diff }, { diff: segment.rows[segment.rows.length - 1].diff }),
+      ...OpenApiBlockEdges.rows(segment.rows[0], segment.rows[segment.rows.length - 1]),
       payload: () => <>{segment.rows.map(row => <Fragment key={row.key}>{row.render(framePosition)}</Fragment>)}</>,
     }))
   }
@@ -132,6 +136,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   card.add({
     key: 'title',
     diff: titleDiff,
+    severity: severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
     render: (framePosition) => (
       <TitleRow
         data-precededby={PrecededBy.OPENAPI_ROW}
@@ -150,6 +155,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     card.add({
       key: 'unresolved',
       diff: unresolvedDiff,
+      severity: undefined,
       render: (framePosition) => (
         <TextRow
           data-precededby={PrecededBy.OPENAPI_ROW}
@@ -168,6 +174,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     card.add({
       key: 'description',
       diff: descriptionDiff,
+      severity: severities?.[NodeDiffsSeverityPlacemennt.DescriptionRow],
       render: (framePosition) => (
         <MarkdownTextRow
           data-precededby={PrecededBy.OPENAPI_ROW}
@@ -273,6 +280,7 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
   return {
     key,
     diff: rowDiff,
+    severity,
     render: (framePosition) => (
       <SecurityRow
         data-precededby={PrecededBy.OPENAPI_ROW}
@@ -314,6 +322,7 @@ function addFlowRows(
   card.add({
     key: flowKey,
     diff: blockDiff,
+    severity: severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
     render: (framePosition) => (
       <SecurityRow
         data-precededby={PrecededBy.OPENAPI_ROW}
@@ -374,6 +383,7 @@ function addScopeRows(
   card.add({
     key: `${key}-scopes`,
     diff: blockDiff,
+    severity: blockDiff ? blockSeverity : undefined,
     render: (framePosition) => (
       <SecurityRow
         data-precededby={PrecededBy.OPENAPI_ROW}
@@ -399,6 +409,7 @@ function addScopeRows(
     card.add({
       key: `${key}-scope-${scope.name}`,
       diff: scope.rowDiff,
+      severity: rowSeverity,
       render: (framePosition) => (
         <SecurityRow
           data-precededby={PrecededBy.OPENAPI_ROW}

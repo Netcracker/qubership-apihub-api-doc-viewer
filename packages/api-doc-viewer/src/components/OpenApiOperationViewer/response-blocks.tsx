@@ -61,7 +61,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
         return content && hasBody
           ? [{
             id: id(sectionId),
-            ...OpenApiBlockEdges.body(OpenApiRowDiffs.Section.takeHeaderRowDiff(content), undefined, resolveSelectedMediaType(response, view.selection)),
+            ...OpenApiBlockEdges.responseBody(content, resolveSelectedMediaType(response, view.selection)),
             payload: () => <ResponseBodyViewer key={id(sectionId)} node={response} />,
           }]
           : []

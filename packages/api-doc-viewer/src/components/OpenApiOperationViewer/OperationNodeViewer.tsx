@@ -157,7 +157,7 @@ const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility })
         return (
           <TextRow
             key={row}
-            data-precededby={PrecededBy.OPENAPI_ROW}
+            data-precededby={PrecededBy.OPENAPI_OPERATION_ID_ROW}
             label={OPERATION_ID_ROW_LABEL}
             value={value?.operationId ?? ''}
             variant={TextValueVariant.body2}
@@ -168,7 +168,7 @@ const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility })
             trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
             diff={rowDiff(row)}
             diffsSeverities={severities}
-            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement(deprecatedTagRow)}
+            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
           />
         )
       case 'address':
@@ -181,7 +181,7 @@ const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility })
             trailing={deprecatedTagRow === 'address' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
             diff={rowDiff(row)}
             diffsSeverities={severities}
-            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveAddressRowSeverityPlacement(deprecatedTagRow)}
+            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
           />
         )
       case 'description':

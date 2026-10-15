@@ -15,6 +15,7 @@ import { Expander } from "../Expander"
 import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
+import { BadgeStub } from "../Separator/BadgeStub"
 import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../WithPrecededByProps"
 import "../../shared-styles/frame.css"
@@ -104,7 +105,13 @@ export const SecurityFrameRow: FC<SecurityFrameRowProps> = (props) => {
   )
 
   if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
-    return <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
+    // A wholly added / removed card: a decorative stub keeps its badge line unbroken (no hover, no text).
+    return (
+      <div className="relative flex w-full flex-row items-stretch">
+        <BadgeStub segments={[{ height, type: frameRow.badge }]} />
+        <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
+      </div>
+    )
   }
   return <OneSideLayout content={renderSide(CHANGED_LAYOUT_SIDE)} />
 }

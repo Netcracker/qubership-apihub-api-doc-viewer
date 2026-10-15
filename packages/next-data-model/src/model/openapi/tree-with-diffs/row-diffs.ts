@@ -196,6 +196,25 @@ class Operation {
       : NodeDiffsSeverityPlacemennt.OperationIdRow
   }
 
+  /**
+   * Severity placement each operation header row renders (its floating badge). One accessor for the
+   * rows and the layout edges, so a separator's badge stub always matches the row's real badge.
+   */
+  public static resolveHeaderRowSeverityPlacement(row: OpenApiOperationHeaderRow, deprecatedTagRow: OpenApiDeprecatedTagRow): NodeDiffsSeverityPlacemennt {
+    switch (row) {
+      case 'title':
+        return NodeDiffsSeverityPlacemennt.TitleRow
+      case 'operationId':
+        return Operation.resolveOperationIdRowSeverityPlacement(deprecatedTagRow)
+      case 'address':
+        return Operation.resolveAddressRowSeverityPlacement(deprecatedTagRow)
+      case 'description':
+        return NodeDiffsSeverityPlacemennt.DescriptionRow
+      case 'externalDocs':
+        return NodeDiffsSeverityPlacemennt.ExternalDocsRow
+    }
+  }
+
   /** Severity placement of the address row, as {@link resolveOperationIdRowSeverityPlacement}. */
   public static resolveAddressRowSeverityPlacement(deprecatedTagRow: OpenApiDeprecatedTagRow): NodeDiffsSeverityPlacemennt {
     return deprecatedTagRow === 'address'

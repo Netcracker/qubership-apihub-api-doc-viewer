@@ -91,7 +91,10 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
               <LevelContext.Provider value={0}>
-                <div data-testid="openapi-operation-diffs-viewer" style={{ '--openapi-row-padding': `${viewerContext.spacing.rowPadding}px` }}>
+                <div data-testid="openapi-operation-diffs-viewer" style={{
+              '--openapi-row-padding': `${viewerContext.spacing.rowPadding.default}px`,
+              '--openapi-row-padding-operation-id': `${viewerContext.spacing.rowPadding.operationId}px`,
+            }}>
                   <OperationNodeViewer node={operationNode} noHeading={noHeading} />
                 </div>
               </LevelContext.Provider>

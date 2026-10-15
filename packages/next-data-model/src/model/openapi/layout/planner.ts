@@ -1,6 +1,6 @@
 import { OpenApiBlockEdges } from "./block-edges"
 import { OpenApiSpacing, OpenApiSpacingConfig } from "./spacing-config"
-import { OpenApiEdgeTones, OpenApiFrameRow, OpenApiLayoutBlock, OpenApiLayoutItem, OpenApiSeparatorRow } from "./types"
+import { OpenApiBlockEdge, OpenApiFrameRow, OpenApiLayoutBlock, OpenApiLayoutItem, OpenApiSeparatorRow } from "./types"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 
 /**
@@ -16,7 +16,7 @@ export class OpenApiLayoutPlanner {
       if (previous && config.needsSeparator(previous.tail, block.head)) {
         items.push({
           type: 'separator',
-          separator: OpenApiLayoutPlanner.separator(`${previous.id}|${block.id}`, previous.tail.tones, block.head.tones, config),
+          separator: OpenApiLayoutPlanner.separator(`${previous.id}|${block.id}`, previous.tail, block.head, config),
         })
       }
       items.push({ type: 'block', block })
@@ -24,22 +24,28 @@ export class OpenApiLayoutPlanner {
     return items
   }
 
-  /** A separator row between rows of tones `above` and `below`, each side split independently. */
-  public static separator(id: string, above: OpenApiEdgeTones, below: OpenApiEdgeTones, config: OpenApiSpacingConfig): OpenApiSeparatorRow {
+  /**
+   * A separator row between the edges `above` and `below`: each side's bands split independently by
+   * the tones, one badge stub for the row split by the badges.
+   */
+  public static separator(id: string, above: OpenApiBlockEdge, below: OpenApiBlockEdge, config: OpenApiSpacingConfig): OpenApiSeparatorRow {
     const height = OpenApiSpacing.separatorHeight(config)
     return {
       id,
-      before: config.splitBands(above.before, below.before, height),
-      after: config.splitBands(above.after, below.after, height),
+      before: config.splitBands(above.tones.before, below.tones.before, height),
+      after: config.splitBands(above.tones.after, below.tones.after, height),
+      badge: config.splitBadge(above.badge, below.badge, height),
     }
   }
 
-  /** A card opening / closing row: whole-card tones, border at `frameBorderOffset`. */
+  /** A card opening / closing row: whole-card tones and badge stub, border at `frameBorderOffset`. */
   public static frameRow(card: OpenApiTreeNode | OpenApiTreeNodeWithDiffs, config: OpenApiSpacingConfig): OpenApiFrameRow {
+    const edge = OpenApiBlockEdges.frameEdge(card)
     return {
       height: config.frameRowHeight,
       borderOffset: config.frameBorderOffset,
-      tones: OpenApiBlockEdges.frameEdge(card).tones,
+      tones: edge.tones,
+      ...(config.frameRowBadge && edge.badge ? { badge: edge.badge } : {}),
     }
   }
 }

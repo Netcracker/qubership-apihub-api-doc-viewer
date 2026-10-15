@@ -1,3 +1,4 @@
+import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { HighlightVariant } from "../../abstract/tree-with-diffs/tree-node.interface"
 
 /**
@@ -20,6 +21,8 @@ export type OpenApiEdgeTones = {
 export type OpenApiBlockEdge = {
   readonly kind: 'row' | 'frame'
   readonly tones: OpenApiEdgeTones
+  /** Diff type of the floating badge the edge row shows (one per row, both sides); absent = none. */
+  readonly badge?: DiffType
 }
 
 /** The edges of a block, as the planner sees it. */
@@ -40,18 +43,30 @@ export type OpenApiBand = {
   readonly tone: OpenApiSideTone
 }
 
-/** A content-less row between two blocks: per side a stack of bands, both summing to one height. */
+/** One segment of a decorative badge stub (no hover, no text); no `type` = no bar there. */
+export type OpenApiBadgeSegment = {
+  readonly height: number
+  readonly type?: DiffType
+}
+
+/**
+ * A content-less row between two blocks: per side a stack of bands, both summing to one height,
+ * plus one badge stub stack for the whole row (the floating badge is per row, not per side).
+ */
 export type OpenApiSeparatorRow = {
   readonly id: string
   readonly before: readonly OpenApiBand[]
   readonly after: readonly OpenApiBand[]
+  readonly badge: readonly OpenApiBadgeSegment[]
 }
 
-/** A card opening / closing row: its height, the border's offset from the row top, its tones. */
+/** A card opening / closing row: its height, the border's offset from the row top, its tones and badge stub. */
 export type OpenApiFrameRow = {
   readonly height: number
   readonly borderOffset: number
   readonly tones: OpenApiEdgeTones
+  /** A full-height badge stub: the whole card's badge when it is wholly added / removed. */
+  readonly badge?: DiffType
 }
 
 export type OpenApiLayoutItem<TPayload> =

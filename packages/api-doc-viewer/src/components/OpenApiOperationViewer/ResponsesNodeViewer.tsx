@@ -40,7 +40,7 @@ export function buildResponsesBlock(node: ResponsesNode, extensionsNode: Extensi
   })
   return {
     id: 'responses',
-    ...OpenApiBlockEdges.container(OpenApiRowDiffs.Section.takeHeaderRowDiff(node), children),
+    ...OpenApiBlockEdges.section(node, children),
     payload: () => <ResponsesNodeViewer key="responses" node={node} blocks={children} />,
   }
 }

@@ -42,7 +42,7 @@ export function buildRequestBlock(node: RequestNode, view: OpenApiViewState): Op
   const children = buildRequestChildBlocks(node, view)
   return {
     id: 'request',
-    ...OpenApiBlockEdges.container(OpenApiRowDiffs.Section.takeHeaderRowDiff(node), children),
+    ...OpenApiBlockEdges.section(node, children),
     payload: () => <RequestNodeViewer key="request" node={node} blocks={children} />,
   }
 }
@@ -68,12 +68,9 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Ope
 }
 
 function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): OpenApiBlock {
-  const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value())
-    ? { diff: OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description') }
-    : undefined
   return {
     id,
-    ...OpenApiBlockEdges.body(OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node), description, resolveSelectedMediaType(node, view.selection)),
+    ...OpenApiBlockEdges.requestBody(node, OpenApiNodeVisibility.showRequestBodyDescription(node.value()), resolveSelectedMediaType(node, view.selection)),
     payload: () => <RequestBodyNodeViewer key={id} node={node} />,
   }
 }

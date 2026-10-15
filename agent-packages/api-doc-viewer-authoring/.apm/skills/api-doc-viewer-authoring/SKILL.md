@@ -924,6 +924,15 @@ that holds the value** (the element with the diff background) — no margins, no
 - **Line-height struts are offsets too.** A 12px value in a cell that inherits the page's 24px line
   height sits in a taller line box — an offset outside the row padding. Pin the cell's line height to
   its text (`.security-prop` / `.security-scope` `line-height: 1rem`).
+- **Badge stubs on synthetic rows.** Separator and frame rows carry `BadgeStub` (same 4px bar and
+  position as `UxDiffFloatingBadge`, `pointer-events: none`, no text) inside the same
+  `relative flex` wrapper shape as `DiffFloatingBadgeWrapper`. Their segments come from the plan
+  (`OpenApiSeparatorRow.badge`, `OpenApiFrameRow.badge`); an edge's badge must be the badge its row
+  really renders, so the row and the edge read one placement accessor
+  (`resolveHeaderRowSeverityPlacement`) and card rows carry their rendered severity (`CardRow.severity`).
+- **Per-kind row padding.** `OpenApiSpacingConfig.rowPadding` is `{ default, operationId }`; a row kind
+  with its own padding gets its own `PrecededBy` member (`OPENAPI_OPERATION_ID_ROW`) and CSS custom
+  property set on the viewer root.
 - **CSS custom properties in `style`** are typed by `src/types/css-custom-properties.d.ts` — no casts.
 - **Verify by measuring**, not by eye (testing skill → vertical spacing audit): row paddings 4/4,
   separators 12 or 6 + 6 with the right tones per side, frame rows 24 with the border at 12.

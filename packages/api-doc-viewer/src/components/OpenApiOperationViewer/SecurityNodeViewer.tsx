@@ -45,7 +45,7 @@ export function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): 
   ]
   return {
     id: 'security',
-    ...OpenApiBlockEdges.container(OpenApiRowDiffs.Section.takeHeaderRowDiff(node), children),
+    ...OpenApiBlockEdges.section(node, children),
     payload: () => <SecurityNodeViewer key="security" blocks={children} />,
   }
 }

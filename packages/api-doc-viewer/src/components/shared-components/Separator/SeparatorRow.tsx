@@ -7,6 +7,7 @@ import { FC, ReactElement } from "react"
 import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
+import { BadgeStub } from "./BadgeStub"
 import "./SeparatorRow.css"
 
 type SeparatorRowProps = WithFramePositionProps & {
@@ -15,7 +16,8 @@ type SeparatorRowProps = WithFramePositionProps & {
 
 /**
  * A content-less row between two blocks: per side a stack of bands whose heights and tones come
- * from the layout data (next-data-model `OpenApiLayoutPlanner`). No padding, no margin, no text.
+ * from the layout data (next-data-model `OpenApiLayoutPlanner`), and in diffs mode a decorative badge
+ * stub continuing the neighbouring rows' floating badges. No padding, no margin, no text.
  * Design: docs/design/openapi/features/block-separators.md
  */
 export const SeparatorRow: FC<SeparatorRowProps> = (props) => {
@@ -34,7 +36,13 @@ export const SeparatorRow: FC<SeparatorRowProps> = (props) => {
   }
 
   if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
-    return <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
+    // Same wrapper shape as `DiffFloatingBadgeWrapper`, so the stub sits where the real badges sit.
+    return (
+      <div className="relative flex w-full flex-row items-stretch">
+        <BadgeStub segments={separator.badge} />
+        <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
+      </div>
+    )
   }
   return <OneSideLayout content={renderSide(CHANGED_LAYOUT_SIDE)} />
 }

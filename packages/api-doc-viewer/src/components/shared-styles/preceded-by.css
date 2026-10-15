@@ -382,6 +382,12 @@
    OpenApiSpacingConfig.rowPadding), set on the viewer root.
    Design: docs/design/openapi/features/block-separators.md */
 
+/* The operation ID row (small grey text) has a padding of its own (OpenApiRowPadding.operationId). */
+.text-row-content[data-precededby="openapi-operation-id-row"] {
+  padding-top: var(--openapi-row-padding-operation-id, 12px);
+  padding-bottom: var(--openapi-row-padding-operation-id, 12px);
+}
+
 .title-row-content[data-precededby="openapi-row"],
 .text-row-content[data-precededby="openapi-row"],
 .markdown-text-row-content[data-precededby="openapi-row"],
