@@ -15,8 +15,8 @@ import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../share
 import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { OpenApiExtensionsNodeViewer } from "./OpenApiExtensionsNodeViewer"
-import { ResponseNodeViewer } from "./ResponseNodeViewer"
-import { chainSectionsPrecededBy, OpenApiSectionEntry } from "./section-preceded-by"
+import { buildResponseSections, ResponseNodeViewer } from "./ResponseNodeViewer"
+import { chainSectionsPrecededBy, isBlockClosing, OpenApiSectionEntry, OpenApiSectionTail, resolveSectionsTail } from "./section-preceded-by"
 
 export const RESPONSES_SECTION_TITLE = 'Responses'
 
@@ -24,6 +24,12 @@ type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
 
 type ResponsesNodeViewerProps = WithPrecededByProps & {
   node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
+  /**
+   * What the row after the Responses section assumes about its end (see `OpenApiSectionEntry`). The
+   * operation cannot know the selected response, so it promises `OPENAPI_AFTER_NESTED_VIEWER` unless
+   * Responses is its last section.
+   */
+  closing: OpenApiSectionTail
   /** Responses Object `x-*`: a child of the operation node, rendered inside this section. */
   extensionsNode?: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
 }
@@ -38,7 +44,7 @@ function resolveInitialResponse(responses: readonly ResponseNode[]): ResponseNod
  * and the Responses Object extensions - in config order.
  */
 export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
-  const { node, extensionsNode, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { node, extensionsNode, closing, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
 
   const options: SelectorOption<ResponseNode>[] = useMemo(() => responses.map(response => ({
@@ -69,48 +75,54 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
     }
   }, [selected])
 
-  const sections = chainSectionsPrecededBy(
-    OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiSectionEntry[] => {
-      if (sectionId === 'selectedResponse') {
-        return selected
-          ? [{
-            id: sectionId,
-            tail: PrecededBy.JSON_SCHEMA_VIEWER,
-            render: (sectionPrecededBy) => (
-              <ResponseNodeViewer
-                key={selected.id}
-                data-precededby={sectionPrecededBy}
-                node={selected}
-                selectedMediaTypeId={mediaTypeSelection[selected.id]}
-                onSelectMediaType={onSelectMediaType}
-              />
-            ),
-          }]
-          : []
-      }
-      return extensionsNode
+  // The selected response's own sections: their tail is known here (the selection is view state).
+  const responseSections = selected
+    ? buildResponseSections({ node: selected, selectedMediaTypeId: mediaTypeSelection[selected.id], onSelectMediaType })
+    : []
+  const sectionEntries = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiSectionEntry[] => {
+    if (sectionId === 'selectedResponse') {
+      // A response with nothing to show (status only) renders no rows: no section at all.
+      return selected && responseSections.length > 0
         ? [{
           id: sectionId,
-          tail: PrecededBy.JSO_VIEWER,
-          render: (sectionPrecededBy) => (
-            <OpenApiExtensionsNodeViewer
-              key={sectionId}
+          tail: resolveSectionsTail(responseSections),
+          render: (sectionPrecededBy, sectionClosing) => (
+            <ResponseNodeViewer
+              key={selected.id}
               data-precededby={sectionPrecededBy}
-              node={extensionsNode}
-              variant={TextValueVariant.h3}
-              testId="openapi-responses-extensions-section"
+              closing={sectionClosing}
+              node={selected}
+              selectedMediaTypeId={mediaTypeSelection[selected.id]}
+              onSelectMediaType={onSelectMediaType}
             />
           ),
         }]
         : []
-    }),
-    PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL,
-  )
+    }
+    return extensionsNode
+      ? [{
+        id: sectionId,
+        tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER,
+        render: (sectionPrecededBy) => (
+          <OpenApiExtensionsNodeViewer
+            key={sectionId}
+            data-precededby={sectionPrecededBy}
+            node={extensionsNode}
+            variant={TextValueVariant.h3}
+            testId="openapi-responses-extensions-section"
+          />
+        ),
+      }]
+      : []
+  })
+  // The h2 title row heads the first sub-block (in-block gap); sub-blocks are a block gap apart.
+  const sections = chainSectionsPrecededBy(sectionEntries, PrecededBy.OPENAPI_BLOCK_ROW, closing)
 
   return (
     <div data-testid="openapi-responses-section" className="flex flex-col">
       <TitleRow
         data-precededby={precededBy}
+        data-block-last-row={sectionEntries.length === 0 && isBlockClosing(closing)}
         value={RESPONSES_SECTION_TITLE}
         expandable={false}
         variant={TextValueVariant.h2}

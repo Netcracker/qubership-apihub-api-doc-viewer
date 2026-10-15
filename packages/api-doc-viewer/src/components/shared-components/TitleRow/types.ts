@@ -8,7 +8,7 @@ import type {
 import type { ReactElement } from "react"
 import { TextValueVariant } from "../TextValue/types"
 import { WithFramePositionProps } from "../Frame/types"
-import { WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
+import { WithBlockLastRowProps, WithDdlListLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 
 export enum TitleRowUsage {
   Default = 'default',
@@ -19,7 +19,7 @@ export enum TitleRowUsage {
   JsonSchemaProperty = 'json-schema-property',
 }
 
-export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithFramePositionProps & {
+export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithBlockLastRowProps & WithFramePositionProps & {
   value?: string // Document Mode
   titleContent?: ReactElement | ((layoutSide: LayoutSide) => ReactElement | null)
   expandable: boolean

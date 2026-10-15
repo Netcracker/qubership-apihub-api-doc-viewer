@@ -83,8 +83,8 @@ titles, **h5** OAuth flow titles.
 | 1 | Operation title (h1) + **deprecated** tag | `TitleRow` | `operation` | `summary` exists and not `noHeading` | [operation](../entities/operation.md#title-row) |
 | 2 | `Operation ID:` label + `operationId` (secondary text, one line) | `TextRow` (`label` + `value`) | `operation` | `operationId` exists | [operation](../entities/operation.md#operation-id-row) |
 | 3 | Address: method badge + path (+ **deprecated** tag when row 1 is absent) | shared `AddressRow` | `operation` | always | [operation](../entities/operation.md#address-row) |
-| 4 | External docs link `View external documentation ↗`, description in a `UxTooltip` | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
-| 5 | Description | `MarkdownTextRow` | `operation` | `description` | [operation](../entities/operation.md#description-row) |
+| 4 | Description | `MarkdownTextRow` | `operation` | `description` | [operation](../entities/operation.md#description-row) |
+| 5 | External docs link `View external documentation ↗`, description in a `UxTooltip` | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
 | 6 | **Security** (h2) | `TitleRow` | `security` | ≥1 effective alternative | [security](../entities/security.md) |
 | 7 | Security toolbar (alternatives) | shared `SecurityToolbar` | `security` | ≥1 alternative (always with the section) | [security](../entities/security.md#security-toolbar) |
 | 8 | Framed scheme cards of the selected alternative | `SecuritySchemeCard` × n | `securityScheme` | selected alternative | [security](../entities/security.md#scheme-card) |
@@ -121,8 +121,8 @@ painted wholly added / removed even when no diff sits on its own object
 Upload a photo of a pet  [deprecated]                                h1 + deprecated tag (when deprecated)
 Operation ID: uploadPetPhoto                                         operation ID row: static label + value (small, grey)
 [POST] /pets/{petId}/photos                                          address row
-View external documentation ↗                                        external docs link (description in a hover tooltip)
 Uploads a new photo and attaches it to the pet. …                    description (markdown)
+View external documentation ↗                                        external docs link (description in a hover tooltip)
 
 Security                                                             h2
 [petstore_auth]  [api_key + request_signature]                       alternatives selector (OR), always shown
@@ -179,7 +179,7 @@ File: `packages/api-doc-viewer/src/components/OpenApiOperationViewer/config/sect
 
 ```typescript
 export const OpenApiSectionIds = {
-  // operation level (after the header rows: title, operation ID, address, external docs, description)
+  // operation level (after the header rows: title, operation ID, address, description, external docs)
   SECURITY: 'security',
   OPERATION_EXTENSIONS: 'operationExtensions',
   REQUEST: 'request',
@@ -218,9 +218,9 @@ export const OPENAPI_SECTION_ORDER = {
 | --- | --- |
 | Scope | one list per container level: `OperationNodeViewer` (`operation`), `RequestNodeViewer` (`request`), `ResponsesNodeViewer` (`responses`), `ResponseNodeViewer` (`response`) |
 | Containers | iterate their list and render the section whose id they meet, skipping sections that are not visible; no container has a hard-coded sequence of sections |
-| Fixed, not configurable | the operation header rows (title, operation ID, address, external docs, description) and the rows **inside** a section (e.g. Body header → description → schema; Security header → selector → cards). The Responses header with its code selector always comes first in the Responses section — it is the section header, not a section of the list. |
+| Fixed, not configurable | the operation header rows (title, operation ID, address, description, external docs) and the rows **inside** a section (e.g. Body header → description → schema; Security header → selector → cards). The Responses header with its code selector always comes first in the Responses section — it is the section header, not a section of the list. |
 | Moving between levels | not supported: a section id stays in its own list (a response section cannot move into `request`) |
-| Spacing | `data-precededby` is computed from the **configured** order over the visible sections (`utils/openapi/section-preceded-by.ts`), never from a hard-coded predecessor — changing the order must not need CSS changes |
+| Spacing | `data-precededby` is computed from the **configured** order over the visible sections (`OpenApiOperationViewer/section-preceded-by.ts`), never from a hard-coded predecessor — changing the order must not need CSS changes ([Spacing](#spacing-data-precededby)) |
 | Test ids, change markers, diffs | independent of the order |
 | Unit test | each list contains exactly its allowed ids, each once (a reordered list is valid, a missing or foreign id fails) |
 | Public API | not exposed to hosts in v1; the map is the extension point |
@@ -231,30 +231,105 @@ selected response.
 
 ## Spacing (`data-precededby`)
 
-Rows keep the AsyncAPI spacing model: every row sets `data-precededby` from what is rendered above
-it; selectors in `shared-styles/preceded-by.css` turn that into vertical gaps. Reuse the existing
-members wherever the meaning matches; add only the four below (and their CSS rules, copied from
-the closest existing member).
+**Rule.** Every vertical gap is padding **inside** the per-side row element that holds the
+displayed value (the element that also carries the row's diff background) — never a margin, never
+padding on a wrapper (section `div`s, layouts, badge wrappers), never a `min-height` that centres a
+value. It holds in plain and diffs mode alike.
 
-| Situation | `PrecededBy` member |
+**Gaps and their halves.** Rows form **blocks**. Each gap between two rows is split in half: the
+row above keeps the upper half as its `padding-bottom`, the row below the lower half as its
+`padding-top`. A highlighted row (diffs) therefore reaches to the middle of each gap, and two
+neighbouring highlighted rows meet without a seam.
+
+| Gap | Size | Upper row `padding-bottom` | Lower row `padding-top` |
+| --- | --- | --- | --- |
+| Inside a block | 8px | 4px | 4px |
+| Between blocks (and at the viewer's top edge) | 20px | 10px | 10px |
+| After a block that ends with a nested JSON Schema / JSO viewer | 20px | the nested last row's own 4px | 16px |
+| Before the first row of a nested viewer (same block) | 8px | 4px | the nested first row's (JSON Schema row body 4px; JSO: its 26px min-height centring) |
+
+**Block map** (default section order):
+
+```text
+Update an order (h1)          ┐
+Operation ID: …               │ header block (8px apart)
+[POST] /orders/{id}           │
+Description …                 │
+View external docs ↗          ┘
+                                20
+Security (h2)                 ┐ 8
+‹ oauth  api_key ›            ┘
+                                20
+┌ card ──────────────┐          each card is a block; 16px inner frame indent;
+└────────────────────┘          flow parts inside a card are 20px apart
+                                20
+Extensions (h2)  -> 8 -> JSO rows
+                                20
+Request (h2) -> 8 -> Path Parameters (h3) -> 8 -> schema
+                                20
+Query Parameters (h3) -> 8 -> schema …
+                                20
+Body (h3) -> 8 -> description -> 8 -> schema
+                                20
+Responses (h2) [codes] -> 8 -> response description
+                                20
+Headers (h3) -> 8 -> schema
+                                20
+Body (h3) …
+```
+
+A section header (h2 / h3) is 8px from its own content; sibling blocks — sections, sub-sections,
+cards, the "No authentication" text — are 20px apart. The h2 **Request** / **Responses** header is
+8px from its first sub-block.
+
+**Mechanism.** The top half comes from `data-precededby`, the bottom half from
+`data-block-last-row` (`ATTRIBUTE_BLOCK_LAST_ROW`, set on the last row of a block). OpenAPI rows
+use only the OpenAPI members (all start with `openapi-`, so no AsyncAPI / DDL rule matches them):
+
+| `PrecededBy` member | Row | `padding-top` |
+| --- | --- | --- |
+| `OPENAPI_VIEWER_START` | the first row of the viewer | 10px |
+| `OPENAPI_BLOCK_ROW` | follows a row of the same block | 4px |
+| `OPENAPI_BLOCK_START` | starts a block after an OpenAPI row | 10px |
+| `OPENAPI_AFTER_NESTED_VIEWER` | starts a block after a nested viewer | 16px |
+| `OPENAPI_NESTED_VIEWER_START` | the first row of a nested JSON Schema / JSO viewer (opt-in hooks: `JsonSchemaViewer` / `JsonSchemaDiffsViewer` `firstRowPrecededBy`, `ExtensionsSection` `contentPrecededBy`) | the nested row's own rule |
+
+`padding-bottom` is 4px, or 10px with `data-block-last-row`. Rules:
+`shared-styles/preceded-by.css` -> "OpenAPI operation viewer". Row components that carry them:
+`TitleRow`, `TextRow`, `MarkdownTextRow`, `AddressRow`, `ExternalDocsRow`, `SecurityToolbar`,
+`SecurityRow`. Markdown values lose the default top / bottom margins of their first / last block.
+Nested viewers keep their internal spacing; only their first row is adjusted.
+
+**One pass, no sibling inspection** (`OpenApiOperationViewer/section-preceded-by.ts`):
+
+| Helper | Use |
 | --- | --- |
-| Title row (first row) | `ROOT` |
-| Operation ID row after the title / as the first row | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` / `ROOT` |
-| Address row after the operation ID row | **`OPERATION_ID_ROW`** (new) |
-| Address row after the title / as the first row | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` / `ROOT` (as AsyncAPI) |
-| External docs row | `ADDRESS_ROW` |
-| Description after external docs | **`EXTERNAL_DOCS_ROW`** (new) |
-| Description after the address row | `ADDRESS_ROW` |
-| First section header | `DESCRIPTION_ROW`, else `EXTERNAL_DOCS_ROW`, else `ADDRESS_ROW` |
-| Selector row under a section header | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` |
-| Row after a standalone selector row | **`SECTION_SELECTOR_ROW`** (new) |
-| First row of a scheme card / next card | **`SECURITY_SCHEME_CARD`** (new) for the card title row |
-| Nested JSON Schema / JSO viewer under its header | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` |
-| Section header after a nested viewer | `JSON_SCHEMA_VIEWER` / `JSO_VIEWER` |
+| `resolveBlockRowsSpacing(count, first, lastRowEndsBlock)` | spacing of the rows of one block (operation header, Body header + description) |
+| `chainSectionsPrecededBy(sections, first, closing)` | sections in the **configured** order ([Section order](#section-order)): each section's top is the previous section's `tail` |
+| `OpenApiSectionEntry.tail` | how a section ends: `OPENAPI_BLOCK_START` (last row is an OpenAPI row) or `OPENAPI_AFTER_NESTED_VIEWER` |
+| `closing` (render argument) | what the row after the section assumes about its end: the section's own `tail`, or for the last section what its container promised. A section whose last row is an OpenAPI row marks it `data-block-last-row` only when `closing` is `OPENAPI_BLOCK_START`; otherwise the row keeps 4px, so the gap stays 20px (4 + 16) |
 
-Precompute the `data-precededby` of each section in the parent container (one pass over the
-visible sections **in the configured order** — [Section order](#section-order) — as
-`buildColumnViewerContexts` does for DDL) — a section must not inspect its previous sibling.
+`tail` must be known before rendering. When the end depends on view state the container cannot
+see, the section **promises** `OPENAPI_AFTER_NESTED_VIEWER` and keeps the promise through
+`closing`: a Body whose selected media type has no schema, and **Responses** at the operation level
+(the selected response is `ResponsesNodeViewer` state). Inside `ResponsesNodeViewer` the selected
+response's real tail is known (`buildResponseSections`), and a response with no rows (status only)
+is not a section at all. `RequestNodeViewer` exposes `resolveRequestTail`, `ParametersNodeViewer`
+`resolveParametersTail`. The spacing stays in the viewer (not in next-data-model visibility
+managers) because block ends depend on this view state.
+
+**Security cards** are blocks of their own. The frame (`shared-styles/frame.css`) keeps the outer
+half-gap (`--frame-outer-gap`, 10px) as padding of the card's first and last rows, **outside** the
+border box: there are no spacer rows between cards. The title row's top is 10 + 16 (inner indent);
+the content-less closing row's bottom is 10 + 12 (the last content row keeps its 4px). Flow parts
+after the first one, and the trailing required-scopes list after flow parts, start a sub-block
+(`CardRow.startsBlock`) — 20px apart. Card rows compute their spacing in the same one pass as their
+frame positions.
+
+**Known limits.** The security toolbar keeps a 6px decoration inset around its options (diff round
+markers and border shadows overhang the option boxes inside a horizontally scrolling strip), on top
+of its row padding. A Body without a schema or a Responses section that ends with an OpenAPI row
+splits its 20px gap 4 + 16 instead of 10 + 10.
 
 ## View state
 
@@ -281,7 +356,7 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | --- | --- | --- |
 | `OpenApiOperationViewer.tsx` / `OpenApiOperationDiffsViewer.tsx` | root | see [Root component shape](#root-component-shape) |
 | `OpenApiViewerContext.ts` | context | `devMode`, `expandedDepth`, `hideUnchangedNodes` |
-| `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | precomputes header-row and section `data-precededby`; decides where the deprecated tag goes (title or address row) |
+| `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | precomputes header-row spacing (one pass over the visible header rows) and the section chain; decides where the deprecated tag goes (title or address row) |
 | `SecurityNodeViewer.tsx` | rows 6–8 | owns alternative selection |
 | `SecuritySchemeCard/SecuritySchemeCard.tsx` | one framed card | rows in [security](../entities/security.md#scheme-card); precomputes per-side frame positions |
 | `shared-components/Security/` | `SecurityToolbar`, `SecurityRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with AsyncAPI server security later; flow parts are built inside `SecuritySchemeCard` |
@@ -308,7 +383,6 @@ tested):
 | `node-type-checkers.ts` | `isOpenApiOperationNode`, `isOpenApiSecurityNode`, …, `getOpenApiChildNodes(node)` (type-guard helpers, no `as`) |
 | `http-method-badge-config.ts` | `OPENAPI_HTTP_METHOD_BADGE_CONFIG` + `resolveHttpMethodBadge(method)` (D13) |
 | `response-code-tone.ts` | `OpenApiResponseCodeClass` → `SelectorOptionTone` |
-| `section-preceded-by.ts` | one-pass `data-precededby` resolver for sections |
 
 With-diffs guards (`isOpenApi*NodeWithDiffs`) go to `shared-utilities/tree-node-guards.ts` next to
 the AsyncAPI ones.

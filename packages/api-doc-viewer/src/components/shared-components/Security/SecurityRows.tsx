@@ -15,6 +15,7 @@ import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 import "../../shared-styles/frame.css"
 import "../SubheaderValue/SubheaderValue.css"
 import "./SecurityRows.css"
@@ -26,7 +27,7 @@ import "./SecurityRows.css"
  * Design: docs/design/openapi/entities/security.md -> "Scheme card".
  */
 
-type SecurityRowProps = WithFramePositionProps & {
+type SecurityRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
   /** Content of one side; called only on a side where the row has content. */
   renderSide: (layoutSide: LayoutSide) => ReactNode
   /** Row background; a whole add / remove leaves the absent side empty and gray. */
@@ -34,19 +35,18 @@ type SecurityRowProps = WithFramePositionProps & {
   /** Floating severity badge of this row (own changes only, never an inherited block diff). */
   severity?: NodeDiffsSeverity
   testId?: string
-  /**
-   * `spacer`: the fixed gap before a flow part, painted like the block that follows it.
-   * `frame-end`: the closing row of a card (bottom indent + border), always last.
-   */
-  variant?: 'default' | 'spacer' | 'frame-end'
+  /** `frame-end`: the content-less closing row of a card (bottom indent + border), always last. */
+  variant?: 'default' | 'frame-end'
 }
 
 /**
- * One card row on both sides. Vertical spacing is padding inside the row (never margins between
- * rows), so neighbouring highlighted rows join into one colored block without white seams.
+ * One card row on both sides. Vertical spacing is padding inside the row only (`data-precededby` for
+ * the top, `data-block-last-row` for the bottom; never margins between rows), so neighbouring
+ * highlighted rows join into one colored block without white seams.
  */
 export const SecurityRow: FC<SecurityRowProps> = (props) => {
   const { renderSide, diff, severity, framePosition, testId, variant = 'default' } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
   const layoutMode = useLayoutMode()
 
   const renderContent = (layoutSide: LayoutSide): ReactElement => {
@@ -55,6 +55,8 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
     return (
       <div
         data-testid={testId}
+        data-precededby={precededBy}
+        data-block-last-row={blockLastRow ? true : undefined}
         data-frame-position={framePosition?.(layoutSide)}
         className={`security-row ${variant === 'default' ? '' : `security-row_${variant}`} flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >

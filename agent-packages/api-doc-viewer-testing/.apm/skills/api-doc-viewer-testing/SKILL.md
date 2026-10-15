@@ -79,6 +79,18 @@ before a browser check caught them in minutes. Instead:
    screenshot of the region for the user-visible result.
 4. Stop the Storybook process and close the tab afterwards. This is still not a screenshot IT run.
 
+**Vertical spacing audit (session lesson, OpenAPI spacing rework).** For spacing work, a headless
+Puppeteer script (the repo-root `node_modules/puppeteer`, no Docker) over many story ids beats
+clicking through stories. Per row element (`.title-row-content`, `.text-row-content`,
+`.markdown-text-row-content`, `.address-row-content`, `.security-row`, …) print the computed
+`padding-top/bottom`, `data-precededby` / `data-block-last-row`, the diff background class, and the
+**ink insets** — distance from the row edge to the union of its text ranges
+(`Range.getClientRects()`) and boxed elements, skipping `.level-indicator-column`. Then list every
+non-row element with non-zero vertical margin / padding: those are wrapper-chain offsets (markdown
+`<ul>` margins, an inner `py-*`). Insets larger than the padding reveal hidden offsets such as an
+inherited line-height strut. Run it on plain and diffs stories (changed side) and on edge cases
+(status-only response, anonymous alternative, no responses).
+
 **Targeted single-suite runner:** `node bin/run-screenshot-test-suite.mjs test|regenerate
 [test-run] [suite]` (e.g. `regenerate json-schema-diffs-suite description-changes`) wraps the
 build-showcase → start-static-server → jest pipeline for one suite, so you don't have to

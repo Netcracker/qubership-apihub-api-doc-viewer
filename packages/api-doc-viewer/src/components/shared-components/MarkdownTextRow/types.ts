@@ -8,9 +8,9 @@ import type {
 import { TextRowUsage } from "../TextRow/types"
 import { TextValueVariant } from "../TextValue/types"
 import { WithFramePositionProps } from "../Frame/types"
-import { WithPrecededByProps } from "../WithPrecededByProps"
+import { WithBlockLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 
-export type MarkdownTextRowProps = WithPrecededByProps & WithFramePositionProps & {
+export type MarkdownTextRowProps = WithPrecededByProps & WithBlockLastRowProps & WithFramePositionProps & {
   value: string
   variant?: TextValueVariant
   usage?: TextRowUsage

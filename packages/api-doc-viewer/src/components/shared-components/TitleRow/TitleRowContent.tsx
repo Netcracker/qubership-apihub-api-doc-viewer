@@ -10,7 +10,7 @@ import { Expander } from "../Expander"
 import { JsonSchemaExpanderColumn } from "../JsonSchemaExpanderColumn/JsonSchemaExpanderColumn"
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
-import { ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_DDL_LIST_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TitleRowContentProps, TitleRowUsage } from "./types"
 
 const TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TitleRowUsage, string>> = {
@@ -54,7 +54,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   const { diff, descendantDiffs, diffsSeverities } = props
 
   // indents specific
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: ddlListLastRow } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_DDL_LIST_LAST_ROW]: ddlListLastRow, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
 
   const highlightingModeForKey = useMemo(() => {
     switch (usage) {
@@ -170,6 +170,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     <div
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
+      data-block-last-row={blockLastRow ? true : undefined}
       data-usage={usage !== TitleRowUsage.Default ? usage : undefined}
       data-frame-position={props.framePosition?.(layoutSide)}
       className={`title-row-content flex w-full ${isDdlApiPropertyRow || isJsonSchemaPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}

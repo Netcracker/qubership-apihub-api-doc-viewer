@@ -18,6 +18,7 @@ import {
 import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from './embedding/JsonSchemaEmbeddingContext'
 import { JsonSchemaNodeViewer } from './JsonSchemaNodeViewer'
 import { JsonSchemaViewerContext } from './JsonSchemaViewerContext'
+import { PrecededBy } from '../shared-components/WithPrecededByProps'
 import { TopLevelPropsMediaTypesMap } from './utils/top-level-props-media-types'
 
 export type JsonSchemaViewerProps = {
@@ -32,6 +33,12 @@ export type JsonSchemaViewerProps = {
    * OpenAPI parameters described with `content`). Not supported by `JsonSchemaDiffsViewer`.
    */
   topLevelPropsMediaTypes?: TopLevelPropsMediaTypesMap
+  /**
+   * Opt-in `data-precededby` of the first row (the root's title row, or with a suppressed root nesting
+   * indicator its first child): lets an embedding viewer control the gap above the schema (OpenAPI).
+   * Without it the rows keep their own spacing.
+   */
+  firstRowPrecededBy?: PrecededBy
 }
 
 export const JsonSchemaViewer: FC<JsonSchemaViewerProps> = memo((props) => {
@@ -60,6 +67,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
     initialLevel = 0,
     customizationOptions,
     topLevelPropsMediaTypes,
+    firstRowPrecededBy,
   } = props
 
   const logger = useMemo(() => createBuildingServiceLogger(devMode), [devMode])
@@ -123,7 +131,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
             <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
               <LevelContext.Provider value={initialLevel}>
                 <div data-testid="json-schema-viewer">
-                  <JsonSchemaNodeViewer node={root}/>
+                  <JsonSchemaNodeViewer node={root} data-precededby={firstRowPrecededBy}/>
                 </div>
               </LevelContext.Provider>
             </LayoutModeContext.Provider>

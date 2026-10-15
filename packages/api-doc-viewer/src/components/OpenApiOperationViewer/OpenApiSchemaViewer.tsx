@@ -18,6 +18,7 @@ type OpenApiSchemaViewerProps = {
 /**
  * The nested JSON Schema viewer of every OpenAPI section (parameters, headers, bodies): the plain or
  * the diffs viewer by layout mode, with the root viewer's `expandedDepth` / `hideUnchangedNodes`.
+ * It always follows an OpenAPI row of its own block, so its first row takes the in-block half-gap.
  */
 export const OpenApiSchemaViewer: FC<OpenApiSchemaViewerProps> = ({ schema }) => {
   const layoutMode = useLayoutMode()
@@ -33,7 +34,7 @@ export const OpenApiSchemaViewer: FC<OpenApiSchemaViewerProps> = ({ schema }) =>
     return diffMetaKeys
       ? (
         <JsonSchemaDiffsViewer
-          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          firstRowPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
           schema={schema}
           displayMode={displayMode}
           diffMetaKeys={diffMetaKeys}
@@ -47,7 +48,7 @@ export const OpenApiSchemaViewer: FC<OpenApiSchemaViewerProps> = ({ schema }) =>
   }
   return (
     <JsonSchemaViewer
-      data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+      firstRowPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
       schema={schema}
       displayMode={displayMode}
       expandedDepth={expandedDepth}

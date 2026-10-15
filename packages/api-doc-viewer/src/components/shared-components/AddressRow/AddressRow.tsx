@@ -1,5 +1,5 @@
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
-import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -22,7 +22,7 @@ export type AddressRowBadge = {
   colorClass: string
 }
 
-export type AddressRowProps = WithPrecededByProps & {
+export type AddressRowProps = WithPrecededByProps & WithBlockLastRowProps & {
   badge: AddressRowBadge | null
   address: string
   /** Content after the address, per side (OpenAPI: the deprecated tag when there is no title row). */
@@ -78,7 +78,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   const { badge, address, trailing, layoutSide, diff } = props
 
   // indent-specific
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
 
   const renderAddress = useCallback(() => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
@@ -150,6 +150,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   return (
     <div
       data-precededby={precededBy}
+      data-block-last-row={blockLastRow ? true : undefined}
       className={`address-row address-row-content font-Inter-Medium flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffStyles.join(' ')}`}
     >
       <div

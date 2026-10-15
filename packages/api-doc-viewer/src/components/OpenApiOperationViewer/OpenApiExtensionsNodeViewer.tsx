@@ -6,7 +6,7 @@ import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-da
 import { FC } from "react"
 import { ExtensionsSection } from "../shared-components/ExtensionsSection/ExtensionsSection"
 import { TextValueVariant } from "../shared-components/TextValue/types"
-import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
 
 type OpenApiExtensionsNodeViewerProps = WithPrecededByProps & {
@@ -15,7 +15,7 @@ type OpenApiExtensionsNodeViewerProps = WithPrecededByProps & {
   testId: string
 }
 
-/** Operation (h2), Response (h3) and Responses Object (h3) extensions. */
+/** Operation (h2), Response (h3) and Responses Object (h3) extensions; always ends with the JSO viewer. */
 export const OpenApiExtensionsNodeViewer: FC<OpenApiExtensionsNodeViewerProps> = (props) => {
   const { node, variant, testId, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const value = node.value()
@@ -26,6 +26,7 @@ export const OpenApiExtensionsNodeViewer: FC<OpenApiExtensionsNodeViewerProps> =
       rawValues={value?.rawValues ?? {}}
       variant={variant}
       testId={testId}
+      contentPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
       titleRowDiffProps={{
         diff: headerDiff,
         diffsSeverities: takeOpenApiSeverities(node),

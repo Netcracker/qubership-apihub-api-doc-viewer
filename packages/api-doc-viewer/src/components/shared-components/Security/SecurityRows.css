@@ -1,13 +1,14 @@
 /* Security scheme card rows. Spacing is padding inside each row only (no margins, no gaps between
-   rows): neighbouring highlighted rows then form one continuous colored block. */
+   rows, no min-height): the OpenAPI data-precededby / data-block-last-row rules (preceded-by.css)
+   set it, so neighbouring highlighted rows form one continuous colored block. */
 
-.security-row {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  min-height: 26px;
+/* Labels and scope names use the JSON Schema property-title text (NODE_TITLE_TEXT_CLASSES). The
+   cells keep its 16px line: an inherited taller line box would add an offset of its own around the
+   12px values, outside the row padding. */
+.security-prop,
+.security-scope {
+  line-height: 1rem;
 }
-
-/* Labels and scope names use the JSON Schema property-title text (NODE_TITLE_TEXT_CLASSES). */
 
 /* Values: secondary gray (the subheader / type-label gray), title-sized. Links stay link-blue. */
 .security-prop-text {
@@ -35,16 +36,9 @@ a.security-prop-link:hover {
   color: #353C4E;
 }
 
-/* Gap between flow parts: a spacer row, painted like the block that follows it. */
-.security-row.security-row_spacer {
-  min-height: 12px;
-  padding: 0;
-}
-
 /* Closing row of a card: always the card's last row, so the bottom indent and border never move to
    a content row (collapsing `Scopes` would otherwise make its row "last" and change its height).
-   Its height is only the frame's bottom padding. */
+   Its height is only the frame's bottom padding (frame.css). */
 .security-row.security-row_frame-end {
-  min-height: 0;
   padding-top: 0;
 }

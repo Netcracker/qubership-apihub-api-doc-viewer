@@ -376,28 +376,89 @@
 }
 /* ─── OpenAPI operation viewer ─────────────────────────────────────────────── */
 
-.address-row-content[data-precededby="operation-id-row"] {
+/* Every gap between two OpenAPI rows is split in half: the row above keeps the upper half as its
+   padding-bottom, the row below the lower half as its padding-top - so a highlighted row (diffs)
+   reaches to the middle of each gap and two neighbouring highlighted rows meet without a seam.
+     gap inside a block   8px = 4 + 4
+     gap between blocks  20px = 10 + 10
+   padding-top follows data-precededby (what is above the row), padding-bottom 4px unless the row
+   ends its block (data-block-last-row). Containers precompute both in one pass.
+   Nested JSON Schema / JSO viewers keep their own row spacing: the row after one takes 16px
+   (20px - the nested last row's own 4px), the nested first row OPENAPI_NESTED_VIEWER_START.
+   Design: docs/design/openapi/features/operation-viewer.md -> "Spacing". */
+
+.title-row-content[data-precededby="openapi-viewer-start"],
+.text-row-content[data-precededby="openapi-viewer-start"],
+.markdown-text-row-content[data-precededby="openapi-viewer-start"],
+.address-row-content[data-precededby="openapi-viewer-start"],
+.external-docs-row-content[data-precededby="openapi-viewer-start"],
+.security-toolbar[data-precededby="openapi-viewer-start"],
+.security-row[data-precededby="openapi-viewer-start"] {
+  padding-top: 10px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-precededby="openapi-block-row"],
+.text-row-content[data-precededby="openapi-block-row"],
+.markdown-text-row-content[data-precededby="openapi-block-row"],
+.address-row-content[data-precededby="openapi-block-row"],
+.external-docs-row-content[data-precededby="openapi-block-row"],
+.security-toolbar[data-precededby="openapi-block-row"],
+.security-row[data-precededby="openapi-block-row"] {
   padding-top: 4px;
-  padding-bottom: 8px;
+  padding-bottom: 4px;
 }
 
-.text-row-content[data-precededby="external-docs-row"],
-.markdown-text-row-content[data-precededby="external-docs-row"] {
+.title-row-content[data-precededby="openapi-block-start"],
+.text-row-content[data-precededby="openapi-block-start"],
+.markdown-text-row-content[data-precededby="openapi-block-start"],
+.address-row-content[data-precededby="openapi-block-start"],
+.external-docs-row-content[data-precededby="openapi-block-start"],
+.security-toolbar[data-precededby="openapi-block-start"],
+.security-row[data-precededby="openapi-block-start"] {
+  padding-top: 10px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-precededby="openapi-after-nested-viewer"],
+.text-row-content[data-precededby="openapi-after-nested-viewer"],
+.markdown-text-row-content[data-precededby="openapi-after-nested-viewer"],
+.address-row-content[data-precededby="openapi-after-nested-viewer"],
+.external-docs-row-content[data-precededby="openapi-after-nested-viewer"],
+.security-toolbar[data-precededby="openapi-after-nested-viewer"],
+.security-row[data-precededby="openapi-after-nested-viewer"] {
+  padding-top: 16px;
+  padding-bottom: 4px;
+}
+
+.title-row-content[data-block-last-row="true"],
+.text-row-content[data-block-last-row="true"],
+.markdown-text-row-content[data-block-last-row="true"],
+.address-row-content[data-block-last-row="true"],
+.external-docs-row-content[data-block-last-row="true"],
+.security-toolbar[data-block-last-row="true"],
+.security-row[data-block-last-row="true"] {
+  padding-bottom: 10px;
+}
+
+/* Markdown values (descriptions): the row padding alone sets the row's edges - no default margins
+   of the first / last block (paragraph, list, heading). All OpenAPI members start with `openapi-`. */
+.markdown-text-row-content[data-precededby^="openapi-"] .markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown-text-row-content[data-precededby^="openapi-"] .markdown > :last-child {
+  margin-bottom: 0;
+}
+
+/* First row of a nested viewer under an OpenAPI row: the in-block lower half-gap.
+   JSON Schema: on the row body (its own default top is 8px). */
+.json-schema-property .title-row-content[data-precededby="openapi-nested-viewer-start"] > .json-schema-property-row-body {
   padding-top: 4px;
-  padding-bottom: 8px;
 }
 
-.title-row-content[data-precededby="external-docs-row"] {
-  padding-top: 12px;
-}
-
-.title-row-content[data-precededby="section-selector-row"],
-.text-row-content[data-precededby="section-selector-row"],
-.markdown-text-row-content[data-precededby="section-selector-row"] {
-  padding-top: 4px;
-}
-
-/* First row of a framed security card: the gap between cards is a spacer element, not padding. */
-.title-row-content[data-precededby="security-scheme-card"] {
-  padding-top: 8px;
+/* JSO rows have no vertical padding: their 26px min-height centring already insets the text as much
+   as a 4px half-gap does in a JSON Schema row. */
+.jso-property .title-row-content[data-precededby="openapi-nested-viewer-start"] {
+  padding-top: 0;
 }

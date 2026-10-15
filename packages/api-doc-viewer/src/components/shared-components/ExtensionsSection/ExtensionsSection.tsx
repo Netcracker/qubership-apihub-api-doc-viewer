@@ -16,6 +16,8 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
   testId?: string
   /** Header diff props (whole-section add / remove). */
   titleRowDiffProps?: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'>
+  /** `data-precededby` of the JSO viewer's first row; defaults to the AsyncAPI section-header spacing. */
+  contentPrecededBy?: PrecededBy
 }
 
 /**
@@ -24,7 +26,11 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
  * are provided.
  */
 export const ExtensionsSection: FC<ExtensionsSectionProps> = (props) => {
-  const { rawValues, variant, testId, titleRowDiffProps, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const {
+    rawValues, variant, testId, titleRowDiffProps,
+    contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL,
+    [ATTRIBUTE_PRECEDED_BY]: precededBy,
+  } = props
   const diffMetaKeys = useDiffMetaKeys()
 
   const content = (
@@ -39,14 +45,14 @@ export const ExtensionsSection: FC<ExtensionsSectionProps> = (props) => {
       />
       {diffMetaKeys ? (
         <JsoDiffsViewer
-          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={contentPrecededBy}
           mergedSource={rawValues}
           initialLevel={1}
           diffMetaKeys={diffMetaKeys}
         />
       ) : (
         <JsoViewer
-          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+          data-precededby={contentPrecededBy}
           source={rawValues}
           initialLevel={1}
         />

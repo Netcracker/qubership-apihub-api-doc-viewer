@@ -1,5 +1,5 @@
 export const OpenApiSectionIds = {
-  // operation level (after the header rows: title, operation ID, address, external docs, description)
+  // operation level (after the header rows: title, operation ID, address, description, external docs)
   SECURITY: 'security',
   OPERATION_EXTENSIONS: 'operationExtensions',
   REQUEST: 'request',

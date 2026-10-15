@@ -7,7 +7,7 @@ import { FC, memo, useMemo } from "react"
 import '../../shared-styles/preceded-by.css'
 import { LevelIndicator } from "../LevelIndicator"
 import { TextValue } from "../TextValue/TextValue"
-import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import { TextRowUsage, type TextRowContentProps } from "./types"
 
 const TEXT_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<TextRowUsage, string>> = {
@@ -31,7 +31,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   const { label, labelFontWeight, textFontWeight, labelColor, textColor } = props
 
   // indents specific
-  const { [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { diff, descendantDiffs, diffsSeverities } = props
@@ -83,6 +83,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
+      data-block-last-row={blockLastRow ? true : undefined}
       data-frame-position={props.framePosition?.(layoutSide)}
       className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >

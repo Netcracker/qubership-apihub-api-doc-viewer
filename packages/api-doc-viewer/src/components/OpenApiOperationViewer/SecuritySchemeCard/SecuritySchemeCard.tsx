@@ -34,26 +34,30 @@ import { resolveValueHighlighter } from "../../shared-components/Security/value-
 import { TextRow } from "../../shared-components/TextRow/TextRow"
 import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
-import { PrecededBy } from "../../shared-components/WithPrecededByProps"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, PrecededBy } from "../../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "../diff-state"
+import { OpenApiRowSpacing } from "../section-preceded-by"
 
 type SchemeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_SCHEME>
 type FlowNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OAUTH_FLOW>
 
 type SecuritySchemeCardProps = {
   node: SchemeNode
-  /** What the card title row follows: the toolbar for the first card, a card for the next ones. */
-  precededBy: PrecededBy
 }
 
 const MUTED_TEXT_COLOR = '#8F9EB4'
 
 type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
-/** One row of the card: rendered by `render(framePosition)` once its frame position is known. */
+/** One row of the card: rendered by `render(framePosition, spacing)` once both are known. */
 type CardRow = {
   readonly key: string
-  readonly render: (framePosition: FramePositionResolver) => ReactElement
+  /**
+   * Starts a sub-block of the card - a flow part after another one, the trailing list of required
+   * scopes: a block gap (10 + 10) above it instead of the in-block gap.
+   */
+  readonly startsBlock?: boolean
+  readonly render: (framePosition: FramePositionResolver, spacing: OpenApiRowSpacing) => ReactElement
 }
 
 /**
@@ -68,6 +72,19 @@ function resolveFramePosition(index: number, count: number): FramePosition {
     return 'first'
   }
   return index === count - 1 ? 'last' : 'middle'
+}
+
+/**
+ * Spacing of the card rows in the same pass: the card is a block (its title row starts it; the frame
+ * moves the outer half-gaps outside its border), sub-blocks are a block gap apart. The closing row
+ * takes no spacing - its padding is the frame's (frame.css).
+ */
+function resolveCardRowSpacing(rows: readonly CardRow[], index: number): OpenApiRowSpacing {
+  const startsBlock = index === 0 || rows[index].startsBlock === true
+  return {
+    [ATTRIBUTE_PRECEDED_BY]: startsBlock ? PrecededBy.OPENAPI_BLOCK_START : PrecededBy.OPENAPI_BLOCK_ROW,
+    ...(rows[index + 1]?.startsBlock ? { [ATTRIBUTE_BLOCK_LAST_ROW]: true } : {}),
+  }
 }
 
 const severityOf = (diff: ChangedPropertyMetaData | undefined): NodeDiffsSeverity | undefined =>
@@ -91,7 +108,7 @@ class CardRows {
 
 /** Framed card of one security scheme of the selected alternative. Design: entities/security.md -> "Scheme card". */
 export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
-  const { node, precededBy } = props
+  const { node } = props
   const displayMode = useDisplayMode()
   const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
@@ -112,9 +129,9 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   const card = new CardRows()
   card.add({
     key: 'title',
-    render: (framePosition) => (
+    render: (framePosition, spacing) => (
       <TitleRow
-        data-precededby={precededBy}
+        {...spacing}
         value={value?.name ?? String(node.key)}
         expandable={false}
         variant={TextValueVariant.h4}
@@ -128,9 +145,9 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   if (visibility.showUnresolved) {
     card.add({
       key: 'unresolved',
-      render: (framePosition) => (
+      render: (framePosition, spacing) => (
         <TextRow
-          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_LOW_LEVEL}
+          {...spacing}
           value={OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
@@ -144,9 +161,9 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   if (visibility.showDescription) {
     card.add({
       key: 'description',
-      render: (framePosition) => (
+      render: (framePosition, spacing) => (
         <MarkdownTextRow
-          data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_LOW_LEVEL}
+          {...spacing}
           value={value?.description ?? ''}
           variant={TextValueVariant.body2}
           diff={OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')}
@@ -194,10 +211,8 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   }
   if (detailed) {
     flows.forEach((flow, index) => {
-      if (index > 0) {
-        addSpacer(card, `flow-${String(flow.key)}-gap`, OpenApiRowDiffs.Section.takeHeaderRowDiff(flow))
-      }
-      addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes)
+      // Flow parts are a block gap apart; the first one follows the scheme props in-block.
+      addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes, index > 0)
     })
   }
 
@@ -206,9 +221,6 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   if (visibility.showRequiredScopeList && value) {
     const requiredOnly = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node)
     if (requiredOnly.length > 0) {
-      if (detailed && flows.length > 0) {
-        addSpacer(card, 'required-scopes-gap', undefined)
-      }
       addScopeRows(
         card,
         'required',
@@ -218,6 +230,8 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
         collapsedScopes,
         toggleScopes,
+        // After flow parts: a sub-block of its own.
+        detailed && flows.length > 0,
       )
     }
   }
@@ -236,7 +250,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
       {card.rows.map((row, index) => {
         const position = resolveFramePosition(index, card.rows.length)
-        return <Fragment key={row.key}>{row.render(side => isPresent(side) ? position : undefined)}</Fragment>
+        return <Fragment key={row.key}>{row.render(side => isPresent(side) ? position : undefined, resolveCardRowSpacing(card.rows, index))}</Fragment>
       })}
     </div>
   )
@@ -258,8 +272,9 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
   const valueDiff = OpenApiRowDiffs.NodeLevel.takeRowDiff(node, field)
   return {
     key,
-    render: (framePosition) => (
+    render: (framePosition, spacing) => (
       <SecurityRow
+        {...spacing}
         testId={`security-prop-${key}`}
         framePosition={framePosition}
         diff={rowDiff}
@@ -278,13 +293,6 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
   }
 }
 
-function addSpacer(card: CardRows, key: string, diff: ChangedPropertyMetaData | undefined): void {
-  card.add({
-    key,
-    render: (framePosition) => <SecurityRow variant="spacer" framePosition={framePosition} diff={diff} renderSide={() => null} />,
-  })
-}
-
 function addFlowRows(
   card: CardRows,
   flow: FlowNode,
@@ -292,6 +300,7 @@ function addFlowRows(
   displayMode: ReturnType<typeof useDisplayMode>,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
+  startsBlock: boolean,
 ): void {
   const value = flow.value()
   const severities = takeOpenApiSeverities(flow)
@@ -300,8 +309,10 @@ function addFlowRows(
   const flowKey = `flow-${String(flow.key)}`
   card.add({
     key: flowKey,
-    render: (framePosition) => (
+    startsBlock,
+    render: (framePosition, spacing) => (
       <SecurityRow
+        {...spacing}
         testId={`security-${flowKey}`}
         framePosition={framePosition}
         diff={blockDiff}
@@ -335,7 +346,7 @@ function addFlowRows(
     }
   }
   if (visibility.showScopes) {
-    addScopeRows(card, flowKey, OPENAPI_SECURITY_PROP_LABELS.scopes, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
+    addScopeRows(card, flowKey, OPENAPI_SECURITY_PROP_LABELS.scopes, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes, false)
   }
 }
 
@@ -350,12 +361,15 @@ function addScopeRows(
   blockSeverity: NodeDiffsSeverity | undefined,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
+  startsBlock: boolean,
 ): void {
   const expanded = !collapsedScopes.has(key)
   card.add({
     key: `${key}-scopes`,
-    render: (framePosition) => (
+    startsBlock,
+    render: (framePosition, spacing) => (
       <SecurityRow
+        {...spacing}
         framePosition={framePosition}
         diff={blockDiff}
         severity={blockDiff ? blockSeverity : undefined}
@@ -377,8 +391,9 @@ function addScopeRows(
       : scope.rowDiff ? blockSeverity : undefined
     card.add({
       key: `${key}-scope-${scope.name}`,
-      render: (framePosition) => (
+      render: (framePosition, spacing) => (
         <SecurityRow
+          {...spacing}
           testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
           diff={scope.rowDiff}

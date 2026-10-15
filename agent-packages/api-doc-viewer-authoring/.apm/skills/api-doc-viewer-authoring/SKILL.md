@@ -884,10 +884,49 @@ of several review rounds:
   on the last content row, collapsing an expandable row (e.g. `Scopes`) changes which row is last and
   the row visibly "jumps".
 - Vertical spacing inside a card is padding, never margin (margins cut the side borders and leave
-  white seams between highlighted rows); a gap between cards is a full-width spacer row painted with
-  the surrounding block's diff.
+  white seams between highlighted rows). There are **no spacer rows** (2026-10-15): a card is a block,
+  and the frame keeps the outer half of the 20px block gap (`--frame-outer-gap`) as padding of the
+  first / last row **outside** the border box (`::before` `top` / `bottom` offset). See the OpenAPI
+  spacing section below.
 - Verify geometry in a live browser (testing skill → live Storybook check); SSR / HTML checks cannot
   see widths or `::before` boxes.
+
+## OpenAPI vertical spacing: split gaps (session lesson)
+
+Design: `docs/design/openapi/features/operation-viewer.md` → "Spacing". Main rule: every vertical
+offset of the OpenAPI viewers is **padding inside the per-side row element that holds the value**
+(the element with the diff background) — no margins, no padding on wrappers (section divs, layouts,
+`DiffFloatingBadgeWrapper`), no spacer rows, no `min-height` centring.
+
+- **Split gaps.** Rows form blocks; each gap is split in half between the row above
+  (`padding-bottom`) and the row below (`padding-top`): 8px inside a block (4 + 4), 20px between
+  blocks (10 + 10). A highlighted row then reaches to the middle of each gap in diffs mode.
+- **Top = `data-precededby`, bottom = `data-block-last-row`.** `precededBy` alone cannot express a
+  bottom half; `ATTRIBUTE_BLOCK_LAST_ROW` (DDL `data-ddl-list-last-row` analogue) marks the last row of
+  a block. Rules in `preceded-by.css` → "OpenAPI operation viewer"; row components that forward the
+  attribute: `TitleRow`, `TextRow`, `MarkdownTextRow`, `AddressRow`, `ExternalDocsRow`,
+  `SecurityToolbar`, `SecurityRow`.
+- **Use only `OPENAPI_*` members on OpenAPI rows.** Reusing AsyncAPI members
+  (`MESSAGE_SECTION_HEADER_HIGH_LEVEL`, `DESCRIPTION_ROW`, …) pulls in their shared rules (e.g. a
+  12px top with the default 4px bottom) and breaks the split. All OpenAPI values start with
+  `openapi-` (the markdown first/last-child margin reset matches the prefix).
+- **Nested viewers: boundary only.** `JsonSchemaViewer` / `JsonSchemaDiffsViewer` **ignored** the
+  `data-precededby` passed to them (a dead attribute, AsyncAPI still passes one) — honouring it would
+  shift AsyncAPI rows, so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first
+  child under a suppressed root). JSO: `ExtensionsSection` `contentPrecededBy`. The row **after** a
+  nested viewer compensates for its last row's own 4px (`OPENAPI_AFTER_NESTED_VIEWER`, 16px top).
+- **Tails before render.** A section's `tail` (how it ends) must be known by its container's one
+  pass. When the end depends on view state the container cannot see (selected media type without a
+  schema; the selected response at the operation level), the section promises
+  `OPENAPI_AFTER_NESTED_VIEWER` and keeps the promise through the `closing` render argument: its last
+  OpenAPI row stays at 4px instead of taking `data-block-last-row`. Build sub-sections in pure
+  builders (`buildRequestSections`, `buildResponseSections`) so the parent can read the real tail.
+- **Line-height struts are offsets too.** A 12px value in a cell that inherits the page's 24px line
+  height sits in a taller line box — an offset outside the row padding. Pin the cell's line height to
+  its text (`.security-prop` / `.security-scope` `line-height: 1rem`).
+- **Verify by measuring**, not by eye: per row, computed `padding-top/bottom` plus the distance from
+  the row edge to the content's ink (text ranges, boxed elements) on both sides, and every non-row
+  element with vertical margin / padding (testing skill → live Storybook check).
 
 ## Typography: the JSON Schema property-title look (session lesson)
 

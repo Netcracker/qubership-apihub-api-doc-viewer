@@ -18,20 +18,22 @@ import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { MediaTypeContentSection } from "./MediaTypeContentSection"
 import { OpenApiExtensionsNodeViewer } from "./OpenApiExtensionsNodeViewer"
-import { ParametersNodeViewer } from "./ParametersNodeViewer"
-import { chainSectionsPrecededBy, OpenApiSectionEntry } from "./section-preceded-by"
+import { ParametersNodeViewer, resolveParametersTail } from "./ParametersNodeViewer"
+import { chainSectionsPrecededBy, isBlockClosing, OpenApiSectionEntry, OpenApiSectionTail } from "./section-preceded-by"
 
 export const RESPONSE_HEADERS_SECTION_TITLE = 'Headers'
 
-type ResponseNodeViewerProps = WithPrecededByProps & {
-  node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
+type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
+
+type ResponseSectionsParams = {
+  node: ResponseNode
   selectedMediaTypeId: string | undefined
   onSelectMediaType: (mediaTypeId: string) => void
 }
 
-/** The selected response: description, Headers, Extensions, Body - in config order. Design: entities/responses.md. */
-export const ResponseNodeViewer: FC<ResponseNodeViewerProps> = (props) => {
-  const { node, selectedMediaTypeId, onSelectMediaType, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+/** The sections of one response (description, Headers, Extensions, Body) in config order. */
+export function buildResponseSections(params: ResponseSectionsParams): OpenApiSectionEntry[] {
+  const { node, selectedMediaTypeId, onSelectMediaType } = params
   const value = node.value()
   const severities = takeOpenApiSeverities(node)
   const headers = findOpenApiChild(node, isOpenApiResponseHeadersNode)
@@ -39,84 +41,96 @@ export const ResponseNodeViewer: FC<ResponseNodeViewerProps> = (props) => {
   const content = findOpenApiChild(node, isOpenApiContentNode)
   const mediaTypes = getOpenApiChildren(content, isOpenApiMediaTypeNode)
 
-  const sections = chainSectionsPrecededBy(
-    OPENAPI_SECTION_ORDER.response.flatMap((sectionId): OpenApiSectionEntry[] => {
-      switch (sectionId) {
-        case 'responseDescription':
-          return OpenApiNodeVisibility.showResponseDescription(value)
-            ? [{
-              id: sectionId,
-              tail: PrecededBy.DESCRIPTION_ROW,
-              render: (sectionPrecededBy) => (
-                <MarkdownTextRow
-                  key={sectionId}
-                  data-precededby={sectionPrecededBy}
-                  value={value?.description ?? ''}
-                  variant={TextValueVariant.body2}
-                  diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}
-                  diffsSeverities={severities}
-                />
-              ),
-            }]
-            : []
-        case 'responseHeaders':
-          return headers
-            ? [{
-              id: sectionId,
-              tail: PrecededBy.JSON_SCHEMA_VIEWER,
-              render: (sectionPrecededBy) => (
-                <ParametersNodeViewer
-                  key={sectionId}
-                  data-precededby={sectionPrecededBy}
-                  node={headers}
-                  title={RESPONSE_HEADERS_SECTION_TITLE}
-                  testId="openapi-response-headers-section"
-                />
-              ),
-            }]
-            : []
-        case 'responseExtensions':
-          return extensions
-            ? [{
-              id: sectionId,
-              tail: PrecededBy.JSO_VIEWER,
-              render: (sectionPrecededBy) => (
-                <OpenApiExtensionsNodeViewer
-                  key={sectionId}
-                  data-precededby={sectionPrecededBy}
-                  node={extensions}
-                  variant={TextValueVariant.h3}
-                  testId="openapi-response-extensions-section"
-                />
-              ),
-            }]
-            : []
-        case 'responseBody':
-          return content && mediaTypes.length > 0
-            ? [{
-              id: sectionId,
-              tail: PrecededBy.JSON_SCHEMA_VIEWER,
-              render: (sectionPrecededBy) => (
-                <MediaTypeContentSection
-                  key={sectionId}
-                  precededBy={sectionPrecededBy}
-                  testId="openapi-response-body-section"
-                  optionTestIdPrefix="response-media-type"
-                  mediaTypes={mediaTypes}
-                  selectedId={selectedMediaTypeId}
-                  onSelect={onSelectMediaType}
-                  headerDiff={OpenApiRowDiffs.Section.takeHeaderRowDiff(content)}
-                  diffsSeverities={takeOpenApiSeverities(content)}
-                />
-              ),
-            }]
-            : []
-        default:
-          return []
-      }
-    }),
-    precededBy ?? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL,
-  )
+  return OPENAPI_SECTION_ORDER.response.flatMap((sectionId): OpenApiSectionEntry[] => {
+    switch (sectionId) {
+      case 'responseDescription':
+        return OpenApiNodeVisibility.showResponseDescription(value)
+          ? [{
+            id: sectionId,
+            tail: PrecededBy.OPENAPI_BLOCK_START,
+            render: (sectionPrecededBy, closing) => (
+              <MarkdownTextRow
+                key={sectionId}
+                data-precededby={sectionPrecededBy}
+                data-block-last-row={isBlockClosing(closing)}
+                value={value?.description ?? ''}
+                variant={TextValueVariant.body2}
+                diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}
+                diffsSeverities={severities}
+              />
+            ),
+          }]
+          : []
+      case 'responseHeaders':
+        return headers
+          ? [{
+            id: sectionId,
+            tail: resolveParametersTail(headers),
+            render: (sectionPrecededBy, closing) => (
+              <ParametersNodeViewer
+                key={sectionId}
+                data-precededby={sectionPrecededBy}
+                closing={closing}
+                node={headers}
+                title={RESPONSE_HEADERS_SECTION_TITLE}
+                testId="openapi-response-headers-section"
+              />
+            ),
+          }]
+          : []
+      case 'responseExtensions':
+        return extensions
+          ? [{
+            id: sectionId,
+            tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER,
+            render: (sectionPrecededBy) => (
+              <OpenApiExtensionsNodeViewer
+                key={sectionId}
+                data-precededby={sectionPrecededBy}
+                node={extensions}
+                variant={TextValueVariant.h3}
+                testId="openapi-response-extensions-section"
+              />
+            ),
+          }]
+          : []
+      case 'responseBody':
+        return content && mediaTypes.length > 0
+          ? [{
+            id: sectionId,
+            // The selected media type (view state) decides whether a schema ends the body.
+            tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER,
+            render: (sectionPrecededBy, closing) => (
+              <MediaTypeContentSection
+                key={sectionId}
+                precededBy={sectionPrecededBy}
+                closing={closing}
+                testId="openapi-response-body-section"
+                optionTestIdPrefix="response-media-type"
+                mediaTypes={mediaTypes}
+                selectedId={selectedMediaTypeId}
+                onSelect={onSelectMediaType}
+                headerDiff={OpenApiRowDiffs.Section.takeHeaderRowDiff(content)}
+                diffsSeverities={takeOpenApiSeverities(content)}
+              />
+            ),
+          }]
+          : []
+      default:
+        return []
+    }
+  })
+}
+
+type ResponseNodeViewerProps = WithPrecededByProps & ResponseSectionsParams & {
+  /** What the row after the response assumes about its end (see `OpenApiSectionEntry`). */
+  closing: OpenApiSectionTail
+}
+
+/** The selected response: description, Headers, Extensions, Body - in config order. Design: entities/responses.md. */
+export const ResponseNodeViewer: FC<ResponseNodeViewerProps> = (props) => {
+  const { node, closing, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const sections = chainSectionsPrecededBy(buildResponseSections(props), precededBy ?? PrecededBy.OPENAPI_BLOCK_ROW, closing)
 
   return (
     <div data-testid={`openapi-response-${String(node.key)}`} className="flex flex-col">

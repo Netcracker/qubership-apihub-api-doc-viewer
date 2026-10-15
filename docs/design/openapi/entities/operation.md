@@ -37,7 +37,7 @@ export interface OpenApiTreeNodeValueTypeOperation {
 
 | Item | Rule |
 | --- | --- |
-| Component | `TitleRow`, `variant={TextValueVariant.h1}`, `expandable={false}`, `data-precededby={ROOT}` |
+| Component | `TitleRow`, `variant={TextValueVariant.h1}`, `expandable={false}`; spacing from the header block's one pass ([Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
 | Text | `title` (operation `summary`) — **no fallback** (Q10) |
 | Shown when | `summary` exists (diffs: on either side, or a `title` diff exists) and not `noHeading` |
 | Subheader | **deprecated** tag when `deprecated === true` (below) |
@@ -60,7 +60,7 @@ Operation ID: uploadPetPhoto               operation ID row (small, grey)
 | Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OPERATION_ID_ROW_LABEL = 'Operation ID'`) in the container. `labelFontWeight='normal'`, `labelColor` = secondary grey (`#626D82`). |
 | Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
-| `data-precededby` | `MESSAGE_SECTION_HEADER_HIGH_LEVEL` after the title row; `ROOT` when it is the first row. The address row below it uses the new member `OPERATION_ID_ROW`. |
+| Spacing | the header rows (title, operation ID, address, description, external docs) are one block: `OPENAPI_VIEWER_START` on the first visible row, `OPENAPI_BLOCK_ROW` on the others, `data-block-last-row` on the last one ([Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
 | Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). The **label is never highlighted** — on a replace only the value gets the yellow text highlighter (`TextValue` puts diff classes on the value span only). On add / remove the side where `operationId` does not exist renders **no text at all**, label included (`TextValue` returns `null` for an invisible side), so a bare `Operation ID:` never appears. |
 
 ## Deprecated tag
@@ -203,6 +203,7 @@ coloring (URL and whole-object diffs are unaffected).
 | Item | Rule |
 | --- | --- |
 | Component | `MarkdownTextRow` (OpenAPI descriptions are CommonMark), `variant=body2`, default usage |
+| Position | after the address row, before the external docs row (swapped 2026-10-15) |
 | Diff | `description` key; severity `DescriptionRow` (the component default) |
 
 ## Extensions section

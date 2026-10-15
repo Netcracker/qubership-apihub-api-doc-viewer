@@ -20,8 +20,8 @@ import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../share
 import { OPENAPI_SECTION_ORDER, OpenApiSectionId } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { MediaTypeContentSection } from "./MediaTypeContentSection"
-import { ParametersNodeViewer } from "./ParametersNodeViewer"
-import { chainSectionsPrecededBy, OpenApiSectionEntry } from "./section-preceded-by"
+import { ParametersNodeViewer, resolveParametersTail } from "./ParametersNodeViewer"
+import { chainSectionsPrecededBy, isBlockClosing, OpenApiSectionEntry, OpenApiSectionTail, resolveSectionsTail } from "./section-preceded-by"
 
 export const REQUEST_SECTION_TITLE = 'Request'
 
@@ -32,52 +32,69 @@ const PARAMETER_SECTION_LOCATIONS: Readonly<Partial<Record<OpenApiSectionId, Ope
   cookieParameters: 'cookie',
 }
 
+type RequestNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST>
+
 type RequestNodeViewerProps = WithPrecededByProps & {
-  node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST>
+  node: RequestNode
+  /** What the row after the Request section assumes about its end (see `OpenApiSectionEntry`). */
+  closing: OpenApiSectionTail
+}
+
+/** Parameter groups and the Body of the request, in config order. */
+function buildRequestSections(node: RequestNode): OpenApiSectionEntry[] {
+  const groups = getOpenApiChildren(node, isOpenApiParametersNode)
+  const requestBody = findOpenApiChild(node, isOpenApiRequestBodyNode)
+  return OPENAPI_SECTION_ORDER.request.flatMap((sectionId): OpenApiSectionEntry[] => {
+    const location = PARAMETER_SECTION_LOCATIONS[sectionId]
+    if (location) {
+      const group = groups.find(candidate => candidate.value()?.location === location)
+      return group
+        ? [{
+          id: sectionId,
+          tail: resolveParametersTail(group),
+          render: (sectionPrecededBy, closing) => (
+            <ParametersNodeViewer
+              key={sectionId}
+              data-precededby={sectionPrecededBy}
+              closing={closing}
+              node={group}
+              title={OpenApiDisplayLabels.parameterGroupTitle(location)}
+              testId={`openapi-${location}-parameters-section`}
+            />
+          ),
+        }]
+        : []
+    }
+    return requestBody
+      ? [{
+        id: sectionId,
+        // The selected media type (view state) decides whether a schema ends the body.
+        tail: PrecededBy.OPENAPI_AFTER_NESTED_VIEWER,
+        render: (sectionPrecededBy, closing) => (
+          <RequestBodyNodeViewer key={sectionId} data-precededby={sectionPrecededBy} closing={closing} node={requestBody} />
+        ),
+      }]
+      : []
+  })
+}
+
+/** How the Request section ends (its last sub-section, or its own title row when it has none). */
+export function resolveRequestTail(node: RequestNode): OpenApiSectionTail {
+  return resolveSectionsTail(buildRequestSections(node))
 }
 
 /** "Request" (h2): parameter groups and the Body in config order. Design: entities/parameters.md, entities/request-body.md. */
 export const RequestNodeViewer: FC<RequestNodeViewerProps> = (props) => {
-  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
-  const groups = getOpenApiChildren(node, isOpenApiParametersNode)
-  const requestBody = findOpenApiChild(node, isOpenApiRequestBodyNode)
-
-  const sections = chainSectionsPrecededBy(
-    OPENAPI_SECTION_ORDER.request.flatMap((sectionId): OpenApiSectionEntry[] => {
-      const location = PARAMETER_SECTION_LOCATIONS[sectionId]
-      if (location) {
-        const group = groups.find(candidate => candidate.value()?.location === location)
-        return group
-          ? [{
-            id: sectionId,
-            tail: PrecededBy.JSON_SCHEMA_VIEWER,
-            render: (sectionPrecededBy) => (
-              <ParametersNodeViewer
-                key={sectionId}
-                data-precededby={sectionPrecededBy}
-                node={group}
-                title={OpenApiDisplayLabels.parameterGroupTitle(location)}
-                testId={`openapi-${location}-parameters-section`}
-              />
-            ),
-          }]
-          : []
-      }
-      return requestBody
-        ? [{
-          id: sectionId,
-          tail: PrecededBy.JSON_SCHEMA_VIEWER,
-          render: (sectionPrecededBy) => <RequestBodyNodeViewer key={sectionId} data-precededby={sectionPrecededBy} node={requestBody} />,
-        }]
-        : []
-    }),
-    PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL,
-  )
+  const { node, closing, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const sectionEntries = buildRequestSections(node)
+  // The h2 title row heads the first sub-block (in-block gap); sub-blocks are a block gap apart.
+  const sections = chainSectionsPrecededBy(sectionEntries, PrecededBy.OPENAPI_BLOCK_ROW, closing)
 
   return (
     <div data-testid="openapi-request-section" className="flex flex-col">
       <TitleRow
         data-precededby={precededBy}
+        data-block-last-row={sectionEntries.length === 0 && isBlockClosing(closing)}
         value={REQUEST_SECTION_TITLE}
         expandable={false}
         variant={TextValueVariant.h2}
@@ -91,10 +108,11 @@ export const RequestNodeViewer: FC<RequestNodeViewerProps> = (props) => {
 
 type RequestBodyNodeViewerProps = WithPrecededByProps & {
   node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST_BODY>
+  closing: OpenApiSectionTail
 }
 
 const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = (props) => {
-  const { node, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { node, closing, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const value = node.value()
   const content = findOpenApiChild(node, isOpenApiContentNode)
   const mediaTypes = getOpenApiChildren(content, isOpenApiMediaTypeNode)
@@ -104,7 +122,8 @@ const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = (props) => {
 
   return (
     <MediaTypeContentSection
-      precededBy={precededBy ?? PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+      precededBy={precededBy ?? PrecededBy.OPENAPI_BLOCK_START}
+      closing={closing}
       testId="openapi-request-body-section"
       optionTestIdPrefix="request-media-type"
       mediaTypes={mediaTypes}
@@ -114,17 +133,17 @@ const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = (props) => {
       diffsSeverities={severities}
       isRequiredOnSide={(side) => OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)}
       requiredTagDiff={OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)}
-      renderBeforeSchema={() => OpenApiNodeVisibility.showRequestBodyDescription(value)
-        ? (
+      renderDescription={OpenApiNodeVisibility.showRequestBodyDescription(value)
+        ? (spacing) => (
           <MarkdownTextRow
-            data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
+            {...spacing}
             value={value?.description ?? ''}
             variant={TextValueVariant.body2}
             diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}
             diffsSeverities={severities}
           />
         )
-        : null}
+        : undefined}
     />
   )
 }

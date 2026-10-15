@@ -16,10 +16,10 @@ import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { Selector, SelectorOption } from "../Selector/Selector"
 import { SelectorVariant } from "../Selector/types"
-import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../WithPrecededByProps"
+import { ATTRIBUTE_BLOCK_LAST_ROW, ATTRIBUTE_PRECEDED_BY, WithBlockLastRowProps, WithPrecededByProps } from "../WithPrecededByProps"
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
 
-type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
+type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & WithBlockLastRowProps & {
   options: SelectorOption<N>[]
   selectedOption: SelectorOption<N> | null
   onSelectOption: (option: SelectorOption<N>) => void
@@ -35,7 +35,7 @@ type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
  * Design: docs/design/openapi/entities/security.md -> "Security toolbar".
  */
 export function SecurityToolbar<N extends ITreeNode>(props: SecurityToolbarProps<N>): ReactElement {
-  const { diff, severity, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { diff, severity, [ATTRIBUTE_PRECEDED_BY]: precededBy, [ATTRIBUTE_BLOCK_LAST_ROW]: blockLastRow } = props
   const layoutMode = useLayoutMode()
 
   const renderSide = (layoutSide: LayoutSide): ReactElement => {
@@ -43,8 +43,9 @@ export function SecurityToolbar<N extends ITreeNode>(props: SecurityToolbarProps
     return (
       <div
         data-precededby={precededBy}
+        data-block-last-row={blockLastRow ? true : undefined}
         data-testid="security-toolbar"
-        className={`security-toolbar flex w-full h-full items-center gap-1 py-2 ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={`security-toolbar flex w-full h-full items-center gap-1 ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
         <SecurityOptionsStrip {...props} layoutSide={layoutSide} />
       </div>
