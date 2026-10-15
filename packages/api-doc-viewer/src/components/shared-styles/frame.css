@@ -20,6 +20,7 @@ div[data-frame-position] {
   --frame-left: 16px;
   --frame-width: min(calc(100% - 32px), max(320px, min(40%, 500px)));
   --frame-inner-padding: 16px;
+  --frame-radius: 6px;
 
   position: relative;
   flex: 1 1 0%;
@@ -53,15 +54,15 @@ div[data-frame-position]::before {
 div[data-frame-position="first"]::before,
 div[data-frame-position="single"]::before {
   border-top: 1px solid #D5DCE3;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-top-left-radius: var(--frame-radius);
+  border-top-right-radius: var(--frame-radius);
 }
 
 div[data-frame-position="last"]::before,
 div[data-frame-position="single"]::before {
   border-bottom: 1px solid #D5DCE3;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: var(--frame-radius);
+  border-bottom-right-radius: var(--frame-radius);
 }
 
 /* Inner indents: the same 16px vertically as horizontally. The doubled attribute outranks the rows'
