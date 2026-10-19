@@ -5,6 +5,12 @@ implementation map (§8). Replaced the earlier "split gaps" model; summary in
 [operation-viewer.md](operation-viewer.md#spacing-data-precededby).
 **§9 (operation ID row padding, badge stubs on synthetic rows): approved and implemented 2026-10-15**
 (decision points 9.3: all three as recommended).
+**§10 (a row that changes alone at a block edge — asymmetric band): proposed 2026-10-16, awaiting
+approval**; until then §2.2 describes the implemented behaviour.
+**Superseded 2026-10-16 by [vertical-gaps.md](vertical-gaps.md)** (approved and implemented): every
+gap a separator row, owned half-gaps — it replaces §1, §4, §9.1, the frame rows' outer half (§3) and
+§10. The colouring principle (§2), the badge stubs (§9.2) and the data / viewer split (§7) still
+apply; the numbers in the drawings below are historical.
 
 ## 1. Rule
 
@@ -46,6 +52,7 @@ Security                                │ Security
 ### 2.2 Row above changed, row below not
 
 `operation/09-description-changed`: the description is yellow, the Security header is not.
+(Implemented; contradicts §1 for a row that changed alone — see §10.)
 
 ```text
 ▒Y Replaces the order.                  │ ▒Y Replaces the whole order.
@@ -524,3 +531,93 @@ Viewer:
 
 Overall: a few hours of work and no structural change — the plan already carries per-side tones;
 the badge type is one more value travelling the same path.
+
+## 10. A row that changes alone at a block edge (proposed 2026-10-16 — not implemented)
+
+### 10.1 Finding
+
+`operation/09-description-changed`: the yellow description has a separator below it and none above.
+
+- **Why.** The description is the **tail row of the operation header block** (title … external docs,
+  §7.4). The address row is in the same block, so the two rows touch (4 + 4, no separator); the next
+  block (Security) starts below, so a separator follows. §2 paints the upper separator half like the
+  row above, so the yellow band is **4px above** the text and **4 + 6 = 10px below**; the badge stub
+  (§9.2) makes the floating badge 6px longer below as well.
+- **Code = design.** The implementation follows §2.2 and the §9.2 drawing exactly
+  (`openapi-layout.test.ts` pins the yellow tail of `operation/09`). The design contradicts itself:
+  §1 says "a highlighted row's band is as tall above its content as below it", §2 breaks that for a
+  changed row at a block edge, and §2.6 already avoids it next to nested viewers (whole-block colour
+  only).
+
+### 10.2 The same change, three different bands
+
+The band around a row that changed **alone** depends on where the row sits in its block:
+
+| Row that changed alone | Position | Band above / below today |
+| --- | --- | --- |
+| Operation summary | head of the header block, first row of the viewer | 4 / 4 |
+| Operation ID, address | inside the header block | 4 / 4 (12 / 12 for the operation ID) |
+| Operation description, external docs (replaced / added / removed) | tail of the header block | **4 / 10** |
+| Body title row (yellow: `required`, media-type options), Responses title row (yellow: code options) | head of their block | **10 / 4** |
+| Response description | its own block, first under the Responses h2 (touches it), a separator below | **4 / 10** |
+| Last scope row of a flow part, another flow part below | tail of a card segment | **4 / 10** |
+| Last property of a section (nested JSON Schema / JSO row) | §2.6: whole-block colour only | 4 / 4 |
+
+Whole blocks (a section, card, flow part, operation wholly added / removed) are the case §2 was
+made for: the colour continues through the separator halves on both ends (§2.3–2.5), which is
+symmetric at block level and stays as it is.
+
+### 10.3 Options
+
+**A (recommended): separators take colour only from whole blocks.** Generalise §2.6 to every edge:
+an edge's tones and badge type are those of the **block's own whole add / remove** (including an
+inherited one), never those of a single row that changed alone. A row that changed alone gets
+4 / 4 wherever it sits; whole blocks keep their continuous colour.
+
+```text
+                                        today                         A
+   [POST] /orders/{orderId}             │ [POST] /orders/{orderId}    │ [POST] /orders/{orderId}
+▌a ▒Y Replaces the whole order.         │ ▒Y Replaces …   (4 above)   │ ▒Y Replaces …   (4 above)
+▌a ▒Y ┄┄ 6 ┄┄                           │ ▒Y ┄┄ 6 ┄┄      (4 + 6)     │    ┄┄ 12 white ┄┄  (4 below)
+      ┄┄ 6 ┄┄                           │    ┄┄ 6 ┄┄                  │
+      Security                          │    Security                 │    Security
+```
+
+`query-parameters/19-all-added`, `security/09` (whole card), §2.3–2.5: unchanged.
+
+**B: the description and external docs become a block of their own** (a separator above them too).
+`operation/09` becomes 10 / 10, but the plain layout changes (address → description 8 → 20px), and
+the Body / Responses title rows (10 / 4), the response description (4 / 10) and the card segments
+stay as they are — not uniform.
+
+**C: keep the behaviour** and narrow §1 to "inside a block".
+
+### 10.4 Algorithm (A)
+
+| Piece | Change |
+| --- | --- |
+| `OpenApiBlockEdge` | `+ scope: 'row' \| 'block'` — whether the edge's tones / badge come from a row that changed alone or from the block's whole add / remove |
+| `OpenApiBlockEdges` | row-based accessors (`operationHeader`, `securityHeader`, `noAuthentication`, `requestBody`, `responseBody`, `responses`, `responseDescription`, `rows` for card segments) mark their edges `scope: 'row'` unless the painting diff is the owning block's whole add / remove (`Section.takeHeaderRowDiff(owner)`; for card segments the flow / scheme that the segment belongs to) — then `'block'`. `nestedEdge` / `frameEdge` / `wholeBlockEdge` are `'block'` |
+| `OpenApiSpacingConfig` | `+ separatorEdge: (edge) => { tones, badge }` — default: the edge's own values when `scope === 'block'`, none otherwise; returning the edge as is restores today's §2 behaviour (one-line switch) |
+| Planner | `separator(...)` reads `config.separatorEdge(above)` / `config.separatorEdge(below)` before `splitBands` / `splitBadge` |
+| Viewer | no change (it renders the plan) |
+
+Tests: `operation/09` tail → `scope: 'row'`, separator one white 12px band, no stub; `request-body/03`
+and `responses/03` head → the same above the yellow title row; `responses/17-description-changed`
+(response description replaced) → white separator below; `query-parameters/19`, `security/09`
+unchanged (whole blocks).
+
+### 10.5 Cost
+
+| Aspect | Estimate |
+| --- | --- |
+| Data layer | small: one field on the edge, ~8 accessors set it, one config rule, planner +2 lines; unit tests above |
+| Viewer | none |
+| Runtime | negligible (one more value per edge) |
+| Screenshots | every OpenAPI diffs case with a row that changed alone at a block edge (operation description / external docs, Body / Responses title rows, response descriptions, scope rows at segment ends) — plain suites unchanged |
+
+### 10.6 Decision points
+
+1. Option A, B or C.
+2. (A) Card segments: should a scope row that changed alone at a flow part's end also lose its
+   separator colour (recommended: yes — the same rule), or do card segments keep today's §2?

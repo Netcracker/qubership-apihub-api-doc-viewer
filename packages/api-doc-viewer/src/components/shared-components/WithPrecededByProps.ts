@@ -28,14 +28,11 @@ export enum PrecededBy {
   /** Follows a sibling column block that ended with an additional-info row. */
   DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = 'ddl-column-after-additional-info-row',
   DDL_INDEX_ROW = 'ddl-index-row',
-  /* OpenAPI: every row has the same symmetric padding (`--openapi-row-padding`); blocks are
-     separated by separator rows, never by row padding.
-     Design: docs/design/openapi/features/block-separators.md */
+  /* OpenAPI: rows have no vertical padding; every gap is a separator row.
+     Design: docs/design/openapi/features/vertical-gaps.md */
   /** Any OpenAPI row. */
   OPENAPI_ROW = 'openapi-row',
-  /** The operation ID row: its own padding (`--openapi-row-padding-operation-id`). */
-  OPENAPI_OPERATION_ID_ROW = 'openapi-operation-id-row',
-  /** The first row of a nested JSON Schema / JSO viewer, under an OpenAPI row of the same block. */
+  /** The first row of a nested JSON Schema / JSO viewer: keeps its own inset (`--openapi-nested-viewer-inset`). */
   OPENAPI_NESTED_VIEWER_START = 'openapi-nested-viewer-start',
 }
 

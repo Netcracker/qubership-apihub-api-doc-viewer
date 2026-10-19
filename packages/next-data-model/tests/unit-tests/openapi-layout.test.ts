@@ -6,7 +6,10 @@ import {
   OpenApiBlockEdge,
   OpenApiBlockEdges,
   OpenApiLayoutBlock,
+  OpenApiLayoutItem,
+  OpenApiLayoutLevel,
   OpenApiLayoutPlanner,
+  OpenApiSeparatorRow,
   OpenApiSpacing,
 } from '../../src/model/openapi/layout'
 import { OpenApiNodeVisibility } from '../../src/model/openapi/node-visibility'
@@ -16,6 +19,7 @@ import { isOpenApiTreeNodeWithDiffs } from '../../src/shared/openapi/guards/tree
 import { loadMergedOpenApiSample, OPENAPI_TEST_DIFF_META_KEYS } from '../helpers/openapi-fixtures'
 
 const OPERATION = { path: '/orders/{orderId}', method: 'post' }
+const { Yellow, Green, Red, Gray } = HighlightVariant
 
 function operation(caseId: string): OpenApiTreeNodeWithDiffs {
   const node = new OpenApiTreeWithDiffsBuilder({
@@ -38,122 +42,148 @@ function child(node: OpenApiTreeNodeWithDiffs, kind: OpenApiTreeNodeKind, key?: 
 }
 
 const row = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): OpenApiBlockEdge => ({ kind: 'row', tones: { before, after }, badge })
-const frame = (before?: HighlightVariant, after?: HighlightVariant): OpenApiBlockEdge => ({ kind: 'frame', tones: { before, after } })
+const nested = (before?: HighlightVariant, after?: HighlightVariant): OpenApiBlockEdge => ({ kind: 'nested', tones: { before, after } })
+const card = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): OpenApiBlockEdge => ({ kind: 'card', tones: { before, after }, badge })
 const block = (id: string, head: OpenApiBlockEdge, tail = head): OpenApiLayoutBlock<string> => ({ id, head, tail, payload: id })
 
+function between(above: OpenApiBlockEdge, below: OpenApiBlockEdge, level: OpenApiLayoutLevel): OpenApiSeparatorRow | undefined {
+  return OpenApiLayoutPlanner.separator(above, below, level, DEFAULT_OPENAPI_SPACING_CONFIG)
+}
+
+function ids(items: OpenApiLayoutItem<string>[]): string[] {
+  return items.map(item => item.type === 'block' ? item.block.id : item.id)
+}
+
 describe('OpenAPI layout: spacing config', () => {
-  it('derives the separator height from the block gap and the row padding', () => {
-    expect(OpenApiSpacing.separatorHeight(DEFAULT_OPENAPI_SPACING_CONFIG)).toBe(12)
-    expect(OpenApiSpacing.separatorHeight(OpenApiSpacing.withOverrides({ blockGap: 24 }))).toBe(16)
+  it('rows and cards own 4px above and below, nested viewers none; only the operation level adds 4px', () => {
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.halfGap).toEqual({ row: 4, card: 4, nested: 0 })
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.levelGap).toEqual({ operation: 4, operationHeader: 0, security: 0, request: 0, responses: 0, section: 0, card: 0 })
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.cardInnerInset).toBe(8)
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.viewerEdges).toBe(true)
   })
 
-  it('pads the operation ID row 12px and every other row 4px', () => {
-    expect(DEFAULT_OPENAPI_SPACING_CONFIG.rowPadding).toEqual({ default: 4, operationId: 12 })
+  it('splits a level gap into halves for different neighbours, one piece for equal ones', () => {
+    const { splitBands, splitBadge } = DEFAULT_OPENAPI_SPACING_CONFIG
+    expect(splitBands(undefined, undefined, 4)).toEqual([{ height: 4, tone: undefined }])
+    expect(splitBands(Red, Green, 4)).toEqual([{ height: 2, tone: Red }, { height: 2, tone: Green }])
+    expect(splitBadge('annotation', undefined, 4)).toEqual([{ height: 2, type: 'annotation' }, { height: 2, type: undefined }])
+  })
+})
+
+describe('OpenAPI layout: separators', () => {
+  it('8px between rows of a block, 12px between top-level blocks (unchanged: one white band)', () => {
+    expect(between(row(), row(), 'operationHeader')).toMatchObject({ height: 8, before: [{ height: 8, tone: undefined }], after: [{ height: 8, tone: undefined }] })
+    expect(between(row(), row(), 'operation')).toMatchObject({ height: 12, before: [{ height: 12, tone: undefined }] })
   })
 
-  it('splits a badge stub like the bands: one bar for equal types, halves otherwise (absent = no bar)', () => {
-    const { splitBadge } = DEFAULT_OPENAPI_SPACING_CONFIG
-    expect(splitBadge(undefined, undefined, 12)).toEqual([{ height: 12, type: undefined }])
-    expect(splitBadge('breaking', 'breaking', 12)).toEqual([{ height: 12, type: 'breaking' }])
-    expect(splitBadge('annotation', undefined, 12)).toEqual([{ height: 6, type: 'annotation' }, { height: 6, type: undefined }])
+  it('a row that changed alone inside a block: its own 4px, the neighbour its 4px (operation ID removed)', () => {
+    const separator = between(row(Red, Gray, 'breaking'), row(), 'operationHeader')
+    expect(separator?.before).toEqual([{ height: 4, tone: Red }, { height: 4, tone: undefined }])
+    expect(separator?.after).toEqual([{ height: 4, tone: Gray }, { height: 4, tone: undefined }])
+    expect(separator?.badge).toEqual([{ height: 4, type: 'breaking' }, { height: 4, type: undefined }])
   })
 
-  it('keeps one band for equal tones and splits into halves for different tones', () => {
-    const { splitBands } = DEFAULT_OPENAPI_SPACING_CONFIG
-    expect(splitBands(undefined, undefined, 12)).toEqual([{ height: 12, tone: undefined }])
-    expect(splitBands(HighlightVariant.Green, HighlightVariant.Green, 12)).toEqual([{ height: 12, tone: HighlightVariant.Green }])
-    expect(splitBands(HighlightVariant.Red, HighlightVariant.Green, 12)).toEqual([
-      { height: 6, tone: HighlightVariant.Red },
-      { height: 6, tone: HighlightVariant.Green },
-    ])
+  it('a changed row at a top-level edge continues 2px into the level gap (operation/09: 4 + 2 | 2 + 4)', () => {
+    const separator = between(row(Yellow, Yellow, 'annotation'), row(), 'operation')
+    expect(separator?.before).toEqual([{ height: 6, tone: Yellow }, { height: 6, tone: undefined }])
+    expect(separator?.after).toEqual([{ height: 6, tone: Yellow }, { height: 6, tone: undefined }])
+    expect(separator?.badge).toEqual([{ height: 6, type: 'annotation' }, { height: 6, type: undefined }])
   })
 
-  it('adds no separator next to a card frame row', () => {
-    const { needsSeparator } = DEFAULT_OPENAPI_SPACING_CONFIG
-    expect(needsSeparator(row(), row())).toBe(true)
-    expect(needsSeparator(row(), frame())).toBe(false)
-    expect(needsSeparator(frame(), row())).toBe(false)
+  it('after a nested viewer only the level half and the next row\'s half (0 + 2 | 2 + 4)', () => {
+    expect(between(nested(), row(Yellow, Yellow), 'operation')?.before).toEqual([{ height: 2, tone: undefined }, { height: 6, tone: Yellow }])
+    expect(between(nested(), row(), 'request')).toMatchObject({ height: 4, before: [{ height: 4, tone: undefined }] })
+    expect(between(row(), nested(), 'section')).toMatchObject({ height: 4 })
+    expect(between(nested(), nested(), 'section')).toBeUndefined()
+  })
+
+  it('a removed block above an added one: each side splits by its own tones', () => {
+    const separator = between(row(Red, Gray, 'breaking'), row(Gray, Green, 'non-breaking'), 'operation')
+    expect(separator?.before).toEqual([{ height: 6, tone: Red }, { height: 6, tone: Gray }])
+    expect(separator?.after).toEqual([{ height: 6, tone: Gray }, { height: 6, tone: Green }])
+    expect(separator?.badge).toEqual([{ height: 6, type: 'breaking' }, { height: 6, type: 'non-breaking' }])
+  })
+
+  it('cards own 4px outside their border: toolbar -> card, card -> added card', () => {
+    expect(between(row(), card(), 'security')).toMatchObject({ height: 8 })
+    expect(between(card(), card(Gray, Green, 'non-breaking'), 'security')?.after).toEqual([{ height: 4, tone: undefined }, { height: 4, tone: Green }])
+  })
+
+  it('equal separators are one interned object with a stable signature', () => {
+    const a = between(row(Yellow, Yellow), row(), 'operation')
+    const b = between(row(Yellow, Yellow), row(), 'operation')
+    expect(a).toBe(b)
+    expect(a?.signature).toBe('6yellow,6-/6yellow,6-/12-')
+    expect(between(row(), row(), 'operationHeader')).not.toBe(a)
   })
 })
 
 describe('OpenAPI layout: planner', () => {
-  it('interleaves separators between blocks, never before the first or after the last', () => {
-    const items = OpenApiLayoutPlanner.plan([block('a', row()), block('b', row()), block('c', row())], DEFAULT_OPENAPI_SPACING_CONFIG)
-    expect(items.map(item => item.type === 'block' ? item.block.id : item.separator.id)).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
+  it('interleaves separators between blocks; outer halves only on request', () => {
+    const blocks = [block('a', row()), block('b', row()), block('c', nested())]
+    expect(ids(OpenApiLayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG))).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
+    // A trailing nested viewer owns no half: no trailing separator.
+    expect(ids(OpenApiLayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true }))).toEqual(['^a', 'a', 'a|b', 'b', 'b|c', 'c'])
   })
 
-  it('splits each side independently by the tones of the rows around it', () => {
-    const [, separator] = OpenApiLayoutPlanner.plan(
-      [block('removed', row(HighlightVariant.Red, HighlightVariant.Gray, 'breaking')), block('added', row(HighlightVariant.Gray, HighlightVariant.Green, 'non-breaking'))],
-      DEFAULT_OPENAPI_SPACING_CONFIG,
-    )
-    expect(separator).toEqual({
-      type: 'separator',
-      separator: {
-        id: 'removed|added',
-        before: [{ height: 6, tone: HighlightVariant.Red }, { height: 6, tone: HighlightVariant.Gray }],
-        after: [{ height: 6, tone: HighlightVariant.Gray }, { height: 6, tone: HighlightVariant.Green }],
-        badge: [{ height: 6, type: 'breaking' }, { height: 6, type: 'non-breaking' }],
-      },
-    })
+  it('an outer half is the edge element\'s own 4px, no level gap', () => {
+    const [first] = OpenApiLayoutPlanner.plan([block('title', row(Yellow, Yellow))], 'operation', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true })
+    expect(first.type === 'separator' && first.separator.before).toEqual([{ height: 4, tone: Yellow }])
   })
 
-  it('leaves cards (frame edges) without separators', () => {
-    const items = OpenApiLayoutPlanner.plan([block('toolbar', row()), block('card1', frame()), block('card2', frame()), block('next', row())], DEFAULT_OPENAPI_SPACING_CONFIG)
-    expect(items.every(item => item.type === 'block')).toBe(true)
-  })
-
-  it('follows a config override (one band always)', () => {
-    const config = OpenApiSpacing.withOverrides({ splitBands: (above, _below, height) => [{ height, tone: above }] })
-    const [, separator] = OpenApiLayoutPlanner.plan([block('a', row(HighlightVariant.Yellow)), block('b', row())], config)
-    expect(separator.type === 'separator' && separator.separator.before).toEqual([{ height: 12, tone: HighlightVariant.Yellow }])
+  it('follows a config override (rows 6px each: 12 inside a block)', () => {
+    const config = OpenApiSpacing.withOverrides({ halfGap: { row: 6, card: 4, nested: 0 } })
+    expect(OpenApiLayoutPlanner.separator(row(), row(), 'operationHeader', config)?.height).toBe(12)
   })
 })
 
-describe('OpenAPI layout: block edges on fixtures', () => {
-  it('a changed description ends the operation header block in yellow, with the description row badge', () => {
+describe('OpenAPI layout: edges on fixtures', () => {
+  it('operation/09: the description row is yellow with its badge, the address row is not', () => {
     const node = operation('operation/09-description-changed')
-    const edges = OpenApiBlockEdges.operationHeader(node, OpenApiNodeVisibility.resolveOperation(node.value(), false))
-    expect(edges.head.tones).toEqual({ before: undefined, after: undefined })
-    expect(edges.head.badge).toBeUndefined()
-    expect(edges.tail.tones).toEqual({ before: HighlightVariant.Yellow, after: HighlightVariant.Yellow })
-    expect(edges.tail.badge).toBe(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type)
-    expect(edges.tail.badge).toBeDefined()
+    const { deprecatedTagRow } = OpenApiNodeVisibility.resolveOperation(node.value(), false)
+    const description = OpenApiBlockEdges.operationHeaderRow(node, 'description', deprecatedTagRow)
+    expect(description.tones).toEqual({ before: Yellow, after: Yellow })
+    expect(description.badge).toBe(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type)
+    expect(description.badge).toBeDefined()
+    expect(OpenApiBlockEdges.operationHeaderRow(node, 'address', deprecatedTagRow)).toEqual(row())
   })
 
-  it('a wholly added parameter group is green on the changed side and gray on the origin side, schema end included', () => {
+  it('a wholly added parameter group: green title row and green nested viewer, both badged', () => {
     const group = child(child(operation('query-parameters/19-all-added'), OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.PARAMETERS, 'query')
-    const edges = OpenApiBlockEdges.parameters(group)
-    expect(edges.head.tones.after).toBe(HighlightVariant.Green)
-    expect(edges.head.badge).toBe(group.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type)
-    expect(edges.head.badge).toBeDefined()
-    expect(edges.tail).toEqual(edges.head)
-    expect(edges.tail.tones.before).toBe(edges.head.tones.before)
+    const badge = group.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
+    expect(badge).toBeDefined()
+    expect(OpenApiBlockEdges.sectionTitleRow(group)).toEqual(row(Gray, Green, badge))
+    expect(OpenApiBlockEdges.nested(group)).toEqual({ ...nested(Gray, Green), badge })
   })
 
-  it('a collapsed parameter group ends with its title row', () => {
+  it('a changed property inside an unchanged group leaves the nested viewer edge white', () => {
     const group = child(child(operation('query-parameters/08-description-changed'), OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.PARAMETERS, 'query')
-    expect(OpenApiBlockEdges.parameters(group, { expanded: false }).tail).toEqual(OpenApiBlockEdges.parameters(group).head)
+    expect(OpenApiBlockEdges.nested(group)).toEqual({ kind: 'nested', tones: { before: undefined, after: undefined }, badge: undefined })
   })
 
-  it('an added card has green frame edges; a type change paints the title row but not the frame', () => {
+  it('an added card: green card edge and frame rows; a type change paints neither', () => {
     const security = (caseId: string): OpenApiTreeNodeWithDiffs => child(operation(caseId), OpenApiTreeNodeKinds.SECURITY)
     const added = child(security('security/09-scheme-added-to-alternative').childrenNodes()[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
     const addedBadge = added.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
     expect(addedBadge).toBeDefined()
-    expect(OpenApiBlockEdges.card(added).head).toEqual({ kind: 'frame', tones: { before: HighlightVariant.Gray, after: HighlightVariant.Green }, badge: addedBadge })
-    expect(OpenApiLayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG).badge).toBe(addedBadge)
+    expect(OpenApiBlockEdges.card(added)).toEqual(card(Gray, Green, addedBadge))
+    expect(OpenApiLayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
     expect(OpenApiLayoutPlanner.frameRow(added, OpenApiSpacing.withOverrides({ frameRowBadge: false })).badge).toBeUndefined()
     const retyped = security('security/15-scheme-type-changed').childrenNodes()[0].childrenNodes()[0]
-    expect(OpenApiBlockEdges.card(retyped).head.tones).toEqual({ before: undefined, after: undefined })
-    expect(OpenApiBlockEdges.card(retyped).head.badge).toBeUndefined()
-    expect(OpenApiLayoutPlanner.frameRow(retyped, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 24, borderOffset: 12, tones: { before: undefined, after: undefined } })
+    expect(OpenApiBlockEdges.card(retyped)).toEqual(card())
   })
 
-  it('a container ends with the tail of its last child, or its header row without children', () => {
-    const header = row(HighlightVariant.Yellow)
-    const container = OpenApiBlockEdges.container({}, [{ head: row(), tail: header }])
-    expect(container.tail).toBe(header)
-    expect(OpenApiBlockEdges.container({}, []).tail).toEqual(row())
+  it('the yellow Body and Responses title rows are row edges with their badges', () => {
+    const body = child(child(operation('request-body/03-required-added'), OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.REQUEST_BODY)
+    expect(OpenApiBlockEdges.requestBodyTitleRow(body).tones).toEqual({ before: Yellow, after: Yellow })
+    expect(OpenApiBlockEdges.requestBodyTitleRow(body).badge).toBeDefined()
+    const responses = child(operation('responses/15-code-case-renamed'), OpenApiTreeNodeKinds.RESPONSES)
+    expect(OpenApiBlockEdges.responsesTitleRow(responses).tones).toEqual({ before: Yellow, after: Yellow })
+  })
+
+  it('a container takes the head of its first child and the tail of its last one', () => {
+    const title = row(Yellow, Yellow)
+    const viewer = nested(Green)
+    expect(OpenApiBlockEdges.container([OpenApiBlockEdges.single(title), OpenApiBlockEdges.single(viewer)])).toEqual({ head: title, tail: viewer })
   })
 })

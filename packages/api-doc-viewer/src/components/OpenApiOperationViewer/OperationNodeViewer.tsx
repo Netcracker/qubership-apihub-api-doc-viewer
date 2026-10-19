@@ -1,4 +1,5 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
+import { ArrayUtils } from "@apihub/utils/common/arrays"
 import { resolveHttpMethodBadge } from "@apihub/utils/openapi/http-method-badge-config"
 import {
   findOpenApiChild,
@@ -10,6 +11,7 @@ import {
 import { OpenApiSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import {
+  OpenApiDeprecatedTagRow,
   OpenApiNodeVisibility,
   OpenApiOperationHeaderRow,
   OpenApiOperationRowVisibility,
@@ -49,8 +51,9 @@ type OperationNodeViewerProps = {
 
 /**
  * The operation: the header block (title, operation ID, address, description, external docs), then
- * the sections in config order, planned as one level (separator rows between blocks). Owns the view
- * state (selections) every level reads. Design: features/operation-viewer.md, features/block-separators.md.
+ * the sections in config order, planned as one level (separator rows between blocks, the viewer's
+ * top / bottom halves when configured). Owns the view state (selections) every level reads.
+ * Design: features/operation-viewer.md, features/vertical-gaps.md.
  */
 export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const { node, noHeading } = props
@@ -70,7 +73,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   return (
     <OpenApiViewStateContext.Provider value={view}>
       <div className="flex flex-col">
-        <OpenApiLayout blocks={blocks} spacing={spacing} />
+        <OpenApiLayout blocks={blocks} level="operation" outerHalves={spacing.viewerEdges} />
       </div>
     </OpenApiViewStateContext.Provider>
   )
@@ -99,26 +102,38 @@ function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationR
         return []
     }
   })
-  return [
-    {
-      id: 'operation-header',
-      ...OpenApiBlockEdges.operationHeader(node, visibility),
-      payload: () => <OperationHeaderRows key="operation-header" node={node} visibility={visibility} />,
-    },
-    ...sections,
-  ]
+  const header = buildOperationHeaderBlock(node, visibility)
+  return header ? [header, ...sections] : sections
 }
 
-type OperationHeaderRowsProps = {
+/** The header block: one block per visible row, in the data-layer order (`resolveOperationHeaderRows`). */
+function buildOperationHeaderBlock(node: OperationNode, visibility: OpenApiOperationRowVisibility): OpenApiBlock | undefined {
+  const { deprecatedTagRow } = visibility
+  const rows = OpenApiNodeVisibility.resolveOperationHeaderRows(visibility).map((row): OpenApiBlock => ({
+    id: row,
+    ...OpenApiBlockEdges.single(OpenApiBlockEdges.operationHeaderRow(node, row, deprecatedTagRow)),
+    payload: () => <OperationHeaderRow key={row} node={node} row={row} deprecatedTagRow={deprecatedTagRow} />,
+  }))
+  if (!ArrayUtils.isNonEmptyList(rows)) {
+    return undefined
+  }
+  return {
+    id: 'operation-header',
+    ...OpenApiBlockEdges.container(rows),
+    payload: () => <OpenApiLayout key="operation-header" blocks={rows} level="operationHeader" />,
+  }
+}
+
+type OperationHeaderRowProps = {
   node: OperationNode
-  visibility: OpenApiOperationRowVisibility
+  row: OpenApiOperationHeaderRow
+  /** The deprecated tag (and its diff badge) sits on the title row, else the operation ID row, else the address row. */
+  deprecatedTagRow: OpenApiDeprecatedTagRow
 }
 
-/** The header block: its visible rows in the data-layer order (`resolveOperationHeaderRows`). */
-const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility }) => {
+/** One operation header row. */
+const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecatedTagRow }) => {
   const value = node.value()
-  // The deprecated tag (and its diff badge) sits on the title row, else the operation ID row, else the address row.
-  const deprecatedTagRow = visibility.deprecatedTagRow
   const severities = takeOpenApiSeverities(node)
   const deprecatedDiff = OpenApiRowDiffs.Operation.takeDeprecatedTagDiff(node)
   const hasDeprecatedTag = value?.deprecated === true || !!deprecatedDiff
@@ -135,78 +150,68 @@ const OperationHeaderRows: FC<OperationHeaderRowsProps> = ({ node, visibility })
       )
       : <></>
   ), [deprecatedDiff, hasDeprecatedTag, node])
-  const rowDiff = (row: OpenApiOperationHeaderRow): ReturnType<typeof OpenApiRowDiffs.Operation.takeHeaderRowDiff> =>
-    OpenApiRowDiffs.Operation.takeHeaderRowDiff(node, row, deprecatedTagRow)
+  const diff = OpenApiRowDiffs.Operation.takeHeaderRowDiff(node, row, deprecatedTagRow)
 
-  const renderRow = (row: OpenApiOperationHeaderRow): ReactElement => {
-    switch (row) {
-      case 'title':
-        return (
-          <TitleRow
-            key={row}
-            data-precededby={PrecededBy.OPENAPI_ROW}
-            value={value?.title ?? ''}
-            expandable={false}
-            variant={TextValueVariant.h1}
-            subheader={renderDeprecatedTag}
-            diff={rowDiff(row)}
-            diffsSeverities={severities}
-          />
-        )
-      case 'operationId':
-        return (
-          <TextRow
-            key={row}
-            data-precededby={PrecededBy.OPENAPI_OPERATION_ID_ROW}
-            label={OPERATION_ID_ROW_LABEL}
-            value={value?.operationId ?? ''}
-            variant={TextValueVariant.body2}
-            labelFontWeight="normal"
-            textFontWeight="normal"
-            labelColor={SECONDARY_TEXT_COLOR}
-            textColor={SECONDARY_TEXT_COLOR}
-            trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
-            diff={rowDiff(row)}
-            diffsSeverities={severities}
-            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
-          />
-        )
-      case 'address':
-        return (
-          <AddressRow
-            key={row}
-            data-precededby={PrecededBy.OPENAPI_ROW}
-            badge={resolveHttpMethodBadge(value?.method ?? '')}
-            address={value?.path ?? ''}
-            trailing={deprecatedTagRow === 'address' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
-            diff={rowDiff(row)}
-            diffsSeverities={severities}
-            diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
-          />
-        )
-      case 'description':
-        return (
-          <MarkdownTextRow
-            key={row}
-            data-precededby={PrecededBy.OPENAPI_ROW}
-            value={value?.description ?? ''}
-            variant={TextValueVariant.body2}
-            diff={rowDiff(row)}
-            diffsSeverities={severities}
-          />
-        )
-      case 'externalDocs':
-        return (
-          <ExternalDocsRow
-            key={row}
-            data-precededby={PrecededBy.OPENAPI_ROW}
-            resolveSide={(layoutSide) => OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, layoutSide)}
-            diff={rowDiff(row)}
-            diffsSeverities={severities}
-          />
-        )
-    }
+  switch (row) {
+    case 'title':
+      return (
+        <TitleRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          value={value?.title ?? ''}
+          expandable={false}
+          variant={TextValueVariant.h1}
+          subheader={renderDeprecatedTag}
+          diff={diff}
+          diffsSeverities={severities}
+        />
+      )
+    case 'operationId':
+      return (
+        <TextRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          label={OPERATION_ID_ROW_LABEL}
+          value={value?.operationId ?? ''}
+          variant={TextValueVariant.body2}
+          labelFontWeight="normal"
+          textFontWeight="normal"
+          labelColor={SECONDARY_TEXT_COLOR}
+          textColor={SECONDARY_TEXT_COLOR}
+          trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
+          diff={diff}
+          diffsSeverities={severities}
+          diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
+        />
+      )
+    case 'address':
+      return (
+        <AddressRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          badge={resolveHttpMethodBadge(value?.method ?? '')}
+          address={value?.path ?? ''}
+          trailing={deprecatedTagRow === 'address' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
+          diff={diff}
+          diffsSeverities={severities}
+          diffsSeverityPlacement={OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)}
+        />
+      )
+    case 'description':
+      return (
+        <MarkdownTextRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body2}
+          diff={diff}
+          diffsSeverities={severities}
+        />
+      )
+    case 'externalDocs':
+      return (
+        <ExternalDocsRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          resolveSide={(layoutSide) => OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, layoutSide)}
+          diff={diff}
+          diffsSeverities={severities}
+        />
+      )
   }
-
-  return <>{OpenApiNodeVisibility.resolveOperationHeaderRows(visibility).map(renderRow)}</>
 }

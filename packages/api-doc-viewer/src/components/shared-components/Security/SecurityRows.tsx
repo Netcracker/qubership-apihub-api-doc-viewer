@@ -8,7 +8,7 @@ import {
   NodeDiffsSeverity,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiFrameRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
-import { FC, ReactElement, ReactNode } from "react"
+import { FC, memo, ReactElement, ReactNode } from "react"
 import { TagsWithDiffs } from "../diffs/TagsWithDiffs"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { Expander } from "../Expander"
@@ -75,32 +75,31 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
 }
 
 type SecurityFrameRowProps = {
-  /** Height, border offset and whole-card tones (next-data-model `OpenApiLayoutPlanner.frameRow`). */
+  /** Height (the card's inner inset), whole-card tones and badge (next-data-model `OpenApiLayoutPlanner.frameRow`). */
   frameRow: OpenApiFrameRow
-  /** `first`: the card's opening row (top border), `last`: its closing row (bottom border). */
+  /** `first`: the card's opening row (border at its top), `last`: its closing row (border at its bottom). */
   position: 'first' | 'last'
   /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */
-  isPresentOnSide: (layoutSide: LayoutSide) => boolean
+  presence: { readonly before: boolean, readonly after: boolean }
 }
 
 /**
- * A card's content-less opening / closing row: the horizontal border runs at `borderOffset` from
- * the row top (the middle by default), the rest of the row is space inside / outside the card.
- * Painted with the whole-card diff only. Design: docs/design/openapi/features/block-separators.md
+ * A card's content-less opening / closing row inside the border: the border runs along its outer
+ * edge, the row is the space between the border and the first / last content row's own half-gap.
+ * Painted with the whole-card diff only. Memoised on its values (cards re-render on scope toggles).
+ * Design: docs/design/openapi/features/vertical-gaps.md -> "Security cards".
  */
-export const SecurityFrameRow: FC<SecurityFrameRowProps> = (props) => {
-  const { frameRow, position, isPresentOnSide } = props
+export const SecurityFrameRow: FC<SecurityFrameRowProps> = memo<SecurityFrameRowProps>((props) => {
+  const { frameRow, position, presence } = props
   const layoutMode = useLayoutMode()
-  const { height, borderOffset, tones } = frameRow
+  const { height, tones } = frameRow
 
   const renderSide = (layoutSide: LayoutSide): ReactElement => (
     <div
       data-testid={`security-frame-${position === 'first' ? 'start' : 'end'}`}
-      data-frame-position={isPresentOnSide(layoutSide) ? position : undefined}
+      data-frame-position={(layoutSide === ORIGIN_LAYOUT_SIDE ? presence.before : presence.after) ? position : undefined}
       className={`security-frame-row flex w-full ${DiffsClassesBuilder.background(layoutSide === ORIGIN_LAYOUT_SIDE ? tones.before : tones.after)}`}
-      style={position === 'first'
-        ? { height, '--frame-border-top': `${borderOffset}px` }
-        : { height, '--frame-border-bottom': `${height - borderOffset}px` }}
+      style={{ height }}
     />
   )
 
@@ -114,7 +113,15 @@ export const SecurityFrameRow: FC<SecurityFrameRowProps> = (props) => {
     )
   }
   return <OneSideLayout content={renderSide(CHANGED_LAYOUT_SIDE)} />
-}
+}, (previous, next) => (
+  previous.position === next.position
+  && previous.presence.before === next.presence.before
+  && previous.presence.after === next.presence.after
+  && previous.frameRow.height === next.frameRow.height
+  && previous.frameRow.badge === next.frameRow.badge
+  && previous.frameRow.tones.before === next.frameRow.tones.before
+  && previous.frameRow.tones.after === next.frameRow.tones.after
+))
 
 type SecurityPropContentProps = {
   /** Plain text, or composed text with its own highlighted segments (apiKey `<Place> parameter name`). */

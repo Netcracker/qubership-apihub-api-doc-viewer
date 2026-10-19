@@ -3,31 +3,44 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { OpenApiSeparatorRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
-import { FC, ReactElement } from "react"
-import { WithFramePositionProps } from "../Frame/types"
+import { FC, memo, ReactElement } from "react"
+import { FramePosition } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { BadgeStub } from "./BadgeStub"
 import "./SeparatorRow.css"
 
-type SeparatorRowProps = WithFramePositionProps & {
+/** Frame segment of a separator per side (inside a card: `middle` where the card exists). */
+export type SeparatorFramePositions = {
+  readonly before?: FramePosition
+  readonly after?: FramePosition
+}
+
+type SeparatorRowProps = {
   separator: OpenApiSeparatorRow
+  framePositions?: SeparatorFramePositions
 }
 
 /**
- * A content-less row between two blocks: per side a stack of bands whose heights and tones come
- * from the layout data (next-data-model `OpenApiLayoutPlanner`), and in diffs mode a decorative badge
- * stub continuing the neighbouring rows' floating badges. No padding, no margin, no text.
- * Design: docs/design/openapi/features/block-separators.md
+ * A content-less row: per side a stack of bands whose heights and tones come from the layout data
+ * (next-data-model `OpenApiLayoutPlanner`), and in diffs mode a decorative badge stub continuing the
+ * neighbouring rows' floating badges. No padding, no margin, no text. Memoised on the interned
+ * separator and the frame positions; `renderSeparatorRow` (render-separator-row.tsx) also reuses the
+ * rendered element.
+ * Design: docs/design/openapi/features/vertical-gaps.md
  */
-export const SeparatorRow: FC<SeparatorRowProps> = (props) => {
-  const { separator, framePosition } = props
+export const SeparatorRow: FC<SeparatorRowProps> = memo<SeparatorRowProps>((props) => {
+  const { separator, framePositions } = props
   const layoutMode = useLayoutMode()
 
   const renderSide = (layoutSide: LayoutSide): ReactElement => {
     const bands = layoutSide === ORIGIN_LAYOUT_SIDE ? separator.before : separator.after
     return (
-      <div data-testid="layout-separator" data-frame-position={framePosition?.(layoutSide)} className="layout-separator flex w-full flex-col">
+      <div
+        data-testid="layout-separator"
+        data-frame-position={layoutSide === ORIGIN_LAYOUT_SIDE ? framePositions?.before : framePositions?.after}
+        className="layout-separator flex w-full flex-col"
+      >
         {bands.map((band, index) => (
           <div key={index} className={`layout-separator-band ${DiffsClassesBuilder.background(band.tone)}`} style={{ height: band.height }} />
         ))}
@@ -45,4 +58,8 @@ export const SeparatorRow: FC<SeparatorRowProps> = (props) => {
     )
   }
   return <OneSideLayout content={renderSide(CHANGED_LAYOUT_SIDE)} />
-}
+}, (previous, next) => (
+  previous.separator.signature === next.separator.signature
+  && previous.framePositions?.before === next.framePositions?.before
+  && previous.framePositions?.after === next.framePositions?.after
+))

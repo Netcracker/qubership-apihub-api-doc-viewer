@@ -45,7 +45,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
         return OpenApiNodeVisibility.showResponseDescription(response.value())
           ? [{
             id: id(sectionId),
-            ...OpenApiBlockEdges.responseDescription(response),
+            ...OpenApiBlockEdges.single(OpenApiBlockEdges.descriptionRow(response)),
             payload: () => <ResponseDescriptionRow key={id(sectionId)} node={response} />,
           }]
           : []
@@ -61,7 +61,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
         return content && hasBody
           ? [{
             id: id(sectionId),
-            ...OpenApiBlockEdges.responseBody(content, resolveSelectedMediaType(response, view.selection)),
+            ...OpenApiBlockEdges.body(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection)),
             payload: () => <ResponseBodyViewer key={id(sectionId)} node={response} />,
           }]
           : []
@@ -94,6 +94,7 @@ const ResponseBodyViewer: FC<{ node: ResponseNode }> = ({ node }) => {
       onSelect={(mediaTypeId) => select(node.id, mediaTypeId)}
       headerDiff={content ? OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content) : undefined}
       diffsSeverities={content ? takeOpenApiSeverities(content) : undefined}
+      titleEdge={content ? OpenApiBlockEdges.responseBodyTitleRow(content) : OpenApiBlockEdges.row({})}
     />
   )
 }

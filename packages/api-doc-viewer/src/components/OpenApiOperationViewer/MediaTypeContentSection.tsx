@@ -4,11 +4,12 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { wrapJsonSchemaForDiffsViewer, wrapJsonSchemaForViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
+import { OpenApiBlockEdge, OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
-import { FC, ReactElement, useMemo } from "react"
+import { FC, Fragment, ReactElement, useMemo } from "react"
 import { TagsWithDiffs } from "../shared-components/diffs/TagsWithDiffs"
 import { Selector, SelectorOption } from "../shared-components/Selector/Selector"
 import { SelectorVariant } from "../shared-components/Selector/types"
@@ -16,6 +17,7 @@ import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
+import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
 import { OptionKeyText } from "./OptionKeyText"
 
@@ -39,19 +41,22 @@ type MediaTypeContentSectionProps = {
   isRequiredOnSide?: (layoutSide: LayoutSide) => boolean
   /** Request body only: the `required` tag of a required change. */
   requiredTagDiff?: ChangedPropertyMetaData
-  /** The row between the header and the schema (the body description); omitted when hidden. */
-  renderDescription?: () => ReactElement
+  /** Layout edge of the title row (next-data-model `OpenApiBlockEdges.requestBodyTitleRow` / `responseBodyTitleRow`). */
+  titleEdge: OpenApiBlockEdge
+  /** The row between the header and the schema (the body description) and its edge; omitted when hidden. */
+  description?: { readonly edge: OpenApiBlockEdge, readonly render: () => ReactElement }
 }
 
 /**
- * "Body" (h3) with the media-type selector in its subheader, then the selected media type's schema
- * wrapped under a `Type` root. Request body and response body share it.
- * Design: entities/request-body.md, entities/responses.md -> "Body".
+ * "Body" (h3) with the media-type selector in its subheader, the optional description, then the
+ * selected media type's schema wrapped under a `Type` root - each an element of its own layout.
+ * Request body and response body share it; the builders compute the same outer edges with
+ * `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md -> "Body".
  */
 export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props) => {
   const {
     testId, optionTestIdPrefix, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
-    isRequiredOnSide, requiredTagDiff, renderDescription,
+    isRequiredOnSide, requiredTagDiff, titleEdge, description,
   } = props
   const layoutMode = useLayoutMode()
   const diffMetaKeys = useDiffMetaKeys()
@@ -113,20 +118,33 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
     </div>
   )
 
+  const blocks: OpenApiBlock[] = [
+    {
+      id: 'title',
+      ...OpenApiBlockEdges.single(titleEdge),
+      payload: () => (
+        <TitleRow
+          key="title"
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          value={BODY_SECTION_TITLE}
+          titleContent={renderTitle}
+          expandable={false}
+          variant={TextValueVariant.h3}
+          subheader={renderSubheader}
+          diff={headerDiff}
+          diffsSeverities={diffsSeverities}
+        />
+      ),
+    },
+    ...(description ? [{ id: 'description', ...OpenApiBlockEdges.single(description.edge), payload: () => <Fragment key="description">{description.render()}</Fragment> }] : []),
+    ...(selected && schema !== undefined
+      ? [{ id: 'schema', ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(selected)), payload: () => <OpenApiSchemaViewer key="schema" schema={schema} /> }]
+      : []),
+  ]
+
   return (
     <div data-testid={testId} className="flex flex-col">
-      <TitleRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
-        value={BODY_SECTION_TITLE}
-        titleContent={renderTitle}
-        expandable={false}
-        variant={TextValueVariant.h3}
-        subheader={renderSubheader}
-        diff={headerDiff}
-        diffsSeverities={diffsSeverities}
-      />
-      {renderDescription?.()}
-      <OpenApiSchemaViewer schema={schema} />
+      <OpenApiLayout blocks={blocks} level="section" />
     </div>
   )
 }

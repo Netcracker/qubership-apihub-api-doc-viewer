@@ -20,43 +20,58 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
   contentPrecededBy?: PrecededBy
 }
 
+type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'>
+
+/** The "Extensions" header row alone (OpenAPI plans it as an element of its own). */
+export const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps> = (props) => {
+  const { variant, titleRowDiffProps, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  return (
+    <TitleRow
+      data-precededby={precededBy}
+      value={EXTENSIONS_SECTION_TITLE}
+      expandable={false}
+      variant={variant}
+      usage={TitleRowUsage.AsyncApiJsoSection}
+      {...titleRowDiffProps}
+    />
+  )
+}
+
+type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 'contentPrecededBy'>
+
+/** The JSO tree of `x-*` values alone: `JsoDiffsViewer` when diff meta keys are provided. */
+export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (props) => {
+  const { rawValues, contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL } = props
+  const diffMetaKeys = useDiffMetaKeys()
+  return diffMetaKeys
+    ? (
+      <JsoDiffsViewer
+        data-precededby={contentPrecededBy}
+        mergedSource={rawValues}
+        initialLevel={1}
+        diffMetaKeys={diffMetaKeys}
+      />
+    )
+    : (
+      <JsoViewer
+        data-precededby={contentPrecededBy}
+        source={rawValues}
+        initialLevel={1}
+      />
+    )
+}
+
 /**
- * "Extensions" header + JSO tree of `x-*` values. Shared by AsyncAPI (message / channel / operation)
- * and OpenAPI (operation, response, Responses Object). Picks `JsoDiffsViewer` when diff meta keys
- * are provided.
+ * "Extensions" header + JSO tree of `x-*` values. Used by AsyncAPI (message / channel / operation);
+ * OpenAPI composes `ExtensionsSectionTitleRow` and `ExtensionsSectionContent` with a separator row
+ * between them.
  */
 export const ExtensionsSection: FC<ExtensionsSectionProps> = (props) => {
-  const {
-    rawValues, variant, testId, titleRowDiffProps,
-    contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL,
-    [ATTRIBUTE_PRECEDED_BY]: precededBy,
-  } = props
-  const diffMetaKeys = useDiffMetaKeys()
-
+  const { rawValues, variant, testId, titleRowDiffProps, contentPrecededBy, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const content = (
     <>
-      <TitleRow
-        data-precededby={precededBy}
-        value={EXTENSIONS_SECTION_TITLE}
-        expandable={false}
-        variant={variant}
-        usage={TitleRowUsage.AsyncApiJsoSection}
-        {...titleRowDiffProps}
-      />
-      {diffMetaKeys ? (
-        <JsoDiffsViewer
-          data-precededby={contentPrecededBy}
-          mergedSource={rawValues}
-          initialLevel={1}
-          diffMetaKeys={diffMetaKeys}
-        />
-      ) : (
-        <JsoViewer
-          data-precededby={contentPrecededBy}
-          source={rawValues}
-          initialLevel={1}
-        />
-      )}
+      <ExtensionsSectionTitleRow data-precededby={precededBy} variant={variant} titleRowDiffProps={titleRowDiffProps} />
+      <ExtensionsSectionContent rawValues={rawValues} contentPrecededBy={contentPrecededBy} />
     </>
   )
   // Without a test id the section renders as a fragment - the exact DOM AsyncAPI always had.

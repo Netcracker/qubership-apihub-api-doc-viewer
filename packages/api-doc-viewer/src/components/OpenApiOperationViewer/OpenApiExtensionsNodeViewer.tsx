@@ -5,44 +5,52 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
 import { FC } from "react"
-import { ExtensionsSection } from "../shared-components/ExtensionsSection/ExtensionsSection"
+import { ExtensionsSectionContent, ExtensionsSectionTitleRow } from "../shared-components/ExtensionsSection/ExtensionsSection"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiBlock } from "./OpenApiLayout"
+import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+
+type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
 
 type OpenApiExtensionsNodeViewerProps = {
-  node: OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
+  node: ExtensionsNode
   variant: TextValueVariant
   testId: string
 }
 
-/** An Extensions section as a layout block (title row + JSO viewer). */
+/** An Extensions section as a layout block: its title row and its JSO viewer, two elements. */
 export function buildExtensionsBlock(id: string, props: OpenApiExtensionsNodeViewerProps): OpenApiBlock {
+  const { node, variant, testId } = props
+  const elements: [OpenApiBlock, OpenApiBlock] = [
+    { id: 'title', ...OpenApiBlockEdges.single(OpenApiBlockEdges.sectionTitleRow(node)), payload: () => <ExtensionsTitleRow key="title" node={node} variant={variant} /> },
+    { id: 'values', ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(node)), payload: () => <ExtensionsValues key="values" node={node} /> },
+  ]
   return {
     id,
-    ...OpenApiBlockEdges.extensions(props.node),
-    payload: () => <OpenApiExtensionsNodeViewer key={id} {...props} />,
+    ...OpenApiBlockEdges.container(elements),
+    payload: () => (
+      <div key={id} data-testid={testId} className="flex flex-col">
+        <OpenApiLayout blocks={elements} level="section" />
+      </div>
+    ),
   }
 }
 
-/** Operation (h2), Response (h3) and Responses Object (h3) extensions; always ends with the JSO viewer. */
-export const OpenApiExtensionsNodeViewer: FC<OpenApiExtensionsNodeViewerProps> = (props) => {
-  const { node, variant, testId } = props
-  const value = node.value()
-  const headerDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
-  return (
-    <ExtensionsSection
-      data-precededby={PrecededBy.OPENAPI_ROW}
-      rawValues={value?.rawValues ?? {}}
-      variant={variant}
-      testId={testId}
-      contentPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
-      titleRowDiffProps={{
-        diff: headerDiff,
-        diffsSeverities: takeOpenApiSeverities(node),
-        highlightingMode: isOpenApiTreeNodeWithDiffs(node) ? node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode : undefined,
-      }}
-    />
-  )
-}
+/** Operation (h2), Response (h3) and Responses Object (h3) extensions title. */
+const ExtensionsTitleRow: FC<{ node: ExtensionsNode, variant: TextValueVariant }> = ({ node, variant }) => (
+  <ExtensionsSectionTitleRow
+    data-precededby={PrecededBy.OPENAPI_ROW}
+    variant={variant}
+    titleRowDiffProps={{
+      diff: OpenApiRowDiffs.Section.takeHeaderRowDiff(node),
+      diffsSeverities: takeOpenApiSeverities(node),
+      highlightingMode: isOpenApiTreeNodeWithDiffs(node) ? node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode : undefined,
+    }}
+  />
+)
+
+/** The `x-*` values (JSO viewer); its first row keeps the nested-viewer inset. */
+const ExtensionsValues: FC<{ node: ExtensionsNode }> = ({ node }) => (
+  <ExtensionsSectionContent rawValues={node.value()?.rawValues ?? {}} contentPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START} />
+)

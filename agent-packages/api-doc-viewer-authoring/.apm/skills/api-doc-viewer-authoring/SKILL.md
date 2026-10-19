@@ -881,37 +881,54 @@ of several review rounds:
 - Never shrink or margin the highlighted element to draw a card — the diff color then stops at the
   card edge and the rest of the side stays white.
 - The card's top and bottom edges are dedicated, content-less **frame rows** (`SecurityFrameRow`,
-  24px, border in the middle via `--frame-border-top` / `--frame-border-bottom`), coloured by the
-  whole-card diff only. If the border sat on a content row, collapsing an expandable row (e.g.
+  `cardInnerInset` high — inside the border, which runs along their outer edge), coloured by the
+  whole-card diff only. The space **outside** the border is the card's own half-gap in the
+  Security-level separators. If the border sat on a content row, collapsing an expandable row (e.g.
   `Scopes`) would change which row is last and the row would visibly "jump"; a yellow title row would
   also colour the space above the border.
-- Vertical spacing inside a card is padding, never margin (margins cut the side borders and leave
-  white seams between highlighted rows). Gaps between card segments (flow parts) are separator rows
-  with `data-frame-position="middle"`; `SeparatorRow.css` drops the frame padding so the bands still
-  fill the side. See the OpenAPI spacing section below.
+- Vertical spacing inside a card is separator rows, never margin (margins cut the side borders and
+  leave white seams between highlighted rows). The card's rows are planned at the `card` level with
+  outer halves, all with `data-frame-position="middle"`; `SeparatorRow.css` drops the frame padding so
+  the bands still fill the side. See the OpenAPI spacing section below.
 - Verify geometry in a live browser (testing skill → live Storybook check); SSR / HTML checks cannot
   see widths or `::before` boxes.
 
-## OpenAPI vertical spacing: symmetric rows + separator rows (session lesson)
+## OpenAPI vertical spacing: every gap is a separator row (session lesson)
 
-Design: `docs/design/openapi/features/block-separators.md` (rule, colouring, algorithm, config, cost).
-Main rule: every vertical offset of the OpenAPI viewers is **padding inside the per-side row element
-that holds the value** (the element with the diff background) — no margins, no padding on wrappers
-(section divs, layouts, `DiffFloatingBadgeWrapper`), no `min-height` centring.
+Design: `docs/design/openapi/features/vertical-gaps.md` (rule, colouring, examples, config,
+algorithm); `block-separators.md` keeps the colouring principle and the badge stubs. Main rule:
+OpenAPI rows have **no vertical padding**; every vertical gap is one `SeparatorRow` made of bands —
+the upper element's half-gap + the container level's gap + the lower element's half-gap. No margins,
+no padding on rows or wrappers (section divs, layouts, `DiffFloatingBadgeWrapper`), no `min-height`
+centring. JSON Schema / JSO viewers keep their own rows and paddings.
 
-- **Symmetric rows.** Every OpenAPI row has `data-precededby="openapi-row"` → padding
-  `var(--openapi-row-padding)` top and bottom (4px; set on the viewer root from
-  `OpenApiSpacingConfig.rowPadding`). Rows of one block touch (8px between contents).
-- **Separators between blocks.** A content-less `SeparatorRow` (12px) between two blocks; per side one
-  band, or two 6px bands when the rows around it have different tones. The **data layer** computes it
-  (next-data-model `model/openapi/layout/`: `OpenApiBlockEdges`, `OpenApiLayoutPlanner`,
-  `OpenApiSpacingConfig`); the viewer only renders the plan (`OpenApiLayout`). Never decide a colour,
-  height or "separator here?" in React.
+- **Elements and half-gaps.** An element is an OpenAPI row (4px half), a security card seen from
+  outside (4px), or a nested JSON Schema / JSO viewer (0px — its first / last row already insets its
+  text: JSON Schema row body via `OPENAPI_NESTED_VIEWER_START` + `--openapi-nested-viewer-inset`, JSO
+  26px centring). `OpenApiBlockEdge.kind` (`row` / `card` / `nested`) selects the half from
+  `OpenApiSpacingConfig.halfGap`.
+- **Levels.** Every container plans its own elements: `operation` (blocks 1–5, level gap 4 → 12px),
+  `operationHeader`, `security`, `request`, `responses`, `section` (rows of a parameter group / Body /
+  Extensions), `card` (all 0 → 8px). The level gap splits into halves that continue the neighbours
+  (`splitBands`). Every row is its own block of its container; containers take the head of their first
+  child and the tail of their last (`OpenApiBlockEdges.container`). Outer halves: the root (config
+  `viewerEdges`) and the inside of a card.
+- **Data computed in next-data-model** (`model/openapi/layout/`: `OpenApiBlockEdges`,
+  `OpenApiLayoutPlanner`, `OpenApiSpacingConfig`); the viewer only renders the plan (`OpenApiLayout
+  level=…`). Never decide a colour, height or "separator here?" in React. A Body's outer edges come
+  from `OpenApiBlockEdges.body(title, description, selectedMediaType)`; `MediaTypeContentSection`
+  plans the same elements inside, so the parent and the component agree.
 - **Blocks, not sections.** Each container exports a pure builder (`buildRequestBlock`,
   `buildResponsesBlock`, `buildSecurityBlock`, `buildParametersBlock`, `buildExtensionsBlock`,
-  `buildResponseBlocks`) returning `{ id, head, tail, payload }`; a container's edges are its header
-  row and the tail of its last child (`OpenApiBlockEdges.container`), so the parent level can plan
-  before rendering. Pass the built child blocks to the container component — do not build twice.
+  `buildResponseBlocks`) returning `{ id, head, tail, payload }`, so the parent level can plan before
+  rendering. Pass the built child blocks to the container component — do not build twice. Shared
+  components that must be split into elements export their pieces (`ExtensionsSectionTitleRow`,
+  `ExtensionsSectionContent`) and keep the composed component byte-identical for AsyncAPI.
+- **Memoised separators.** The planner interns separators by `signature` (equal separators are one
+  object); `SeparatorRow` and `SecurityFrameRow` are `memo` with value comparators (frame positions
+  and presence are passed as resolved values, not functions); `renderSeparatorRow`
+  (`Separator/render-separator-row.tsx`) returns one cached element per look, so React skips them on
+  re-render.
 - **View state is one store.** Selections live in `OpenApiViewStateContext` (owner node id → selected
   node id), owned by `OperationNodeViewer`: a Body's selected media type decides where Request ends,
   which the operation level needs. Per-container `useState` for a selection breaks the plan.
@@ -919,10 +936,10 @@ that holds the value** (the element with the diff background) — no margins, no
 - **Nested viewers: boundary only.** `JsonSchemaViewer` / `JsonSchemaDiffsViewer` **ignore** a
   `data-precededby` passed to them (AsyncAPI still passes one; honouring it would shift AsyncAPI rows),
   so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first child under a
-  suppressed root). JSO: `ExtensionsSection` `contentPrecededBy`. Next to a nested viewer the layout
-  uses the owning block's whole add / remove only (its inner rows are invisible to the OpenAPI layer).
+  suppressed root). JSO: `ExtensionsSectionContent` `contentPrecededBy`. A nested viewer's edge tone
+  is the owning block's whole add / remove only (its inner rows are invisible to the OpenAPI layer).
 - **Line-height struts are offsets too.** A 12px value in a cell that inherits the page's 24px line
-  height sits in a taller line box — an offset outside the row padding. Pin the cell's line height to
+  height sits in a taller line box — an offset outside the separators. Pin the cell's line height to
   its text (`.security-prop` / `.security-scope` `line-height: 1rem`).
 - **Badge stubs on synthetic rows.** Separator and frame rows carry `BadgeStub` (same 4px bar and
   position as `UxDiffFloatingBadge`, `pointer-events: none`, no text) inside the same
@@ -930,21 +947,21 @@ that holds the value** (the element with the diff background) — no margins, no
   (`OpenApiSeparatorRow.badge`, `OpenApiFrameRow.badge`); an edge's badge must be the badge its row
   really renders, so the row and the edge read one placement accessor
   (`resolveHeaderRowSeverityPlacement`) and card rows carry their rendered severity (`CardRow.severity`).
-- **Per-kind row padding.** `OpenApiSpacingConfig.rowPadding` is `{ default, operationId }`; a row kind
-  with its own padding gets its own `PrecededBy` member (`OPENAPI_OPERATION_ID_ROW`) and CSS custom
-  property set on the viewer root.
 - **CSS custom properties in `style`** are typed by `src/types/css-custom-properties.d.ts` — no casts.
-- **"Symmetric" means per row (session lesson).** The first rework split every gap in half between
-  the rows around it (8 → 4 + 4, 20 → 10 + 10), which left block-edge rows asymmetric (4 / 10) — the
-  user rejected it. "Symmetric indentation" here means **each row's top padding equals its bottom
-  padding**; larger gaps between blocks are separator rows. When proposing a spacing model, show the
-  concrete top / bottom padding of every row kind, block-edge rows included, not only the gap sizes.
+- **The user's gap requirements map onto owned halves (session lesson).** Two earlier models were
+  rejected: splitting every gap in half between rows (block-edge rows 4 / 10) and symmetric row
+  padding with separators only between blocks (a changed row at a block edge 4 / 10 again). The
+  approved model reads "≥ 4px above / below every element, 12px between top-level blocks" literally:
+  each element owns its halves, the 4px level gap splits 2 + 2 continuing the neighbours, so a row that
+  changed alone is 4 / 4 inside a block and 4 / 6 at a top-level edge. When proposing a spacing model,
+  draw the bands of every row kind (block-edge rows included) in plain and diffs mode.
 - **Big layout changes go design-first with approval.** For this kind of change the user asked for a
   drawn proposal in `docs/design/`, then the algorithm (data computed in next-data-model, every number
   and rule in one config), then a cost estimate — each approved before any code. Expect the same for
   comparable requests.
-- **Verify by measuring**, not by eye (testing skill → vertical spacing audit): row paddings 4/4,
-  separators 12 or 6 + 6 with the right tones per side, frame rows 24 with the border at 12.
+- **Verify by measuring**, not by eye (testing skill → vertical spacing audit): OpenAPI rows have 0
+  padding; separators 8 inside a block, 12 between top-level blocks (4 next to a nested viewer), with
+  the right tones per side; card frame rows 8 with the border at their outer edge.
 
 ## Typography: the JSON Schema property-title look (session lesson)
 

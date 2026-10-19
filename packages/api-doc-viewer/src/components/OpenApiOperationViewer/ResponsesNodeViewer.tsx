@@ -17,7 +17,6 @@ import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
 import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
-import { useOpenApiViewerContext } from "./OpenApiViewerContext"
 import { OptionKeyText } from "./OptionKeyText"
 import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
 import { buildResponseBlocks } from "./response-blocks"
@@ -28,9 +27,9 @@ type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
 type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
 
-/** The Responses section as a layout block: its h2 title row with the code selector, then its sub-blocks. */
+/** The Responses section as a layout block: its h2 title row with the code selector, then its sub-blocks - elements of one level. */
 export function buildResponsesBlock(node: ResponsesNode, extensionsNode: ExtensionsNode | undefined, view: OpenApiViewState): OpenApiBlock {
-  const children = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiBlock[] => {
+  const sections = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiBlock[] => {
     if (sectionId === 'selectedResponse') {
       const selected = resolveSelectedResponse(node, view.selection)
       return selected ? buildResponseBlocks(selected, view) : []
@@ -39,16 +38,19 @@ export function buildResponsesBlock(node: ResponsesNode, extensionsNode: Extensi
       ? [buildExtensionsBlock(sectionId, { node: extensionsNode, variant: TextValueVariant.h3, testId: 'openapi-responses-extensions-section' })]
       : []
   })
+  const children: [OpenApiBlock, ...OpenApiBlock[]] = [
+    { id: 'title', ...OpenApiBlockEdges.single(OpenApiBlockEdges.responsesTitleRow(node)), payload: () => <ResponsesTitleRow key="title" node={node} /> },
+    ...sections,
+  ]
   return {
     id: 'responses',
-    ...OpenApiBlockEdges.responses(node, children),
-    payload: () => <ResponsesNodeViewer key="responses" node={node} blocks={children} />,
+    ...OpenApiBlockEdges.container(children),
+    payload: () => <ResponsesNodeViewer key="responses" blocks={children} />,
   }
 }
 
 type ResponsesNodeViewerProps = {
-  node: ResponsesNode
-  /** Its sub-blocks, built by `buildResponsesBlock` (the parent needs them for the section's own edges). */
+  /** Its elements (title row, sections), built by `buildResponsesBlock` (the parent needs them for the section's own edges). */
   blocks: readonly OpenApiBlock[]
 }
 
@@ -56,9 +58,14 @@ type ResponsesNodeViewerProps = {
  * "Responses" (h2) with the toned response-code selector in its subheader, the selected response's
  * sections, and the Responses Object extensions - in config order.
  */
-export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
-  const { node, blocks } = props
-  const { spacing } = useOpenApiViewerContext()
+export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) => (
+  <div data-testid="openapi-responses-section" className="flex flex-col">
+    <OpenApiLayout blocks={blocks} level="responses" />
+  </div>
+)
+
+/** "Responses" (h2) with the code selector; the selection lives in the operation view state. */
+const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
   const { selection, select } = useOpenApiViewState()
   const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
 
@@ -82,25 +89,22 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = (props) => {
   const selectedOption = options.find(option => option.node.id === selected?.id) ?? null
 
   return (
-    <div data-testid="openapi-responses-section" className="flex flex-col">
-      <TitleRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
-        value={RESPONSES_SECTION_TITLE}
-        expandable={false}
-        variant={TextValueVariant.h2}
-        subheader={(layoutSide) => (
-          <Selector
-            options={options}
-            selectedOption={selectedOption}
-            onSelectOption={(option) => select(node.id, option.node.id)}
-            variant={SelectorVariant.Secondary}
-            layoutSide={layoutSide}
-          />
-        )}
-        diff={OpenApiRowDiffs.Responses.takeTitleRowDiff(node)}
-        diffsSeverities={takeOpenApiSeverities(node)}
-      />
-      <OpenApiLayout blocks={blocks} spacing={spacing} />
-    </div>
+    <TitleRow
+      data-precededby={PrecededBy.OPENAPI_ROW}
+      value={RESPONSES_SECTION_TITLE}
+      expandable={false}
+      variant={TextValueVariant.h2}
+      subheader={(layoutSide) => (
+        <Selector
+          options={options}
+          selectedOption={selectedOption}
+          onSelectOption={(option) => select(node.id, option.node.id)}
+          variant={SelectorVariant.Secondary}
+          layoutSide={layoutSide}
+        />
+      )}
+      diff={OpenApiRowDiffs.Responses.takeTitleRowDiff(node)}
+      diffsSeverities={takeOpenApiSeverities(node)}
+    />
   )
 }

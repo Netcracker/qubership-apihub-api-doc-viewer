@@ -231,20 +231,24 @@ selected response.
 
 ## Spacing (`data-precededby`)
 
-Full design: [block-separators.md](block-separators.md) (rule, colouring, algorithm, config, cost).
+Full design: [vertical-gaps.md](vertical-gaps.md) (rule, colouring, examples, config, algorithm);
+colouring principle and badge stubs: [block-separators.md](block-separators.md).
 
 | Rule | Value |
 | --- | --- |
-| Every OpenAPI row | symmetric padding `--openapi-row-padding` (4px top and bottom), `data-precededby="openapi-row"`; the operation ID row 12px (`openapi-operation-id-row`, `--openapi-row-padding-operation-id`) |
-| Rows of one block | touch: 8px between their contents |
-| Between two blocks | a content-less **separator row** of 12px (20px between contents); one band, or two 6px bands when the rows around it are coloured differently (per side) |
-| Security cards | content-less opening / closing **frame rows** of 24px with the border in the middle, coloured by the whole-card diff only; no separators next to them |
-| Floating badges | separators and frame rows carry a decorative **badge stub** (no hover, no text) continuing the neighbouring rows' badges: one bar, or two halves when the badges above and below differ; frame rows: the whole card's badge only |
+| Every OpenAPI row | **no vertical padding** (`data-precededby="openapi-row"`); every gap is a separator row |
+| Element half-gaps | row 4px, security card 4px (outside its border), nested JSON Schema / JSO viewer 0 (its own ≥ 4px inset) |
+| Gap | upper element's half + level gap + lower element's half: **8px** inside a block, **12px** between the top-level blocks (operation header, Security, Extensions, Request, Responses; level gap 4 = 2 + 2 continuing the neighbours) |
+| Colouring | each element's half and the adjacent level half take that element's own tone per side; a row that changed alone: 4 / 4 inside a block, 4 / 6 at a top-level edge |
+| Security cards | frame rows of `cardInnerInset` (8px) inside the border, coloured by the whole-card diff only; card rows planned at the `card` level with outer halves (border → content 12px) |
+| Floating badges | separators and frame rows carry a decorative **badge stub** (no hover, no text) following the same bands |
 | Nested JSON Schema / JSO viewers | their own rows; their first row gets `OPENAPI_NESTED_VIEWER_START` (opt-in hooks `firstRowPrecededBy`, `contentPrecededBy`) |
+| Viewer top / bottom | the first / last element's own half (config `viewerEdges`) |
 
 All numbers and rules live in one config, `OpenApiSpacingConfig` (next-data-model
-`model/openapi/layout/`); the data layer computes block edges, separators and frame rows; each
-container builds its blocks in the configured section order and renders the plan (`OpenApiLayout`).
+`model/openapi/layout/`); the data layer computes element edges, separators and frame rows; each
+container builds its elements in the configured section order and renders the plan
+(`OpenApiLayout level=…`). Separators are interned and their rendered elements cached.
 
 ## View state
 

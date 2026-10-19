@@ -80,8 +80,7 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
           <LevelContext.Provider value={0}>
             <div data-testid="openapi-operation-viewer" style={{
-              '--openapi-row-padding': `${viewerContext.spacing.rowPadding.default}px`,
-              '--openapi-row-padding-operation-id': `${viewerContext.spacing.rowPadding.operationId}px`,
+              '--openapi-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
             }}>
               <OperationNodeViewer node={operationNode} noHeading={noHeading} />
             </div>

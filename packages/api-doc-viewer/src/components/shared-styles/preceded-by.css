@@ -376,17 +376,10 @@
 }
 /* ─── OpenAPI operation viewer ─────────────────────────────────────────────── */
 
-/* Every OpenAPI row has the same symmetric padding, so a highlighted row (diffs) is always as tall
-   above its content as below it. Gaps between blocks are separator rows (SeparatorRow), never row
-   padding. --openapi-row-padding comes from the spacing config (next-data-model
-   OpenApiSpacingConfig.rowPadding), set on the viewer root.
-   Design: docs/design/openapi/features/block-separators.md */
-
-/* The operation ID row (small grey text) has a padding of its own (OpenApiRowPadding.operationId). */
-.text-row-content[data-precededby="openapi-operation-id-row"] {
-  padding-top: var(--openapi-row-padding-operation-id, 12px);
-  padding-bottom: var(--openapi-row-padding-operation-id, 12px);
-}
+/* OpenAPI rows have no vertical padding: a row is its content. Every vertical gap is a separator
+   row (SeparatorRow) planned in next-data-model (OpenApiLayoutPlanner, OpenApiSpacingConfig):
+   the upper element's half-gap + the level gap + the lower element's half-gap.
+   Design: docs/design/openapi/features/vertical-gaps.md */
 
 .title-row-content[data-precededby="openapi-row"],
 .text-row-content[data-precededby="openapi-row"],
@@ -395,11 +388,11 @@
 .external-docs-row-content[data-precededby="openapi-row"],
 .security-toolbar[data-precededby="openapi-row"],
 .security-row[data-precededby="openapi-row"] {
-  padding-top: var(--openapi-row-padding, 4px);
-  padding-bottom: var(--openapi-row-padding, 4px);
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-/* Markdown values (descriptions): the row padding alone sets the row's edges - no default margins
+/* Markdown values (descriptions): the separators alone set the row's edges - no default margins
    of the first / last block (paragraph, list, heading). All OpenAPI members start with `openapi-`. */
 .markdown-text-row-content[data-precededby^="openapi-"] .markdown > :first-child {
   margin-top: 0;
@@ -409,14 +402,14 @@
   margin-bottom: 0;
 }
 
-/* First row of a nested viewer under an OpenAPI row: the row padding above its content.
-   JSON Schema: on the row body (its own default top is 8px). */
+/* First row of a nested viewer under an OpenAPI row: the viewer's own inset above its content (a
+   nested viewer owns no half-gap). JSON Schema: on the row body (its own default top is 8px);
+   --openapi-nested-viewer-inset comes from OpenApiSpacingConfig.nestedViewerInset. */
 .json-schema-property .title-row-content[data-precededby="openapi-nested-viewer-start"] > .json-schema-property-row-body {
-  padding-top: var(--openapi-row-padding, 4px);
+  padding-top: var(--openapi-nested-viewer-inset, 4px);
 }
 
-/* JSO rows have no vertical padding: their 26px min-height centring already insets the text as much
-   as the row padding does in a JSON Schema row. */
+/* JSO rows have no vertical padding: their 26px min-height centring already insets the text. */
 .jso-property .title-row-content[data-precededby="openapi-nested-viewer-start"] {
   padding-top: 0;
 }

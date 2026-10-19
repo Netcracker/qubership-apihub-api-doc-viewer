@@ -3,26 +3,25 @@ import {
   NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
 } from "../../abstract/tree-with-diffs/tree-node.interface"
-import { OpenApiNodeVisibility, OpenApiOperationRowVisibility } from "../node-visibility"
+import { OpenApiDeprecatedTagRow, OpenApiOperationHeaderRow } from "../node-visibility"
 import { OpenApiRowDiffs } from "../tree-with-diffs/row-diffs"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiBlockEdge, OpenApiBlockEdgePair, OpenApiEdgeTones } from "./types"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
 
-/** A row at a block edge: the diff that paints it and the severity its floating badge shows. */
+/** A row as the layout sees it: the diff that paints it and the severity its floating badge shows. */
 export type OpenApiPaintedRow = {
   readonly diff?: ChangedPropertyMetaData
   readonly severity?: NodeDiffsSeverity
 }
 
 /**
- * Tones and badges of the first (`head`) and last (`tail`) row of every OpenAPI block kind, from the
- * same row diffs and severity placements those rows render (`OpenApiRowDiffs`, `node.diffsSeverities`).
- * One accessor per block kind: a new kind is one new method. Next to a nested JSON Schema / JSO viewer
- * only the owning block's whole add / remove counts (its rows are not visible to this layer). View
- * state (selected node, expanded) is passed in.
- * Design: docs/design/openapi/features/block-separators.md -> "Block edge tones", §9.
+ * Edges of the OpenAPI layout elements, built from the same row diffs and severity placements the
+ * rows render (`OpenApiRowDiffs`, `node.diffsSeverities`), so a separator band always continues its
+ * neighbour. One accessor per element (a row of a given kind, a card, a nested viewer); containers
+ * take the head of their first child and the tail of their last one.
+ * Design: docs/design/openapi/features/vertical-gaps.md -> "Algorithm".
  */
 export class OpenApiBlockEdges {
   /** Per-side background of a row painted by `diff`. */
@@ -30,148 +29,105 @@ export class OpenApiBlockEdges {
     return { before: diff?.styles.before.backgroundColor, after: diff?.styles.after.backgroundColor }
   }
 
-  public static rowEdge(row: OpenApiPaintedRow): OpenApiBlockEdge {
-    return { kind: 'row', tones: OpenApiBlockEdges.tones(row.diff), badge: row.severity?.type }
-  }
-
   /** The severity a node's row of `placement` shows (plain trees: none). */
   public static severityOf(node: AnyOpenApiNode, placement: NodeDiffsSeverityPlacemennt): NodeDiffsSeverity | undefined {
     return 'diffsSeverities' in node ? node.diffsSeverities?.[placement] : undefined
   }
 
-  /** A card frame row: the whole-card diff and the card's badge, only when it is wholly added / removed. */
-  public static frameEdge(card: AnyOpenApiNode): OpenApiBlockEdge {
-    return { ...OpenApiBlockEdges.wholeBlockEdge(card), kind: 'frame' }
+  /** An OpenAPI row: its own tones and badge. */
+  public static row(row: OpenApiPaintedRow): OpenApiBlockEdge {
+    return { kind: 'row', tones: OpenApiBlockEdges.tones(row.diff), badge: row.severity?.type }
   }
 
-  /** The end of a nested JSON Schema / JSO viewer: the owning block's whole add / remove only. */
-  public static nestedEdge(owner: AnyOpenApiNode): OpenApiBlockEdge {
-    return OpenApiBlockEdges.wholeBlockEdge(owner)
+  /** A nested JSON Schema / JSO viewer: its rows are not visible here, only its owner's whole add / remove. */
+  public static nested(owner: AnyOpenApiNode): OpenApiBlockEdge {
+    return { ...OpenApiBlockEdges.wholeBlock(owner), kind: 'nested' }
   }
 
-  /** A block whose first and last rows are known rows. */
-  public static rows(first: OpenApiPaintedRow, last: OpenApiPaintedRow): OpenApiBlockEdgePair {
-    return { head: OpenApiBlockEdges.rowEdge(first), tail: OpenApiBlockEdges.rowEdge(last) }
+  /** A security card seen from outside its border: the whole-card add / remove only. */
+  public static card(card: AnyOpenApiNode): OpenApiBlockEdge {
+    return { ...OpenApiBlockEdges.wholeBlock(card), kind: 'card' }
   }
 
-  /** A container (header row + child blocks): its header row, then the tail of its last child. */
-  public static container(header: OpenApiPaintedRow, children: readonly OpenApiBlockEdgePair[]): OpenApiBlockEdgePair {
-    const head = OpenApiBlockEdges.rowEdge(header)
-    return { head, tail: children[children.length - 1]?.tail ?? head }
+  /** A block made of one element. */
+  public static single(edge: OpenApiBlockEdge): OpenApiBlockEdgePair {
+    return { head: edge, tail: edge }
   }
 
-  /** A section container (Request, Security): its title row, then its children. */
-  public static section(node: AnyOpenApiNode, children: readonly OpenApiBlockEdgePair[]): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.container(OpenApiBlockEdges.titleRow(node), children)
+  /** A container: the head of its first child, the tail of its last one. */
+  public static container(children: readonly [OpenApiBlockEdgePair, ...OpenApiBlockEdgePair[]]): OpenApiBlockEdgePair {
+    return { head: children[0].head, tail: children[children.length - 1].tail }
   }
 
-  /** The Responses section: its title row (yellow when a code option changed as an option), then its children. */
-  public static responses(node: AnyOpenApiNode, children: readonly OpenApiBlockEdgePair[]): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.container(
-      { diff: OpenApiRowDiffs.Responses.takeTitleRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) },
-      children,
-    )
+  /** A section / subsection title row (Request, Security, a parameter group, Extensions, Headers): a whole add / remove. */
+  public static sectionTitleRow(node: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.Section.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) })
   }
 
-  /** Operation header block: its first and last visible header rows. */
-  public static operationHeader(node: AnyOpenApiNode, visibility: OpenApiOperationRowVisibility): OpenApiBlockEdgePair {
-    const rows = OpenApiNodeVisibility.resolveOperationHeaderRows(visibility)
-    const rowAt = (index: number): OpenApiPaintedRow => ({
-      diff: OpenApiRowDiffs.Operation.takeHeaderRowDiff(node, rows[index], visibility.deprecatedTagRow),
-      severity: OpenApiBlockEdges.severityOf(node, OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(rows[index], visibility.deprecatedTagRow)),
+  /** One operation header row (title, operation ID, address, description, external docs). */
+  public static operationHeaderRow(node: AnyOpenApiNode, row: OpenApiOperationHeaderRow, deprecatedTagRow: OpenApiDeprecatedTagRow): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({
+      diff: OpenApiRowDiffs.Operation.takeHeaderRowDiff(node, row, deprecatedTagRow),
+      severity: OpenApiBlockEdges.severityOf(node, OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)),
     })
-    return OpenApiBlockEdges.rows(rowAt(0), rowAt(rows.length - 1))
   }
 
-  /** Security title + toolbar. */
-  public static securityHeader(security: AnyOpenApiNode): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.rows(OpenApiBlockEdges.titleRow(security), {
+  /** The security toolbar row. */
+  public static securityToolbarRow(security: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({
       diff: OpenApiRowDiffs.Security.takeToolbarRowDiff(security),
       severity: OpenApiBlockEdges.severityOf(security, NodeDiffsSeverityPlacemennt.SelectorRow),
     })
   }
 
   /** The "No authentication" text of an anonymous alternative (a row without a floating badge). */
-  public static noAuthentication(alternative: AnyOpenApiNode): OpenApiBlockEdgePair {
-    const row = { diff: OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(alternative) }
-    return OpenApiBlockEdges.rows(row, row)
+  public static noAuthenticationRow(alternative: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(alternative) })
   }
 
-  /** A security scheme card: framed on both ends. */
-  public static card(card: AnyOpenApiNode): OpenApiBlockEdgePair {
-    const edge = OpenApiBlockEdges.frameEdge(card)
-    return { head: edge, tail: edge }
+  /** The Responses title row (yellow when a code option changed as an option). */
+  public static responsesTitleRow(node: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.Responses.takeTitleRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) })
   }
 
-  /** Extensions section (title + JSO viewer). */
-  public static extensions(node: AnyOpenApiNode): OpenApiBlockEdgePair {
-    return { head: OpenApiBlockEdges.rowEdge(OpenApiBlockEdges.titleRow(node)), tail: OpenApiBlockEdges.nestedEdge(node) }
+  /** The request Body title row (required and media-type option changes included). */
+  public static requestBodyTitleRow(node: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) })
   }
 
-  /** Parameter group / response Headers (title + synthesized schema); collapsed = title only. */
-  public static parameters(group: AnyOpenApiNode, state: { readonly expanded?: boolean } = {}): OpenApiBlockEdgePair {
-    const head = OpenApiBlockEdges.rowEdge(OpenApiBlockEdges.titleRow(group))
-    return { head, tail: state.expanded === false ? head : OpenApiBlockEdges.nestedEdge(group) }
-  }
-
-  /** Request body: its title (required and media-type option changes included), optional description, the selected media type's schema. */
-  public static requestBody(node: AnyOpenApiNode, showDescription: boolean, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.body(
-      { diff: OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) },
-      showDescription
-        ? { diff: OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description'), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.DescriptionRow) }
-        : undefined,
-      selectedMediaType,
-    )
-  }
-
-  /** Response Body (header painted by its `content` node, media-type option changes included), the selected media type's schema. */
-  public static responseBody(content: AnyOpenApiNode, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
-    return OpenApiBlockEdges.body(
-      { diff: OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content), severity: OpenApiBlockEdges.severityOf(content, NodeDiffsSeverityPlacemennt.TitleRow) },
-      undefined,
-      selectedMediaType,
-    )
+  /** A response Body title row (painted by its `content` node, media-type option changes included). */
+  public static responseBodyTitleRow(content: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content), severity: OpenApiBlockEdges.severityOf(content, NodeDiffsSeverityPlacemennt.TitleRow) })
   }
 
   /**
-   * Body (request / response): title, optional description, then the selected media type's schema.
-   * Without a schema the last of title / description ends the block.
+   * A Body (request / response): its title row, the optional description row, then the selected media
+   * type's schema (a nested viewer) when it has one.
    */
-  public static body(header: OpenApiPaintedRow, description: OpenApiPaintedRow | undefined, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
-    const head = OpenApiBlockEdges.rowEdge(header)
-    if (selectedMediaType && OpenApiBlockEdges.hasSchema(selectedMediaType)) {
-      return { head, tail: OpenApiBlockEdges.nestedEdge(selectedMediaType) }
-    }
-    return { head, tail: description ? OpenApiBlockEdges.rowEdge(description) : head }
+  public static body(title: OpenApiBlockEdge, description: OpenApiBlockEdge | undefined, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
+    const tail = selectedMediaType && OpenApiBlockEdges.hasSchema(selectedMediaType)
+      ? OpenApiBlockEdges.nested(selectedMediaType)
+      : description ?? title
+    return { head: title, tail }
   }
 
-  /** The selected response's description row. */
-  public static responseDescription(response: AnyOpenApiNode): OpenApiBlockEdgePair {
-    const row = {
-      diff: OpenApiRowDiffs.NodeLevel.takeRowDiff(response, 'description'),
-      severity: OpenApiBlockEdges.severityOf(response, NodeDiffsSeverityPlacemennt.DescriptionRow),
-    }
-    return OpenApiBlockEdges.rows(row, row)
+  /** Whether a media type has a schema to show (an object; `true` / `false` schemas are prepared as objects). */
+  public static hasSchema(mediaType: AnyOpenApiNode): boolean {
+    const schema: unknown = Reflect.get(mediaType.value() ?? {}, 'schema')
+    return typeof schema === 'object' && schema !== null
   }
 
-  /** A section title row: painted by a whole add / remove, badged from the `TitleRow` placement. */
-  private static titleRow(node: AnyOpenApiNode): OpenApiPaintedRow {
-    return { diff: OpenApiRowDiffs.Section.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) }
+  /** A description row of a node (request body, response): its `description` diff, else the whole node's. */
+  public static descriptionRow(node: AnyOpenApiNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description'), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.DescriptionRow) })
   }
 
-  /** The tones and badge of a wholly added / removed block, nothing otherwise. */
-  private static wholeBlockEdge(node: AnyOpenApiNode): OpenApiBlockEdge {
+  /** Tones and badge of a wholly added / removed node, nothing otherwise. */
+  private static wholeBlock(node: AnyOpenApiNode): Omit<OpenApiBlockEdge, 'kind'> {
     const whole = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
     return {
-      kind: 'row',
       tones: OpenApiBlockEdges.tones(whole),
       badge: whole ? OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow)?.type : undefined,
     }
-  }
-
-  private static hasSchema(mediaType: AnyOpenApiNode): boolean {
-    const schema: unknown = Reflect.get(mediaType.value() ?? {}, 'schema')
-    return typeof schema === 'object' && schema !== null
   }
 }

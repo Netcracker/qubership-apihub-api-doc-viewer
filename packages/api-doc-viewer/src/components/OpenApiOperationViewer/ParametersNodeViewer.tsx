@@ -7,7 +7,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiBlock } from "./OpenApiLayout"
+import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
 
 type ParametersNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.PARAMETERS> | OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE_HEADERS>
@@ -18,29 +18,37 @@ type ParametersNodeViewerProps = {
   testId: string
 }
 
-/** A parameter group / response Headers as a layout block (title row + synthesized schema). */
+/**
+ * A parameter group / response Headers as a layout block: its h3 title row, then the synthesized
+ * object schema (a nested viewer) when there is one. Design: entities/parameters.md.
+ */
 export function buildParametersBlock(id: string, props: ParametersNodeViewerProps): OpenApiBlock {
+  const { node, title, testId } = props
+  const schema = node.value()?.schema
+  const elements: [OpenApiBlock, ...OpenApiBlock[]] = [
+    { id: 'title', ...OpenApiBlockEdges.single(OpenApiBlockEdges.sectionTitleRow(node)), payload: () => <ParametersTitleRow key="title" node={node} title={title} /> },
+    ...(schema !== undefined
+      ? [{ id: 'schema', ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(node)), payload: () => <OpenApiSchemaViewer key="schema" schema={schema} /> }]
+      : []),
+  ]
   return {
     id,
-    ...OpenApiBlockEdges.parameters(props.node),
-    payload: () => <ParametersNodeViewer key={id} {...props} />,
+    ...OpenApiBlockEdges.container(elements),
+    payload: () => (
+      <div key={id} data-testid={testId} className="flex flex-col">
+        <OpenApiLayout blocks={elements} level="section" />
+      </div>
+    ),
   }
 }
 
-/** A parameter group or response headers: h3 title + the synthesized object schema. Design: entities/parameters.md. */
-export const ParametersNodeViewer: FC<ParametersNodeViewerProps> = (props) => {
-  const { node, title, testId } = props
-  return (
-    <div data-testid={testId} className="flex flex-col">
-      <TitleRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
-        value={title}
-        expandable={false}
-        variant={TextValueVariant.h3}
-        diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
-        diffsSeverities={takeOpenApiSeverities(node)}
-      />
-      <OpenApiSchemaViewer schema={node.value()?.schema} />
-    </div>
-  )
-}
+const ParametersTitleRow: FC<{ node: ParametersNode, title: string }> = ({ node, title }) => (
+  <TitleRow
+    data-precededby={PrecededBy.OPENAPI_ROW}
+    value={title}
+    expandable={false}
+    variant={TextValueVariant.h3}
+    diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
+    diffsSeverities={takeOpenApiSeverities(node)}
+  />
+)
