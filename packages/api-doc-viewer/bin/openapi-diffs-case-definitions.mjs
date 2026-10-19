@@ -178,11 +178,8 @@ export const PARAMETER_FRAGMENTS = [
   { folder: 'response-headers', title: 'Response Headers', fragment: RESPONSE_HEADERS_FRAGMENT },
 ]
 
-const CONTENT_FORM = {
-  'application/json': {
-    schema: { type: 'object', description: 'JSON options.', properties: { strict: { type: 'boolean' } } },
-  },
-}
+// Both forms carry the same schema: a `schema` <-> `content` switch differs only by the media type.
+const ENTRY_SCHEMA = { type: 'boolean', description: 'Boolean flag.' }
 
 function setDescriptions(entry, entryText, schemaText) {
   entry.description = entryText
@@ -192,12 +189,12 @@ function setDescriptions(entry, entryText, schemaText) {
 const setSchemaForm = (f) => (doc) => {
   const entry = f.get(doc)
   delete entry.content
-  entry.schema = { type: 'boolean', description: 'Boolean flag.' }
+  entry.schema = structuredClone(ENTRY_SCHEMA)
 }
 const setContentForm = (f) => (doc) => {
   const entry = f.get(doc)
   delete entry.schema
-  entry.content = structuredClone(CONTENT_FORM)
+  entry.content = { 'application/json': { schema: structuredClone(ENTRY_SCHEMA) } }
 }
 
 /**

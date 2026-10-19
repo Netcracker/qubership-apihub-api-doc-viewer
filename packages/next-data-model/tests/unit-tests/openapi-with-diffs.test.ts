@@ -174,13 +174,20 @@ describe('OpenAPI with diffs: parameters', () => {
     expect(recordOf(property).description).toMatchObject({ beforeValue: 'Entry text v1.', afterValue: 'Entry text v2.' })
   })
 
-  it('schema -> content switch: per-key schema diffs, description replace, media type added', () => {
+  it('schema -> content switch with the same schema adds only the media type annotation', () => {
     const property = queryProperty(build('query-parameters/11-schema-to-content'), 'dryRun')
     const record = recordOf(property)
-    expect(record.type).toMatchObject({ action: DiffAction.replace, beforeValue: 'boolean', afterValue: 'object' })
-    expect(record.properties?.action).toBe(DiffAction.add)
-    expect(record.description).toMatchObject({ action: DiffAction.replace, beforeValue: 'Boolean flag.', afterValue: 'JSON options.' })
+    expect(record.type).toBeUndefined()
+    expect(record.description).toBeUndefined()
     expect(recordOf(property.customAnnotations).mediaType?.action).toBe(DiffAction.add)
+  })
+
+  it('content -> schema switch with the same schema removes only the media type annotation', () => {
+    const property = queryProperty(build('query-parameters/12-content-to-schema'), 'dryRun')
+    const record = recordOf(property)
+    expect(record.type).toBeUndefined()
+    expect(record.description).toBeUndefined()
+    expect(recordOf(property.customAnnotations).mediaType?.action).toBe(DiffAction.remove)
   })
 
   it('content media type change with the same schema changes only the media type annotation', () => {

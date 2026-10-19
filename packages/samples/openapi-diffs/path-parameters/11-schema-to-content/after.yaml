@@ -21,11 +21,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: JSON options.
-                properties:
-                  strict:
-                    type: boolean
+                type: boolean
+                description: Boolean flag.
         - name: dryRun
           in: query
           schema:
