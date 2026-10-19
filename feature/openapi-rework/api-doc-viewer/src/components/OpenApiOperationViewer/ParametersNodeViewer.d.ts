@@ -1,6 +1,5 @@
 import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
-import { FC } from '../../../../../node_modules/react';
 import { OpenApiBlock } from './OpenApiLayout';
 type ParametersNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.PARAMETERS> | OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE_HEADERS>;
 type ParametersNodeViewerProps = {
@@ -8,8 +7,9 @@ type ParametersNodeViewerProps = {
     title: string;
     testId: string;
 };
-/** A parameter group / response Headers as a layout block (title row + synthesized schema). */
+/**
+ * A parameter group / response Headers as a layout block: its h3 title row, then the synthesized
+ * object schema (a nested viewer) when there is one. Design: entities/parameters.md.
+ */
 export declare function buildParametersBlock(id: string, props: ParametersNodeViewerProps): OpenApiBlock;
-/** A parameter group or response headers: h3 title + the synthesized object schema. Design: entities/parameters.md. */
-export declare const ParametersNodeViewer: FC<ParametersNodeViewerProps>;
 export {};

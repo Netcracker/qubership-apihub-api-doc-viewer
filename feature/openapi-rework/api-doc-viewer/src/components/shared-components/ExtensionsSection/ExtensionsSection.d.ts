@@ -13,9 +13,16 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
     /** `data-precededby` of the JSO viewer's first row; defaults to the AsyncAPI section-header spacing. */
     contentPrecededBy?: PrecededBy;
 };
+type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'>;
+/** The "Extensions" header row alone (OpenAPI plans it as an element of its own). */
+export declare const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps>;
+type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 'contentPrecededBy'>;
+/** The JSO tree of `x-*` values alone: `JsoDiffsViewer` when diff meta keys are provided. */
+export declare const ExtensionsSectionContent: FC<ExtensionsSectionContentProps>;
 /**
- * "Extensions" header + JSO tree of `x-*` values. Shared by AsyncAPI (message / channel / operation)
- * and OpenAPI (operation, response, Responses Object). Picks `JsoDiffsViewer` when diff meta keys
- * are provided.
+ * "Extensions" header + JSO tree of `x-*` values. Used by AsyncAPI (message / channel / operation);
+ * OpenAPI composes `ExtensionsSectionTitleRow` and `ExtensionsSectionContent` with a separator row
+ * between them.
  */
 export declare const ExtensionsSection: FC<ExtensionsSectionProps>;
+export {};

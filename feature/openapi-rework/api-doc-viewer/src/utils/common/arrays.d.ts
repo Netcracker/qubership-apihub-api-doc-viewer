@@ -15,6 +15,8 @@
  */
 export declare class ArrayUtils {
     static isEmpty(value: unknown): value is [];
+    /** A typed list with at least one item (for APIs that take a non-empty tuple). */
+    static isNonEmptyList<T>(value: readonly T[]): value is readonly [T, ...T[]];
     static isNotEmpty(value: unknown): value is [unknown, ...unknown[]];
     static isStringArray(array: unknown[]): array is string[];
     static trimLeft(value: string[]): string[];

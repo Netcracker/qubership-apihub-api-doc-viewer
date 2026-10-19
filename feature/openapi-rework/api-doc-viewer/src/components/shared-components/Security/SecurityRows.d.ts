@@ -26,17 +26,21 @@ type SecurityRowProps = WithPrecededByProps & WithFramePositionProps & {
  */
 export declare const SecurityRow: FC<SecurityRowProps>;
 type SecurityFrameRowProps = {
-    /** Height, border offset and whole-card tones (next-data-model `OpenApiLayoutPlanner.frameRow`). */
+    /** Height (the card's inner inset), whole-card tones and badge (next-data-model `OpenApiLayoutPlanner.frameRow`). */
     frameRow: OpenApiFrameRow;
-    /** `first`: the card's opening row (top border), `last`: its closing row (bottom border). */
+    /** `first`: the card's opening row (border at its top), `last`: its closing row (border at its bottom). */
     position: 'first' | 'last';
     /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */
-    isPresentOnSide: (layoutSide: LayoutSide) => boolean;
+    presence: {
+        readonly before: boolean;
+        readonly after: boolean;
+    };
 };
 /**
- * A card's content-less opening / closing row: the horizontal border runs at `borderOffset` from
- * the row top (the middle by default), the rest of the row is space inside / outside the card.
- * Painted with the whole-card diff only. Design: docs/design/openapi/features/block-separators.md
+ * A card's content-less opening / closing row inside the border: the border runs along its outer
+ * edge, the row is the space between the border and the first / last content row's own half-gap.
+ * Painted with the whole-card diff only. Memoised on its values (cards re-render on scope toggles).
+ * Design: docs/design/openapi/features/vertical-gaps.md -> "Security cards".
  */
 export declare const SecurityFrameRow: FC<SecurityFrameRowProps>;
 type SecurityPropContentProps = {

@@ -6,9 +6,9 @@ import { OpenApiViewState } from './OpenApiViewStateContext';
 export declare const SECURITY_SECTION_TITLE = "Security";
 type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
 /**
- * The Security section as a layout block. Its sub-blocks: the title + toolbar, then the selected
- * alternative's "No authentication" text or its scheme cards (each card a block of its own, framed:
- * no separators next to it).
+ * The Security section as a layout block. Its elements: the title row, the toolbar row, then the
+ * selected alternative's "No authentication" text or its scheme cards (each card one element; 4px
+ * outside its border).
  */
 export declare function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): OpenApiBlock;
 /** "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND). */

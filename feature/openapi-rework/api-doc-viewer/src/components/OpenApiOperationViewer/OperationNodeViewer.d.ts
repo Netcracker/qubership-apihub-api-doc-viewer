@@ -9,8 +9,9 @@ type OperationNodeViewerProps = {
 };
 /**
  * The operation: the header block (title, operation ID, address, description, external docs), then
- * the sections in config order, planned as one level (separator rows between blocks). Owns the view
- * state (selections) every level reads. Design: features/operation-viewer.md, features/block-separators.md.
+ * the sections in config order, planned as one level (separator rows between blocks, the viewer's
+ * top / bottom halves when configured). Owns the view state (selections) every level reads.
+ * Design: features/operation-viewer.md, features/vertical-gaps.md.
  */
 export declare const OperationNodeViewer: FC<OperationNodeViewerProps>;
 export {};

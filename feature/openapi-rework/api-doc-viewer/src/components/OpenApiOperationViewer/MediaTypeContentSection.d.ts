@@ -1,5 +1,6 @@
 import { LayoutSide } from '../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from '../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
+import { OpenApiBlockEdge } from '../../../../next-data-model/src/model/openapi/layout';
 import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC, ReactElement } from '../../../../../node_modules/react';
@@ -21,13 +22,19 @@ type MediaTypeContentSectionProps = {
     isRequiredOnSide?: (layoutSide: LayoutSide) => boolean;
     /** Request body only: the `required` tag of a required change. */
     requiredTagDiff?: ChangedPropertyMetaData;
-    /** The row between the header and the schema (the body description); omitted when hidden. */
-    renderDescription?: () => ReactElement;
+    /** Layout edge of the title row (next-data-model `OpenApiBlockEdges.requestBodyTitleRow` / `responseBodyTitleRow`). */
+    titleEdge: OpenApiBlockEdge;
+    /** The row between the header and the schema (the body description) and its edge; omitted when hidden. */
+    description?: {
+        readonly edge: OpenApiBlockEdge;
+        readonly render: () => ReactElement;
+    };
 };
 /**
- * "Body" (h3) with the media-type selector in its subheader, then the selected media type's schema
- * wrapped under a `Type` root. Request body and response body share it.
- * Design: entities/request-body.md, entities/responses.md -> "Body".
+ * "Body" (h3) with the media-type selector in its subheader, the optional description, then the
+ * selected media type's schema wrapped under a `Type` root - each an element of its own layout.
+ * Request body and response body share it; the builders compute the same outer edges with
+ * `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md -> "Body".
  */
 export declare const MediaTypeContentSection: FC<MediaTypeContentSectionProps>;
 export {};

@@ -25,9 +25,7 @@ export declare enum PrecededBy {
     DDL_INDEX_ROW = "ddl-index-row",
     /** Any OpenAPI row. */
     OPENAPI_ROW = "openapi-row",
-    /** The operation ID row: its own padding (`--openapi-row-padding-operation-id`). */
-    OPENAPI_OPERATION_ID_ROW = "openapi-operation-id-row",
-    /** The first row of a nested JSON Schema / JSO viewer, under an OpenAPI row of the same block. */
+    /** The first row of a nested JSON Schema / JSO viewer: keeps its own inset (`--openapi-nested-viewer-inset`). */
     OPENAPI_NESTED_VIEWER_START = "openapi-nested-viewer-start"
 }
 export type WithPrecededByProps = {
