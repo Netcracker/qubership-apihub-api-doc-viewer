@@ -26,7 +26,7 @@ describe('OpenAPI security scheme: required scope list', () => {
   })
 
   it.each([
-    ['oas30/fields/security/11-openid-connect', 'openid-connect', ['openid'], 'Scopes'],
+    ['oas30/fields/security/15-openid-connect-required-scope', 'openid-connect', ['openid'], 'Scopes'],
     ['oas31/fields/security/02-roles-on-api-key', 'api_key', ['admin', 'auditor'], 'Roles'],
   ])('%s: every requirement scope is a required row (no flows)', (caseId, schemeName, names, label) => {
     const tree = new OpenApiTreeBuilder({ source: loadNormalizedOpenApiSample(caseId), operationKeys: { path: '/orders', method: 'post' } }).build()

@@ -302,6 +302,11 @@ function fieldsCase(slug, title, mutate, { path = SHORT_PATH, switchTo = [], ope
 
 const STUB_SCHEME = { type: 'apiKey', in: 'header', name: 'X-Stub-Key' }
 
+// Scoped types get a pair of cases: the requirement lists the scope / lists none.
+const OAUTH2_OPTIONAL_SCOPE = ['optional-scope', 'optional scope: declared by the flow, not listed in the requirement']
+const OPENID_CONNECT_NO_SCOPES = ['no-required-scopes', 'no required scopes: the document declares no scopes, so no `Scopes` list']
+
+/** `[slug, title, scheme, requirement scopes, [optional-variant slug suffix, title suffix]?]`. */
 const SECURITY_TYPES = [
   ['api-key-header', 'apiKey in a header', { type: 'apiKey', in: 'header', name: 'X-API-Key' }, []],
   ['api-key-query', 'apiKey in the query', { type: 'apiKey', in: 'query', name: 'api_key' }, []],
@@ -311,25 +316,25 @@ const SECURITY_TYPES = [
   ['http-bearer-format', 'http bearer with `bearerFormat`', { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, []],
   ['oauth2-implicit', 'oauth2 implicit flow', {
     type: 'oauth2', flows: { implicit: { authorizationUrl: 'https://auth.example.com/authorize', scopes: { 'orders:read': 'Read orders' } } },
-  }, ['orders:read']],
+  }, ['orders:read'], OAUTH2_OPTIONAL_SCOPE],
   ['oauth2-password', 'oauth2 password flow', {
     type: 'oauth2', flows: { password: { tokenUrl: 'https://auth.example.com/token', scopes: { 'orders:read': 'Read orders' } } },
-  }, ['orders:read']],
+  }, ['orders:read'], OAUTH2_OPTIONAL_SCOPE],
   ['oauth2-client-credentials', 'oauth2 client credentials flow', {
     type: 'oauth2', flows: { clientCredentials: { tokenUrl: 'https://auth.example.com/token', scopes: { 'orders:read': 'Read orders' } } },
-  }, ['orders:read']],
+  }, ['orders:read'], OAUTH2_OPTIONAL_SCOPE],
   ['oauth2-authorization-code', 'oauth2 authorization code flow', {
     type: 'oauth2',
     flows: { authorizationCode: { authorizationUrl: 'https://auth.example.com/authorize', tokenUrl: 'https://auth.example.com/token', scopes: { 'orders:read': 'Read orders' } } },
-  }, ['orders:read']],
-  ['openid-connect', 'openIdConnect', { type: 'openIdConnect', openIdConnectUrl: 'https://auth.example.com/.well-known/openid-configuration' }, ['openid']],
+  }, ['orders:read'], OAUTH2_OPTIONAL_SCOPE],
+  ['openid-connect', 'openIdConnect', { type: 'openIdConnect', openIdConnectUrl: 'https://auth.example.com/.well-known/openid-configuration' }, ['openid'], OPENID_CONNECT_NO_SCOPES],
 ]
 
 /** Security case: alternative 1 is a stub, alternative 2 the covered scheme (auto-switched). */
-function securityCase(slug, title, scheme, scopes, openapi) {
+function securityCase(slug, title, scheme, scopes, { openapi, schemeName = slug } = {}) {
   return fieldsCase(slug, `${title} (2nd alternative, auto-switched)`, ({ document, operation }) => {
-    operation.security = [{ stub_key: [] }, { [slug]: scopes }]
-    Object.assign(securitySchemes(document), { stub_key: STUB_SCHEME, [slug]: scheme })
+    operation.security = [{ stub_key: [] }, { [schemeName]: scopes }]
+    Object.assign(securitySchemes(document), { stub_key: STUB_SCHEME, [schemeName]: scheme })
   }, { switchTo: ['security-alternative-1'], openapi })
 }
 
@@ -377,7 +382,16 @@ function collectFieldsSubgroups() {
       Object.assign(operation, { 'x-rate-limit': 100, 'x-audience': { visibility: 'public', owners: ['orders-team'] } })
     }),
   ]
-  const security = SECURITY_TYPES.map(([slug, title, scheme, scopes]) => securityCase(slug, title, scheme, scopes))
+  const security = SECURITY_TYPES.flatMap(([slug, title, scheme, scopes, optional]) => optional
+    ? [
+        securityCase(`${slug}-required-scope`, `${title}, required scope`, scheme, scopes, { schemeName: slug }),
+        securityCase(`${slug}-${optional[0]}`, `${title}, ${optional[1]}`, scheme, [], { schemeName: slug }),
+      ]
+    : [securityCase(slug, title, scheme, scopes)])
+  security.push(securityCase('scheme-description', 'scheme with a markdown `description`', {
+    ...SECURITY_TYPES[0][2],
+    description: 'Key issued in the **developer portal**.\n\n- Send it with every request.\n- Rotate it every 90 days.',
+  }, []))
   const parameters = PARAMETER_LOCATIONS.map(([slug, location, title]) => fieldsCase(slug, `${title}: required, optional, deprecated, \`content\``, ({ operation }) => {
     operation.parameters = parametersOf(location)
   }, { path: location === 'path' ? PATH_WITH_ALL_PATH_PARAMETERS : SHORT_PATH }))
@@ -548,7 +562,7 @@ function bodyPropertyCase(slug, title, property) {
 
 function collectOas31FieldsSubgroups() {
   const cases = [
-    securityCase('mutual-tls', '`mutualTLS`', { type: 'mutualTLS' }, [], OAS31),
+    securityCase('mutual-tls', '`mutualTLS`', { type: 'mutualTLS' }, [], { openapi: OAS31 }),
     fieldsCase('roles-on-api-key', '`Required roles` on an apiKey scheme', ({ document, operation }) => {
       operation.security = [{ api_key: ['admin', 'auditor'] }]
       securitySchemes(document).api_key = { type: 'apiKey', in: 'header', name: 'X-API-Key' }

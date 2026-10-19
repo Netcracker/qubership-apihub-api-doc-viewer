@@ -11,7 +11,7 @@ What the `OpenAPI Operation Suite` covers, and why. Fixtures:
 | --- | --- | --- |
 | **E2E** (`oas30/e2e/`) | How sections look next to each other. | Sections, in display order: summary, operation ID, address, description, security, operation extensions, path / query parameters, headers, cookies, body, responses with 1 code (headers, body), responses with 2 codes (headers, body). Cases: **every pair** of sections (every possible "A directly above B" adjacency), **consecutive windows** of 3, 4, … sections in display order, and **one all-sections case** (also captured with `noHeading`). A 1-code and a 2-codes section are never combined. |
 | **Minimal** (`oas30/minimal/`) | The smallest valid operations. | One per HTTP method (badge colors) with one status-only `200`, plus a `default`-only operation. |
-| **Fields** (`oas30/fields/<sub-group>/`) | Each displayed field alone, in semantic sub-groups: **Operation** (summary, operation ID, description, external docs, extensions), **Security**, **Parameters**, **Request Body**, **Request Combinations**, **Responses / 2XX, 3XX, 4XX, 5XX**. Case ids restart in every sub-group. | Required fields only + the covered field. Security: alternative 1 is a stub apiKey, alternative 2 the covered scheme type (auto-switched). Parameters / headers: four entries per location — required, optional (path parameters are always required: a second required one), deprecated, `content`-described; one case per location. **Request Combinations**: every pair among path, query, headers, cookies, and the request body (required, with a description) — two request sections next to each other. Request body: required / optional / deprecated schema root × 1 / 2 media types (the 2nd auto-switched), plus body + schema descriptions. Responses: one sub-group per code kind (`200`, `302`, `404`, `500`) next to a `default` stub, the target code auto-switched; status only, description only, headers only, body only (1 / 2 media types × plain / deprecated schema root), the pairwise combinations, and description + body schema description. |
+| **Fields** (`oas30/fields/<sub-group>/`) | Each displayed field alone, in semantic sub-groups: **Operation** (summary, operation ID, description, external docs, extensions), **Security**, **Parameters**, **Request Body**, **Request Combinations**, **Responses / 2XX, 3XX, 4XX, 5XX**. Case ids restart in every sub-group. | Required fields only + the covered field. Security: alternative 1 is a stub apiKey, alternative 2 the covered scheme type (auto-switched); every oauth2 flow and openIdConnect is a pair of adjacent cases — the requirement lists the scope (required, `*`) / lists no scopes (oauth2: the flow's scope row without `*`; openIdConnect declares no scopes in the document, so no `Scopes` list); one apiKey scheme with a markdown `description` covers the scheme description row. Parameters / headers: four entries per location — required, optional (path parameters are always required: a second required one), deprecated, `content`-described; one case per location. **Request Combinations**: every pair among path, query, headers, cookies, and the request body (required, with a description) — two request sections next to each other. Request body: required / optional / deprecated schema root × 1 / 2 media types (the 2nd auto-switched), plus body + schema descriptions. Responses: one sub-group per code kind (`200`, `302`, `404`, `500`) next to a `default` stub, the target code auto-switched; status only, description only, headers only, body only (1 / 2 media types × plain / deprecated schema root), the pairwise combinations, and description + body schema description. |
 | **Document Structure** (`oas30/structure/`) | Document features that change what is displayed. | Path-item parameters with an operation override, `$ref` parameter / body / response, ignored-by-spec headers (shown as is), canonical response-code order, inherited / disabled document security, `{}` alternative, deprecated operation with and without a summary. |
 | **OAS 3.1** (`oas31/fields/{security,responses,schemas}/`, `oas31/structure/`) | Only what displays differently from 3.0 ([oas-versions.md](oas-versions.md)), in the sub-groups **Security**, **Responses**, **Schemas**. | `mutualTLS`, `Required roles`, no `responses`, type-array nullable, numeric exclusive bounds, `examples`, `const`, enum without `type`, boolean schema, `contentMediaType`; Reference Object description overrides, `components.pathItems`. |
 
@@ -52,7 +52,7 @@ How to extend and maintain the suites:
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-suite.mjs -->
 
-281 cases; ITs capture each in `detailed` and `simple` (562 screenshots, plus the `noHeading` variant of the all-sections case).
+287 cases; ITs capture each in `detailed` and `simple` (574 screenshots, plus the `noHeading` variant of the all-sections case).
 
 ### OAS 3.0 — E2E (`oas30/e2e/`, 168)
 
@@ -253,7 +253,7 @@ How to extend and maintain the suites:
 | `04-external-docs` | `POST /orders` | external docs (description in a tooltip) | — |
 | `05-extensions` | `POST /orders` | operation `x-*` extensions | — |
 
-### OAS 3.0 — Fields / Security (`oas30/fields/security/`, 11)
+### OAS 3.0 — Fields / Security (`oas30/fields/security/`, 17)
 
 | Case | Operation | Covers | Auto-switch |
 | --- | --- | --- | --- |
@@ -263,11 +263,17 @@ How to extend and maintain the suites:
 | `04-http-basic` | `POST /orders` | http basic (2nd alternative, auto-switched) | `security-alternative-1` |
 | `05-http-bearer` | `POST /orders` | http bearer (2nd alternative, auto-switched) | `security-alternative-1` |
 | `06-http-bearer-format` | `POST /orders` | http bearer with `bearerFormat` (2nd alternative, auto-switched) | `security-alternative-1` |
-| `07-oauth2-implicit` | `POST /orders` | oauth2 implicit flow (2nd alternative, auto-switched) | `security-alternative-1` |
-| `08-oauth2-password` | `POST /orders` | oauth2 password flow (2nd alternative, auto-switched) | `security-alternative-1` |
-| `09-oauth2-client-credentials` | `POST /orders` | oauth2 client credentials flow (2nd alternative, auto-switched) | `security-alternative-1` |
-| `10-oauth2-authorization-code` | `POST /orders` | oauth2 authorization code flow (2nd alternative, auto-switched) | `security-alternative-1` |
-| `11-openid-connect` | `POST /orders` | openIdConnect (2nd alternative, auto-switched) | `security-alternative-1` |
+| `07-oauth2-implicit-required-scope` | `POST /orders` | oauth2 implicit flow, required scope (2nd alternative, auto-switched) | `security-alternative-1` |
+| `08-oauth2-implicit-optional-scope` | `POST /orders` | oauth2 implicit flow, optional scope: declared by the flow, not listed in the requirement (2nd alternative, auto-switched) | `security-alternative-1` |
+| `09-oauth2-password-required-scope` | `POST /orders` | oauth2 password flow, required scope (2nd alternative, auto-switched) | `security-alternative-1` |
+| `10-oauth2-password-optional-scope` | `POST /orders` | oauth2 password flow, optional scope: declared by the flow, not listed in the requirement (2nd alternative, auto-switched) | `security-alternative-1` |
+| `11-oauth2-client-credentials-required-scope` | `POST /orders` | oauth2 client credentials flow, required scope (2nd alternative, auto-switched) | `security-alternative-1` |
+| `12-oauth2-client-credentials-optional-scope` | `POST /orders` | oauth2 client credentials flow, optional scope: declared by the flow, not listed in the requirement (2nd alternative, auto-switched) | `security-alternative-1` |
+| `13-oauth2-authorization-code-required-scope` | `POST /orders` | oauth2 authorization code flow, required scope (2nd alternative, auto-switched) | `security-alternative-1` |
+| `14-oauth2-authorization-code-optional-scope` | `POST /orders` | oauth2 authorization code flow, optional scope: declared by the flow, not listed in the requirement (2nd alternative, auto-switched) | `security-alternative-1` |
+| `15-openid-connect-required-scope` | `POST /orders` | openIdConnect, required scope (2nd alternative, auto-switched) | `security-alternative-1` |
+| `16-openid-connect-no-required-scopes` | `POST /orders` | openIdConnect, no required scopes: the document declares no scopes, so no `Scopes` list (2nd alternative, auto-switched) | `security-alternative-1` |
+| `17-scheme-description` | `POST /orders` | scheme with a markdown `description` (2nd alternative, auto-switched) | `security-alternative-1` |
 
 ### OAS 3.0 — Fields / Parameters (`oas30/fields/parameters/`, 4)
 

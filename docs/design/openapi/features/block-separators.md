@@ -140,7 +140,7 @@ rows replace separators at the card's edges:
 Distances: toolbar → border 4 + 12 = 16; border → card text 12 + 4 = 16; card → card (border to
 border) 12 + 12 = 24; last card → next section header 12 + 4 = 16.
 
-Type change (`security/15-scheme-type-changed`): the title row is yellow, the opening row is not:
+Type change (`security/16-scheme-type-changed`): the title row is yellow, the opening row is not:
 
 ```text
    ┌─────────────────────────┐          │    ┌─────────────────────────┐

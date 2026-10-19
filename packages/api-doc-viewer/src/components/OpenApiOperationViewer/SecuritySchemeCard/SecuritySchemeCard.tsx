@@ -166,7 +166,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         <MarkdownTextRow
           data-precededby={PrecededBy.OPENAPI_ROW}
           value={value?.description ?? ''}
-          variant={TextValueVariant.body2}
+          variant={TextValueVariant.body1}
           diff={descriptionDiff}
           diffsSeverities={severities}
           diffsSeverityPlacement={NodeDiffsSeverityPlacemennt.DescriptionRow}

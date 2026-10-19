@@ -169,7 +169,7 @@ describe('OpenAPI layout: edges on fixtures', () => {
     expect(OpenApiBlockEdges.card(added)).toEqual(card(Gray, Green, addedBadge))
     expect(OpenApiLayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
     expect(OpenApiLayoutPlanner.frameRow(added, OpenApiSpacing.withOverrides({ frameRowBadge: false })).badge).toBeUndefined()
-    const retyped = security('security/15-scheme-type-changed').childrenNodes()[0].childrenNodes()[0]
+    const retyped = security('security/16-scheme-type-changed').childrenNodes()[0].childrenNodes()[0]
     expect(OpenApiBlockEdges.card(retyped)).toEqual(card())
   })
 

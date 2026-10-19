@@ -15,11 +15,17 @@ const CASES: ReadonlyArray<readonly [string, string, readonly string[], Readonly
   ['04-http-basic', 'openapi-operation-suite-oas-3-0-fields-security--case-04-http-basic', ['security-alternative-1'], {}],
   ['05-http-bearer', 'openapi-operation-suite-oas-3-0-fields-security--case-05-http-bearer', ['security-alternative-1'], {}],
   ['06-http-bearer-format', 'openapi-operation-suite-oas-3-0-fields-security--case-06-http-bearer-format', ['security-alternative-1'], {}],
-  ['07-oauth2-implicit', 'openapi-operation-suite-oas-3-0-fields-security--case-07-oauth-2-implicit', ['security-alternative-1'], {}],
-  ['08-oauth2-password', 'openapi-operation-suite-oas-3-0-fields-security--case-08-oauth-2-password', ['security-alternative-1'], {}],
-  ['09-oauth2-client-credentials', 'openapi-operation-suite-oas-3-0-fields-security--case-09-oauth-2-client-credentials', ['security-alternative-1'], {}],
-  ['10-oauth2-authorization-code', 'openapi-operation-suite-oas-3-0-fields-security--case-10-oauth-2-authorization-code', ['security-alternative-1'], {}],
-  ['11-openid-connect', 'openapi-operation-suite-oas-3-0-fields-security--case-11-openid-connect', ['security-alternative-1'], {}],
+  ['07-oauth2-implicit-required-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-07-oauth-2-implicit-required-scope', ['security-alternative-1'], {}],
+  ['08-oauth2-implicit-optional-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-08-oauth-2-implicit-optional-scope', ['security-alternative-1'], {}],
+  ['09-oauth2-password-required-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-09-oauth-2-password-required-scope', ['security-alternative-1'], {}],
+  ['10-oauth2-password-optional-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-10-oauth-2-password-optional-scope', ['security-alternative-1'], {}],
+  ['11-oauth2-client-credentials-required-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-11-oauth-2-client-credentials-required-scope', ['security-alternative-1'], {}],
+  ['12-oauth2-client-credentials-optional-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-12-oauth-2-client-credentials-optional-scope', ['security-alternative-1'], {}],
+  ['13-oauth2-authorization-code-required-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-13-oauth-2-authorization-code-required-scope', ['security-alternative-1'], {}],
+  ['14-oauth2-authorization-code-optional-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-14-oauth-2-authorization-code-optional-scope', ['security-alternative-1'], {}],
+  ['15-openid-connect-required-scope', 'openapi-operation-suite-oas-3-0-fields-security--case-15-openid-connect-required-scope', ['security-alternative-1'], {}],
+  ['16-openid-connect-no-required-scopes', 'openapi-operation-suite-oas-3-0-fields-security--case-16-openid-connect-no-required-scopes', ['security-alternative-1'], {}],
+  ['17-scheme-description', 'openapi-operation-suite-oas-3-0-fields-security--case-17-scheme-description', ['security-alternative-1'], {}],
 ]
 
 describe('OpenAPI Operation Suite - OAS 3.0 Fields / Security', () => {

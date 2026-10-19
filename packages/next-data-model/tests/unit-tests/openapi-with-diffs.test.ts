@@ -415,8 +415,8 @@ describe('OpenAPI with diffs: security', () => {
 
   it('scheme definition changes reach the flow rows', () => {
     const flow = (caseId: string) => security(build(caseId)).childrenNodes()[0].childrenNodes()[0].childrenNodes()[0]
-    expect(flow('security/26-token-url-changed').diffs.tokenUrl?.data.action).toBe(DiffAction.replace)
-    expect(flow('security/29-flow-scope-added').diffs.scopes?.data.action).toBe(DiffAction.replace)
+    expect(flow('security/27-token-url-changed').diffs.tokenUrl?.data.action).toBe(DiffAction.replace)
+    expect(flow('security/30-flow-scope-added').diffs.scopes?.data.action).toBe(DiffAction.replace)
   })
 
   it('switch from the document security to an operation override', () => {
@@ -434,7 +434,7 @@ describe('OpenAPI with diffs: security', () => {
 
 describe('OpenAPI with diffs: side accessors', () => {
   it('resolves a replaced field per side', () => {
-    const flow = security(build('security/26-token-url-changed')).childrenNodes()[0].childrenNodes()[0].childrenNodes()[0]
+    const flow = security(build('security/27-token-url-changed')).childrenNodes()[0].childrenNodes()[0].childrenNodes()[0]
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(flow, 'tokenUrl', ORIGIN_LAYOUT_SIDE)).toBe('https://auth.example.com/token')
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(flow, 'tokenUrl', CHANGED_LAYOUT_SIDE)).toBe('https://auth.example.com/oauth2/token')
   })
@@ -452,7 +452,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
   const flows = (node: OpenApiTreeNodeWithDiffs): OpenApiTreeNodeWithDiffs[] => node.childrenNodes()
 
   it('scope added to a flow: added row, absent on the origin side', () => {
-    const oauth = scheme('security/29-flow-scope-added')
+    const oauth = scheme('security/30-flow-scope-added')
     const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:delete')
     expect(row?.origin).toBeUndefined()
     expect(row?.changed).toEqual({ description: 'Delete orders', required: false })
@@ -461,7 +461,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it('scope description replaced: replace row with a text highlighter', () => {
-    const oauth = scheme('security/31-flow-scope-description-changed')
+    const oauth = scheme('security/32-flow-scope-description-changed')
     const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:read')
     expect(row?.rowDiff?.data.action).toBe(DiffAction.replace)
     expect(row?.rowDiff?.styles.after.textHighlighterColor).toBeDefined()
@@ -484,7 +484,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it('wholly added flow: its scope rows inherit the whole add', () => {
-    const oauth = scheme('security/24-oauth-flow-added')
+    const oauth = scheme('security/25-oauth-flow-added')
     const added = flows(oauth).find(flow => flow.key === 'authorizationCode')
     expect(added).toBeDefined()
     const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(added!, oauth)
@@ -492,7 +492,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it('scheme type change: yellow title row that keeps the scheme name, highlighted type text', () => {
-    const apiKey = scheme('security/15-scheme-type-changed')
+    const apiKey = scheme('security/16-scheme-type-changed')
     const title = OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(apiKey)
     expect(title?.styles.before.backgroundColor).toBe('yellow')
     expect(title?.styles.after.textHighlighterColor).toBeUndefined()
@@ -502,9 +502,9 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it.each([
-    ['security/16-scheme-definition-added', undefined, 'green'],
-    ['security/17-scheme-definition-removed', 'red', undefined],
-    ['security/15-scheme-type-changed', 'yellow', 'yellow'],
+    ['security/17-scheme-definition-added', undefined, 'green'],
+    ['security/18-scheme-definition-removed', 'red', undefined],
+    ['security/16-scheme-type-changed', 'yellow', 'yellow'],
   ])('type text marker of %s: origin %s, changed %s', (caseId, origin, changed) => {
     const node = scheme(caseId)
     expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, ORIGIN_LAYOUT_SIDE)).toBe(origin)
@@ -512,7 +512,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it('apiKey location change: per-side label, yellow row, highlighter on the place word only', () => {
-    const apiKey = scheme('security/18-api-key-location-changed')
+    const apiKey = scheme('security/19-api-key-location-changed')
     expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE)).toEqual({ place: 'Header', suffix: ' parameter name' })
     expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE)).toEqual({ place: 'Query', suffix: ' parameter name' })
     const rowDiff = OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(apiKey)
@@ -522,7 +522,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(locationDiff?.styles.before.textHighlighterColor).toBe('yellow')
     expect(locationDiff?.styles.after.textHighlighterColor).toBe('yellow')
     // `in` removed with the type change: no highlighter on the place word (replace only).
-    const removedLocation = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(scheme('security/15-scheme-type-changed'))
+    const removedLocation = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(scheme('security/16-scheme-type-changed'))
     expect(removedLocation?.styles.before.textHighlighterColor).toBeUndefined()
   })
 

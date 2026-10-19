@@ -615,6 +615,12 @@ export const SECURITY_CASES = [
     apply: () => doc => { scheme(doc, 'oauth').description = 'OAuth 2.0 client credentials.' },
   },
   {
+    change: 'scheme-description-changed',
+    title: 'scheme description replaced',
+    setup: () => doc => { scheme(doc, 'oauth').description = 'OAuth 2.0 client credentials.' },
+    after: () => doc => { scheme(doc, 'oauth').description = 'OAuth 2.0 client credentials for back-end services.' },
+  },
+  {
     change: 'scheme-type-changed',
     title: 'scheme type replaced: apiKey -> http bearer (type badge only)',
     setup: () => withSecurity({ api_key: [] }),
