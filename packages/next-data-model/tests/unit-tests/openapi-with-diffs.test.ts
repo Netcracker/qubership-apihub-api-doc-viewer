@@ -334,6 +334,7 @@ describe('OpenAPI with diffs: responses', () => {
     ['responses/01-response-1xx-added', '101', 'green'],
     ['responses/04-response-2xx-removed', '201', 'red'],
     ['responses/11-response-range-added', '5XX', 'green'],
+    ['responses/12-response-range-removed', '5XX', 'red'],
     ['responses/14-response-default-removed', 'default', 'red'],
   ])('response option wholly changed (%s): yellow Responses row, neutral option with a %s border', (caseId, code, border) => {
     const tree = build(caseId)

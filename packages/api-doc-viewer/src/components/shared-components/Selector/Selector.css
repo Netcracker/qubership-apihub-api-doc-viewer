@@ -95,6 +95,12 @@ button.button-selector-option_tone-danger.selected {
   color: white;
 }
 
+/* A yellow-highlighted label (renamed response code / media type) is always black: the inherited
+   white of a selected tone is invisible on the highlighter. */
+button.button-selector-option .diffs-highlighter_yellow {
+  color: black;
+}
+
 /* ─── No-wrap strip (security toolbar). An option never grows wider than the strip; its label is
    cropped with an ellipsis down to one character + "…" (min-width: 2.5ch + 2 × 8px padding + border).
    The button itself must not clip: diff round markers and border shadows sit outside its box. */

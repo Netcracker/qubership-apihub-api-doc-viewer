@@ -36,9 +36,10 @@ export class OpenApiSideReader {
     return isObjective(value) ? takeIfDiffsRecord(value[this.diffsMetaKey]) : undefined
   }
 
-  public readField(owner: unknown, key: PropertyKey, context: OpenApiSideContext): OpenApiFieldSides {
+  /** `diffKey`: the diffs-record key when `apiDiff` records the diff under another spelling of `key`. */
+  public readField(owner: unknown, key: PropertyKey, context: OpenApiSideContext, diffKey: PropertyKey = key): OpenApiFieldSides {
     const merged = isObjective(owner) ? owner[key] : undefined
-    const diff = typeof key === 'symbol' ? undefined : this.record(owner)?.[String(key)]
+    const diff = typeof diffKey === 'symbol' ? undefined : this.record(owner)?.[String(diffKey)]
     let beforePresent = context.before && merged !== undefined
     let afterPresent = context.after && merged !== undefined
     let before = merged

@@ -35,6 +35,9 @@ type UnknownRecord = Record<PropertyKey, unknown>
 
 const NO_SIDES: OpenApiSideContext = { before: false, after: false }
 
+/** A response-code range (`1XX` … `5XX`), matched case-insensitively. */
+const RESPONSE_CODE_RANGE = /^[1-5]xx$/i
+
 /** Scheme-definition field -> scheme spec field. */
 const SECURITY_SCHEME_FIELDS: ReadonlyArray<readonly [string, string]> = [
   ['type', 'type'],
@@ -638,7 +641,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     const responsesRecord: DiffsRecord = {}
     const presence = { before: false, after: false }
     for (const code of Object.keys(responsesSpec)) {
-      const responseField = this.reader.readField(responses, code, responsesContext)
+      const responseField = this.readResponseField(responses, code, responsesContext)
       this.mergePresence(presence, this.reader.childContext(responseField))
       const diff = responseField.diff
       if (diff && (isDiffAdd(diff) || isDiffRemove(diff) || isDiffRename(diff))) {
@@ -698,7 +701,22 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
 
   private responseField(context: OpenApiOperationContext, code: string): OpenApiFieldSides {
     const responsesField = this.reader.readField(context.operation, 'responses', this.operationSides)
-    return this.reader.readField(context.operation.responses, code, this.reader.childContext(responsesField))
+    return this.readResponseField(context.operation.responses, code, this.reader.childContext(responsesField))
+  }
+
+  /**
+   * `apiDiff` keys a removed range code's diff by its normalized lowercase spelling (`5xx`), while the
+   * merged document keeps the original key (`5XX`): fall back to the diff of another spelling of the
+   * same range unless that spelling is a response of its own.
+   */
+  private readResponseField(responses: unknown, code: string, context: OpenApiSideContext): OpenApiFieldSides {
+    const field = this.reader.readField(responses, code, context)
+    if (field.diff || !RESPONSE_CODE_RANGE.test(code) || !isObject(responses)) {
+      return field
+    }
+    const diffKey = Object.keys(this.reader.record(responses) ?? {})
+      .find(key => key !== code && key.toLowerCase() === code.toLowerCase() && !(key in responses))
+    return diffKey === undefined ? field : this.reader.readField(responses, code, context, diffKey)
   }
 
   private responseContext(context: OpenApiOperationContext, code: string): OpenApiSideContext {
