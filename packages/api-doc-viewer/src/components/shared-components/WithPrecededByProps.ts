@@ -20,6 +20,8 @@ export enum PrecededBy {
   */
   SERVER_BLOCK = 'server-block',
   SERVER_ADDRESS_ROW = 'server-address-row',
+  /** Follows an AsyncAPI Security section (operation or server): its last card's lower half-gap is already there. */
+  SECURITY_SECTION = 'security-section',
   DDL_TABLE_HEADER_ROW = 'ddl-table-header-row',
   DDL_TABLE_SCHEMA_ROW = 'ddl-table-schema-row',
   DDL_TABLE_DESCRIPTION_ROW = 'ddl-table-description-row',

@@ -8,10 +8,8 @@ function createKindGuard<K extends OpenApiTreeNodeKind>(kind: K): OpenApiKindGua
 }
 
 export const isOpenApiOperationNode = createKindGuard(OpenApiTreeNodeKinds.OPERATION)
+// The section's own nodes (alternatives, schemes, flows): `utils/security/node-type-checkers`.
 export const isOpenApiSecurityNode = createKindGuard(OpenApiTreeNodeKinds.SECURITY)
-export const isOpenApiSecurityRequirementNode = createKindGuard(OpenApiTreeNodeKinds.SECURITY_REQUIREMENT)
-export const isOpenApiSecuritySchemeNode = createKindGuard(OpenApiTreeNodeKinds.SECURITY_SCHEME)
-export const isOpenApiOAuthFlowNode = createKindGuard(OpenApiTreeNodeKinds.OAUTH_FLOW)
 export const isOpenApiExtensionsNode = createKindGuard(OpenApiTreeNodeKinds.EXTENSIONS)
 export const isOpenApiRequestNode = createKindGuard(OpenApiTreeNodeKinds.REQUEST)
 export const isOpenApiParametersNode = createKindGuard(OpenApiTreeNodeKinds.PARAMETERS)

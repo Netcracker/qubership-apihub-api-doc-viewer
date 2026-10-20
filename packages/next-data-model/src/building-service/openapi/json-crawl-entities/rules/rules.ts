@@ -1,5 +1,6 @@
 import { CrawlRules } from "@netcracker/qubership-apihub-json-crawl"
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../model/openapi/types/node-kind"
+import { getSecurityCrawlRules } from "../../../security/json-crawl-entities/rules"
 import { OpenApiTreeCrawlState } from "../state/types"
 import { collectOpenApiRawValues } from "../transformers/collect-raw-values"
 import { OpenApiCrawlRule } from "./types"
@@ -20,22 +21,7 @@ export function getOpenApiCrawlRules<S extends OpenApiTreeCrawlState = OpenApiTr
   }
   return {
     '/data': {
-      '/security': {
-        '/alternatives': {
-          '/*': {
-            '/schemes': {
-              '/*': {
-                '/flows': {
-                  '/*': { kind: OpenApiTreeNodeKinds.OAUTH_FLOW },
-                },
-                kind: OpenApiTreeNodeKinds.SECURITY_SCHEME,
-              },
-            },
-            kind: OpenApiTreeNodeKinds.SECURITY_REQUIREMENT,
-          },
-        },
-        kind: OpenApiTreeNodeKinds.SECURITY,
-      },
+      '/security': getSecurityCrawlRules(),
       '/extensions': extensionsRule,
       '/request': {
         '/parameters': {

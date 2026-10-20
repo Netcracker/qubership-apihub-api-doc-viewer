@@ -1,9 +1,9 @@
+import { SecurityTreeNodeKinds } from "../../security/types/node-kind"
+
 export const OpenApiTreeNodeKinds = {
   OPERATION: 'operation',
-  SECURITY: 'security',
-  SECURITY_REQUIREMENT: 'securityRequirement',
-  SECURITY_SCHEME: 'securityScheme',
-  OAUTH_FLOW: 'oauthFlow',
+  // The Security section's kinds (shared with AsyncAPI).
+  ...SecurityTreeNodeKinds,
   EXTENSIONS: 'extensions',
   REQUEST: 'request',
   PARAMETERS: 'parameters',

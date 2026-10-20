@@ -1,18 +1,18 @@
 import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { JsonPath } from "@netcracker/qubership-apihub-json-crawl"
-import { DiffsRecord, isArray, isObjective, takeIfDiffsRecord } from "../../../utilities"
-import { AbstractNodeDiffsSeveritiesAggregator } from "../../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+import { DiffsRecord, isArray, isObjective, takeIfDiffsRecord } from "../../utilities"
+import { AbstractNodeDiffsSeveritiesAggregator } from "../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
 
 /** Whether the current object exists on each side of a merged document. */
-export type OpenApiSideContext = {
+export type SideContext = {
   readonly before: boolean
   readonly after: boolean
 }
 
-export const BOTH_SIDES: OpenApiSideContext = { before: true, after: true }
+export const BOTH_SIDES: SideContext = { before: true, after: true }
 
 /** One field of a merged object, reconstructed per side. */
-export type OpenApiFieldSides = {
+export type FieldSides = {
   readonly beforePresent: boolean
   readonly afterPresent: boolean
   readonly before: unknown
@@ -29,7 +29,7 @@ const SYNTHETIC_DIFF_SCOPE = 'openapi-operation-viewer'
  * so a field is absent on a side when it or an ancestor carries an add (before) / remove (after).
  * Design: docs/design/openapi/entities/parameters.md -> "Step 1".
  */
-export class OpenApiSideReader {
+export class SideReader {
   constructor(public readonly diffsMetaKey: symbol) { }
 
   public record(value: unknown): DiffsRecord | undefined {
@@ -37,7 +37,7 @@ export class OpenApiSideReader {
   }
 
   /** `diffKey`: the diffs-record key when `apiDiff` records the diff under another spelling of `key`. */
-  public readField(owner: unknown, key: PropertyKey, context: OpenApiSideContext, diffKey: PropertyKey = key): OpenApiFieldSides {
+  public readField(owner: unknown, key: PropertyKey, context: SideContext, diffKey: PropertyKey = key): FieldSides {
     const merged = isObjective(owner) ? owner[key] : undefined
     const diff = typeof diffKey === 'symbol' ? undefined : this.record(owner)?.[String(diffKey)]
     let beforePresent = context.before && merged !== undefined
@@ -62,7 +62,7 @@ export class OpenApiSideReader {
     }
   }
 
-  public childContext(field: OpenApiFieldSides): OpenApiSideContext {
+  public childContext(field: FieldSides): SideContext {
     return { before: field.beforePresent, after: field.afterPresent }
   }
 
@@ -77,7 +77,7 @@ export class OpenApiSideReader {
     if (!beforeShown && !afterShown) {
       return undefined
     }
-    if (beforeShown && afterShown && OpenApiSideReader.deepEqual(before, after)) {
+    if (beforeShown && afterShown && SideReader.deepEqual(before, after)) {
       return undefined
     }
     if (!beforeShown) {
@@ -91,7 +91,7 @@ export class OpenApiSideReader {
 
   /** Synthetic whole add / remove when presence flips; `undefined` otherwise. */
   public diffPresence(
-    presence: OpenApiSideContext,
+    presence: SideContext,
     value: unknown,
     causes: readonly (Diff | undefined)[],
   ): Diff | undefined {
@@ -162,6 +162,17 @@ export class OpenApiSideReader {
     Reflect.set(owner, this.diffsMetaKey, { ...(this.record(owner) ?? {}), ...record })
   }
 
+  /**
+   * Row of a selector: one synthetic `replace` under `key` of `target` when any option diff of
+   * `options` is an option change (`isOptionChange`), typed by the strongest of them.
+   */
+  public writeOptionsDiff(target: DiffsRecord, key: string, options: DiffsRecord, isOptionChange: (diff: Diff | undefined) => boolean): void {
+    const optionDiffs = Object.values(options).filter(isOptionChange)
+    if (optionDiffs.length > 0) {
+      target[key] = this.createDiff(DiffAction.replace, {}, optionDiffs)
+    }
+  }
+
   public static isWholeChange(diff: Diff | undefined): boolean {
     return diff !== undefined && (isDiffAdd(diff) || isDiffRemove(diff))
   }
@@ -186,6 +197,6 @@ export class OpenApiSideReader {
     if (keysA.length !== keysB.length) {
       return false
     }
-    return keysA.every(key => Object.prototype.hasOwnProperty.call(b, key) && OpenApiSideReader.deepEqual(a[key], b[key], visited))
+    return keysA.every(key => Object.prototype.hasOwnProperty.call(b, key) && SideReader.deepEqual(a[key], b[key], visited))
   }
 }

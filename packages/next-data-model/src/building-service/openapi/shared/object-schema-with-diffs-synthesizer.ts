@@ -8,7 +8,7 @@ import {
   OpenApiObjectSchemaSynthesizer,
   OpenApiSchemaEntry,
 } from "./object-schema-synthesizer"
-import { OpenApiFieldSides, OpenApiSideContext, OpenApiSideReader } from "./side-reader"
+import { FieldSides, SideContext, SideReader } from "../../shared/side-reader"
 
 type UnknownRecord = Record<PropertyKey, unknown>
 
@@ -16,7 +16,7 @@ export type OpenApiSynthesisContainer = {
   /** The merged array (parameters) or map (headers) holding the entries; its record keys entries. */
   readonly owner: unknown
   /** Side context of `owner`. */
-  readonly context: OpenApiSideContext
+  readonly context: SideContext
   /** Whole add / remove of an ancestor (operation, parameters array, headers map, response) to stamp on every entry. */
   readonly inheritedWholeDiff?: Diff
 }
@@ -25,7 +25,7 @@ export type OpenApiSynthesisContainer = {
 type SchemaSource = {
   readonly mediaType?: string
   /** The schema field, reconstructed per side. */
-  readonly field: OpenApiFieldSides
+  readonly field: FieldSides
   /** Merged schema object of this source. */
   readonly merged: unknown
 }
@@ -42,7 +42,7 @@ const RESERVED_SCHEMA_KEYS: ReadonlySet<string> = new Set([DESCRIPTION_KEY, CUST
  * "Entry extensions".
  */
 export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchemaSynthesizer {
-  constructor(private readonly reader: OpenApiSideReader) {
+  constructor(private readonly reader: SideReader) {
     super()
   }
 
@@ -56,7 +56,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
       const entryContext = this.reader.childContext(entryField)
       schema.properties[entry.name] = this.buildPropertyWithDiffs(entry, entryContext)
 
-      const wholeDiff = container.inheritedWholeDiff ?? (OpenApiSideReader.isWholeChange(entryField.diff) ? entryField.diff : undefined)
+      const wholeDiff = container.inheritedWholeDiff ?? (SideReader.isWholeChange(entryField.diff) ? entryField.diff : undefined)
       const renameDiff = this.resolveRenameDiff(entry, entryContext)
       const propertyDiff = wholeDiff ?? renameDiff
       if (propertyDiff) {
@@ -85,7 +85,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
   }
 
   /** `apiDiff` maps path parameters by template position: a changed `name` is a property key rename. */
-  private resolveRenameDiff(entry: OpenApiSchemaEntry, entryContext: OpenApiSideContext): Diff | undefined {
+  private resolveRenameDiff(entry: OpenApiSchemaEntry, entryContext: SideContext): Diff | undefined {
     const nameField = this.reader.readField(entry.value, 'name', entryContext)
     const nameDiff = nameField.diff
     if (!nameDiff || !isDiffReplace(nameDiff) || !isString(nameDiff.beforeValue) || !isString(nameDiff.afterValue)) {
@@ -103,7 +103,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     }
   }
 
-  private buildPropertyWithDiffs(entry: OpenApiSchemaEntry, entryContext: OpenApiSideContext): unknown {
+  private buildPropertyWithDiffs(entry: OpenApiSchemaEntry, entryContext: SideContext): unknown {
     const entryValue = entry.value
     const sourceBefore = this.resolveSchemaSourceOnSide(entryValue, entryContext, 'before')
     const sourceAfter = this.resolveSchemaSourceOnSide(entryValue, entryContext, 'after')
@@ -147,7 +147,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     return property
   }
 
-  private resolveSchemaSourceOnSide(entry: UnknownRecord, entryContext: OpenApiSideContext, side: 'before' | 'after'): SchemaSource | undefined {
+  private resolveSchemaSourceOnSide(entry: UnknownRecord, entryContext: SideContext, side: 'before' | 'after'): SchemaSource | undefined {
     const schemaField = this.reader.readField(entry, 'schema', entryContext)
     if (side === 'before' ? schemaField.beforePresent : schemaField.afterPresent) {
       return { field: schemaField, merged: entry.schema }
@@ -234,7 +234,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     property: UnknownRecord,
     key: string,
     entry: UnknownRecord,
-    entryContext: OpenApiSideContext,
+    entryContext: SideContext,
     rootValue: (key: string, side: 'before' | 'after') => unknown,
     isSameSource: boolean,
     normalize: (value: unknown) => unknown,
@@ -260,7 +260,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
   private applyShownFlag(
     property: UnknownRecord,
     entry: UnknownRecord,
-    entryContext: OpenApiSideContext,
+    entryContext: SideContext,
     rootValue: (key: string, side: 'before' | 'after') => unknown,
     isSameSource: boolean,
   ): void {

@@ -1,6 +1,5 @@
+import { SecurityRequiredScopesKind } from "../../../../model/security/types/node-value"
 import { OpenApiSpecVersion } from "@netcracker/qubership-apihub-api-unifier"
-import { OpenApiRequiredScopesKind } from "../../../../model/openapi/types/node-value"
-
 const OAUTH_LIKE_SCHEME_TYPES: ReadonlySet<string> = new Set(['oauth2', 'openIdConnect'])
 
 /**
@@ -14,7 +13,7 @@ export interface OpenApiDialect {
   /** Whether the Responses Object is required on an operation (dev-mode warning only). */
   readonly isResponsesObjectRequired: boolean
   /** How the scopes array of a Security Requirement Object is read for one scheme type. */
-  resolveRequiredScopesKind(schemeType: string | undefined): OpenApiRequiredScopesKind
+  resolveRequiredScopesKind(schemeType: string | undefined): SecurityRequiredScopesKind
 }
 
 export abstract class OpenApiDialectBase implements OpenApiDialect {
@@ -22,7 +21,7 @@ export abstract class OpenApiDialectBase implements OpenApiDialect {
   public abstract readonly securitySchemeTypes: ReadonlySet<string>
   public abstract readonly isResponsesObjectRequired: boolean
 
-  public resolveRequiredScopesKind(schemeType: string | undefined): OpenApiRequiredScopesKind {
+  public resolveRequiredScopesKind(schemeType: string | undefined): SecurityRequiredScopesKind {
     if (schemeType && OAUTH_LIKE_SCHEME_TYPES.has(schemeType)) {
       return 'scopes'
     }
@@ -30,5 +29,5 @@ export abstract class OpenApiDialectBase implements OpenApiDialect {
   }
 
   /** Meaning of a scopes list on a scheme that is neither OAuth2 nor OpenID Connect. */
-  protected abstract resolveNonOAuthScopesKind(): OpenApiRequiredScopesKind
+  protected abstract resolveNonOAuthScopesKind(): SecurityRequiredScopesKind
 }

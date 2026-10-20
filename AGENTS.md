@@ -206,6 +206,15 @@ DDL table diffs touch both packages and fixtures:
 
 JSO diffs specification: `docs/design/jso/features/diffs.md`.
 
+## Security sections (OpenAPI + AsyncAPI)
+
+One spec-neutral security module serves the OpenAPI operation section and the AsyncAPI operation /
+server sections: `model/security/`, `building-service/security/` (next-data-model) and
+`shared-components/Security/` (`SecuritySchemeCardBase`, `SecuritySectionBase`) with thin per-spec
+wrappers. Extend the module; do not fork per-spec copies. Design:
+`docs/design/async-api/features/security.md`; skills: `next-data-model-authoring` and
+`api-doc-viewer-authoring` → **Security**.
+
 ## JSON Schema Diffs Suite (type changes)
 
 Generated YAML pairs under `packages/samples/json-schema-diffs/type-changes/` exercise

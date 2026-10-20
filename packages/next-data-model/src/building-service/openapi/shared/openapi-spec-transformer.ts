@@ -1,14 +1,7 @@
+import { SecuritySpec } from "../../security/security-spec"
 import { OpenApiSpecVersion } from "@netcracker/qubership-apihub-api-unifier"
 import { BuildingServiceLogger } from "../../../loggers"
-import {
-  OPENAPI_OAUTH_FLOW_TYPES,
-  OPENAPI_PARAMETER_LOCATIONS,
-  OpenApiExternalDocs,
-  OpenApiOAuthFlowType,
-  OpenApiParameterLocation,
-  OpenApiRequiredScopesKind,
-  OpenApiSynthesizedObjectSchema,
-} from "../../../model/openapi/types/node-value"
+import { OPENAPI_PARAMETER_LOCATIONS, OpenApiExternalDocs, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
 import { isSpecificationExtensionKey, SpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { isOpenApiHttpMethod, OPEN_API_HTTP_METHODS_ORDER, OpenApiHttpMethod } from "../../../shared/openapi/types/http-method"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
@@ -16,49 +9,12 @@ import { OpenApiResponseCode, OpenApiResponseCodeClass } from "../../../shared/o
 import { isArray, isObject, isString } from "../../../utilities"
 import { OpenApiDialect } from "./dialects/dialect"
 import { OpenApiDialectResolver } from "./dialects/dialect-resolver"
+import { OpenApiSecuritySpecBuilder } from "./openapi-security-spec-builder"
 import { OpenApiObjectSchemaSynthesizer, OpenApiSchemaEntry } from "./object-schema-synthesizer"
 
 type UnknownRecord = Record<PropertyKey, unknown>
 
 export type OpenApiExtensionsSpec = Record<SpecificationExtensionKey, unknown>
-
-export interface OpenApiOAuthFlowSpec {
-  flowType: OpenApiOAuthFlowType
-  authorizationUrl?: string
-  tokenUrl?: string
-  refreshUrl?: string
-  scopes: Record<string, string>
-  [key: symbol]: unknown
-}
-
-export interface OpenApiSecuritySchemeSpec {
-  name: string
-  isResolved: boolean
-  type?: string
-  description?: string
-  in?: string
-  parameterName?: string
-  scheme?: string
-  bearerFormat?: string
-  openIdConnectUrl?: string
-  requiredScopes: string[]
-  requiredScopesKind: OpenApiRequiredScopesKind
-  flows?: Partial<Record<OpenApiOAuthFlowType, OpenApiOAuthFlowSpec>>
-  [key: symbol]: unknown
-}
-
-export interface OpenApiSecurityAlternativeSpec {
-  schemeNames: string[]
-  isAnonymous: boolean
-  schemes: Record<string, OpenApiSecuritySchemeSpec>
-  [key: symbol]: unknown
-}
-
-export interface OpenApiSecuritySpec {
-  isInheritedFromDocument: boolean
-  alternatives: OpenApiSecurityAlternativeSpec[]
-  [key: symbol]: unknown
-}
 
 export interface OpenApiParametersSpec {
   location: OpenApiParameterLocation
@@ -103,7 +59,7 @@ export interface OpenApiResponseSpec {
 }
 
 export interface OpenApiOperationOrientedSpecData {
-  security?: OpenApiSecuritySpec
+  security?: SecuritySpec
   extensions?: OpenApiExtensionsSpec
   request?: OpenApiRequestSpec
   responses?: Record<string, OpenApiResponseSpec>
@@ -139,6 +95,8 @@ export type OpenApiOperationContext = {
  * Design: docs/design/openapi/architecture/data-model-plain.md
  */
 export class OpenApiSpecTransformer {
+  private securitySpecBuilder?: OpenApiSecuritySpecBuilder
+
   constructor(protected readonly logger: BuildingServiceLogger) { }
 
   public transform(source: unknown, operationKeys?: OpenApiOperationKeys): OpenApiOperationOrientedSpec | null {
@@ -247,94 +205,14 @@ export class OpenApiSpecTransformer {
 
   /* Security */
 
-  protected buildSecurity(context: OpenApiOperationContext): OpenApiSecuritySpec | undefined {
-    const { source, operation } = context
-    const isInheritedFromDocument = operation.security === undefined
-    const requirements = isInheritedFromDocument ? source.security : operation.security
-    if (!isArray(requirements) || requirements.length === 0) {
-      return undefined
-    }
-    return {
-      isInheritedFromDocument,
-      alternatives: requirements
-        .filter(isObject)
-        .map(requirement => this.buildSecurityAlternative(context, requirement)),
-    }
+  /** The Security section: built by the API type's security spec builder (created once per transformer). */
+  protected buildSecurity(context: OpenApiOperationContext): SecuritySpec | undefined {
+    this.securitySpecBuilder ??= this.createSecuritySpecBuilder()
+    return this.securitySpecBuilder.build(context)
   }
 
-  protected buildSecurityAlternative(context: OpenApiOperationContext, requirement: UnknownRecord): OpenApiSecurityAlternativeSpec {
-    const schemeNames = Object.keys(requirement)
-    const schemes: Record<string, OpenApiSecuritySchemeSpec> = {}
-    for (const name of schemeNames) {
-      const scopes = requirement[name]
-      schemes[name] = this.buildSecurityScheme(context, name, isArray(scopes) ? scopes.filter(isString) : [])
-    }
-    return { schemeNames, isAnonymous: schemeNames.length === 0, schemes }
-  }
-
-  protected takeSecuritySchemeDefinition(context: OpenApiOperationContext, name: string): UnknownRecord | undefined {
-    const components = context.source.components
-    const securitySchemes = isObject(components) ? components.securitySchemes : undefined
-    const definition = isObject(securitySchemes) ? securitySchemes[name] : undefined
-    return isObject(definition) ? definition : undefined
-  }
-
-  protected buildSecurityScheme(context: OpenApiOperationContext, name: string, requiredScopes: string[]): OpenApiSecuritySchemeSpec {
-    const definition = this.takeSecuritySchemeDefinition(context, name)
-    const type = isString(definition?.type) ? definition.type : undefined
-    if (type && !context.dialect.securitySchemeTypes.has(type)) {
-      this.logger.warn(`[OpenAPI] Security scheme type '${type}' is not defined in ${context.dialect.specVersion}.`)
-    }
-    const requiredScopesKind = context.dialect.resolveRequiredScopesKind(type)
-    if (requiredScopesKind === 'ignored' && requiredScopes.length > 0) {
-      this.logger.warn(`[OpenAPI] Scopes of security scheme '${name}' are ignored in ${context.dialect.specVersion}.`)
-    }
-    const flows = this.buildOAuthFlows(definition?.flows)
-    return {
-      name,
-      isResolved: definition !== undefined,
-      ...(type ? { type } : {}),
-      ...(isString(definition?.description) ? { description: definition.description } : {}),
-      ...(isString(definition?.in) ? { in: definition.in } : {}),
-      ...(isString(definition?.name) ? { parameterName: definition.name } : {}),
-      ...(isString(definition?.scheme) ? { scheme: definition.scheme } : {}),
-      ...(isString(definition?.bearerFormat) ? { bearerFormat: definition.bearerFormat } : {}),
-      ...(isString(definition?.openIdConnectUrl) ? { openIdConnectUrl: definition.openIdConnectUrl } : {}),
-      requiredScopes,
-      requiredScopesKind,
-      ...(flows ? { flows } : {}),
-    }
-  }
-
-  protected buildOAuthFlows(flows: unknown): Partial<Record<OpenApiOAuthFlowType, OpenApiOAuthFlowSpec>> | undefined {
-    if (!isObject(flows)) {
-      return undefined
-    }
-    const result: Partial<Record<OpenApiOAuthFlowType, OpenApiOAuthFlowSpec>> = {}
-    for (const flowType of OPENAPI_OAUTH_FLOW_TYPES) {
-      const flow = flows[flowType]
-      if (isObject(flow)) {
-        result[flowType] = this.buildOAuthFlow(flowType, flow)
-      }
-    }
-    return Object.keys(result).length > 0 ? result : undefined
-  }
-
-  protected buildOAuthFlow(flowType: OpenApiOAuthFlowType, flow: UnknownRecord): OpenApiOAuthFlowSpec {
-    const scopes: Record<string, string> = {}
-    if (isObject(flow.scopes)) {
-      for (const scope of Object.keys(flow.scopes)) {
-        const scopeDescription = flow.scopes[scope]
-        scopes[scope] = isString(scopeDescription) ? scopeDescription : ''
-      }
-    }
-    return {
-      flowType,
-      ...(isString(flow.authorizationUrl) ? { authorizationUrl: flow.authorizationUrl } : {}),
-      ...(isString(flow.tokenUrl) ? { tokenUrl: flow.tokenUrl } : {}),
-      ...(isString(flow.refreshUrl) ? { refreshUrl: flow.refreshUrl } : {}),
-      scopes,
-    }
+  protected createSecuritySpecBuilder(): OpenApiSecuritySpecBuilder {
+    return new OpenApiSecuritySpecBuilder(this.logger)
   }
 
   /* Request */

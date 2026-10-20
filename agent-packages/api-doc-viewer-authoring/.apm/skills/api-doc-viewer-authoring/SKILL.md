@@ -893,6 +893,37 @@ of several review rounds:
 - Verify geometry in a live browser (testing skill → live Storybook check); SSR / HTML checks cannot
   see widths or `::before` boxes.
 
+## Security sections: one presenter, two API types (session lesson)
+
+Design: `docs/design/async-api/features/security.md` (structure, layout, deviations) and
+`docs/design/openapi/entities/security.md` (rows, diffs). The card and the section pieces are
+**spec-neutral**; each API type only wraps them.
+
+| Piece | Shared (`shared-components/Security/`) | OpenAPI | AsyncAPI |
+| --- | --- | --- | --- |
+| Card | `SecuritySchemeCardBase` (`presentation: SecurityPresentation`) | `OpenApiSecuritySchemeCard` | `AsyncApiSecuritySchemeCard` |
+| Toolbar | `SecurityToolbarRow` (`labels`, `selected`, `onSelect`) over `SecurityToolbar` | selection in `OpenApiViewStateContext` | local `useState` |
+| Section | `buildSecurityToolbarBlock(node, render)`, `buildSecurityContentBlocks(selected, renderCard)`, `SECURITY_SECTION_TITLE` | `buildSecurityBlock` (h2, operation-level block) | `AsyncApiSecuritySection` (h3 `PRIMARY` in `MessageNodeViewer`, h5 `SECONDARY` in `MessageChannelServerNodeViewer`) |
+
+- **Navigate with the security guards.** `utils/security/node-type-checkers.ts`
+  (`getSecurityChildren`, `isSecuritySchemeNode`, `resolveSelectedSecurityAlternative`, …) and
+  `takeSecuritySeverities` work on nodes of either tree (`SecurityTreeNode<K>`). Do not add
+  per-spec copies (`isOpenApiSecuritySchemeNode` was removed); spec trees keep only the guard that
+  finds the section itself (`isOpenApiSecurityNode`).
+- **A card title is always smaller than its section title.** `SecuritySchemeCardBase` takes
+  `titleVariant` (default h4); the AsyncAPI card maps `SizeVariant` → h4 (operation, under h3) / h6
+  (server, under h5). A new placement of the card picks a variant below its section's title.
+- **Labels and row visibility come from the presentation**, never from a spec switch in JSX: a new
+  scheme type or row is a `SecurityDisplayLabels` / `SecurityNodeVisibility` change in
+  next-data-model plus, for a new row kind, one `fieldPropRow` in the base card (e.g. AsyncAPI
+  `API key location` with a `format` for the value label).
+- **AsyncAPI keeps its own rows outside, the shared layout inside.** The AsyncAPI section title is an
+  AsyncAPI `TitleRow` spaced by `data-precededby`; the toolbar and cards render in
+  `OpenApiLayout level="security" outerHalves`. The element after a section is
+  `PrecededBy.SECURITY_SECTION` (`preceded-by.css`: 8px + the last card's 4px half = 12px). Local
+  selection state is fine here because no outer planner depends on it (unlike the OpenAPI operation,
+  see **View state is one store** below).
+
 ## OpenAPI vertical spacing: every gap is a separator row (session lesson)
 
 Design: `docs/design/openapi/features/vertical-gaps.md` (rule, colouring, examples, config,

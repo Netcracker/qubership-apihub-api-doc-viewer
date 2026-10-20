@@ -1,3 +1,5 @@
+import { OPENAPI_SECURITY_DISPLAY_LABELS } from '../../src/model/openapi/security-presentation'
+import { SecurityRowDiffs } from '../../src/model/security/tree-with-diffs/row-diffs'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
 import { NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
@@ -451,7 +453,7 @@ describe('OpenAPI with diffs: side accessors', () => {
     const scheme = child(security(build('security/09-scheme-added-to-alternative')).childrenNodes()[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', ORIGIN_LAYOUT_SIDE)).toBeUndefined()
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', CHANGED_LAYOUT_SIDE)).toBe('http')
-    expect(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(scheme)).toBeUndefined()
+    expect(SecurityRowDiffs.Scheme.takeTypeTextDiff(scheme)).toBeUndefined()
   })
 })
 
@@ -461,7 +463,7 @@ describe('OpenAPI with diffs: security card accessors', () => {
 
   it('scope added to a flow: added row, absent on the origin side', () => {
     const oauth = scheme('security/30-flow-scope-added')
-    const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:delete')
+    const row = SecurityRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:delete')
     expect(row?.origin).toBeUndefined()
     expect(row?.changed).toEqual({ description: 'Delete orders', required: false })
     expect(row?.rowDiff?.data.action).toBe(DiffAction.add)
@@ -470,14 +472,14 @@ describe('OpenAPI with diffs: security card accessors', () => {
 
   it('scope description replaced: replace row with a text highlighter', () => {
     const oauth = scheme('security/32-flow-scope-description-changed')
-    const row = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:read')
+    const row = SecurityRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth).find(r => r.name === 'orders:read')
     expect(row?.rowDiff?.data.action).toBe(DiffAction.replace)
     expect(row?.rowDiff?.styles.after.textHighlighterColor).toBeDefined()
   })
 
   it('required scope added: a required diff on a scope present on both sides', () => {
     const oauth = scheme('security/11-required-scope-added')
-    const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth)
+    const rows = SecurityRowDiffs.OAuthFlow.resolveScopeRows(flows(oauth)[0], oauth)
     const read = rows.find(r => r.name === 'orders:read')
     expect(read?.origin?.required).toBe(false)
     expect(read?.changed?.required).toBe(true)
@@ -488,25 +490,25 @@ describe('OpenAPI with diffs: security card accessors', () => {
     expect(read?.rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
     expect(rows.find(r => r.name === 'orders:write')?.rowDiff).toBeUndefined()
     expect(rows.find(r => r.name === 'orders:write')?.origin?.required).toBe(true)
-    expect(OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(oauth)).toEqual([])
+    expect(SecurityRowDiffs.Scheme.resolveUndeclaredRequiredScopeRows(oauth)).toEqual([])
   })
 
   it('wholly added flow: its scope rows inherit the whole add', () => {
     const oauth = scheme('security/25-oauth-flow-added')
     const added = flows(oauth).find(flow => flow.key === 'authorizationCode')
     expect(added).toBeDefined()
-    const rows = OpenApiRowDiffs.OAuthFlow.resolveScopeRows(added!, oauth)
+    const rows = SecurityRowDiffs.OAuthFlow.resolveScopeRows(added!, oauth)
     expect(rows.map(r => [r.name, r.origin, r.rowDiff?.data.action])).toEqual([['orders:read', undefined, DiffAction.add]])
   })
 
   it('scheme type change: yellow title row that keeps the scheme name, highlighted type text', () => {
     const apiKey = scheme('security/16-scheme-type-changed')
-    const title = OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(apiKey)
+    const title = SecurityRowDiffs.Scheme.takeTitleRowDiff(apiKey)
     expect(title?.styles.before.backgroundColor).toBe('yellow')
     expect(title?.styles.after.textHighlighterColor).toBeUndefined()
     expect(title?.data.action).toBe(DiffAction.replace)
     expect(title && 'beforeValue' in title.data ? title.data.beforeValue : 'absent').toBeUndefined()
-    expect(OpenApiRowDiffs.SecurityScheme.takeTypeTextDiff(apiKey)?.styles.after.textHighlighterColor).toBe('yellow')
+    expect(SecurityRowDiffs.Scheme.takeTypeTextDiff(apiKey)?.styles.after.textHighlighterColor).toBe('yellow')
   })
 
   it.each([
@@ -515,31 +517,31 @@ describe('OpenAPI with diffs: security card accessors', () => {
     ['security/16-scheme-type-changed', 'yellow', 'yellow'],
   ])('type text marker of %s: origin %s, changed %s', (caseId, origin, changed) => {
     const node = scheme(caseId)
-    expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, ORIGIN_LAYOUT_SIDE)).toBe(origin)
-    expect(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, CHANGED_LAYOUT_SIDE)).toBe(changed)
+    expect(SecurityRowDiffs.Scheme.resolveTypeTextHighlight(node, ORIGIN_LAYOUT_SIDE)).toBe(origin)
+    expect(SecurityRowDiffs.Scheme.resolveTypeTextHighlight(node, CHANGED_LAYOUT_SIDE)).toBe(changed)
   })
 
   it('apiKey location change: per-side label, yellow row, highlighter on the place word only', () => {
     const apiKey = scheme('security/19-api-key-location-changed')
-    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE)).toEqual({ place: 'Header', suffix: ' parameter name' })
-    expect(OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE)).toEqual({ place: 'Query', suffix: ' parameter name' })
-    const rowDiff = OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(apiKey)
+    expect(SecurityRowDiffs.Scheme.resolveParameterNameLabel(apiKey, ORIGIN_LAYOUT_SIDE, OPENAPI_SECURITY_DISPLAY_LABELS)).toEqual({ place: 'Header', suffix: ' parameter name' })
+    expect(SecurityRowDiffs.Scheme.resolveParameterNameLabel(apiKey, CHANGED_LAYOUT_SIDE, OPENAPI_SECURITY_DISPLAY_LABELS)).toEqual({ place: 'Query', suffix: ' parameter name' })
+    const rowDiff = SecurityRowDiffs.Scheme.takeParameterNameRowDiff(apiKey)
     expect(rowDiff?.styles.after.backgroundColor).toBe('yellow')
     expect(rowDiff?.styles.after.textHighlighterColor).toBeUndefined()
-    const locationDiff = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(apiKey)
+    const locationDiff = SecurityRowDiffs.Scheme.takeParameterLocationTextDiff(apiKey)
     expect(locationDiff?.styles.before.textHighlighterColor).toBe('yellow')
     expect(locationDiff?.styles.after.textHighlighterColor).toBe('yellow')
     // `in` removed with the type change: no highlighter on the place word (replace only).
-    const removedLocation = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(scheme('security/16-scheme-type-changed'))
+    const removedLocation = SecurityRowDiffs.Scheme.takeParameterLocationTextDiff(scheme('security/16-scheme-type-changed'))
     expect(removedLocation?.styles.before.textHighlighterColor).toBeUndefined()
   })
 
   it('alternative added: yellow toolbar row with the severity of the option; the option gets a green border', () => {
     const node = security(build('security/05-alternative-added'))
-    const toolbar = OpenApiRowDiffs.Security.takeToolbarRowDiff(node)
+    const toolbar = SecurityRowDiffs.Security.takeToolbarRowDiff(node)
     expect(toolbar?.styles.before.backgroundColor).toBe('yellow')
     expect(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]?.type).toBe('non-breaking')
     expect(node.childrenNodes()[1].diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.borderShadowColor).toBe('green')
-    expect(OpenApiRowDiffs.Security.takeToolbarRowDiff(security(build('security/11-required-scope-added')))).toBeUndefined()
+    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(security(build('security/11-required-scope-added')))).toBeUndefined()
   })
 })

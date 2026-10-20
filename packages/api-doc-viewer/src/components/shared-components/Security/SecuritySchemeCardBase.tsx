@@ -1,7 +1,8 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
-import { maxDiffType } from "@apihub/utils/common/changes"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { getOpenApiChildren, isOpenApiOAuthFlowNode } from "@apihub/utils/openapi/node-type-checkers"
+import { maxDiffType } from "@apihub/utils/common/changes"
+import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
+import { getSecurityChildren, isSecurityOAuthFlowNode } from "@apihub/utils/security/node-type-checkers"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
 import {
@@ -9,20 +10,21 @@ import {
   NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import {
-  OPENAPI_OAUTH_FLOW_HEADER_PREFIX,
-  OPENAPI_SECURITY_PROP_LABELS,
-  OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT,
-  OpenApiDisplayLabels,
-} from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { OpenApiBlockEdges, OpenApiLayoutPlanner } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
-import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
-import { OpenApiRowDiffs, OpenApiScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
-import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
-import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
+import { SECURITY_OAUTH_FLOW_HEADER_PREFIX, SECURITY_PROP_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
+import { SecurityPresentation } from "@netcracker/qubership-apihub-next-data-model/model/security/presentation"
+import { SecurityRowDiffs, SecurityScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
+import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
+import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/security/types/node-kind"
 import { FC, Fragment, ReactElement, ReactNode, useState } from "react"
-import { FramePosition } from "../../shared-components/Frame/types"
-import { MarkdownTextRow } from "../../shared-components/MarkdownTextRow/MarkdownTextRow"
+import { OpenApiBlock, OpenApiLayout } from "../../OpenApiOperationViewer/OpenApiLayout"
+import { useOpenApiViewerContext } from "../../OpenApiOperationViewer/OpenApiViewerContext"
+import { FramePosition } from "../Frame/types"
+import { MarkdownTextRow } from "../MarkdownTextRow/MarkdownTextRow"
+import { TextRow } from "../TextRow/TextRow"
+import { TextValueVariant } from "../TextValue/types"
+import { TitleRow } from "../TitleRow/TitleRow"
+import { PrecededBy } from "../WithPrecededByProps"
 import {
   SecurityFlowHeaderContent,
   SecurityFrameRow,
@@ -31,21 +33,22 @@ import {
   SecurityRow,
   SecurityScopeContent,
   SecurityScopesToggleContent,
-} from "../../shared-components/Security/SecurityRows"
-import { resolveValueHighlighter } from "../../shared-components/Security/value-highlighter"
-import { TextRow } from "../../shared-components/TextRow/TextRow"
-import { TextValueVariant } from "../../shared-components/TextValue/types"
-import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
-import { PrecededBy } from "../../shared-components/WithPrecededByProps"
-import { takeOpenApiSeverities } from "../diff-state"
-import { OpenApiBlock, OpenApiLayout } from "../OpenApiLayout"
-import { useOpenApiViewerContext } from "../OpenApiViewerContext"
+} from "./SecurityRows"
+import { resolveValueHighlighter } from "./value-highlighter"
 
-type SchemeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_SCHEME>
-type FlowNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OAUTH_FLOW>
+export type SecuritySchemeNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_SCHEME>
+type FlowNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.OAUTH_FLOW>
 
-type SecuritySchemeCardProps = {
-  node: SchemeNode
+/** Props of the API-type cards (`OpenApiSecuritySchemeCard`, `AsyncApiSecuritySchemeCard`). */
+export type SecuritySchemeCardProps = {
+  node: SecuritySchemeNode
+}
+
+type SecuritySchemeCardBaseProps = SecuritySchemeCardProps & {
+  /** Labels and row visibility of the API type (data-layer instances). */
+  presentation: SecurityPresentation
+  /** Scheme name size; smaller than the section title it sits under (default h4 under an h2 / h3 title). */
+  titleVariant?: TextValueVariant
 }
 
 const MUTED_TEXT_COLOR = '#8F9EB4'
@@ -92,21 +95,23 @@ class CardRows {
 }
 
 /**
- * Framed card of one security scheme of the selected alternative: an opening frame row (border at its
- * top), the content rows with the separators around them, a closing frame row (border at its
- * bottom); frame row heights and tones from `OpenApiLayoutPlanner.frameRow`. The space outside the
- * border is the card's own half-gap in the separators of the Security level.
- * Design: entities/security.md -> "Scheme card", features/vertical-gaps.md.
+ * Framed card of one security scheme of the selected alternative, for every API type: an opening
+ * frame row (border at its top), the content rows with the separators around them, a closing frame
+ * row (border at its bottom); frame row heights and tones from `OpenApiLayoutPlanner.frameRow`. The
+ * space outside the border is the card's own half-gap in the separators of the Security level.
+ * Labels (scheme types, unresolved text) and which rows a scheme type has come from `presentation`.
+ * Design: docs/design/openapi/entities/security.md -> "Scheme card", docs/design/async-api/features/security.md.
  */
-export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
-  const { node } = props
+export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) => {
+  const { node, presentation, titleVariant = TextValueVariant.h4 } = props
+  const { labels } = presentation
   const displayMode = useDisplayMode()
   const { spacing } = useOpenApiViewerContext()
   const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
-  const severities = takeOpenApiSeverities(node)
-  const visibility = OpenApiNodeVisibility.resolveSecurityScheme(value, displayMode)
-  const flows = getOpenApiChildren(node, isOpenApiOAuthFlowNode)
+  const severities = takeSecuritySeverities(node)
+  const visibility = presentation.visibility.resolveSecurityScheme(value, displayMode)
+  const flows = getSecurityChildren(node, isSecurityOAuthFlowNode)
   const [collapsedScopes, setCollapsedScopes] = useState<ReadonlySet<string>>(new Set())
   const toggleScopes = (key: string): void => setCollapsedScopes(current => {
     const next = new Set(current)
@@ -119,7 +124,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
   })
 
   const card = new CardRows()
-  const titleDiff = OpenApiRowDiffs.SecurityScheme.takeTitleRowDiff(node)
+  const titleDiff = SecurityRowDiffs.Scheme.takeTitleRowDiff(node)
   card.add({
     key: 'title',
     diff: titleDiff,
@@ -129,8 +134,8 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         data-precededby={PrecededBy.OPENAPI_ROW}
         value={value?.name ?? String(node.key)}
         expandable={false}
-        variant={TextValueVariant.h4}
-        subheader={(side) => <SchemeTypeText node={node} layoutSide={side} />}
+        variant={titleVariant}
+        subheader={(side) => <SchemeTypeText node={node} presentation={presentation} layoutSide={side} />}
         diff={titleDiff}
         diffsSeverities={severities}
         framePosition={framePosition}
@@ -138,7 +143,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     ),
   })
   if (visibility.showUnresolved) {
-    const unresolvedDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
+    const unresolvedDiff = SecurityRowDiffs.Section.takeHeaderRowDiff(node)
     card.add({
       key: 'unresolved',
       diff: unresolvedDiff,
@@ -146,7 +151,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       render: (framePosition) => (
         <TextRow
           data-precededby={PrecededBy.OPENAPI_ROW}
-          value={OPENAPI_UNRESOLVED_SECURITY_SCHEME_TEXT}
+          value={labels.unresolvedSchemeText}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
           textColor={MUTED_TEXT_COLOR}
@@ -157,7 +162,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     })
   }
   if (visibility.showDescription) {
-    const descriptionDiff = OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, 'description')
+    const descriptionDiff = SecurityRowDiffs.Scheme.takeFieldRowDiff(node, 'description')
     card.add({
       key: 'description',
       diff: descriptionDiff,
@@ -178,9 +183,9 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
 
   if (visibility.showParameterName) {
     // Only the place word (`Header` / `Query` ...) takes the location's highlighter, never ` parameter name`.
-    const locationDiff = OpenApiRowDiffs.SecurityScheme.takeParameterLocationTextDiff(node)
+    const locationDiff = SecurityRowDiffs.Scheme.takeParameterLocationTextDiff(node)
     const labelOf = (side: LayoutSide): ReactNode => {
-      const { place, suffix } = OpenApiRowDiffs.SecurityScheme.resolveParameterNameLabel(node, side)
+      const { place, suffix } = SecurityRowDiffs.Scheme.resolveParameterNameLabel(node, side, labels)
       return <><span className={`security-prop-label-place ${resolveValueHighlighter(locationDiff, side)}`}>{place}</span>{suffix}</>
     }
     card.add(fieldPropRow({
@@ -188,14 +193,26 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
       node,
       field: 'parameterName',
       label: labelOf,
-      rowDiff: OpenApiRowDiffs.SecurityScheme.takeParameterNameRowDiff(node),
+      rowDiff: SecurityRowDiffs.Scheme.takeParameterNameRowDiff(node),
       severity: severities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
     }))
   }
+  if (visibility.showApiKeyLocation) {
+    // AsyncAPI `apiKey`: `in` is where the key goes (`user` / `password`), shown as its label.
+    card.add(fieldPropRow({
+      key: 'apiKeyLocation',
+      node,
+      field: 'in',
+      label: () => SECURITY_PROP_LABELS.apiKeyLocation,
+      rowDiff: SecurityRowDiffs.Scheme.takeFieldRowDiff(node, 'in'),
+      severity: severities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
+      format: location => labels.apiKeyLocation(location),
+    }))
+  }
   const schemeFields: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt, boolean]> = [
-    [visibility.showHttpScheme, 'scheme', OPENAPI_SECURITY_PROP_LABELS.httpAuthorizationScheme, NodeDiffsSeverityPlacemennt.SecuritySchemeHttpSchemeRow, false],
-    [visibility.showBearerFormat, 'bearerFormat', OPENAPI_SECURITY_PROP_LABELS.bearerFormat, NodeDiffsSeverityPlacemennt.SecuritySchemeBearerFormatRow, false],
-    [visibility.showOpenIdConnectUrl, 'openIdConnectUrl', OPENAPI_SECURITY_PROP_LABELS.openIdConnectUrl, NodeDiffsSeverityPlacemennt.SecuritySchemeOpenIdConnectUrlRow, true],
+    [visibility.showHttpScheme, 'scheme', SECURITY_PROP_LABELS.httpAuthorizationScheme, NodeDiffsSeverityPlacemennt.SecuritySchemeHttpSchemeRow, false],
+    [visibility.showBearerFormat, 'bearerFormat', SECURITY_PROP_LABELS.bearerFormat, NodeDiffsSeverityPlacemennt.SecuritySchemeBearerFormatRow, false],
+    [visibility.showOpenIdConnectUrl, 'openIdConnectUrl', SECURITY_PROP_LABELS.openIdConnectUrl, NodeDiffsSeverityPlacemennt.SecuritySchemeOpenIdConnectUrlRow, true],
   ]
   for (const [shown, field, label, placement, link] of schemeFields) {
     if (shown) {
@@ -204,27 +221,27 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
         node,
         field,
         label: () => label,
-        rowDiff: OpenApiRowDiffs.SecurityScheme.takeFieldRowDiff(node, field),
+        rowDiff: SecurityRowDiffs.Scheme.takeFieldRowDiff(node, field),
         severity: severities?.[placement],
         link,
       }))
     }
   }
   if (detailed) {
-    flows.forEach(flow => addFlowRows(card, flow, node, displayMode, collapsedScopes, toggleScopes))
+    flows.forEach(flow => addFlowRows(card, flow, node, presentation, displayMode, collapsedScopes, toggleScopes))
   }
 
   // The scheme's own list of required scopes (rows with `*`): every required scope for openIdConnect
   // and OAS 3.1 roles (no flows), the ones no flow declares for oauth2. No separate prop row.
   if (visibility.showRequiredScopeList && value) {
-    const requiredOnly = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node)
+    const requiredOnly = SecurityRowDiffs.Scheme.resolveUndeclaredRequiredScopeRows(node)
     if (requiredOnly.length > 0) {
       addScopeRows(
         card,
         'required',
-        OpenApiDisplayLabels.requiredScopeListLabel(value.requiredScopesKind),
+        labels.requiredScopeListLabel(value.requiredScopesKind),
         requiredOnly,
-        OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(node),
+        SecurityRowDiffs.NodeLevel.takeWholeNodeDiff(node),
         severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
         collapsedScopes,
         toggleScopes,
@@ -232,7 +249,7 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
     }
   }
 
-  const isPresent = (side: LayoutSide): boolean => OpenApiRowDiffs.SecurityScheme.isCardPresentOnSide(node, side)
+  const isPresent = (side: LayoutSide): boolean => SecurityRowDiffs.Scheme.isCardPresentOnSide(node, side)
   const middle: FramePositionResolver = (side) => isPresent(side) ? 'middle' : undefined
   const frameRow = OpenApiLayoutPlanner.frameRow(node, spacing)
   const presence = { before: isPresent(ORIGIN_LAYOUT_SIDE), after: isPresent(CHANGED_LAYOUT_SIDE) }
@@ -253,18 +270,20 @@ export const SecuritySchemeCard: FC<SecuritySchemeCardProps> = (props) => {
 
 type FieldPropRowParams = {
   key: string
-  node: SchemeNode | FlowNode
+  node: SecuritySchemeNode | FlowNode
   field: string
   label: (side: LayoutSide) => ReactNode
   rowDiff: ChangedPropertyMetaData | undefined
   severity: NodeDiffsSeverity | undefined
   link?: boolean
+  /** Display text of the side's raw value (a location code -> its label); the raw value by default. */
+  format?: (text: string) => string | undefined
 }
 
 /** `label <gap> value`: the value per side; a replaced value gets the text highlighter. */
 function fieldPropRow(params: FieldPropRowParams): CardRow {
-  const { key, node, field, label, rowDiff, severity, link = false } = params
-  const valueDiff = OpenApiRowDiffs.NodeLevel.takeRowDiff(node, field)
+  const { key, node, field, label, rowDiff, severity, link = false, format } = params
+  const valueDiff = SecurityRowDiffs.NodeLevel.takeRowDiff(node, field)
   return {
     key,
     diff: rowDiff,
@@ -277,7 +296,8 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
         diff={rowDiff}
         severity={severity}
         renderSide={(side) => {
-          const text = OpenApiRowDiffs.NodeLevel.resolveSideField(node, field, side)
+          const raw = SecurityRowDiffs.NodeLevel.resolveSideField(node, field, side)
+          const text = raw === undefined || !format ? raw : format(raw)
           return (
             <SecurityPropContent
               label={label(side)}
@@ -293,15 +313,16 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
 function addFlowRows(
   card: CardRows,
   flow: FlowNode,
-  scheme: SchemeNode,
+  scheme: SecuritySchemeNode,
+  presentation: SecurityPresentation,
   displayMode: ReturnType<typeof useDisplayMode>,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
 ): void {
   const value = flow.value()
-  const severities = takeOpenApiSeverities(flow)
-  const visibility = OpenApiNodeVisibility.resolveOAuthFlow(value, displayMode)
-  const blockDiff = OpenApiRowDiffs.Section.takeHeaderRowDiff(flow)
+  const severities = takeSecuritySeverities(flow)
+  const visibility = presentation.visibility.resolveOAuthFlow(value, displayMode)
+  const blockDiff = SecurityRowDiffs.Section.takeHeaderRowDiff(flow)
   const flowKey = `flow-${String(flow.key)}`
   card.add({
     key: flowKey,
@@ -316,8 +337,8 @@ function addFlowRows(
         severity={severities?.[NodeDiffsSeverityPlacemennt.TitleRow]}
         renderSide={() => (
           <SecurityFlowHeaderContent
-            prefix={OPENAPI_OAUTH_FLOW_HEADER_PREFIX}
-            name={value ? OpenApiDisplayLabels.oauthFlowName(value.flowType) : String(flow.key)}
+            prefix={SECURITY_OAUTH_FLOW_HEADER_PREFIX}
+            name={value ? presentation.labels.oauthFlowName(value.flowType) : String(flow.key)}
           />
         )}
       />
@@ -330,20 +351,20 @@ function addFlowRows(
   ]
   for (const [shown, field, placement] of urlFields) {
     if (shown) {
-      const label = OPENAPI_SECURITY_PROP_LABELS[field]
+      const label = SECURITY_PROP_LABELS[field]
       card.add(fieldPropRow({
         key: `${flowKey}-${field}`,
         node: flow,
         field,
         label: () => label,
-        rowDiff: OpenApiRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field),
+        rowDiff: SecurityRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field),
         severity: severities?.[placement],
         link: true,
       }))
     }
   }
   if (visibility.showScopes) {
-    addScopeRows(card, flowKey, OPENAPI_SECURITY_PROP_LABELS.scopes, OpenApiRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
+    addScopeRows(card, flowKey, SECURITY_PROP_LABELS.scopes, SecurityRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
   }
 }
 
@@ -352,7 +373,7 @@ function addScopeRows(
   card: CardRows,
   key: string,
   label: string,
-  scopes: readonly OpenApiScopeRow[],
+  scopes: readonly SecurityScopeRow[],
   blockDiff: ChangedPropertyMetaData | undefined,
   /** Severity of the whole block (flow / card): the badge of rows painted only by the block diff. */
   blockSeverity: NodeDiffsSeverity | undefined,
@@ -419,11 +440,11 @@ function addScopeRows(
 }
 
 /** Gray type text in the title row (JSON Schema / DDL type-label look); marked yellow / green / red when the type was replaced / appeared / disappeared. */
-const SchemeTypeText: FC<{ node: SchemeNode, layoutSide: LayoutSide }> = ({ node, layoutSide }) => {
-  const label = OpenApiDisplayLabels.securitySchemeType(OpenApiRowDiffs.NodeLevel.resolveSideField(node, 'type', layoutSide))
+const SchemeTypeText: FC<{ node: SecuritySchemeNode, presentation: SecurityPresentation, layoutSide: LayoutSide }> = ({ node, presentation, layoutSide }) => {
+  const label = presentation.labels.securitySchemeType(SecurityRowDiffs.NodeLevel.resolveSideField(node, 'type', layoutSide))
   if (!label) {
     return <></>
   }
-  const highlighter = DiffsClassesBuilder.highlighter(OpenApiRowDiffs.SecurityScheme.resolveTypeTextHighlight(node, layoutSide))
+  const highlighter = DiffsClassesBuilder.highlighter(SecurityRowDiffs.Scheme.resolveTypeTextHighlight(node, layoutSide))
   return <span className={`title-row-subheader-value subheader text ${highlighter}`}>{label}</span>
 }

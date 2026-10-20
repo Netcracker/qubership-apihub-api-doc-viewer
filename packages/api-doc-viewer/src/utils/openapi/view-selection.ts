@@ -1,5 +1,7 @@
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
+import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
+import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/security/types/node-kind"
 import { OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
 import {
   findOpenApiChild,
@@ -7,8 +9,8 @@ import {
   isOpenApiContentNode,
   isOpenApiMediaTypeNode,
   isOpenApiResponseNode,
-  isOpenApiSecurityRequirementNode,
 } from "./node-type-checkers"
+import { resolveSelectedSecurityAlternative } from "../security/node-type-checkers"
 
 /**
  * View-state selection of the OpenAPI operation viewer: owner node id -> selected child node id
@@ -23,9 +25,8 @@ type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type MediaTypeOwnerNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST_BODY> | OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
 
 /** The selected security alternative: the chosen one, else the first (index 0 of the merged list). */
-export function resolveSelectedAlternative(security: SecurityNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY_REQUIREMENT> | undefined {
-  const alternatives = getOpenApiChildren(security, isOpenApiSecurityRequirementNode)
-  return alternatives.find(alternative => alternative.id === selection.get(security.id)) ?? alternatives[0]
+export function resolveSelectedAlternative(security: SecurityNode, selection: OpenApiSelection): SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT> | undefined {
+  return resolveSelectedSecurityAlternative(security, selection.get(security.id))
 }
 
 /** The selected response: the chosen one, else the first 2XX, else the first (features/response-code-selector.md). */

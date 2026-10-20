@@ -1,4 +1,4 @@
-import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
+import { RowDiffsNode } from "../../abstract/tree-with-diffs/row-diffs-base"
 import { OpenApiBlockEdges } from "./block-edges"
 import { OpenApiSpacingConfig } from "./spacing-config"
 import {
@@ -116,7 +116,7 @@ export class OpenApiLayoutPlanner {
   }
 
   /** A card opening / closing row (inside the border): whole-card tones and badge stub. */
-  public static frameRow(card: OpenApiTreeNode | OpenApiTreeNodeWithDiffs, config: OpenApiSpacingConfig): OpenApiFrameRow {
+  public static frameRow(card: RowDiffsNode, config: OpenApiSpacingConfig): OpenApiFrameRow {
     const edge = OpenApiBlockEdges.card(card)
     return {
       height: config.cardInnerInset,

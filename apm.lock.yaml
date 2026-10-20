@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-10-20T14:22:50.964783+00:00'
+generated_at: '2026-10-20T19:01:56.850719+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -17,10 +17,10 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:95696a631f0af17843ca1c2a11c574a285b25649519cb1890840e5207664079c
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:fad24a7a95c5c23eeaa3f4b8264f9d6dd6fd187d9de1daf7877c830fc8ab52b6
     .claude/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:b692bb990013a56f9303581a1ac34c9b8d854ea5602b948851b52dbaeefbe34b
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:95696a631f0af17843ca1c2a11c574a285b25649519cb1890840e5207664079c
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:fad24a7a95c5c23eeaa3f4b8264f9d6dd6fd187d9de1daf7877c830fc8ab52b6
     .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:b692bb990013a56f9303581a1ac34c9b8d854ea5602b948851b52dbaeefbe34b
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
@@ -91,10 +91,10 @@ dependencies:
   - .cursor/skills/api-doc-viewer-testing/openapi-suites.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-testing.md: sha256:9754dea129ac33d8ea028b990761a79feb56aefac3dc620a7be325911aa3eaf1
-    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:7f716098d5ec582c5bb5067017e275582a64c3463f778c720eb14c889ed17bc6
+    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:2dd5ae36b4c05b90254d8d7bcdaa7ed2425265e96b0c2f30679691e7221638d2
     .claude/skills/api-doc-viewer-testing/openapi-suites.md: sha256:2a4a45cce3aaa53682bd3fe17169f68ee308061419f541d45dd0ddd2eb64cca1
     .cursor/rules/api-doc-viewer-testing.mdc: sha256:8468b19496e2b1340a495472365b3161590716c1e6515ab17f6637a90e0b6bed
-    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:7f716098d5ec582c5bb5067017e275582a64c3463f778c720eb14c889ed17bc6
+    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:2dd5ae36b4c05b90254d8d7bcdaa7ed2425265e96b0c2f30679691e7221638d2
     .cursor/skills/api-doc-viewer-testing/openapi-suites.md: sha256:2a4a45cce3aaa53682bd3fe17169f68ee308061419f541d45dd0ddd2eb64cca1
   source: local
   local_path: ./agent-packages/api-doc-viewer-testing
@@ -143,7 +143,7 @@ dependencies:
   - .cursor/skills/next-data-model-authoring/node-visibility/general-approach.md
   deployed_file_hashes:
     .claude/rules/next-data-model-authoring.md: sha256:70210952bfcea3f072bc9d806ac70c16ae9e147e54a3b9f2a05e06476d255926
-    .claude/skills/next-data-model-authoring/SKILL.md: sha256:8921bf37c731a5d7d671a18c28c8eb98f1b46ca8a3ed33765408d4b788748e17
+    .claude/skills/next-data-model-authoring/SKILL.md: sha256:19ff1b2094b169c19374b23f4615bb3844615fceffb335274e0aeedce35e0adb
     .claude/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md: sha256:8e6d7f9bb652d770446d6afb7a7968bc42af0a2226a175cc819eb72899ad8d87
     .claude/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md: sha256:678b65fabc6f610ec90e951856e3797ab259022e24e2976b14e3c7f48f776de7
     .claude/skills/next-data-model-authoring/json-schema/json-schema-node-key-rename.md: sha256:cf508d9732c25e06428ea84eee124afb427c6c0de91735271ecd3f9f20254b22
@@ -152,7 +152,7 @@ dependencies:
     .claude/skills/next-data-model-authoring/node-visibility/ddlapi.md: sha256:a8945401440060035907c66f79d124520351981a10d19544c951acf174c00400
     .claude/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
     .cursor/rules/next-data-model-authoring.mdc: sha256:fb7dab286ef502d05029953c39235ea585ebb75236a65d4509e13f82c3199b8d
-    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:8921bf37c731a5d7d671a18c28c8eb98f1b46ca8a3ed33765408d4b788748e17
+    .cursor/skills/next-data-model-authoring/SKILL.md: sha256:19ff1b2094b169c19374b23f4615bb3844615fceffb335274e0aeedce35e0adb
     .cursor/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md: sha256:8e6d7f9bb652d770446d6afb7a7968bc42af0a2226a175cc819eb72899ad8d87
     .cursor/skills/next-data-model-authoring/json-schema/json-schema-nesting-indicator-row-diffs.md: sha256:678b65fabc6f610ec90e951856e3797ab259022e24e2976b14e3c7f48f776de7
     .cursor/skills/next-data-model-authoring/json-schema/json-schema-node-key-rename.md: sha256:cf508d9732c25e06428ea84eee124afb427c6c0de91735271ecd3f9f20254b22
@@ -321,7 +321,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:95696a631f0af17843ca1c2a11c574a285b25649519cb1890840e5207664079c
+  content_hash: sha256:fad24a7a95c5c23eeaa3f4b8264f9d6dd6fd187d9de1daf7877c830fc8ab52b6
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-authoring/refactoring-notes.md
@@ -420,7 +420,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:7f716098d5ec582c5bb5067017e275582a64c3463f778c720eb14c889ed17bc6
+  content_hash: sha256:2dd5ae36b4c05b90254d8d7bcdaa7ed2425265e96b0c2f30679691e7221638d2
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-testing/openapi-suites.md
@@ -501,7 +501,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:8921bf37c731a5d7d671a18c28c8eb98f1b46ca8a3ed33765408d4b788748e17
+  content_hash: sha256:19ff1b2094b169c19374b23f4615bb3844615fceffb335274e0aeedce35e0adb
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md
@@ -681,7 +681,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:95696a631f0af17843ca1c2a11c574a285b25649519cb1890840e5207664079c
+  content_hash: sha256:fad24a7a95c5c23eeaa3f4b8264f9d6dd6fd187d9de1daf7877c830fc8ab52b6
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md
@@ -780,7 +780,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:7f716098d5ec582c5bb5067017e275582a64c3463f778c720eb14c889ed17bc6
+  content_hash: sha256:2dd5ae36b4c05b90254d8d7bcdaa7ed2425265e96b0c2f30679691e7221638d2
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-testing/openapi-suites.md
@@ -861,7 +861,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:8921bf37c731a5d7d671a18c28c8eb98f1b46ca8a3ed33765408d4b788748e17
+  content_hash: sha256:19ff1b2094b169c19374b23f4615bb3844615fceffb335274e0aeedce35e0adb
 - kind: project-relative
   target: cursor
   value: .cursor/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md

@@ -628,11 +628,13 @@ visibility algorithms; with-diffs delegates diff-free rules to plain tree manage
 ## OpenAPI row diffs — traps (session lessons)
 
 Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accessors live in
-`model/openapi/tree-with-diffs/row-diffs.ts` (`OpenApiRowDiffs`); viewers never read `node.diffs`.
+`model/openapi/tree-with-diffs/row-diffs.ts` (`OpenApiRowDiffs`) and, for the Security section,
+`model/security/tree-with-diffs/row-diffs.ts` (`SecurityRowDiffs`), both on
+`model/abstract/tree-with-diffs/row-diffs-base.ts`; viewers never read `node.diffs`.
 
 - **Selector option borders come from `styles.borderShadowColor`.** `Selector` paints the green / red
   border of a wholly added / removed option from the node-level diff's `borderShadowColor`. A
-  per-stack `ChangedPropertyMetaData` builder (here `OpenApiChangedPropertyMetaData.build`) must set it
+  per-stack `ChangedPropertyMetaData` builder (here `RowChangedPropertyMetaData.build`) must set it
   for add / remove, or every option of that stack silently loses its border.
 - **A text highlighter is only set for `replace`.** Add / remove styles carry a background, not a
   `textHighlighterColor`. When a value must still be marked on add / remove (e.g. the scheme type
@@ -652,8 +654,9 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   `buildRowReplace` so the whole row is painted.
 - **Synthetic field diffs need an allow-list.** The `KindAny` node-diffs aggregator copies only the
   kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
-  `alternatives`) must be listed in `SYNTHETIC_FIELD_DIFF_KEYS` and mapped in the severities
-  aggregator. OpenAPI model files (`model/openapi/`) do not import `building-service` (some other
+  `alternatives`) must be listed in the synthetic-key table (security: `SECURITY_SYNTHETIC_FIELD_DIFF_KEYS` in
+  `building-service/security/tree-with-diffs/aggregation-tables.ts`) and mapped in the field
+  placements. OpenAPI model files (`model/openapi/`) do not import `building-service` (some other
   specs' model files do — DDL node visibility, JSON Schema combiner row diffs — but keep OpenAPI's
   boundary), so severity math belongs in the
   transformer / aggregators, not in `row-diffs.ts`.
@@ -673,3 +676,40 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   the insertion order, so a canonically sorted object cannot keep response codes in order; sort the
   tree children instead (`OpenApiTreeBuilder.sortResponseCodes`).
 
+## Security module (OpenAPI + AsyncAPI)
+
+Design: `docs/design/async-api/features/security.md` (structure, deviations),
+`docs/design/openapi/entities/security.md` (rows, diffs). One spec-neutral module, two
+specialisations — extend it, do not fork a per-spec copy.
+
+| Layer | Spec-neutral | Per API type |
+| --- | --- | --- |
+| Kinds / values / alias | `model/security/types/` (`SecurityTreeNodeKinds`, `SECURITY_NODE_VALUE_PROPS`, `SecurityTreeNode<K>`) | spread into `OpenApiTreeNodeKinds` / `AsyncApiTreeNodeKinds`; value maps `T extends SecurityTreeNodeKind ? SecurityTreeNodeValue<T>` |
+| Spec builders | `building-service/security/` — `SecuritySpecBuilder<TInput>` (abstract), `SecuritySpecDiffsDecorator` (composed), `getSecurityCrawlRules()` | `<Spec>SecuritySpecBuilder` + `<Spec>SecuritySpecWithDiffsBuilder extends` it; the spec transformer's `createSecuritySpecBuilder()` is the only with-diffs override |
+| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + `aggregation-tables.ts` | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `SecurityNodeAggregators` |
+| Row diffs | `SecurityRowDiffs` | — |
+| Labels / visibility | `SecurityDisplayLabels`, `SecurityNodeVisibility`, `SecurityPresentation` | `model/<spec>/security-presentation.ts` (`*_SECURITY_DISPLAY_LABELS`, `*_SECURITY_NODE_VISIBILITY`, `*_SECURITY_PRESENTATION`) |
+
+Traps (session 2026-10-20):
+
+- **Mapping a merged list drops its diff record.** `apiDiff` stores a list's item add / remove under
+  the list's own symbol key; `list.map(...)` returns an array without it. The AsyncAPI transformer's
+  `withServersSecurity` copies `Object.getOwnPropertySymbols(servers)` onto the mapped list — without
+  it a wholly added server had no diff and its Security section did not inherit the add.
+- **AsyncAPI owners carry no child-section descendant diffs.** The message root and `server` use
+  `KindAny` descendant aggregators that return nothing, so the security builder writes the
+  section's own whole add / remove into the section record under `NODE_LEVEL_DIFF_KEY` (`''`); the
+  record-driven aggregator still inherits a wholly added / removed owner first.
+- **Security lists are compared by index.** An AsyncAPI list item is one alternative of one scheme;
+  item add / remove is an option add / remove (toolbar `alternatives` diff + green / red option),
+  field changes of an item are changes of its scheme. With `firstReferenceKeyProperty` the
+  reference-name symbol is **not** set on security items: names resolve as symbol → `$ref` last
+  segment → deep-equal `components.securitySchemes` entry → `Security scheme <n>`.
+- **One placement per row instance.** AsyncAPI `apiKey` (`API key location`) and `httpApiKey` /
+  OpenAPI `apiKey` (`<Place> parameter name`) share `SecuritySchemeParameterNameRow`: a scheme type
+  has only one of the two rows. A new row that can coexist with an existing one needs its own
+  placement.
+- **Layout edges take any row node.** `OpenApiBlockEdges` generic edges and
+  `OpenApiLayoutPlanner.frameRow` accept `RowDiffsNode`, so the AsyncAPI section reuses the OpenAPI
+  vertical layout. Keep OpenAPI-only edges (`operationHeaderRow`, bodies, responses) on
+  `OpenApiTreeNode`.

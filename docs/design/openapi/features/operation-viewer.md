@@ -87,7 +87,7 @@ titles, **h5** OAuth flow titles.
 | 5 | External docs link `View external documentation ↗`, description in a `UxTooltip` | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
 | 6 | **Security** (h2) | `TitleRow` | `security` | ≥1 effective alternative | [security](../entities/security.md) |
 | 7 | Security toolbar (alternatives) | shared `SecurityToolbar` | `security` | ≥1 alternative (always with the section) | [security](../entities/security.md#security-toolbar) |
-| 8 | Framed scheme cards of the selected alternative | `SecuritySchemeCard` × n | `securityScheme` | selected alternative | [security](../entities/security.md#scheme-card) |
+| 8 | Framed scheme cards of the selected alternative | `OpenApiSecuritySchemeCard` × n | `securityScheme` | selected alternative | [security](../entities/security.md#scheme-card) |
 | 9 | **Extensions** (h2) + JSO tree | shared extensions section | `extensions` | ≥1 `x-*` key on the operation | [operation](../entities/operation.md#extensions-section) |
 | 10 | **Request** (h2) | `TitleRow` | `request` | a parameter group or the Body is present | [parameters](../entities/parameters.md) |
 | 11 | **Path Parameters** (h3) + schema | `TitleRow` + `JsonSchemaViewer` | `parameters` (`path`) | ≥1 path parameter | [parameters](../entities/parameters.md) |
@@ -283,8 +283,8 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | `OpenApiLayout.tsx` | one container level | renders `OpenApiLayoutPlanner.plan(blocks)`: blocks and `SeparatorRow`s; `OpenApiBlock` = a layout block whose payload renders it |
 | `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | owns the view state; builds the header block (rows from `resolveOperationHeaderRows`) and the section blocks in config order; places the deprecated tag (title, operation ID or address row) |
 | `SecurityNodeViewer.tsx` | rows 6–8 | `buildSecurityBlock`: title + toolbar block, then the "No authentication" text or the cards |
-| `SecuritySchemeCard/SecuritySchemeCard.tsx` | one framed card | rows in [security](../entities/security.md#scheme-card); opening / closing `SecurityFrameRow`, content segments planned like blocks |
-| `shared-components/Security/` | `SecurityToolbar`, `SecurityRow`, `SecurityFrameRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with AsyncAPI server security later; flow parts are built inside `SecuritySchemeCard` |
+| `OpenApiSecuritySchemeCard.tsx` | one framed card: `SecuritySchemeCardBase` with `OPENAPI_SECURITY_PRESENTATION` | rows in [security](../entities/security.md#scheme-card); opening / closing `SecurityFrameRow`, content segments planned like blocks |
+| `shared-components/Security/` | `SecurityToolbar`, `SecurityRow`, `SecurityFrameRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with the AsyncAPI Security sections, with `SecuritySchemeCardBase` (flow parts are built inside it) and `SecuritySectionBase` (toolbar / content blocks) |
 | `RequestNodeViewer.tsx` | row 10, rows 11–17 | `buildRequestBlock` (parameter groups and the Body, in config order); the request body viewer (rows 15–17) is inside this file |
 | `ParametersNodeViewer.tsx` | rows 11–14 (one instance per location) and row 20 | `buildParametersBlock`; same component for request parameters and response headers |
 | `OpenApiExtensionsNodeViewer.tsx` (shared `ExtensionsSection`) | rows 9, 21, 24 | `buildExtensionsBlock`; heading variant per call site (h2 operation, h3 response / Responses) |

@@ -406,7 +406,7 @@ collapsed scopes as input, so a collapsed flow part ends with its `Scopes` row.
 | Unit tests | next-data-model `tests/unit-tests/openapi-layout.test.ts`; api-doc-viewer `tests/openapi-view-selection.test.ts` |
 | View state | api-doc-viewer `OpenApiViewStateContext.ts` (store in `OperationNodeViewer`), `src/utils/openapi/view-selection.ts` (resolvers with the defaults) |
 | Rendering | `OpenApiLayout.tsx` (plans one level), `shared-components/Separator/SeparatorRow.tsx`, `shared-components/Separator/BadgeStub.tsx` (decorative badge stub), `SecurityFrameRow` in `shared-components/Security/SecurityRows.tsx` |
-| Block builders | `buildSecurityBlock`, `buildExtensionsBlock`, `buildRequestBlock`, `buildParametersBlock`, `buildResponsesBlock`, `buildResponseBlocks` (`response-blocks.tsx`), card segments in `SecuritySchemeCard` |
+| Block builders | `buildSecurityBlock`, `buildExtensionsBlock`, `buildRequestBlock`, `buildParametersBlock`, `buildResponsesBlock`, `buildResponseBlocks` (`response-blocks.tsx`), card segments in `SecuritySchemeCardBase` |
 | CSS | `preceded-by.css` → "OpenAPI operation viewer" (`--openapi-row-padding`, `--openapi-row-padding-operation-id`, set on the viewer root from the config); `frame.css` (`--frame-border-top` / `--frame-border-bottom`); `SeparatorRow.css` |
 | Badge placements | `OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement` (header rows and their edges); other edges read the `TitleRow` / `DescriptionRow` / `SelectorRow` placement their row renders; card rows carry the severity they render (`CardRow.severity`) |
 | Config entry point | `OpenApiViewerContext.spacing` (= `DEFAULT_OPENAPI_SPACING_CONFIG`); not a public prop in v1 |

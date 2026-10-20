@@ -1,40 +1,13 @@
+import { SECURITY_NODE_VALUE_PROPS } from "../../../../model/security/types/node-value"
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../model/openapi/types/node-kind"
 import { OpenApiTreeNodeMeta } from "../../../../model/openapi/types/node-meta"
-import {
-  OpenApiAnyTreeNodeValue,
-  OpenApiTreeNodeValueTypeExtensions,
-  OpenApiTreeNodeValueTypeMediaType,
-  OpenApiTreeNodeValueTypeOAuthFlow,
-  OpenApiTreeNodeValueTypeOperation,
-  OpenApiTreeNodeValueTypeParameters,
-  OpenApiTreeNodeValueTypeRequestBody,
-  OpenApiTreeNodeValueTypeResponse,
-  OpenApiTreeNodeValueTypeResponseHeaders,
-  OpenApiTreeNodeValueTypeSecurity,
-  OpenApiTreeNodeValueTypeSecurityRequirement,
-  OpenApiTreeNodeValueTypeSecurityScheme,
-} from "../../../../model/openapi/types/node-value"
+import { OpenApiAnyTreeNodeValue, OpenApiTreeNodeValueTypeExtensions, OpenApiTreeNodeValueTypeMediaType, OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeParameters, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse, OpenApiTreeNodeValueTypeResponseHeaders } from "../../../../model/openapi/types/node-value"
 import { isObject, isObjectWithStringKeys, isString } from "../../../../utilities"
 import { AbstractNodeDataBuilder, NodeDataPickFunction } from "../../../abstract/tree/node-data/builder"
 
 const OPERATION_VALUE_PROPS = [
   'path', 'method', 'specVersion', 'title', 'operationId', 'description', 'externalDocs', 'deprecated',
 ] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeOperation)[]
-
-const SECURITY_VALUE_PROPS = ['isInheritedFromDocument'] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeSecurity)[]
-
-const SECURITY_REQUIREMENT_VALUE_PROPS = [
-  'schemeNames', 'isAnonymous',
-] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeSecurityRequirement)[]
-
-const SECURITY_SCHEME_VALUE_PROPS = [
-  'name', 'isResolved', 'type', 'description', 'in', 'parameterName', 'scheme', 'bearerFormat',
-  'openIdConnectUrl', 'requiredScopes', 'requiredScopesKind',
-] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeSecurityScheme)[]
-
-const OAUTH_FLOW_VALUE_PROPS = [
-  'flowType', 'authorizationUrl', 'tokenUrl', 'refreshUrl', 'scopes',
-] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeOAuthFlow)[]
 
 const EXTENSIONS_VALUE_PROPS = ['rawValues'] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeExtensions)[]
 
@@ -51,10 +24,10 @@ const RESPONSE_HEADERS_VALUE_PROPS = ['schema'] as const satisfies readonly (key
 /** Value props per kind. Also the allow-list of field diffs a node aggregates. */
 export const OPENAPI_NODE_VALUE_PROPS: Readonly<Record<OpenApiTreeNodeKind, readonly string[]>> = {
   [OpenApiTreeNodeKinds.OPERATION]: OPERATION_VALUE_PROPS,
-  [OpenApiTreeNodeKinds.SECURITY]: SECURITY_VALUE_PROPS,
-  [OpenApiTreeNodeKinds.SECURITY_REQUIREMENT]: SECURITY_REQUIREMENT_VALUE_PROPS,
-  [OpenApiTreeNodeKinds.SECURITY_SCHEME]: SECURITY_SCHEME_VALUE_PROPS,
-  [OpenApiTreeNodeKinds.OAUTH_FLOW]: OAUTH_FLOW_VALUE_PROPS,
+  [OpenApiTreeNodeKinds.SECURITY]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.SECURITY],
+  [OpenApiTreeNodeKinds.SECURITY_REQUIREMENT]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.SECURITY_REQUIREMENT],
+  [OpenApiTreeNodeKinds.SECURITY_SCHEME]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.SECURITY_SCHEME],
+  [OpenApiTreeNodeKinds.OAUTH_FLOW]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.OAUTH_FLOW],
   [OpenApiTreeNodeKinds.EXTENSIONS]: EXTENSIONS_VALUE_PROPS,
   [OpenApiTreeNodeKinds.REQUEST]: [],
   [OpenApiTreeNodeKinds.PARAMETERS]: PARAMETERS_VALUE_PROPS,

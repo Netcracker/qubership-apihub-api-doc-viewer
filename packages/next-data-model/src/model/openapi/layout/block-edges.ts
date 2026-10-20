@@ -4,11 +4,15 @@ import {
   NodeDiffsSeverityPlacemennt,
 } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiDeprecatedTagRow, OpenApiOperationHeaderRow } from "../node-visibility"
+import { SecurityRowDiffs } from "../../security/tree-with-diffs/row-diffs"
 import { OpenApiRowDiffs } from "../tree-with-diffs/row-diffs"
+import { hasNodeDiffs, RowDiffsNode } from "../../abstract/tree-with-diffs/row-diffs-base"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
 import { OpenApiBlockEdge, OpenApiBlockEdgePair, OpenApiEdgeTones } from "./types"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
+/** Any node of a row-based tree: the OpenAPI tree, or a Security section mounted in another API type's tree (AsyncAPI). */
+type AnyRowNode = RowDiffsNode
 
 /** A row as the layout sees it: the diff that paints it and the severity its floating badge shows. */
 export type OpenApiPaintedRow = {
@@ -30,8 +34,8 @@ export class OpenApiBlockEdges {
   }
 
   /** The severity a node's row of `placement` shows (plain trees: none). */
-  public static severityOf(node: AnyOpenApiNode, placement: NodeDiffsSeverityPlacemennt): NodeDiffsSeverity | undefined {
-    return 'diffsSeverities' in node ? node.diffsSeverities?.[placement] : undefined
+  public static severityOf(node: AnyRowNode, placement: NodeDiffsSeverityPlacemennt): NodeDiffsSeverity | undefined {
+    return hasNodeDiffs(node) ? node.diffsSeverities?.[placement] : undefined
   }
 
   /** An OpenAPI row: its own tones and badge. */
@@ -40,12 +44,12 @@ export class OpenApiBlockEdges {
   }
 
   /** A nested JSON Schema / JSO viewer: its rows are not visible here, only its owner's whole add / remove. */
-  public static nested(owner: AnyOpenApiNode): OpenApiBlockEdge {
+  public static nested(owner: AnyRowNode): OpenApiBlockEdge {
     return { ...OpenApiBlockEdges.wholeBlock(owner), kind: 'nested' }
   }
 
   /** A security card seen from outside its border: the whole-card add / remove only. */
-  public static card(card: AnyOpenApiNode): OpenApiBlockEdge {
+  public static card(card: AnyRowNode): OpenApiBlockEdge {
     return { ...OpenApiBlockEdges.wholeBlock(card), kind: 'card' }
   }
 
@@ -60,7 +64,7 @@ export class OpenApiBlockEdges {
   }
 
   /** A section / subsection title row (Request, Security, a parameter group, Extensions, Headers): a whole add / remove. */
-  public static sectionTitleRow(node: AnyOpenApiNode): OpenApiBlockEdge {
+  public static sectionTitleRow(node: AnyRowNode): OpenApiBlockEdge {
     return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.Section.takeHeaderRowDiff(node), severity: OpenApiBlockEdges.severityOf(node, NodeDiffsSeverityPlacemennt.TitleRow) })
   }
 
@@ -73,15 +77,15 @@ export class OpenApiBlockEdges {
   }
 
   /** The security toolbar row. */
-  public static securityToolbarRow(security: AnyOpenApiNode): OpenApiBlockEdge {
+  public static securityToolbarRow(security: AnyRowNode): OpenApiBlockEdge {
     return OpenApiBlockEdges.row({
-      diff: OpenApiRowDiffs.Security.takeToolbarRowDiff(security),
+      diff: SecurityRowDiffs.Security.takeToolbarRowDiff(security),
       severity: OpenApiBlockEdges.severityOf(security, NodeDiffsSeverityPlacemennt.SelectorRow),
     })
   }
 
   /** The "No authentication" text of an anonymous alternative (a row without a floating badge). */
-  public static noAuthenticationRow(alternative: AnyOpenApiNode): OpenApiBlockEdge {
+  public static noAuthenticationRow(alternative: AnyRowNode): OpenApiBlockEdge {
     return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(alternative) })
   }
 
@@ -131,7 +135,7 @@ export class OpenApiBlockEdges {
   }
 
   /** Tones and badge of a wholly added / removed node, nothing otherwise. */
-  private static wholeBlock(node: AnyOpenApiNode): Omit<OpenApiBlockEdge, 'kind'> {
+  private static wholeBlock(node: AnyRowNode): Omit<OpenApiBlockEdge, 'kind'> {
     const whole = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
     return {
       tones: OpenApiBlockEdges.tones(whole),

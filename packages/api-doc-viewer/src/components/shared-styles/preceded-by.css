@@ -72,6 +72,12 @@
   padding-bottom: 8px;
 }
 
+/* After an AsyncAPI Security section: its last card already ends with a 4px half-gap (12px in total,
+   as after a summary row). Design: docs/design/async-api/features/security.md -> "Placement". */
+.title-row-content[data-precededby="security-section"] {
+  padding-top: 8px;
+}
+
 /* DDL API */
 
 .title-row-content[data-precededby="ddl-table-header-row"] {
@@ -365,6 +371,10 @@
 }
 
 .message-sections-selector[data-precededby="server-block"] {
+  padding-top: 8px;
+}
+
+.message-sections-selector[data-precededby="security-section"] {
   padding-top: 8px;
 }
 

@@ -10,7 +10,7 @@ flowchart TB
   Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext"]
   Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · 'Operation ID:' + value (TextRow label) · AddressRow ·<br/>description · ExternalDocsRow · header + section spacing (one pass)"]
   Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row (always)"]
-  Card["SecuritySchemeCard/SecuritySchemeCard.tsx<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
+  Card["OpenApiSecuritySchemeCard.tsx → shared SecuritySchemeCardBase<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
   Flow["shared-components/Security/SecurityRows.tsx<br/>flow header · URL props (links) · Scopes toggle · scope rows"]
   Extensions["shared-components/ExtensionsSection<br/>Extensions (h2)"]
   Request["RequestNodeViewer.tsx<br/>Request (h2)"]

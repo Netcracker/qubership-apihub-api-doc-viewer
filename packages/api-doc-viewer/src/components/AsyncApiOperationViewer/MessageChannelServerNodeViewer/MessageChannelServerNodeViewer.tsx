@@ -7,6 +7,7 @@ import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "@apihub/
 import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
+import { getSecurityChildren, isSecuritySectionNode } from "@apihub/utils/security/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
@@ -20,6 +21,7 @@ import { TextValueVariant } from "../../shared-components/TextValue/types"
 import { TitleRow } from "../../shared-components/TitleRow/TitleRow"
 import { TitleRowProps } from "../../shared-components/TitleRow/types"
 import { isServerNodeWithDiffs } from "../../shared-utilities/tree-node-guards"
+import { AsyncApiSecuritySection } from "../AsyncApiSecuritySection"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
 import { SizeVariant } from "../types/SizeVariant"
@@ -38,6 +40,8 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
 
   const children: AsyncApiTreeNode[] | AsyncApiTreeNodeWithDiffs[] = node.childrenNodes()
   const bindingsChild = children.find(isBindingsNode)
+  // The server's Security section, before its bindings.
+  const security = useMemo(() => getSecurityChildren(node, isSecuritySectionNode).at(0), [node])
 
   const nodeDiffState = useNodeDiffState<AsyncApiTreeNodeValueTypeServer, AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs>(node, isServerNodeWithDiffs)
   const { nodeDiffs } = nodeDiffState
@@ -220,6 +224,13 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
     return null
   }
 
+  // What the first element after the server header (Security, else the bindings) follows.
+  const headerPrecededBy = isSummaryDisplayed
+    ? PrecededBy.SUMMARY_ROW
+    : isDescriptionDisplayed
+      ? PrecededBy.DESCRIPTION_ROW
+      : PrecededBy.SERVER_ADDRESS_ROW
+
   return (
     <div className='flex flex-col'>
       {isTitleDisplayed && (
@@ -275,15 +286,16 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
           {...summaryRowDiffProps}
         />
       )}
+      {security && (
+        <AsyncApiSecuritySection
+          data-precededby={headerPrecededBy}
+          node={security}
+          variant={SizeVariant.SECONDARY}
+        />
+      )}
       {bindingsChild && (
         <BindingsNodeViewer
-          data-precededby={
-            isSummaryDisplayed
-              ? PrecededBy.SUMMARY_ROW
-              : isDescriptionDisplayed
-                ? PrecededBy.DESCRIPTION_ROW
-                : PrecededBy.SERVER_ADDRESS_ROW
-          }
+          data-precededby={security ? PrecededBy.SECURITY_SECTION : headerPrecededBy}
           node={bindingsChild}
           variant={SizeVariant.SECONDARY}
         />

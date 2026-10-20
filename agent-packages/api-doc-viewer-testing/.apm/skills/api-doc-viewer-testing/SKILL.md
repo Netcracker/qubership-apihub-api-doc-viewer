@@ -334,6 +334,17 @@ the generator is wrong):
   `apiDiff` never renames a JSON Schema property).
 - Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
   `number-validation-value-range.stories.tsx` and paired ITs.
+- AsyncAPI Security — `node bin/generate-async-api-security-suite.mjs` (cases in
+  `bin/async-api-security-case-definitions.mjs`: `PLAIN_CASES` 01–26, `DIFF_CASES` 1.x operation /
+  2.x server) → recreates `packages/samples/async-api/security/` and
+  `packages/samples/async-api-diffs/security/` (fixtures + catalogues),
+  `src/stories/async-api-suite/security.stories.tsx` (`Async API Suite/Security`),
+  `src/stories/async-api-diffs-suite/security.stories.tsx` (`Async API Diffs Suite/Security Samples`)
+  and the paired `src/it/async-api-*suite.security.it-test.ts`. Every case is captured in `detailed`
+  and `simple`; server cases click `[data-testid="message-channel"]` and wait for
+  `message-channel-section` first (servers live in the Channel tab). Section test id:
+  `async-api-security-section`. Data-layer tests: `next-data-model/tests/unit-tests/async-api-security.test.ts`
+  (fixtures via `tests/helpers/async-api-security-fixtures.ts`).
 
 **Runner:** generators that import `src/stories/**/*.ts` (combiner, value-range, validation
 suites) fail under plain `node` with `ERR_MODULE_NOT_FOUND` on extensionless TS imports such as
@@ -396,7 +407,7 @@ rather than assuming the literal list is the complete requirement.
 **Hand-written** (edit stories and matching IT files together):
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
-  `src/stories/*/` with paired `src/it/*.it-test.ts`.
+  `src/stories/*/` with paired `src/it/*.it-test.ts` (except AsyncAPI Security — generated, above).
 - JSON Schema diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
   `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).

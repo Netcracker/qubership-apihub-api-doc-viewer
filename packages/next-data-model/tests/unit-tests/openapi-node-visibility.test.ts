@@ -1,11 +1,10 @@
+import { OPENAPI_SECURITY_DISPLAY_LABELS, OPENAPI_SECURITY_NODE_VISIBILITY } from '../../src/model/openapi/security-presentation'
+import { SecurityRowDiffs } from '../../src/model/security/tree-with-diffs/row-diffs'
+import { SecurityTreeNodeValueTypeScheme } from '../../src/model/security/types/node-value'
 import { OpenApiTreeBuilder } from '../../src/building-service/openapi/tree/builder'
-import { OpenApiDisplayLabels } from '../../src/model/openapi/display/labels'
-import { OpenApiNodeVisibility } from '../../src/model/openapi/node-visibility'
-import { OpenApiRowDiffs } from '../../src/model/openapi/tree-with-diffs/row-diffs'
-import { OpenApiTreeNodeValueTypeSecurityScheme } from '../../src/model/openapi/types/node-value'
 import { loadNormalizedOpenApiSample } from '../helpers/openapi-fixtures'
 
-const scheme = (type: string, requiredScopesKind: OpenApiTreeNodeValueTypeSecurityScheme['requiredScopesKind']): OpenApiTreeNodeValueTypeSecurityScheme => ({
+const scheme = (type: string, requiredScopesKind: SecurityTreeNodeValueTypeScheme['requiredScopesKind']): SecurityTreeNodeValueTypeScheme => ({
   name: type,
   isResolved: true,
   type,
@@ -21,8 +20,8 @@ describe('OpenAPI security scheme: required scope list', () => {
     ['http', 'roles', true],
     ['apiKey', 'ignored', false],
   ] as const)('%s (%s): list shown in detailed mode = %s', (type, kind, shown) => {
-    expect(OpenApiNodeVisibility.resolveSecurityScheme(scheme(type, kind), 'detailed').showRequiredScopeList).toBe(shown)
-    expect(OpenApiNodeVisibility.resolveSecurityScheme(scheme(type, kind), 'simple').showRequiredScopeList).toBe(false)
+    expect(OPENAPI_SECURITY_NODE_VISIBILITY.resolveSecurityScheme(scheme(type, kind), 'detailed').showRequiredScopeList).toBe(shown)
+    expect(OPENAPI_SECURITY_NODE_VISIBILITY.resolveSecurityScheme(scheme(type, kind), 'simple').showRequiredScopeList).toBe(false)
   })
 
   it.each([
@@ -33,10 +32,10 @@ describe('OpenAPI security scheme: required scope list', () => {
     const alternatives = tree.root?.childrenNodes().find(child => child.kind === 'security')?.childrenNodes() ?? []
     const node = alternatives.flatMap(alternative => alternative.childrenNodes()).find(candidate => candidate.key === schemeName)
     expect(node).toBeDefined()
-    const rows = OpenApiRowDiffs.SecurityScheme.resolveUndeclaredRequiredScopeRows(node!)
+    const rows = SecurityRowDiffs.Scheme.resolveUndeclaredRequiredScopeRows(node!)
     expect(rows.map(row => [row.name, row.origin?.required, row.changed?.required])).toEqual(names.map(name => [name, true, true]))
     const value = node!.value()
-    expect(value && 'requiredScopesKind' in value ? OpenApiDisplayLabels.requiredScopeListLabel(value.requiredScopesKind) : undefined).toBe(label)
+    expect(value && 'requiredScopesKind' in value ? OPENAPI_SECURITY_DISPLAY_LABELS.requiredScopeListLabel(value.requiredScopesKind) : undefined).toBe(label)
   })
 })
 
