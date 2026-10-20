@@ -10,7 +10,9 @@ export declare enum TitleRowUsage {
     JsoProperty = "jso-property",
     DdlApiSection = "ddlapi-section",
     DdlApiProperty = "ddlapi-property",
-    JsonSchemaProperty = "json-schema-property"
+    JsonSchemaProperty = "json-schema-property",
+    /** A collapsible OpenAPI 2nd-level section title: the default row with a fixed-width expander column. */
+    OpenApiSection = "openapi-section"
 }
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithFramePositionProps & {
     value?: string;

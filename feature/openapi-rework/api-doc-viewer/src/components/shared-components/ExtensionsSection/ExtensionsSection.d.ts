@@ -13,7 +13,10 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
     /** `data-precededby` of the JSO viewer's first row; defaults to the AsyncAPI section-header spacing. */
     contentPrecededBy?: PrecededBy;
 };
-type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'>;
+type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'> & {
+    /** A collapsible section's expander (OpenAPI 2nd-level sections); omitted = not expandable. */
+    section?: Pick<TitleRowProps, 'usage' | 'expandable' | 'expanded' | 'onClickExpander'>;
+};
 /** The "Extensions" header row alone (OpenAPI plans it as an element of its own). */
 export declare const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps>;
 type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 'contentPrecededBy'>;

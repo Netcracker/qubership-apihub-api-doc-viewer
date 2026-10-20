@@ -29,12 +29,15 @@ type MediaTypeContentSectionProps = {
         readonly edge: OpenApiBlockEdge;
         readonly render: () => ReactElement;
     };
+    /** Node id the section's collapsed state is kept under (view state); expanded by default. */
+    sectionNodeId: string;
 };
 /**
- * "Body" (h3) with the media-type selector in its subheader, the optional description, then the
- * selected media type's schema wrapped under a `Type` root - each an element of its own layout.
- * Request body and response body share it; the builders compute the same outer edges with
- * `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md -> "Body".
+ * "Body" (h3) with the expander and the media-type selector in its title row, then - while expanded -
+ * the optional description and the selected media type's schema wrapped under a `Type` root, each an
+ * element of its own layout. Request body and response body share it; the builders compute the same
+ * outer edges with `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md
+ * -> "Body", features/collapsible-sections.md.
  */
 export declare const MediaTypeContentSection: FC<MediaTypeContentSectionProps>;
 export {};
