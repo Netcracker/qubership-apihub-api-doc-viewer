@@ -938,6 +938,16 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
   so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first child under a
   suppressed root). JSO: `ExtensionsSectionContent` `contentPrecededBy`. A nested viewer's edge tone
   is the owning block's whole add / remove only (its inner rows are invisible to the OpenAPI layer).
+- **Collapsible 2nd-level sections** (design: `docs/design/openapi/features/collapsible-sections.md`):
+  `TitleRowUsage.OpenApiSection` fixes the expander column width (the caret icons differ in width, so
+  an unfixed column moves the title on toggle); the collapsed state is the view-state set
+  `collapsed`, and a collapsed section is planned as its title row alone
+  (`buildCollapsibleSectionElements`). **Indenting content that contains nested JSON Schema / JSO
+  rows:** a transparent `border-left` on each per-side row element (`.one-side-layout > *`,
+  `.side-by-side-layout > div > *`) — it adds to the row's own padding instead of replacing it, and
+  the diff background paints under it, so highlighted rows still fill their side. A padded wrapper
+  would shrink the rows (white strip at the left of highlighted rows); overriding `padding-left`
+  would wipe each row kind's own padding.
 - **Line-height struts are offsets too.** A 12px value in a cell that inherits the page's 24px line
   height sits in a taller line box — an offset outside the separators. Pin the cell's line height to
   its text (`.security-prop` / `.security-scope` `line-height: 1rem`).

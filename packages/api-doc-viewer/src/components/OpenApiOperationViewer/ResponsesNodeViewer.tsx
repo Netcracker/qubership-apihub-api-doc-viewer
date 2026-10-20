@@ -35,7 +35,7 @@ export function buildResponsesBlock(node: ResponsesNode, extensionsNode: Extensi
       return selected ? buildResponseBlocks(selected, view) : []
     }
     return extensionsNode
-      ? [buildExtensionsBlock(sectionId, { node: extensionsNode, variant: TextValueVariant.h3, testId: 'openapi-responses-extensions-section' })]
+      ? [buildExtensionsBlock(sectionId, { node: extensionsNode, variant: TextValueVariant.h3, testId: 'openapi-responses-extensions-section' }, view)]
       : []
   })
   const children: [OpenApiBlock, ...OpenApiBlock[]] = [

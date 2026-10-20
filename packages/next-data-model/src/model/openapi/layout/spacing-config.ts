@@ -21,6 +21,12 @@ export type OpenApiSpacingConfig = {
   readonly viewerEdges: boolean
   /** Whether card frame rows show the whole card's badge stub when it is wholly added / removed. */
   readonly frameRowBadge: boolean
+  /**
+   * Expander column of the collapsible 2nd-level sections (parameter groups, Body, response Headers /
+   * Extensions, Responses Object Extensions): its fixed `width` and the title row's `gap` after it
+   * (`gap-2` of the row) — px. Their content is indented by both (`OpenApiSpacing.sectionContentIndent`).
+   */
+  readonly sectionExpander: { readonly width: number, readonly gap: number }
   /** The bands of one side of a level gap of `height`, between elements of tones `above` and `below`. */
   readonly splitBands: (above: OpenApiSideTone, below: OpenApiSideTone, height: number) => OpenApiBand[]
   /** The badge stub of a level gap of `height`, between elements with badges `above` and `below`. */
@@ -44,11 +50,17 @@ export const DEFAULT_OPENAPI_SPACING_CONFIG: OpenApiSpacingConfig = {
   nestedViewerInset: 4,
   viewerEdges: true,
   frameRowBadge: true,
+  sectionExpander: { width: 16, gap: 8 },
   splitBands: (above, below, height) => splitInHalves(above, below, height).map(({ height, value }) => ({ height, tone: value })),
   splitBadge: (above, below, height) => splitInHalves(above, below, height).map(({ height, value }) => ({ height, type: value })),
 }
 
 export class OpenApiSpacing {
+  /** Indent of a collapsible section's content: it stays under the title text, past the expander column. */
+  public static sectionContentIndent(config: OpenApiSpacingConfig): number {
+    return config.sectionExpander.width + config.sectionExpander.gap
+  }
+
   /** The default config with some entries replaced. */
   public static withOverrides(overrides: Partial<OpenApiSpacingConfig>): OpenApiSpacingConfig {
     return { ...DEFAULT_OPENAPI_SPACING_CONFIG, ...overrides }

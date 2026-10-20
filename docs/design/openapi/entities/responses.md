@@ -134,7 +134,7 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | Item | Rule |
 | --- | --- |
 | Source | `response.headers` (map name → Header Object); synthesized by the same `OpenApiObjectSchemaSynthesizer` as parameters ([parameters.md](parameters.md#schema-synthesizer)) — entry name = map key, no `in` |
-| Header row | `TitleRow` "Headers", **h3**, test id `openapi-response-headers` |
+| Header row | `TitleRow` "Headers", **h3**, test id `openapi-response-headers`; collapsible, expanded by default ([collapsible-sections.md](../features/collapsible-sections.md)) — as the response Body and both Extensions subsections |
 | Content | `ParametersNodeViewer` (same component as request parameter groups) |
 | Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`response-headers/20-all-removed`) |
 | `Content-Type` header | shown (Q5) |

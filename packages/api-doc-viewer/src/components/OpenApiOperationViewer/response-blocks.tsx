@@ -19,7 +19,7 @@ import { takeOpenApiSeverities } from "./diff-state"
 import { MediaTypeContentSection } from "./MediaTypeContentSection"
 import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
 import { OpenApiBlock } from "./OpenApiLayout"
-import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
+import { isOpenApiSectionExpanded, OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
 import { buildParametersBlock } from "./ParametersNodeViewer"
 
 export const RESPONSE_HEADERS_SECTION_TITLE = 'Headers'
@@ -51,17 +51,17 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
           : []
       case 'responseHeaders':
         return headers
-          ? [buildParametersBlock(id(sectionId), { node: headers, title: RESPONSE_HEADERS_SECTION_TITLE, testId: 'openapi-response-headers-section' })]
+          ? [buildParametersBlock(id(sectionId), { node: headers, title: RESPONSE_HEADERS_SECTION_TITLE, testId: 'openapi-response-headers-section' }, view)]
           : []
       case 'responseExtensions':
         return extensions
-          ? [buildExtensionsBlock(id(sectionId), { node: extensions, variant: TextValueVariant.h3, testId: 'openapi-response-extensions-section' })]
+          ? [buildExtensionsBlock(id(sectionId), { node: extensions, variant: TextValueVariant.h3, testId: 'openapi-response-extensions-section' }, view)]
           : []
       case 'responseBody':
         return content && hasBody
           ? [{
             id: id(sectionId),
-            ...OpenApiBlockEdges.body(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection)),
+            ...OpenApiBlockEdges.body(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection), { expanded: isOpenApiSectionExpanded(view, content.id) }),
             payload: () => <ResponseBodyViewer key={id(sectionId)} node={response} />,
           }]
           : []
@@ -95,6 +95,7 @@ const ResponseBodyViewer: FC<{ node: ResponseNode }> = ({ node }) => {
       headerDiff={content ? OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content) : undefined}
       diffsSeverities={content ? takeOpenApiSeverities(content) : undefined}
       titleEdge={content ? OpenApiBlockEdges.responseBodyTitleRow(content) : OpenApiBlockEdges.row({})}
+      sectionNodeId={content?.id ?? `${node.id}:body`}
     />
   )
 }

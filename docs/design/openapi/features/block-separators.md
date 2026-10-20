@@ -382,8 +382,10 @@ node id), read by every container. The parent level needs them too: the selected
 a Body's tail, which is the Request's tail, which touches the separator before Responses. The store
 resets when the operation node changes (a rebuilt tree), as the per-container states did.
 
-**Collapsible blocks (planned, e.g. `Path Parameters`).** Collapsing is one more view-state input —
-a map block id → expanded in the same store — passed to the edge accessors:
+**Collapsible blocks (implemented 2026-10-20, [collapsible-sections.md](collapsible-sections.md)).**
+Collapsing is one more view-state input — a set of collapsed section node ids in the same store —
+passed to the block builders (a collapsed section is its title row alone) and `OpenApiBlockEdges.body`.
+Numbers below are from this document's original model; the effects are the same:
 
 | Effect of collapsing | Handled by |
 | --- | --- |

@@ -264,6 +264,7 @@ decides where a Body, and so the Request, ends). The store resets when the opera
 | Selected request media type | `requestBody` node id | first media type (document order) |
 | Selected response | `responses` node id | first `2XX` code in canonical order, else the first code (Q13) |
 | Selected media type per response | `response` node id | first media type of that response; switching codes keeps each response's own choice |
+| Collapsed 2nd-level sections | section node id in `collapsed` (a set) | empty: every section expanded ([collapsible-sections.md](collapsible-sections.md)) |
 
 In the diffs viewer an option can be invisible on one side (wholly added / removed). The selection
 stays on the same node on both sides; the side where the node does not exist renders the

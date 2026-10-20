@@ -102,9 +102,17 @@ export class OpenApiBlockEdges {
 
   /**
    * A Body (request / response): its title row, the optional description row, then the selected media
-   * type's schema (a nested viewer) when it has one.
+   * type's schema (a nested viewer) when it has one. Collapsed (view state): the title row only.
    */
-  public static body(title: OpenApiBlockEdge, description: OpenApiBlockEdge | undefined, selectedMediaType: AnyOpenApiNode | undefined): OpenApiBlockEdgePair {
+  public static body(
+    title: OpenApiBlockEdge,
+    description: OpenApiBlockEdge | undefined,
+    selectedMediaType: AnyOpenApiNode | undefined,
+    state: { readonly expanded: boolean } = { expanded: true },
+  ): OpenApiBlockEdgePair {
+    if (!state.expanded) {
+      return OpenApiBlockEdges.single(title)
+    }
     const tail = selectedMediaType && OpenApiBlockEdges.hasSchema(selectedMediaType)
       ? OpenApiBlockEdges.nested(selectedMediaType)
       : description ?? title

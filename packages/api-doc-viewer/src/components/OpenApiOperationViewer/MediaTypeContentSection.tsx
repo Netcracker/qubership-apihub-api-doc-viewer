@@ -17,7 +17,9 @@ import { TextValue } from "../shared-components/TextValue/TextValue"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { buildCollapsibleSectionElements, useOpenApiSectionTitleRowProps } from "./CollapsibleSection"
+import { OpenApiLayout } from "./OpenApiLayout"
+import { useOpenApiViewState } from "./OpenApiViewStateContext"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
 import { OptionKeyText } from "./OptionKeyText"
 
@@ -45,21 +47,26 @@ type MediaTypeContentSectionProps = {
   titleEdge: OpenApiBlockEdge
   /** The row between the header and the schema (the body description) and its edge; omitted when hidden. */
   description?: { readonly edge: OpenApiBlockEdge, readonly render: () => ReactElement }
+  /** Node id the section's collapsed state is kept under (view state); expanded by default. */
+  sectionNodeId: string
 }
 
 /**
- * "Body" (h3) with the media-type selector in its subheader, the optional description, then the
- * selected media type's schema wrapped under a `Type` root - each an element of its own layout.
- * Request body and response body share it; the builders compute the same outer edges with
- * `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md -> "Body".
+ * "Body" (h3) with the expander and the media-type selector in its title row, then - while expanded -
+ * the optional description and the selected media type's schema wrapped under a `Type` root, each an
+ * element of its own layout. Request body and response body share it; the builders compute the same
+ * outer edges with `OpenApiBlockEdges.body`. Design: entities/request-body.md, entities/responses.md
+ * -> "Body", features/collapsible-sections.md.
  */
 export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props) => {
   const {
     testId, optionTestIdPrefix, mediaTypes, selectedId, onSelect, headerDiff, diffsSeverities,
-    isRequiredOnSide, requiredTagDiff, titleEdge, description,
+    isRequiredOnSide, requiredTagDiff, titleEdge, description, sectionNodeId,
   } = props
   const layoutMode = useLayoutMode()
   const diffMetaKeys = useDiffMetaKeys()
+  const view = useOpenApiViewState()
+  const sectionProps = useOpenApiSectionTitleRowProps(sectionNodeId)
 
   const options: SelectorOption<MediaTypeNode>[] = useMemo(() => mediaTypes.map(mediaType => ({
     node: mediaType,
@@ -91,7 +98,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
 
   const renderTitle = (layoutSide: LayoutSide): ReactElement => (
     <div className="flex flex-row items-baseline">
-      <TextValue value={BODY_SECTION_TITLE} variant={TextValueVariant.h3} layoutSide={layoutSide} diff={headerDiff} />
+      <TextValue value={BODY_SECTION_TITLE} variant={TextValueVariant.h3} layoutSide={layoutSide} diff={headerDiff} onClick={sectionProps.onClickExpander} />
       {isRequiredOnSide?.(layoutSide) && <sup className="ml-0.5 text-red-500">*</sup>}
     </div>
   )
@@ -118,7 +125,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
     </div>
   )
 
-  const blocks: OpenApiBlock[] = [
+  const blocks = buildCollapsibleSectionElements(
     {
       id: 'title',
       ...OpenApiBlockEdges.single(titleEdge),
@@ -128,19 +135,23 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
           data-precededby={PrecededBy.OPENAPI_ROW}
           value={BODY_SECTION_TITLE}
           titleContent={renderTitle}
-          expandable={false}
           variant={TextValueVariant.h3}
+          {...sectionProps}
           subheader={renderSubheader}
           diff={headerDiff}
           diffsSeverities={diffsSeverities}
         />
       ),
     },
-    ...(description ? [{ id: 'description', ...OpenApiBlockEdges.single(description.edge), payload: () => <Fragment key="description">{description.render()}</Fragment> }] : []),
-    ...(selected && schema !== undefined
-      ? [{ id: 'schema', ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(selected)), payload: () => <OpenApiSchemaViewer key="schema" schema={schema} /> }]
-      : []),
-  ]
+    [
+      ...(description ? [{ id: 'description', ...OpenApiBlockEdges.single(description.edge), payload: () => <Fragment key="description">{description.render()}</Fragment> }] : []),
+      ...(selected && schema !== undefined
+        ? [{ id: 'schema', ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(selected)), payload: () => <OpenApiSchemaViewer key="schema" schema={schema} /> }]
+        : []),
+    ],
+    view,
+    sectionNodeId,
+  )
 
   return (
     <div data-testid={testId} className="flex flex-col">

@@ -21,7 +21,7 @@ import { OPENAPI_SECTION_ORDER, OpenApiSectionId } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { MediaTypeContentSection } from "./MediaTypeContentSection"
 import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
-import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
+import { isOpenApiSectionExpanded, OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
 import { buildParametersBlock } from "./ParametersNodeViewer"
 
 export const REQUEST_SECTION_TITLE = 'Request'
@@ -62,7 +62,7 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Ope
           node: group,
           title: OpenApiDisplayLabels.parameterGroupTitle(location),
           testId: `openapi-${location}-parameters-section`,
-        })]
+        }, view)]
         : []
     }
     return requestBody ? [buildRequestBodyBlock(sectionId, requestBody, view)] : []
@@ -73,7 +73,7 @@ function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiV
   const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value()) ? OpenApiBlockEdges.descriptionRow(node) : undefined
   return {
     id,
-    ...OpenApiBlockEdges.body(OpenApiBlockEdges.requestBodyTitleRow(node), description, resolveSelectedMediaType(node, view.selection)),
+    ...OpenApiBlockEdges.body(OpenApiBlockEdges.requestBodyTitleRow(node), description, resolveSelectedMediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) }),
     payload: () => <RequestBodyNodeViewer key={id} node={node} />,
   }
 }
@@ -118,6 +118,7 @@ const RequestBodyNodeViewer: FC<{ node: RequestBodyNode }> = ({ node }) => {
       isRequiredOnSide={(side) => OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)}
       requiredTagDiff={OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)}
       titleEdge={OpenApiBlockEdges.requestBodyTitleRow(node)}
+      sectionNodeId={node.id}
       description={OpenApiNodeVisibility.showRequestBodyDescription(value)
         ? {
           edge: OpenApiBlockEdges.descriptionRow(node),

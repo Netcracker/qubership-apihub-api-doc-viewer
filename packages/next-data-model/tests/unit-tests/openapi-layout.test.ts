@@ -62,6 +62,12 @@ describe('OpenAPI layout: spacing config', () => {
     expect(DEFAULT_OPENAPI_SPACING_CONFIG.viewerEdges).toBe(true)
   })
 
+  it('indents a collapsible section\'s content by its expander column and the row gap (16 + 8)', () => {
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.sectionExpander).toEqual({ width: 16, gap: 8 })
+    expect(OpenApiSpacing.sectionContentIndent(DEFAULT_OPENAPI_SPACING_CONFIG)).toBe(24)
+    expect(OpenApiSpacing.sectionContentIndent(OpenApiSpacing.withOverrides({ sectionExpander: { width: 20, gap: 8 } }))).toBe(28)
+  })
+
   it('splits a level gap into halves for different neighbours, one piece for equal ones', () => {
     const { splitBands, splitBadge } = DEFAULT_OPENAPI_SPACING_CONFIG
     expect(splitBands(undefined, undefined, 4)).toEqual([{ height: 4, tone: undefined }])
@@ -179,6 +185,16 @@ describe('OpenAPI layout: edges on fixtures', () => {
     expect(OpenApiBlockEdges.requestBodyTitleRow(body).badge).toBeDefined()
     const responses = child(operation('responses/15-code-case-renamed'), OpenApiTreeNodeKinds.RESPONSES)
     expect(OpenApiBlockEdges.responsesTitleRow(responses).tones).toEqual({ before: Yellow, after: Yellow })
+  })
+
+  it('a Body ends with its schema, its description, or - collapsed - its title row', () => {
+    const body = child(child(operation('request-body/03-required-added'), OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.REQUEST_BODY)
+    const mediaType = child(child(body, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE)
+    const title = OpenApiBlockEdges.requestBodyTitleRow(body)
+    const description = OpenApiBlockEdges.descriptionRow(body)
+    expect(OpenApiBlockEdges.body(title, description, mediaType).tail.kind).toBe('nested')
+    expect(OpenApiBlockEdges.body(title, description, undefined).tail).toBe(description)
+    expect(OpenApiBlockEdges.body(title, description, mediaType, { expanded: false })).toEqual({ head: title, tail: title })
   })
 
   it('a container takes the head of its first child and the tail of its last one', () => {

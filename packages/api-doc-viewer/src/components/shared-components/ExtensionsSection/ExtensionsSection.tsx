@@ -20,11 +20,14 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
   contentPrecededBy?: PrecededBy
 }
 
-type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'>
+type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'> & {
+  /** A collapsible section's expander (OpenAPI 2nd-level sections); omitted = not expandable. */
+  section?: Pick<TitleRowProps, 'usage' | 'expandable' | 'expanded' | 'onClickExpander'>
+}
 
 /** The "Extensions" header row alone (OpenAPI plans it as an element of its own). */
 export const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps> = (props) => {
-  const { variant, titleRowDiffProps, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { variant, titleRowDiffProps, section, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   return (
     <TitleRow
       data-precededby={precededBy}
@@ -32,6 +35,7 @@ export const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps> = (pr
       expandable={false}
       variant={variant}
       usage={TitleRowUsage.AsyncApiJsoSection}
+      {...section}
       {...titleRowDiffProps}
     />
   )

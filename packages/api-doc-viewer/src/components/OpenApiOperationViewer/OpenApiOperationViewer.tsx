@@ -6,7 +6,7 @@ import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isOpenApiOperationNode } from "@apihub/utils/openapi/node-type-checkers"
 import { createOpenApiLogger, OpenApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model"
-import { DEFAULT_OPENAPI_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { DEFAULT_OPENAPI_SPACING_CONFIG, OpenApiSpacing } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiOperationKeys } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/operation-keys"
 import { FC, memo, useMemo } from "react"
 import '../../index.css'
@@ -81,6 +81,8 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
           <LevelContext.Provider value={0}>
             <div data-testid="openapi-operation-viewer" style={{
               '--openapi-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
+              '--openapi-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
+              '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
             }}>
               <OperationNodeViewer node={operationNode} noHeading={noHeading} />
             </div>

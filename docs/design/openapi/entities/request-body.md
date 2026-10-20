@@ -20,7 +20,7 @@ Media type `examples` / `example` / `encoding` are not copied (Q11). Request Bod
 
 | Item | Rule |
 | --- | --- |
-| Component | `TitleRow` "Body" (+ required `*`, [below](#required-marker)), **h3**, `expandable={false}`, `subheader={(side) => <><Selector …/>{requiredTag}</>}` — the `BindingsNodeViewer` pattern |
+| Component | `TitleRow` "Body" (+ required `*`, [below](#required-marker)), **h3**, collapsible (expander column, expanded by default — [collapsible-sections.md](../features/collapsible-sections.md)), `subheader={(side) => <><Selector …/>{requiredTag}</>}` — the `BindingsNodeViewer` pattern |
 | Selector | options = nested `mediaType` nodes of `content` that **have a `schema`** (a media type without `schema` is not content — [presence](../features/diffs.md#section-presence-and-whole-section-changes)); title = media type text; `SelectorVariant.Secondary`; default tone; `layoutSide` forwarded |
 | No options | the subheader is empty; the header is still shown when the Body is present through its `description` alone |
 | Option test id | `request-media-type-<index>` |

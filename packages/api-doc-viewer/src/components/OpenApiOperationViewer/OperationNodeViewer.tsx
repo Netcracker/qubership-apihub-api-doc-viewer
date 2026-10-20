@@ -62,11 +62,24 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
 
   // View state of the whole operation; a rebuilt tree (new source) starts fresh.
   const [selection, setSelection] = useState<OpenApiSelection>(new Map())
-  useEffect(() => setSelection(new Map()), [node])
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
+  useEffect(() => {
+    setSelection(new Map())
+    setCollapsed(new Set())
+  }, [node])
   const select = useCallback((ownerNodeId: string, selectedNodeId: string) => {
     setSelection(current => new Map(current).set(ownerNodeId, selectedNodeId))
   }, [])
-  const view: OpenApiViewState = useMemo(() => ({ selection, select }), [selection, select])
+  const toggleCollapsed = useCallback((sectionNodeId: string) => {
+    setCollapsed(current => {
+      const next = new Set(current)
+      if (!next.delete(sectionNodeId)) {
+        next.add(sectionNodeId)
+      }
+      return next
+    })
+  }, [])
+  const view: OpenApiViewState = useMemo(() => ({ selection, select, collapsed, toggleCollapsed }), [selection, select, collapsed, toggleCollapsed])
 
   const blocks = useMemo(() => buildOperationBlocks(node, visibility, view), [node, visibility, view])
 
