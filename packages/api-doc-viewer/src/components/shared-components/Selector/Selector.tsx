@@ -5,7 +5,7 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { ReactNode } from "react"
-import { SelectorVariant } from "./types"
+import { SelectorOptionTone, SelectorVariant } from "./types"
 import "./Selector.css"
 
 const EMPTY_DIFFS_SUMMARY = new Set<DiffType>()
@@ -18,6 +18,8 @@ export type SelectorOption<
   title: ReactNode | ((layoutSide: LayoutSide) => ReactNode)
   node: N
   testId?: string
+  /** Option color; omitted = `SelectorOptionTone.Neutral` (unchanged grey markup). */
+  tone?: SelectorOptionTone
   diffs?: NodeDiffs<V>
   diffsSummary?: NodeDiffsSummary
   descendantDiffsSummary?: NodeDescendantDiffsSummary
@@ -32,20 +34,25 @@ type SelectorProps<
   onSelectOption: (option: SelectorOption<N, V>) => void
   variant: SelectorVariant
   layoutSide?: LayoutSide
+  /**
+   * One non-wrapping line of options for a scrolling container (security toolbar); each option is
+   * cropped with an ellipsis down to one character. Omitted = today's wrapping layout.
+   */
+  noWrap?: boolean
 }
 
 export function Selector<
   N extends ITreeNode,
   V extends object | null = object | null,
 >(props: SelectorProps<N, V>): JSX.Element | null {
-  const { options, selectedOption, onSelectOption, variant, layoutSide = CHANGED_LAYOUT_SIDE } = props
+  const { options, selectedOption, onSelectOption, variant, layoutSide = CHANGED_LAYOUT_SIDE, noWrap = false } = props
 
   if (options.length === 0) {
     return null
   }
 
   return (
-    <div className='flex flex-row flex-wrap gap-2'>
+    <div className={noWrap ? 'flex flex-row flex-nowrap gap-2' : 'flex flex-row flex-wrap gap-2'}>
       {options.map((option) => {
         const { diffsRelatedClassesList, isInvisible } = resolveOptionDiffPresentation({
           diffs: option.diffs,
@@ -58,18 +65,21 @@ export function Selector<
         }
         const diffsRelatedClasses = diffsRelatedClassesList.join(' ')
         const resolvedTitle = typeof option.title === "function" ? option.title(layoutSide) : option.title
+        // Neutral options keep their markup byte-identical (no tone class), so existing selectors do not move.
+        const toneClass = option.tone && option.tone !== SelectorOptionTone.Neutral ? ` button-selector-option_tone-${option.tone}` : ''
+        const croppedClass = noWrap ? ' button-selector-option_cropped' : ''
         return (
           <button
             key={option.node.id}
             data-testid={option.testId}
-            className={`button-selector-option button-selector-option_${variant} ${selectedOption === option ? 'selected' : ''} ${diffsRelatedClasses}`}
+            className={`button-selector-option button-selector-option_${variant}${toneClass}${croppedClass} ${selectedOption === option ? 'selected' : ''} ${diffsRelatedClasses}`}
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
               onSelectOption(option)
             }}
           >
-            {resolvedTitle}
+            {noWrap ? <span className="button-selector-option-label">{resolvedTitle}</span> : resolvedTitle}
           </button>
         )
       })}

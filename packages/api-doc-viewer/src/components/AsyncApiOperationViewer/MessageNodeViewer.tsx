@@ -14,8 +14,21 @@ import { TitleRowProps } from "../shared-components/TitleRow/types";
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps";
 import { buildRowDiffProps, useNodeDiffState } from "../shared-components/diffs/node-diff-props";
 import { isMessageNodeWithDiffs } from "../shared-utilities/tree-node-guards";
-import { AddressRow, AddressRowProps } from "./AddressRow/AddressRow";
+import { AddressRow, AddressRowBadge, AddressRowProps } from "../shared-components/AddressRow/AddressRow";
 import { MessageSectionsViewer } from "./MessageSectionsViewer";
+import { getSecurityChildren, isSecuritySectionNode } from "@apihub/utils/security/node-type-checkers";
+import { AsyncApiSecuritySection } from "./AsyncApiSecuritySection";
+import { SizeVariant } from "./types/SizeVariant";
+
+// Literal class names: Tailwind keeps only classes it finds in source files.
+const ACTION_COLOR_MAP: Record<string, string> = {
+  send: 'bg-sky-400',
+  receive: 'bg-green-500',
+}
+
+function toActionBadge(action: string): AddressRowBadge {
+  return { text: action.toUpperCase(), colorClass: ACTION_COLOR_MAP[action] ?? '' }
+}
 
 type MessageNodeViewerProps = {
   node: AsyncApiTreeNode<typeof AsyncApiTreeNodeKinds.MESSAGE>
@@ -27,6 +40,8 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
 
   const value = node.value()
   const children = useMemo(() => node.childrenNodes(), [node])
+  // The operation's Security section (a child of the message root).
+  const security = useMemo(() => getSecurityChildren(node, isSecuritySectionNode).at(0), [node])
 
   const nodeDiffState = useNodeDiffState<AsyncApiTreeNodeValueTypeMessage, AsyncApiTreeNode | AsyncApiTreeNodeWithDiffs>(node, isMessageNodeWithDiffs)
   const { nodeDiffs } = nodeDiffState
@@ -65,6 +80,13 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
     ? PrecededBy.ROOT
     : PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL
 
+  // What the first element after the operation header (Security, else the section selector) follows.
+  const headerPrecededBy = isSummaryDisplayed
+    ? PrecededBy.SUMMARY_ROW
+    : isDescriptionDisplayed
+      ? PrecededBy.DESCRIPTION_ROW
+      : PrecededBy.ADDRESS_ROW
+
   return (
     <div className="flex flex-col">
       {!noHeading && isTitleDisplayed && (
@@ -89,7 +111,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       )}
       <AddressRow
         data-precededby={addressRowPrecededBy}
-        action={value?.action ?? ''}
+        badge={toActionBadge(value?.action ?? '')}
         address={value?.address ?? ''}
         // diffs
         {...addressRowDiffsProps}
@@ -120,14 +142,15 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
           {...summaryRowDiffsProps}
         />
       )}
+      {security && (
+        <AsyncApiSecuritySection
+          data-precededby={headerPrecededBy}
+          node={security}
+          variant={SizeVariant.PRIMARY}
+        />
+      )}
       <MessageChildrenViewer
-        data-precededby={
-          isSummaryDisplayed
-            ? PrecededBy.SUMMARY_ROW
-            : isDescriptionDisplayed
-              ? PrecededBy.DESCRIPTION_ROW
-              : PrecededBy.ADDRESS_ROW
-        }
+        data-precededby={security ? PrecededBy.SECURITY_SECTION : headerPrecededBy}
         children={children}
       />
     </div>

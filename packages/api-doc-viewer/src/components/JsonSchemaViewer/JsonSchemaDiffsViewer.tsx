@@ -27,6 +27,7 @@ import {
 } from './embedding/DefaultJsonSchemaEmbedding'
 import { JsonSchemaEmbeddingContext, JsonSchemaEmbeddingContextValue } from './embedding/JsonSchemaEmbeddingContext'
 import { JsonSchemaViewerContext } from './JsonSchemaViewerContext'
+import { PrecededBy } from '../shared-components/WithPrecededByProps'
 import { JsonSchemaNodeViewerWithDiffs } from './JsonSchemaNodeViewerWithDiffs'
 import { resolveJsonSchemaDiffsNodesVisibilityMode } from './JsonSchemaDiffsNodesVisibilityMode'
 import {
@@ -55,6 +56,12 @@ export type JsonSchemaDiffsViewerProps = {
    * refactoring-notes.md (agent-packages/api-doc-viewer-authoring) for the design analysis.
    */
   hideUnchangedNodes?: boolean
+  /**
+   * Opt-in `data-precededby` of the first row (the root's title row, or with a suppressed root nesting
+   * indicator its first child): lets an embedding viewer control the gap above the schema (OpenAPI).
+   * Without it the rows keep their own spacing.
+   */
+  firstRowPrecededBy?: PrecededBy
 }
 
 export const JsonSchemaDiffsViewer: FC<JsonSchemaDiffsViewerProps> = memo((props) => {
@@ -154,7 +161,7 @@ const JsonSchemaDiffsViewerInner: FC<JsonSchemaDiffsViewerProps> = (props) => {
                 <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                   <LevelContext.Provider value={initialLevel}>
                     <div data-testid="json-schema-diffs-viewer">
-                      <JsonSchemaNodeViewerWithDiffs node={root}/>
+                      <JsonSchemaNodeViewerWithDiffs node={root} data-precededby={props.firstRowPrecededBy}/>
                     </div>
                   </LevelContext.Provider>
                 </LayoutModeContext.Provider>

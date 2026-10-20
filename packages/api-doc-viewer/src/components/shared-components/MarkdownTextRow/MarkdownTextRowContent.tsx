@@ -97,6 +97,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
   return (
     <div
       data-precededby={precededBy}
+      data-frame-position={props.framePosition?.(layoutSide)}
       className={[
         "markdown-text-row-content flex w-full h-full gap-2",
         isDdlApiPropertyRow || usage === TextRowUsage.JsonSchemaDescription ? "items-stretch" : "",

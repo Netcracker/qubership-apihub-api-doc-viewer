@@ -59,6 +59,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
   const highlightingModeForKey = useMemo(() => {
     switch (usage) {
       case TitleRowUsage.Default:
+      case TitleRowUsage.OpenApiSection:
       case TitleRowUsage.DdlApiProperty:
         return highlightingMode.get(DiffHiglightingApplicationArea.Default)!
       case TitleRowUsage.AsyncApiJsoSection:
@@ -171,6 +172,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       data-precededby={precededBy}
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
       data-usage={usage !== TitleRowUsage.Default ? usage : undefined}
+      data-frame-position={props.framePosition?.(layoutSide)}
       className={`title-row-content flex w-full ${isDdlApiPropertyRow || isJsonSchemaPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {header}

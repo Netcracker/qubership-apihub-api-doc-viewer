@@ -1276,7 +1276,14 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     for (const key of Object.keys(customAnnotations)) {
       const keyDiff = perKeyDiffsRecord[key]
       if (AbstractNodeDiffsAggregator.isDiff(keyDiff)) {
-        setEntry(key, keyDiff)
+        // A per-key add/remove carries the whole `{ label, value }` entry: unwrap it like Tier 1.
+        if (isDiffAdd(keyDiff) && isObject(keyDiff.afterValue)) {
+          setEntry(key, { ...keyDiff, afterValue: Reflect.get(keyDiff.afterValue, "value") })
+        } else if (isDiffRemove(keyDiff) && isObject(keyDiff.beforeValue)) {
+          setEntry(key, { ...keyDiff, beforeValue: Reflect.get(keyDiff.beforeValue, "value") })
+        } else {
+          setEntry(key, keyDiff)
+        }
         continue
       }
 

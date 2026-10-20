@@ -15,9 +15,9 @@ import { NestingIndicatorTitleRow } from "@apihub/components/shared-components/N
 import { NestingIndicatorTitleRowUsage } from "@apihub/components/shared-components/NestingIndicatorTitleRow/types"
 import {
   ATTRIBUTE_PRECEDED_BY,
-  PrecededBy,
   WithPrecededByProps,
 } from "../../shared-components/WithPrecededByProps"
+import { resolveChildPrecededBy } from "../utils/resolve-child-preceded-by"
 import { useJsonSchemaViewerContext } from "../JsonSchemaViewerContext"
 import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewer } from "../JsonSchemaNodeViewer"
@@ -149,7 +149,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
                 {children.map((child, index) => (
                   <JsonSchemaNodeViewer
                     key={child.id}
-                    data-precededby={PrecededBy.JSON_SCHEMA_PROPERTY}
+                    data-precededby={resolveChildPrecededBy(suppressRootNesting, precededBy, index)}
                     node={child}
                     isLastInList={index === children.length - 1}
                   />

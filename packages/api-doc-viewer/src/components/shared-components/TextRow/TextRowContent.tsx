@@ -25,7 +25,7 @@ function getTextRowClassesByUsage(usage: TextRowUsage): string {
 }
 
 export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>((props) => {
-  const { value, variant, layoutSide, usage = TextRowUsage.Default, hideLevelIndicatorWhenSideEmpty = false } = props
+  const { value, variant, layoutSide, usage = TextRowUsage.Default, hideLevelIndicatorWhenSideEmpty = false, trailing } = props
 
   // value/font specific
   const { label, labelFontWeight, textFontWeight, labelColor, textColor } = props
@@ -83,7 +83,8 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
   return (
     <div
       data-precededby={precededBy}
-      className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      data-frame-position={props.framePosition?.(layoutSide)}
+      className={`text-row-content flex w-full h-full ${isDdlApiPropertyRow ? 'items-stretch' : trailing ? 'items-center' : ''} ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
     >
       {showsLevelIndent && (
         <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
@@ -98,6 +99,7 @@ export const TextRowContent: FC<TextRowContentProps> = memo<TextRowContentProps>
       ) : (
         textValue
       )}
+      {trailing && <div className="flex items-center">{trailing(layoutSide)}</div>}
     </div>
   )
 })
