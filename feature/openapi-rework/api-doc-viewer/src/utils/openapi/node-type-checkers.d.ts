@@ -3,9 +3,6 @@ import { OpenApiTreeNodeKind } from '../../../../next-data-model/src/model/opena
 type OpenApiKindGuard<K extends OpenApiTreeNodeKind> = (node: OpenApiTreeNode | null | undefined) => node is OpenApiTreeNode<K>;
 export declare const isOpenApiOperationNode: OpenApiKindGuard<"operation">;
 export declare const isOpenApiSecurityNode: OpenApiKindGuard<"security">;
-export declare const isOpenApiSecurityRequirementNode: OpenApiKindGuard<"securityRequirement">;
-export declare const isOpenApiSecuritySchemeNode: OpenApiKindGuard<"securityScheme">;
-export declare const isOpenApiOAuthFlowNode: OpenApiKindGuard<"oauthFlow">;
 export declare const isOpenApiExtensionsNode: OpenApiKindGuard<"extensions">;
 export declare const isOpenApiRequestNode: OpenApiKindGuard<"request">;
 export declare const isOpenApiParametersNode: OpenApiKindGuard<"parameters">;
