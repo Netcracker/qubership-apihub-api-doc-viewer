@@ -1,5 +1,6 @@
 /**
- * "Showing/hiding unchanged nodes" feature toggle for the JSON Schema diffs viewer.
+ * "Showing/hiding unchanged nodes" feature toggle of the diffs viewers (JSON Schema, OpenAPI security
+ * scheme cards).
  *
  * The public prop (`JsonSchemaDiffsViewerProps.hideUnchangedNodes`) is a boolean today, but
  * the underlying concept is modeled here as a proper mode (mirroring `LayoutMode`/`DisplayMode`)
@@ -11,21 +12,21 @@
 export const SHOW_ALL_NODES_MODE = "show-all"
 export const SHOW_ONLY_CHANGED_NODES_MODE = "show-only-changed-nodes"
 
-export type JsonSchemaDiffsNodesVisibilityMode =
+export type DiffsNodesVisibilityMode =
   | typeof SHOW_ALL_NODES_MODE
   | typeof SHOW_ONLY_CHANGED_NODES_MODE
 
 /** Boundary conversion for the current boolean public prop - the only place that needs to change
  * shape when the public API itself grows a third mode. */
-export function resolveJsonSchemaDiffsNodesVisibilityMode(
+export function resolveDiffsNodesVisibilityMode(
   hideUnchangedNodes: boolean,
-): JsonSchemaDiffsNodesVisibilityMode {
+): DiffsNodesVisibilityMode {
   return hideUnchangedNodes ? SHOW_ONLY_CHANGED_NODES_MODE : SHOW_ALL_NODES_MODE
 }
 
 /** Every mode except `show-all` collapses unchanged content - `show-only-nodes-with-filtered-changes`
  * will too, just with a `diffTypes`-aware "changed" predicate, so this stays correct unchanged once
  * that mode is added. */
-export function isHideUnchangedNodesMode(mode: JsonSchemaDiffsNodesVisibilityMode): boolean {
+export function isHideUnchangedNodesMode(mode: DiffsNodesVisibilityMode): boolean {
   return mode !== SHOW_ALL_NODES_MODE
 }

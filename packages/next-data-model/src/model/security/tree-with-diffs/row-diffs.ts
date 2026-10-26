@@ -4,6 +4,7 @@ import { RowChangedPropertyMetaData } from "../../abstract/tree-with-diffs/row-c
 import {
   BOTH_LAYOUT_SIDES,
   deriveRowDiff,
+  hasNodeDiffs,
   NodeLevelRowDiffs,
   RowDiffsNode,
   SectionRowDiffs,
@@ -15,7 +16,7 @@ import {
   toStringList,
   toStringMap,
 } from "../../abstract/tree-with-diffs/row-diffs-base"
-import { ChangedPropertyMetaData, HighlightVariant } from "../../abstract/tree-with-diffs/tree-node.interface"
+import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { SecurityDisplayLabels, SecurityParameterNameLabel } from "../display/labels"
 import { SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
@@ -90,6 +91,12 @@ function buildScopeRow(
   }
 }
 
+/**
+ * Scheme fields that are not content rows of the card: the title row shows `name` and the gray type
+ * text (`type`); `requiredScopesKind` is a dialect decision and has no row of its own.
+ */
+const SCHEME_TITLE_ROW_FIELDS: ReadonlySet<string> = new Set(['name', 'type', 'requiredScopesKind'])
+
 class Scheme {
   public static takeFieldRowDiff(node: RowDiffsNode, field: string): ChangedPropertyMetaData | undefined {
     return NodeLevelRowDiffs.takeRowDiff(node, field)
@@ -152,6 +159,30 @@ class Scheme {
     return takeFieldDiff(node, 'parameterName')
       ?? (location ? RowChangedPropertyMetaData.buildRowReplace(location.data) : undefined)
       ?? NodeLevelRowDiffs.takeWholeNodeDiff(node)
+  }
+
+  /**
+   * Whether the card has a change below its title row: the card was wholly added / removed, a field
+   * of a content row changed (description, unresolved state, props, required scopes), or anything in
+   * an OAuth flow part changed. A change of the title row alone (the scheme type) is not content.
+   * Required scopes of a scheme that ignores them (OAS 3.0 non-OAuth types) have no row, so their
+   * diff is not content either. Without content changes the card hides everything below its title
+   * row behind one `Show N unchanged rows` row.
+   * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
+   */
+  public static isContentChanged(node: RowDiffsNode): boolean {
+    if (NodeLevelRowDiffs.takeWholeNodeDiff(node)) {
+      return true
+    }
+    const ignoresRequiredScopes = takeValueField(node, 'requiredScopesKind') === 'ignored'
+    const isContentField = (field: string): boolean => field !== NODE_LEVEL_DIFF_KEY
+      && !SCHEME_TITLE_ROW_FIELDS.has(field)
+      && !(ignoresRequiredScopes && field === 'requiredScopes')
+      && takeFieldDiff(node, field) !== undefined
+    if (hasNodeDiffs(node) && Object.keys(node.diffs).some(isContentField)) {
+      return true
+    }
+    return node.childrenNodes().some(flow => hasNodeDiffs(flow) && Object.keys(flow.diffs).length > 0)
   }
 
   /** Whether the card exists on a side (no frame on the side where it was wholly added / removed). */

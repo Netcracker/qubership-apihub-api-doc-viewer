@@ -7,6 +7,7 @@ defines its own "is changed" predicate.
 | API type | Status | Design |
 | --- | --- | --- |
 | JSON Schema | implemented | [../../json-schema/features/hiding-unchanged-nodes.md](../../json-schema/features/hiding-unchanged-nodes.md) |
+| OpenAPI | implemented (security scheme cards; nested JSON Schema trees as above) | [../../openapi/features/hiding-unchanged-nodes.md](../../openapi/features/hiding-unchanged-nodes.md) |
 | AsyncAPI, DDL API, JSO | not implemented | — |
 
 ## Mechanism
@@ -17,6 +18,8 @@ defines its own "is changed" predicate.
 | `UnchangedBlockMembership` | same | `visible`, or hidden with `unchangedBlockId`, `isBlockStart`, `blockSize` |
 | `UnchangedVisibleItem` | same | The visible sequence: nodes plus one placeholder per block |
 | `ShowUnchangedRow` | `api-doc-viewer/src/components/shared-components/ShowUnchangedRow/` | Placeholder row with the reveal control |
+| `ShowUnchangedTrigger` | same | The three-dots reveal button alone, for rows that place it themselves (security scheme card) |
+| `UnchangedBlocksContext`, `DiffsNodesVisibilityMode` | same | Viewer-level mode and revealed block ids; provided by `JsonSchemaDiffsViewer` and `OpenApiOperationDiffsViewer` |
 
 ## Rules
 

@@ -4,7 +4,7 @@ import { JsonSchemaTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-d
 import { FC, Fragment, useMemo } from "react"
 import { PrecededBy } from "../../shared-components/WithPrecededByProps"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
-import { useUnchangedBlocksContext } from "../UnchangedBlocksContext"
+import { useUnchangedBlocksContext } from "@apihub/components/shared-components/ShowUnchangedRow/UnchangedBlocksContext"
 
 export type SchemaNodeChildrenListWithDiffsProps = {
   children: readonly JsonSchemaTreeNodeWithDiffs[]

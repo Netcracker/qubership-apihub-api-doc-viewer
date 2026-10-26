@@ -29,7 +29,7 @@ import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-d
 import { useJsonSchemaViewerContext } from "../JsonSchemaViewerContext"
 import { JsonSchemaNodeTypeCheckers } from "../utils/node-type-checkers"
 import { JsonSchemaNodeViewerWithDiffs } from "../JsonSchemaNodeViewerWithDiffs"
-import { useOptionalUnchangedBlocksContext } from "../UnchangedBlocksContext"
+import { useOptionalUnchangedBlocksContext } from "@apihub/components/shared-components/ShowUnchangedRow/UnchangedBlocksContext"
 import { JsonSchemaNestingIndicatorTypeValueWithDiffs } from "./TypeValue/JsonSchemaNestingIndicatorTypeValueWithDiffs"
 import { JsonSchemaNestingLevel } from "../utils/resolve-nesting-level"
 import { SchemaNodeChildrenListWithDiffs } from "./SchemaNodeChildrenListWithDiffs"

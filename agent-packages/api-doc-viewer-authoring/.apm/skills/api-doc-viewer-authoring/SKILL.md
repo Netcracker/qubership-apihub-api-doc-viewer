@@ -268,6 +268,17 @@ CSS-custom-property-based alternative was analyzed but deliberately deferred —
 `agent-packages/api-doc-viewer-authoring/.apm/skills/api-doc-viewer-authoring/refactoring-notes.md` (entry 1)
 for the trade-off and when to reconsider it.
 
+## OpenAPI security cards — hiding unchanged content
+
+Design: `docs/design/openapi/features/hiding-unchanged-nodes.md`. `SecuritySchemeCardBase` keeps the title
+row and replaces every other row (all flow parts together) with one `SecurityRow` holding the shared
+`ShowUnchangedTrigger` when `useOptionalUnchangedBlocksContext()` says `hideUnchangedNodes`, the card is
+not revealed (`revealedBlockIds.has(node.id)`), and `SecurityRowDiffs.Scheme.isContentChanged(node)` is
+false. The context (`shared-components/ShowUnchangedRow/UnchangedBlocksContext.tsx`, mode in
+`DiffsNodesVisibilityMode.ts`) is shared with `JsonSchemaDiffsViewer`; only `OpenApiOperationDiffsViewer`
+provides it for cards, so plain and AsyncAPI cards never collapse. Do not decide "changed" from the
+rendered rows (scope toggles and display mode change them) — read the data-layer predicate.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in

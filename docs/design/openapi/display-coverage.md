@@ -125,7 +125,7 @@ shows when it has content on either side or a diff of its own.
 | `callbacks`, `links`, `webhooks` | `intentional-gap` | Out of the operation-viewer scope. |
 | Security requirement inherited from the document (hint) | `ndm-reserved` | `isInheritedFromDocument` on the `security` node. |
 | Schema keywords `const`, `contentMediaType`, `contentEncoding` | — | JSON Schema stack topic; triage against [../json-schema/display-coverage.md](../json-schema/display-coverage.md). |
-| Hiding unchanged OpenAPI rows | `planned` | Only nested JSON Schema trees hide unchanged nodes. |
+| Hiding unchanged OpenAPI rows | `implemented` (security scheme cards) | Nested JSON Schema trees hide unchanged nodes; a security scheme card without content changes keeps its title row and hides the rest behind one three-dots row ([features/hiding-unchanged-nodes.md](features/hiding-unchanged-nodes.md)). Other OpenAPI rows are never hidden. |
 | Diff-type filters on OpenAPI rows | `planned` | `diffTypes` is forwarded; floating badges keep `hidden={false}` (as AsyncAPI). |
 | Layout modes other than document / side-by-side | `intentional-gap` | As AsyncAPI. |
 

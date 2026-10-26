@@ -1,11 +1,10 @@
-import { FC, memo, useCallback } from "react"
+import { FC, memo } from "react"
 import { NestingHorizontalIndicator } from "@apihub/components/common/NestingHorizontalIndicator"
-import { ThreeDotsIcon } from "@apihub/components/kit/icons/ThreeDotsIcon"
-import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
 import "./ShowUnchangedRowContent.css"
 import { LevelIndicator } from "../LevelIndicator"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import type { ShowUnchangedRowProps } from "./ShowUnchangedRow"
+import { ShowUnchangedTrigger } from "./ShowUnchangedTrigger"
 
 type ShowUnchangedRowContentProps = ShowUnchangedRowProps & {
   layoutSide: "before" | "after"
@@ -26,10 +25,6 @@ export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((p
     [ATTRIBUTE_PRECEDED_BY]: precededBy,
   } = props
 
-  const onClick = useCallback(() => {
-    onReveal(unchangedBlockId)
-  }, [onReveal, unchangedBlockId])
-
   return (
     <div
       data-testid="show-unchanged-nodes"
@@ -49,16 +44,11 @@ export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((p
         </div>
       )}
       <div className="json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center">
-        <UxTooltip text={formatShowUnchangedLabel(count)}>
-          <button
-            type="button"
-            className="show-unchanged-trigger"
-            aria-label={formatShowUnchangedLabel(count)}
-            onClick={onClick}
-          >
-            <ThreeDotsIcon />
-          </button>
-        </UxTooltip>
+        <ShowUnchangedTrigger
+          unchangedBlockId={unchangedBlockId}
+          label={formatShowUnchangedLabel(count)}
+          onReveal={onReveal}
+        />
       </div>
     </div>
   )

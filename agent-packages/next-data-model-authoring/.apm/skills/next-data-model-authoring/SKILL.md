@@ -602,6 +602,15 @@ still aggregated. The rename sits under `NODE_LEVEL_DIFF_KEY` but is **not** a w
 `agent-packages/next-data-model-authoring/.apm/skills/next-data-model-authoring/json-schema/json-schema-node-key-rename.md`.
 Unit tests: `json-schema-property-rename-diffs.test.ts`.
 
+## Security card content changes (hiding unchanged nodes)
+
+`SecurityRowDiffs.Scheme.isContentChanged(scheme)` (`model/security/tree-with-diffs/row-diffs.ts`) decides
+whether a security scheme card collapses below its title row: whole-node add/remove, any field diff
+except the title-row fields (`name`, `type`, `requiredScopesKind`; `requiredScopes` when the kind is
+`ignored`), or any OAuth flow child diff. Design: `docs/design/openapi/features/hiding-unchanged-nodes.md`;
+unit tests: `tests/unit-tests/openapi-security-hiding-unchanged.test.ts` (cases from
+`@netcracker/qubership-apihub-samples`, merged with `mergeOpenApiDocuments` in `tests/helpers/openapi-fixtures.ts`).
+
 ## Cross-package boundary
 
 View components in `packages/api-doc-viewer` import builders and node types

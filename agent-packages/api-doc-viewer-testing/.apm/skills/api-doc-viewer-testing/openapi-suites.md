@@ -187,3 +187,20 @@ prefixed per body because both bodies can show the same media type).
 - `api-unifier` merges path-item parameters **after** the operation's own parameters.
 - Mixed, multi-purpose fixtures hide bugs (the code-order bug survived nine hand-written
   fixtures); prefer one concern per case and generated combinations.
+
+## Hiding unchanged nodes suite (programmatic, hand-written)
+
+`OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes` is **not** produced by
+`generate-openapi-diffs-suite.mjs` and has no YAML: cases come from one template plus one fragment
+per scheme kind toggled by `hasChanges` in `packages/samples/src/openapi-diffs-hiding-unchanged-nodes.ts`
+(design: `docs/design/openapi/features/hiding-unchanged-nodes.md`). Stories pass the built documents
+as JSON strings to `OpenApiDiffSampleStory` (`parseYamlSource` reads JSON) and add a
+`hideUnchangedNodes` control. The IT captures every case in `detailed` / `simple` and, for cases with
+an unchanged card, a `revealed` capture after clicking every `[data-testid="security-show-unchanged"] button`.
+When cases change, update the story exports and the IT `CASES` together (ids from
+`bin/storybook-story-id-utils.mjs` — `oauth2` slugs to `oauth-2`). Suite id for the runner:
+`openapi-diffs-hiding-unchanged-nodes-suite`.
+
+`OpenApiOperationDiffsViewer` hides unchanged card content by default, so every
+`openapi-diffs-suite` case whose base document keeps an unchanged scheme (the `oauth` card of the
+base) renders that card collapsed — regenerate those baselines together with card changes.

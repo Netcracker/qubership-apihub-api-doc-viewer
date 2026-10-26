@@ -16,6 +16,8 @@ import '../../index.css'
 import { DiffMetaKeys } from "../../types/DiffMetaKeys"
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
+import { resolveDiffsNodesVisibilityMode } from "../shared-components/ShowUnchangedRow/DiffsNodesVisibilityMode"
+import { UnchangedBlocksContext, useUnchangedBlocksContextValue } from "../shared-components/ShowUnchangedRow/UnchangedBlocksContext"
 import '../shared-styles/diffs/index.css'
 import { OpenApiViewerContext, OpenApiViewerContextValue } from "./OpenApiViewerContext"
 import { OperationNodeViewer } from "./OperationNodeViewer"
@@ -33,7 +35,11 @@ export type OpenApiOperationDiffsViewerProps = {
   diffMetaKeys: DiffMetaKeys
   /** Accepted and forwarded; diff-type filters are not implemented yet. */
   diffTypes?: ReadonlyArray<DiffType>
-  /** Forwarded to nested `JsonSchemaDiffsViewer`s. */
+  /**
+   * Hide unchanged content (default `true`): forwarded to nested `JsonSchemaDiffsViewer`s, and a
+   * security scheme card without content changes shows only its title row plus a "three dots" row.
+   * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
+   */
   hideUnchangedNodes?: boolean
 }
 
@@ -62,7 +68,7 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
     expandedDepth,
     diffMetaKeys,
     diffTypes,
-    hideUnchangedNodes,
+    hideUnchangedNodes = true,
   } = props
 
   const logger = useMemo(() => createOpenApiLogger(devMode), [devMode])
@@ -71,6 +77,8 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
     [mergedSource, operationKeys, diffMetaKeys, logger],
   )
   const tree = useMemo(() => treeBuilder.build(), [treeBuilder])
+  const visibilityMode = useMemo(() => resolveDiffsNodesVisibilityMode(hideUnchangedNodes), [hideUnchangedNodes])
+  const unchangedBlocksContext = useUnchangedBlocksContextValue(visibilityMode)
   const viewerContext: OpenApiViewerContextValue = useMemo(
     () => ({ devMode, expandedDepth, hideUnchangedNodes, spacing: DEFAULT_OPENAPI_SPACING_CONFIG }),
     [devMode, expandedDepth, hideUnchangedNodes],
@@ -88,6 +96,7 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
     <DiffMetaKeysContext.Provider value={diffMetaKeys}>
       <DiffTypesContext.Provider value={diffTypes}>
         <OpenApiViewerContext.Provider value={viewerContext}>
+          <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
               <LevelContext.Provider value={0}>
@@ -101,6 +110,7 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
               </LevelContext.Provider>
             </LayoutModeContext.Provider>
           </DisplayModeContext.Provider>
+          </UnchangedBlocksContext.Provider>
         </OpenApiViewerContext.Provider>
       </DiffTypesContext.Provider>
     </DiffMetaKeysContext.Provider>

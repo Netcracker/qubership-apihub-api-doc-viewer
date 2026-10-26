@@ -11,7 +11,7 @@ Applies only to the with-diffs data model and `JsonSchemaDiffsViewer`
 | "Is changed" predicate | `.../changed-only/is-node-changed.ts` (`isJsonSchemaNodeChanged`) |
 | Grouping wrapper | `.../changed-only/resolve-json-schema-unchanged-blocks.ts` |
 | Initial expansion | `.../node-visibility-data/kind-property-expand.ts` |
-| Viewer | `SchemaNodeChildrenListWithDiffs`, `UnchangedBlocksContext`, `JsonSchemaDiffsNodesVisibilityMode` |
+| Viewer | `SchemaNodeChildrenListWithDiffs`; shared `UnchangedBlocksContext`, `DiffsNodesVisibilityMode` (`shared-components/ShowUnchangedRow/`) |
 | Fixtures | `packages/samples/json-schema-diffs/hiding-unchanged-rows/` |
 
 ## When a node is changed

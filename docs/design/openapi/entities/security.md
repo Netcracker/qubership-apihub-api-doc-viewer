@@ -208,6 +208,12 @@ element wraps "the card" on one side. The frame is therefore drawn **per row and
 | OAuth flows | flow rows stay inside the scheme's frame; the flow title (h5) is a `middle` row. |
 | Tests | a story with two cards, one wholly added (frame on the changed side only); DOM check that each side's frame width equals the column width. |
 
+### Hiding unchanged content (with diffs)
+
+With `hideUnchangedNodes` (default), a card without changes below its title row keeps the title row and
+hides every other row — all flow parts together — behind one three-dots row inside the frame:
+[../features/hiding-unchanged-nodes.md](../features/hiding-unchanged-nodes.md#security-scheme-card).
+
 ### Anonymous alternative content
 
 When the selected alternative is `{}`: one `TextRow` (muted, body2) `Authentication is not

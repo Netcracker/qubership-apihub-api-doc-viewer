@@ -1,10 +1,10 @@
 import { NodeId } from "@netcracker/qubership-apihub-next-data-model/utility-types"
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
-import { isHideUnchangedNodesMode, JsonSchemaDiffsNodesVisibilityMode } from "./JsonSchemaDiffsNodesVisibilityMode"
+import { DiffsNodesVisibilityMode, isHideUnchangedNodesMode } from "./DiffsNodesVisibilityMode"
 
 export type UnchangedBlocksContextValue = {
-  /** Source of truth - see JsonSchemaDiffsNodesVisibilityMode.ts for why this is a mode, not a bare boolean. */
-  mode: JsonSchemaDiffsNodesVisibilityMode
+  /** Source of truth - see DiffsNodesVisibilityMode.ts for why this is a mode, not a bare boolean. */
+  mode: DiffsNodesVisibilityMode
   /** Derived from `mode` (`mode !== "show-all"`) - kept as a plain boolean for the existing
    * consumers (SchemaNodeViewer, CombinerNodeViewer, SchemaNodeChildrenListWithDiffs) that only
    * ever needed the binary "collapse unchanged content or not" answer, and for the next-data-model
@@ -20,7 +20,7 @@ export const UnchangedBlocksContext = createContext<UnchangedBlocksContextValue 
 export function useUnchangedBlocksContext(): UnchangedBlocksContextValue {
   const context = useContext(UnchangedBlocksContext)
   if (!context) {
-    throw new Error("useUnchangedBlocksContext must be used within JsonSchemaDiffsViewer")
+    throw new Error("useUnchangedBlocksContext must be used within a diffs viewer that provides it (JsonSchemaDiffsViewer, OpenApiOperationDiffsViewer)")
   }
   return context
 }
@@ -30,7 +30,7 @@ export function useOptionalUnchangedBlocksContext(): UnchangedBlocksContextValue
 }
 
 export function useUnchangedBlocksContextValue(
-  mode: JsonSchemaDiffsNodesVisibilityMode,
+  mode: DiffsNodesVisibilityMode,
 ): UnchangedBlocksContextValue {
   const [revealedBlockIds, setRevealedBlockIds] = useState<ReadonlySet<NodeId>>(() => new Set())
 

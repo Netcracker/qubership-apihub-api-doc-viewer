@@ -37,6 +37,11 @@ export function loadNormalizedOpenApiSample(caseId: string): unknown {
 export function loadMergedOpenApiSample(caseId: string): unknown {
   const before = loadOpenApiYaml(join('openapi-diffs', caseId, 'before.yaml'))
   const after = loadOpenApiYaml(join('openapi-diffs', caseId, 'after.yaml'))
+  return mergeOpenApiDocuments(before, after)
+}
+
+/** Two whole OpenAPI documents merged like the stories do (programmatic cases of `@netcracker/qubership-apihub-samples`). */
+export function mergeOpenApiDocuments(before: unknown, after: unknown): unknown {
   return apiDiff(before, after, {
     ...NORMALIZE_OPTIONS,
     beforeSource: before,

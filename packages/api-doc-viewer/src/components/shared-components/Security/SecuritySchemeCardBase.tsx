@@ -21,6 +21,8 @@ import { OpenApiBlock, OpenApiLayout } from "../../OpenApiOperationViewer/OpenAp
 import { useOpenApiViewerContext } from "../../OpenApiOperationViewer/OpenApiViewerContext"
 import { FramePosition } from "../Frame/types"
 import { MarkdownTextRow } from "../MarkdownTextRow/MarkdownTextRow"
+import { ShowUnchangedTrigger } from "../ShowUnchangedRow/ShowUnchangedTrigger"
+import { useOptionalUnchangedBlocksContext } from "../ShowUnchangedRow/UnchangedBlocksContext"
 import { TextRow } from "../TextRow/TextRow"
 import { TextValueVariant } from "../TextValue/types"
 import { TitleRow } from "../TitleRow/TitleRow"
@@ -84,6 +86,11 @@ class CardRows {
     this.rows.push(row)
   }
 
+  /** Keeps the title row (always the first one) and replaces every other row with `placeholder`. */
+  public collapseContent(placeholder: CardRow): void {
+    this.rows.splice(1, this.rows.length - 1, placeholder)
+  }
+
   /** Each row as a layout element: edges from its own diff and badge (next-data-model). */
   public toBlocks(framePosition: FramePositionResolver): OpenApiBlock[] {
     return this.rows.map(row => ({
@@ -113,6 +120,8 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
   const visibility = presentation.visibility.resolveSecurityScheme(value, displayMode)
   const flows = getSecurityChildren(node, isSecurityOAuthFlowNode)
   const [collapsedScopes, setCollapsedScopes] = useState<ReadonlySet<string>>(new Set())
+  // Provided by the diffs viewers that hide unchanged content (OpenAPI); absent = show every row.
+  const unchangedBlocks = useOptionalUnchangedBlocksContext()
   const toggleScopes = (key: string): void => setCollapsedScopes(current => {
     const next = new Set(current)
     if (next.has(key)) {
@@ -247,6 +256,34 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
         toggleScopes,
       )
     }
+  }
+
+  // Hiding unchanged nodes: a card without changes below its title row keeps the title row (the
+  // structure stays readable) and hides all other rows - every flow part included - behind one
+  // "three dots" row. Any content change shows the whole card. A revealed card stays revealed.
+  const hiddenRowCount = card.rows.length - 1
+  if (
+    unchangedBlocks?.hideUnchangedNodes
+    && hiddenRowCount > 0
+    && !unchangedBlocks.revealedBlockIds.has(node.id)
+    && !SecurityRowDiffs.Scheme.isContentChanged(node)
+  ) {
+    const label = hiddenRowCount === 1 ? 'Show 1 unchanged row' : `Show ${hiddenRowCount} unchanged rows`
+    card.collapseContent({
+      key: 'show-unchanged',
+      diff: undefined,
+      severity: undefined,
+      render: (framePosition) => (
+        <SecurityRow
+          data-precededby={PrecededBy.OPENAPI_ROW}
+          testId="security-show-unchanged"
+          framePosition={framePosition}
+          renderSide={() => (
+            <ShowUnchangedTrigger unchangedBlockId={node.id} label={label} onReveal={unchangedBlocks.revealBlock} />
+          )}
+        />
+      ),
+    })
   }
 
   const isPresent = (side: LayoutSide): boolean => SecurityRowDiffs.Scheme.isCardPresentOnSide(node, side)
