@@ -15,7 +15,11 @@ export type OpenApiOperationDiffsViewerProps = {
     diffMetaKeys: DiffMetaKeys;
     /** Accepted and forwarded; diff-type filters are not implemented yet. */
     diffTypes?: ReadonlyArray<DiffType>;
-    /** Forwarded to nested `JsonSchemaDiffsViewer`s. */
+    /**
+     * Hide unchanged content (default `true`): forwarded to nested `JsonSchemaDiffsViewer`s, and a
+     * security scheme card without content changes shows only its title row plus a "three dots" row.
+     * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
+     */
     hideUnchangedNodes?: boolean;
 };
 /**
