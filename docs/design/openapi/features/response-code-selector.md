@@ -7,65 +7,64 @@ The response codes in the **Responses** header are the shared `Selector` with a 
 
 `Selector` (`shared-components/Selector/Selector.tsx`) already owns option rendering, selection,
 per-side visibility of wholly added / removed options, change markers, and border-shadow diff
-chrome. The response codes need exactly that plus color. A tone is one optional field on
+chrome. The response codes need exactly that plus color. A tone is one optional class on
 `SelectorOption`; every existing caller (AsyncAPI sections, bindings, combiner selector rows)
 keeps the default and does not change.
 
 ## API change
 
 ```typescript
-// shared-components/Selector/types.ts
-export enum SelectorOptionTone {
-  Neutral = 'neutral',   // default — today's grey look
-  Success = 'success',   // green
-  Info = 'info',         // blue
-  Warning = 'warning',   // orange
-  Danger = 'danger',     // red
-}
-
 // shared-components/Selector/Selector.tsx
 export type SelectorOption<N extends ITreeNode, V extends object | null = object | null> = {
   title: ReactNode | ((layoutSide: LayoutSide) => ReactNode)
   node: N
   testId?: string
-  tone?: SelectorOptionTone        // new; undefined = Neutral
+  toneClass?: string               // color class from the caller's color config; undefined = neutral grey
   diffs?: NodeDiffs<V>
   diffsSummary?: NodeDiffsSummary
   descendantDiffsSummary?: NodeDescendantDiffsSummary
 }
 ```
 
-The button gets one more class: `button-selector-option_tone-<tone>` (only for non-neutral tones,
-so neutral markup stays byte-identical and existing screenshots do not move).
+The button gets `toneClass` as one more class (only when set, so neutral markup stays byte-identical
+and existing screenshots do not move). `Selector` holds no tone colors: the caller's color file does
+([../../shared/features/color-config.md](../../shared/features/color-config.md)).
 
 ## Mapping (`utils/openapi/response-code-tone.ts`)
 
-| `OpenApiResponseCodeClass` | Tone | Color |
+| `OpenApiResponseCodeClass` | Tone class | Color |
 | --- | --- | --- |
-| `2XX` | `Success` | green |
-| `3XX` | `Info` | blue |
-| `4XX` | `Warning` | orange |
-| `5XX` | `Danger` | red |
-| `1XX`, `default`, `unknown` | `Neutral` | grey |
+| `1XX` | `openapi-response-code_1xx` | violet |
+| `2XX` | `openapi-response-code_2xx` | green |
+| `3XX` | `openapi-response-code_3xx` | sky blue |
+| `4XX` | `openapi-response-code_4xx` | amber |
+| `5XX` | `openapi-response-code_5xx` | red |
+| `default`, `unknown` | — | neutral grey |
 
 The class comes from next-data-model (`OpenApiResponseCode.resolveClass`, stored on the `response`
-node value); the viewer only maps class → tone. Ranges (`2XX`) and explicit codes (`200`) share the
+node value); the viewer only maps class → tone class. Ranges (`2XX`) and explicit codes (`200`) share the
 class color.
 
-## Styles (`Selector.css`)
+## Styles (`Selector.css` neutral, `shared-styles/colors/openapi.css` toned)
 
 | State | Neutral (unchanged) | Toned |
 | --- | --- | --- |
-| Idle | white background, `#8F9EB4` border and text | white background, tone border and text |
-| Hover | `#D5DCE3` background | tone tint background (`-50` shade) |
-| Selected | `#D5DCE3` background, `#626D82` text | **solid** tone background, white text |
+| Untouched | white background, `#8F9EB4` border and text | transparent background, tone border and text |
+| Hovered | `#D5DCE3` background | pale tone tint background, tone border and text |
+| Selected | `#D5DCE3` background, `#626D82` text | **solid** tone background and border, white text |
 
-| Tone | Border / text / selected background | Hover tint |
-| --- | --- | --- |
-| Success | `rgb(22 163 74)` (green-600) | `rgb(240 253 244)` |
-| Info | `rgb(37 99 235)` (blue-600) | `rgb(239 246 255)` |
-| Warning | `rgb(234 88 12)` (orange-600) | `rgb(255 247 237)` |
-| Danger | `rgb(220 38 38)` (red-600) | `rgb(254 242 242)` |
+| Code class | Untouched (background / text) | Hovered (background / text) | Selected (background / text) |
+| --- | --- | --- | --- |
+| `1XX` | transparent / `#9B7BF7` | `#ECE6FE` / `#9B7BF7` | `#9B7BF7` / `#FFFFFF` |
+| `2XX` | transparent / `#00BB5B` | `#D0FAD4` / `#00BB5B` | `#00BB5B` / `#FFFFFF` |
+| `3XX` | transparent / `#4FC0F8` | `#D6F2FE` / `#4FC0F8` | `#4FC0F8` / `#FFFFFF` |
+| `4XX` | transparent / `#FFB02E` | `#FFF4CC` / `#FFB02E` | `#FFB02E` / `#FFFFFF` |
+| `5XX` | transparent / `#FF5260` | `#FFC8C1` / `#FF5260` | `#FF636F` / `#FFFFFF` |
+
+`2XX`, `4XX` and `5XX` are the product palette. `1XX` and `3XX` follow the same scheme: `3XX` reuses
+the POST badge sky blue (redirection is neutral, informative), `1XX` takes a violet of the same
+lightness so it differs from both `3XX` and the neutral grey of `default`. The border always
+matches the text (untouched / hovered) or the fill (selected).
 
 Rules:
 
@@ -96,7 +95,8 @@ Unchanged `Selector` semantics, fed from `response` nodes:
 
 ## Tests
 
-- Unit test (`packages/api-doc-viewer/tests/`): every class → tone; CSS-free module.
+- Unit test (`packages/api-doc-viewer/tests/openapi-viewer-config.test.ts`): every class → tone
+  class (CSS-free module), and the colors of every state read from `openapi.css` as text.
 - Stories `OpenAPI Operation Suite/OAS 3.0/Document Structure` (`oas30/structure/04-response-code-order`) and `…/OAS 3.0/Fields/Responses/*` (`oas30/fields/responses/{2xx,3xx,4xx,5xx}/*`, one sub-group per code kind):
   all classes, ranges, `default`, canonical order; ITs click `response-code-404` and
   `response-code-default` to capture selected Warning and Neutral states.

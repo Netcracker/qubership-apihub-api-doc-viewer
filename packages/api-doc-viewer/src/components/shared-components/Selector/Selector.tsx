@@ -5,7 +5,7 @@ import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-mode
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import { NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary, NodeDiffs, NodeDiffsSummary } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { ReactNode } from "react"
-import { SelectorOptionTone, SelectorVariant } from "./types"
+import { SelectorVariant } from "./types"
 import "./Selector.css"
 
 const EMPTY_DIFFS_SUMMARY = new Set<DiffType>()
@@ -18,8 +18,11 @@ export type SelectorOption<
   title: ReactNode | ((layoutSide: LayoutSide) => ReactNode)
   node: N
   testId?: string
-  /** Option color; omitted = `SelectorOptionTone.Neutral` (unchanged grey markup). */
-  tone?: SelectorOptionTone
+  /**
+   * Option color class from the caller's color config (`components/shared-styles/colors/`, e.g.
+   * `openapi-response-code_2xx`); omitted = the neutral grey look (unchanged markup).
+   */
+  toneClass?: string
   diffs?: NodeDiffs<V>
   diffsSummary?: NodeDiffsSummary
   descendantDiffsSummary?: NodeDescendantDiffsSummary
@@ -66,7 +69,7 @@ export function Selector<
         const diffsRelatedClasses = diffsRelatedClassesList.join(' ')
         const resolvedTitle = typeof option.title === "function" ? option.title(layoutSide) : option.title
         // Neutral options keep their markup byte-identical (no tone class), so existing selectors do not move.
-        const toneClass = option.tone && option.tone !== SelectorOptionTone.Neutral ? ` button-selector-option_tone-${option.tone}` : ''
+        const toneClass = option.toneClass ? ` ${option.toneClass}` : ''
         const croppedClass = noWrap ? ' button-selector-option_cropped' : ''
         return (
           <button

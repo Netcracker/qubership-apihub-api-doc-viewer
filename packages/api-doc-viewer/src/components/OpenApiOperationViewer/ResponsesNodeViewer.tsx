@@ -1,6 +1,6 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
-import { resolveResponseCodeTone } from "@apihub/utils/openapi/response-code-tone"
+import { resolveResponseCodeToneClass } from "@apihub/utils/openapi/response-code-tone"
 import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
@@ -79,7 +79,7 @@ const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
     ),
     testId: `response-code-${String(response.key)}`,
     // A wholly added / removed code keeps the default look: only its green / red border shadow.
-    tone: OpenApiRowDiffs.Response.keepsCodeTone(response) ? resolveResponseCodeTone(response.value()?.codeClass) : undefined,
+    toneClass: OpenApiRowDiffs.Response.keepsCodeTone(response) ? resolveResponseCodeToneClass(response.value()?.codeClass) : undefined,
     // Markers show inner changes only: no own-diff summary, the descendant summary of the accessor.
     ...(isOpenApiTreeNodeWithDiffs(response)
       ? { diffs: response.diffs, descendantDiffsSummary: OpenApiRowDiffs.Response.takeChangesMarkerSummary(response) }

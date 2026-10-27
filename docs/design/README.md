@@ -33,7 +33,7 @@ docs/design/
 
 | Area | Coverage | Architecture | Entities | Features | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Shared | — | [architecture/](shared/architecture/) | — | [lazy materialization](shared/features/lazy-materialization.md), [hiding unchanged nodes](shared/features/hiding-unchanged-nodes.md), [section header colorizing](shared/features/section-header-colorizing.md) | — |
+| Shared | — | [architecture/](shared/architecture/) | — | [lazy materialization](shared/features/lazy-materialization.md), [hiding unchanged nodes](shared/features/hiding-unchanged-nodes.md), [section header colorizing](shared/features/section-header-colorizing.md), [color config](shared/features/color-config.md) | — |
 | AsyncAPI | [display-coverage.md](async-api/display-coverage.md) | [architecture/](async-api/architecture/) | — | — | — |
 | DDL API | [display-coverage.md](ddlapi/display-coverage.md) | [architecture/](ddlapi/architecture/) | [entities/](ddlapi/entities/) | [doc view](ddlapi/features/doc-view.md) | — |
 | JSO | — | — | — | [diffs specification](jso/features/diffs.md) | — |

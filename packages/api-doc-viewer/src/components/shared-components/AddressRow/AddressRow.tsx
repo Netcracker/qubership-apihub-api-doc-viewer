@@ -18,7 +18,7 @@ import "./AddressRow.css"
 /** Badge before the address: AsyncAPI action (SEND / RECEIVE), OpenAPI HTTP method. */
 export type AddressRowBadge = {
   text: string
-  /** Tailwind background class (must be a literal class name in the caller's source). */
+  /** Background class from the caller's color config (`components/shared-styles/colors/`). */
   colorClass: string
 }
 

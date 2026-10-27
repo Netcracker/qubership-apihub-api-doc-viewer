@@ -1,3 +1,6 @@
+/* Viewer color config (badges, selector tones); @import must precede every other statement. */
+@import "./components/shared-styles/colors/index.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -96,8 +96,8 @@ export type AddressRowProps = WithPrecededByProps & {
 
 Behaviour is unchanged from AsyncAPI: the badge is hidden on the side where a whole-node add /
 remove does not exist; a `replace` of `address` with a common prefix highlights only the differing
-suffix (`detectPartialReplaceCase`). AsyncAPI passes `{ text: action.toUpperCase(), colorClass:
-ACTION_COLOR_MAP[action] }`; its screenshot ITs must stay unchanged after the move.
+suffix (`detectPartialReplaceCase`). AsyncAPI passes `resolveAsyncApiActionBadge(action)` (`utils/async-api/action-badge-config.ts`); its
+screenshot ITs must stay unchanged after the move.
 
 | Item | Rule |
 | --- | --- |
@@ -107,27 +107,32 @@ ACTION_COLOR_MAP[action] }`; its screenshot ITs must stay unchanged after the mo
 
 ### HTTP method badge config
 
-One exported config map (D13, Q9) in `packages/api-doc-viewer/src/utils/openapi/http-method-badge-config.ts`;
-`resolveHttpMethodBadge(method)` reads it and falls back to `DEFAULT` for an unknown method.
-Changing a color is a one-line edit of this map; no component holds method colors.
+One exported config map (D13, Q9) in `packages/api-doc-viewer/src/utils/openapi/http-method-badge-config.ts`
+maps a method to a class; `resolveHttpMethodBadge(method)` reads it and falls back to `DEFAULT` for an
+unknown method. The colors live in `components/shared-styles/colors/openapi.css`
+([../../shared/features/color-config.md](../../shared/features/color-config.md)); changing a color is
+a one-line edit there, and no component holds method colors.
 
 ```typescript
 export const OPENAPI_HTTP_METHOD_BADGE_CONFIG: Readonly<Record<OpenApiHttpMethod | 'DEFAULT', { colorClass: string }>> = {
-  get:     { colorClass: 'bg-green-500' },
-  post:    { colorClass: 'bg-sky-500' },
-  put:     { colorClass: 'bg-orange-400' },
-  patch:   { colorClass: 'bg-teal-500' },
-  delete:  { colorClass: 'bg-red-500' },
-  head:    { colorClass: 'bg-purple-500' },
-  options: { colorClass: 'bg-indigo-500' },
-  trace:   { colorClass: 'bg-slate-500' },
-  DEFAULT: { colorClass: 'bg-slate-500' },
+  get:     { colorClass: 'openapi-http-method-badge_get' },
+  post:    { colorClass: 'openapi-http-method-badge_post' },
+  // … one class per method …
+  DEFAULT: { colorClass: 'openapi-http-method-badge_default' },
 }
 ```
 
-Tailwind keeps only class names it finds in source files: the classes must stay literal strings in
-this file (never built by concatenation), or they disappear from the CSS bundle. A host-level
-override prop is not part of v1; the map is the extension point.
+| Method | Background (text is white `#FFF` for all) |
+| --- | --- |
+| GET | `#00BB5B` |
+| POST | `#4FC0F8` |
+| PUT, PATCH | `#FFB02E` |
+| DELETE | `#FF5260` |
+| HEAD | `#A855F7` |
+| OPTIONS | `#6366F1` |
+| TRACE, unknown | `#64748B` |
+
+A host-level override prop is not part of v1; the color file is the extension point.
 
 ## External docs row
 

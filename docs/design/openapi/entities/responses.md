@@ -46,7 +46,7 @@ export type OpenApiResponseCodeClass = typeof OpenApiResponseCodeClasses[keyof t
 | anything else | `unknown` | — |
 
 `OpenApiResponseCode.resolveClass(key)` and `OpenApiResponseCode.compare(a, b)` live in
-next-data-model (the transformer orders the nested nodes); the viewer only maps a class to a tone.
+next-data-model (the transformer orders the nested nodes); the viewer only maps a class to a tone class.
 
 **Canonical order** (`compare`): by class `1XX` → `5XX`; inside a class explicit codes ascending,
 then the range; then `unknown` keys in document order; `default` last. Document order is ignored on
@@ -58,7 +58,7 @@ purpose — fixture `oas30/structure/04-response-code-order` declares `500` firs
 | --- | --- |
 | Component | `TitleRow` "Responses", **h2**, `subheader={(side) => <Selector …/>}` |
 | Options | one per `response` node; title = the code text (`OpenApiRowDiffs.Response.resolveSideCode(node, side)` for a renamed code, e.g. `4xx` → `4XX`, E6) |
-| Tone | `resolveResponseCodeTone(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md); a code wholly added / removed **on its own** (not inherited) has no tone — default background and text, green / red border shadow only (`OpenApiRowDiffs.Response.keepsCodeTone`) |
+| Tone | `resolveResponseCodeToneClass(codeClass)` — [../features/response-code-selector.md](../features/response-code-selector.md); a code wholly added / removed **on its own** (not inherited) has no tone — default background and text, green / red border shadow only (`OpenApiRowDiffs.Response.keepsCodeTone`) |
 | Option test id | `response-code-<code>` |
 | Initial selection | first `2XX` option, else the first option (Q13) |
 | Diff | header = `OpenApiRowDiffs.Responses.takeTitleRowDiff`: wholly added / removed when its presence (≥1 code) flips ([presence](../features/diffs.md#section-presence-and-whole-section-changes)); else the whole title row is yellow (synthetic `replace`, background only) when any code option was wholly added / removed / renamed — the with-diffs transformer writes the synthetic `codes` field diff (`OPENAPI_RESPONSE_OPTIONS_DIFF_KEY`) on the `responses` node; floating badge `TitleRow`, the strongest of those option changes. A renamed code's text is highlighted yellow inside the button on both sides (`OpenApiRowDiffs.Response.resolveSideCodeHighlight`, `OptionKeyText`). Options carry the `response` node-level diff (per-side visibility, border shadow, per-side title of a renamed code) and the **change marker** below. A response option stays present as long as its code exists — losing its body or headers changes the option's marker, not its visibility. |

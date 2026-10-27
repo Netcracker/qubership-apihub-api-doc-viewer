@@ -305,8 +305,8 @@ tested):
 | File | Content |
 | --- | --- |
 | `node-type-checkers.ts` | `isOpenApiOperationNode`, `isOpenApiSecurityNode`, …, `getOpenApiChildNodes(node)` (type-guard helpers, no `as`) |
-| `http-method-badge-config.ts` | `OPENAPI_HTTP_METHOD_BADGE_CONFIG` + `resolveHttpMethodBadge(method)` (D13) |
-| `response-code-tone.ts` | `OpenApiResponseCodeClass` → `SelectorOptionTone` |
+| `http-method-badge-config.ts` | `OPENAPI_HTTP_METHOD_BADGE_CONFIG` + `resolveHttpMethodBadge(method)` (D13); colors in `shared-styles/colors/openapi.css` |
+| `response-code-tone.ts` | `OpenApiResponseCodeClass` → tone class (`OPENAPI_RESPONSE_CODE_TONE_CLASSES`); colors in `shared-styles/colors/openapi.css` |
 
 With-diffs guards (`isOpenApi*NodeWithDiffs`) go to `shared-utilities/tree-node-guards.ts` next to
 the AsyncAPI ones.

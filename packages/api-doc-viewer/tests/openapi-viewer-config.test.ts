@@ -1,8 +1,26 @@
-import { OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
+import { readFileSync } from "fs"
+import { resolve } from "path"
+import { OpenApiResponseCodeClass, OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
 import { OPENAPI_SECTION_IDS_BY_LEVEL, OPENAPI_SECTION_ORDER } from "../src/components/OpenApiOperationViewer/config/section-order"
-import { SelectorOptionTone } from "../src/components/shared-components/Selector/types"
+import { ASYNC_API_ACTION_BADGE_CONFIG, resolveAsyncApiActionBadge } from "../src/utils/async-api/action-badge-config"
 import { OPENAPI_HTTP_METHOD_BADGE_CONFIG, resolveHttpMethodBadge } from "../src/utils/openapi/http-method-badge-config"
-import { resolveResponseCodeTone } from "../src/utils/openapi/response-code-tone"
+import { OPENAPI_RESPONSE_CODE_TONE_CLASSES, resolveResponseCodeToneClass } from "../src/utils/openapi/response-code-tone"
+
+const COLORS_DIR = resolve(__dirname, "../src/components/shared-styles/colors")
+
+/** Declarations of the rule whose selector list contains `selector` exactly (CSS is read as text: jest has no CSS loader). */
+function takeDeclarations(cssFile: string, selector: string): Record<string, string> {
+  const css = readFileSync(resolve(COLORS_DIR, cssFile), "utf-8").replace(/\/\*[\s\S]*?\*\//g, "")
+  const rule = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+    .find(([, selectors]) => selectors.split(",").map(value => value.trim()).includes(selector))
+  if (!rule) {
+    throw new Error(`${cssFile}: no rule for ${selector}`)
+  }
+  return Object.fromEntries(rule[2].split(";").map(value => value.trim()).filter(Boolean).map(declaration => {
+    const [property, ...rest] = declaration.split(":")
+    return [property.trim(), rest.join(":").trim().toUpperCase()]
+  }))
+}
 
 describe("OpenAPI viewer config", () => {
   describe("section order", () => {
@@ -24,25 +42,30 @@ describe("OpenAPI viewer config", () => {
 
   describe("response code tone", () => {
     it.each([
-      [OpenApiResponseCodeClasses.SUCCESS, SelectorOptionTone.Success],
-      [OpenApiResponseCodeClasses.REDIRECTION, SelectorOptionTone.Info],
-      [OpenApiResponseCodeClasses.CLIENT_ERROR, SelectorOptionTone.Warning],
-      [OpenApiResponseCodeClasses.SERVER_ERROR, SelectorOptionTone.Danger],
-      [undefined, SelectorOptionTone.Neutral],
-    ])("%s -> %s", (codeClass, tone) => {
-      expect(resolveResponseCodeTone(codeClass)).toBe(tone)
+      [OpenApiResponseCodeClasses.INFORMATIONAL, "openapi-response-code_1xx"],
+      [OpenApiResponseCodeClasses.SUCCESS, "openapi-response-code_2xx"],
+      [OpenApiResponseCodeClasses.REDIRECTION, "openapi-response-code_3xx"],
+      [OpenApiResponseCodeClasses.CLIENT_ERROR, "openapi-response-code_4xx"],
+      [OpenApiResponseCodeClasses.SERVER_ERROR, "openapi-response-code_5xx"],
+      [OpenApiResponseCodeClasses.DEFAULT, undefined],
+      [OpenApiResponseCodeClasses.UNKNOWN, undefined],
+      [undefined, undefined],
+    ])("%s -> %s", (codeClass, toneClass) => {
+      expect(resolveResponseCodeToneClass(codeClass)).toBe(toneClass)
     })
 
-    it("paints the remaining classes neutral", () => {
-      const toned = new Set<string>([
-        OpenApiResponseCodeClasses.SUCCESS,
-        OpenApiResponseCodeClasses.REDIRECTION,
-        OpenApiResponseCodeClasses.CLIENT_ERROR,
-        OpenApiResponseCodeClasses.SERVER_ERROR,
-      ])
-      for (const codeClass of Object.values(OpenApiResponseCodeClasses).filter(value => !toned.has(value))) {
-        expect(resolveResponseCodeTone(codeClass)).toBe(SelectorOptionTone.Neutral)
-      }
+    // [code class, selected background, selected text, hovered background, text of untouched / hovered]
+    it.each<[OpenApiResponseCodeClass, string, string, string, string]>([
+      [OpenApiResponseCodeClasses.INFORMATIONAL, "#9B7BF7", "#FFFFFF", "#ECE6FE", "#9B7BF7"],
+      [OpenApiResponseCodeClasses.SUCCESS, "#00BB5B", "#FFFFFF", "#D0FAD4", "#00BB5B"],
+      [OpenApiResponseCodeClasses.REDIRECTION, "#4FC0F8", "#FFFFFF", "#D6F2FE", "#4FC0F8"],
+      [OpenApiResponseCodeClasses.CLIENT_ERROR, "#FFB02E", "#FFFFFF", "#FFF4CC", "#FFB02E"],
+      [OpenApiResponseCodeClasses.SERVER_ERROR, "#FF636F", "#FFFFFF", "#FFC8C1", "#FF5260"],
+    ])("%s colors", (codeClass, selectedBackground, selectedText, hoveredBackground, text) => {
+      const option = `button.button-selector-option.${OPENAPI_RESPONSE_CODE_TONE_CLASSES[codeClass]}`
+      expect(takeDeclarations("openapi.css", option)).toMatchObject({ "background-color": "TRANSPARENT", color: text })
+      expect(takeDeclarations("openapi.css", `${option}:hover`)).toMatchObject({ "background-color": hoveredBackground, color: text })
+      expect(takeDeclarations("openapi.css", `${option}.selected`)).toMatchObject({ "background-color": selectedBackground, color: selectedText })
     })
   })
 
@@ -51,13 +74,40 @@ describe("OpenAPI viewer config", () => {
       expect(resolveHttpMethodBadge("Post")).toEqual({ text: "POST", colorClass: OPENAPI_HTTP_METHOD_BADGE_CONFIG.post.colorClass })
     })
 
-    it("swaps the GET / POST colors of the design table", () => {
-      expect(OPENAPI_HTTP_METHOD_BADGE_CONFIG.get.colorClass).toBe("bg-green-500")
-      expect(OPENAPI_HTTP_METHOD_BADGE_CONFIG.post.colorClass).toBe("bg-sky-500")
+    it.each([
+      ["get", "#00BB5B"],
+      ["post", "#4FC0F8"],
+      ["delete", "#FF5260"],
+      ["patch", "#FFB02E"],
+      ["put", "#FFB02E"],
+    ])("paints %s %s", (method, background) => {
+      expect(takeDeclarations("openapi.css", `.${resolveHttpMethodBadge(method).colorClass}`)).toEqual({ "background-color": background })
+    })
+
+    it("defines a color for every configured class", () => {
+      for (const { colorClass } of Object.values(OPENAPI_HTTP_METHOD_BADGE_CONFIG)) {
+        expect(takeDeclarations("openapi.css", `.${colorClass}`)["background-color"]).toMatch(/^#[0-9A-F]{6}$/)
+      }
     })
 
     it("falls back to the default color for an unknown method", () => {
       expect(resolveHttpMethodBadge("query").colorClass).toBe(OPENAPI_HTTP_METHOD_BADGE_CONFIG.DEFAULT.colorClass)
     })
+  })
+})
+
+describe("AsyncAPI action badge", () => {
+  it("upper-cases the text and maps the action to its class", () => {
+    expect(resolveAsyncApiActionBadge("send")).toEqual({ text: "SEND", colorClass: ASYNC_API_ACTION_BADGE_CONFIG.send.colorClass })
+  })
+
+  it("defines a color for every configured class", () => {
+    for (const { colorClass } of Object.values(ASYNC_API_ACTION_BADGE_CONFIG)) {
+      expect(takeDeclarations("async-api.css", `.${colorClass}`)["background-color"]).toMatch(/^#[0-9A-F]{6}$/)
+    }
+  })
+
+  it("leaves an unknown action without a background class", () => {
+    expect(resolveAsyncApiActionBadge("publish")).toEqual({ text: "PUBLISH", colorClass: "" })
   })
 })

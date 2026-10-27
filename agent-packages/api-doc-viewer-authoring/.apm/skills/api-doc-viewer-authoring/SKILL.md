@@ -870,6 +870,20 @@ by subpath — mirror existing import paths when adding builders or types.
 The JSO diffs contract is specified in `docs/design/jso/features/diffs.md` —
 read it before diffs-viewer refactors.
 
+## Color config: one CSS file per API type
+
+Design: `docs/design/shared/features/color-config.md`. Badge and selector-option colors with API-type
+meaning (HTTP method, AsyncAPI action, response-code class, DDL column flags, `read-only` /
+`write-only` / `deprecated` tags) live only in `src/components/shared-styles/colors/<api-type>.css`
+(imported once through `src/index.css`). TS configs (`utils/openapi/http-method-badge-config.ts`,
+`utils/openapi/response-code-tone.ts`, `utils/async-api/action-badge-config.ts`,
+`DdlTableViewer/consts.ts`, `consts/tags.ts`) map values to literal class names only; shared
+components take a class (`AddressRow` `badge.colorClass`, `UxBadge` `colorSchema`, `Selector`
+`SelectorOption.toneClass`). Do not put a hex value or a Tailwind `bg-*` color in a component or TS
+config. A color rule overriding a shared component's own rule must win by specificity, not by bundle
+order. `index.css` gives `button` a `border-color` transition: measure border colors ≥ 250ms after a
+hover / click in a live check.
+
 ## Global `button` styles (session lesson)
 
 `src/index.css` styles **every** `<button>` (padding `0.6em 1.2em`, 8px radius, a border and a
