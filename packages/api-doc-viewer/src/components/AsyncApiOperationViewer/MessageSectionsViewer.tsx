@@ -108,7 +108,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     return (
       <div
         data-precededby={precededBy}
-        className={`message-sections-selector ${X_AXIS_PADDING_ROWS_ASYNC_API} h-full ${Array.from(diffsStyles).join(' ')}`}
+        className={`message-sections-selector ${X_AXIS_PADDING_ROWS_ASYNC_API} w-full h-full ${Array.from(diffsStyles).join(' ')}`}
       >
         <Selector
           options={sectionSelectorOptions}
