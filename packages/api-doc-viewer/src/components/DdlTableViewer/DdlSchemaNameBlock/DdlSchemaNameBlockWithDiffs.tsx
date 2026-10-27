@@ -51,7 +51,7 @@ const DdlSchemaNameBlockSideContent: FC<DdlSchemaNameBlockWithDiffsProps> = memo
     return (
       <div
         data-precededby={precededBy}
-        className={`ddl-schema-name-block-row flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
+        className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
       />
     )
   }
@@ -59,7 +59,7 @@ const DdlSchemaNameBlockSideContent: FC<DdlSchemaNameBlockWithDiffsProps> = memo
   return (
     <div
       data-precededby={precededBy}
-      className={`ddl-schema-name-block-row flex h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
+      className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
     >
       <span
         className={`ddl-schema-name-block ${textHighlighterColor ? DiffsClassesBuilder.highlighter(textHighlighterColor) : ''}`}
