@@ -3,7 +3,7 @@ import {
   buildOpenApiHidingUnchangedDocuments,
   openApiHidingUnchangedCases,
 } from "@netcracker/qubership-apihub-samples";
-import { OPENAPI_STORY_ARG_TYPES, OPENAPI_STORY_DEFAULT_ARGS } from "../openapi-suite/openapi-story-args";
+import { OPENAPI_DIFFS_STORY_ARG_TYPES, OPENAPI_DIFFS_STORY_DEFAULT_ARGS } from "../openapi-suite/openapi-story-args";
 import { OpenApiDiffSampleStory } from "../openapi-diffs-suite/OpenApiDiffSampleStory";
 
 /**
@@ -17,14 +17,8 @@ import { OpenApiDiffSampleStory } from "../openapi-diffs-suite/OpenApiDiffSample
 const meta = {
   title: "OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes",
   component: OpenApiDiffSampleStory,
-  argTypes: {
-    ...OPENAPI_STORY_ARG_TYPES,
-    hideUnchangedNodes: {
-      control: { type: "boolean" },
-      table: { category: "Viewer" },
-    },
-  },
-  args: { ...OPENAPI_STORY_DEFAULT_ARGS, hideUnchangedNodes: true },
+  argTypes: OPENAPI_DIFFS_STORY_ARG_TYPES,
+  args: { ...OPENAPI_DIFFS_STORY_DEFAULT_ARGS, hideUnchangedNodes: true },
 } satisfies Meta<typeof OpenApiDiffSampleStory>;
 
 export default meta;

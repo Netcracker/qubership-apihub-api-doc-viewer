@@ -116,7 +116,9 @@ before passing it as `source`. Select the operation with `operationType`
 top-level list). `JsonSchemaDiffsViewer` takes the merged document as `schema`,
 plus `diffMetaKeys`, optional `diffTypes` (placeholder: accepted but ignored — no diff-type
 filtering yet), and `hideUnchangedNodes` (default `true`:
-runs of unchanged nodes collapse behind a "Show N unchanged nodes" row).
+runs of unchanged nodes collapse behind a "Show N unchanged nodes" row). The `x-*` extension values
+(JSO trees) follow the same setting, in `JsonSchemaDiffsViewer` and in `OpenApiOperationDiffsViewer`;
+AsyncAPI bindings and extensions always show every row.
 
 **Synthesized schemas — renamed keys.** When the host builds a schema itself (for example one
 property per API parameter) and a property's key changed between versions, it can express the

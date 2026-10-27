@@ -16,6 +16,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 | Response codes | Whole add / remove per code kind (`1XX`–`5XX`, a range, `default`); the IT selects the changed code. All other response cases change the initially selected `200`, except `description-changed-non-initial-code` (change marker on a code that is not selected). |
 | JSON Schemas inside | Not fanned out (that is the JSON Schema suites' job): each body has one property add / remove pair and one schema replace; the `schema` ↔ `content` and description-precedence cases cover the parameter synthesis. |
 | Display modes | One story per case; `displayMode` is a story control (default `detailed`). ITs capture every case in `detailed` and `simple` by passing the story arg — never a duplicated story or fixture. |
+| Hiding unchanged nodes | Off: the story control `hideUnchangedNodes` defaults to `false`, so every row of the OpenAPI layer and of every embedded JSON Schema / JSO viewer is shown. Hiding is covered by `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)` ([hiding-unchanged-nodes.md](hiding-unchanged-nodes.md)). |
 | Generated | Fixtures, catalogues, stories, ITs, and the matrix below come from `packages/api-doc-viewer/bin/openapi-diffs-case-definitions.mjs` via `node bin/generate-openapi-diffs-suite.mjs`. Change cases there, not in the output. |
 
 ## Matrix

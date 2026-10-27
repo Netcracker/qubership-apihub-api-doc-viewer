@@ -20,6 +20,24 @@ export const OPENAPI_STORY_DEFAULT_ARGS: { displayMode: DisplayMode } = {
   displayMode: DETAILED_DISPLAY_MODE,
 };
 
+/**
+ * Diffs suites: display mode plus `hideUnchangedNodes` - `false` by default, so every row shows;
+ * only the "Hiding Unchanged Nodes" suite sets `true`. One switch hides unchanged content in the
+ * OpenAPI layer and in every embedded JSON Schema and JSO viewer alike.
+ */
+export const OPENAPI_DIFFS_STORY_ARG_TYPES = {
+  ...OPENAPI_STORY_ARG_TYPES,
+  hideUnchangedNodes: {
+    control: { type: "boolean" },
+    table: { category: "Viewer" },
+  },
+} as const;
+
+export const OPENAPI_DIFFS_STORY_DEFAULT_ARGS: { displayMode: DisplayMode; hideUnchangedNodes: boolean } = {
+  ...OPENAPI_STORY_DEFAULT_ARGS,
+  hideUnchangedNodes: false,
+};
+
 /** Plain suite: display mode plus the auto-switch toggle. */
 export const OPENAPI_PLAIN_STORY_ARG_TYPES = {
   ...OPENAPI_STORY_ARG_TYPES,

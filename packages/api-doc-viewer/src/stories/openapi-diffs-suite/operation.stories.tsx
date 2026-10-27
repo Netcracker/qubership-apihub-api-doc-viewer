@@ -2,7 +2,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { collectSampleCases } from "../utils/diffs-samples-cases";
 import { createSampleById } from "../utils/sample-cases";
-import { OPENAPI_STORY_ARG_TYPES, OPENAPI_STORY_DEFAULT_ARGS } from "../openapi-suite/openapi-story-args";
+import { OPENAPI_DIFFS_STORY_ARG_TYPES, OPENAPI_DIFFS_STORY_DEFAULT_ARGS } from "../openapi-suite/openapi-story-args";
 import { OpenApiDiffSampleStory } from "./OpenApiDiffSampleStory";
 
 const beforeFiles = import.meta.glob(
@@ -21,8 +21,8 @@ const sampleById = createSampleById(collectSampleCases(beforeFiles, afterFiles))
 const meta = {
   title: "OpenAPI Operation Diffs Suite/Operation",
   component: OpenApiDiffSampleStory,
-  argTypes: OPENAPI_STORY_ARG_TYPES,
-  args: OPENAPI_STORY_DEFAULT_ARGS,
+  argTypes: OPENAPI_DIFFS_STORY_ARG_TYPES,
+  args: OPENAPI_DIFFS_STORY_DEFAULT_ARGS,
 } satisfies Meta<typeof OpenApiDiffSampleStory>;
 
 export default meta;

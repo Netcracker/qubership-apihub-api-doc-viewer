@@ -18,6 +18,8 @@ export type ExtensionsSectionProps = WithPrecededByProps & {
   titleRowDiffProps?: Pick<TitleRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities' | 'highlightingMode'>
   /** `data-precededby` of the JSO viewer's first row; defaults to the AsyncAPI section-header spacing. */
   contentPrecededBy?: PrecededBy
+  /** Forwarded to `JsoDiffsViewer`; omitted = follow the host diffs viewer (OpenAPI). */
+  hideUnchangedNodes?: boolean
 }
 
 type ExtensionsSectionTitleRowProps = WithPrecededByProps & Pick<ExtensionsSectionProps, 'variant' | 'titleRowDiffProps'> & {
@@ -41,11 +43,11 @@ export const ExtensionsSectionTitleRow: FC<ExtensionsSectionTitleRowProps> = (pr
   )
 }
 
-type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 'contentPrecededBy'>
+type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 'contentPrecededBy' | 'hideUnchangedNodes'>
 
 /** The JSO tree of `x-*` values alone: `JsoDiffsViewer` when diff meta keys are provided. */
 export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (props) => {
-  const { rawValues, contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL } = props
+  const { rawValues, contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL, hideUnchangedNodes } = props
   const diffMetaKeys = useDiffMetaKeys()
   return diffMetaKeys
     ? (
@@ -54,6 +56,7 @@ export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (prop
         mergedSource={rawValues}
         initialLevel={1}
         diffMetaKeys={diffMetaKeys}
+        hideUnchangedNodes={hideUnchangedNodes}
       />
     )
     : (
@@ -71,11 +74,11 @@ export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (prop
  * between them.
  */
 export const ExtensionsSection: FC<ExtensionsSectionProps> = (props) => {
-  const { rawValues, variant, testId, titleRowDiffProps, contentPrecededBy, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { rawValues, variant, testId, titleRowDiffProps, contentPrecededBy, hideUnchangedNodes, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const content = (
     <>
       <ExtensionsSectionTitleRow data-precededby={precededBy} variant={variant} titleRowDiffProps={titleRowDiffProps} />
-      <ExtensionsSectionContent rawValues={rawValues} contentPrecededBy={contentPrecededBy} />
+      <ExtensionsSectionContent rawValues={rawValues} contentPrecededBy={contentPrecededBy} hideUnchangedNodes={hideUnchangedNodes} />
     </>
   )
   // Without a test id the section renders as a fragment - the exact DOM AsyncAPI always had.

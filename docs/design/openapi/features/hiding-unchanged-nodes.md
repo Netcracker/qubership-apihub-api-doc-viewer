@@ -8,8 +8,12 @@ default as `JsonSchemaDiffsViewer`). Status: **implemented** for security scheme
 | Where | Behaviour |
 | --- | --- |
 | Nested JSON Schema trees (parameters, headers, bodies) | The JSON Schema rules ([../../json-schema/features/hiding-unchanged-nodes.md](../../json-schema/features/hiding-unchanged-nodes.md)); `hideUnchangedNodes` is forwarded. |
+| `Extensions` section values (JSO) | The JSO rules ([../../jso/features/hiding-unchanged-nodes.md](../../jso/features/hiding-unchanged-nodes.md)); the embedded `JsoDiffsViewer` takes the operation viewer's mode. The section title row is never hidden. |
 | **Security scheme card** | The only OpenAPI-layer place with a "three dots" row (below). |
 | Every other OpenAPI row (sections, toolbar, address, responses, …) | Never hidden. |
+
+**One switch.** `hideUnchangedNodes` hides unchanged content in the OpenAPI layer and in every
+embedded JSON Schema and JSO viewer alike; with `false`, none of them hides anything.
 
 ## Security scheme card
 

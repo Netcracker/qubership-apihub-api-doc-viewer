@@ -411,6 +411,15 @@ rather than assuming the literal list is the complete requirement.
 - JSON Schema diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
   `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
+- JSO hiding suite — `JSO Diffs Suite (Hiding Unchanged Nodes)/{Root Level, Second Level, Nested}`:
+  `src/stories/jso-diffs-hiding-unchanged-nodes-suite/<group>.stories.tsx` and
+  `src/it/jso-diffs-hiding-unchanged-nodes-suite.<group>.it-test.ts` (fixtures and catalogue:
+  `packages/samples/jso-diffs/hiding-unchanged-nodes/`). Stories reuse the JSO suite's
+  `createJsoCaseStoryFactory(..., defaultHideUnchangedNodes = true)`; the property suites
+  (`JSO Diffs Suite`) keep the default `false`. ITs capture every case collapsed and, for cases with
+  a `⋯` row, `revealed` (click `[data-testid="show-unchanged-nodes"] button` until none is left).
+  In a JSO fixture, an object with a `type` key renders as an embedded JSON Schema — avoid the key
+  unless the case means it.
 - DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios.stories.tsx`
   and `src/it/ddlapi-suite/e2e-scenarios.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under

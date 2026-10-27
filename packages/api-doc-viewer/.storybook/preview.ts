@@ -70,6 +70,12 @@ const preview: Preview = {
             'stringJsonSchema',
             'objectJsonSchema',
           ],
+          'JSO Diffs Suite (Hiding Unchanged Nodes)',
+          [
+            'Root Level',
+            'Second Level',
+            'Nested',
+          ],
           'DDL API Suite',
           [
             'E2E Scenarios',

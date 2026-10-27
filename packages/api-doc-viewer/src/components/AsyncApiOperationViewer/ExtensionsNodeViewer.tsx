@@ -41,6 +41,8 @@ export const ExtensionsNodeViewer: FC<SpecificationExtensionsProps> = (props) =>
       rawValues={extensions}
       variant={TextValueVariant.h3}
       titleRowDiffProps={diffsProps}
+      // AsyncAPI does not hide unchanged nodes yet
+      hideUnchangedNodes={false}
     />
   )
 }

@@ -276,7 +276,7 @@ export class JsonSchemaNodeDiffsAggregatorKindAny
     }
     // Only assign when non-empty: an always-present key (even with an empty Set) would make
     // `Object.keys(node.diffs).length > 0` true for every node, breaking "changed only" filtering
-    // (`hasOwnChangeSignals` in changed-only/has-own-change-signals.ts treats any key on
+    // (`hasOwnChangeSignals` in model/abstract/tree-with-diffs/changed-only/ treats any key on
     // `node.diffs` as a change signal).
     if (summary.size > 0) {
       nodeDiffs.nodeChangesSummary = summary

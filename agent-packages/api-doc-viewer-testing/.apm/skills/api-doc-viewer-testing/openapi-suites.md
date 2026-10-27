@@ -149,7 +149,10 @@ prefixed per body because both bodies can show the same media type).
   ITs capture every case in `detailed` **and** `simple` via `storyPageWithArgs(page, id,
   { displayMode })` inside `describe.each(['detailed', 'simple'])`. Never add a per-mode export or
   fixture. Plain stories also have `autoSwitch` and `noHeading` controls
-  (`OPENAPI_PLAIN_STORY_ARG_TYPES`); diff stories only `displayMode` (`OPENAPI_STORY_ARG_TYPES`).
+  (`OPENAPI_PLAIN_STORY_ARG_TYPES`); diff stories `displayMode` and `hideUnchangedNodes`
+  (`OPENAPI_DIFFS_STORY_ARG_TYPES`, default `false` — hiding is off in the diffs suite, for the
+  OpenAPI layer and every embedded JSON Schema / JSO viewer; only the "Hiding Unchanged Nodes"
+  suite sets `true`).
 - Storybook URL args encode booleans as `!true` / `!false`; a bare `'false'` arrives as a string.
 - Waits: `waitForOpenApiOperationViewer` / `waitForOpenApiOperationDiffsViewer`
   (`src/it/service/viewer-waits.ts`); never local wait helpers.

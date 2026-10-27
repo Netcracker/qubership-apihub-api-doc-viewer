@@ -39,11 +39,15 @@ export type {
   JsonSchemaTreeBuilderParams,
   JsonSchemaTreeWithDiffsBuilderParams,
 } from "./shared/json-schema/types/tree-builder-params"
+export { hasOwnChangeSignals } from "./model/abstract/tree-with-diffs/changed-only/has-own-change-signals"
 export {
-  hasOwnChangeSignals,
   isJsonSchemaNodeChanged,
   resolveJsonSchemaUnchangedBlocks,
 } from "./building-service/json-schema/tree-with-diffs/changed-only"
+export {
+  isJsoNodeChanged,
+  resolveJsoUnchangedBlocks,
+} from "./building-service/jso/tree-with-diffs/changed-only"
 export type {
   ResolveJsonSchemaUnchangedBlocksOptions,
   UnchangedBlockMembership,

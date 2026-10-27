@@ -279,6 +279,27 @@ false. The context (`shared-components/ShowUnchangedRow/UnchangedBlocksContext.t
 provides it for cards, so plain and AsyncAPI cards never collapse. Do not decide "changed" from the
 rendered rows (scope toggles and display mode change them) — read the data-layer predicate.
 
+## JSO diffs — hiding unchanged nodes
+
+Design: `docs/design/jso/features/hiding-unchanged-nodes.md`. `JsoPropertyChildrenListWithDiffs`
+renders every JSO sibling list (the `JsoDiffsViewer` top level and each property's children) from
+`resolveJsoUnchangedBlocks` (next-data-model), placing `ShowUnchangedRow` for hidden blocks — the
+JSON Schema `SchemaNodeChildrenListWithDiffs` pattern. Traps:
+
+- **Mode follows the host, revealed ids do not.** `JsoDiffsViewer.hideUnchangedNodes` wins when set;
+  omitted, it takes the host `UnchangedBlocksContext` **mode** (JSON Schema / OpenAPI extensions),
+  else `true`. It always provides its **own** context: JSO node ids are path-based within one JSO
+  tree (`#/x-owner` in two extension sections), so sharing the host's revealed set would reveal
+  unrelated blocks.
+- **AsyncAPI opts out explicitly** (`BindingsNodeViewer`, `ExtensionsNodeViewer` →
+  `ExtensionsSection.hideUnchangedNodes={false}`): AsyncAPI has no provider, so omitting the prop
+  there would fall back to `true`.
+- **Embedded JSON Schema gets the JSO mode** (`JsoEmbeddedSchemaDiffsComponentProps.hideUnchangedNodes`);
+  before, it always used `JsonSchemaDiffsViewer`'s own default `true`.
+- **`ShowUnchangedRow` reads per-side levels** from `AsyncLevelContext` when present (like
+  `TitleRowContent`): JSO diffs only set `AsyncLevelContext`, so the single `LevelContext` level
+  drew the row at level 0.
+
 ## DDL viewer notes
 
 **Coverage baseline:** which ddlapi model fields are shown vs omitted is documented in
