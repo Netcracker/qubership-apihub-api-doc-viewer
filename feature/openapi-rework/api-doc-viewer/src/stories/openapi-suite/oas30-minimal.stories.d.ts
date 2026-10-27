@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
-    component: ({ sampleYaml, path, method, displayMode, noHeading }: import('./OpenApiSampleStory').OpenApiSampleStoryProps) => import("react").JSX.Element;
+    component: ({ sampleYaml, path, method, methodTemplate, displayMode, noHeading }: import('./OpenApiSampleStory').OpenApiSampleStoryProps) => import("react").JSX.Element;
     argTypes: {
         readonly autoSwitch: {
             readonly control: {
@@ -45,12 +45,4 @@ declare const meta: {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export declare const Case_01_get: Story;
-export declare const Case_02_put: Story;
-export declare const Case_03_post: Story;
-export declare const Case_04_delete: Story;
-export declare const Case_05_options: Story;
-export declare const Case_06_head: Story;
-export declare const Case_07_patch: Story;
-export declare const Case_08_trace: Story;
-export declare const Case_09_default_response_only: Story;
+export declare const Case_01_default_response_only: Story;

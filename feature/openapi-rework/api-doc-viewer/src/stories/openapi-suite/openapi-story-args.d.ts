@@ -62,3 +62,42 @@ export declare const playOpenApiAutoSwitch: (context: {
         autoSwitch?: boolean;
     };
 }) => Promise<void>;
+/** HTTP Methods group: the plain controls plus the method the template operation is served as. */
+export declare const OPENAPI_METHOD_TEMPLATE_STORY_ARG_TYPES: {
+    readonly method: {
+        readonly control: {
+            readonly type: "select";
+        };
+        readonly options: readonly import('../../../../next-data-model/src/shared/openapi/types/http-method').OpenApiHttpMethod[];
+        readonly description: "HTTP method the template operation is served as.";
+        readonly table: {
+            readonly category: "Case";
+        };
+    };
+    readonly autoSwitch: {
+        readonly control: {
+            readonly type: "boolean";
+        };
+        readonly description: "Select the options the case covers (`switchTo`) on mount.";
+        readonly table: {
+            readonly category: "Case";
+        };
+    };
+    readonly noHeading: {
+        readonly control: {
+            readonly type: "boolean";
+        };
+        readonly table: {
+            readonly category: "Viewer";
+        };
+    };
+    readonly displayMode: {
+        readonly control: {
+            readonly type: "select";
+        };
+        readonly options: readonly DisplayMode[];
+        readonly table: {
+            readonly category: "Viewer";
+        };
+    };
+};

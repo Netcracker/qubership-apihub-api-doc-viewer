@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react-vite';
 declare const meta: {
     title: string;
-    component: ({ sampleYaml, path, method, displayMode, noHeading }: import('./OpenApiSampleStory').OpenApiSampleStoryProps) => import("react").JSX.Element;
+    component: ({ sampleYaml, path, method, methodTemplate, displayMode, noHeading }: import('./OpenApiSampleStory').OpenApiSampleStoryProps) => import("react").JSX.Element;
     argTypes: {
         readonly autoSwitch: {
             readonly control: {
