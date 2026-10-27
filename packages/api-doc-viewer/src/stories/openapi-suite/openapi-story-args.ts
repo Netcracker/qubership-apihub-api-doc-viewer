@@ -1,5 +1,6 @@
 import { DETAILED_DISPLAY_MODE, DisplayMode, SIMPLE_DISPLAY_MODE } from "@apihub/types/DisplayMode";
 import { switchOpenApiOptions } from "@apihub/utils/openapi/switch-openapi-options";
+import { OPEN_API_HTTP_METHODS_ORDER } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/http-method";
 
 const DISPLAY_MODES: readonly DisplayMode[] = [DETAILED_DISPLAY_MODE, SIMPLE_DISPLAY_MODE];
 
@@ -52,3 +53,14 @@ export const playOpenApiAutoSwitch = async (context: {
     await switchOpenApiOptions(args.switchTo, canvasElement);
   }
 };
+
+/** HTTP Methods group: the plain controls plus the method the template operation is served as. */
+export const OPENAPI_METHOD_TEMPLATE_STORY_ARG_TYPES = {
+  ...OPENAPI_PLAIN_STORY_ARG_TYPES,
+  method: {
+    control: { type: "select" },
+    options: OPEN_API_HTTP_METHODS_ORDER,
+    description: "HTTP method the template operation is served as.",
+    table: { category: "Case" },
+  },
+} as const;

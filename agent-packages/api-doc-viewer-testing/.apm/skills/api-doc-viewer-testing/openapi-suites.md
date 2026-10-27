@@ -35,10 +35,22 @@ Every case definition is `{ slug, title, document, path, method, switchTo?, argV
 | Group | Storybook | Purpose |
 | --- | --- | --- |
 | `oas30/e2e` | `OAS 3.0/E2E` | How sections look **next to each other** (see below). |
-| `oas30/minimal` | `OAS 3.0/Minimal` | Smallest valid operations: one per HTTP method + `default` only. |
+| `oas30/minimal` | `OAS 3.0/Minimal` | Smallest valid operations: `default` only. |
+| `oas30/http-methods` | `OAS 3.0/HTTP Methods` | Every method badge from **one** `template/sample.yaml` (see **Template groups**). |
 | `oas30/fields/<sub-group>` | `OAS 3.0/Fields/<Sub-group>` | Required fields + exactly the covered field. Sub-groups: `operation`, `security` (one per scheme type), `parameters` (one per location), `request-body`, `request-combinations` (every pair of path / query / headers / cookies / request body), `responses/{2xx,3xx,4xx,5xx}`. |
 | `oas30/structure` | `OAS 3.0/Document Structure` | Path items, `$ref`, ignored headers, response-code order, inherited / disabled security, deprecated operation. The data-layer unit tests depend on these. |
 | `oas31/fields/{security,responses,schemas}`, `oas31/structure` | `OAS 3.1/…` | **Only** what displays differently from 3.0 (`features/oas-versions.md`). Never copy 3.0 cases here. |
+
+### Template groups (`http-methods`)
+
+A group may declare `template: { slug, document, path, method }` instead of per-case documents. The
+generator writes only `<group>/template/sample.yaml` (with a header comment) and emits stories with
+`sampleYaml` = the template, `methodTemplate: true`, and `argTypes`
+`OPENAPI_METHOD_TEMPLATE_STORY_ARG_TYPES` (adds a `method` select). `OpenApiSampleStory` then serves
+the template's only operation as the story's `method` (`serveTemplateOperationAs` in
+`openapi-suite-utils.ts`, unit-tested in `tests/openapi-method-template.test.ts`). Cases carry
+`path` + `method` only; ITs are unchanged (one row per case). Use this when cases differ by one
+story arg, not by document content — do not add per-method fixtures.
 
 ### E2E: pairs + consecutive windows + all sections (keep this approach)
 

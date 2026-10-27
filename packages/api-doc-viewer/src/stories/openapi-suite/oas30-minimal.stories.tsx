@@ -29,12 +29,4 @@ const createCaseStory = (caseId: string, path: string, method: string, switchTo:
   args: { caseId, sampleYaml: takeOpenApiSample(samples, caseId), path, method, switchTo },
 });
 
-export const Case_01_get: Story = createCaseStory("01-get", "/orders", "get", []);
-export const Case_02_put: Story = createCaseStory("02-put", "/orders", "put", []);
-export const Case_03_post: Story = createCaseStory("03-post", "/orders", "post", []);
-export const Case_04_delete: Story = createCaseStory("04-delete", "/orders", "delete", []);
-export const Case_05_options: Story = createCaseStory("05-options", "/orders", "options", []);
-export const Case_06_head: Story = createCaseStory("06-head", "/orders", "head", []);
-export const Case_07_patch: Story = createCaseStory("07-patch", "/orders", "patch", []);
-export const Case_08_trace: Story = createCaseStory("08-trace", "/orders", "trace", []);
-export const Case_09_default_response_only: Story = createCaseStory("09-default-response-only", "/orders", "get", []);
+export const Case_01_default_response_only: Story = createCaseStory("01-default-response-only", "/orders", "get", []);

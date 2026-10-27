@@ -2,11 +2,13 @@
  * Case definitions of the plain OpenAPI Operation Suite (`packages/samples/openapi/`).
  * Matrix and rules: docs/design/openapi/features/plain-case-matrix.md.
  *
- * Groups (OAS 3.0): `e2e` (section combinations), `minimal`, `fields` (required fields + the
- * covered one), `structure` (path items, `$ref`, ordering). OAS 3.1: `fields` and `structure`
- * limited to what displays differently from 3.0.
+ * Groups (OAS 3.0): `e2e` (section combinations), `minimal`, `http-methods` (one template served as
+ * every method), `fields` (required fields + the covered one), `structure` (path items, `$ref`,
+ * ordering). OAS 3.1: `fields` and `structure` limited to what displays differently from 3.0.
  *
- * Every case: `{ slug, title, document, path, method, switchTo?, argVariants? }`.
+ * Every case: `{ slug, title, document, path, method, switchTo?, argVariants? }`. A group with a
+ * `template` (`{ slug, document, path, method }`) writes that one fixture; its cases carry no
+ * `document` and render the template with their own `method`.
  * `switchTo` lists selector option test ids selected before capture (story `play` + ITs).
  *
  * Regenerate: `node bin/generate-openapi-suite.mjs`.
@@ -271,15 +273,8 @@ function collectE2eCases() {
 // ---------------------------------------------------------------------------------------------
 // Group 2: minimal
 
-const HTTP_METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace']
-
 function collectMinimalCases() {
   return [
-    ...HTTP_METHODS.map(method => ({
-      slug: method,
-      title: `\`${method.toUpperCase()}\` with one status-only \`200\``,
-      ...withPath(createOperationDocument({ method, operation: { responses: { 200: statusOnly() } } }), SHORT_PATH, method),
-    })),
     {
       slug: 'default-response-only',
       title: 'only a `default` response',
@@ -289,6 +284,31 @@ function collectMinimalCases() {
 }
 
 const withPath = ({ document }, path, method) => ({ document, path, method })
+
+// ---------------------------------------------------------------------------------------------
+// Group 2a: HTTP methods - one template fixture, the method is a story arg
+
+/** Same order as next-data-model `OpenApiHttpMethods`. */
+const HTTP_METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace']
+
+/**
+ * One `template/sample.yaml` (the smallest operation: one status-only `200`); every case serves its
+ * only operation as the case's method (`methodTemplate` story arg), so no fixture is per method.
+ */
+function collectHttpMethodsGroup() {
+  return {
+    template: {
+      slug: 'template',
+      ...withPath(createOperationDocument({ method: HTTP_METHODS[0], operation: { responses: { 200: statusOnly() } } }), SHORT_PATH, HTTP_METHODS[0]),
+    },
+    cases: HTTP_METHODS.map(method => ({
+      slug: method,
+      title: `\`${method.toUpperCase()}\` badge (method template)`,
+      path: SHORT_PATH,
+      method,
+    })),
+  }
+}
 
 // ---------------------------------------------------------------------------------------------
 // Group 3: fields - required fields only + the covered one
@@ -628,6 +648,7 @@ export function collectGroups() {
   return [
     { ...oas30, group: 'e2e', title: 'E2E', cases: collectE2eCases(), digits: 3 },
     { ...oas30, group: 'minimal', title: 'Minimal', cases: collectMinimalCases() },
+    { ...oas30, group: 'http-methods', title: 'HTTP Methods', ...collectHttpMethodsGroup() },
     ...fields(oas30, collectFieldsSubgroups()),
     { ...oas30, group: 'structure', title: 'Document Structure', cases: collectStructureCases() },
     ...fields(oas31, collectOas31FieldsSubgroups()),

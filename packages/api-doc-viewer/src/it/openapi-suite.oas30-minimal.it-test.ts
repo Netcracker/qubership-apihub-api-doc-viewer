@@ -9,15 +9,7 @@ import { waitForOpenApiOperationViewer } from './service/viewer-waits'
 
 /** [test name, story id, options selected before the capture, extra story args]. */
 const CASES: ReadonlyArray<readonly [string, string, readonly string[], Readonly<Record<string, string>>]> = [
-  ['01-get', 'openapi-operation-suite-oas-3-0-minimal--case-01-get', [], {}],
-  ['02-put', 'openapi-operation-suite-oas-3-0-minimal--case-02-put', [], {}],
-  ['03-post', 'openapi-operation-suite-oas-3-0-minimal--case-03-post', [], {}],
-  ['04-delete', 'openapi-operation-suite-oas-3-0-minimal--case-04-delete', [], {}],
-  ['05-options', 'openapi-operation-suite-oas-3-0-minimal--case-05-options', [], {}],
-  ['06-head', 'openapi-operation-suite-oas-3-0-minimal--case-06-head', [], {}],
-  ['07-patch', 'openapi-operation-suite-oas-3-0-minimal--case-07-patch', [], {}],
-  ['08-trace', 'openapi-operation-suite-oas-3-0-minimal--case-08-trace', [], {}],
-  ['09-default-response-only', 'openapi-operation-suite-oas-3-0-minimal--case-09-default-response-only', [], {}],
+  ['01-default-response-only', 'openapi-operation-suite-oas-3-0-minimal--case-01-default-response-only', [], {}],
 ]
 
 describe('OpenAPI Operation Suite - OAS 3.0 Minimal', () => {

@@ -150,7 +150,7 @@ Suites (stories under `packages/api-doc-viewer/src/stories/openapi-suite/` and
 
 | Suite | Fixtures |
 | --- | --- |
-| `OpenAPI Operation Suite/OAS 3.0/{E2E,Minimal,Fields,Document Structure}`, `…/OAS 3.1/{Fields,Document Structure}` (matrix: [features/plain-case-matrix.md](features/plain-case-matrix.md)) | `packages/samples/openapi/` |
+| `OpenAPI Operation Suite/OAS 3.0/{E2E,Minimal,HTTP Methods,Fields,Document Structure}`, `…/OAS 3.1/{Fields,Document Structure}` (matrix: [features/plain-case-matrix.md](features/plain-case-matrix.md)) | `packages/samples/openapi/` |
 | `OpenAPI Operation Diffs Suite/<Category>` (matrix: [features/diffs-case-matrix.md](features/diffs-case-matrix.md)) | `packages/samples/openapi-diffs/` |
 
 ## Related documents

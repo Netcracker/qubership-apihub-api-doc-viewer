@@ -10,7 +10,8 @@ What the `OpenAPI Operation Suite` covers, and why. Fixtures:
 | Group | Purpose | Rules |
 | --- | --- | --- |
 | **E2E** (`oas30/e2e/`) | How sections look next to each other. | Sections, in display order: summary, operation ID, address, description, security, operation extensions, path / query parameters, headers, cookies, body, responses with 1 code (headers, body), responses with 2 codes (headers, body). Cases: **every pair** of sections (every possible "A directly above B" adjacency), **consecutive windows** of 3, 4, … sections in display order, and **one all-sections case** (also captured with `noHeading`). A 1-code and a 2-codes section are never combined. |
-| **Minimal** (`oas30/minimal/`) | The smallest valid operations. | One per HTTP method (badge colors) with one status-only `200`, plus a `default`-only operation. |
+| **Minimal** (`oas30/minimal/`) | The smallest valid operations. | A `default`-only operation. |
+| **HTTP Methods** (`oas30/http-methods/`) | Every HTTP method badge (text and color). | **One fixture**, `template/sample.yaml` (the smallest operation: one status-only `200`); one story per method (`get`, `put`, `post`, `delete`, `options`, `head`, `patch`, `trace`) serves the template's only operation as that method (`methodTemplate` + `method` story args; `method` is a Storybook control). A new method is a new story and IT row, never a new fixture. |
 | **Fields** (`oas30/fields/<sub-group>/`) | Each displayed field alone, in semantic sub-groups: **Operation** (summary, operation ID, description, external docs, extensions), **Security**, **Parameters**, **Request Body**, **Request Combinations**, **Responses / 2XX, 3XX, 4XX, 5XX**. Case ids restart in every sub-group. | Required fields only + the covered field. Security: alternative 1 is a stub apiKey, alternative 2 the covered scheme type (auto-switched); every oauth2 flow and openIdConnect is a pair of adjacent cases — the requirement lists the scope (required, `*`) / lists no scopes (oauth2: the flow's scope row without `*`; openIdConnect declares no scopes in the document, so no `Scopes` list); one apiKey scheme with a markdown `description` covers the scheme description row. Parameters / headers: four entries per location — required, optional (path parameters are always required: a second required one), deprecated, `content`-described; one case per location. **Request Combinations**: every pair among path, query, headers, cookies, and the request body (required, with a description) — two request sections next to each other. Request body: required / optional / deprecated schema root × 1 / 2 media types (the 2nd auto-switched), plus body + schema descriptions. Responses: one sub-group per code kind (`200`, `302`, `404`, `500`) next to a `default` stub, the target code auto-switched; status only, description only, headers only, body only (1 / 2 media types × plain / deprecated schema root), the pairwise combinations, and description + body schema description. |
 | **Document Structure** (`oas30/structure/`) | Document features that change what is displayed. | Path-item parameters with an operation override, `$ref` parameter / body / response, ignored-by-spec headers (shown as is), canonical response-code order, inherited / disabled document security, `{}` alternative, deprecated operation with and without a summary. |
 | **OAS 3.1** (`oas31/fields/{security,responses,schemas}/`, `oas31/structure/`) | Only what displays differently from 3.0 ([oas-versions.md](oas-versions.md)), in the sub-groups **Security**, **Responses**, **Schemas**. | `mutualTLS`, `Required roles`, no `responses`, type-array nullable, numeric exclusive bounds, `examples`, `const`, enum without `type`, boolean schema, `contentMediaType`; Reference Object description overrides, `components.pathItems`. |
@@ -229,19 +230,24 @@ How to extend and maintain the suites:
 | `167-window-13--summary--to--responses-1-code-body` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  |
 | `168-all-sections` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ | ✓ |
 
-### OAS 3.0 — Minimal (`oas30/minimal/`, 9)
+### OAS 3.0 — Minimal (`oas30/minimal/`, 1)
 
 | Case | Operation | Covers | Auto-switch |
 | --- | --- | --- | --- |
-| `01-get` | `GET /orders` | `GET` with one status-only `200` | — |
-| `02-put` | `PUT /orders` | `PUT` with one status-only `200` | — |
-| `03-post` | `POST /orders` | `POST` with one status-only `200` | — |
-| `04-delete` | `DELETE /orders` | `DELETE` with one status-only `200` | — |
-| `05-options` | `OPTIONS /orders` | `OPTIONS` with one status-only `200` | — |
-| `06-head` | `HEAD /orders` | `HEAD` with one status-only `200` | — |
-| `07-patch` | `PATCH /orders` | `PATCH` with one status-only `200` | — |
-| `08-trace` | `TRACE /orders` | `TRACE` with one status-only `200` | — |
-| `09-default-response-only` | `GET /orders` | only a `default` response | — |
+| `01-default-response-only` | `GET /orders` | only a `default` response | — |
+
+### OAS 3.0 — HTTP Methods (`oas30/http-methods/`, 8)
+
+| Case | Operation | Covers | Auto-switch |
+| --- | --- | --- | --- |
+| `01-get` | `GET /orders` | `GET` badge (method template) | — |
+| `02-put` | `PUT /orders` | `PUT` badge (method template) | — |
+| `03-post` | `POST /orders` | `POST` badge (method template) | — |
+| `04-delete` | `DELETE /orders` | `DELETE` badge (method template) | — |
+| `05-options` | `OPTIONS /orders` | `OPTIONS` badge (method template) | — |
+| `06-head` | `HEAD /orders` | `HEAD` badge (method template) | — |
+| `07-patch` | `PATCH /orders` | `PATCH` badge (method template) | — |
+| `08-trace` | `TRACE /orders` | `TRACE` badge (method template) | — |
 
 ### OAS 3.0 — Fields / Operation (`oas30/fields/operation/`, 5)
 
