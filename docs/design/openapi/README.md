@@ -64,6 +64,7 @@ tree, and lays the rows out.
 | D14 | Whole-section add / remove is decided by **presence per side** (does the section display anything there), computed by `OpenApiSectionPresenceResolver` and written as a synthetic node-level diff; a media type without `schema` is not content. | `apiDiff` attaches the same intent at different depths (E19); the raw object of a section can exist while showing nothing ([features/diffs.md](features/diffs.md#section-presence-and-whole-section-changes)). |
 | D15 | Extensions placement (approved 2026-10-08): parameter, header, Media Type, and Request Body `x-*` are cloned flat into the related JSON Schema root(s) and shown by the JSON Schema Extensions sub-tree; Response and Responses Object `x-*` get their own **Extensions** (h3) subsections; `x-*` keys inside `content` maps are not extensions. | `x-*` that describe one schema (or every media type of the body) belong to that schema; a response also has headers and the Responses Object spans all codes ([entities/request-body.md](entities/request-body.md#extensions), [entities/responses.md](entities/responses.md#extensions)). |
 | D16 | Section order of the OpenAPI layer comes from one config map `OPENAPI_SECTION_ORDER`; spacing is derived from it. | Easy to reorder later ([features/operation-viewer.md](features/operation-viewer.md#section-order)). |
+| D17 | Anonymous access (`{}`) is an `Optional` badge on the Security title row, not an alternative (2026-10-28, supersedes Q7); its change never reveals a scheme card. | `{}` names no scheme: an option whose content is one text row added a click for nothing ([entities/security.md](entities/security.md#optional-badge-anonymous-access), [features/hiding-unchanged-nodes.md](features/hiding-unchanged-nodes.md#anonymous-access-changes)). |
 
 ## Open questions
 
@@ -84,7 +85,7 @@ Answered by the product owner on 2026-10-07; the design documents already reflec
 | Q4 | Body schemas: wrap under a synthetic `Type` property or render the raw root? | Wrap, title `Type`, root nesting indicator suppressed (AsyncAPI payload parity). |
 | Q5 | Header parameters ignored by the specification (`Accept`, `Content-Type`, `Authorization`; response `Content-Type`): hide? | Show them unchanged. |
 | Q6 | Security alternatives selector with only one alternative? | **Always shown** (from one alternative), like the AsyncAPI bindings selector. |
-| Q7 | Anonymous alternative (`{}`)? | Option `No authentication`; content: muted row `Authentication is not required.` |
+| Q7 | Anonymous alternative (`{}`)? | ~~Option `No authentication`; content: muted row `Authentication is not required.`~~ Superseded by D17 (2026-10-28): `Optional` badge on the Security title row. |
 | Q8 | Security card look in v1? | **Framed box in v1**, drawn by per-row frame segments ([entities/security.md](entities/security.md#card-frame)). |
 | Q9 | HTTP method badge colors? | Proposed table with **GET and POST swapped**, kept as **one config map** ([entities/operation.md](entities/operation.md#http-method-badge-config)). |
 | Q10 | Title when `summary` is absent? | **No title row.** New: a secondary **operation ID row** (`TextRow`, small grey text) under the title, shown whenever `operationId` exists ([entities/operation.md](entities/operation.md#operation-id-row)). |

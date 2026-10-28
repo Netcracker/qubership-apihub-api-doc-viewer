@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-10-27T16:02:05.257782+00:00'
+generated_at: '2026-10-28T12:47:01.489126+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -17,10 +17,10 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:bc221db342a5e797cd7be3f5744bd8401e96e7ad0250a76205024d168bbf5ffd
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:9e5a9dff55ce85e7060429cfb41d0a5cf55ee5a5573bd4274fe4a31636578662
     .claude/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:686d323293b62be68591bd66265130aa214b1c3fa7cc3d894367284da15c2b2a
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:bc221db342a5e797cd7be3f5744bd8401e96e7ad0250a76205024d168bbf5ffd
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:9e5a9dff55ce85e7060429cfb41d0a5cf55ee5a5573bd4274fe4a31636578662
     .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:686d323293b62be68591bd66265130aa214b1c3fa7cc3d894367284da15c2b2a
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
@@ -91,10 +91,10 @@ dependencies:
   - .cursor/skills/api-doc-viewer-testing/openapi-suites.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-testing.md: sha256:9754dea129ac33d8ea028b990761a79feb56aefac3dc620a7be325911aa3eaf1
-    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:35832452fc27736a87666ab21cf07cc5c241c40f713b9c2daab8b5137207107d
+    .claude/skills/api-doc-viewer-testing/SKILL.md: sha256:6a856a0e6d0e6f72e5e941e385c4ab8a2e4f646636803ff33285d78fe4579e13
     .claude/skills/api-doc-viewer-testing/openapi-suites.md: sha256:c36a504fa7cf9c8d44d10ba75a146215c9d82d67f5f6dae618cb0a9ac26ad51c
     .cursor/rules/api-doc-viewer-testing.mdc: sha256:8468b19496e2b1340a495472365b3161590716c1e6515ab17f6637a90e0b6bed
-    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:35832452fc27736a87666ab21cf07cc5c241c40f713b9c2daab8b5137207107d
+    .cursor/skills/api-doc-viewer-testing/SKILL.md: sha256:6a856a0e6d0e6f72e5e941e385c4ab8a2e4f646636803ff33285d78fe4579e13
     .cursor/skills/api-doc-viewer-testing/openapi-suites.md: sha256:c36a504fa7cf9c8d44d10ba75a146215c9d82d67f5f6dae618cb0a9ac26ad51c
   source: local
   local_path: ./agent-packages/api-doc-viewer-testing
@@ -321,7 +321,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:bc221db342a5e797cd7be3f5744bd8401e96e7ad0250a76205024d168bbf5ffd
+  content_hash: sha256:9e5a9dff55ce85e7060429cfb41d0a5cf55ee5a5573bd4274fe4a31636578662
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-authoring/refactoring-notes.md
@@ -420,7 +420,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:35832452fc27736a87666ab21cf07cc5c241c40f713b9c2daab8b5137207107d
+  content_hash: sha256:6a856a0e6d0e6f72e5e941e385c4ab8a2e4f646636803ff33285d78fe4579e13
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-testing/openapi-suites.md
@@ -681,7 +681,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:bc221db342a5e797cd7be3f5744bd8401e96e7ad0250a76205024d168bbf5ffd
+  content_hash: sha256:9e5a9dff55ce85e7060429cfb41d0a5cf55ee5a5573bd4274fe4a31636578662
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md
@@ -780,7 +780,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-testing
   active_owner: ./agent-packages/api-doc-viewer-testing
-  content_hash: sha256:35832452fc27736a87666ab21cf07cc5c241c40f713b9c2daab8b5137207107d
+  content_hash: sha256:6a856a0e6d0e6f72e5e941e385c4ab8a2e4f646636803ff33285d78fe4579e13
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-testing/openapi-suites.md

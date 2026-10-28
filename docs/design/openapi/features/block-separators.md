@@ -283,7 +283,6 @@ nestedEdge(owner)               = { kind: 'row',   tones: tones(Section.takeHead
 | --- | --- | --- |
 | Operation header (title … external docs) | first visible header row's diff | last visible header row's diff |
 | Security header (title + toolbar) | Security title row | toolbar row |
-| "No authentication" text | its row | its row |
 | Security card | `frameEdge(card)` | `frameEdge(card)` |
 | Card flow part / required-scopes list (inside a card) | its first row (flow header / `Scopes` toggle) | its last scope row (or the toggle when collapsed) |
 | Extensions section | its title row | `nestedEdge(extensions)` |
@@ -324,7 +323,7 @@ Levels that call `plan` (each over its own visible children, in the configured o
 | Operation | header block, Security, operation Extensions, Request, Responses |
 | Request | parameter groups, Body (the h2 title row is the container's header: 8px to the first child, no separator) |
 | Responses | selected response's sections (description, Headers, Extensions, Body), Responses Extensions (same: h2 + selector is the header) |
-| Security | security header (title + toolbar), "No authentication" text or the cards |
+| Security | security header (title + toolbar; the title alone for an anonymous-only list), the cards |
 | Card | scheme rows block, flow parts, required-scopes list — inside the frame, between the opening and closing rows |
 
 A container is itself one block of its parent level: its `head` is its header row, its `tail` the

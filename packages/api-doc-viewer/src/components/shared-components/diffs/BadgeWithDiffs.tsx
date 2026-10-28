@@ -28,6 +28,8 @@ import { UxBadge } from '../../kit/ux/UxBadge/UxBadge'
 export type BadgeWithDiffsProps = {
   label: string
   colorSchema?: string
+  /** Classes kept in every look, the diff look included (e.g. a font size); `colorSchema` is replaced there. */
+  sizeClassName?: string
   layoutMode: LayoutMode
   layoutSide: LayoutSide
   diff?: Diff
@@ -37,6 +39,7 @@ export const BadgeWithDiffs: FC<BadgeWithDiffsProps> = (props) => {
   const {
     label,
     colorSchema = getUxBadgeColorSchema(BADGE_KIND_DEFAULT),
+    sizeClassName,
     layoutMode,
     layoutSide,
     diff,
@@ -50,20 +53,21 @@ export const BadgeWithDiffs: FC<BadgeWithDiffsProps> = (props) => {
   const { originSide, changedSide } = getLayoutSideFlags(layoutSide)
 
   const propertyChanged = !isDocumentLayoutMode && !!diff
+  const withSize = (classes: string): string => (sizeClassName ? `${classes} ${sizeClassName}` : classes)
 
   if (!propertyChanged) {
-    return <UxBadge text={label} colorSchema={colorSchema} />
+    return <UxBadge text={label} colorSchema={withSize(colorSchema)} />
   }
 
   const diffAction = diff!.action
-  const diffColorSchema = `${getUxBadgeColorSchema(BADGE_KIND_DEFAULT)} ${BLOCK_CONTENT_DIFF_COLOR_MAP[diffAction]}`
+  const diffColorSchema = withSize(`${getUxBadgeColorSchema(BADGE_KIND_DEFAULT)} ${BLOCK_CONTENT_DIFF_COLOR_MAP[diffAction]}`)
 
   const removedRule = diffAction === DiffAction.remove && (isInlineDiffsLayoutMode || originSide)
   const addedRule = diffAction === DiffAction.add && (isInlineDiffsLayoutMode || changedSide)
 
   if (!diffTypeIncluded) {
     return removedRule || addedRule
-      ? <UxBadge text={label} colorSchema={getUxBadgeColorSchema(BADGE_KIND_DEFAULT)} />
+      ? <UxBadge text={label} colorSchema={withSize(getUxBadgeColorSchema(BADGE_KIND_DEFAULT))} />
       : null
   }
 

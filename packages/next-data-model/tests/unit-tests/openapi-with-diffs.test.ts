@@ -432,8 +432,8 @@ describe('OpenAPI with diffs: security', () => {
   it('switch from the document security to an operation override', () => {
     const node = security(build('security/03-document-security-overridden'))
     expect(node.childrenNodes().map(alternative => [alternative.value(), wholeAction(alternative)])).toEqual([
-      [{ schemeNames: ['oauth'], isAnonymous: false }, DiffAction.add],
-      [{ schemeNames: ['api_key'], isAnonymous: false }, DiffAction.remove],
+      [{ schemeNames: ['oauth'] }, DiffAction.add],
+      [{ schemeNames: ['api_key'] }, DiffAction.remove],
     ])
   })
 

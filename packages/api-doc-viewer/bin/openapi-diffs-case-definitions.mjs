@@ -592,9 +592,8 @@ export const SECURITY_CASES = [
   },
   {
     pair: ['anonymous-alternative-added', 'anonymous-alternative-removed'],
-    titles: ['`{}` (No authentication) alternative added', '`{}` alternative removed'],
+    titles: ['`{}` added: `Optional` badge appears (yellow title row, toolbar uncolored)', '`{}` removed: `Optional` badge disappears'],
     apply: () => doc => { operation(doc).security.push({}) },
-    clicks: ['security-alternative-1'],
   },
   {
     pair: ['scheme-added-to-alternative', 'scheme-removed-from-alternative'],
@@ -671,6 +670,14 @@ export const SECURITY_CASES = [
     change: 'flow-scope-description-changed',
     title: 'available scope description replaced (tooltip)',
     after: () => doc => { scheme(doc, 'oauth').flows.clientCredentials.scopes['orders:read'] = 'Read all orders' },
+  },
+  {
+    // apiDiff pairs alternatives by index: the slot is `{}` on one side and `{ api_key }` on the other.
+    pair: ['anonymous-alternative-replaced-by-api-key', 'api-key-alternative-replaced-by-anonymous'],
+    titles: ['`{}` replaced by an `api_key` alternative (badge removed, option added)', '`api_key` alternative replaced by `{}` (option removed, badge added)'],
+    setup: () => doc => { operation(doc).security.push({}) },
+    apply: () => doc => { operation(doc).security[1] = { api_key: [] } },
+    clicks: ['security-alternative-1'],
   },
 ]
 

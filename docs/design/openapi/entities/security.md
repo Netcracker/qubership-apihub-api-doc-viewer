@@ -16,7 +16,7 @@ presenters `SecuritySchemeCardBase` / `SecuritySectionBase`. Structure and the A
 | --- | --- | --- |
 | `security` (list of Security Requirement Objects) | Any **one** requirement satisfies the request. | Security toolbar (OR). |
 | Security Requirement Object (`{ schemeName: [scopes] }`) | **All** schemes of one object must be satisfied. | One card per scheme (AND). |
-| Empty requirement `{}` | Anonymous access is allowed. | An alternative titled `No authentication` (Q7). |
+| Empty requirement `{}` | Anonymous access is allowed. | **Not an alternative**: an `Optional` badge on the Security title row ([Optional badge](#optional-badge-anonymous-access), D17; supersedes Q7). |
 | Operation `security` absent | The document-level `security` applies. | Effective security = document `security`. |
 | Operation `security: []` | Overrides the document: no security. | No Security section. |
 | Scheme reference | By **name**, into `components.securitySchemes`; not a `$ref`. | The transformer resolves names (D11). |
@@ -73,8 +73,8 @@ The scheme spec is a **merge** of the requirement entry (name, scopes) and the s
 
 | Kind | Complexity | Key | Value | Children / nested |
 | --- | --- | --- | --- | --- |
-| `security` | complex | `security` | `{ isInheritedFromDocument }`¹ | nested: `securityRequirement` per alternative |
-| `securityRequirement` | simple | alternative index | `{ schemeNames: string[]; isAnonymous: boolean }` | children: `securityScheme` per scheme |
+| `security` | complex | `security` | `{ isInheritedFromDocument; allowsAnonymous }`¹ | nested: `securityRequirement` per alternative (never `{}`) |
+| `securityRequirement` | simple | alternative index | `{ schemeNames: string[] }` | children: `securityScheme` per scheme |
 | `securityScheme` | simple | scheme name | the scheme spec without `flows` | children: `oauthFlow` per flow |
 | `oauthFlow` | simple | flow type | `OpenApiOAuthFlowSpec` | — |
 
@@ -88,8 +88,8 @@ implementation and record it in the diagram. The rest of this document is neutra
 ## Section header
 
 `TitleRow` "Security", **h2**, `expandable={false}`. **Present** on a side when the effective list
-has at least one alternative there; an anonymous-only list (`[{}]`) is present (it shows the
-`No authentication` content). With diffs the section is rendered when present on either side and,
+has at least one item there; an anonymous-only list (`[{}]`) is present: the title row with the
+`Optional` badge only — no toolbar, no cards. With diffs the section is rendered when present on either side and,
 per side, follows the [presence rule](../features/diffs.md#section-presence-and-whole-section-changes):
 
 | Before | After | Section |
@@ -109,11 +109,11 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 
 | Item | Rule |
 | --- | --- |
-| Shown when | ≥1 alternative — always, also for a single alternative (Q6) |
+| Shown when | ≥1 alternative (on either side with diffs) — always, also for a single alternative (Q6); `{}` is never an option, so an anonymous-only list has no toolbar |
 | Row | shared `SecurityToolbar` (`shared-components/Security/`): `‹ [option] [option] … ›` — the options are one non-wrapping line (`Selector` `noWrap`) in a horizontally scrolling strip. Vertical padding: the in-block half-gap under the title (4px) and the block half-gap above the cards (10px), [Spacing](../features/operation-viewer.md#spacing-data-precededby). The strip keeps a 6px inset around the options so diff round markers and border shadows (they overhang the option box) are never clipped. |
 | Arrows | `‹` / `›` scroll the strip by exactly one option (`resolveStripScrollTarget`, `utils/common/strip-scroll.ts`). The arrow buttons reset the package-wide `button` rule of `index.css` (padding, border, background) — without it the 24px button has no room for its icon. At the left / right edge the arrow is disabled: gray, no hover, no pointer, not clickable; otherwise blue, hoverable, clickable. Both arrows are always shown (disabled when everything fits) so the row never jumps (Q-S5). |
 | Long titles | an option never grows wider than the strip; its label (inner span, not the button, so markers stay visible) is cropped with an ellipsis; `min-width` keeps one character + `…` visible |
-| Option title | scheme names joined with ` + ` (`api_key + request_signature`); `No authentication` for `{}` (`SecurityDisplayLabels.securityRequirementTitle`) |
+| Option title | scheme names joined with ` + ` (`api_key + request_signature`) (`SecurityDisplayLabels.securityRequirementTitle`) |
 | Option test id | `security-alternative-<index>`; arrows `security-toolbar-arrow-{left,right}` |
 | Diffs | a wholly added / removed option: green / red border shadow only (`diffs`); any other changed option: the **round marker** of its strongest change (`diffsSummary` ∪ `descendantDiffsSummary`), as in the AsyncAPI section selectors. Row background: `OpenApiRowDiffs.Security.takeToolbarRowDiff` — the section's whole add / remove, else a yellow `replace` row from the synthetic `alternatives` field diff that the with-diffs transformer writes when any alternative was wholly added / removed. Floating badge: `SelectorRow` placement (the strongest of those option changes). |
 | Reuse | the same toolbar, cards, and rows serve AsyncAPI server security later (smaller section header there); the AsyncAPI data layer does not exist yet |
@@ -214,10 +214,29 @@ With `hideUnchangedNodes` (default), a card without changes below its title row 
 hides every other row — all flow parts together — behind one three-dots row inside the frame:
 [../features/hiding-unchanged-nodes.md](../features/hiding-unchanged-nodes.md#security-scheme-card).
 
-### Anonymous alternative content
+### Optional badge (anonymous access)
 
-When the selected alternative is `{}`: one `TextRow` (muted, body2) `Authentication is not
-required.` instead of cards (Q7).
+Decided 2026-10-28 (D17), replacing the `No authentication` option and its `Authentication is not
+required.` text (Q7).
+
+```text
+Security  [Optional]                  ← h2 title row; badge in the subheader
+‹ [api_key] ›                         ← only the non-anonymous alternatives
+┌──────────────────────┐
+│ api_key   API key    │
+└──────────────────────┘
+```
+
+| Rule | Detail |
+| --- | --- |
+| Source | `security.allowsAnonymous`: the effective list contains `{}` at any position. `{}` items are never alternatives (no option, no node). |
+| Badge | text `Optional` in the title row subheader: background `#4C87EC`, white text, 15px (`shared-styles/colors/openapi.css`, `OPENAPI_SECURITY_OPTIONAL_BADGE_COLOR_SCHEMA`). |
+| Anonymous-only list (`[{}]`) | the title row with the badge only: no toolbar, no cards. |
+| `{}` added / removed (section present on both sides) | the badge is on one side only — added: changed side, removed: origin side — drawn by `BadgeWithDiffs` like the operation `deprecated` tag (default badge look with a green / red border, still 15px); the whole title row gets a synthetic yellow `replace` (`SecurityRowDiffs.Security.takeTitleRowDiff`) and the floating badge of the `allowsAnonymous` severity (`TitleRow` placement). The toolbar is **not** colored by it. |
+| Section wholly added / removed | the section's green / red title row wins; the badge is plain on the present side (no border). |
+| `{}` replaced by a scheme in the same slot (`[A, {}] ↔ [A, B]`) | `apiDiff` pairs alternatives by index, so the slot is `{}` on one side and `{ B }` on the other: the badge is removed / added and alternative `B` is wholly added / removed (green / red option, whole card) — `security/33`, `34`. |
+| Known limitation | removing `{}` from the middle (`[A, {}, B] → [A, B]`) pairs `B` with the old `{}` slot: `B` shows as added at index 1 and removed at index 2. Alternatives are not re-matched by content. |
+| Hiding unchanged nodes | a `{}` change reveals **no** card — [../features/hiding-unchanged-nodes.md](../features/hiding-unchanged-nodes.md#anonymous-access-changes). |
 
 ## Display modes
 
@@ -238,6 +257,7 @@ Measured on the fixtures (E7, E8, E9 in [../notes/2026-10-design-analysis.md](..
 | Change | Diff location in the merged document | Becomes |
 | --- | --- | --- |
 | Alternative added / removed | `operation.security[diffsMetaKey][index]` (`add` / `remove`); `apiDiff` maps alternatives **by index** | `securityRequirement` node-level diff (via `security` descendant diffs) |
+| `{}` added / removed / replaced | the slot's own diff, or the scheme-key diffs inside a slot that is `{}` on one side only | synthetic `allowsAnonymous` add / remove on `security` (presence of `{}` per side, any position); a slot that is `{}` on one side only also becomes a synthetic whole add / remove of its alternative |
 | `security` set to `[]` | one `remove` per alternative (not a whole-list diff) | same as above |
 | Scheme added to / removed from an alternative | `operation.security[i][diffsMetaKey][name]` (`add` / `remove`, value `[]` or the scopes) | `securityScheme` node-level diff |
 | Scope added / removed | `operation.security[i][name][diffsMetaKey][j]` | list-item diffs of `requiredScopes` |
@@ -269,7 +289,7 @@ When the effective list switches between the document list `D` and the operation
 
 | Element | Rule |
 | --- | --- |
-| Section header | presence rule over the alternatives ([../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)) |
+| Section header | presence rule over the alternatives and `{}` ([../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)); else a yellow `replace` row when `{}` was added / removed ([Optional badge](#optional-badge-anonymous-access)) |
 | Toolbar | yellow (`replace`) row when an alternative was wholly added / removed; the option keeps its green / red border; selecting it shows its content on one side only (the other side empty and gray) |
 | Whole card / whole flow part added or removed | every row of the block (title or flow header, props, scopes toggle, scope rows) is green / red on the present side and empty gray on the other; the colour reaches to the middle of the gaps around the block |
 | Floating badges | **every** highlighted row carries a diffs floating badge with the strongest severity of that row's diffs; the content-less closing row is painted but has no badge |

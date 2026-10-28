@@ -282,7 +282,7 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | `OpenApiViewStateContext.ts` | context | the view-state store ([View state](#view-state)) |
 | `OpenApiLayout.tsx` | one container level | renders `OpenApiLayoutPlanner.plan(blocks)`: blocks and `SeparatorRow`s; `OpenApiBlock` = a layout block whose payload renders it |
 | `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | owns the view state; builds the header block (rows from `resolveOperationHeaderRows`) and the section blocks in config order; places the deprecated tag (title, operation ID or address row) |
-| `SecurityNodeViewer.tsx` | rows 6–8 | `buildSecurityBlock`: title + toolbar block, then the "No authentication" text or the cards |
+| `SecurityNodeViewer.tsx` | rows 6–8 | `buildSecurityBlock`: title (with the `Optional` badge) + toolbar block, then the cards |
 | `OpenApiSecuritySchemeCard.tsx` | one framed card: `SecuritySchemeCardBase` with `OPENAPI_SECURITY_PRESENTATION` | rows in [security](../entities/security.md#scheme-card); opening / closing `SecurityFrameRow`, content segments planned like blocks |
 | `shared-components/Security/` | `SecurityToolbar`, `SecurityRow`, `SecurityFrameRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with the AsyncAPI Security sections, with `SecuritySchemeCardBase` (flow parts are built inside it) and `SecuritySectionBase` (toolbar / content blocks) |
 | `RequestNodeViewer.tsx` | row 10, rows 11–17 | `buildRequestBlock` (parameter groups and the Body, in config order); the request body viewer (rows 15–17) is inside this file |

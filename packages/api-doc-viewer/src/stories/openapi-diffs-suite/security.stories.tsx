@@ -69,3 +69,5 @@ export const Case_29_refresh_url_removed: Story = createCaseStory("29-refresh-ur
 export const Case_30_flow_scope_added: Story = createCaseStory("30-flow-scope-added");
 export const Case_31_flow_scope_removed: Story = createCaseStory("31-flow-scope-removed");
 export const Case_32_flow_scope_description_changed: Story = createCaseStory("32-flow-scope-description-changed");
+export const Case_33_anonymous_alternative_replaced_by_api_key: Story = createCaseStory("33-anonymous-alternative-replaced-by-api-key");
+export const Case_34_api_key_alternative_replaced_by_anonymous: Story = createCaseStory("34-api-key-alternative-replaced-by-anonymous");

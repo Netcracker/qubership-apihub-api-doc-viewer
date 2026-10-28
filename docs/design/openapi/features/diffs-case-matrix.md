@@ -23,7 +23,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-diffs-suite.mjs -->
 
-252 cases; ITs capture each in `detailed` and `simple` (504 screenshots).
+254 cases; ITs capture each in `detailed` and `simple` (508 screenshots).
 
 ### Parameters and headers
 
@@ -162,8 +162,8 @@ One case list for the request body and the body of the initially selected respon
 | `04-document-security-override-removed` | operation override removed, document security inherited | `03-document-security-overridden` |
 | `05-alternative-added` | second alternative added | `06-alternative-removed` |
 | `06-alternative-removed` | one of two alternatives removed | `05-alternative-added` |
-| `07-anonymous-alternative-added` | `{}` (No authentication) alternative added | `08-anonymous-alternative-removed` |
-| `08-anonymous-alternative-removed` | `{}` alternative removed | `07-anonymous-alternative-added` |
+| `07-anonymous-alternative-added` | `{}` added: `Optional` badge appears (yellow title row, toolbar uncolored) | `08-anonymous-alternative-removed` |
+| `08-anonymous-alternative-removed` | `{}` removed: `Optional` badge disappears | `07-anonymous-alternative-added` |
 | `09-scheme-added-to-alternative` | second scheme added to the alternative (AND) | `10-scheme-removed-from-alternative` |
 | `10-scheme-removed-from-alternative` | one of two schemes removed from the alternative | `09-scheme-added-to-alternative` |
 | `11-required-scope-added` | required scope added | `12-required-scope-removed` |
@@ -188,6 +188,8 @@ One case list for the request body and the body of the initially selected respon
 | `30-flow-scope-added` | available scope added | `31-flow-scope-removed` |
 | `31-flow-scope-removed` | available scope removed | `30-flow-scope-added` |
 | `32-flow-scope-description-changed` | available scope description replaced (tooltip) | — |
+| `33-anonymous-alternative-replaced-by-api-key` | `{}` replaced by an `api_key` alternative (badge removed, option added) | `34-api-key-alternative-replaced-by-anonymous` |
+| `34-api-key-alternative-replaced-by-anonymous` | `api_key` alternative replaced by `{}` (option removed, badge added) | `33-anonymous-alternative-replaced-by-api-key` |
 
 ### OAS 3.1 (`oas31/`)
 

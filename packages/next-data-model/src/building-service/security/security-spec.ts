@@ -34,13 +34,14 @@ export interface SecuritySchemeSpec {
 
 export interface SecurityAlternativeSpec {
   schemeNames: string[]
-  isAnonymous: boolean
   schemes: Record<string, SecuritySchemeSpec>
   [key: symbol]: unknown
 }
 
 export interface SecuritySpec {
   isInheritedFromDocument: boolean
+  /** OpenAPI: the list contains `{}` (with diffs: on either side); `{}` is never an alternative. */
+  allowsAnonymous: boolean
   alternatives: SecurityAlternativeSpec[]
   [key: symbol]: unknown
 }

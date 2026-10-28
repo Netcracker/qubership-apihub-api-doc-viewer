@@ -29,6 +29,8 @@ const CASES: ReadonlyArray<readonly [string, string, boolean]> = [
   ['19-two-schemes-first-unchanged-second-changed', 'openapi-operation-diffs-suite-hiding-unchanged-nodes-security-schemes--case-19-two-schemes-first-unchanged-second-changed', true],
   ['20-two-schemes-first-changed-second-unchanged', 'openapi-operation-diffs-suite-hiding-unchanged-nodes-security-schemes--case-20-two-schemes-first-changed-second-unchanged', true],
   ['21-three-schemes-all-unchanged', 'openapi-operation-diffs-suite-hiding-unchanged-nodes-security-schemes--case-21-three-schemes-all-unchanged', true],
+  ['22-anonymous-added-cards-unchanged', 'openapi-operation-diffs-suite-hiding-unchanged-nodes-security-schemes--case-22-anonymous-added-cards-unchanged', true],
+  ['23-anonymous-removed-cards-unchanged', 'openapi-operation-diffs-suite-hiding-unchanged-nodes-security-schemes--case-23-anonymous-removed-cards-unchanged', true],
 ]
 
 const SHOW_UNCHANGED_TRIGGER = '[data-testid="security-show-unchanged"] button'

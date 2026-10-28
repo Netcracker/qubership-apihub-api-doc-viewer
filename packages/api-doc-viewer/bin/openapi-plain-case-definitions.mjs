@@ -556,15 +556,18 @@ function collectStructureCases() {
       securitySchemes(document).api_key = { type: 'apiKey', in: 'header', name: 'X-API-Key' }
       document.paths[SHORT_PATH] = { post: { security: [], responses: { 200: statusOnly() } } }
     }),
-    structureCase('security-anonymous-alternative', '`{}` alternative (No authentication), auto-switched', (document) => {
+    structureCase('security-anonymous-alternative', '`{}` alternative: `Optional` badge on the Security title, no option of its own', (document) => {
       securitySchemes(document).api_key = { type: 'apiKey', in: 'header', name: 'X-API-Key' }
       document.paths[SHORT_PATH] = { post: { security: [{ api_key: [] }, {}], responses: { 200: statusOnly() } } }
-    }, { switchTo: ['security-alternative-1'] }),
+    }),
     structureCase('deprecated-operation', 'deprecated operation with a summary (tag in the title row)', (document) => {
       document.paths[SHORT_PATH] = { post: { summary: 'Update an order', deprecated: true, responses: { 200: statusOnly() } } }
     }),
     structureCase('deprecated-operation-without-summary', 'deprecated operation without a summary (tag on the address row)', (document) => {
       document.paths[SHORT_PATH] = { post: { deprecated: true, responses: { 200: statusOnly() } } }
+    }),
+    structureCase('security-anonymous-only', '`security: [{}]`: Security title with the `Optional` badge only (no toolbar, no cards)', (document) => {
+      document.paths[SHORT_PATH] = { post: { security: [{}], responses: { 200: statusOnly() } } }
     }),
   ]
 }

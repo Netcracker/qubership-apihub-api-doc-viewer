@@ -50,7 +50,7 @@ export class AsyncApiSecuritySpecWithDiffsBuilder extends AsyncApiSecuritySpecBu
       }
       alternatives.push(alternative)
     })
-    const security: SecuritySpec = { isInheritedFromDocument: false, alternatives }
+    const security: SecuritySpec = { isInheritedFromDocument: false, allowsAnonymous: false, alternatives }
     this.decorator.writeAlternativesDiff(securityRecord)
     const sectionDiff = SideReader.isWholeChange(listField.diff)
       ? listField.diff

@@ -67,11 +67,11 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
 | Header | External docs link: static `View external documentation ↗`; `externalDocs.description` in a hover `UxTooltip` | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
 | Header | Description (markdown) | `description` | [entities/operation.md](entities/operation.md#description-row) |
-| Security | Section (h2) | ≥1 effective alternative | [entities/security.md](entities/security.md) |
-| Security | Security toolbar: `‹` options strip `›` (scrolls one option per arrow click, cropped titles) | ≥1 alternative (always with the section) | [entities/security.md](entities/security.md#security-toolbar) |
+| Security | Section (h2) | ≥1 effective list item (`[{}]` included) | [entities/security.md](entities/security.md) |
+| Security | Security toolbar: `‹` options strip `›` (scrolls one option per arrow click, cropped titles) | ≥1 non-anonymous alternative | [entities/security.md](entities/security.md#security-toolbar) |
 | Security | Framed scheme card: title (h4) + gray type text, description, security props (`<Place> parameter name`, `HTTP Authorization Scheme`, `Bearer Format`, `OpenID Connect URL`, `Required scopes` / `Required roles`) | per scheme of the selected alternative; detail rows in `detailed` mode | [entities/security.md](entities/security.md#scheme-card) |
 | Security | OAuth flow parts: `Flow type **…**` header, `Authorization URL` / `Token URL` / `Refresh URL` links, expandable `Scopes` with scope rows (required `*`) | oauth2 | [entities/security.md](entities/security.md#oauth-flow-parts) |
-| Security | `No authentication` alternative | `{}` requirement | [entities/security.md](entities/security.md#anonymous-alternative-content) |
+| Security | `Optional` badge in the section title row | `{}` requirement | [entities/security.md](entities/security.md#optional-badge-anonymous-access) |
 | Extensions | Section (h2) + JSO tree | `x-*` keys on the operation | [entities/operation.md](entities/operation.md#extensions-section) |
 | Request | Section (h2) | parameters or body | [entities/parameters.md](entities/parameters.md) |
 | Request | Path / Query Parameters, Headers, Cookies (h3) + synthesized schema | parameters of that `in` | [entities/parameters.md](entities/parameters.md#groups) |

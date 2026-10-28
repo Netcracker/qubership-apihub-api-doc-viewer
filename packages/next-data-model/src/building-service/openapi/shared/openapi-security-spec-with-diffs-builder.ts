@@ -1,10 +1,10 @@
-import { Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
+import { Diff, DiffAction, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { BuildingServiceLogger } from "../../../loggers"
 import { DiffsRecord, isArray, isObject } from "../../../utilities"
 import { SecurityAlternativeSpec, SecuritySpec } from "../../security/security-spec"
 import { UnknownRecord } from "../../security/security-spec-builder"
 import { intersectSides, SecuritySpecDiffsDecorator } from "../../security/security-spec-diffs-decorator"
-import { BOTH_SIDES, SideContext, SideReader } from "../../shared/side-reader"
+import { BOTH_SIDES, FieldSides, SideContext, SideReader } from "../../shared/side-reader"
 import { OpenApiSecuritySpecBuilder } from "./openapi-security-spec-builder"
 import { OpenApiOperationContext } from "./openapi-spec-transformer"
 
@@ -17,11 +17,22 @@ export type OpenApiSecurityDiffsHost = {
   readonly setPresence: (section: object, presence: SideContext) => void
 }
 
+/** One list slot per side: `{}` (anonymous access) and / or a requirement naming schemes. */
+type SecuritySlotSides = {
+  readonly anonymous: SideContext
+  readonly alternative: SideContext
+  /** The slot's own diff and the scheme-key diffs inside it. */
+  readonly causes: readonly (Diff | undefined)[]
+}
+
 /**
  * OpenAPI Security section with diff records: alternatives of one list (by index), or matched by
  * deep equality when the operation starts / stops overriding the document list; scheme records
- * under the requirement keys; definitions and required scopes by the shared decorator.
- * Design: docs/design/openapi/entities/security.md -> "Diffs".
+ * under the requirement keys; definitions and required scopes by the shared decorator. The
+ * anonymous requirement `{}` is not an alternative: its presence per side becomes the synthetic
+ * `allowsAnonymous` diff (the title-row `Optional` badge), and a slot that is `{}` on one side
+ * only is an alternative wholly added / removed on the other.
+ * Design: docs/design/openapi/entities/security.md -> "Diffs", "Optional badge (anonymous access)".
  */
 export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuilder {
   private readonly decorator: SecuritySpecDiffsDecorator
@@ -67,6 +78,8 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
     const alternatives: SecurityAlternativeSpec[] = []
     const securityRecord: DiffsRecord = {}
     const presence = { before: false, after: false }
+    const anonymous = { before: false, after: false }
+    const anonymousCauses: (Diff | undefined)[] = []
     list.forEach((requirement, index) => {
       if (!isObject(requirement)) {
         return
@@ -75,22 +88,74 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       const alternativeContext = this.reader.childContext(alternativeField)
       presence.before ||= alternativeContext.before
       presence.after ||= alternativeContext.after
+      const slot = this.resolveSlotSides(requirement, alternativeField)
+      if (slot.anonymous.before || slot.anonymous.after) {
+        anonymous.before ||= slot.anonymous.before
+        anonymous.after ||= slot.anonymous.after
+        anonymousCauses.push(...slot.causes)
+      }
+      if (!slot.alternative.before && !slot.alternative.after) {
+        return
+      }
       const alternative = this.buildAlternative(context, requirement)
       this.decorateAlternative(context, alternative, requirement, alternativeContext)
       const alternativeIndex = alternatives.length
       alternatives.push(alternative)
-      if (SideReader.isWholeChange(alternativeField.diff)) {
-        securityRecord[String(alternativeIndex)] = alternativeField.diff
+      // A slot that is `{}` on one side only holds this alternative on the other side alone.
+      const wholeDiff = SideReader.isWholeChange(alternativeField.diff)
+        ? alternativeField.diff
+        : this.reader.diffPresence(slot.alternative, requirement, slot.causes)
+      if (wholeDiff) {
+        securityRecord[String(alternativeIndex)] = wholeDiff
       }
     })
-    if (alternatives.length === 0) {
+    return this.createSecurity(isInheritedFromDocument, alternatives, securityRecord, presence, anonymous, anonymousCauses)
+  }
+
+  /**
+   * The section spec and its record: the toolbar diff from the wholly added / removed alternatives,
+   * then the `allowsAnonymous` presence diff (written after the toolbar diff: it is not an option).
+   * `undefined` when the list has neither alternatives nor `{}` on any side.
+   */
+  private createSecurity(
+    isInheritedFromDocument: boolean,
+    alternatives: SecurityAlternativeSpec[],
+    securityRecord: DiffsRecord,
+    presence: SideContext,
+    anonymous: SideContext,
+    anonymousCauses: readonly (Diff | undefined)[],
+  ): SecuritySpec | undefined {
+    const allowsAnonymous = anonymous.before || anonymous.after
+    if (alternatives.length === 0 && !allowsAnonymous) {
       return undefined
     }
-    const security: SecuritySpec = { isInheritedFromDocument, alternatives }
+    const security: SecuritySpec = { isInheritedFromDocument, allowsAnonymous, alternatives }
     this.decorator.writeAlternativesDiff(securityRecord)
+    const anonymousDiff = this.reader.diffPresence(anonymous, true, anonymousCauses)
+    if (anonymousDiff) {
+      securityRecord.allowsAnonymous = anonymousDiff
+    }
     this.reader.writeRecord(security, securityRecord)
     this.host.setPresence(security, presence)
     return security
+  }
+
+  /**
+   * Per side, whether a list slot is the anonymous requirement `{}` or names schemes. `apiDiff` pairs
+   * slots by index, so one slot can be `{}` on one side and a requirement on the other.
+   */
+  private resolveSlotSides(requirement: UnknownRecord, field: FieldSides): SecuritySlotSides {
+    const context = this.reader.childContext(field)
+    const names = Object.keys(requirement)
+    const beforeNames = field.diff && isDiffReplace(field.diff)
+      ? (isObject(field.before) ? Object.keys(field.before) : [])
+      : names.filter(name => this.reader.readField(requirement, name, context).beforePresent)
+    const afterNames = names.filter(name => this.reader.readField(requirement, name, context).afterPresent)
+    return {
+      anonymous: { before: context.before && beforeNames.length === 0, after: context.after && afterNames.length === 0 },
+      alternative: { before: context.before && beforeNames.length > 0, after: context.after && afterNames.length > 0 },
+      causes: [field.diff, ...Object.values(this.reader.record(requirement) ?? {})],
+    }
   }
 
   /**
@@ -104,8 +169,14 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
     cause: Diff | undefined,
     isInheritedFromDocument: boolean,
   ): SecuritySpec | undefined {
-    const before = isArray(beforeList) ? beforeList.filter(isObject) : []
-    const after = isArray(afterList) ? afterList.filter(isObject) : []
+    const beforeAll = isArray(beforeList) ? beforeList.filter(isObject) : []
+    const afterAll = isArray(afterList) ? afterList.filter(isObject) : []
+    const anonymous = {
+      before: beforeAll.some(OpenApiSecuritySpecBuilder.isAnonymousRequirement),
+      after: afterAll.some(OpenApiSecuritySpecBuilder.isAnonymousRequirement),
+    }
+    const before = beforeAll.filter(requirement => !OpenApiSecuritySpecBuilder.isAnonymousRequirement(requirement))
+    const after = afterAll.filter(requirement => !OpenApiSecuritySpecBuilder.isAnonymousRequirement(requirement))
     const unmatchedBefore = [...before]
     const alternatives: SecurityAlternativeSpec[] = []
     const securityRecord: DiffsRecord = {}
@@ -122,14 +193,8 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       securityRecord[String(alternatives.length)] = this.reader.createDiff(DiffAction.remove, { beforeValue: requirement }, [cause])
       alternatives.push(this.buildAlternative(context, requirement))
     }
-    if (alternatives.length === 0) {
-      return undefined
-    }
-    const security: SecuritySpec = { isInheritedFromDocument, alternatives }
-    this.decorator.writeAlternativesDiff(securityRecord)
-    this.reader.writeRecord(security, securityRecord)
-    this.host.setPresence(security, { before: before.length > 0, after: after.length > 0 })
-    return security
+    const presence = { before: beforeAll.length > 0, after: afterAll.length > 0 }
+    return this.createSecurity(isInheritedFromDocument, alternatives, securityRecord, presence, anonymous, [cause])
   }
 
   private decorateAlternative(

@@ -56,7 +56,8 @@ describe('OpenAPI spec transformer (plain)', () => {
     expect(inherited?.data.security?.alternatives.map(alternative => alternative.schemeNames)).toEqual([['api_key']])
 
     const anonymous = transformer.transform(loadNormalizedOpenApiSample('oas30/structure/07-security-anonymous-alternative'), ORDERS_POST)
-    expect(anonymous?.data.security?.alternatives.map(alternative => alternative.isAnonymous)).toEqual([false, true])
+    expect(anonymous?.data.security?.allowsAnonymous).toBe(true)
+    expect(anonymous?.data.security?.alternatives.map(alternative => alternative.schemeNames)).toEqual([['api_key']])
 
     const publicOperation = transformer.transform(loadNormalizedOpenApiSample('oas30/structure/06-security-disabled'), ORDERS_POST)
     expect(publicOperation?.data.security).toBeUndefined()

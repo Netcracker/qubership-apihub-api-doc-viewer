@@ -11,6 +11,9 @@
  * show every row then. Unchanged variants must leave only the title row visible plus the
  * `Show N unchanged rows` trigger.
  *
+ * A case may also add or remove the anonymous alternative `{}` (`anonymous`): that changes the
+ * Security title row only (`Optional` badge) and must not reveal any card.
+ *
  * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
  * Catalogue: packages/samples/README.md -> "OpenAPI hiding unchanged nodes"
  */
@@ -204,6 +207,8 @@ export type OpenApiHidingUnchangedCase = {
   readonly dialect: OpenApiHidingUnchangedDialect;
   /** Cards of the (only) security alternative, in requirement order. */
   readonly schemes: readonly OpenApiHidingUnchangedSchemeEntry[];
+  /** The anonymous alternative `{}` after the schemes' one, per side; absent = on neither side. */
+  readonly anonymous?: { readonly before: boolean; readonly after: boolean };
 };
 
 export const OPENAPI_HIDING_UNCHANGED_OPERATION = { path: "/orders/{orderId}", method: "post" } as const;
@@ -213,10 +218,14 @@ const OPENAPI_VERSIONS: Record<OpenApiHidingUnchangedDialect, string> = {
   "3.1": "3.1.0",
 };
 
-/** The operation template: the same minimal operation for every case, security from the fragments. */
+/**
+ * The operation template: the same minimal operation for every case, security from the fragments;
+ * `allowsAnonymous` appends the anonymous alternative `{}`.
+ */
 export function buildOpenApiHidingUnchangedDocument(
   dialect: OpenApiHidingUnchangedDialect,
   schemes: ReadonlyArray<{ readonly fragment: OpenApiSecuritySchemeFragmentKey; readonly hasChanges: boolean }>,
+  allowsAnonymous = false,
 ): Record<string, unknown> {
   const requirement: Record<string, string[]> = {};
   const securitySchemes: Record<string, Record<string, unknown>> = {};
@@ -234,7 +243,7 @@ export function buildOpenApiHidingUnchangedDocument(
         [OPENAPI_HIDING_UNCHANGED_OPERATION.method]: {
           operationId: "updateOrder",
           summary: "Update an order",
-          security: [requirement],
+          security: allowsAnonymous ? [requirement, {}] : [requirement],
           parameters: [{ name: "orderId", in: "path", required: true, schema: { type: "string" } }],
           responses: { "200": { description: "Updated order." } },
         },
@@ -250,8 +259,12 @@ export function buildOpenApiHidingUnchangedDocuments(testCase: OpenApiHidingUnch
   after: Record<string, unknown>;
 } {
   return {
-    before: buildOpenApiHidingUnchangedDocument(testCase.dialect, testCase.schemes.map(({ fragment }) => ({ fragment, hasChanges: false }))),
-    after: buildOpenApiHidingUnchangedDocument(testCase.dialect, testCase.schemes),
+    before: buildOpenApiHidingUnchangedDocument(
+      testCase.dialect,
+      testCase.schemes.map(({ fragment }) => ({ fragment, hasChanges: false })),
+      testCase.anonymous?.before,
+    ),
+    after: buildOpenApiHidingUnchangedDocument(testCase.dialect, testCase.schemes, testCase.anonymous?.after),
   };
 }
 
@@ -273,8 +286,14 @@ function caseNumber(index: number): string {
 
 function collectCases(): OpenApiHidingUnchangedCase[] {
   const cases: OpenApiHidingUnchangedCase[] = [];
-  const push = (slug: string, title: string, dialect: OpenApiHidingUnchangedDialect, schemes: OpenApiHidingUnchangedSchemeEntry[]): void => {
-    cases.push({ caseId: `${caseNumber(cases.length)}-${slug}`, title, dialect, schemes });
+  const push = (
+    slug: string,
+    title: string,
+    dialect: OpenApiHidingUnchangedDialect,
+    schemes: OpenApiHidingUnchangedSchemeEntry[],
+    anonymous?: OpenApiHidingUnchangedCase["anonymous"],
+  ): void => {
+    cases.push({ caseId: `${caseNumber(cases.length)}-${slug}`, title, dialect, schemes, ...(anonymous ? { anonymous } : {}) });
   };
   // Every scheme kind in both states: unchanged (title row + trigger), then changed (every row).
   for (const [fragment, slug, title] of SINGLE_SCHEME_CASES) {
@@ -296,6 +315,13 @@ function collectCases(): OpenApiHidingUnchangedCase[] {
     { fragment: "httpBasic", hasChanges: false },
     { fragment: "oauth2SingleFlow", hasChanges: false },
   ]);
+  // An anonymous alternative change is not a change of any card: both cards stay collapsed.
+  const unchangedPair: OpenApiHidingUnchangedSchemeEntry[] = [
+    { fragment: "apiKeyHeader", hasChanges: false },
+    { fragment: "oauth2SingleFlow", hasChanges: false },
+  ];
+  push("anonymous-added-cards-unchanged", "`{}` added (`Optional` badge), two unchanged cards stay collapsed", "3.0", unchangedPair, { before: false, after: true });
+  push("anonymous-removed-cards-unchanged", "`{}` removed (`Optional` badge), two unchanged cards stay collapsed", "3.0", unchangedPair, { before: true, after: false });
   return cases;
 }
 

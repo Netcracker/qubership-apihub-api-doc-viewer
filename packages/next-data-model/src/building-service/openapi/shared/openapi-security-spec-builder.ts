@@ -7,7 +7,8 @@ import { OpenApiOperationContext } from "./openapi-spec-transformer"
  * OpenAPI Security section: the operation's `security` list, else the document's; each Security
  * Requirement Object is an alternative of the schemes it names, resolved in
  * `components.securitySchemes`; the required scopes are the requirement's lists (dialect decides
- * how they are read). Design: docs/design/openapi/entities/security.md
+ * how they are read). The anonymous requirement `{}` is not an alternative: it sets
+ * `allowsAnonymous` (the `Optional` badge). Design: docs/design/openapi/entities/security.md
  */
 export class OpenApiSecuritySpecBuilder extends SecuritySpecBuilder<OpenApiOperationContext> {
   public readonly flowScopesKey = 'scopes'
@@ -19,12 +20,19 @@ export class OpenApiSecuritySpecBuilder extends SecuritySpecBuilder<OpenApiOpera
     if (!isArray(requirements) || requirements.length === 0) {
       return undefined
     }
+    const objects = requirements.filter(isObject)
     return {
       isInheritedFromDocument,
-      alternatives: requirements
-        .filter(isObject)
+      allowsAnonymous: objects.some(OpenApiSecuritySpecBuilder.isAnonymousRequirement),
+      alternatives: objects
+        .filter(requirement => !OpenApiSecuritySpecBuilder.isAnonymousRequirement(requirement))
         .map(requirement => this.buildAlternative(context, requirement)),
     }
+  }
+
+  /** The anonymous requirement `{}`: no scheme is needed. */
+  public static isAnonymousRequirement(requirement: UnknownRecord): boolean {
+    return Object.keys(requirement).length === 0
   }
 
   public buildAlternative(context: OpenApiOperationContext, requirement: UnknownRecord): SecurityAlternativeSpec {
@@ -34,7 +42,7 @@ export class OpenApiSecuritySpecBuilder extends SecuritySpecBuilder<OpenApiOpera
       const scopes = requirement[name]
       schemes[name] = this.buildRequirementScheme(context, name, isArray(scopes) ? scopes.filter(isString) : [])
     }
-    return { schemeNames, isAnonymous: schemeNames.length === 0, schemes }
+    return { schemeNames, schemes }
   }
 
   public takeDefinition(context: OpenApiOperationContext, name: string): UnknownRecord | undefined {

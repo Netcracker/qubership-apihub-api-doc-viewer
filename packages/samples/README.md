@@ -49,13 +49,14 @@ One operation template (`buildOpenApiHidingUnchangedDocument`) plus one fragment
 (`OPENAPI_SECURITY_SCHEME_FRAGMENTS`); a fragment renders its scheme for `hasChanges: false` (before,
 and after when unchanged) or `hasChanges: true` (after, one or two content rows changed, never the
 title row). A case lists fragments with a flag each; all schemes of a case are cards of one security
-alternative.
+alternative. A case may also add or remove the anonymous alternative `{}` (`anonymous`).
 
 | Cases | Content |
 | --- | --- |
 | `01`–`18` | Each scheme kind unchanged, then changed: API key in header / query / cookie, HTTP basic, HTTP bearer, OpenID Connect, OAuth 2.0 with one flow, OAuth 2.0 with all four flows (one scope of one flow changed), Mutual TLS (OAS 3.1). |
 | `19`, `20` | Two cards, one changed and one unchanged, in both orders. |
 | `21` | Three cards, all unchanged. |
+| `22`, `23` | The anonymous alternative `{}` added / removed next to two unchanged cards: only the `Optional` badge of the Security title row changes; both cards stay collapsed. |
 
 **Storybook and screenshot tests:** `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes`
 (`packages/api-doc-viewer/src/stories/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.stories.tsx`),

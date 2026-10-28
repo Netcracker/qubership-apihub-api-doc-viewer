@@ -14,8 +14,8 @@ const CASES: ReadonlyArray<readonly [string, string, readonly string[]]> = [
   ['04-document-security-override-removed', 'openapi-operation-diffs-suite-security--case-04-document-security-override-removed', []],
   ['05-alternative-added', 'openapi-operation-diffs-suite-security--case-05-alternative-added', ['security-alternative-1']],
   ['06-alternative-removed', 'openapi-operation-diffs-suite-security--case-06-alternative-removed', ['security-alternative-1']],
-  ['07-anonymous-alternative-added', 'openapi-operation-diffs-suite-security--case-07-anonymous-alternative-added', ['security-alternative-1']],
-  ['08-anonymous-alternative-removed', 'openapi-operation-diffs-suite-security--case-08-anonymous-alternative-removed', ['security-alternative-1']],
+  ['07-anonymous-alternative-added', 'openapi-operation-diffs-suite-security--case-07-anonymous-alternative-added', []],
+  ['08-anonymous-alternative-removed', 'openapi-operation-diffs-suite-security--case-08-anonymous-alternative-removed', []],
   ['09-scheme-added-to-alternative', 'openapi-operation-diffs-suite-security--case-09-scheme-added-to-alternative', []],
   ['10-scheme-removed-from-alternative', 'openapi-operation-diffs-suite-security--case-10-scheme-removed-from-alternative', []],
   ['11-required-scope-added', 'openapi-operation-diffs-suite-security--case-11-required-scope-added', []],
@@ -40,6 +40,8 @@ const CASES: ReadonlyArray<readonly [string, string, readonly string[]]> = [
   ['30-flow-scope-added', 'openapi-operation-diffs-suite-security--case-30-flow-scope-added', []],
   ['31-flow-scope-removed', 'openapi-operation-diffs-suite-security--case-31-flow-scope-removed', []],
   ['32-flow-scope-description-changed', 'openapi-operation-diffs-suite-security--case-32-flow-scope-description-changed', []],
+  ['33-anonymous-alternative-replaced-by-api-key', 'openapi-operation-diffs-suite-security--case-33-anonymous-alternative-replaced-by-api-key', ['security-alternative-1']],
+  ['34-api-key-alternative-replaced-by-anonymous', 'openapi-operation-diffs-suite-security--case-34-api-key-alternative-replaced-by-anonymous', ['security-alternative-1']],
 ]
 
 describe('OpenAPI Operation Diffs Suite - Security', () => {

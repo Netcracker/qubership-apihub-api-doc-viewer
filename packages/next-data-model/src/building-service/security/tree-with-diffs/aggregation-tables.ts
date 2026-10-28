@@ -14,6 +14,8 @@ export const SECURITY_SYNTHETIC_FIELD_DIFF_KEYS: Readonly<Partial<Record<Securit
 /** Field diff -> the row it belongs to. One placement per row instance. */
 export const SECURITY_FIELD_PLACEMENTS: Readonly<Partial<Record<SecurityTreeNodeKind, RecordDrivenFieldPlacements>>> = {
   [SecurityTreeNodeKinds.SECURITY]: {
+    // The `Optional` badge (anonymous access) sits in the section title row.
+    allowsAnonymous: Placement.TitleRow,
     [SECURITY_ALTERNATIVES_DIFF_KEY]: Placement.SelectorRow,
   },
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: {

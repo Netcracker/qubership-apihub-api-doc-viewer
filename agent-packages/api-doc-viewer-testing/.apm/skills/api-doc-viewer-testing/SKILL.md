@@ -92,7 +92,8 @@ inherited line-height strut. Also list the synthetic rows: `.layout-separator` (
 and `diffs-background_*` class — print the full tone, `g` alone is ambiguous between green and
 gray) and `.security-frame-row` (`getComputedStyle(el, '::before').top / bottom` for the border).
 Run it on plain and diffs stories (both sides) and on edge cases (status-only response, anonymous
-alternative, no responses, wholly added / removed sections and cards). For floating badges, walk the
+access — the `Optional` badge, an anonymous-only section without a toolbar — no responses, wholly
+added / removed sections and cards). For floating badges, walk the
 full-width rows (each `.side-by-side-layout` and its parent): a real `.UxDiffFloatingBadge` (map its
 `background-color` back to the diff type) or a `.badge-stub` (segment heights and colours) — the badge
 line must run unbroken across separators and card frame rows.

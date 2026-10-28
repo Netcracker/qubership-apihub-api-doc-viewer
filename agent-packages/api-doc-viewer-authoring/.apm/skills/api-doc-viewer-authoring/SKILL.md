@@ -279,6 +279,25 @@ false. The context (`shared-components/ShowUnchangedRow/UnchangedBlocksContext.t
 provides it for cards, so plain and AsyncAPI cards never collapse. Do not decide "changed" from the
 rendered rows (scope toggles and display mode change them) — read the data-layer predicate.
 
+**Anonymous access (`{}`) is not an alternative** (design D17,
+`docs/design/openapi/entities/security.md` → "Optional badge"). The OpenAPI spec builders filter `{}`
+out of `alternatives` and set `security.allowsAnonymous`; the with-diffs builder writes a synthetic
+`allowsAnonymous` add / remove on the `security` node (presence of `{}` per side) **after**
+`writeAlternativesDiff`, so it never colors the toolbar. `SecurityTitleRow` renders the `Optional`
+badge through `BadgeWithDiffs` (`sizeClassName` keeps the 15px size in the diff look, which swaps
+the color schema for the default badge + green / red border) and reads
+`SecurityRowDiffs.Security.takeTitleRowDiff` / `takeOptionalBadgeDiff` / `isAnonymousAllowedOnSide`.
+Traps:
+
+- The diff sits on the section node, so `Scheme.isContentChanged` stays false: a `{}` change must
+  **not** reveal any card (hiding cases `22`, `23`). Do not "fix" collapsed cards next to a yellow
+  title row.
+- `apiDiff` pairs list slots by index: one slot can be `{}` on one side and `{ api_key }` on the
+  other (diffs `security/33`, `34`). `resolveSlotSides` decides per side, and a slot that is `{}`
+  on one side only becomes a synthetic whole add / remove of its alternative.
+- An anonymous-only list (`[{}]`) is a present section with no alternative: `buildSecurityBlock`
+  drops the toolbar block (title row alone).
+
 ## JSO diffs — hiding unchanged nodes
 
 Design: `docs/design/jso/features/hiding-unchanged-nodes.md`. `JsoPropertyChildrenListWithDiffs`

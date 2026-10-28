@@ -84,9 +84,12 @@ export class OpenApiBlockEdges {
     })
   }
 
-  /** The "No authentication" text of an anonymous alternative (a row without a floating badge). */
-  public static noAuthenticationRow(alternative: AnyRowNode): OpenApiBlockEdge {
-    return OpenApiBlockEdges.row({ diff: OpenApiRowDiffs.NodeLevel.takeWholeNodeDiff(alternative) })
+  /** The Security title row (yellow when anonymous access, the `Optional` badge, changed). */
+  public static securityTitleRow(security: AnyRowNode): OpenApiBlockEdge {
+    return OpenApiBlockEdges.row({
+      diff: SecurityRowDiffs.Security.takeTitleRowDiff(security),
+      severity: OpenApiBlockEdges.severityOf(security, NodeDiffsSeverityPlacemennt.TitleRow),
+    })
   }
 
   /** The Responses title row (yellow when a code option changed as an option). */

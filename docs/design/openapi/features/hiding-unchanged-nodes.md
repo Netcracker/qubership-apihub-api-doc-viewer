@@ -29,6 +29,23 @@ embedded JSON Schema and JSO viewer alike; with `false`, none of them hides anyt
 | `simple` mode | Cards have only the title row, so there is nothing to hide and no trigger. |
 | Plain viewer, AsyncAPI | No `UnchangedBlocksContext` provider → every row shown. |
 
+### Anonymous access changes
+
+**Important.** Adding or removing the anonymous alternative `{}` changes the Security **title row
+only** (the `Optional` badge, [../entities/security.md](../entities/security.md#optional-badge-anonymous-access)).
+It is unlike any other alternative change:
+
+| Change | Toolbar | Cards |
+| --- | --- | --- |
+| `{}` added / removed | not colored (no option changed) | **still collapsed** when their own content is unchanged |
+| Any other alternative added / removed | yellow row, green / red option | the added / removed alternative's cards are shown whole |
+
+So when nothing changed in the other security schemes but anonymous access changed, every card keeps
+its three-dots row: the `allowsAnonymous` diff lives on the `security` node and never counts in
+`SecurityRowDiffs.Scheme.isContentChanged`. Fixtures: hiding cases `22`, `23`. When `{}` is
+replaced by a scheme in the same slot (`security/33`, `34`), that scheme's alternative is wholly
+added / removed, so its card is shown whole as for any added alternative.
+
 ### "Content change" (`SecurityRowDiffs.Scheme.isContentChanged`)
 
 True when any of:
@@ -50,6 +67,6 @@ Programmatic, not YAML: one operation template and one fragment per scheme kind 
 
 | Layer | Location |
 | --- | --- |
-| Unit tests | `packages/next-data-model/tests/unit-tests/openapi-security-hiding-unchanged.test.ts` |
+| Unit tests | `packages/next-data-model/tests/unit-tests/openapi-security-hiding-unchanged.test.ts`, `openapi-security-anonymous.test.ts` |
 | Stories | `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes` — `src/stories/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.stories.tsx` (control `hideUnchangedNodes`) |
 | Screenshot ITs | `src/it/openapi-diffs-hiding-unchanged-nodes-suite.security-schemes.it-test.ts` — every case in `detailed` and `simple`, plus a `revealed` capture of every case with an unchanged card |

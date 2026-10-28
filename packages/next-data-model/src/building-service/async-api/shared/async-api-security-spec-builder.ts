@@ -35,6 +35,7 @@ export class AsyncApiSecuritySpecBuilder extends SecuritySpecBuilder<AsyncApiSec
     }
     return {
       isInheritedFromDocument: false,
+      allowsAnonymous: false,
       alternatives: list.map((item, index) => this.buildAlternative(input.source, item, index)),
     }
   }
@@ -49,7 +50,6 @@ export class AsyncApiSecuritySpecBuilder extends SecuritySpecBuilder<AsyncApiSec
     const requiredScopes = requiredScopesKind === 'scopes' && isArray(scopes) ? scopes.filter(isString) : []
     return {
       schemeNames: [name],
-      isAnonymous: false,
       schemes: { [name]: this.buildScheme(name, definition, requiredScopes, requiredScopesKind) },
     }
   }

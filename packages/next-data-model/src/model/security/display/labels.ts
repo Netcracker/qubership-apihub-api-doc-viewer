@@ -43,8 +43,8 @@ const PARAMETER_NAME_LABEL_SUFFIX = ' parameter name'
 /** Plain text before the flow name in a flow part header: `Flow type **Authorization Code**`. */
 export const SECURITY_OAUTH_FLOW_HEADER_PREFIX = 'Flow type'
 
-export const SECURITY_NO_AUTHENTICATION_TITLE = 'No authentication'
-export const SECURITY_NO_AUTHENTICATION_TEXT = 'Authentication is not required.'
+/** The title-row badge of a Security section that allows anonymous access (OpenAPI `{}`). */
+export const SECURITY_OPTIONAL_BADGE_TEXT = 'Optional'
 
 /**
  * Display labels of a Security section, resolved in the data layer (never in JSX). The base holds
@@ -60,7 +60,7 @@ export abstract class SecurityDisplayLabels {
 
   /** Option title of a security alternative: scheme names joined with ` + `. */
   public securityRequirementTitle(schemeNames: readonly string[]): string {
-    return schemeNames.length === 0 ? SECURITY_NO_AUTHENTICATION_TITLE : schemeNames.join(' + ')
+    return schemeNames.join(' + ')
   }
 
   public securitySchemeType(type: string | undefined): string | undefined {

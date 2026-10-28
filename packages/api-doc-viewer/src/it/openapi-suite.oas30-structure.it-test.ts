@@ -15,9 +15,10 @@ const CASES: ReadonlyArray<readonly [string, string, readonly string[], Readonly
   ['04-response-code-order', 'openapi-operation-suite-oas-3-0-document-structure--case-04-response-code-order', [], {}],
   ['05-security-inherited-from-document', 'openapi-operation-suite-oas-3-0-document-structure--case-05-security-inherited-from-document', [], {}],
   ['06-security-disabled', 'openapi-operation-suite-oas-3-0-document-structure--case-06-security-disabled', [], {}],
-  ['07-security-anonymous-alternative', 'openapi-operation-suite-oas-3-0-document-structure--case-07-security-anonymous-alternative', ['security-alternative-1'], {}],
+  ['07-security-anonymous-alternative', 'openapi-operation-suite-oas-3-0-document-structure--case-07-security-anonymous-alternative', [], {}],
   ['08-deprecated-operation', 'openapi-operation-suite-oas-3-0-document-structure--case-08-deprecated-operation', [], {}],
   ['09-deprecated-operation-without-summary', 'openapi-operation-suite-oas-3-0-document-structure--case-09-deprecated-operation-without-summary', [], {}],
+  ['10-security-anonymous-only', 'openapi-operation-suite-oas-3-0-document-structure--case-10-security-anonymous-only', [], {}],
 ]
 
 describe('OpenAPI Operation Suite - OAS 3.0 Document Structure', () => {

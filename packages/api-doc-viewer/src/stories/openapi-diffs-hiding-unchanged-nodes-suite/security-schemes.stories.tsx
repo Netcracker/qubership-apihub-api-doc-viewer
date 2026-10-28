@@ -8,7 +8,8 @@ import { OpenApiDiffSampleStory } from "../openapi-diffs-suite/OpenApiDiffSample
 
 /**
  * Security scheme cards with "hide unchanged nodes": every scheme kind unchanged (title row plus the
- * three-dots row) and changed (every row), plus cards of one alternative decided one by one.
+ * three-dots row) and changed (every row), plus cards of one alternative decided one by one, and an
+ * anonymous alternative (`{}`) change that must not reveal any card.
  * Cases are built from one template and per-scheme fragments (`hasChanges`) in
  * `packages/samples/src/openapi-diffs-hiding-unchanged-nodes.ts`, not stored as YAML.
  * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
@@ -59,3 +60,5 @@ export const Case_18_mutual_tls_changed: Story = createCaseStory("18-mutual-tls-
 export const Case_19_two_schemes_first_unchanged_second_changed: Story = createCaseStory("19-two-schemes-first-unchanged-second-changed");
 export const Case_20_two_schemes_first_changed_second_unchanged: Story = createCaseStory("20-two-schemes-first-changed-second-unchanged");
 export const Case_21_three_schemes_all_unchanged: Story = createCaseStory("21-three-schemes-all-unchanged");
+export const Case_22_anonymous_added_cards_unchanged: Story = createCaseStory("22-anonymous-added-cards-unchanged");
+export const Case_23_anonymous_removed_cards_unchanged: Story = createCaseStory("23-anonymous-removed-cards-unchanged");

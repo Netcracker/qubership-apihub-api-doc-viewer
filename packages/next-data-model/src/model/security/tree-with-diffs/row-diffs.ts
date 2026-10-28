@@ -20,7 +20,33 @@ import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY } from "
 import { SecurityDisplayLabels, SecurityParameterNameLabel } from "../display/labels"
 import { SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
+/** The anonymous-access field of a `security` node (the `Optional` badge of the title row). */
+const ALLOWS_ANONYMOUS_FIELD = 'allowsAnonymous'
+
 class Security {
+  /**
+   * Section title row: a whole section add / remove, else a synthetic yellow `replace` when anonymous
+   * access (`{}`) was added / removed - the `Optional` badge itself carries the green / red border.
+   */
+  public static takeTitleRowDiff(node: RowDiffsNode): ChangedPropertyMetaData | undefined {
+    const anonymous = takeFieldDiff(node, ALLOWS_ANONYMOUS_FIELD)
+    return SectionRowDiffs.takeHeaderRowDiff(node) ?? (anonymous ? RowChangedPropertyMetaData.buildRowReplace(anonymous.data) : undefined)
+  }
+
+  /** Diff of the `Optional` badge: none when the whole section is added / removed (its row color wins). */
+  public static takeOptionalBadgeDiff(node: RowDiffsNode): ChangedPropertyMetaData | undefined {
+    return SectionRowDiffs.takeHeaderRowDiff(node) ? undefined : takeFieldDiff(node, ALLOWS_ANONYMOUS_FIELD)
+  }
+
+  /** Whether the list allows anonymous access (`{}`) on a side: the `Optional` badge is shown there. */
+  public static isAnonymousAllowedOnSide(node: RowDiffsNode, side: LayoutSide): boolean {
+    const diff = takeFieldDiff(node, ALLOWS_ANONYMOUS_FIELD)?.data
+    if (diff && !isDiffRename(diff)) {
+      return takeSideValue(diff, side) === true
+    }
+    return NodeLevelRowDiffs.isPresentOnSide(node, side) && takeValueField(node, ALLOWS_ANONYMOUS_FIELD) === true
+  }
+
   /**
    * Security toolbar row: a whole section add / remove, else a yellow row when any alternative
    * (toolbar option) was wholly added or removed - the option itself keeps its green / red border.

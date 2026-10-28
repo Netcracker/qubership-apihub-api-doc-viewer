@@ -16,12 +16,17 @@ export type SecurityRequiredScopesKind = 'scopes' | 'roles' | 'ignored'
 export interface SecurityTreeNodeValueTypeSecurity {
   /** OpenAPI: the operation has no `security` and inherits the document list. AsyncAPI: always `false`. */
   readonly isInheritedFromDocument: boolean
+  /**
+   * OpenAPI: the list contains the anonymous requirement `{}` (the `Optional` badge of the title
+   * row; `{}` is never an alternative). With diffs: on either side, the per-side answer is
+   * `SecurityRowDiffs.Security.isAnonymousAllowedOnSide`. AsyncAPI: always `false`.
+   */
+  readonly allowsAnonymous: boolean
 }
 
 /** One alternative (toolbar option): OpenAPI a requirement of several schemes, AsyncAPI one scheme. */
 export interface SecurityTreeNodeValueTypeRequirement {
   readonly schemeNames: string[]
-  readonly isAnonymous: boolean
 }
 
 export interface SecurityTreeNodeValueTypeScheme {
@@ -58,8 +63,8 @@ export type SecurityAnyTreeNodeValue = SecurityTreeNodeValue<SecurityTreeNodeKin
 
 /** Value props per security kind: the fields a node value is picked from (plain and with diffs). */
 export const SECURITY_NODE_VALUE_PROPS: Readonly<Record<SecurityTreeNodeKind, readonly string[]>> = {
-  [SecurityTreeNodeKinds.SECURITY]: ['isInheritedFromDocument'] satisfies (keyof SecurityTreeNodeValueTypeSecurity)[],
-  [SecurityTreeNodeKinds.SECURITY_REQUIREMENT]: ['schemeNames', 'isAnonymous'] satisfies (keyof SecurityTreeNodeValueTypeRequirement)[],
+  [SecurityTreeNodeKinds.SECURITY]: ['isInheritedFromDocument', 'allowsAnonymous'] satisfies (keyof SecurityTreeNodeValueTypeSecurity)[],
+  [SecurityTreeNodeKinds.SECURITY_REQUIREMENT]: ['schemeNames'] satisfies (keyof SecurityTreeNodeValueTypeRequirement)[],
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: [
     'name', 'isResolved', 'type', 'description', 'in', 'parameterName', 'scheme', 'bearerFormat', 'openIdConnectUrl', 'requiredScopes', 'requiredScopesKind',
   ] satisfies (keyof SecurityTreeNodeValueTypeScheme)[],

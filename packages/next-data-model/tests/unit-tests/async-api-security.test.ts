@@ -50,9 +50,9 @@ describe('AsyncAPI security: plain', () => {
     const security = operationSecurity(buildAsyncApiSecurityTree('23-several-alternatives').root)
     const alternatives = childrenOf(security, AsyncApiTreeNodeKinds.SECURITY_REQUIREMENT)
     expect(alternatives.map(alternative => alternative.value())).toEqual([
-      { schemeNames: ['oauth'], isAnonymous: false },
-      { schemeNames: ['headerKey'], isAnonymous: false },
-      { schemeNames: ['scram512'], isAnonymous: false },
+      { schemeNames: ['oauth'] },
+      { schemeNames: ['headerKey'] },
+      { schemeNames: ['scram512'] },
     ])
     expect(schemes(security).map(scheme => (scheme.value() as { type: string }).type)).toEqual(['oauth2', 'httpApiKey', 'scramSha512'])
   })

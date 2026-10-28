@@ -1,5 +1,18 @@
 /* stylelint-disable selector-class-pattern -- modifier classes shared with TS/TSX */
 
+/* ─── `Optional` badge of the Security title row (anonymous access `{}`). Class names:
+   `consts/tags.ts`. The size class stays in the diff look (default badge + green / red border). ── */
+
+.openapi-security-optional-badge {
+  background-color: #4C87EC;
+  box-shadow: inset 0 0 0 1px #4C87EC;
+  color: white;
+}
+
+.ux-badge.openapi-security-optional-badge-size {
+  font-size: 15px;
+}
+
 /* ─── HTTP method badge (address row). Text is white (`AddressRow`). Mapping method → class:
    `utils/openapi/http-method-badge-config.ts`. ───────────────────────────────────────────── */
 

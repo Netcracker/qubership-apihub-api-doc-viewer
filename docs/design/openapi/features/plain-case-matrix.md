@@ -53,7 +53,7 @@ How to extend and maintain the suites:
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-suite.mjs -->
 
-287 cases; ITs capture each in `detailed` and `simple` (574 screenshots, plus the `noHeading` variant of the all-sections case).
+288 cases; ITs capture each in `detailed` and `simple` (576 screenshots, plus the `noHeading` variant of the all-sections case).
 
 ### OAS 3.0 — E2E (`oas30/e2e/`, 168)
 
@@ -381,7 +381,7 @@ How to extend and maintain the suites:
 | `10-headers-and-body` | `POST /orders` | `500` response: headers + body | `response-code-500` |
 | `11-description-and-body-schema-description` | `POST /orders` | `500` response: description + body schema description | `response-code-500` |
 
-### OAS 3.0 — Document Structure (`oas30/structure/`, 9)
+### OAS 3.0 — Document Structure (`oas30/structure/`, 10)
 
 | Case | Operation | Covers | Auto-switch |
 | --- | --- | --- | --- |
@@ -391,9 +391,10 @@ How to extend and maintain the suites:
 | `04-response-code-order` | `POST /orders` | response codes declared out of order (canonical order, colors) | — |
 | `05-security-inherited-from-document` | `POST /orders` | document `security` inherited by the operation | — |
 | `06-security-disabled` | `POST /orders` | document `security` disabled by `security: []` (no section) | — |
-| `07-security-anonymous-alternative` | `POST /orders` | `{}` alternative (No authentication), auto-switched | `security-alternative-1` |
+| `07-security-anonymous-alternative` | `POST /orders` | `{}` alternative: `Optional` badge on the Security title, no option of its own | — |
 | `08-deprecated-operation` | `POST /orders` | deprecated operation with a summary (tag in the title row) | — |
 | `09-deprecated-operation-without-summary` | `POST /orders` | deprecated operation without a summary (tag on the address row) | — |
+| `10-security-anonymous-only` | `POST /orders` | `security: [{}]`: Security title with the `Optional` badge only (no toolbar, no cards) | — |
 
 ### OAS 3.1 — Fields / Security (`oas31/fields/security/`, 3)
 

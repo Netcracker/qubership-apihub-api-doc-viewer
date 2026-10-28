@@ -3,15 +3,13 @@ import { getSecurityChildren, isSecurityRequirementNode, isSecuritySchemeNode } 
 import { hasNodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/row-diffs-base"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
-import { SECURITY_NO_AUTHENTICATION_TEXT, SecurityDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
+import { SecurityDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
 import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
 import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/security/types/node-kind"
 import { FC, ReactElement, useMemo } from "react"
 import { OpenApiBlock } from "../../OpenApiOperationViewer/OpenApiLayout"
 import { SelectorOption } from "../Selector/Selector"
-import { TextRow } from "../TextRow/TextRow"
-import { TextValueVariant } from "../TextValue/types"
 import { PrecededBy } from "../WithPrecededByProps"
 import { SecuritySchemeNode } from "./SecuritySchemeCardBase"
 import { SecurityToolbar } from "./SecurityToolbar"
@@ -24,8 +22,8 @@ export type SecurityAlternativeNode = SecurityTreeNode<typeof SecurityTreeNodeKi
 
 /**
  * Building blocks of a Security section, shared by the API types: the toolbar row (alternatives, OR,
- * always shown), the selected alternative's content ("No authentication" text or its framed scheme
- * cards, AND) as layout elements. Each API type composes them with its own title row, card
+ * shown whenever there is an alternative), the selected alternative's framed scheme cards (AND) as
+ * layout elements. Anonymous access (OpenAPI `{}`) is no alternative: the API type's title row shows it. Each API type composes them with its own title row, card
  * (`OpenApiSecuritySchemeCard` / `AsyncApiSecuritySchemeCard`) and selection state.
  * Design: docs/design/openapi/entities/security.md, docs/design/async-api/features/security.md.
  */
@@ -40,17 +38,10 @@ export function buildSecurityToolbarBlock(node: SecuritySectionNode, render: () 
 }
 
 /**
- * The selected alternative's content as layout elements: its "No authentication" row or one element
- * per card (4px outside its border). `renderCard` draws the API type's card (keyed by the scheme id).
+ * The selected alternative's content as layout elements: one element per card (4px outside its
+ * border). `renderCard` draws the API type's card (keyed by the scheme id).
  */
 export function buildSecurityContentBlocks(selected: SecurityAlternativeNode | undefined, renderCard: (scheme: SecuritySchemeNode) => ReactElement): OpenApiBlock[] {
-  if (selected?.value()?.isAnonymous) {
-    return [{
-      id: 'no-authentication',
-      ...OpenApiBlockEdges.single(OpenApiBlockEdges.noAuthenticationRow(selected)),
-      payload: () => <SecurityNoAuthenticationRow key="no-authentication" alternative={selected} />,
-    }]
-  }
   return getSecurityChildren(selected, isSecuritySchemeNode).map(scheme => ({
     id: scheme.id,
     ...OpenApiBlockEdges.single(OpenApiBlockEdges.card(scheme)),
@@ -94,14 +85,3 @@ export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, 
     />
   )
 }
-
-const SecurityNoAuthenticationRow: FC<{ alternative: SecurityAlternativeNode }> = ({ alternative }) => (
-  <TextRow
-    data-precededby={PrecededBy.OPENAPI_ROW}
-    value={SECURITY_NO_AUTHENTICATION_TEXT}
-    variant={TextValueVariant.body2}
-    textFontWeight="normal"
-    textColor="#8F9EB4"
-    diff={SecurityRowDiffs.NodeLevel.takeWholeNodeDiff(alternative)}
-  />
-)
