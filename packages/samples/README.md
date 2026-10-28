@@ -42,6 +42,7 @@ Plain AsyncAPI stories (except Security) and plain JSO stories use inline data u
 | --- | --- | --- | --- |
 | `src/async-api-diffs.ts` | AsyncAPI | with diffs | Inline YAML pairs for next-data-model unit tests. |
 | `src/openapi-diffs-hiding-unchanged-nodes.ts` | OpenAPI | with diffs | Security scheme cards with hidden unchanged rows ([design](../../docs/design/openapi/features/hiding-unchanged-nodes.md)). |
+| `src/openapi-arrow-buttons.ts` | OpenAPI | plain and with diffs | Security toolbar and response-code strips that fit or overflow ([design](../../docs/design/shared/features/arrow-scroll-strip.md)). |
 
 ### OpenAPI hiding unchanged nodes
 
@@ -66,6 +67,33 @@ unit tests `packages/next-data-model/tests/unit-tests/openapi-security-hiding-un
 **Regenerate:** nothing is written to disk — edit the module. When the case list changes, update the
 story exports and the IT `CASES` list (story ids via `bin/storybook-story-id-utils.mjs`), then
 `node bin/run-screenshot-test-suite.mjs regenerate openapi-diffs-hiding-unchanged-nodes-suite`.
+
+### OpenAPI arrow buttons
+
+Toolbars whose options fit their strip (both arrows disabled) or overflow it (arrows enabled), for the
+shared `ArrowScrollStrip` ([design](../../docs/design/shared/features/arrow-scroll-strip.md)). One
+operation template (`buildOpenApiArrowButtonsDocument(toolbar, lineup)`); a lineup is `single` (one
+option) or `every` (the strip overflows at the 1800px screenshot viewport, also on one diffs side).
+
+| Toolbar | `single` | `every` |
+| --- | --- | --- |
+| `security-toolbar` (OAS 3.1) | one alternative (`api_key_header`) | one alternative per scheme kind (the 9 fragments of the hiding cases), then 8 `A + B` alternatives of neighbouring kinds: 17 options |
+| `response-codes` (OAS 3.0, no security) | `200` | every IANA-registered status code except 305, 306, 418, 510 (59 codes), each class followed by its range key `1XX`–`5XX`, `default` last: 65 options |
+
+| Cases (per toolbar) | Plain (`openApiArrowButtonsCases`) | With diffs (`openApiDiffsArrowButtonsCases`) |
+| --- | --- | --- |
+| `01` | `single` | `single` → `every` (the changed side overflows) |
+| `02` | `every` | `every` → `single` (the origin side overflows) |
+
+**Storybook and screenshot tests:** `OpenAPI Operation Suite (Arrow Buttons)/{Security Toolbar,Response Codes}`
+and `OpenAPI Operation Diffs Suite (Arrow Buttons)/{Security Toolbar,Response Codes}`
+(`packages/api-doc-viewer/src/stories/openapi-{,diffs-}arrow-buttons-suite/`), ITs
+`packages/api-doc-viewer/src/it/openapi-{,diffs-}arrow-buttons-suite.*.it-test.ts`: an overflowing
+strip is one test with three screenshots (left / middle / right).
+
+**Regenerate:** nothing is written to disk — edit the module, then
+`node bin/run-screenshot-test-suite.mjs regenerate openapi-arrow-buttons-suite` and
+`… regenerate openapi-diffs-arrow-buttons-suite`.
 
 ## Workflow
 

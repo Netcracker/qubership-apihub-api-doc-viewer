@@ -203,6 +203,23 @@ prefixed per body because both bodies can show the same media type).
 - Mixed, multi-purpose fixtures hide bugs (the code-order bug survived nine hand-written
   fixtures); prefer one concern per case and generated combinations.
 
+## Arrow buttons suites (programmatic, hand-written; three screenshots per test)
+
+`OpenAPI Operation Suite (Arrow Buttons)/{Security Toolbar,Response Codes}` and
+`OpenAPI Operation Diffs Suite (Arrow Buttons)/{Security Toolbar,Response Codes}` exercise the shared
+`ArrowScrollStrip` (design: `docs/design/shared/features/arrow-scroll-strip.md` → Tests). Cases
+come from `packages/samples/src/openapi-arrow-buttons.ts` (`single` / `every` lineups per toolbar;
+the security `every` lineup adds `A + B` alternatives because the 9 scheme kinds alone fit the 1800px
+viewport). An overflowing strip is **one test with three `toMatchImageSnapshot()` calls** (snapshot
+files `-1`, `-2`, `-3`) through `expectArrowScrollStripStates` (`src/it/service/arrow-scroll-strip.ts`):
+left edge, the median option (⌊n / 2⌋ + 1) scrolled to the strip's centre, right edge — each with
+its arrow states asserted. "Median option visible" is not a middle state: in the plain security
+case it is visible from the start. Arrows are clicked in the DOM (`element.click()`, no hover
+background captured), then the helper waits until `scrollLeft` is stable for 5 frames (smooth
+scroll). In diffs the strips are one per side: index `0` origin, `1` changed. Display mode
+`detailed` only. Suite ids for the runner: `openapi-arrow-buttons-suite`,
+`openapi-diffs-arrow-buttons-suite`.
+
 ## Hiding unchanged nodes suite (programmatic, hand-written)
 
 `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes` is **not** produced by

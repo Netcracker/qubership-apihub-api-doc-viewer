@@ -111,3 +111,31 @@ describe("AsyncAPI action badge", () => {
     expect(resolveAsyncApiActionBadge("publish")).toEqual({ text: "PUBLISH", colorClass: "" })
   })
 })
+
+describe("Icon buttons (scroll-strip arrows, three-dots trigger)", () => {
+  // docs/design/shared/features/arrow-scroll-strip.md -> "Arrow button styles"
+  it("keeps the specified colors and radius as variables of one rule", () => {
+    expect(takeDeclarations("icon-buttons.css", ".icon-button")).toEqual({
+      "--icon-button-color": "#0068FF",
+      "--icon-button-hover-background": "#ECEDEF",
+      "--icon-button-hover-color": "#0068FF",
+      "--icon-button-disabled-color": "#353C4E",
+      "--icon-button-radius": "6PX",
+    })
+  })
+
+  it("paints every state from the variables only", () => {
+    expect(takeDeclarations("icon-buttons.css", "button.icon-button")).toMatchObject({
+      "background-color": "TRANSPARENT",
+      color: "VAR(--ICON-BUTTON-COLOR)",
+      "border-radius": "VAR(--ICON-BUTTON-RADIUS)",
+    })
+    expect(takeDeclarations("icon-buttons.css", "button.icon-button:hover:enabled")).toEqual({
+      "background-color": "VAR(--ICON-BUTTON-HOVER-BACKGROUND)",
+      color: "VAR(--ICON-BUTTON-HOVER-COLOR)",
+    })
+    expect(takeDeclarations("icon-buttons.css", "button.icon-button:disabled")).toMatchObject({
+      color: "VAR(--ICON-BUTTON-DISABLED-COLOR)",
+    })
+  })
+})

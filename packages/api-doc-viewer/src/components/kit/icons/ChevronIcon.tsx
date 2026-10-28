@@ -4,7 +4,7 @@ type ChevronIconProps = {
   direction: 'left' | 'right'
 }
 
-/** Chevron in `currentColor`, so the button decides the color (blue enabled, gray disabled). */
+/** Chevron in `currentColor`, so the button decides the color (shared-styles/colors/icon-buttons.css). */
 export const ChevronIcon: FC<ChevronIconProps> = memo<ChevronIconProps>(({ direction }) => (
   <svg
     width="8"

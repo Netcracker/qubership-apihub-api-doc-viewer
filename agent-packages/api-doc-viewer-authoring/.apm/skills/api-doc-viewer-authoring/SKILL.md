@@ -924,12 +924,37 @@ config. A color rule overriding a shared component's own rule must win by specif
 order. `index.css` gives `button` a `border-color` transition: measure border colors ≥ 250ms after a
 hover / click in a live check.
 
+## Arrow scroll strip: previous / next arrows on a line of options
+
+Design: `docs/design/shared/features/arrow-scroll-strip.md`. Any line of options that may overflow
+its row goes into the universal `ArrowScrollStrip` (`shared-components/ArrowScrollStrip/`):
+`<ArrowScrollStrip testIdPrefix="…"><Selector … noWrap={true} /></ArrowScrollStrip>`. It owns the
+arrows, the hidden native scrollbar, the scroll state (`utils/common/strip-scroll.ts`), and the
+one-option step (`scrollTo({ behavior: 'smooth' })`); it knows nothing about selectors or API types.
+Users: the security toolbar (`SecurityToolbar`, own row) and the response codes (`ResponsesTitleRow`
+subheader, `overhangVertically`). Do not re-implement arrows per toolbar. Traps:
+
+- **Child contract:** one element whose direct children are the options (the strip measures
+  `strip > inset > line > options`). The line needs a gap (`Selector` has 8px): the room after the
+  last option is that gap before a 1px `::after` spacer. An end margin on the last option does
+  **not** count toward the scroll width, so the last option's border shadow was clipped at the right
+  edge.
+- **Row height:** the 6px decoration inset (diff round markers / border shadows overhang the option)
+  is part of a toolbar row's height but would grow a title row from 26.5px to 38.5px — pass
+  `overhangVertically` in a title-row subheader (negative block margins keep the row height).
+- **State after every render:** `useLayoutEffect` without deps plus a `ResizeObserver`; the
+  `setState` keeps the previous object when nothing changed, otherwise it loops.
+- **Arrow styles** come from the shared icon-button config (`shared-styles/colors/icon-buttons.css`,
+  `.icon-button` CSS variables), shared with the three-dots `ShowUnchangedTrigger`; icons paint
+  in `currentColor`. Per-button CSS sets padding only. Arrows are always shown, disabled at an edge.
+
 ## Global `button` styles (session lesson)
 
 `src/index.css` styles **every** `<button>` (padding `0.6em 1.2em`, 8px radius, a border and a
 background). A small icon button (e.g. a 24px arrow) keeps its box but its icon disappears — the
 padding leaves no content width. Reset it on new buttons with utilities (`p-0 border-0
-bg-transparent`; class selectors outrank the element rule), or use a non-button clickable element
+bg-transparent`; class selectors outrank the element rule) — icon buttons use the shared
+`icon-button` class (`shared-styles/colors/icon-buttons.css`), which resets it — or use a non-button clickable element
 where the JSON Schema pattern applies (clickable text + `Expander`). Also: never put
 `overflow: hidden` on a selector option or its scrolling container edge without an inset — diff
 round markers and border shadows overhang the option box and get clipped.

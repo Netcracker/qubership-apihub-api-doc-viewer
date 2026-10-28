@@ -20,7 +20,7 @@ defines its own "is changed" predicate.
 | `hasOwnChangeSignals(node)` | `next-data-model/src/model/abstract/tree-with-diffs/changed-only/has-own-change-signals.ts` | Spec-agnostic half of an "is changed" predicate: any of the node's own diff fields is non-empty |
 | `UnchangedVisibleItem` | same | The visible sequence: nodes plus one placeholder per block |
 | `ShowUnchangedRow` | `api-doc-viewer/src/components/shared-components/ShowUnchangedRow/` | Placeholder row with the reveal control |
-| `ShowUnchangedTrigger` | same | The three-dots reveal button alone, for rows that place it themselves (security scheme card) |
+| `ShowUnchangedTrigger` | same | The three-dots reveal button alone, for rows that place it themselves (security scheme card); an icon button styled by the shared `icon-button` config ([arrow-scroll-strip.md](arrow-scroll-strip.md#arrow-button-styles-shared-icon-button-config)) |
 | `UnchangedBlocksContext`, `DiffsNodesVisibilityMode` | same | Viewer-level mode and revealed block ids; provided by `JsonSchemaDiffsViewer`, `OpenApiOperationDiffsViewer`, and `JsoDiffsViewer` |
 
 ## Rules

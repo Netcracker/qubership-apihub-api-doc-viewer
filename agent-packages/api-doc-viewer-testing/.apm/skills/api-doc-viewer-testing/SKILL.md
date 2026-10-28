@@ -346,6 +346,12 @@ the generator is wrong):
   `message-channel-section` first (servers live in the Channel tab). Section test id:
   `async-api-security-section`. Data-layer tests: `next-data-model/tests/unit-tests/async-api-security.test.ts`
   (fixtures via `tests/helpers/async-api-security-fixtures.ts`).
+- OpenAPI Arrow Buttons (programmatic, hand-written; no generator) — `OpenAPI Operation Suite (Arrow
+  Buttons)` and `OpenAPI Operation Diffs Suite (Arrow Buttons)`, cases in
+  `packages/samples/src/openapi-arrow-buttons.ts`. **Several screenshots per test:** an overflowing
+  strip is captured at its left edge, middle, and right edge by `expectArrowScrollStripStates`
+  (`src/it/service/arrow-scroll-strip.ts`) — reuse it for any new `ArrowScrollStrip` user. Details:
+  [openapi-suites.md](openapi-suites.md) → Arrow buttons suites.
 
 **Runner:** generators that import `src/stories/**/*.ts` (combiner, value-range, validation
 suites) fail under plain `node` with `ERR_MODULE_NOT_FOUND` on extensionless TS imports such as

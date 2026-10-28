@@ -82,6 +82,14 @@ Rules:
 3. **Font sizes stay with the variant** (`_primary` 20px, `_secondary` 15px); the Responses header
    uses `Secondary`.
 
+## Strip (arrow buttons)
+
+The codes are one non-wrapping line (`Selector` `noWrap`) in the shared `ArrowScrollStrip`
+(test ids `response-codes-strip`, `response-codes-arrow-{left,right}`), placed in the `Responses`
+title row's subheader: `Responses ‹ [200] [404] … ›`. The strip takes the rest of the row; both
+arrows are always shown, disabled while every code fits. Behaviour, styles, and tests:
+[../../shared/features/arrow-scroll-strip.md](../../shared/features/arrow-scroll-strip.md).
+
 ## Diffs
 
 Unchanged `Selector` semantics, fed from `response` nodes:
@@ -100,6 +108,9 @@ Unchanged `Selector` semantics, fed from `response` nodes:
 - Stories `OpenAPI Operation Suite/OAS 3.0/Document Structure` (`oas30/structure/04-response-code-order`) and `…/OAS 3.0/Fields/Responses/*` (`oas30/fields/responses/{2xx,3xx,4xx,5xx}/*`, one sub-group per code kind):
   all classes, ranges, `default`, canonical order; ITs click `response-code-404` and
   `response-code-default` to capture selected Warning and Neutral states.
+- Strip: `OpenAPI Operation Suite (Arrow Buttons)/Response Codes` and
+  `OpenAPI Operation Diffs Suite (Arrow Buttons)/Response Codes` (one code, every code: left /
+  middle / right), see [../../shared/features/arrow-scroll-strip.md](../../shared/features/arrow-scroll-strip.md#tests).
 - Regression: AsyncAPI section / bindings and JSON Schema combiner screenshot ITs must not change.
 
 ## Related documents

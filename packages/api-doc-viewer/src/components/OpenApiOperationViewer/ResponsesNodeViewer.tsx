@@ -8,6 +8,7 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
 import { FC, useMemo } from "react"
+import { ArrowScrollStrip } from "../shared-components/ArrowScrollStrip/ArrowScrollStrip"
 import { Selector, SelectorOption } from "../shared-components/Selector/Selector"
 import { SelectorVariant } from "../shared-components/Selector/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
@@ -64,7 +65,10 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) =>
   </div>
 )
 
-/** "Responses" (h2) with the code selector; the selection lives in the operation view state. */
+/**
+ * "Responses" (h2) with the code selector: one line of codes in the shared `ArrowScrollStrip`, which
+ * takes the rest of the row. The selection lives in the operation view state.
+ */
 const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
   const { selection, select } = useOpenApiViewState()
   const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
@@ -95,13 +99,16 @@ const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
       expandable={false}
       variant={TextValueVariant.h2}
       subheader={(layoutSide) => (
-        <Selector
-          options={options}
-          selectedOption={selectedOption}
-          onSelectOption={(option) => select(node.id, option.node.id)}
-          variant={SelectorVariant.Secondary}
-          layoutSide={layoutSide}
-        />
+        <ArrowScrollStrip testIdPrefix="response-codes" overhangVertically={true}>
+          <Selector
+            options={options}
+            selectedOption={selectedOption}
+            onSelectOption={(option) => select(node.id, option.node.id)}
+            variant={SelectorVariant.Secondary}
+            layoutSide={layoutSide}
+            noWrap={true}
+          />
+        </ArrowScrollStrip>
       )}
       diff={OpenApiRowDiffs.Responses.takeTitleRowDiff(node)}
       diffsSeverities={takeOpenApiSeverities(node)}

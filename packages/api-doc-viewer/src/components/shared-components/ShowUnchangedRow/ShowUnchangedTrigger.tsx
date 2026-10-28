@@ -12,7 +12,8 @@ export type ShowUnchangedTriggerProps = {
 }
 
 /**
- * The "three dots" button that reveals one block of unchanged content. Rows place it: the JSON
+ * The "three dots" button that reveals one block of unchanged content: an icon button styled by the
+ * shared config (shared-styles/colors/icon-buttons.css), like the scroll-strip arrows. Rows place it: the JSON
  * Schema children list in `ShowUnchangedRowContent`, a security scheme card in its own card row.
  */
 export const ShowUnchangedTrigger: FC<ShowUnchangedTriggerProps> = memo((props) => {
@@ -26,7 +27,7 @@ export const ShowUnchangedTrigger: FC<ShowUnchangedTriggerProps> = memo((props) 
     <UxTooltip text={label}>
       <button
         type="button"
-        className="show-unchanged-trigger"
+        className="icon-button show-unchanged-trigger"
         aria-label={label}
         onClick={onClick}
       >

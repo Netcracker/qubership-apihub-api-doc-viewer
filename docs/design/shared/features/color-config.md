@@ -12,8 +12,9 @@ holds a color value.
 | `openapi.css` | HTTP method badges (address row); response-code selector options (untouched / hovered / selected) | `utils/openapi/http-method-badge-config.ts`, `utils/openapi/response-code-tone.ts` |
 | `async-api.css` | operation action badges (`SEND`, `RECEIVE`) | `utils/async-api/action-badge-config.ts` |
 | `ddlapi.css` | column flag badges (`PK`, `FK`, `unique`, `not null`, `generated`) | `components/DdlTableViewer/consts.ts` |
+| `icon-buttons.css` | icon buttons of every viewer: the scroll-strip arrows (`‹` `›`) and the "three dots" reveal trigger — enabled / hovered / disabled colors, hover background, radius, as CSS variables on `.icon-button` ([arrow-scroll-strip.md](arrow-scroll-strip.md#arrow-button-styles-shared-icon-button-config)) | `ArrowScrollStrip`, `ShowUnchangedTrigger` |
 | `json-schema.css` | meta-flag tags (`read-only`, `write-only`, `deprecated`); also used by the OpenAPI operation `deprecated` tag and the legacy GraphQL viewers | `consts/tags.ts` |
-| `index.css` | `@import`s the four files | — |
+| `index.css` | `@import`s the five files | — |
 
 `src/index.css` imports `colors/index.css` before `@tailwind base` (`@import` must come first). Every
 viewer root imports `src/index.css`, so the classes exist wherever a badge renders, legacy GraphQL
