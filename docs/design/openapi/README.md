@@ -38,6 +38,7 @@ tree, and lays the rows out.
 | 4a | [features/plain-case-matrix.md](features/plain-case-matrix.md) | Plain fixture case matrix: E2E section combinations, minimal operations, fields, document structure, OAS 3.1 differences. |
 | 4b | [features/diffs-case-matrix.md](features/diffs-case-matrix.md) | Diff fixture case matrix: every covered change, its opposite, and the fragments it applies to. |
 | 4c | [features/hiding-unchanged-nodes.md](features/hiding-unchanged-nodes.md) | `hideUnchangedNodes`: which OpenAPI rows collapse (security scheme cards) and when. |
+| 4d | [features/compatibility-suite.md](features/compatibility-suite.md) | The external compatibility suites in Storybook and screenshot tests (version-pair groups, which operation a case shows); legacy workarounds in [notes/2026-10-compatibility-suite-port-todo.md](notes/2026-10-compatibility-suite-port-todo.md). |
 | 5 | [features/response-code-selector.md](features/response-code-selector.md) | The multicolor response-code selector and the `Selector` tone extension. |
 | 6 | [architecture/](architecture/) | Class and component diagrams (data model and viewer, plain and with diffs). |
 | 7 | [display-coverage.md](display-coverage.md) | Display baseline; triage of what is shown, omitted, or planned. |

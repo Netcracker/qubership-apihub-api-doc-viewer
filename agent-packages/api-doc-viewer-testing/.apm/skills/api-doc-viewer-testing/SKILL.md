@@ -107,7 +107,15 @@ need flags it doesn't expose (e.g. `--maxWorkers 1 --verbose` against a suite al
 The `ddlapi-compatibility-suite` test run (`regenerate ddlapi-compatibility-suite [column|column-type|constraints|table]`)
 targets the gitignored `src/it/compatibility-suite/ddlapi-compatibility-suite-*.generated.it-test.ts`;
 the runner calls `npm run generate-tests` before Jest for it in both modes (and generates the
-files up front when they are missing). Add further spec types to `COMPATIBILITY_TEST_RUN_IDS`.
+files up front when they are missing). The OpenAPI compatibility suite has one test run per OAS
+version pair (`openapi-compatibility-suite-30-30`, `-30-31`, `-31-30`, `-31-31`; suites = suite ids,
+e.g. `regenerate openapi-compatibility-suite-30-31 request-body`); `graphql-compatibility-suite` is
+listed too. **Menu order** comes from `bin/screenshot-test-run-order.json` (compatibility test runs
+carry `"compatibility": true` — that replaced the hard-coded `COMPATIBILITY_TEST_RUN_IDS`), which
+follows `.storybook/preview.ts`; `tests/storybook-order.test.ts` fails when a new hand-written test
+run is missing from the JSON or the JSON leaves the preview order. Adding a suite = a `preview.ts`
+entry **and** a JSON entry in the same API type block (JSO, JSON Schema, AsyncAPI, OpenAPI, DDL API,
+GraphQL). `node bin/run-screenshot-test-suite.mjs list` prints the menu without a TTY.
 
 ## Screenshot test troubleshooting (read first)
 
@@ -288,10 +296,15 @@ use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regen
 
 **Generated — compatibility suites only** (do not edit by hand; regenerate):
 
-- GraphQL compatibility suite — `bin/generate-compatibility-suite-stories.mjs`
-  and `bin/generate-compatibility-suite-tests.mjs` →
+- GraphQL, DDL API, and OpenAPI compatibility suites — `bin/generate-compatibility-suite-stories.mjs`
+  and `bin/generate-compatibility-suite-tests.mjs` (helpers in `bin/compatibility-suite-generation-utils.mjs`) →
   `src/stories/compatibility-suite/*.generated.stories.tsx` and
-  `src/it/compatibility-suite/*.generated.it-test.ts`.
+  `src/it/compatibility-suite/*.generated.it-test.ts`. OpenAPI (ported from the legacy apispec-view,
+  design `docs/design/openapi/features/compatibility-suite.md`): one file per (OAS version-pair
+  group, suite), `OpenAPI Compatibility Suite/OAS 3.0 vs OAS 3.1/<suite>`, meta id
+  `openapi-compatibility-suite-30-31-<suite>`; every case variant of `metadata.yaml` is a story
+  (`human-readable` excluded); `OpenApiStoryComponent` shows the added / removed operation of a case
+  with two (`resolveOpenApiCompatibilitySuiteOperationKeys`) with `hideUnchangedNodes: false`.
 
 **Regenerated from local samples** (persistent committed output — run generators **explicitly**,
 not via `npm run generate-stories` / `generate-tests`; do not edit output by hand except when

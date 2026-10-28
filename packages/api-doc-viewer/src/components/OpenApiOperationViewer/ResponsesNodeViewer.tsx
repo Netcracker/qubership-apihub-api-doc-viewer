@@ -98,7 +98,8 @@ const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
       value={RESPONSES_SECTION_TITLE}
       expandable={false}
       variant={TextValueVariant.h2}
-      subheader={(layoutSide) => (
+      // No strip (no codes, no arrows) on the side where the Responses section does not exist.
+      subheader={(layoutSide) => !OpenApiRowDiffs.NodeLevel.isPresentOnSide(node, layoutSide) ? <></> : (
         <ArrowScrollStrip testIdPrefix="response-codes" overhangVertically={true}>
           <Selector
             options={options}

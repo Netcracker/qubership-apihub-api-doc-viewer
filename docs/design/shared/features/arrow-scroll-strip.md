@@ -25,6 +25,7 @@ the arrows replace it. Status: **implemented**.
 | Decoration inset | the strip keeps a 6px inset around the options, so diff round markers and border shadows (they overhang the option box by up to 5px) are never clipped at the strip edges. After the last option the room is the line's gap (8px) before a 1px spacer: an end margin on the last option does not count toward the scroll width, so it would leave the last option's border shadow clipped at the right edge |
 | Row height | in its own row (security toolbar) the vertical inset is part of the row; in a title row's subheader (response codes) it overhangs the row (negative block margins), so the title row keeps its height (26.5px) |
 | Selection | selecting an option does not scroll the strip |
+| Absent side | no strip (no options, no arrows) on the side where the row's section does not exist: the Responses section, or a Security section wholly added / removed (`ResponsesTitleRow` via `OpenApiRowDiffs.NodeLevel.isPresentOnSide`; `SecurityToolbar` via its row diff) |
 
 ## Component
 

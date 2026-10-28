@@ -1,18 +1,19 @@
 import { writeFileSync } from 'fs'
 import { kebabCase } from 'lodash-es'
 import {
+  collectOpenApiCasesByPairGroup,
   exitIfInsideNodeModules,
   makeFilePrefix,
   makeMetaId,
+  makeOpenApiMetaId,
   resetDirectory,
 } from './compatibility-suite-generation-utils.mjs'
 
 exitIfInsideNodeModules(import.meta.url)
 
 // Dynamic import: must run after exitIfInsideNodeModules because static import breaks the UI component build
-const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL, TEST_SPEC_TYPE_DDL_API } = await import(
-  '@netcracker/qubership-apihub-compatibility-suites'
-)
+const compatibilitySuites = await import('@netcracker/qubership-apihub-compatibility-suites')
+const { getCompatibilitySuites, TEST_SPEC_TYPE_GRAPH_QL, TEST_SPEC_TYPE_DDL_API, TEST_SPEC_TYPE_OPEN_API } = compatibilitySuites
 
 const TESTS_OUT_DIR = './src/it/compatibility-suite'
 
@@ -30,6 +31,8 @@ const TEST_GENERATION_CONFIGS = [
     visibleSelector: '[data-testid="ddl-table-diffs-viewer"]',
   },
 ]
+
+const OPENAPI_VISIBLE_SELECTOR = '[data-testid="openapi-operation-diffs-viewer"]'
 
 // Storybook sanitizes PascalCase export names to kebab-case story IDs.
 // We pre-compute kebab-case at generation time (like apispec-view).
@@ -81,3 +84,18 @@ for (const config of TEST_GENERATION_CONFIGS) {
   }
   console.log(`Generated ${generated}/${suites.size} test file(s) for ${config.specType}`)
 }
+
+// OpenAPI: one file per (version-pair group, suite) = one runner suite of test run
+// `openapi-compatibility-suite-<before><after>` (e.g. `-30-31`).
+let openApiFiles = 0
+for (const [group, suites] of collectOpenApiCasesByPairGroup(compatibilitySuites).entries()) {
+  for (const [suiteId, cases] of suites.entries()) {
+    const metaId = makeOpenApiMetaId(TEST_SPEC_TYPE_OPEN_API, group, suiteId)
+    writeFileSync(
+      `${TESTS_OUT_DIR}/${metaId}.generated.it-test.ts`,
+      printTestFile(metaId, cases.map(({ testId }) => testId), OPENAPI_VISIBLE_SELECTOR),
+    )
+    openApiFiles++
+  }
+}
+console.log(`Generated ${openApiFiles} test file(s) for ${TEST_SPEC_TYPE_OPEN_API}`)

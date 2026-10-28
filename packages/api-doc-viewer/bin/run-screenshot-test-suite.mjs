@@ -9,6 +9,12 @@
  *   node bin/run-screenshot-test-suite.mjs regenerate json-schema-diffs-suite combiners
  *   node bin/run-screenshot-test-suite.mjs regenerate --ui=select
  *   node bin/run-screenshot-test-suite.mjs regenerate ddlapi-compatibility-suite column-type
+ *   node bin/run-screenshot-test-suite.mjs regenerate openapi-compatibility-suite-30-31 request-body
+ *   node bin/run-screenshot-test-suite.mjs list
+ *
+ * Test runs are listed in Storybook's order (`.storybook/preview.ts`): API type blocks from the core
+ * to the overall specifications. The order lives in `bin/screenshot-test-run-order.json`
+ * (`tests/storybook-order.test.ts` keeps it in sync with preview.ts); unknown test runs come last.
  *
  * Compatibility-suite test runs (e.g. `ddlapi-compatibility-suite`) select their spec type's
  * `*.generated.it-test.ts` files inside `src/it/compatibility-suite/`. Those files are gitignored
@@ -48,9 +54,12 @@ const SAMPLES_DIR_IGNORE = new Set(['fixtures', 'src']);
 const IT_TEST_SUFFIX_RE = /(-samples)?\.it-test\.ts$/;
 const GENERATED_IT_TEST_SUFFIX = '.generated.it-test.ts';
 const COMPATIBILITY_SUITE_DIR = 'compatibility-suite';
-// One test run per compatibility-suite spec type, named after the generator's file prefix
-// (`makeFilePrefix` in bin/compatibility-suite-generation-utils.mjs).
-const COMPATIBILITY_TEST_RUN_IDS = ['ddlapi-compatibility-suite'];
+/** @type {Array<{ testRun: string, storybookTitle: string, compatibility?: boolean }>} */
+const TEST_RUN_ORDER = JSON.parse(fs.readFileSync(path.join(__dirname, 'screenshot-test-run-order.json'), 'utf8'));
+// Compatibility-suite test runs, named after the generator's file prefix (`makeFilePrefix` /
+// `makeOpenApiFilePrefix` in bin/compatibility-suite-generation-utils.mjs): one per spec type, one
+// per OAS version pair for OpenAPI.
+const COMPATIBILITY_TEST_RUN_IDS = TEST_RUN_ORDER.filter((entry) => entry.compatibility).map((entry) => entry.testRun);
 
 /**
  * Finds the on-disk IT test filename for a suite id, trying the plain name first and
@@ -81,15 +90,15 @@ for (const arg of process.argv.slice(2)) {
 }
 
 const mode = positionalArgs[0];
-if (mode !== 'test' && mode !== 'regenerate') {
-  console.error('Usage: node bin/run-screenshot-test-suite.mjs <test|regenerate> [test-run] [suite] [--ui=listed|select]');
+if (mode !== 'test' && mode !== 'regenerate' && mode !== 'list') {
+  console.error('Usage: node bin/run-screenshot-test-suite.mjs <test|regenerate|list> [test-run] [suite] [--ui=listed|select]');
   process.exit(1);
 }
 
 const cliTestRunId = positionalArgs[1];
 const cliSuite = positionalArgs[2];
 
-if (!cliTestRunId && !process.stdin.isTTY) {
+if (!cliTestRunId && !process.stdin.isTTY && mode !== 'list') {
   console.error('Interactive screenshot suite runner requires a TTY.');
   console.error('Pass a test-run name, or run Jest directly from packages/api-doc-viewer/.');
   process.exit(1);
@@ -207,7 +216,16 @@ function discoverTestRuns() {
     knownIds.add(itSuiteId);
   }
 
-  return testRuns.sort((a, b) => a.itSuiteId.localeCompare(b.itSuiteId));
+  return testRuns.sort(compareTestRuns);
+}
+
+/** Storybook order (`TEST_RUN_ORDER`), then unknown test runs alphabetically. */
+function compareTestRuns(a, b) {
+  const rank = (testRun) => {
+    const index = TEST_RUN_ORDER.findIndex((entry) => entry.testRun === testRun.itSuiteId);
+    return index < 0 ? TEST_RUN_ORDER.length : index;
+  };
+  return rank(a) - rank(b) || a.itSuiteId.localeCompare(b.itSuiteId);
 }
 
 /**
@@ -608,6 +626,11 @@ const testRuns = discoverTestRuns();
 if (testRuns.length === 0) {
   console.error('No screenshot test runs found under packages/samples/.');
   process.exit(1);
+}
+
+if (mode === 'list') {
+  testRuns.forEach((testRun, index) => console.log(`${index + 1}. ${testRun.itSuiteId}  samples/${testRun.samplesDir}`));
+  process.exit(0);
 }
 
 intro(mode === 'test' ? 'Screenshot test — single suite' : 'Regenerate screenshots — single suite');

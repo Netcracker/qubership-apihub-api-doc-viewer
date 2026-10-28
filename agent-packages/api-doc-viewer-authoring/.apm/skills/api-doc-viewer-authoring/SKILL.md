@@ -150,6 +150,15 @@ Diff-suite stories typically:
 3. Export one Storybook story per sample case; story export names become
    kebab-case story IDs (`metaId--story-name`).
 
+**Storybook order** (`.storybook/preview.ts` `storySort.order`, design `docs/design/README.md` →
+Storybook and runner order): `Debug` first, then API type blocks from the core to the overall
+specifications — JSO, JSON Schema, AsyncAPI, OpenAPI, DDL API, GraphQL. A new suite root needs an
+entry in its block and in `bin/screenshot-test-run-order.json` (runner menus;
+`tests/storybook-order.test.ts`). `storySort` is parsed statically: keep the order literal in
+`preview.ts`, no imports. A new viewer gets a `Debug/<Viewer>` story (YAML / JSON text controls plus
+the viewer's selection props, e.g. `Debug/OpenAPI Operation Viewer` with `path` + `method`) listed in
+the `Debug` sub-order.
+
 Compatibility-suite stories and tests are **generated** — run
 `npm run generate-stories` / `npm run generate-tests` inside `packages/api-doc-viewer`
 rather than hand-editing `src/stories/compatibility-suite/` or
