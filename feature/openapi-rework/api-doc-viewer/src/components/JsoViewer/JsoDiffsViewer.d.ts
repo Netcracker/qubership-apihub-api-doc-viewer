@@ -12,6 +12,12 @@ type JsoDiffsViewerProps = WithPrecededByProps & {
     devMode?: boolean;
     diffMetaKeys: DiffMetaKeys;
     diffTypes?: ReadonlyArray<DiffType>;
+    /**
+     * Collapse each run of unchanged sibling properties into one "Show N unchanged nodes" row.
+     * When omitted, an embedded viewer follows its host diffs viewer (JSON Schema, OpenAPI) and a
+     * standalone one hides (`true`, the `JsonSchemaDiffsViewer` default).
+     */
+    hideUnchangedNodes?: boolean;
     embeddedSchemaDiffsComponent?: JsoEmbeddedSchemaDiffsComponent;
 };
 export declare const JsoDiffsViewer: FC<JsoDiffsViewerProps>;

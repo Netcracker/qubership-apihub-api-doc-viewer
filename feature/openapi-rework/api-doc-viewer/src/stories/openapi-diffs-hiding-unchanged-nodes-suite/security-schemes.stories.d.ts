@@ -10,15 +10,15 @@ declare const meta: {
     title: string;
     component: ({ beforeYaml, afterYaml, displayMode, hideUnchangedNodes }: import('../openapi-diffs-suite/OpenApiDiffSampleStory').OpenApiDiffSampleStoryProps) => import("react").JSX.Element;
     argTypes: {
-        hideUnchangedNodes: {
-            control: {
-                type: "boolean";
+        readonly hideUnchangedNodes: {
+            readonly control: {
+                readonly type: "boolean";
             };
-            table: {
-                category: string;
+            readonly table: {
+                readonly category: "Viewer";
             };
         };
-        displayMode: {
+        readonly displayMode: {
             readonly control: {
                 readonly type: "select";
             };

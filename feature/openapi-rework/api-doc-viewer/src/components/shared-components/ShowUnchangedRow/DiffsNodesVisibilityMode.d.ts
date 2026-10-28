@@ -1,6 +1,6 @@
 /**
  * "Showing/hiding unchanged nodes" feature toggle of the diffs viewers (JSON Schema, OpenAPI security
- * scheme cards).
+ * scheme cards, JSO).
  *
  * The public prop (`JsonSchemaDiffsViewerProps.hideUnchangedNodes`) is a boolean today, but
  * the underlying concept is modeled here as a proper mode (mirroring `LayoutMode`/`DisplayMode`)

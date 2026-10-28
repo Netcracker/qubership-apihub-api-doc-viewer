@@ -1,7 +1,7 @@
 import { JsoPropertySamplesStoryObj } from './property-samples-common';
 declare const meta: {
     title: string;
-    component: ({ beforeYaml, afterYaml, }: import('./jso-diffs-utils').JsoCaseStoryComponentProps) => import("react").JSX.Element;
+    component: ({ beforeYaml, afterYaml, hideUnchangedNodes, }: import('./jso-diffs-utils').JsoCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
         beforeYaml: {
             control: {
@@ -15,6 +15,15 @@ declare const meta: {
         afterYaml: {
             control: {
                 type: "text";
+            };
+            table: {
+                category: string;
+            };
+            description: string;
+        };
+        hideUnchangedNodes: {
+            control: {
+                type: "boolean";
             };
             table: {
                 category: string;

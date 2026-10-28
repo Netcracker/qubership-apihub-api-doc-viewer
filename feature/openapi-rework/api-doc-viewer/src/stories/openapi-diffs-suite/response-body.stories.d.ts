@@ -3,6 +3,14 @@ declare const meta: {
     title: string;
     component: ({ beforeYaml, afterYaml, displayMode, hideUnchangedNodes }: import('./OpenApiDiffSampleStory').OpenApiDiffSampleStoryProps) => import("react").JSX.Element;
     argTypes: {
+        readonly hideUnchangedNodes: {
+            readonly control: {
+                readonly type: "boolean";
+            };
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
         readonly displayMode: {
             readonly control: {
                 readonly type: "select";
@@ -15,6 +23,7 @@ declare const meta: {
     };
     args: {
         displayMode: import('../..').DisplayMode;
+        hideUnchangedNodes: boolean;
     };
 };
 export default meta;

@@ -5,7 +5,10 @@ export type JsoDiffSampleCase = {
     beforeYaml: string;
     afterYaml: string;
 };
-export type JsoCaseStoryComponentProps = Pick<JsoDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml">;
+export type JsoCaseStoryComponentProps = Pick<JsoDiffSampleCase, "caseId" | "beforeYaml" | "afterYaml"> & {
+    hideUnchangedNodes: boolean;
+};
+export declare const JSO_DIFFS_SUITE_DEFAULT_HIDE_UNCHANGED_NODES = false;
 export declare const jsoDiffSampleReadonlyArgTypes: {
     beforeYaml: {
         control: {
@@ -25,6 +28,15 @@ export declare const jsoDiffSampleReadonlyArgTypes: {
         };
         description: string;
     };
+    hideUnchangedNodes: {
+        control: {
+            type: "boolean";
+        };
+        table: {
+            category: string;
+        };
+        description: string;
+    };
 };
 type JsoDiffsViewerProps = ComponentProps<typeof JsoDiffsViewer>;
 type JsoCaseStoryArgs = {
@@ -33,6 +45,10 @@ type JsoCaseStoryArgs = {
     argTypes: typeof jsoDiffSampleReadonlyArgTypes;
     render: (args: JsoCaseStoryComponentProps) => JSX.Element;
 };
-export declare const createJsoViewerArgs: (beforeSourceText: string, afterSourceText: string) => JsoDiffsViewerProps;
-export declare const createJsoCaseStoryFactory: (StoryComponent: (props: JsoCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsoDiffSampleCase>) => (caseId: string) => JsoCaseStoryArgs;
+export declare const createJsoViewerArgs: (beforeSourceText: string, afterSourceText: string, hideUnchangedNodes: boolean) => JsoDiffsViewerProps;
+/**
+ * `defaultHideUnchangedNodes` seeds the `hideUnchangedNodes` story arg (default `false`: the property
+ * suites show every row; the "Hiding Unchanged Nodes" suite passes `true`).
+ */
+export declare const createJsoCaseStoryFactory: (StoryComponent: (props: JsoCaseStoryComponentProps) => JSX.Element, sampleById: Record<string, JsoDiffSampleCase>, defaultHideUnchangedNodes?: boolean) => (caseId: string) => JsoCaseStoryArgs;
 export {};
