@@ -110,7 +110,10 @@ the runner calls `npm run generate-tests` before Jest for it in both modes (and 
 files up front when they are missing). The OpenAPI compatibility suite has one test run per OAS
 version pair (`openapi-compatibility-suite-30-30`, `-30-31`, `-31-30`, `-31-31`; suites = suite ids,
 e.g. `regenerate openapi-compatibility-suite-30-31 request-body`); `graphql-compatibility-suite` is
-listed too. **Menu order** comes from `bin/screenshot-test-run-order.json` (compatibility test runs
+listed too. The shared output folder `src/it/compatibility-suite/` is **not** a test run of its own:
+folder auto-discovery skips it (`COMPATIBILITY_SUITE_DIR`), otherwise it would surface as an
+unprefixed `compatibility-suite` entry that runs every spec type's generated ITs at once and
+bypasses `ensureCompatibilityTests()`. Run compatibility ITs through the spec-type test runs only. **Menu order** comes from `bin/screenshot-test-run-order.json` (compatibility test runs
 carry `"compatibility": true` — that replaced the hard-coded `COMPATIBILITY_TEST_RUN_IDS`), which
 follows `.storybook/preview.ts`; `tests/storybook-order.test.ts` fails when a new hand-written test
 run is missing from the JSON or the JSON leaves the preview order. Adding a suite = a `preview.ts`

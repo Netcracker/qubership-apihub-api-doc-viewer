@@ -165,6 +165,8 @@ function discoverTestRuns() {
       && !knownIds.has(entry.name)
       && entry.name !== 'service'
       && entry.name !== '__image_snapshots__'
+      // Generated compatibility ITs are listed per spec type below, not as one aggregate test run.
+      && entry.name !== COMPATIBILITY_SUITE_DIR
     ) {
       const itDir = path.join(itRoot, entry.name);
       const hasSamples = fs.readdirSync(itDir).some((file) => file.endsWith('.it-test.ts'));
