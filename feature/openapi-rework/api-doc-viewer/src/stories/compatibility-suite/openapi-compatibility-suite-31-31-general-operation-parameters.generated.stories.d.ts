@@ -1,0 +1,11 @@
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { OpenApiCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<OpenApiCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddMethodInPathItem: Story;
+export declare const AddUnusedMethodInPathItem: Story;
+export declare const RemoveMethodInPathItem: Story;
+export declare const RemoveUnusedMethodInPathItem: Story;
+export declare const ReplaceInlinePathItemToRef: Story;
+export declare const ReplaceRefPathItemToInline: Story;

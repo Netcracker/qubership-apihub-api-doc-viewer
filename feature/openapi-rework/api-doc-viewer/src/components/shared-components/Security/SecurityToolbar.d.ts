@@ -12,8 +12,8 @@ type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
     severity?: NodeDiffsSeverity;
 };
 /**
- * Security toolbar: `‹ [option] [option] … ›`. The options form one non-wrapping line in a strip;
- * each arrow scrolls by one option and is disabled (gray, not interactive) at its edge.
+ * Security toolbar: `‹ [option] [option] … ›`. The options form one non-wrapping line in the shared
+ * `ArrowScrollStrip` (each arrow scrolls by one option and is disabled at its edge).
  * Shared by every security section (OpenAPI operations now, AsyncAPI servers later).
  * Design: docs/design/openapi/entities/security.md -> "Security toolbar".
  */

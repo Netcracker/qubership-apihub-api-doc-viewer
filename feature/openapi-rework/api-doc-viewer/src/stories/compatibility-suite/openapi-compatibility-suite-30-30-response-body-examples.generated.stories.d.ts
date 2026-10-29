@@ -1,0 +1,17 @@
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { OpenApiCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<OpenApiCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddAdditionalExamplesObject: Story;
+export declare const AddDescriptionOfExample: Story;
+export declare const AddExamplesObjectForResponseBody: Story;
+export declare const AddSummaryOfExample: Story;
+export declare const RemoveDescriptionOfExample: Story;
+export declare const RemoveExternalValueOfExample: Story;
+export declare const RemoveSummaryOfExample: Story;
+export declare const UpdateDescriptionOfExample: Story;
+export declare const UpdateExampleValue: Story;
+export declare const UpdateExternalValueOfExample: Story;
+export declare const UpdateNameOfExample: Story;
+export declare const UpdateSummaryOfExample: Story;

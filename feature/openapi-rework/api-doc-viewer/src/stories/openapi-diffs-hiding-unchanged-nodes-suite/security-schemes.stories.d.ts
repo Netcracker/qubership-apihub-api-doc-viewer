@@ -1,7 +1,8 @@
 import { StoryObj } from '@storybook/react-vite';
 /**
  * Security scheme cards with "hide unchanged nodes": every scheme kind unchanged (title row plus the
- * three-dots row) and changed (every row), plus cards of one alternative decided one by one.
+ * three-dots row) and changed (every row), plus cards of one alternative decided one by one, and an
+ * anonymous alternative (`{}`) change that must not reveal any card.
  * Cases are built from one template and per-scheme fragments (`hasChanges`) in
  * `packages/samples/src/openapi-diffs-hiding-unchanged-nodes.ts`, not stored as YAML.
  * Design: docs/design/openapi/features/hiding-unchanged-nodes.md
@@ -56,3 +57,5 @@ export declare const Case_18_mutual_tls_changed: Story;
 export declare const Case_19_two_schemes_first_unchanged_second_changed: Story;
 export declare const Case_20_two_schemes_first_changed_second_unchanged: Story;
 export declare const Case_21_three_schemes_all_unchanged: Story;
+export declare const Case_22_anonymous_added_cards_unchanged: Story;
+export declare const Case_23_anonymous_removed_cards_unchanged: Story;

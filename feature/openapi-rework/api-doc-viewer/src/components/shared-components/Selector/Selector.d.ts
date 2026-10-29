@@ -24,7 +24,7 @@ type SelectorProps<N extends ITreeNode, V extends object | null = object | null>
     variant: SelectorVariant;
     layoutSide?: LayoutSide;
     /**
-     * One non-wrapping line of options for a scrolling container (security toolbar); each option is
+     * One non-wrapping line of options for an `ArrowScrollStrip` (security toolbar, response codes); each option is
      * cropped with an ellipsis down to one character. Omitted = today's wrapping layout.
      */
     noWrap?: boolean;

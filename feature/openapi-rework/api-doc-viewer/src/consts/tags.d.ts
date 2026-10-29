@@ -19,3 +19,6 @@ export declare const READ_ONLY_TAG = "read-only";
 export declare const WRITE_ONLY_TAG = "write-only";
 export declare const BLUE_TAG_COLOR_SCHEMA = "ux-badge_tag-blue";
 export declare const AMBER_TAG_COLOR_SCHEMA = "ux-badge_tag-amber";
+/** The `Optional` badge of the OpenAPI Security title row (anonymous access): colors and size, `shared-styles/colors/openapi.css`. */
+export declare const OPENAPI_SECURITY_OPTIONAL_BADGE_COLOR_SCHEMA = "openapi-security-optional-badge";
+export declare const OPENAPI_SECURITY_OPTIONAL_BADGE_SIZE_CLASS = "openapi-security-optional-badge-size";

@@ -1,0 +1,15 @@
+import { Meta, StoryObj } from '@storybook/react-vite';
+import { OpenApiCompatibilitySuiteStoryArgs } from '../utils/compatibility-suite-utils';
+declare const meta: Meta<OpenApiCompatibilitySuiteStoryArgs>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const AddExclusiveMaximum: Story;
+export declare const AddExclusiveMinimum: Story;
+export declare const AddSiblingDescriptionForRef: Story;
+export declare const AddUnionType: Story;
+export declare const ChangeFromInclusiveMaximumToExclusiveMaximum: Story;
+export declare const ChangeFromInclusiveMinimumToExclusiveMinimum: Story;
+export declare const NullableEquivalentToNull: Story;
+export declare const ReplaceBooleanExclusiveMaximumToNumeric: Story;
+export declare const ReplaceBooleanExclusiveMinimumToNumeric: Story;
+export declare const UnionTypeEquivalentToAnyOf: Story;

@@ -60,3 +60,5 @@ export declare const Case_29_refresh_url_removed: Story;
 export declare const Case_30_flow_scope_added: Story;
 export declare const Case_31_flow_scope_removed: Story;
 export declare const Case_32_flow_scope_description_changed: Story;
+export declare const Case_33_anonymous_alternative_replaced_by_api_key: Story;
+export declare const Case_34_api_key_alternative_replaced_by_anonymous: Story;

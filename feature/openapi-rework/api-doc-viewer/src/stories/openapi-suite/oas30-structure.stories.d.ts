@@ -54,3 +54,4 @@ export declare const Case_06_security_disabled: Story;
 export declare const Case_07_security_anonymous_alternative: Story;
 export declare const Case_08_deprecated_operation: Story;
 export declare const Case_09_deprecated_operation_without_summary: Story;
+export declare const Case_10_security_anonymous_only: Story;

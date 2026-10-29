@@ -5,6 +5,8 @@ import { LayoutMode } from '../../../types/LayoutMode';
 export type BadgeWithDiffsProps = {
     label: string;
     colorSchema?: string;
+    /** Classes kept in every look, the diff look included (e.g. a font size); `colorSchema` is replaced there. */
+    sizeClassName?: string;
     layoutMode: LayoutMode;
     layoutSide: LayoutSide;
     diff?: Diff;
