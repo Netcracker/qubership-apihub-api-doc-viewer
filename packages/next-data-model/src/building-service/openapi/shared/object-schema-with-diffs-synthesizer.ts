@@ -1,8 +1,9 @@
 import { Diff, DiffAction, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
-import { DiffsRecord, isObject, isString } from "../../../utilities"
+import { DiffsRecord, isNonEmptyString, isObject, isString } from "../../../utilities"
 import {
+  CUSTOM_ANNOTATIONS_KEY,
   MEDIA_TYPE_CUSTOM_ANNOTATION_KEY,
   MEDIA_TYPE_CUSTOM_ANNOTATION_LABEL,
   OpenApiObjectSchemaSynthesizer,
@@ -30,7 +31,6 @@ type SchemaSource = {
   readonly merged: unknown
 }
 
-const CUSTOM_ANNOTATIONS_KEY = 'customAnnotations'
 const DESCRIPTION_KEY = 'description'
 const DEPRECATED_KEY = 'deprecated'
 const RESERVED_SCHEMA_KEYS: ReadonlySet<string> = new Set([DESCRIPTION_KEY, CUSTOM_ANNOTATIONS_KEY])
@@ -131,7 +131,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     }
 
     // Description: entry description wins over the schema root; the diff is computed from the SHOWN values.
-    this.applyShownValue(property, DESCRIPTION_KEY, entryValue, entryContext, rootValue, isSameSource, value => (isString(value) && value.length > 0 ? value : undefined))
+    this.applyShownValue(property, DESCRIPTION_KEY, entryValue, entryContext, rootValue, isSameSource, value => (isNonEmptyString(value) ? value : undefined))
     // Deprecated flag: same precedence; absent = false.
     this.applyShownFlag(property, entryValue, entryContext, rootValue, isSameSource)
     // Extensions: entry-level x-* moved flat into the property; entry wins over the schema root.

@@ -61,8 +61,13 @@ export type SecurityTreeNodeValue<T extends SecurityTreeNodeKind> =
 
 export type SecurityAnyTreeNodeValue = SecurityTreeNodeValue<SecurityTreeNodeKind>
 
+/** Value props of each security kind, typed by the kind's value. */
+export type SecurityNodeValueProps = {
+  readonly [K in SecurityTreeNodeKind]: readonly (keyof SecurityTreeNodeValue<K>)[]
+}
+
 /** Value props per security kind: the fields a node value is picked from (plain and with diffs). */
-export const SECURITY_NODE_VALUE_PROPS: Readonly<Record<SecurityTreeNodeKind, readonly string[]>> = {
+export const SECURITY_NODE_VALUE_PROPS: SecurityNodeValueProps = {
   [SecurityTreeNodeKinds.SECURITY]: ['isInheritedFromDocument', 'allowsAnonymous'] satisfies (keyof SecurityTreeNodeValueTypeSecurity)[],
   [SecurityTreeNodeKinds.SECURITY_REQUIREMENT]: ['schemeNames'] satisfies (keyof SecurityTreeNodeValueTypeRequirement)[],
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: [

@@ -12,41 +12,46 @@ import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS, securityFieldDiffK
 /**
  * Aggregators of the Security section kinds for the API types whose own aggregators are not
  * record-driven (AsyncAPI): the security with-diffs builders prepare the records, these map them to
- * rows exactly as the OpenAPI tree does. Stateless; cached per kind and node type.
+ * rows exactly as the OpenAPI tree does. Stateless; one instance per API type's node types (`V`,
+ * `K`, `M`), cached per kind inside it.
  */
-export class SecurityNodeAggregators {
-  private static readonly cache = new Map<string, unknown>()
+export class SecurityNodeAggregators<V extends object | boolean | null, K extends string, M extends object> {
+  private readonly nodeDiffsByKind = new Map<SecurityTreeNodeKind, RecordDrivenNodeDiffsAggregator<V, K, M>>()
+  private readonly severitiesByKind = new Map<SecurityTreeNodeKind, RecordDrivenNodeDiffsSeveritiesAggregator<V>>()
+  private readonly descendantDiffsAggregator = new RecordDrivenNodeDescendantDiffsAggregator()
+  private readonly diffsSummaryAggregator = new RecordDrivenNodeDiffsSummaryAggregator()
+  private readonly descendantDiffsSummaryAggregator = new RecordDrivenNodeDescendantDiffsSummaryAggregator()
 
-  private static cached<T>(key: string, create: () => T): T {
-    const existing = SecurityNodeAggregators.cache.get(key)
-    if (existing) {
-      return existing as T
+  public nodeDiffs(kind: SecurityTreeNodeKind): RecordDrivenNodeDiffsAggregator<V, K, M> {
+    let aggregator = this.nodeDiffsByKind.get(kind)
+    if (!aggregator) {
+      aggregator = new RecordDrivenNodeDiffsAggregator<V, K, M>(securityFieldDiffKeys(kind))
+      this.nodeDiffsByKind.set(kind, aggregator)
     }
-    const created = create()
-    SecurityNodeAggregators.cache.set(key, created)
-    return created
+    return aggregator
   }
 
-  public static nodeDiffs<V extends object | boolean | null, K extends string, M extends object>(kind: SecurityTreeNodeKind): RecordDrivenNodeDiffsAggregator<V, K, M> {
-    return SecurityNodeAggregators.cached(`diffs:${kind}`, () => new RecordDrivenNodeDiffsAggregator<V, K, M>(securityFieldDiffKeys(kind)))
+  public severities(kind: SecurityTreeNodeKind): RecordDrivenNodeDiffsSeveritiesAggregator<V> {
+    let aggregator = this.severitiesByKind.get(kind)
+    if (!aggregator) {
+      aggregator = new RecordDrivenNodeDiffsSeveritiesAggregator<V>(
+        SECURITY_FIELD_PLACEMENTS[kind] ?? {},
+        SECURITY_NODE_PLACEMENTS[kind] ?? [NodeDiffsSeverityPlacemennt.TitleRow],
+      )
+      this.severitiesByKind.set(kind, aggregator)
+    }
+    return aggregator
   }
 
-  public static severities<V extends object | boolean | null>(kind: SecurityTreeNodeKind): RecordDrivenNodeDiffsSeveritiesAggregator<V> {
-    return SecurityNodeAggregators.cached(`severities:${kind}`, () => new RecordDrivenNodeDiffsSeveritiesAggregator<V>(
-      SECURITY_FIELD_PLACEMENTS[kind] ?? {},
-      SECURITY_NODE_PLACEMENTS[kind] ?? [NodeDiffsSeverityPlacemennt.TitleRow],
-    ))
+  public descendantDiffs(): RecordDrivenNodeDescendantDiffsAggregator {
+    return this.descendantDiffsAggregator
   }
 
-  public static descendantDiffs(): RecordDrivenNodeDescendantDiffsAggregator {
-    return SecurityNodeAggregators.cached('descendantDiffs', () => new RecordDrivenNodeDescendantDiffsAggregator())
+  public diffsSummary(): RecordDrivenNodeDiffsSummaryAggregator {
+    return this.diffsSummaryAggregator
   }
 
-  public static diffsSummary(): RecordDrivenNodeDiffsSummaryAggregator {
-    return SecurityNodeAggregators.cached('diffsSummary', () => new RecordDrivenNodeDiffsSummaryAggregator())
-  }
-
-  public static descendantDiffsSummary(): RecordDrivenNodeDescendantDiffsSummaryAggregator {
-    return SecurityNodeAggregators.cached('descendantDiffsSummary', () => new RecordDrivenNodeDescendantDiffsSummaryAggregator())
+  public descendantDiffsSummary(): RecordDrivenNodeDescendantDiffsSummaryAggregator {
+    return this.descendantDiffsSummaryAggregator
   }
 }

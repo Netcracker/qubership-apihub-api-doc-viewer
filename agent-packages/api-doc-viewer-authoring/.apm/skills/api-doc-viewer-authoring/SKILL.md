@@ -1002,7 +1002,7 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
 | --- | --- | --- | --- |
 | Card | `SecuritySchemeCardBase` (`presentation: SecurityPresentation`) | `OpenApiSecuritySchemeCard` | `AsyncApiSecuritySchemeCard` |
 | Toolbar | `SecurityToolbarRow` (`labels`, `selected`, `onSelect`) over `SecurityToolbar` | selection in `OpenApiViewStateContext` | local `useState` |
-| Section | `buildSecurityToolbarBlock(node, render)`, `buildSecurityContentBlocks(selected, renderCard)`, `SECURITY_SECTION_TITLE` | `buildSecurityBlock` (h2, operation-level block) | `AsyncApiSecuritySection` (h3 `PRIMARY` in `MessageNodeViewer`, h5 `SECONDARY` in `MessageChannelServerNodeViewer`) |
+| Section | `security-section-blocks.ts` (`buildSecurityToolbarBlock(node, render)`, `buildSecurityContentBlocks(selected, renderCard)`), `SECURITY_SECTION_TITLE` | `security-blocks.tsx` `buildSecurityBlock` (h2, operation-level block) | `AsyncApiSecuritySection` (h3 `PRIMARY` in `MessageNodeViewer`, h5 `SECONDARY` in `MessageChannelServerNodeViewer`) |
 
 - **Navigate with the security guards.** `utils/security/node-type-checkers.ts`
   (`getSecurityChildren`, `isSecuritySchemeNode`, `resolveSelectedSecurityAlternative`, …) and
@@ -1048,10 +1048,13 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
   level=…`). Never decide a colour, height or "separator here?" in React. A Body's outer edges come
   from `OpenApiBlockEdges.body(title, description, selectedMediaType)`; `MediaTypeContentSection`
   plans the same elements inside, so the parent and the component agree.
-- **Blocks, not sections.** Each container exports a pure builder (`buildRequestBlock`,
+- **Blocks, not sections.** Each container has a pure builder (`buildRequestBlock`,
   `buildResponsesBlock`, `buildSecurityBlock`, `buildParametersBlock`, `buildExtensionsBlock`,
   `buildResponseBlocks`) returning `{ id, head, tail, payload }`, so the parent level can plan before
-  rendering. Pass the built child blocks to the container component — do not build twice. Shared
+  rendering. Builders live in kebab-case `*-blocks.tsx` modules next to the component files
+  (`request-blocks.tsx` → `RequestNodeViewer.tsx`), never in a file that declares components: mixing
+  them disables Fast Refresh (`react-refresh/only-export-components`). Pass the built child blocks
+  to the container component — do not build twice. Shared
   components that must be split into elements export their pieces (`ExtensionsSectionTitleRow`,
   `ExtensionsSectionContent`) and keep the composed component byte-identical for AsyncAPI.
 - **Memoised separators.** The planner interns separators by `signature` (equal separators are one

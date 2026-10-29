@@ -1,4 +1,7 @@
-import { OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse } from "./types/node-value"/** The rows of the operation header block, in their fixed display order. */
+import { isNonEmptyString } from "../../utilities"
+import { OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse } from "./types/node-value"
+
+/** The rows of the operation header block, in their fixed display order. */
 export const OPENAPI_OPERATION_HEADER_ROWS = ['title', 'operationId', 'address', 'description', 'externalDocs'] as const
 
 export type OpenApiOperationHeaderRow = typeof OPENAPI_OPERATION_HEADER_ROWS[number]
@@ -15,10 +18,6 @@ export type OpenApiOperationRowVisibility = {
   readonly deprecatedTagRow: OpenApiDeprecatedTagRow
 }
 
-function hasText(value: unknown): boolean {
-  return typeof value === 'string' && value.length > 0
-}
-
 /**
  * Row visibility of the OpenAPI layer. Works for plain and merged trees alike: a merged node value
  * keeps removed values (E18), so "has content on either side" is "has a merged value".
@@ -27,13 +26,13 @@ function hasText(value: unknown): boolean {
  */
 export class OpenApiNodeVisibility {
   public static resolveOperation(value: OpenApiTreeNodeValueTypeOperation | null, noHeading: boolean): OpenApiOperationRowVisibility {
-    const showTitle = !noHeading && hasText(value?.title)
-    const showOperationId = hasText(value?.operationId)
+    const showTitle = !noHeading && isNonEmptyString(value?.title)
+    const showOperationId = isNonEmptyString(value?.operationId)
     return {
       showTitle,
       showOperationId,
-      showExternalDocs: hasText(value?.externalDocs?.url),
-      showDescription: hasText(value?.description),
+      showExternalDocs: isNonEmptyString(value?.externalDocs?.url),
+      showDescription: isNonEmptyString(value?.description),
       deprecatedTagRow: showTitle ? 'title' : showOperationId ? 'operationId' : 'address',
     }
   }
@@ -51,10 +50,10 @@ export class OpenApiNodeVisibility {
   }
 
   public static showRequestBodyDescription(value: OpenApiTreeNodeValueTypeRequestBody | null): boolean {
-    return hasText(value?.description)
+    return isNonEmptyString(value?.description)
   }
 
   public static showResponseDescription(value: OpenApiTreeNodeValueTypeResponse | null): boolean {
-    return hasText(value?.description)
+    return isNonEmptyString(value?.description)
   }
 }

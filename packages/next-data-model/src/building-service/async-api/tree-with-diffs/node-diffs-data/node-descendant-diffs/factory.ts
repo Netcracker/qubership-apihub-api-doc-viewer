@@ -5,7 +5,7 @@ import { AsyncApiNodeDescendantDiffsAggregatorKindBindings } from "./kind-bindin
 import { AsyncApiNodeDescendantDiffsAggregatorKindMessageContent } from "./kind-message-content";
 import { AsyncApiNodeDescendantDiffsAggregatorKindServers } from "./kind-servers";
 import { isSecurityTreeNodeKind } from "@apihub/next-data-model/model/security/types/node-kind";
-import { SecurityNodeAggregators } from "@apihub/next-data-model/building-service/security/tree-with-diffs/aggregators";
+import { ASYNC_API_SECURITY_NODE_AGGREGATORS } from "../security-node-aggregators";
 
 export class AsyncApiNodeDescendantDiffsAggregatorFactory {
   private static readonly instances = new Map<AsyncApiTreeNodeKind | null, AbstractNodeDescendantsDiffsAggregator>();
@@ -15,7 +15,7 @@ export class AsyncApiNodeDescendantDiffsAggregatorFactory {
   ): AbstractNodeDescendantsDiffsAggregator {
     // Security sections: record-driven, shared with OpenAPI (records prepared by the security builders).
     if (isSecurityTreeNodeKind(kind)) {
-      return SecurityNodeAggregators.descendantDiffs();
+      return ASYNC_API_SECURITY_NODE_AGGREGATORS.descendantDiffs();
     }
     switch (kind) {
       case AsyncApiTreeNodeKinds.BINDINGS:

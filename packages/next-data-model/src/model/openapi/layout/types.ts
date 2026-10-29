@@ -81,6 +81,11 @@ export type OpenApiFrameRow = {
   readonly badge?: DiffType
 }
 
+/** View state of a collapsible section (Body) as its edges see it: collapsed = its title row only. */
+export type OpenApiSectionViewState = {
+  readonly expanded: boolean
+}
+
 /** Planning options of one level. */
 export type OpenApiPlanOptions = {
   /** Also emit the first element's upper half and the last element's lower half (viewer edges, inside a card). */

@@ -2,7 +2,6 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiChildren, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
 import { resolveResponseCodeToneClass } from "@apihub/utils/openapi/response-code-tone"
 import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
-import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -14,41 +13,15 @@ import { SelectorVariant } from "../shared-components/Selector/types"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
-import { OPENAPI_SECTION_ORDER } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
-import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
 import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
 import { OptionKeyText } from "./OptionKeyText"
-import { OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
-import { buildResponseBlocks } from "./response-blocks"
+import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
 export const RESPONSES_SECTION_TITLE = 'Responses'
 
-type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
+export type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
-type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
-
-/** The Responses section as a layout block: its h2 title row with the code selector, then its sub-blocks - elements of one level. */
-export function buildResponsesBlock(node: ResponsesNode, extensionsNode: ExtensionsNode | undefined, view: OpenApiViewState): OpenApiBlock {
-  const sections = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): OpenApiBlock[] => {
-    if (sectionId === 'selectedResponse') {
-      const selected = resolveSelectedResponse(node, view.selection)
-      return selected ? buildResponseBlocks(selected, view) : []
-    }
-    return extensionsNode
-      ? [buildExtensionsBlock(sectionId, { node: extensionsNode, variant: TextValueVariant.h3, testId: 'openapi-responses-extensions-section' }, view)]
-      : []
-  })
-  const children: [OpenApiBlock, ...OpenApiBlock[]] = [
-    { id: 'title', ...OpenApiBlockEdges.single(OpenApiBlockEdges.responsesTitleRow(node)), payload: () => <ResponsesTitleRow key="title" node={node} /> },
-    ...sections,
-  ]
-  return {
-    id: 'responses',
-    ...OpenApiBlockEdges.container(children),
-    payload: () => <ResponsesNodeViewer key="responses" blocks={children} />,
-  }
-}
 
 type ResponsesNodeViewerProps = {
   /** Its elements (title row, sections), built by `buildResponsesBlock` (the parent needs them for the section's own edges). */
@@ -57,7 +30,7 @@ type ResponsesNodeViewerProps = {
 
 /**
  * "Responses" (h2) with the toned response-code selector in its subheader, the selected response's
- * sections, and the Responses Object extensions - in config order.
+ * sections, and the Responses Object extensions - in config order. Layout block: `responses-blocks.tsx`.
  */
 export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) => (
   <div data-testid="openapi-responses-section" className="flex flex-col">
@@ -65,11 +38,15 @@ export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) =>
   </div>
 )
 
+type ResponsesTitleRowProps = {
+  node: ResponsesNode
+}
+
 /**
  * "Responses" (h2) with the code selector: one line of codes in the shared `ArrowScrollStrip`, which
  * takes the rest of the row. The selection lives in the operation view state.
  */
-const ResponsesTitleRow: FC<{ node: ResponsesNode }> = ({ node }) => {
+export const ResponsesTitleRow: FC<ResponsesTitleRowProps> = ({ node }) => {
   const { selection, select } = useOpenApiViewState()
   const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
 

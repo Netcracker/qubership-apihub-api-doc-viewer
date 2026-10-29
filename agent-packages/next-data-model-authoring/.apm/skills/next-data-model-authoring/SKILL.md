@@ -695,7 +695,7 @@ specialisations — extend it, do not fork a per-spec copy.
 | --- | --- | --- |
 | Kinds / values / alias | `model/security/types/` (`SecurityTreeNodeKinds`, `SECURITY_NODE_VALUE_PROPS`, `SecurityTreeNode<K>`) | spread into `OpenApiTreeNodeKinds` / `AsyncApiTreeNodeKinds`; value maps `T extends SecurityTreeNodeKind ? SecurityTreeNodeValue<T>` |
 | Spec builders | `building-service/security/` — `SecuritySpecBuilder<TInput>` (abstract), `SecuritySpecDiffsDecorator` (composed), `getSecurityCrawlRules()` | `<Spec>SecuritySpecBuilder` + `<Spec>SecuritySpecWithDiffsBuilder extends` it; the spec transformer's `createSecuritySpecBuilder()` is the only with-diffs override |
-| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + `aggregation-tables.ts` | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `SecurityNodeAggregators` |
+| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + `aggregation-tables.ts` | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `ASYNC_API_SECURITY_NODE_AGGREGATORS` (one typed `SecurityNodeAggregators<V, K, M>` instance per API type — no untyped cache, no casts) |
 | Row diffs | `SecurityRowDiffs` | — |
 | Labels / visibility | `SecurityDisplayLabels`, `SecurityNodeVisibility`, `SecurityPresentation` | `model/<spec>/security-presentation.ts` (`*_SECURITY_DISPLAY_LABELS`, `*_SECURITY_NODE_VISIBILITY`, `*_SECURITY_PRESENTATION`) |
 

@@ -3,7 +3,7 @@ import { AsyncApiTreeNodeKind } from "@apihub/next-data-model/model/async-api/ty
 import { AsyncApiTreeNodeValue } from "@apihub/next-data-model/model/async-api/types/node-value";
 import { AsyncApiNodeDiffsSeveritiesAggregatorKindAny } from "./kind-any";
 import { isSecurityTreeNodeKind } from "@apihub/next-data-model/model/security/types/node-kind";
-import { SecurityNodeAggregators } from "@apihub/next-data-model/building-service/security/tree-with-diffs/aggregators";
+import { ASYNC_API_SECURITY_NODE_AGGREGATORS } from "../security-node-aggregators";
 
 export class AsyncApiNodeDiffsSeveritiesAggregatorFactory {
   private static readonly instances = new Map<
@@ -16,7 +16,7 @@ export class AsyncApiNodeDiffsSeveritiesAggregatorFactory {
   ): AbstractNodeDiffsSeveritiesAggregator<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null> {
     // Security sections: record-driven, shared with OpenAPI (records prepared by the security builders).
     if (isSecurityTreeNodeKind(kind)) {
-      return SecurityNodeAggregators.severities<AsyncApiTreeNodeValue<AsyncApiTreeNodeKind> | null>(kind);
+      return ASYNC_API_SECURITY_NODE_AGGREGATORS.severities(kind);
     }
     switch (kind) {
       default:

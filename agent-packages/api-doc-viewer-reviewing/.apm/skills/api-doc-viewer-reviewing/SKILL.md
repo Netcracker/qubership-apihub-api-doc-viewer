@@ -1,6 +1,6 @@
 ---
 name: api-doc-viewer-reviewing
-description: Architecture review and refactoring of one api-doc-viewer API type stack (JSON Schema, AsyncAPI, DDL API, JSO) — shared rules, report format, and per-API-type briefs.
+description: Architecture review and refactoring of one api-doc-viewer API type stack (JSON Schema, AsyncAPI, DDL API, JSO, OpenAPI) — shared rules, report format, and per-API-type briefs.
 ---
 
 # Reviewing an API type stack
@@ -15,6 +15,7 @@ apply to every API type; scope and specifics live in the brief for that type:
 | AsyncAPI | [review/async-api.md](review/async-api.md) |
 | DDL API | [review/ddlapi.md](review/ddlapi.md) |
 | JSO | [review/jso.md](review/jso.md) |
+| OpenAPI | [review/openapi.md](review/openapi.md) |
 
 GraphQL is legacy and is not reviewed.
 
@@ -69,7 +70,8 @@ GraphQL is legacy and is not reviewed.
 - Never change npm scripts, TypeScript, Vite, ESLint, or other configs — list proposals in a
   separate report section for approval.
 - Never run npm scripts except the static Storybook server. Type-check and test by invoking
-  `node_modules/.bin/tsc --noEmit` and `node_modules/.bin/jest` directly.
+  `tsc --noEmit -p .` and `jest` directly from each package directory; the binaries are hoisted to
+  the repository root (`<repo>/node_modules/.bin/`), there is no package-local `node_modules/.bin/`.
 - Do not treat other API types as best practice; they may be cited as better solutions.
 
 ## Report

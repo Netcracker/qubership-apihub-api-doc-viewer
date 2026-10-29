@@ -29,6 +29,12 @@ export const BODY_SECTION_TITLE = 'Body'
 /** Root property name of a wrapped body schema (AsyncAPI parity). */
 export const WRAPPED_BODY_SCHEMA_TITLE = 'Type'
 
+/** A row between the Body header and the schema (the body description): its layout edge and how to render it. */
+export type MediaTypeContentDescription = {
+  readonly edge: OpenApiBlockEdge
+  readonly render: () => ReactElement
+}
+
 type MediaTypeContentSectionProps = {
   testId: string
   /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */
@@ -46,7 +52,7 @@ type MediaTypeContentSectionProps = {
   /** Layout edge of the title row (next-data-model `OpenApiBlockEdges.requestBodyTitleRow` / `responseBodyTitleRow`). */
   titleEdge: OpenApiBlockEdge
   /** The row between the header and the schema (the body description) and its edge; omitted when hidden. */
-  description?: { readonly edge: OpenApiBlockEdge, readonly render: () => ReactElement }
+  description?: MediaTypeContentDescription
   /** Node id the section's collapsed state is kept under (view state); expanded by default. */
   sectionNodeId: string
 }

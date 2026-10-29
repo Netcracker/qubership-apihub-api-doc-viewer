@@ -29,15 +29,15 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import '../shared-styles/preceded-by.css'
-import { OPENAPI_SECTION_ORDER } from "./config/section-order"
+import { OPENAPI_SECTION_ORDER, OpenApiSectionIds } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
-import { buildExtensionsBlock } from "./OpenApiExtensionsNodeViewer"
+import { buildExtensionsBlock } from "./extensions-blocks"
 import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
 import { useOpenApiViewerContext } from "./OpenApiViewerContext"
 import { OpenApiViewState, OpenApiViewStateContext } from "./OpenApiViewStateContext"
-import { buildRequestBlock } from "./RequestNodeViewer"
-import { buildResponsesBlock } from "./ResponsesNodeViewer"
-import { buildSecurityBlock } from "./SecurityNodeViewer"
+import { buildRequestBlock } from "./request-blocks"
+import { buildResponsesBlock } from "./responses-blocks"
+import { buildSecurityBlock } from "./security-blocks"
 
 export const OPERATION_ID_ROW_LABEL = 'Operation ID'
 const SECONDARY_TEXT_COLOR = '#626D82'
@@ -101,15 +101,15 @@ function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationR
 
   const sections = OPENAPI_SECTION_ORDER.operation.flatMap((sectionId): OpenApiBlock[] => {
     switch (sectionId) {
-      case 'security':
+      case OpenApiSectionIds.SECURITY:
         return security ? [buildSecurityBlock(security, view)] : []
-      case 'operationExtensions':
+      case OpenApiSectionIds.OPERATION_EXTENSIONS:
         return operationExtensions
           ? [buildExtensionsBlock(sectionId, { node: operationExtensions, variant: TextValueVariant.h2, testId: 'openapi-extensions-section' })]
           : []
-      case 'request':
+      case OpenApiSectionIds.REQUEST:
         return request ? [buildRequestBlock(request, view)] : []
-      case 'responses':
+      case OpenApiSectionIds.RESPONSES:
         return responses ? [buildResponsesBlock(responses, responsesExtensions, view)] : []
       default:
         return []

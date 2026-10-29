@@ -1,4 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { DisplayMode } from "@apihub/types/DisplayMode"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
@@ -352,7 +353,7 @@ function addFlowRows(
   flow: FlowNode,
   scheme: SecuritySchemeNode,
   presentation: SecurityPresentation,
-  displayMode: ReturnType<typeof useDisplayMode>,
+  displayMode: DisplayMode,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
 ): void {
@@ -477,7 +478,13 @@ function addScopeRows(
 }
 
 /** Gray type text in the title row (JSON Schema / DDL type-label look); marked yellow / green / red when the type was replaced / appeared / disappeared. */
-const SchemeTypeText: FC<{ node: SecuritySchemeNode, presentation: SecurityPresentation, layoutSide: LayoutSide }> = ({ node, presentation, layoutSide }) => {
+type SchemeTypeTextProps = {
+  node: SecuritySchemeNode
+  presentation: SecurityPresentation
+  layoutSide: LayoutSide
+}
+
+const SchemeTypeText: FC<SchemeTypeTextProps> = ({ node, presentation, layoutSide }) => {
   const label = presentation.labels.securitySchemeType(SecurityRowDiffs.NodeLevel.resolveSideField(node, 'type', layoutSide))
   if (!label) {
     return <></>

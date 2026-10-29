@@ -1,7 +1,7 @@
 import { SECURITY_NODE_VALUE_PROPS } from "../../../../model/security/types/node-value"
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../model/openapi/types/node-kind"
 import { OpenApiTreeNodeMeta } from "../../../../model/openapi/types/node-meta"
-import { OpenApiAnyTreeNodeValue, OpenApiTreeNodeValueTypeExtensions, OpenApiTreeNodeValueTypeMediaType, OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeParameters, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse, OpenApiTreeNodeValueTypeResponseHeaders } from "../../../../model/openapi/types/node-value"
+import { OpenApiAnyTreeNodeValue, OpenApiTreeNodeValue, OpenApiTreeNodeValueTypeExtensions, OpenApiTreeNodeValueTypeMediaType, OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeParameters, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse, OpenApiTreeNodeValueTypeResponseHeaders } from "../../../../model/openapi/types/node-value"
 import { isObject, isObjectWithStringKeys, isString } from "../../../../utilities"
 import { AbstractNodeDataBuilder, NodeDataPickFunction } from "../../../abstract/tree/node-data/builder"
 
@@ -21,8 +21,13 @@ const RESPONSE_VALUE_PROPS = ['code', 'codeClass', 'description'] as const satis
 
 const RESPONSE_HEADERS_VALUE_PROPS = ['schema'] as const satisfies readonly (keyof OpenApiTreeNodeValueTypeResponseHeaders)[]
 
+/** Value props of each kind, typed by the kind's value. */
+export type OpenApiNodeValueProps = {
+  readonly [K in OpenApiTreeNodeKind]: readonly (keyof OpenApiTreeNodeValue<K>)[]
+}
+
 /** Value props per kind. Also the allow-list of field diffs a node aggregates. */
-export const OPENAPI_NODE_VALUE_PROPS: Readonly<Record<OpenApiTreeNodeKind, readonly string[]>> = {
+export const OPENAPI_NODE_VALUE_PROPS: OpenApiNodeValueProps = {
   [OpenApiTreeNodeKinds.OPERATION]: OPERATION_VALUE_PROPS,
   [OpenApiTreeNodeKinds.SECURITY]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.SECURITY],
   [OpenApiTreeNodeKinds.SECURITY_REQUIREMENT]: SECURITY_NODE_VALUE_PROPS[OpenApiTreeNodeKinds.SECURITY_REQUIREMENT],
@@ -59,7 +64,15 @@ export class OpenApiNodeDataBuilder extends AbstractNodeDataBuilder<OpenApiAnyTr
     if (!isObjectWithStringKeys(value)) {
       return null
     }
-    // `pick` keeps only the listed props; the pick lists are checked against the value types above.
-    return pick<OpenApiAnyTreeNodeValue>(value, OPENAPI_NODE_VALUE_PROPS[kind] as readonly (keyof OpenApiAnyTreeNodeValue)[])
+    return this.pickValue(kind, value, pick)
+  }
+
+  /** The kind's value: only its listed props (`OPENAPI_NODE_VALUE_PROPS`, typed per kind). */
+  private pickValue<K extends OpenApiTreeNodeKind>(
+    kind: K,
+    value: Record<string, unknown>,
+    pick: NodeDataPickFunction,
+  ): OpenApiTreeNodeValue<K> | null {
+    return pick<OpenApiTreeNodeValue<K>>(value, OPENAPI_NODE_VALUE_PROPS[kind])
   }
 }

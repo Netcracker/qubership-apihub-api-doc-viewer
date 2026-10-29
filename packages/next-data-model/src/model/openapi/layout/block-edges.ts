@@ -8,7 +8,7 @@ import { SecurityRowDiffs } from "../../security/tree-with-diffs/row-diffs"
 import { OpenApiRowDiffs } from "../tree-with-diffs/row-diffs"
 import { hasNodeDiffs, RowDiffsNode } from "../../abstract/tree-with-diffs/row-diffs-base"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
-import { OpenApiBlockEdge, OpenApiBlockEdgePair, OpenApiEdgeTones } from "./types"
+import { OpenApiBlockEdge, OpenApiBlockEdgePair, OpenApiEdgeTones, OpenApiSectionViewState } from "./types"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
 /** Any node of a row-based tree: the OpenAPI tree, or a Security section mounted in another API type's tree (AsyncAPI). */
@@ -115,7 +115,7 @@ export class OpenApiBlockEdges {
     title: OpenApiBlockEdge,
     description: OpenApiBlockEdge | undefined,
     selectedMediaType: AnyOpenApiNode | undefined,
-    state: { readonly expanded: boolean } = { expanded: true },
+    state: OpenApiSectionViewState = { expanded: true },
   ): OpenApiBlockEdgePair {
     if (!state.expanded) {
       return OpenApiBlockEdges.single(title)

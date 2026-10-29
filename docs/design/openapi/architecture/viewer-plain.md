@@ -1,70 +1,81 @@
 # OpenAPI — viewer, plain
 
-Status: **implemented** (first iteration; deviations in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md)). Paths are relative to
-`packages/api-doc-viewer/src/components/OpenApiOperationViewer/`. Abstract layer:
-[../../shared/architecture/viewer-plain.md](../../shared/architecture/viewer-plain.md). Row stack:
-[../features/operation-viewer.md](../features/operation-viewer.md#row-stack).
+Status: **implemented**; diagram refreshed to the code on 2026-10-29
+([../notes/2026-10-architecture-review.md](../notes/2026-10-architecture-review.md), D1). Decisions
+behind this shape: V1–V11 in [../notes/2026-10-implementation-decisions.md](../notes/2026-10-implementation-decisions.md).
+Paths are relative to `packages/api-doc-viewer/src/components/OpenApiOperationViewer/`. Abstract
+layer: [../../shared/architecture/viewer-plain.md](../../shared/architecture/viewer-plain.md). Row
+stack: [../features/operation-viewer.md](../features/operation-viewer.md#row-stack).
 
 ```mermaid
 flowchart TB
-  Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext"]
-  Operation["OperationNodeViewer.tsx<br/>title (h1) + deprecated tag · 'Operation ID:' + value (TextRow label) · AddressRow ·<br/>description · ExternalDocsRow · header + section spacing (one pass)"]
-  Security["SecurityNodeViewer.tsx<br/>Security (h2) · alternatives Selector row (always)"]
-  Card["OpenApiSecuritySchemeCard.tsx → shared SecuritySchemeCardBase<br/>framed (per-row framePosition) · title (h4) + type badge ·<br/>description · detail AdditionalInfoRows"]
-  Flow["shared-components/Security/SecurityRows.tsx<br/>flow header · URL props (links) · Scopes toggle · scope rows"]
-  Extensions["shared-components/ExtensionsSection<br/>Extensions (h2)"]
-  Request["RequestNodeViewer.tsx<br/>Request (h2)"]
-  Params["ParametersNodeViewer.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies (h3)"]
-  Body["RequestNodeViewer.tsx (request body viewer)<br/>media-type selection from OpenApiViewStateContext"]
-  BodyHeader["MediaTypeContentSection.tsx<br/>Body (h3) + required * · media-type Selector (+ required tag) · description · schema"]
-  Responses["ResponsesNodeViewer.tsx<br/>Responses (h2) + toned code Selector"]
-  Response["response-blocks.tsx<br/>description · Headers (h3) · Body header"]
-  MediaSchema["OpenApiSchemaViewer.tsx<br/>wrapJsonSchemaForViewer('Type', …) in MediaTypeContentSection"]
-  Layout["OpenApiLayout.tsx · SeparatorRow · BadgeStub<br/>one container level: blocks + separator rows"]
-  LayoutData["next-data-model model/openapi/layout<br/>OpenApiSpacingConfig · OpenApiBlockEdges · OpenApiLayoutPlanner"]
-  Visibility["next-data-model<br/>OpenApiNodeVisibilityManagerKind* · display labels"]
-  JsonSchema["JsonSchemaViewer<br/>(SUPPRESS_ROOT_NESTING_INDICATOR)"]
-  Jso["JsoViewer"]
-  SharedRows["shared-components<br/>TitleRow · MarkdownTextRow · AdditionalInfoRow · TextRow ·<br/>AddressRow · ExternalDocsRow · Selector (tone)"]
+  Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext (spacing) ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext · CSS variables"]
+  Operation["OperationNodeViewer.tsx<br/>owns OpenApiViewStateContext (selection · collapsed) ·<br/>header rows: title (h1) + deprecated tag · Operation ID · AddressRow · description · ExternalDocsRow ·<br/>sections in OPENAPI_SECTION_ORDER (config/section-order.ts)"]
+  Security["SecurityNodeViewer.tsx · security-blocks.tsx<br/>Security (h2) + Optional badge · SecurityToolbarRow"]
+  SecBase["shared-components/Security/<br/>SecuritySectionBase · security-section-blocks · SecurityToolbar (ArrowScrollStrip)"]
+  Card["OpenApiSecuritySchemeCard.tsx → SecuritySchemeCardBase<br/>frame rows · title (h4) + type text · description · label / value props"]
+  SecRows["shared-components/Security/SecurityRows.tsx<br/>SecurityRow · flow header · Scopes toggle · scope rows · SecurityFrameRow"]
+  Extensions["OpenApiExtensionsNodeViewer.tsx · extensions-blocks.tsx<br/>shared ExtensionsSection (h2 operation · h3 collapsible response / Responses Object)"]
+  Request["RequestNodeViewer.tsx · request-blocks.tsx<br/>Request (h2) · request body block"]
+  Params["ParametersNodeViewer.tsx · parameters-blocks.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies · response Headers (h3, collapsible)"]
+  Body["MediaTypeContentSection.tsx<br/>Body (h3, collapsible) + required * · media-type Selector (+ required tag) · description · schema"]
+  Responses["ResponsesNodeViewer.tsx · responses-blocks.tsx<br/>Responses (h2) + toned code Selector in ArrowScrollStrip"]
+  Response["response-blocks.tsx · ResponseBodyViewer.tsx<br/>description · Headers · Extensions · Body (OPENAPI_SECTION_ORDER.response)"]
+  Collapsible["CollapsibleSection.tsx<br/>useOpenApiSectionTitleRowProps · buildCollapsibleSectionElements"]
+  SchemaViewer["OpenApiSchemaViewer.tsx<br/>JsonSchemaViewer (SUPPRESS_ROOT_NESTING_INDICATOR) · wrapJsonSchemaForViewer('Type')"]
+  Layout["OpenApiLayout.tsx · shared-components/Separator<br/>one container level: blocks + separator rows"]
+  ViewUtils["utils/openapi/<br/>node-type-checkers · view-selection · http-method-badge-config · response-code-tone"]
+  NdmModel["next-data-model model/openapi<br/>OpenApiNodeVisibility · OpenApiDisplayLabels · OPENAPI_SECURITY_PRESENTATION ·<br/>layout/ (OpenApiBlockEdges · OpenApiLayoutPlanner · OpenApiSpacingConfig)"]
+  Jso["JsoViewer (extensions)"]
+  SharedRows["shared-components<br/>TitleRow · TextRow · MarkdownTextRow · AddressRow · ExternalDocsRow · Selector (tone)"]
 
   Root --> Operation
   Operation --> Security
   Operation --> Extensions
   Operation --> Request
   Operation --> Responses
+  Security --> SecBase
   Security --> Card
-  Card --> Flow
+  Card --> SecRows
   Request --> Params
   Request --> Body
-  Body --> BodyHeader
-  Body --> MediaSchema
   Responses --> Response
+  Responses --> Extensions
   Response --> Params
-  Response --> BodyHeader
-  Response --> MediaSchema
-  Params --> JsonSchema
-  MediaSchema --> JsonSchema
+  Response --> Extensions
+  Response --> Body
+  Params --> Collapsible
+  Body --> Collapsible
+  Extensions --> Collapsible
+  Params --> SchemaViewer
+  Body --> SchemaViewer
   Extensions --> Jso
-  Operation --> Visibility
-  Security --> Visibility
-  Card --> Visibility
-  Response --> Visibility
+  Operation --> Layout
+  Security --> Layout
+  Request --> Layout
+  Responses --> Layout
+  Card --> Layout
+  Layout --> NdmModel
+  Operation --> NdmModel
+  Card --> NdmModel
+  Operation --> ViewUtils
+  Responses --> ViewUtils
   Operation --> SharedRows
   Card --> SharedRows
   Response --> SharedRows
-  Operation --> Layout
-  Request --> Layout
-  Responses --> Layout
-  Security --> Layout
-  Card --> Layout
-  Layout --> LayoutData
 ```
 
 ## Notes
 
+- Containers are `build*Block` functions (in `*-blocks.tsx` modules) plus row components (in the
+  component files): a block carries its edges (from
+  `OpenApiBlockEdges`) and a `payload` render function; `OpenApiLayout` plans the separators of one
+  level and renders the payloads.
 - Containers read node values, visibility flags, and display labels from next-data-model; they
   compute neither visibility nor labels.
 - Child lists go through guard helpers (`utils/openapi/node-type-checkers.ts`), never
   `childrenNodes() as …`.
 - All hooks run before any early `return` (outer component returns `null` for a missing source,
   inner component checks the root kind after its hooks).
+- The security card, toolbar, rows and `OpenApiLayout` are also used by the AsyncAPI security
+  sections (review finding F1: still under OpenAPI names).

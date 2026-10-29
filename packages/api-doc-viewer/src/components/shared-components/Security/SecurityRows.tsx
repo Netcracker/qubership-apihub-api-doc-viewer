@@ -163,7 +163,12 @@ export const SecurityPropValue: FC<SecurityPropValueProps> = ({ text, href = fal
 )
 
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
-export const SecurityFlowHeaderContent: FC<{ prefix: string, name: string }> = ({ prefix, name }) => (
+type SecurityFlowHeaderContentProps = {
+  prefix: string
+  name: string
+}
+
+export const SecurityFlowHeaderContent: FC<SecurityFlowHeaderContentProps> = ({ prefix, name }) => (
   <span className="security-flow-header">
     {prefix} <span className="security-flow-header-name">{name}</span>
   </span>
@@ -173,7 +178,13 @@ export const SecurityFlowHeaderContent: FC<{ prefix: string, name: string }> = (
  * `Scopes ▾` - label and expander only (no value), JSON Schema title pattern: the text and the
  * expander are both clickable; the expander comes after the text.
  */
-export const SecurityScopesToggleContent: FC<{ label: string, expanded: boolean, onToggle: () => void }> = (props) => {
+type SecurityScopesToggleContentProps = {
+  label: string
+  expanded: boolean
+  onToggle: () => void
+}
+
+export const SecurityScopesToggleContent: FC<SecurityScopesToggleContentProps> = (props) => {
   const { label, expanded, onToggle } = props
   return (
     <div data-testid="security-scopes-toggle" className="security-scopes-toggle flex items-center gap-1">

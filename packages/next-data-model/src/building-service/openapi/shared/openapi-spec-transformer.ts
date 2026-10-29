@@ -4,11 +4,12 @@ import { BuildingServiceLogger } from "../../../loggers"
 import { OPENAPI_PARAMETER_LOCATIONS, OpenApiExternalDocs, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
 import { isSpecificationExtensionKey, SpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { isOpenApiHttpMethod, OPEN_API_HTTP_METHODS_ORDER, OpenApiHttpMethod } from "../../../shared/openapi/types/http-method"
-import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
+import { OpenApiOperationKeys, OpenApiResolvedOperationKeys } from "../../../shared/openapi/types/operation-keys"
 import { OpenApiResponseCode, OpenApiResponseCodeClass } from "../../../shared/openapi/types/response-code"
-import { isArray, isObject, isString } from "../../../utilities"
+import { isArray, isNonEmptyString, isObject, isString } from "../../../utilities"
 import { OpenApiDialect } from "./dialects/dialect"
 import { OpenApiDialectResolver } from "./dialects/dialect-resolver"
+import { OPENAPI_LOG_PREFIX } from "./log-prefix"
 import { OpenApiSecuritySpecBuilder } from "./openapi-security-spec-builder"
 import { OpenApiObjectSchemaSynthesizer, OpenApiSchemaEntry } from "./object-schema-synthesizer"
 
@@ -83,7 +84,7 @@ export interface OpenApiOperationOrientedSpec {
 /** Resolved operation: the inputs every build step needs. */
 export type OpenApiOperationContext = {
   readonly source: UnknownRecord
-  readonly keys: { path: string, method: OpenApiHttpMethod }
+  readonly keys: OpenApiResolvedOperationKeys
   readonly operation: UnknownRecord
   readonly dialect: OpenApiDialect
 }
@@ -111,12 +112,12 @@ export class OpenApiSpecTransformer {
 
   protected resolveOperation(source: unknown, operationKeys?: OpenApiOperationKeys): OpenApiOperationContext | null {
     if (!isObject(source) || !isString(source.openapi)) {
-      this.logger.error('[OpenAPI] Source is not an OpenAPI document.')
+      this.logger.error(`${OPENAPI_LOG_PREFIX} Source is not an OpenAPI document.`)
       return null
     }
     const dialect = OpenApiDialectResolver.resolve(source)
     if (!dialect) {
-      this.logger.error(`[OpenAPI] Unsupported OpenAPI version: ${source.openapi}`)
+      this.logger.error(`${OPENAPI_LOG_PREFIX} Unsupported OpenAPI version: ${source.openapi}`)
       return null
     }
     const keys = this.resolveOperationKeys(source, operationKeys)
@@ -126,25 +127,25 @@ export class OpenApiSpecTransformer {
     const pathItem = isObject(source.paths) ? source.paths[keys.path] : undefined
     const operation = isObject(pathItem) ? pathItem[keys.method] : undefined
     if (!isObject(operation)) {
-      this.logger.error(`[OpenAPI] Cannot find operation ${keys.method.toUpperCase()} ${keys.path}`)
+      this.logger.error(`${OPENAPI_LOG_PREFIX} Cannot find operation ${keys.method.toUpperCase()} ${keys.path}`)
       return null
     }
     if (dialect.isResponsesObjectRequired && !isObject(operation.responses)) {
-      this.logger.warn(`[OpenAPI] Operation ${keys.method.toUpperCase()} ${keys.path} has no responses (required in ${dialect.specVersion}).`)
+      this.logger.warn(`${OPENAPI_LOG_PREFIX} Operation ${keys.method.toUpperCase()} ${keys.path} has no responses (required in ${dialect.specVersion}).`)
     }
     return { source, keys, operation, dialect }
   }
 
-  protected resolveOperationKeys(source: UnknownRecord, operationKeys?: OpenApiOperationKeys): { path: string, method: OpenApiHttpMethod } | null {
+  protected resolveOperationKeys(source: UnknownRecord, operationKeys?: OpenApiOperationKeys): OpenApiResolvedOperationKeys | null {
     if (operationKeys) {
       const method = operationKeys.method.toLowerCase()
       if (!isOpenApiHttpMethod(method)) {
-        this.logger.error(`[OpenAPI] Unknown HTTP method: ${operationKeys.method}`)
+        this.logger.error(`${OPENAPI_LOG_PREFIX} Unknown HTTP method: ${operationKeys.method}`)
         return null
       }
       return { path: operationKeys.path, method }
     }
-    this.logger.error('[OpenAPI] Operation keys are not provided. Looking for the first operation in source...')
+    this.logger.error(`${OPENAPI_LOG_PREFIX} Operation keys are not provided. Looking for the first operation in source...`)
     const paths = isObject(source.paths) ? source.paths : {}
     for (const path of Object.keys(paths)) {
       const pathItem = paths[path]
@@ -156,7 +157,7 @@ export class OpenApiSpecTransformer {
         return { path, method }
       }
     }
-    this.logger.error('[OpenAPI] Cannot find any operation in source.')
+    this.logger.error(`${OPENAPI_LOG_PREFIX} Cannot find any operation in source.`)
     return null
   }
 
@@ -191,7 +192,7 @@ export class OpenApiSpecTransformer {
     return spec
   }
 
-  protected pickExternalDocs(externalDocs: unknown): { externalDocs?: OpenApiExternalDocs } {
+  protected pickExternalDocs(externalDocs: unknown): Pick<OpenApiOperationOrientedSpec, 'externalDocs'> {
     if (!isObject(externalDocs) || !isString(externalDocs.url)) {
       return {}
     }
@@ -241,7 +242,7 @@ export class OpenApiSpecTransformer {
       }
       const location = OPENAPI_PARAMETER_LOCATIONS.find(candidate => candidate === parameter.in)
       if (!location) {
-        this.logger.warn(`[OpenAPI] Parameter '${parameter.name}' has unsupported location '${String(parameter.in)}'.`)
+        this.logger.warn(`${OPENAPI_LOG_PREFIX} Parameter '${parameter.name}' has unsupported location '${String(parameter.in)}'.`)
         return
       }
       const entries = groups.get(location) ?? []
@@ -265,7 +266,6 @@ export class OpenApiSpecTransformer {
   }
 
   protected synthesizeParameters(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     context: OpenApiOperationContext,
     entries: readonly OpenApiSchemaEntry[],
   ): OpenApiSynthesizedObjectSchema {
@@ -282,7 +282,7 @@ export class OpenApiSpecTransformer {
       return undefined
     }
     const content = this.buildContent(requestBody.content, [requestBody])
-    const description = isString(requestBody.description) && requestBody.description.length > 0 ? requestBody.description : undefined
+    const description = isNonEmptyString(requestBody.description) ? requestBody.description : undefined
     if (!content && !description) {
       return undefined
     }
@@ -375,9 +375,7 @@ export class OpenApiSpecTransformer {
   }
 
   protected buildResponseHeaders(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     context: OpenApiOperationContext,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     code: string,
     response: UnknownRecord,
   ): OpenApiResponseHeadersSpec | undefined {
@@ -395,9 +393,9 @@ export class OpenApiSpecTransformer {
     if (keys.length === 0) {
       return undefined
     }
-    return keys.reduce((extensions, key) => {
+    return keys.reduce<OpenApiExtensionsSpec>((extensions, key) => {
       extensions[key] = source[key]
       return extensions
-    }, {} as OpenApiExtensionsSpec)
+    }, {})
   }
 }

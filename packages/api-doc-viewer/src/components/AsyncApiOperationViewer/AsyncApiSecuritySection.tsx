@@ -5,12 +5,11 @@ import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/m
 import { FC, memo, useMemo, useState } from "react"
 import { OpenApiBlock, OpenApiLayout } from "../OpenApiOperationViewer/OpenApiLayout"
 import {
-  buildSecurityContentBlocks,
-  buildSecurityToolbarBlock,
   SECURITY_SECTION_TITLE,
   SecuritySectionNode,
   SecurityToolbarRow,
 } from "../shared-components/Security/SecuritySectionBase"
+import { buildSecurityContentBlocks, buildSecurityToolbarBlock } from "../shared-components/Security/security-section-blocks"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"

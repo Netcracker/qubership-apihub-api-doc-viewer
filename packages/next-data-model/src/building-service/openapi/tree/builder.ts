@@ -17,14 +17,13 @@ import { NodeDataPickFunction } from "../../abstract/tree/node-data/builder"
 import { getOpenApiCrawlRules } from "../json-crawl-entities/rules/rules"
 import { OpenApiCrawlRule } from "../json-crawl-entities/rules/types"
 import { OpenApiTreeCrawlState } from "../json-crawl-entities/state/types"
+import { OPENAPI_LOG_PREFIX } from "../shared/log-prefix"
 import { OpenApiOperationOrientedSpec, OpenApiSpecTransformer } from "../shared/openapi-spec-transformer"
 import { createOpenApiTreeBuildingHooks, OpenApiTreeBuildingNodeParams } from "./building-hooks"
 import { OpenApiNodeDataBuilder } from "./node-data/builder"
 
 type SimpleOpenApiTreeNodeParams = SimpleTreeNodeParams<OpenApiAnyTreeNodeValue | null, OpenApiTreeNodeKind, OpenApiTreeNodeMeta>
 type ComplexOpenApiTreeNodeParams = ComplexTreeNodeParams<OpenApiAnyTreeNodeValue | null, OpenApiTreeNodeKind, OpenApiTreeNodeMeta>
-
-const OPENAPI_LOG_PREFIX = '[OpenAPI]'
 
 /**
  * OpenAPI document -> operation-oriented spec -> tree.

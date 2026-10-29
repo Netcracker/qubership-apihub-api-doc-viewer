@@ -1,6 +1,6 @@
 import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
-import { isObject } from "../../../utilities"
+import { isNonEmptyString, isObject } from "../../../utilities"
 
 /** One parameter (from a `parameters` array) or one header (from a `headers` map). */
 export type OpenApiSchemaEntry = {
@@ -14,7 +14,7 @@ export type OpenApiSchemaEntry = {
 
 export const MEDIA_TYPE_CUSTOM_ANNOTATION_KEY = 'mediaType'
 export const MEDIA_TYPE_CUSTOM_ANNOTATION_LABEL = 'Media type'
-const CUSTOM_ANNOTATIONS_KEY = 'customAnnotations'
+export const CUSTOM_ANNOTATIONS_KEY = 'customAnnotations'
 
 /**
  * Builds one JSON Schema object from parameters or headers: one property per entry.
@@ -39,7 +39,7 @@ export class OpenApiObjectSchemaSynthesizer {
       return false
     }
     const { description, deprecated } = entry.value
-    if (typeof description === 'string' && description.length > 0) {
+    if (isNonEmptyString(description)) {
       property.description = description
     }
     if (deprecated === true) {

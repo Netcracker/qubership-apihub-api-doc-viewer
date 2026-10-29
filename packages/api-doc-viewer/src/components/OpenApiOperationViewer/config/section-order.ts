@@ -41,10 +41,21 @@ export const OPENAPI_SECTION_ORDER: {
   readonly responses: readonly ResponsesSectionId[]
   readonly response: readonly ResponseSectionId[]
 } = {
-  operation: ['security', 'operationExtensions', 'request', 'responses'],
-  request: ['pathParameters', 'queryParameters', 'headerParameters', 'cookieParameters', 'requestBody'],
-  responses: ['selectedResponse', 'responsesExtensions'],
-  response: ['responseDescription', 'responseHeaders', 'responseExtensions', 'responseBody'],
+  operation: [OpenApiSectionIds.SECURITY, OpenApiSectionIds.OPERATION_EXTENSIONS, OpenApiSectionIds.REQUEST, OpenApiSectionIds.RESPONSES],
+  request: [
+    OpenApiSectionIds.PATH_PARAMETERS,
+    OpenApiSectionIds.QUERY_PARAMETERS,
+    OpenApiSectionIds.HEADER_PARAMETERS,
+    OpenApiSectionIds.COOKIE_PARAMETERS,
+    OpenApiSectionIds.REQUEST_BODY,
+  ],
+  responses: [OpenApiSectionIds.SELECTED_RESPONSE, OpenApiSectionIds.RESPONSES_EXTENSIONS],
+  response: [
+    OpenApiSectionIds.RESPONSE_DESCRIPTION,
+    OpenApiSectionIds.RESPONSE_HEADERS,
+    OpenApiSectionIds.RESPONSE_EXTENSIONS,
+    OpenApiSectionIds.RESPONSE_BODY,
+  ],
 }
 
 /** Allowed ids per list (the unit test checks each list is a permutation of these). */

@@ -1,6 +1,7 @@
 import { isArray, isObject, isString } from "../../../utilities"
 import { SecurityAlternativeSpec, SecuritySchemeSpec, SecuritySpec } from "../../security/security-spec"
 import { SecuritySpecBuilder, UnknownRecord } from "../../security/security-spec-builder"
+import { OPENAPI_LOG_PREFIX } from "./log-prefix"
 import { OpenApiOperationContext } from "./openapi-spec-transformer"
 
 /**
@@ -56,11 +57,11 @@ export class OpenApiSecuritySpecBuilder extends SecuritySpecBuilder<OpenApiOpera
     const definition = this.takeDefinition(context, name)
     const type = isString(definition?.type) ? definition.type : undefined
     if (type && !context.dialect.securitySchemeTypes.has(type)) {
-      this.logger.warn(`[OpenAPI] Security scheme type '${type}' is not defined in ${context.dialect.specVersion}.`)
+      this.logger.warn(`${OPENAPI_LOG_PREFIX} Security scheme type '${type}' is not defined in ${context.dialect.specVersion}.`)
     }
     const requiredScopesKind = context.dialect.resolveRequiredScopesKind(type)
     if (requiredScopesKind === 'ignored' && requiredScopes.length > 0) {
-      this.logger.warn(`[OpenAPI] Scopes of security scheme '${name}' are ignored in ${context.dialect.specVersion}.`)
+      this.logger.warn(`${OPENAPI_LOG_PREFIX} Scopes of security scheme '${name}' are ignored in ${context.dialect.specVersion}.`)
     }
     return this.buildScheme(name, definition, requiredScopes, requiredScopesKind)
   }

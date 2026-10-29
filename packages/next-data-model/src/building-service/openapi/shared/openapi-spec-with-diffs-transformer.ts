@@ -5,20 +5,24 @@ import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY 
 import { OPENAPI_PARAMETER_LOCATIONS, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
 import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
-import { DiffsRecord, isObject, isString } from "../../../utilities"
+import { OpenApiResponseCode } from "../../../shared/openapi/types/response-code"
+import { DiffsRecord, isNonEmptyString, isObject, isString } from "../../../utilities"
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { OpenApiObjectSchemaWithDiffsSynthesizer } from "./object-schema-with-diffs-synthesizer"
 import { OpenApiSecuritySpecWithDiffsBuilder } from "./openapi-security-spec-with-diffs-builder"
 import { OpenApiSchemaEntry } from "./object-schema-synthesizer"
-import { OpenApiContentSpec, OpenApiExtensionsSpec, OpenApiOperationContext, OpenApiOperationOrientedSpec, OpenApiParametersSpec, OpenApiRequestBodySpec, OpenApiRequestSpec, OpenApiResponseHeadersSpec, OpenApiResponseSpec, OpenApiSpecTransformer } from "./openapi-spec-transformer"
+import { OpenApiContentSpec, OpenApiExtensionsSpec, OpenApiMediaTypeSpec, OpenApiOperationContext, OpenApiOperationOrientedSpec, OpenApiParametersSpec, OpenApiRequestBodySpec, OpenApiRequestSpec, OpenApiResponseHeadersSpec, OpenApiResponseSpec, OpenApiSpecTransformer } from "./openapi-spec-transformer"
 import { BOTH_SIDES, FieldSides, SideContext, SideReader } from "../../shared/side-reader"
 
 type UnknownRecord = Record<PropertyKey, unknown>
 
-const NO_SIDES: SideContext = { before: false, after: false }
+/** An object whose `x-*` are cloned into a media-type schema root, and the sides where it exists. */
+type ExtensionOwnerSides = {
+  readonly owner: UnknownRecord
+  readonly context: SideContext
+}
 
-/** A response-code range (`1XX` … `5XX`), matched case-insensitively. */
-const RESPONSE_CODE_RANGE = /^[1-5]xx$/i
+const NO_SIDES: SideContext = { before: false, after: false }
 
 /**
  * Merged `apiDiff` document -> operation-oriented spec with diff records attached for the
@@ -168,7 +172,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   }
 
   /** Media-type / response-code options: a wholly added / removed or renamed option paints the selector's row. */
-  private static isKeyedOptionChange(diff: Diff | undefined): boolean {
+  private static isKeyedOptionChange(diff: Diff | undefined): diff is Diff {
     return SideReader.isWholeChange(diff) || SideReader.isRename(diff)
   }
 
@@ -274,7 +278,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     contentSpec: OpenApiContentSpec,
     content: unknown,
     contentContext: SideContext,
-    owners: ReadonlyArray<{ owner: UnknownRecord, context: SideContext }>,
+    owners: readonly ExtensionOwnerSides[],
     contentDiff: Diff | undefined,
     headerRecord?: DiffsRecord,
   ): SideContext {
@@ -292,7 +296,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       const optionPresence = this.reader.childContext(schemaField)
       this.mergePresence(presence, optionPresence)
       const rawDiff = mediaTypeField.diff
-      const optionDiff = rawDiff && (isDiffAdd(rawDiff) || isDiffRemove(rawDiff) || isDiffRename(rawDiff))
+      const optionDiff = OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(rawDiff)
         ? rawDiff
         : this.reader.diffPresence(optionPresence, mediaTypeSpec, [schemaField.diff, rawDiff, contentDiff])
       if (optionDiff) {
@@ -307,9 +311,9 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
 
   /** Per-key precedence: owners in order (media type, request body), then the schema root. */
   private decorateClonedExtensions(
-    mediaTypeSpec: { schema?: unknown },
+    mediaTypeSpec: OpenApiMediaTypeSpec,
     mediaTypeObject: UnknownRecord,
-    owners: ReadonlyArray<{ owner: UnknownRecord, context: SideContext }>,
+    owners: readonly ExtensionOwnerSides[],
     schemaContext: SideContext,
   ): void {
     const keys = new Set<string>()
@@ -364,7 +368,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       const responseField = this.readResponseField(responses, code, responsesContext)
       this.mergePresence(presence, this.reader.childContext(responseField))
       const diff = responseField.diff
-      if (diff && (isDiffAdd(diff) || isDiffRemove(diff) || isDiffRename(diff))) {
+      if (OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(diff)) {
         responsesRecord[code] = diff
       }
     }
@@ -431,7 +435,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
    */
   private readResponseField(responses: unknown, code: string, context: SideContext): FieldSides {
     const field = this.reader.readField(responses, code, context)
-    if (field.diff || !RESPONSE_CODE_RANGE.test(code) || !isObject(responses)) {
+    if (field.diff || !OpenApiResponseCode.isRange(code) || !isObject(responses)) {
       return field
     }
     const diffKey = Object.keys(this.reader.record(responses) ?? {})
@@ -491,7 +495,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
       return
     }
     const current = this.reader.record(owner)?.[key]
-    if (current && (isDiffAdd(current) || isDiffRemove(current) || isDiffRename(current))) {
+    if (OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(current)) {
       return
     }
     // A raw add / remove of the section object itself (e.g. a whole `content` map) wins over a synthetic one.
@@ -537,8 +541,4 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   private createSchemaWithDiffsSynthesizer(): OpenApiObjectSchemaWithDiffsSynthesizer {
     return new OpenApiObjectSchemaWithDiffsSynthesizer(this.reader)
   }
-}
-
-function isNonEmptyString(value: unknown): boolean {
-  return isString(value) && value.length > 0
 }

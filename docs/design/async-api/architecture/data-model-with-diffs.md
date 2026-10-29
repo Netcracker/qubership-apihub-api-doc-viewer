@@ -27,7 +27,7 @@ flowchart TB
       DescSummary["node-descendant-diffs-summary/<br/>KindAny · KindBinding · KindChannel · KindMessageContent · KindOperation<br/>(forward aggregators across tree boundaries)"]
       Summary["node-diffs-summary/KindAny"]
       Severities["node-diffs-severities/KindAny<br/>title · description · summary · address ·<br/>server-address · binding-version rows"]
-      SecurityAgg["security kinds (each factory: isSecurityTreeNodeKind)<br/>→ SecurityNodeAggregators (record-driven, shared with OpenAPI)"]
+      SecurityAgg["security kinds (each factory: isSecurityTreeNodeKind)<br/>→ ASYNC_API_SECURITY_NODE_AGGREGATORS (typed SecurityNodeAggregators instance, record-driven, shared with OpenAPI)"]
     end
     SecurityBuilderD["shared/async-api-security-spec-with-diffs-builder.ts<br/>AsyncApiSecuritySpecWithDiffsBuilder + SecuritySpecDiffsDecorator"]
   end
