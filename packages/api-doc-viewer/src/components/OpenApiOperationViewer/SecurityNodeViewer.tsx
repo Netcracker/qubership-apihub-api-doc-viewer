@@ -9,7 +9,7 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { FC, ReactElement, useCallback } from "react"
 import { BadgeWithDiffs } from "../shared-components/diffs/BadgeWithDiffs"
-import { SECURITY_SECTION_TITLE, SecurityToolbarRow } from "../shared-components/Security/SecuritySectionBase"
+import { SECURITY_SECTION_TITLE, SecurityAlternativesNode, SecurityToolbarRow } from "../shared-components/Security/SecuritySectionBase"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
@@ -69,11 +69,11 @@ export const SecurityTitleRow: FC<SecuritySectionRowProps> = ({ node }) => {
 }
 
 /** The alternatives toolbar; the selection lives in the operation view state. */
-export const OpenApiSecurityToolbarRow: FC<SecuritySectionRowProps> = ({ node }) => {
+export const OpenApiSecurityToolbarRow: FC<SecuritySectionRowProps & { toolbar: SecurityAlternativesNode }> = ({ node, toolbar }) => {
   const { selection, select } = useOpenApiViewState()
   return (
     <SecurityToolbarRow
-      node={node}
+      toolbar={toolbar}
       labels={OPENAPI_SECURITY_DISPLAY_LABELS}
       selected={resolveSelectedAlternative(node, selection)}
       onSelect={(alternative) => select(node.id, alternative.id)}

@@ -20,12 +20,26 @@ export const isOpenApiResponsesNode = createKindGuard(OpenApiTreeNodeKinds.RESPO
 export const isOpenApiResponseNode = createKindGuard(OpenApiTreeNodeKinds.RESPONSE)
 export const isOpenApiResponseHeadersNode = createKindGuard(OpenApiTreeNodeKinds.RESPONSE_HEADERS)
 
-/** Children of a node narrowed by a kind guard (no `as` casts at call sites). */
+/**
+ * Children of a node narrowed by a kind guard (no `as` casts at call sites). Never for the options of
+ * a complex selector container (`responses`, `content`): those are nested nodes (`getOpenApiOptions`).
+ */
 export function getOpenApiChildren<K extends OpenApiTreeNodeKind>(
   node: OpenApiTreeNode | null | undefined,
   guard: OpenApiKindGuard<K>,
 ): OpenApiTreeNode<K>[] {
   return (node?.childrenNodes() ?? []).filter(guard)
+}
+
+/**
+ * The options of a complex selector container (`responses` -> codes, `content` -> media types), in
+ * tree order, narrowed by a kind guard. Docs: docs/design/shared/features/selector-options.md.
+ */
+export function getOpenApiOptions<K extends OpenApiTreeNodeKind>(
+  container: OpenApiTreeNode | null | undefined,
+  guard: OpenApiKindGuard<K>,
+): OpenApiTreeNode<K>[] {
+  return (container?.nestedNodes() ?? []).filter(guard)
 }
 
 /** First child of a kind (optionally with a key). */

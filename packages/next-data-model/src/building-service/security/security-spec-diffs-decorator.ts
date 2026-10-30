@@ -3,7 +3,7 @@ import { SECURITY_ALTERNATIVES_DIFF_KEY } from "../../model/security/tree-with-d
 import { SECURITY_OAUTH_FLOW_TYPES } from "../../model/security/types/node-value"
 import { DiffsRecord, isArray, isObject, isString } from "../../utilities"
 import { SideContext, SideContexts, SideReader } from "../shared/side-reader"
-import { SecurityOAuthFlowSpec, SecuritySchemeSpec } from "./security-spec"
+import { SecurityAlternativeSpec, SecurityOAuthFlowSpec, SecuritySchemeSpec } from "./security-spec"
 import { UnknownRecord } from "./security-spec-builder"
 
 /** Scheme-definition field -> scheme spec field. */
@@ -30,11 +30,14 @@ export class SecuritySpecDiffsDecorator {
   constructor(private readonly reader: SideReader, private readonly flowScopesKey: string) { }
 
   /**
-   * Security toolbar: one synthetic `alternatives` replace when any alternative was wholly added or
-   * removed, typed by the strongest of them (row color + `SelectorRow` severity of the toolbar).
+   * The record of the alternatives list (the crawl value of the complex `securityAlternatives`
+   * container): the per-alternative entries (`alternativesRecord`, keyed by index) plus the
+   * toolbar's synthetic `alternatives` replace when any alternative was wholly added or removed,
+   * typed by the strongest of them (row color + `SelectorRow` severity of the toolbar).
    */
-  public writeAlternativesDiff(securityRecord: DiffsRecord): void {
-    this.reader.writeOptionsDiff(securityRecord, SECURITY_ALTERNATIVES_DIFF_KEY, securityRecord, SideReader.isWholeChange)
+  public writeAlternativesRecord(alternatives: SecurityAlternativeSpec[], alternativesRecord: DiffsRecord): void {
+    this.reader.writeOptionsDiff(alternativesRecord, SECURITY_ALTERNATIVES_DIFF_KEY, alternativesRecord, SideReader.isWholeChange)
+    this.reader.writeRecord(alternatives, alternativesRecord)
   }
 
   /** Scope list changes become one `requiredScopes` replace carrying both side lists. */

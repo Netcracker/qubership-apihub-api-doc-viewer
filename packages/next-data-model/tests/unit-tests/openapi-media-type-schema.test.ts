@@ -1,4 +1,5 @@
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
+import { TreeNodeComplexityTypes } from '../../src/model/abstract/tree/tree-node.interface'
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
 import { SectionRowDiffs } from '../../src/model/abstract/tree-with-diffs/row-diffs-base'
 import { OpenApiDisplayLabels } from '../../src/model/openapi/display/labels'
@@ -14,7 +15,8 @@ const DIFFS_KEY = OPENAPI_TEST_DIFF_META_KEYS.diffsMetaKey
 const TITLE = OpenApiDisplayLabels.WRAPPED_BODY_SCHEMA_TITLE
 
 function child(node: OpenApiTreeNodeWithDiffs, kind: OpenApiTreeNodeKind, key?: string): OpenApiTreeNodeWithDiffs {
-  const found = node.childrenNodes().find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === key))
+  // A complex container's options are its nested nodes (selector options rule).
+  const found = (node.type === TreeNodeComplexityTypes.COMPLEX ? node.nestedNodes() : node.childrenNodes()).find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === key))
   if (!found || !isOpenApiTreeNodeWithDiffs(found)) {
     throw new Error(`no ${kind} ${key ?? ''} under ${node.kind}`)
   }

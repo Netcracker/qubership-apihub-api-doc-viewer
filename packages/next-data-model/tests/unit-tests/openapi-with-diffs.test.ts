@@ -1,4 +1,5 @@
 import { OPENAPI_SECURITY_DISPLAY_LABELS } from '../../src/model/openapi/security-presentation'
+import { TreeNodeComplexityTypes } from '../../src/model/abstract/tree/tree-node.interface'
 import { SecurityRowDiffs } from '../../src/model/security/tree-with-diffs/row-diffs'
 import { DiffAction } from '@netcracker/qubership-apihub-api-diff'
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
@@ -33,7 +34,8 @@ function root(tree: OpenApiTreeWithDiffs): OpenApiTreeNodeWithDiffs {
 }
 
 function child(node: OpenApiTreeNodeWithDiffs, kind: OpenApiTreeNodeKind, key?: string | number): OpenApiTreeNodeWithDiffs {
-  const found = node.childrenNodes().find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === String(key)))
+  // A complex container's options are its nested nodes (selector options rule).
+  const found = (node.type === TreeNodeComplexityTypes.COMPLEX ? node.nestedNodes() : node.childrenNodes()).find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === String(key)))
   if (!found) {
     throw new Error(`no ${kind} ${key ?? ''} under ${node.kind}`)
   }
@@ -65,6 +67,11 @@ function security(tree: OpenApiTreeWithDiffs): OpenApiTreeNodeWithDiffs {
   return child(root(tree), OpenApiTreeNodeKinds.SECURITY)
 }
 
+/** The alternatives of a Security section: nested nodes of its `securityAlternatives` container. */
+function alternativesOf(security: OpenApiTreeNodeWithDiffs): OpenApiTreeNodeWithDiffs[] {
+  return child(security, OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES).nestedNodes()
+}
+
 function requestBody(tree: OpenApiTreeWithDiffs): OpenApiTreeNodeWithDiffs {
   return child(child(root(tree), OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.REQUEST_BODY)
 }
@@ -93,7 +100,7 @@ describe('OpenAPI with diffs: operation', () => {
     expect(wholeAction(root(tree))).toBe(DiffAction.add)
     const responses = responsesNode(tree)
     expect(responses.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)
-    for (const response of responses.childrenNodes()) {
+    for (const response of responses.nestedNodes()) {
       expect(wholeAction(response)).toBe(DiffAction.add)
       expect([...response.descendantDiffsSummary]).toEqual([])
     }
@@ -227,13 +234,13 @@ describe('OpenAPI with diffs: request body', () => {
 
   it('the only schema removed also removes its media type option', () => {
     const content = child(requestBody(build('request-body/16-schema-removed')), OpenApiTreeNodeKinds.CONTENT)
-    const option = content.childrenNodes()[0]
+    const option = content.nestedNodes()[0]
     expect(wholeAction(option)).toBe(DiffAction.remove)
   })
 
   it('renamed media type stays one option with a rename diff', () => {
     const content = child(requestBody(build('request-body/10-media-type-renamed')), OpenApiTreeNodeKinds.CONTENT)
-    expect(content.childrenNodes().map(option => [option.key, wholeAction(option)])).toEqual([
+    expect(content.nestedNodes().map(option => [option.key, wholeAction(option)])).toEqual([
       ['application/json; charset=utf-8', DiffAction.rename],
     ])
   })
@@ -269,7 +276,7 @@ describe('OpenAPI with diffs: request body', () => {
   it('a schema change inside a media type keeps the plain Body row and the option marker', () => {
     const node = requestBody(build('request-body/17-schema-property-added'))
     expect(OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node)).toBeUndefined()
-    const option = child(node, OpenApiTreeNodeKinds.CONTENT).childrenNodes()[0]
+    const option = child(node, OpenApiTreeNodeKinds.CONTENT).nestedNodes()[0]
     expect([...OpenApiRowDiffs.MediaType.takeChangesMarkerSummary(option)]).toEqual(['non-breaking'])
   })
 
@@ -293,14 +300,14 @@ describe('OpenAPI with diffs: request body', () => {
   })
 
   it('request body and media type extensions are cloned into the schema root with precedence', () => {
-    const option = child(requestBody(build('request-body/24-extensions-changed')), OpenApiTreeNodeKinds.CONTENT).childrenNodes()[0]
+    const option = child(requestBody(build('request-body/24-extensions-changed')), OpenApiTreeNodeKinds.CONTENT).nestedNodes()[0]
     const value = option.value()
     const schema = isObject(value) && isObject(value.schema) ? value.schema : {}
     expect(schema['x-max-size']).toBe('5MB')
     expect(recordOf(schema)['x-max-size']?.action).toBe(DiffAction.replace)
     expect(recordOf(schema)['x-codec']?.action).toBe(DiffAction.add)
 
-    const shadowing = child(requestBody(build('request-body/25-media-type-extension-shadows-schema-root')), OpenApiTreeNodeKinds.CONTENT).childrenNodes()[0]
+    const shadowing = child(requestBody(build('request-body/25-media-type-extension-shadows-schema-root')), OpenApiTreeNodeKinds.CONTENT).nestedNodes()[0]
     const shadowingValue = shadowing.value()
     const shadowingSchema = isObject(shadowingValue) && isObject(shadowingValue.schema) ? shadowingValue.schema : {}
     expect(shadowingSchema['x-codec']).toBe('gzip')
@@ -402,12 +409,12 @@ describe('OpenAPI with diffs: responses', () => {
 
 describe('OpenAPI with diffs: security', () => {
   it('alternative added', () => {
-    const alternatives = security(build('security/05-alternative-added')).childrenNodes()
+    const alternatives = alternativesOf(security(build('security/05-alternative-added')))
     expect(alternatives.map(wholeAction)).toEqual([undefined, DiffAction.add])
   })
 
   it('scope added becomes a requiredScopes replace with both lists', () => {
-    const scheme = security(build('security/11-required-scope-added')).childrenNodes()[0].childrenNodes()[0]
+    const scheme = alternativesOf(security(build('security/11-required-scope-added')))[0].childrenNodes()[0]
     expect(scheme.diffs.requiredScopes?.data).toMatchObject({
       action: DiffAction.replace,
       beforeValue: ['orders:write'],
@@ -416,7 +423,7 @@ describe('OpenAPI with diffs: security', () => {
   })
 
   it('scheme added to an alternative is a wholly added card', () => {
-    const alternative = security(build('security/09-scheme-added-to-alternative')).childrenNodes()[0]
+    const alternative = alternativesOf(security(build('security/09-scheme-added-to-alternative')))[0]
     expect(alternative.childrenNodes().map(scheme => [scheme.key, wholeAction(scheme)])).toEqual([
       ['oauth', undefined],
       ['basic', DiffAction.add],
@@ -424,14 +431,14 @@ describe('OpenAPI with diffs: security', () => {
   })
 
   it('scheme definition changes reach the flow rows', () => {
-    const flow = (caseId: string) => security(build(caseId)).childrenNodes()[0].childrenNodes()[0].childrenNodes()[0]
+    const flow = (caseId: string) => alternativesOf(security(build(caseId)))[0].childrenNodes()[0].childrenNodes()[0]
     expect(flow('security/27-token-url-changed').diffs.tokenUrl?.data.action).toBe(DiffAction.replace)
     expect(flow('security/30-flow-scope-added').diffs.scopes?.data.action).toBe(DiffAction.replace)
   })
 
   it('switch from the document security to an operation override', () => {
     const node = security(build('security/03-document-security-overridden'))
-    expect(node.childrenNodes().map(alternative => [alternative.value(), wholeAction(alternative)])).toEqual([
+    expect(alternativesOf(node).map(alternative => [alternative.value(), wholeAction(alternative)])).toEqual([
       [{ schemeNames: ['oauth'] }, DiffAction.add],
       [{ schemeNames: ['api_key'] }, DiffAction.remove],
     ])
@@ -444,13 +451,13 @@ describe('OpenAPI with diffs: security', () => {
 
 describe('OpenAPI with diffs: side accessors', () => {
   it('resolves a replaced field per side', () => {
-    const flow = security(build('security/27-token-url-changed')).childrenNodes()[0].childrenNodes()[0].childrenNodes()[0]
+    const flow = alternativesOf(security(build('security/27-token-url-changed')))[0].childrenNodes()[0].childrenNodes()[0]
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(flow, 'tokenUrl', ORIGIN_LAYOUT_SIDE)).toBe('https://auth.example.com/token')
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(flow, 'tokenUrl', CHANGED_LAYOUT_SIDE)).toBe('https://auth.example.com/oauth2/token')
   })
 
   it('hides fields of a wholly added node on the origin side and keeps its type badge undecorated', () => {
-    const scheme = child(security(build('security/09-scheme-added-to-alternative')).childrenNodes()[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
+    const scheme = child(alternativesOf(security(build('security/09-scheme-added-to-alternative')))[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', ORIGIN_LAYOUT_SIDE)).toBeUndefined()
     expect(OpenApiRowDiffs.NodeLevel.resolveSideField(scheme, 'type', CHANGED_LAYOUT_SIDE)).toBe('http')
     expect(SecurityRowDiffs.Scheme.takeTypeTextDiff(scheme)).toBeUndefined()
@@ -458,7 +465,7 @@ describe('OpenAPI with diffs: side accessors', () => {
 })
 
 describe('OpenAPI with diffs: security card accessors', () => {
-  const scheme = (caseId: string): OpenApiTreeNodeWithDiffs => security(build(caseId)).childrenNodes()[0].childrenNodes()[0]
+  const scheme = (caseId: string): OpenApiTreeNodeWithDiffs => alternativesOf(security(build(caseId)))[0].childrenNodes()[0]
   const flows = (node: OpenApiTreeNodeWithDiffs): OpenApiTreeNodeWithDiffs[] => node.childrenNodes()
 
   it('scope added to a flow: added row, absent on the origin side', () => {
@@ -537,11 +544,11 @@ describe('OpenAPI with diffs: security card accessors', () => {
   })
 
   it('alternative added: yellow toolbar row with the severity of the option; the option gets a green border', () => {
-    const node = security(build('security/05-alternative-added'))
-    const toolbar = SecurityRowDiffs.Security.takeToolbarRowDiff(node)
+    const alternatives = child(security(build('security/05-alternative-added')), OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES)
+    const toolbar = SecurityRowDiffs.Alternatives.takeToolbarRowDiff(alternatives)
     expect(toolbar?.styles.before.backgroundColor).toBe('yellow')
-    expect(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]?.type).toBe('non-breaking')
-    expect(node.childrenNodes()[1].diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.borderShadowColor).toBe('green')
-    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(security(build('security/11-required-scope-added')))).toBeUndefined()
+    expect(alternatives.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]?.type).toBe('non-breaking')
+    expect(alternatives.nestedNodes()[1].diffs[NODE_LEVEL_DIFF_KEY]?.styles.after.borderShadowColor).toBe('green')
+    expect(SecurityRowDiffs.Alternatives.takeToolbarRowDiff(child(security(build('security/11-required-scope-added')), OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES))).toBeUndefined()
   })
 })

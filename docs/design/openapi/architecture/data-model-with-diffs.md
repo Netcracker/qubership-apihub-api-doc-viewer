@@ -21,7 +21,7 @@ flowchart TB
   subgraph SEC["Security module (spec-neutral, shared with AsyncAPI)"]
     SecDecorator["building-service/security/security-spec-diffs-decorator.ts<br/>SecuritySpecDiffsDecorator (composed)"]
     SecTables["model/security/tree-with-diffs/placements.ts<br/>SECURITY_FIELD_PLACEMENTS · SECURITY_NODE_PLACEMENTS"]
-    SecRowDiffs["model/security/tree-with-diffs/row-diffs.ts · SecurityRowDiffs<br/>(scope rows with severity · isToolbarShownOnSide)"]
+    SecRowDiffs["model/security/tree-with-diffs/row-diffs.ts · SecurityRowDiffs<br/>(scope rows with severity · Alternatives: toolbar row diff, isToolbarShownOnSide)"]
     SecCardRows["model/security/card-rows.ts · SecuritySchemeCardRows<br/>card label / value rows from the placement table"]
   end
 

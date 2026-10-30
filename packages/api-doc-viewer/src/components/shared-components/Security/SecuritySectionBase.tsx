@@ -1,5 +1,5 @@
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
-import { getSecurityChildren, isSecurityRequirementNode } from "@apihub/utils/security/node-type-checkers"
+import { getSecurityToolbarOptions } from "@apihub/utils/security/node-type-checkers"
 import { hasNodeDiffs } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/row-diffs-base"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { SecurityDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
@@ -15,6 +15,8 @@ import { SecurityToolbar } from "./SecurityToolbar"
 export const SECURITY_SECTION_TITLE = 'Security'
 
 export type SecuritySectionNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY>
+/** The toolbar's complex container; its nested nodes are the alternatives. */
+export type SecurityAlternativesNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_ALTERNATIVES>
 export type SecurityAlternativeNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT>
 
 /**
@@ -26,7 +28,8 @@ export type SecurityAlternativeNode = SecurityTreeNode<typeof SecurityTreeNodeKi
  */
 
 export type SecurityToolbarRowProps = {
-  node: SecuritySectionNode
+  /** The section's `securityAlternatives` container (`findSecurityAlternatives`): options, row diff and badge. */
+  toolbar: SecurityAlternativesNode
   labels: SecurityDisplayLabels
   /** The shown alternative (`resolveSelectedSecurityAlternative`). */
   selected: SecurityAlternativeNode | undefined
@@ -34,8 +37,8 @@ export type SecurityToolbarRowProps = {
 }
 
 /** The alternatives toolbar; the selection lives with the API type's viewer. */
-export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, selected, onSelect }) => {
-  const alternatives = useMemo(() => getSecurityChildren(node, isSecurityRequirementNode), [node])
+export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ toolbar, labels, selected, onSelect }) => {
+  const alternatives = useMemo(() => getSecurityToolbarOptions(toolbar), [toolbar])
   const options: SelectorOption<SecurityAlternativeNode>[] = useMemo(() => alternatives.map((alternative, index) => ({
     node: alternative,
     title: labels.securityRequirementTitle(alternative.value()?.schemeNames ?? []),
@@ -54,9 +57,9 @@ export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, 
       options={options}
       selectedOption={selectedOption}
       onSelectOption={(option) => onSelect(option.node)}
-      diff={SecurityRowDiffs.Security.takeToolbarRowDiff(node)}
-      severity={takeSecuritySeverities(node)?.[NodeDiffsSeverityPlacemennt.SelectorRow]}
-      isShownOnSide={(side) => SecurityRowDiffs.Security.isToolbarShownOnSide(node, side)}
+      diff={SecurityRowDiffs.Alternatives.takeToolbarRowDiff(toolbar)}
+      severity={takeSecuritySeverities(toolbar)?.[NodeDiffsSeverityPlacemennt.SelectorRow]}
+      isShownOnSide={(side) => SecurityRowDiffs.Alternatives.isToolbarShownOnSide(toolbar, side)}
     />
   )
 }

@@ -9,11 +9,11 @@ import { SecurityRowDiffs } from "./tree-with-diffs/row-diffs"
  * operation, AsyncAPI operation / server). Cards use `BlockEdges.card`.
  */
 export class SecurityBlockEdges extends BlockEdges {
-  /** The security toolbar row. */
-  public static toolbarRow(security: RowDiffsNode): LayoutBlockEdge {
+  /** The security toolbar row, painted by the section's `securityAlternatives` container. */
+  public static toolbarRow(alternatives: RowDiffsNode): LayoutBlockEdge {
     return BlockEdges.row({
-      diff: SecurityRowDiffs.Security.takeToolbarRowDiff(security),
-      severity: BlockEdges.severityOf(security, NodeDiffsSeverityPlacemennt.SelectorRow),
+      diff: SecurityRowDiffs.Alternatives.takeToolbarRowDiff(alternatives),
+      severity: BlockEdges.severityOf(alternatives, NodeDiffsSeverityPlacemennt.SelectorRow),
     })
   }
 

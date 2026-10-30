@@ -67,6 +67,11 @@ Canonical skill sources live under `agent-packages/`. After editing skills there
 
 ## Always-on conventions
 
+- **Selector options are nested nodes** — the options of a selector / toolbar (AsyncAPI sections and
+  bindings, OpenAPI response codes and media types, Security alternatives) are nested nodes of one
+  complex container node; read them with `nestedNodes()` through the API type's option helpers,
+  never `childrenNodes()` / `value()` on the container (they delegate to the first option). Design:
+  `docs/design/shared/features/selector-options.md`.
 - **Legacy viewers** — do not change `GraphSchemaViewer`, `GraphQLOperationViewer`,
   `GraphQLOperationDiffViewer`, or `components/common/diffs/` (`DiffTags`, `DiffBadge`)
   without explicit approval. The legacy (api-data-model based) `JsonSchemaViewer` is

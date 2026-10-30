@@ -29,7 +29,7 @@ describe('OpenAPI security scheme: required scope list', () => {
     ['oas31/fields/security/02-roles-on-api-key', 'api_key', ['admin', 'auditor'], 'Roles'],
   ])('%s: every requirement scope is a required row (no flows)', (caseId, schemeName, names, label) => {
     const tree = new OpenApiTreeBuilder({ source: loadNormalizedOpenApiSample(caseId), operationKeys: { path: '/orders', method: 'post' } }).build()
-    const alternatives = tree.root?.childrenNodes().find(child => child.kind === 'security')?.childrenNodes() ?? []
+    const alternatives = tree.root?.childrenNodes().find(child => child.kind === 'security')?.childrenNodes().find(child => child.kind === 'securityAlternatives')?.nestedNodes() ?? []
     const node = alternatives.flatMap(alternative => alternative.childrenNodes()).find(candidate => candidate.key === schemeName)
     expect(node).toBeDefined()
     const rows = SecurityRowDiffs.Scheme.resolveUndeclaredRequiredScopeRows(node!)

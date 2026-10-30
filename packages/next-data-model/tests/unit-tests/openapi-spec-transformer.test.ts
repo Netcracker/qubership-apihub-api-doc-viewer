@@ -108,12 +108,12 @@ describe('OpenAPI spec transformer (plain)', () => {
     // The spec object cannot hold this order (JS puts integer-like keys first): the tree sorts it.
     const tree = new OpenApiTreeBuilder({ source: loadNormalizedOpenApiSample('oas30/structure/04-response-code-order'), operationKeys: ORDERS_POST }).build()
     const responses = tree.root?.childrenNodes().find(child => child.kind === OpenApiTreeNodeKinds.RESPONSES)
-    expect(responses?.childrenNodes().map(child => child.key)).toEqual(['101', '201', '2XX', '302', '404', '4XX', '500', 'default'])
+    expect(responses?.nestedNodes().map(child => child.key)).toEqual(['101', '201', '2XX', '302', '404', '4XX', '500', 'default'])
   })
 })
 
 describe('OpenAPI tree builder (plain)', () => {
-  it('builds simple nodes for every section', () => {
+  it('builds a node per section; the response codes are nested nodes of the complex `responses`', () => {
     const source = loadNormalizedOpenApiSample(ALL_SECTIONS)
     const tree = new OpenApiTreeBuilder({ source, operationKeys: ALL_SECTIONS_KEYS }).build()
     const root = tree.root
@@ -125,8 +125,8 @@ describe('OpenAPI tree builder (plain)', () => {
       OpenApiTreeNodeKinds.RESPONSES,
     ])
     const responses = root?.childrenNodes().find(child => child.kind === OpenApiTreeNodeKinds.RESPONSES)
-    expect(responses?.childrenNodes().map(child => child.key)).toEqual(['200', '400'])
-    const ok = responses?.childrenNodes()[0]
+    expect(responses?.nestedNodes().map(child => child.key)).toEqual(['200', '400'])
+    const ok = responses?.nestedNodes()[0]
     expect(ok?.value()).toMatchObject({ code: '200', codeClass: '2XX' })
     expect(ok?.childrenNodes().map(child => child.kind)).toEqual([
       OpenApiTreeNodeKinds.RESPONSE_HEADERS,

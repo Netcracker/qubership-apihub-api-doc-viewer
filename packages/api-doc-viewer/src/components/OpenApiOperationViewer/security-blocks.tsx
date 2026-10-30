@@ -1,5 +1,5 @@
 import { resolveSelectedAlternative } from "@apihub/utils/openapi/view-selection"
-import { getSecurityChildren, isSecurityRequirementNode } from "@apihub/utils/security/node-type-checkers"
+import { findSecurityAlternatives, getSecurityAlternatives } from "@apihub/utils/security/node-type-checkers"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { SecurityBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/security/block-edges"
 import { buildSecurityContentBlocks, buildSecurityToolbarBlock } from "../shared-components/Security/security-section-blocks"
@@ -17,10 +17,11 @@ import { OpenApiSecurityToolbarRow, SecurityNode, SecurityNodeViewer, SecurityTi
 export function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): StackBlock {
   const selected = resolveSelectedAlternative(node, view.selection)
   // An anonymous-only list (`[{}]`) has no alternative: the title row alone.
-  const hasAlternatives = getSecurityChildren(node, isSecurityRequirementNode).length > 0
+  const toolbar = findSecurityAlternatives(node)
+  const hasAlternatives = getSecurityAlternatives(node).length > 0
   const children: [StackBlock, ...StackBlock[]] = [
     { id: 'security-title', ...OpenApiBlockEdges.single(SecurityBlockEdges.titleRow(node)), payload: () => <SecurityTitleRow key="security-title" node={node} /> },
-    ...(hasAlternatives ? [buildSecurityToolbarBlock(node, () => <OpenApiSecurityToolbarRow key="security-toolbar" node={node} />)] : []),
+    ...(toolbar && hasAlternatives ? [buildSecurityToolbarBlock(toolbar, () => <OpenApiSecurityToolbarRow key="security-toolbar" node={node} toolbar={toolbar} />)] : []),
     ...buildSecurityContentBlocks(selected, scheme => <OpenApiSecuritySchemeCard key={scheme.id} node={scheme} />),
   ]
   return {

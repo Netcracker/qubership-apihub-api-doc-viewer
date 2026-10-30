@@ -1,5 +1,5 @@
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { getOpenApiChildren, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
+import { getOpenApiOptions, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
 import { resolveResponseCodeToneClass } from "@apihub/utils/openapi/response-code-tone"
 import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
@@ -48,7 +48,7 @@ type ResponsesTitleRowProps = {
  */
 export const ResponsesTitleRow: FC<ResponsesTitleRowProps> = ({ node }) => {
   const { selection, select } = useOpenApiViewState()
-  const responses = useMemo(() => getOpenApiChildren(node, isOpenApiResponseNode), [node])
+  const responses = useMemo(() => getOpenApiOptions(node, isOpenApiResponseNode), [node])
 
   const options: SelectorOption<ResponseNode>[] = useMemo(() => responses.map(response => ({
     node: response,

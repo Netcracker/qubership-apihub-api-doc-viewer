@@ -713,6 +713,35 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   `SideReader.replaceRecordEntry`, not a hand-written copy + `delete` + `Reflect.set`. The side name
   type is `DiffSide` (`model/abstract/diff-side.ts`, usable from model code).
 
+## Selector options are nested nodes (every API type)
+
+Design: `docs/design/shared/features/selector-options.md` (review F25, 2026-10-30). The options of a
+selector / toolbar are nested nodes of **one complex container**: AsyncAPI section selector and
+`bindings`, OpenAPI `responses` (codes) and `content` (media types), the shared
+`securityAlternatives` (alternatives). Traps:
+
+- **Crawl rule `complex: true` on the container.** The shared hooks then add each crawled option as
+  a nested node; the option's `container` is the complex node and its **`parent` is the container's
+  parent** (`response.parent` = operation). Children of an option are ordinary children again.
+- **A complex node delegates `value()` and `childrenNodes()` to its first (or given) nested node.**
+  Calling either on a container type-checks and returns the first option's data — the bug is
+  silent. Read options with `nestedNodes()` / `findNestedNode(id)`; reorder them with
+  `sortNestedNodes(compare)` (never `.sort()` on an array a getter returns).
+- **A node with its own value keeps it and gets a container child for the choice**: `security`
+  (simple: `isInheritedFromDocument`, `allowsAnonymous`, the title row) → `securityAlternatives`
+  (complex, the toolbar, crawled at the spec's `alternatives` list) → `securityRequirement`.
+- **Records go on the container's crawl value.** The per-option add / remove / rename entries and the
+  selector row's synthetic options diff (`SECURITY_ALTERNATIVES_DIFF_KEY`, …) sit in the container's
+  record (`SecuritySpecDiffsDecorator.writeAlternativesRecord` writes the `alternatives` list's
+  record); the record-driven aggregators take `containerNode ?? parentNode` as the owner, so an
+  option inherits the container's whole add / remove, and the container inherits its parent's. Field
+  keys and severity placements of the selector row belong to the container kind
+  (`SECURITY_FIELD_PLACEMENTS` / `SECURITY_NODE_PLACEMENTS[SECURITY_ALTERNATIVES]`).
+- **Verifying a shape change.** Compare old and new trees with nested nodes flattened into children
+  (and an added container level folded into its parent, parent entries first): ids, kinds, values,
+  diffs, descendant diffs, severities, summaries must match; the render-HTML comparison then shows
+  the viewer reads the new shape. Complex-node values are not comparable (they delegate).
+
 ## Security module (OpenAPI + AsyncAPI)
 
 Design: `docs/design/async-api/features/security.md` (structure, deviations),

@@ -92,15 +92,15 @@ function buildOpenApiSecurityCase(caseId: string): AnyNode | null {
 
 describe('Security toolbar: sides and option markers from the shared accessors', () => {
   it('shows no options on the side where the whole section does not exist', () => {
-    const security = findWithParent(buildOpenApiSecurityCase('01-security-added'), SecurityTreeNodeKinds.SECURITY)?.node
-    expect(security).toBeTruthy()
-    expect(SecurityRowDiffs.Security.isToolbarShownOnSide(security!, ORIGIN_LAYOUT_SIDE)).toBe(false)
-    expect(SecurityRowDiffs.Security.isToolbarShownOnSide(security!, CHANGED_LAYOUT_SIDE)).toBe(true)
+    const alternatives = findWithParent(buildOpenApiSecurityCase('01-security-added'), SecurityTreeNodeKinds.SECURITY_ALTERNATIVES)?.node
+    expect(alternatives).toBeTruthy()
+    expect(SecurityRowDiffs.Alternatives.isToolbarShownOnSide(alternatives!, ORIGIN_LAYOUT_SIDE)).toBe(false)
+    expect(SecurityRowDiffs.Alternatives.isToolbarShownOnSide(alternatives!, CHANGED_LAYOUT_SIDE)).toBe(true)
   })
 
   it('marks an alternative with an inner change, never a wholly added one (V9)', () => {
-    const security = findWithParent(buildOpenApiSecurityCase('05-alternative-added'), SecurityTreeNodeKinds.SECURITY)?.node
-    const alternatives = security?.childrenNodes() ?? []
+    const toolbar = findWithParent(buildOpenApiSecurityCase('05-alternative-added'), SecurityTreeNodeKinds.SECURITY_ALTERNATIVES)?.node
+    const alternatives = toolbar?.nestedNodes() ?? []
     const added = alternatives.filter(alternative => SecurityRowDiffs.NodeLevel.isOwnWholeChange(alternative))
     expect(added.length).toBeGreaterThan(0)
     for (const alternative of added) {

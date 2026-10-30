@@ -73,15 +73,18 @@ The scheme spec is a **merge** of the requirement entry (name, scopes) and the s
 
 | Kind | Complexity | Key | Value | Children / nested |
 | --- | --- | --- | --- | --- |
-| `security` | complex | `security` | `{ isInheritedFromDocument; allowsAnonymous }`¹ | nested: `securityRequirement` per alternative (never `{}`) |
+| `security` | simple | `security` | `{ isInheritedFromDocument; allowsAnonymous }` | child: `securityAlternatives` (when the section has alternatives) |
+| `securityAlternatives` | **complex** | `alternatives` | none (delegates to the selected alternative) | nested: `securityRequirement` per alternative (never `{}`) |
 | `securityRequirement` | simple | alternative index | `{ schemeNames: string[] }` | children: `securityScheme` per scheme |
 | `securityScheme` | simple | scheme name | the scheme spec without `flows` | children: `oauthFlow` per flow |
 | `oauthFlow` | simple | flow type | `OpenApiOAuthFlowSpec` | — |
 
-¹ Complex AsyncAPI nodes carry `value: null`; `security` needs a value, so `createNodeFromRaw`
-must create values for complex kinds listed in an allow-list (`OPENAPI_COMPLEX_KINDS_WITH_VALUE`).
-Alternatively keep `security` simple with one complex child `securityAlternatives`; pick one in
-implementation and record it in the diagram. The rest of this document is neutral to the choice.
+The alternatives are nested nodes of the complex `securityAlternatives` container (shared rule
+[../../shared/features/selector-options.md](../../shared/features/selector-options.md)); `security`
+stays simple because it has its own value and the title row. The container owns the toolbar: its
+record holds the per-alternative add / remove / rename entries and the toolbar's synthetic
+`SECURITY_ALTERNATIVES_DIFF_KEY` replace (severity placement `SelectorRow`). Same shape in AsyncAPI
+(shared Security module).
 
 `meta.unresolvedSecurityScheme = name` is set when `isResolved` is false.
 
@@ -115,7 +118,7 @@ Sketches: [../features/security-redesign.md](../features/security-redesign.md) �
 | Long titles | an option never grows wider than the strip; its label (inner span, not the button, so markers stay visible) is cropped with an ellipsis; `min-width` keeps one character + `…` visible |
 | Option title | scheme names joined with ` + ` (`api_key + request_signature`) (`SecurityDisplayLabels.securityRequirementTitle`) |
 | Option test id | `security-alternative-<index>`; strip `security-toolbar-strip`, arrows `security-toolbar-arrow-{left,right}` |
-| Diffs | a wholly added / removed option: green / red border shadow only (`diffs`); any other changed option: the **round marker** of its strongest change (`diffsSummary` ∪ `descendantDiffsSummary`), as in the AsyncAPI section selectors. Row background: `OpenApiRowDiffs.Security.takeToolbarRowDiff` — the section's whole add / remove, else a yellow `replace` row from the synthetic `alternatives` field diff that the with-diffs transformer writes when any alternative was wholly added / removed. Floating badge: `SelectorRow` placement (the strongest of those option changes). |
+| Diffs | a wholly added / removed option: green / red border shadow only (`diffs`); any other changed option: the **round marker** of its strongest change (`diffsSummary` ∪ `descendantDiffsSummary`), as in the AsyncAPI section selectors. Row background: `SecurityRowDiffs.Alternatives.takeToolbarRowDiff(securityAlternatives)` — the section's whole add / remove (inherited by the container), else a yellow `replace` row from the synthetic `alternatives` field diff that the with-diffs transformer writes when any alternative was wholly added / removed. Floating badge: `SelectorRow` placement (the strongest of those option changes). |
 | Reuse | the same toolbar, cards, and rows serve AsyncAPI server security later (smaller section header there); the AsyncAPI data layer does not exist yet |
 
 ## Scheme card

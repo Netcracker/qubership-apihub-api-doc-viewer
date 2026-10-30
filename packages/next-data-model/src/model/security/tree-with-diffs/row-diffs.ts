@@ -54,18 +54,26 @@ class Security {
     return NodeLevelRowDiffs.isPresentOnSide(node, side) && takeValueField(node, ALLOWS_ANONYMOUS_FIELD) === true
   }
 
+}
+
+/**
+ * The toolbar: the complex `securityAlternatives` container of a Security section, whose nested
+ * nodes are the alternatives (docs/design/shared/features/selector-options.md). It inherits the
+ * section's whole add / remove.
+ */
+class Alternatives {
   /**
    * Security toolbar row: a whole section add / remove, else a yellow row when any alternative
    * (toolbar option) was wholly added or removed - the option itself keeps its green / red border.
    */
-  public static takeToolbarRowDiff(node: RowDiffsNode): ChangedPropertyMetaData | undefined {
-    const options = takeFieldDiff(node, SECURITY_ALTERNATIVES_DIFF_KEY)
-    return SectionRowDiffs.takeHeaderRowDiff(node) ?? (options ? RowChangedPropertyMetaData.buildRowReplace(options.data) : undefined)
+  public static takeToolbarRowDiff(container: RowDiffsNode): ChangedPropertyMetaData | undefined {
+    const options = takeFieldDiff(container, SECURITY_ALTERNATIVES_DIFF_KEY)
+    return SectionRowDiffs.takeHeaderRowDiff(container) ?? (options ? RowChangedPropertyMetaData.buildRowReplace(options.data) : undefined)
   }
 
   /** Whether the toolbar shows options and arrows on a side: not where the whole section was added / removed. */
-  public static isToolbarShownOnSide(node: RowDiffsNode, side: LayoutSide): boolean {
-    return NodeLevelRowDiffs.isPresentOnSide(node, side)
+  public static isToolbarShownOnSide(container: RowDiffsNode, side: LayoutSide): boolean {
+    return NodeLevelRowDiffs.isPresentOnSide(container, side)
   }
 }
 
@@ -340,6 +348,7 @@ export class SecurityRowDiffs {
   public static readonly NodeLevel = NodeLevelRowDiffs
   public static readonly Section = SectionRowDiffs
   public static readonly Security = Security
+  public static readonly Alternatives = Alternatives
   public static readonly Scheme = Scheme
   public static readonly OAuthFlow = OAuthFlow
 }

@@ -52,8 +52,12 @@ export interface SecurityTreeNodeValueTypeOAuthFlow {
   readonly scopes: Record<string, string>
 }
 
+/** The alternatives container has no own value (a complex node delegates to the selected alternative). */
+export type SecurityTreeNodeValueTypeAlternatives = Record<string, never>
+
 export type SecurityTreeNodeValue<T extends SecurityTreeNodeKind> =
   T extends typeof SecurityTreeNodeKinds.SECURITY ? SecurityTreeNodeValueTypeSecurity
+  : T extends typeof SecurityTreeNodeKinds.SECURITY_ALTERNATIVES ? SecurityTreeNodeValueTypeAlternatives
   : T extends typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT ? SecurityTreeNodeValueTypeRequirement
   : T extends typeof SecurityTreeNodeKinds.SECURITY_SCHEME ? SecurityTreeNodeValueTypeScheme
   : T extends typeof SecurityTreeNodeKinds.OAUTH_FLOW ? SecurityTreeNodeValueTypeOAuthFlow
@@ -69,6 +73,7 @@ export type SecurityNodeValueProps = {
 /** Value props per security kind: the fields a node value is picked from (plain and with diffs). */
 export const SECURITY_NODE_VALUE_PROPS: SecurityNodeValueProps = {
   [SecurityTreeNodeKinds.SECURITY]: ['isInheritedFromDocument', 'allowsAnonymous'] satisfies (keyof SecurityTreeNodeValueTypeSecurity)[],
+  [SecurityTreeNodeKinds.SECURITY_ALTERNATIVES]: [],
   [SecurityTreeNodeKinds.SECURITY_REQUIREMENT]: ['schemeNames'] satisfies (keyof SecurityTreeNodeValueTypeRequirement)[],
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: [
     'name', 'isResolved', 'type', 'description', 'in', 'parameterName', 'scheme', 'bearerFormat', 'openIdConnectUrl', 'requiredScopes', 'requiredScopesKind',

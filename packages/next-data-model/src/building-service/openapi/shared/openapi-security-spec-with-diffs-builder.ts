@@ -75,7 +75,7 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       return undefined
     }
     const alternatives: SecurityAlternativeSpec[] = []
-    const securityRecord: DiffsRecord = {}
+    const alternativesRecord: DiffsRecord = {}
     let presence = SideContexts.NONE
     let anonymous = SideContexts.NONE
     const anonymousCauses: (Diff | undefined)[] = []
@@ -103,21 +103,21 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
         ? alternativeField.diff
         : this.reader.diffPresence(slot.alternative, requirement, slot.causes)
       if (wholeDiff) {
-        securityRecord[String(alternativeIndex)] = wholeDiff
+        alternativesRecord[String(alternativeIndex)] = wholeDiff
       }
     })
-    return this.createSecurity(isInheritedFromDocument, alternatives, securityRecord, presence, anonymous, anonymousCauses)
+    return this.createSecurity(isInheritedFromDocument, alternatives, alternativesRecord, presence, anonymous, anonymousCauses)
   }
 
   /**
-   * The section spec and its record: the toolbar diff from the wholly added / removed alternatives,
-   * then the `allowsAnonymous` presence diff (written after the toolbar diff: it is not an option).
-   * `undefined` when the list has neither alternatives nor `{}` on any side.
+   * The section spec and its records: the alternatives list gets the per-alternative entries and the
+   * toolbar diff (the `securityAlternatives` container), the section its `allowsAnonymous` presence
+   * diff (not an option). `undefined` when the list has neither alternatives nor `{}` on any side.
    */
   private createSecurity(
     isInheritedFromDocument: boolean,
     alternatives: SecurityAlternativeSpec[],
-    securityRecord: DiffsRecord,
+    alternativesRecord: DiffsRecord,
     presence: SideContext,
     anonymous: SideContext,
     anonymousCauses: readonly (Diff | undefined)[],
@@ -127,7 +127,8 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       return undefined
     }
     const security: SecuritySpec = { isInheritedFromDocument, allowsAnonymous, alternatives }
-    this.decorator.writeAlternativesDiff(securityRecord)
+    this.decorator.writeAlternativesRecord(alternatives, alternativesRecord)
+    const securityRecord: DiffsRecord = {}
     const anonymousDiff = this.reader.diffPresence(anonymous, true, anonymousCauses)
     if (anonymousDiff) {
       securityRecord.allowsAnonymous = anonymousDiff
@@ -176,22 +177,22 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
     const after = afterAll.filter(requirement => !OpenApiSecuritySpecBuilder.isAnonymousRequirement(requirement))
     const unmatchedBefore = [...before]
     const alternatives: SecurityAlternativeSpec[] = []
-    const securityRecord: DiffsRecord = {}
+    const alternativesRecord: DiffsRecord = {}
     for (const requirement of after) {
       const matchIndex = unmatchedBefore.findIndex(candidate => SideReader.deepEqual(candidate, requirement))
       if (matchIndex >= 0) {
         unmatchedBefore.splice(matchIndex, 1)
       } else {
-        securityRecord[String(alternatives.length)] = this.reader.createDiff(DiffAction.add, { afterValue: requirement }, [cause])
+        alternativesRecord[String(alternatives.length)] = this.reader.createDiff(DiffAction.add, { afterValue: requirement }, [cause])
       }
       alternatives.push(this.buildAlternative(context, requirement))
     }
     for (const requirement of unmatchedBefore) {
-      securityRecord[String(alternatives.length)] = this.reader.createDiff(DiffAction.remove, { beforeValue: requirement }, [cause])
+      alternativesRecord[String(alternatives.length)] = this.reader.createDiff(DiffAction.remove, { beforeValue: requirement }, [cause])
       alternatives.push(this.buildAlternative(context, requirement))
     }
     const presence = { before: beforeAll.length > 0, after: afterAll.length > 0 }
-    return this.createSecurity(isInheritedFromDocument, alternatives, securityRecord, presence, anonymous, [cause])
+    return this.createSecurity(isInheritedFromDocument, alternatives, alternativesRecord, presence, anonymous, [cause])
   }
 
   private decorateAlternative(

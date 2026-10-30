@@ -5,7 +5,7 @@ import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mo
 import { OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
 import {
   findOpenApiChild,
-  getOpenApiChildren,
+  getOpenApiOptions,
   isOpenApiContentNode,
   isOpenApiMediaTypeNode,
   isOpenApiResponseNode,
@@ -31,7 +31,7 @@ export function resolveSelectedAlternative(security: SecurityNode, selection: Op
 
 /** The selected response: the chosen one, else the first 2XX, else the first (features/response-code-selector.md). */
 export function resolveSelectedResponse(responses: ResponsesNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE> | undefined {
-  const codes = getOpenApiChildren(responses, isOpenApiResponseNode)
+  const codes = getOpenApiOptions(responses, isOpenApiResponseNode)
   return codes.find(response => response.id === selection.get(responses.id))
     ?? codes.find(response => response.value()?.codeClass === OpenApiResponseCodeClasses.SUCCESS)
     ?? codes[0]
@@ -39,7 +39,7 @@ export function resolveSelectedResponse(responses: ResponsesNode, selection: Ope
 
 /** Media types of a body owner (request body, or a response for its body), in document order. */
 export function getOpenApiMediaTypes(owner: MediaTypeOwnerNode): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>[] {
-  return getOpenApiChildren(findOpenApiChild(owner, isOpenApiContentNode), isOpenApiMediaTypeNode)
+  return getOpenApiOptions(findOpenApiChild(owner, isOpenApiContentNode), isOpenApiMediaTypeNode)
 }
 
 /** The selected media type of a body owner: the chosen one, else the first. */

@@ -1,6 +1,7 @@
 import { OpenApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model"
 import { resolveChildPrecededBy } from "../src/components/JsonSchemaViewer/utils/resolve-child-preceded-by"
 import { PrecededBy } from "../src/components/shared-components/WithPrecededByProps"
+import { getSecurityAlternatives } from "../src/utils/security/node-type-checkers"
 import {
   findOpenApiChild,
   isOpenApiOperationNode,
@@ -54,8 +55,9 @@ describe("OpenAPI view selection", () => {
   it("defaults to the first alternative and follows the selection", () => {
     const security = required(findOpenApiChild(operation(), isOpenApiSecurityNode))
     const first = resolveSelectedAlternative(security, new Map())
-    const second = security.childrenNodes()[1]
-    expect(first?.id).toBe(security.childrenNodes()[0].id)
+    // The alternatives are nested nodes of the section's `securityAlternatives` container.
+    const [firstAlternative, second] = getSecurityAlternatives(security)
+    expect(first?.id).toBe(firstAlternative.id)
     expect(resolveSelectedAlternative(security, new Map([[security.id, second.id]]))?.id).toBe(second.id)
   })
 

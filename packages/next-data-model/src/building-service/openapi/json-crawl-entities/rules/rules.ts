@@ -8,8 +8,8 @@ import { OpenApiCrawlRule } from "./types"
 /**
  * Crawl rules over the operation-oriented spec. Segments without `kind` only route the crawl;
  * keys without rules stop it, so schemas and extension values stay raw on their nodes.
- * Every OpenAPI node is SIMPLE: selector options are children, not nested nodes
- * (see docs/design/openapi/notes/2026-10-implementation-decisions.md).
+ * Selector containers are COMPLEX and their options nested nodes: `responses` (codes), `content`
+ * (media types) and the shared `securityAlternatives` (docs/design/shared/features/selector-options.md).
  */
 export function getOpenApiCrawlRules<S extends OpenApiTreeCrawlState = OpenApiTreeCrawlState>(
   kind: OpenApiTreeNodeKind,
@@ -18,6 +18,7 @@ export function getOpenApiCrawlRules<S extends OpenApiTreeCrawlState = OpenApiTr
   const contentRule = {
     '/*': { kind: OpenApiTreeNodeKinds.MEDIA_TYPE },
     kind: OpenApiTreeNodeKinds.CONTENT,
+    complex: true,
   }
   return {
     '/data': {
@@ -41,6 +42,7 @@ export function getOpenApiCrawlRules<S extends OpenApiTreeCrawlState = OpenApiTr
           kind: OpenApiTreeNodeKinds.RESPONSE,
         },
         kind: OpenApiTreeNodeKinds.RESPONSES,
+        complex: true,
       },
       '/responsesExtensions': extensionsRule,
     },

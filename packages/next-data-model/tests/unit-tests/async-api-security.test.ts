@@ -23,6 +23,16 @@ function childrenOf(node: AnyNode, kind: string): AnyNode[] {
   return node.childrenNodes().filter(candidate => candidate.kind === kind)
 }
 
+/** The toolbar of a Security section: its complex `securityAlternatives` container. */
+function toolbarOf(security: AnyNode): AnyNode {
+  return childOf(security, AsyncApiTreeNodeKinds.SECURITY_ALTERNATIVES)
+}
+
+/** The alternatives of a Security section: nested nodes of its `securityAlternatives` container. */
+function alternativesOf(security: AnyNode): AnyNode[] {
+  return childOf(security, AsyncApiTreeNodeKinds.SECURITY_ALTERNATIVES).nestedNodes().filter(node => node.kind === AsyncApiTreeNodeKinds.SECURITY_REQUIREMENT)
+}
+
 /** The operation's Security section: a child of the message root. */
 function operationSecurity(root: AnyNode | null): AnyNode {
   return childOf(root, AsyncApiTreeNodeKinds.SECURITY)
@@ -37,7 +47,7 @@ function servers(root: AnyNode | null): AnyNode[] {
 
 /** The schemes of every alternative (one per alternative in AsyncAPI). */
 function schemes(security: AnyNode): AnyNode[] {
-  return childrenOf(security, AsyncApiTreeNodeKinds.SECURITY_REQUIREMENT)
+  return alternativesOf(security)
     .flatMap(alternative => childrenOf(alternative, AsyncApiTreeNodeKinds.SECURITY_SCHEME))
 }
 
@@ -48,7 +58,7 @@ function wholeAction(node: AnyNode): string | undefined {
 describe('AsyncAPI security: plain', () => {
   it('builds one alternative per list item, each with its one named scheme', () => {
     const security = operationSecurity(buildAsyncApiSecurityTree('23-several-alternatives').root)
-    const alternatives = childrenOf(security, AsyncApiTreeNodeKinds.SECURITY_REQUIREMENT)
+    const alternatives = alternativesOf(security)
     expect(alternatives.map(alternative => alternative.value())).toEqual([
       { schemeNames: ['oauth'] },
       { schemeNames: ['headerKey'] },
@@ -114,11 +124,13 @@ describe('AsyncAPI security: diffs', () => {
 
   it('alternative added: yellow toolbar row, the option wholly added (green border)', () => {
     const security = operationSecurity(buildAsyncApiSecurityTreeWithDiffs('1.3-alternative-added').root)
-    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(security)?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
-    const [first, second] = childrenOf(security, AsyncApiTreeNodeKinds.SECURITY_REQUIREMENT)
+    expect(SecurityRowDiffs.Alternatives.takeToolbarRowDiff(toolbarOf(security))?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    const [first, second] = alternativesOf(security)
     expect(wholeAction(first)).toBeUndefined()
     expect(wholeAction(second)).toBe(DiffAction.add)
-    expect(isAsyncApiTreeNodeWithDiffs(security) && security.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]).toBeTruthy()
+    // The toolbar row's badge belongs to the alternatives container.
+    const toolbar = toolbarOf(security)
+    expect(isAsyncApiTreeNodeWithDiffs(toolbar) && toolbar.diffsSeverities?.[NodeDiffsSeverityPlacemennt.SelectorRow]).toBeTruthy()
   })
 
   it('scheme type replaced: yellow title row, highlighted type text', () => {
@@ -169,7 +181,7 @@ describe('AsyncAPI security: diffs', () => {
     const serverSecurity = (caseId: string, index = 0): AnyNode => childOf(servers(buildAsyncApiSecurityTreeWithDiffs(caseId).root)[index], AsyncApiTreeNodeKinds.SECURITY)
     expect(wholeAction(serverSecurity('2.1-server-security-added'))).toBe(DiffAction.add)
     expect(wholeAction(serverSecurity('2.2-server-security-removed'))).toBe(DiffAction.remove)
-    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(serverSecurity('2.3-server-alternative-added'))?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
+    expect(SecurityRowDiffs.Alternatives.takeToolbarRowDiff(toolbarOf(serverSecurity('2.3-server-alternative-added')))?.styles.after.backgroundColor).toBe(HighlightVariant.Yellow)
     const added = serverSecurity('2.7-server-with-security-added', 1)
     expect(wholeAction(added)).toBe(DiffAction.add)
     expect(isAsyncApiTreeNodeWithDiffs(added) && added.diffs[NODE_LEVEL_DIFF_KEY]?.inherited).toBe(true)

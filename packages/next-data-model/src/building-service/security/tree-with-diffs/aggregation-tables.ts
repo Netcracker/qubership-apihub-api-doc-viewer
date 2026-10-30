@@ -7,7 +7,7 @@ import { SECURITY_NODE_VALUE_PROPS } from "../../../model/security/types/node-va
 
 /** Field diffs that are not value props: synthetic row diffs written by the security with-diffs builders. */
 export const SECURITY_SYNTHETIC_FIELD_DIFF_KEYS: Readonly<Partial<Record<SecurityTreeNodeKind, readonly string[]>>> = {
-  [SecurityTreeNodeKinds.SECURITY]: [SECURITY_ALTERNATIVES_DIFF_KEY],
+  [SecurityTreeNodeKinds.SECURITY_ALTERNATIVES]: [SECURITY_ALTERNATIVES_DIFF_KEY],
 }
 
 /** The diffs a security node aggregates: its value props and its synthetic row keys. */

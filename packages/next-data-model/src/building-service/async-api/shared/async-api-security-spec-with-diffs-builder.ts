@@ -32,7 +32,7 @@ export class AsyncApiSecuritySpecWithDiffsBuilder extends AsyncApiSecuritySpecBu
     const listField = this.reader.readField(owner, 'security', SideContexts.BOTH)
     const listContext = this.reader.childContext(listField)
     const alternatives: SecurityAlternativeSpec[] = []
-    const securityRecord: DiffsRecord = {}
+    const alternativesRecord: DiffsRecord = {}
     let presence = SideContexts.NONE
     list.forEach((item, index) => {
       if (!isObject(item)) {
@@ -45,15 +45,16 @@ export class AsyncApiSecuritySpecWithDiffsBuilder extends AsyncApiSecuritySpecBu
       const scheme = alternative.schemes[alternative.schemeNames[0]]
       this.decorateScheme(scheme, item, itemContext)
       if (SideReader.isWholeChange(itemField.diff)) {
-        securityRecord[String(alternatives.length)] = itemField.diff
+        alternativesRecord[String(alternatives.length)] = itemField.diff
       }
       alternatives.push(alternative)
     })
     const security: SecuritySpec = { isInheritedFromDocument: false, allowsAnonymous: false, alternatives }
-    this.decorator.writeAlternativesDiff(securityRecord)
+    this.decorator.writeAlternativesRecord(alternatives, alternativesRecord)
+    const securityRecord: DiffsRecord = {}
     const sectionDiff = SideReader.isWholeChange(listField.diff)
       ? listField.diff
-      : this.reader.diffPresence(presence, security, [listField.diff, ...Object.values(securityRecord)])
+      : this.reader.diffPresence(presence, security, [listField.diff, ...Object.values(alternativesRecord)])
     if (sectionDiff) {
       securityRecord[NODE_LEVEL_DIFF_KEY] = sectionDiff
     }

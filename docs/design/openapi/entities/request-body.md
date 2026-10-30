@@ -8,7 +8,7 @@ description, and the schema of the selected media type. Status: **implemented** 
 | Kind | Complexity | Key | Value | Children / nested |
 | --- | --- | --- | --- | --- |
 | `requestBody` | simple | `requestBody` | `{ description?: string; required?: boolean }` | child: `content` |
-| `content` | complex | `content` | `null` | nested: `mediaType` per media type, document order |
+| `content` | **complex** | `content` | none (delegates to the selected media type) | nested: `mediaType` per media type, document order ([selector options](../../shared/features/selector-options.md)) |
 | `mediaType` | simple | the media type (`application/json`) | `{ mediaType: string; schema?: object \| boolean }` | — |
 
 `required` is displayed in v1 ([Required marker](#required-marker), Q11). `content` and `mediaType`

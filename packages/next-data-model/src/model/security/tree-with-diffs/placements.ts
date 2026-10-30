@@ -14,6 +14,9 @@ export const SECURITY_FIELD_PLACEMENTS: Readonly<Partial<Record<SecurityTreeNode
   [SecurityTreeNodeKinds.SECURITY]: {
     // The `Optional` badge (anonymous access) sits in the section title row.
     allowsAnonymous: Placement.TitleRow,
+  },
+  [SecurityTreeNodeKinds.SECURITY_ALTERNATIVES]: {
+    // The toolbar row belongs to the alternatives container.
     [SECURITY_ALTERNATIVES_DIFF_KEY]: Placement.SelectorRow,
   },
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: {
@@ -38,7 +41,8 @@ export const SECURITY_FIELD_PLACEMENTS: Readonly<Partial<Record<SecurityTreeNode
 
 /** Rows a node renders: a whole add / remove badges each of them. */
 export const SECURITY_NODE_PLACEMENTS: Readonly<Partial<Record<SecurityTreeNodeKind, readonly NodeDiffsSeverityPlacemennt[]>>> = {
-  [SecurityTreeNodeKinds.SECURITY]: [Placement.TitleRow, Placement.SelectorRow],
+  [SecurityTreeNodeKinds.SECURITY]: [Placement.TitleRow],
+  [SecurityTreeNodeKinds.SECURITY_ALTERNATIVES]: [Placement.SelectorRow],
   [SecurityTreeNodeKinds.SECURITY_SCHEME]: [
     Placement.TitleRow,
     Placement.DescriptionRow,

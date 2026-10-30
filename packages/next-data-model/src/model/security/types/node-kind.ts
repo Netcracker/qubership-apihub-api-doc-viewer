@@ -6,6 +6,8 @@
  */
 export const SecurityTreeNodeKinds = {
   SECURITY: 'security',
+  /** The toolbar's container: complex, its nested nodes are the alternatives (`securityRequirement`). */
+  SECURITY_ALTERNATIVES: 'securityAlternatives',
   SECURITY_REQUIREMENT: 'securityRequirement',
   SECURITY_SCHEME: 'securityScheme',
   OAUTH_FLOW: 'oauthFlow',

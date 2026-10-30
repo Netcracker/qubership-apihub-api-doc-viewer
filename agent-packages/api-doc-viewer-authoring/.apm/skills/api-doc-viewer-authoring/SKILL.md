@@ -1021,7 +1021,13 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
   (with `causedAt`) and `ownRowDiff` (description highlighter); do not pick the strongest diff or
   build a `{ type, causedAt: [] }` severity in React. The toolbar's options use
   `SecurityRowDiffs.NodeLevel.takeChangesMarkerSummary` (the V9 marker rule of every selector) and its
-  sides `SecurityRowDiffs.Security.isToolbarShownOnSide`.
+  sides `SecurityRowDiffs.Alternatives.isToolbarShownOnSide` — on the toolbar's `securityAlternatives`
+  container (`findSecurityAlternatives`), which `SecurityToolbarRow` / `buildSecurityToolbarBlock` take.
+- **Selector options are nested nodes** (`docs/design/shared/features/selector-options.md`). Read
+  response codes / media types with `getOpenApiOptions(container, guard)` and alternatives with
+  `getSecurityAlternatives(security)` — all `nestedNodes()`. Never call `childrenNodes()` or `value()`
+  on a complex container (`responses`, `content`, `securityAlternatives`): they silently delegate to
+  the first option, so the code type-checks and renders the wrong data.
 - **AsyncAPI keeps its own rows outside, the shared layout inside.** The AsyncAPI section title is an
   AsyncAPI `TitleRow` spaced by `data-precededby`; the toolbar and cards render in
   `StackLayout level="security" outerHalves`. The element after a section is

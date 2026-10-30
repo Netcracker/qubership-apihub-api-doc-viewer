@@ -7,7 +7,7 @@ description, headers, and body (whose header carries the media-type selector). S
 
 | Kind | Complexity | Key | Value | Children / nested |
 | --- | --- | --- | --- | --- |
-| `responses` | complex | `responses` | `null` | nested: `response` per code, **canonical order** |
+| `responses` | **complex** | `responses` | none (delegates to the selected code) | nested: `response` per code, **canonical order** ([selector options](../../shared/features/selector-options.md)) |
 | `response` | simple | the code as in the document (`200`, `2XX`, `default`) | `{ code: string; codeClass: OpenApiResponseCodeClass; description?: string }` | children: `responseHeaders`?, `extensions`?, `content`? |
 | `responseHeaders` | simple | `headers` | `{ schema: OpenApiSynthesizedObjectSchema }` | — |
 | `extensions` (of a response) | simple | `extensions` | `{ rawValues }` — Response Object `x-*` | — |

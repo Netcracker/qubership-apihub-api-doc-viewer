@@ -1,5 +1,5 @@
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
-import { resolveSelectedSecurityAlternative } from "@apihub/utils/security/node-type-checkers"
+import { findSecurityAlternatives, resolveSelectedSecurityAlternative } from "@apihub/utils/security/node-type-checkers"
 import { ASYNC_API_SECURITY_DISPLAY_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/async-api/security-presentation"
 import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
 import { FC, memo, useMemo, useState } from "react"
@@ -34,18 +34,20 @@ export const AsyncApiSecuritySection: FC<AsyncApiSecuritySectionProps> = memo(pr
   const [selectedId, setSelectedId] = useState<string>()
   const selected = resolveSelectedSecurityAlternative(node, selectedId)
 
+  const toolbar = findSecurityAlternatives(node)
+
   const blocks: StackBlock[] = useMemo(() => [
-    buildSecurityToolbarBlock(node, () => (
+    ...(toolbar ? [buildSecurityToolbarBlock(toolbar, () => (
       <SecurityToolbarRow
         key="security-toolbar"
-        node={node}
+        toolbar={toolbar}
         labels={ASYNC_API_SECURITY_DISPLAY_LABELS}
         selected={selected}
         onSelect={(alternative) => setSelectedId(alternative.id)}
       />
-    )),
+    ))] : []),
     ...buildSecurityContentBlocks(selected, scheme => <AsyncApiSecuritySchemeCard key={scheme.id} node={scheme} variant={variant} />),
-  ], [node, selected, variant])
+  ], [toolbar, selected, variant])
 
   return (
     <div data-testid="async-api-security-section" className="flex flex-col">

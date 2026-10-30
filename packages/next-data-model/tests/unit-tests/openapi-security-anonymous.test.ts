@@ -40,8 +40,18 @@ function plainSecurity(caseId: string) {
   return security
 }
 
+/** The toolbar of a Security section: its complex `securityAlternatives` container. */
+function toolbarOf(security: OpenApiTreeNodeWithDiffs): OpenApiTreeNodeWithDiffs {
+  const container = security.childrenNodes().find(node => node.kind === OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES)
+  if (!container) {
+    throw new Error('no securityAlternatives under security')
+  }
+  return container
+}
+
+/** The alternatives: nested nodes of the section's `securityAlternatives` container. */
 function alternatives(security: OpenApiTreeNodeWithDiffs): [string[], string | undefined][] {
-  return security.childrenNodes().map(alternative => {
+  return toolbarOf(security).nestedNodes().map(alternative => {
     const value = alternative.value()
     const schemeNames = value && 'schemeNames' in value ? value.schemeNames : []
     return [schemeNames, alternative.diffs[NODE_LEVEL_DIFF_KEY]?.data.action]
@@ -65,7 +75,10 @@ describe('OpenAPI security: anonymous access (plain)', () => {
   it('an anonymous-only list keeps the section, with no alternatives', () => {
     const security = plainSecurity('oas30/structure/10-security-anonymous-only')
     expect(security.value()).toMatchObject({ allowsAnonymous: true })
-    expect(security.childrenNodes()).toEqual([])
+    // The toolbar container exists (the list is present) and holds no alternative.
+    const toolbar = security.childrenNodes().find(node => node.kind === OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES)
+    expect(security.childrenNodes().map(node => node.kind)).toEqual([OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES])
+    expect(toolbar?.nestedNodes()).toEqual([])
   })
 
   it('a list without `{}` does not allow anonymous access', () => {
@@ -84,7 +97,7 @@ describe('OpenAPI security: anonymous access (with diffs)', () => {
     // The whole title row is a yellow replace with a floating badge; the toolbar is not colored.
     expect(SecurityRowDiffs.Security.takeTitleRowDiff(security)?.data.action).toBe(DiffAction.replace)
     expect(security.diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow]).toBeDefined()
-    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(security)).toBeUndefined()
+    expect(SecurityRowDiffs.Alternatives.takeToolbarRowDiff(toolbarOf(security))).toBeUndefined()
     expect(alternatives(security)).toEqual([[['oauth'], undefined]])
   })
 
@@ -97,8 +110,8 @@ describe('OpenAPI security: anonymous access (with diffs)', () => {
     expect(badgeSides(security)).toEqual(sides)
     expect(alternatives(security)).toEqual([[['oauth'], undefined], [['api_key'], alternativeAction]])
     // The api_key alternative is wholly added / removed: an option change colors the toolbar.
-    expect(SecurityRowDiffs.Security.takeToolbarRowDiff(security)?.data.action).toBe(DiffAction.replace)
-    const apiKeyCard = security.childrenNodes()[1].childrenNodes()[0]
+    expect(SecurityRowDiffs.Alternatives.takeToolbarRowDiff(toolbarOf(security))?.data.action).toBe(DiffAction.replace)
+    const apiKeyCard = toolbarOf(security).nestedNodes()[1].childrenNodes()[0]
     expect(SecurityRowDiffs.Scheme.isContentChanged(apiKeyCard)).toBe(true)
   })
 

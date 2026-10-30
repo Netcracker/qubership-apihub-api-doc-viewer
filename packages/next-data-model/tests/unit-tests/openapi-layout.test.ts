@@ -1,4 +1,5 @@
 import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/tree-with-diffs/builder'
+import { TreeNodeComplexityTypes } from '../../src/model/abstract/tree/tree-node.interface'
 import { DiffType } from '@netcracker/qubership-apihub-api-diff'
 import { HighlightVariant, NodeDiffsSeverityPlacemennt } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
 import {
@@ -36,7 +37,8 @@ function operation(caseId: string): OpenApiTreeNodeWithDiffs {
 }
 
 function child(node: OpenApiTreeNodeWithDiffs, kind: OpenApiTreeNodeKind, key?: string): OpenApiTreeNodeWithDiffs {
-  const found = node.childrenNodes().find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === key))
+  // A complex container's options are its nested nodes (selector options rule).
+  const found = (node.type === TreeNodeComplexityTypes.COMPLEX ? node.nestedNodes() : node.childrenNodes()).find(candidate => candidate.kind === kind && (key === undefined || String(candidate.key) === key))
   if (!found) {
     throw new Error(`no ${kind} ${key ?? ''} under ${node.kind}`)
   }
@@ -171,7 +173,8 @@ describe('OpenAPI layout: edges on fixtures', () => {
 
   it('an added card: green card edge and frame rows; a type change paints neither', () => {
     const security = (caseId: string): OpenApiTreeNodeWithDiffs => child(operation(caseId), OpenApiTreeNodeKinds.SECURITY)
-    const added = child(security('security/09-scheme-added-to-alternative').childrenNodes()[0], OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
+    const [alternative] = child(security('security/09-scheme-added-to-alternative'), OpenApiTreeNodeKinds.SECURITY_ALTERNATIVES).nestedNodes()
+    const added = child(alternative, OpenApiTreeNodeKinds.SECURITY_SCHEME, 'basic')
     const addedBadge = added.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
     expect(addedBadge).toBeDefined()
     expect(OpenApiBlockEdges.card(added)).toEqual(card(Gray, Green, addedBadge))

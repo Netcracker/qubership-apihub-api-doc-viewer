@@ -12,7 +12,7 @@ flowchart TB
     TreeBuilderAbs["TreeBuilder"]
     NodeDataBuilderAbs["AbstractNodeDataBuilder"]
     HooksAbs["createTreeBuildingHooks"]
-    NodesAbs["SimpleTreeNode (every OpenAPI node is simple, I1)"]
+    NodesAbs["SimpleTreeNode · ComplexTreeNode<br/>(selector containers are complex: responses · content · securityAlternatives)"]
   end
 
   subgraph SEC["Security module (spec-neutral, shared with AsyncAPI)"]
@@ -121,7 +121,7 @@ entries, no media type without `schema`) so visibility can rely on presence.
 
 ## Crawl rules
 
-`getOpenApiCrawlRules(kind)`; every node is **simple** (I1):
+`getOpenApiCrawlRules(kind)`; selector containers (`responses`, `content`, the shared `securityAlternatives`) are **complex**, their options nested nodes (shared rule [../../shared/features/selector-options.md](../../shared/features/selector-options.md); supersedes I1):
 
 ```typescript
 {
@@ -153,10 +153,15 @@ Notes:
 - Intermediate segments without `kind` (`/data`, `/alternatives`, `/schemes`, `/flows`,
   `/parameters`) only route the crawl: `createTreeBuildingHooks` returns without creating a node
   when `rules.kind` is missing and keeps crawling.
-- Selector options (alternatives, schemes, media types, response codes) are ordinary children; the
-  viewer picks them by kind guard (`getOpenApiChildren`). The Responses Object's extensions live in
-  `data.responsesExtensions`, a sibling of `data.responses`, so every child of `responses` is a
-  response-code option.
+- Selector options are **nested nodes of a complex container** (shared rule
+  [../../shared/features/selector-options.md](../../shared/features/selector-options.md)): response
+  codes of `responses`, media types of `content`, alternatives of the shared `securityAlternatives`
+  (child of the simple `security`, which keeps its own value). An option's `parent` is the container's
+  parent. The viewer reads them with `getOpenApiOptions` / `getSecurityAlternatives` (`nestedNodes()`),
+  never `childrenNodes()` on a container (it delegates to the first option). The Responses Object's
+  extensions live in `data.responsesExtensions`, a sibling of `data.responses`, so every nested node
+  of `responses` is a response-code option. Schemes of an alternative and flows of a scheme stay
+  ordinary children (not selector options).
 - Leaf kinds (`parameters`, `responseHeaders`, `mediaType`, `extensions`, `oauthFlow`) declare no
   sub-rules: schemas and raw values stay on the node value and are rendered by nested viewers.
 - JS enumerates integer-like keys first, so the canonical response-code order is applied to the
