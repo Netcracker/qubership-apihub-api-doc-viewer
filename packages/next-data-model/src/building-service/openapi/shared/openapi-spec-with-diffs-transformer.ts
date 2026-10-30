@@ -1,45 +1,55 @@
-import { aggregateDiffsWithRollup, Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
+import { aggregateDiffsWithRollup, Diff, DiffAction } from "@netcracker/qubership-apihub-api-diff"
 import { BuildingServiceLogger } from "../../../loggers"
 import { NODE_LEVEL_DIFF_KEY } from "../../../model/abstract/tree-with-diffs/tree-node.interface"
-import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY } from "../../../model/openapi/tree-with-diffs/diff-keys"
+import { OPENAPI_RESPONSE_OPTIONS_DIFF_KEY } from "../../../model/openapi/tree-with-diffs/diff-keys"
 import { OPENAPI_PARAMETER_LOCATIONS, OpenApiParameterLocation, OpenApiSynthesizedObjectSchema } from "../../../model/openapi/types/node-value"
-import { isSpecificationExtensionKey } from "../../../model/specification-extension-key"
 import { OpenApiOperationKeys } from "../../../shared/openapi/types/operation-keys"
 import { OpenApiResponseCode } from "../../../shared/openapi/types/response-code"
-import { DiffsRecord, isNonEmptyString, isObject, isString } from "../../../utilities"
+import { DiffsRecord, isNonEmptyString, isObject } from "../../../utilities"
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
+import { FieldSides, SideContext, SideContexts, SideReader } from "../../shared/side-reader"
 import { OpenApiObjectSchemaWithDiffsSynthesizer } from "./object-schema-with-diffs-synthesizer"
-import { OpenApiSecuritySpecWithDiffsBuilder } from "./openapi-security-spec-with-diffs-builder"
 import { OpenApiSchemaEntry } from "./object-schema-synthesizer"
-import { OpenApiContentSpec, OpenApiExtensionsSpec, OpenApiMediaTypeSpec, OpenApiOperationContext, OpenApiOperationOrientedSpec, OpenApiParametersSpec, OpenApiRequestBodySpec, OpenApiRequestSpec, OpenApiResponseHeadersSpec, OpenApiResponseSpec, OpenApiSpecTransformer } from "./openapi-spec-transformer"
-import { BOTH_SIDES, FieldSides, SideContext, SideReader } from "../../shared/side-reader"
+import { OpenApiContentWithDiffsDecorator } from "./openapi-content-with-diffs-decorator"
+import { OpenApiDiffsOperationFactsResolver } from "./openapi-diffs-operation-facts"
+import { OpenApiSectionPresence } from "./openapi-section-presence"
+import { OpenApiSecuritySpecWithDiffsBuilder } from "./openapi-security-spec-with-diffs-builder"
+import { OpenApiExtensionsSpec, OpenApiOperationContext, OpenApiOperationOrientedSpec, OpenApiParametersSpec, OpenApiRequestBodySpec, OpenApiRequestSpec, OpenApiResponseHeadersSpec, OpenApiResponseSpec, OpenApiSpecTransformer } from "./openapi-spec-transformer"
 
 type UnknownRecord = Record<PropertyKey, unknown>
 
-/** An object whose `x-*` are cloned into a media-type schema root, and the sides where it exists. */
-type ExtensionOwnerSides = {
-  readonly owner: UnknownRecord
-  readonly context: SideContext
-}
+/** Operation fields whose raw diffs move onto the operation node unchanged (source key -> value prop). */
+const OPERATION_FIELD_DIFFS: ReadonlyArray<readonly [string, string]> = [
+  ['summary', 'title'],
+  ['operationId', 'operationId'],
+  ['description', 'description'],
+  ['externalDocs', 'externalDocs'],
+]
 
-const NO_SIDES: SideContext = { before: false, after: false }
+/** Operation-level sections that get a whole-section diff from their presence. */
+const OPERATION_SECTION_KEYS = ['security', 'extensions', 'request', 'responses', 'responsesExtensions'] as const
 
 /**
  * Merged `apiDiff` document -> operation-oriented spec with diff records attached for the
  * OpenAPI layer. Child-section diffs live in the parent's own record under the child key (where
  * `KindAny` inheritance reads them); synthetic whole-section diffs come from presence per side.
+ * Collaborators: operation facts (`OpenApiDiffsOperationFactsResolver`), section presence
+ * (`OpenApiSectionPresence`), body content (`OpenApiContentWithDiffsDecorator`). No per-operation
+ * state lives on the transformer: every step reads the facts of the context it is given.
  * Design: docs/design/openapi/features/diffs.md
  */
 export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   private readonly reader: SideReader
-  private readonly presence = new WeakMap<object, SideContext>()
-  private operationSides: SideContext = BOTH_SIDES
-  private wholeOperationDiff: Diff | undefined
-  private addressDiff: Diff | undefined
+  private readonly operationFacts: OpenApiDiffsOperationFactsResolver
+  private readonly presence: OpenApiSectionPresence
+  private readonly content: OpenApiContentWithDiffsDecorator
 
   constructor(logger: BuildingServiceLogger, private readonly diffMetaKeys: DiffMetaKeys) {
     super(logger)
     this.reader = new SideReader(diffMetaKeys.diffsMetaKey)
+    this.operationFacts = new OpenApiDiffsOperationFactsResolver(this.reader)
+    this.presence = new OpenApiSectionPresence(this.reader)
+    this.content = new OpenApiContentWithDiffsDecorator(this.reader)
   }
 
   public override transform(source: unknown, operationKeys?: OpenApiOperationKeys): OpenApiOperationOrientedSpec | null {
@@ -55,33 +65,27 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   /* Operation */
 
   protected override buildSpec(context: OpenApiOperationContext): OpenApiOperationOrientedSpec {
-    this.resolveOperationSides(context)
     const spec = super.buildSpec(context)
+    const facts = this.operationFacts.resolve(context)
     const operationRecord = this.reader.record(context.operation) ?? {}
     const rootRecord: DiffsRecord = {}
-    if (this.wholeOperationDiff) {
-      rootRecord[NODE_LEVEL_DIFF_KEY] = this.wholeOperationDiff
+    if (facts.wholeDiff) {
+      rootRecord[NODE_LEVEL_DIFF_KEY] = facts.wholeDiff
     }
-    const fieldMapping: ReadonlyArray<readonly [string, string]> = [
-      ['summary', 'title'],
-      ['operationId', 'operationId'],
-      ['description', 'description'],
-      ['externalDocs', 'externalDocs'],
-    ]
-    for (const [sourceKey, targetKey] of fieldMapping) {
+    for (const [sourceKey, targetKey] of OPERATION_FIELD_DIFFS) {
       const diff = operationRecord[sourceKey]
       if (diff) {
         rootRecord[targetKey] = diff
       }
     }
-    const deprecatedDiff = this.normalizeFlagDiff(this.reader.readField(context.operation, 'deprecated', this.operationSides))
+    const deprecatedDiff = this.reader.normalizeFlagDiff(this.reader.readField(context.operation, 'deprecated', facts.sides))
     if (deprecatedDiff) {
       rootRecord.deprecated = deprecatedDiff
     }
-    if (this.addressDiff) {
-      rootRecord.path = this.addressDiff
+    if (facts.addressDiff) {
+      rootRecord.path = facts.addressDiff
     }
-    const nestedExternalDocsDiff = this.resolveNestedExternalDocsDiff(context.operation)
+    const nestedExternalDocsDiff = this.resolveNestedExternalDocsDiff(context.operation, facts.sides)
     if (!rootRecord.externalDocs && nestedExternalDocsDiff) {
       rootRecord.externalDocs = nestedExternalDocsDiff
     }
@@ -89,26 +93,22 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
 
     // Operation extensions
     if (spec.data.extensions) {
-      this.decorateExtensions(spec.data.extensions, context.operation, this.operationSides)
+      this.decorateExtensions(spec.data.extensions, context.operation, facts.sides, facts.wholeDiff)
     }
     // Responses extensions
-    const responsesField = this.reader.readField(context.operation, 'responses', this.operationSides)
     if (spec.data.responsesExtensions) {
-      this.decorateExtensions(spec.data.responsesExtensions, context.operation.responses, this.reader.childContext(responsesField))
+      this.decorateExtensions(spec.data.responsesExtensions, context.operation.responses, this.reader.childContext(facts.responsesField), facts.wholeDiff)
     }
     if (spec.data.responses) {
-      const codesPresence = this.presenceOf(spec.data.responses)
-      const extensionsPresence = spec.data.responsesExtensions ? this.presenceOf(spec.data.responsesExtensions) : NO_SIDES
-      this.presence.set(spec.data.responses, {
-        before: codesPresence.before || extensionsPresence.before,
-        after: codesPresence.after || extensionsPresence.after,
-      })
+      const codesPresence = this.presence.of(spec.data.responses)
+      const extensionsPresence = spec.data.responsesExtensions ? this.presence.of(spec.data.responsesExtensions) : SideContexts.NONE
+      this.presence.set(spec.data.responses, SideContexts.union(codesPresence, extensionsPresence))
     }
 
-    for (const sectionKey of ['security', 'extensions', 'request', 'responses', 'responsesExtensions'] as const) {
+    for (const sectionKey of OPERATION_SECTION_KEYS) {
       const section = spec.data[sectionKey]
       if (section) {
-        this.writeSectionDiff(spec, sectionKey, section, undefined, sectionKey === 'responses' ? responsesField.diff : undefined)
+        this.presence.writeSectionDiff(spec, sectionKey, section, facts.wholeDiff, undefined, sectionKey === 'responses' ? facts.responsesField.diff : undefined)
       }
     }
     return spec
@@ -118,8 +118,8 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
    * `externalDocs.url` / `.description` changed inside an existing object: one replace of the whole
    * external docs value carrying both sides (the link text is static; the row needs per-side values).
    */
-  private resolveNestedExternalDocsDiff(operation: UnknownRecord): Diff | undefined {
-    const externalDocsField = this.reader.readField(operation, 'externalDocs', this.operationSides)
+  private resolveNestedExternalDocsDiff(operation: UnknownRecord, operationSides: SideContext): Diff | undefined {
+    const externalDocsField = this.reader.readField(operation, 'externalDocs', operationSides)
     if (!externalDocsField.beforePresent || !externalDocsField.afterPresent) {
       return undefined
     }
@@ -139,45 +139,14 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     )
   }
 
-  private resolveOperationSides(context: OpenApiOperationContext): void {
-    const { source, keys } = context
-    const paths = source.paths
-    const pathItemField = this.reader.readField(paths, keys.path, BOTH_SIDES)
-    const operationField = this.reader.readField(paths && isObject(paths) ? paths[keys.path] : undefined, keys.method, this.reader.childContext(pathItemField))
-    this.operationSides = this.reader.childContext(operationField)
-    const wholeOperationDiff = [operationField.diff, pathItemField.diff].find(diff => SideReader.isWholeChange(diff))
-    this.wholeOperationDiff = wholeOperationDiff
-    const pathDiff = pathItemField.diff
-    this.addressDiff = pathDiff && isDiffRename(pathDiff) && isString(pathDiff.beforeKey) && isString(pathDiff.afterKey)
-      ? {
-        type: pathDiff.type,
-        scope: pathDiff.scope,
-        action: DiffAction.replace,
-        beforeValue: pathDiff.beforeKey,
-        afterValue: pathDiff.afterKey,
-        beforeDeclarationPaths: pathDiff.beforeDeclarationPaths,
-        afterDeclarationPaths: pathDiff.afterDeclarationPaths,
-      }
-      : undefined
-  }
-
   /* Security */
 
   protected override createSecuritySpecBuilder(): OpenApiSecuritySpecWithDiffsBuilder {
     return new OpenApiSecuritySpecWithDiffsBuilder(this.logger, {
       reader: this.reader,
-      operationSides: () => this.operationSides,
-      setPresence: (section, presence) => this.presence.set(section, presence),
+      operationFacts: this.operationFacts,
+      presence: this.presence,
     })
-  }
-
-  /** Media-type / response-code options: a wholly added / removed or renamed option paints the selector's row. */
-  private static isKeyedOptionChange(diff: Diff | undefined): diff is Diff {
-    return SideReader.isWholeChange(diff) || SideReader.isRename(diff)
-  }
-
-  private intersect(a: SideContext, b: SideContext): SideContext {
-    return { before: a.before && b.before, after: a.after && b.after }
   }
 
   /* Request */
@@ -187,18 +156,18 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     if (!request) {
       return undefined
     }
-    const presence = { before: false, after: false }
+    const facts = this.operationFacts.resolve(context)
+    let presence = SideContexts.NONE
     for (const location of OPENAPI_PARAMETER_LOCATIONS) {
       const group = request.parameters?.[location]
       if (group) {
-        this.writeSectionDiff(request, location, group)
-        this.mergePresence(presence, this.presenceOf(group))
+        this.presence.writeSectionDiff(request, location, group, facts.wholeDiff)
+        presence = SideContexts.union(presence, this.presence.of(group))
       }
     }
     if (request.requestBody) {
-      const requestBodyField = this.reader.readField(context.operation, 'requestBody', this.operationSides)
-      this.writeSectionDiff(request, 'requestBody', request.requestBody, undefined, requestBodyField.diff)
-      this.mergePresence(presence, this.presenceOf(request.requestBody))
+      this.presence.writeSectionDiff(request, 'requestBody', request.requestBody, facts.wholeDiff, undefined, facts.requestBodyField.diff)
+      presence = SideContexts.union(presence, this.presence.of(request.requestBody))
     }
     this.presence.set(request, presence)
     return request
@@ -209,8 +178,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     if (!groups) {
       return undefined
     }
-    const parametersField = this.reader.readField(context.operation, 'parameters', this.operationSides)
-    const parametersContext = this.reader.childContext(parametersField)
+    const parametersContext = this.reader.childContext(this.operationFacts.resolve(context).parametersField)
     const entriesByLocation = this.collectParameterEntries(context)
     for (const location of OPENAPI_PARAMETER_LOCATIONS) {
       const group = groups[location]
@@ -222,11 +190,11 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   }
 
   protected override synthesizeParameters(context: OpenApiOperationContext, entries: readonly OpenApiSchemaEntry[]): OpenApiSynthesizedObjectSchema {
-    const parametersField = this.reader.readField(context.operation, 'parameters', this.operationSides)
+    const facts = this.operationFacts.resolve(context)
     return this.createSchemaWithDiffsSynthesizer().synthesizeWithDiffs(entries, {
       owner: context.operation.parameters,
-      context: this.reader.childContext(parametersField),
-      inheritedWholeDiff: this.wholeOperationDiff ?? this.wholeDiffOf(parametersField),
+      context: this.reader.childContext(facts.parametersField),
+      inheritedWholeDiff: facts.wholeDiff ?? this.wholeDiffOf(facts.parametersField),
     })
   }
 
@@ -236,120 +204,34 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     if (!requestBodySpec || !isObject(requestBody)) {
       return requestBodySpec
     }
-    const requestBodyField = this.reader.readField(context.operation, 'requestBody', this.operationSides)
-    const requestBodyContext = this.reader.childContext(requestBodyField)
+    const facts = this.operationFacts.resolve(context)
+    const requestBodyContext = this.reader.childContext(facts.requestBodyField)
     const record = this.reader.record(requestBody) ?? {}
     const requestBodyRecord: DiffsRecord = {}
     if (record.description) {
       requestBodyRecord.description = record.description
     }
-    const requiredDiff = this.normalizeFlagDiff(this.reader.readField(requestBody, 'required', requestBodyContext))
+    const requiredDiff = this.reader.normalizeFlagDiff(this.reader.readField(requestBody, 'required', requestBodyContext))
     if (requiredDiff) {
       requestBodyRecord.required = requiredDiff
     }
 
     const descriptionField = this.reader.readField(requestBody, 'description', requestBodyContext)
-    const presence = {
+    let presence: SideContext = {
       before: descriptionField.beforePresent && isNonEmptyString(descriptionField.before),
       after: descriptionField.afterPresent && isNonEmptyString(descriptionField.after),
     }
     if (requestBodySpec.content) {
       const contentField = this.reader.readField(requestBody, 'content', requestBodyContext)
-      const optionsPresence = this.decorateContent(requestBodySpec.content, requestBody.content, this.reader.childContext(contentField), [
+      const optionsPresence = this.content.decorate(requestBodySpec.content, requestBody.content, this.reader.childContext(contentField), [
         { owner: requestBody, context: requestBodyContext },
       ], contentField.diff, requestBodyRecord)
-      this.mergePresence(presence, optionsPresence)
-      this.writeSectionDiff(requestBodySpec, 'content', requestBodySpec.content, optionsPresence, contentField.diff)
+      presence = SideContexts.union(presence, optionsPresence)
+      this.presence.writeSectionDiff(requestBodySpec, 'content', requestBodySpec.content, facts.wholeDiff, optionsPresence, contentField.diff)
     }
     this.reader.writeRecord(requestBodySpec, requestBodyRecord)
     this.presence.set(requestBodySpec, presence)
     return requestBodySpec
-  }
-
-  /**
-   * Options are media types with a schema: option presence = schema presence. Writes option diffs
-   * (raw add / remove / rename, else synthetic from schema presence) and the diffs of extensions
-   * cloned into the schema root. Returns the presence of "≥1 option".
-   * A wholly added / removed or renamed option writes the synthetic media-type options diff of the
-   * Body header row into `headerRecord` (the request body's record), else into the content's own
-   * record (the response Body header is painted by its `content` node).
-   */
-  private decorateContent(
-    contentSpec: OpenApiContentSpec,
-    content: unknown,
-    contentContext: SideContext,
-    owners: readonly ExtensionOwnerSides[],
-    contentDiff: Diff | undefined,
-    headerRecord?: DiffsRecord,
-  ): SideContext {
-    const presence = { before: false, after: false }
-    const contentRecord: DiffsRecord = {}
-    for (const mediaType of Object.keys(contentSpec)) {
-      const mediaTypeSpec = contentSpec[mediaType]
-      const mediaTypeObject = isObject(content) ? content[mediaType] : undefined
-      if (!isObject(mediaTypeObject)) {
-        continue
-      }
-      const mediaTypeField = this.reader.readField(content, mediaType, contentContext)
-      const mediaTypeContext = this.reader.childContext(mediaTypeField)
-      const schemaField = this.reader.readField(mediaTypeObject, 'schema', mediaTypeContext)
-      const optionPresence = this.reader.childContext(schemaField)
-      this.mergePresence(presence, optionPresence)
-      const rawDiff = mediaTypeField.diff
-      const optionDiff = OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(rawDiff)
-        ? rawDiff
-        : this.reader.diffPresence(optionPresence, mediaTypeSpec, [schemaField.diff, rawDiff, contentDiff])
-      if (optionDiff) {
-        contentRecord[mediaType] = optionDiff
-      }
-      this.decorateClonedExtensions(mediaTypeSpec, mediaTypeObject, [{ owner: mediaTypeObject, context: mediaTypeContext }, ...owners], optionPresence)
-    }
-    this.reader.writeOptionsDiff(headerRecord ?? contentRecord, OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, { ...contentRecord }, OpenApiSpecWithDiffsTransformer.isKeyedOptionChange)
-    this.reader.writeRecord(contentSpec, contentRecord)
-    return presence
-  }
-
-  /** Per-key precedence: owners in order (media type, request body), then the schema root. */
-  private decorateClonedExtensions(
-    mediaTypeSpec: OpenApiMediaTypeSpec,
-    mediaTypeObject: UnknownRecord,
-    owners: readonly ExtensionOwnerSides[],
-    schemaContext: SideContext,
-  ): void {
-    const keys = new Set<string>()
-    for (const { owner } of owners) {
-      Object.keys(owner).filter(isSpecificationExtensionKey).forEach(key => keys.add(key))
-    }
-    if (keys.size === 0 || !isObject(mediaTypeSpec.schema)) {
-      return
-    }
-    if (mediaTypeSpec.schema === mediaTypeObject.schema) {
-      mediaTypeSpec.schema = { ...mediaTypeSpec.schema }
-    }
-    const schema = mediaTypeSpec.schema
-    if (!isObject(schema)) {
-      return
-    }
-    const rawSchema = mediaTypeObject.schema
-    for (const key of keys) {
-      const fields = owners.map(({ owner, context }) => this.reader.readField(owner, key, this.intersect(context, schemaContext)))
-      const rootField = this.reader.readField(rawSchema, key, schemaContext)
-      const shownBefore = [...fields, rootField].find(field => field.beforePresent)?.before
-      const shownAfter = [...fields, rootField].find(field => field.afterPresent)?.after
-      const shown = shownAfter ?? shownBefore
-      if (shown !== undefined) {
-        schema[key] = shown
-      }
-      const diff = schemaContext.before && schemaContext.after
-        ? this.reader.diffShownValues(shownBefore, shownAfter, [...fields, rootField].map(field => field.diff))
-        : undefined
-      const record: DiffsRecord = { ...(this.reader.record(schema) ?? {}) }
-      delete record[key]
-      if (diff) {
-        record[key] = diff
-      }
-      Reflect.set(schema, this.reader.diffsMetaKey, record)
-    }
   }
 
   /* Responses */
@@ -360,19 +242,18 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     if (!responsesSpec || !isObject(responses)) {
       return responsesSpec
     }
-    const responsesField = this.reader.readField(context.operation, 'responses', this.operationSides)
-    const responsesContext = this.reader.childContext(responsesField)
+    const responsesContext = this.reader.childContext(this.operationFacts.resolve(context).responsesField)
     const responsesRecord: DiffsRecord = {}
-    const presence = { before: false, after: false }
+    let presence = SideContexts.NONE
     for (const code of Object.keys(responsesSpec)) {
       const responseField = this.readResponseField(responses, code, responsesContext)
-      this.mergePresence(presence, this.reader.childContext(responseField))
+      presence = SideContexts.union(presence, this.reader.childContext(responseField))
       const diff = responseField.diff
-      if (OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(diff)) {
+      if (SideReader.isWholeChangeOrRename(diff)) {
         responsesRecord[code] = diff
       }
     }
-    this.reader.writeOptionsDiff(responsesRecord, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY, { ...responsesRecord }, OpenApiSpecWithDiffsTransformer.isKeyedOptionChange)
+    this.reader.writeOptionsDiff(responsesRecord, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY, { ...responsesRecord }, SideReader.isWholeChangeOrRename)
     this.reader.writeRecord(responsesSpec, responsesRecord)
     this.presence.set(responsesSpec, presence)
     return responsesSpec
@@ -380,6 +261,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
 
   protected override buildResponse(context: OpenApiOperationContext, code: string, response: UnknownRecord): OpenApiResponseSpec {
     const responseSpec = super.buildResponse(context, code, response)
+    const { wholeDiff } = this.operationFacts.resolve(context)
     const responseContext = this.responseContext(context, code)
     const responseRecord: DiffsRecord = {}
     const description = this.reader.record(response)?.description
@@ -389,16 +271,16 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     this.reader.writeRecord(responseSpec, responseRecord)
     if (responseSpec.headers) {
       const headersField = this.reader.readField(response, 'headers', responseContext)
-      this.writeSectionDiff(responseSpec, 'headers', responseSpec.headers, undefined, headersField.diff)
+      this.presence.writeSectionDiff(responseSpec, 'headers', responseSpec.headers, wholeDiff, undefined, headersField.diff)
     }
     if (responseSpec.extensions) {
-      this.decorateExtensions(responseSpec.extensions, response, responseContext)
-      this.writeSectionDiff(responseSpec, 'extensions', responseSpec.extensions)
+      this.decorateExtensions(responseSpec.extensions, response, responseContext, wholeDiff)
+      this.presence.writeSectionDiff(responseSpec, 'extensions', responseSpec.extensions, wholeDiff)
     }
     if (responseSpec.content) {
       const contentField = this.reader.readField(response, 'content', responseContext)
-      const optionsPresence = this.decorateContent(responseSpec.content, response.content, this.reader.childContext(contentField), [], contentField.diff)
-      this.writeSectionDiff(responseSpec, 'content', responseSpec.content, optionsPresence, contentField.diff)
+      const optionsPresence = this.content.decorate(responseSpec.content, response.content, this.reader.childContext(contentField), [], contentField.diff)
+      this.presence.writeSectionDiff(responseSpec, 'content', responseSpec.content, wholeDiff, optionsPresence, contentField.diff)
     }
     return responseSpec
   }
@@ -408,12 +290,13 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
     if (entries.length === 0) {
       return undefined
     }
+    const facts = this.operationFacts.resolve(context)
     const responseContext = this.responseContext(context, code)
     const headersField = this.reader.readField(response, 'headers', responseContext)
     const headersContext = this.reader.childContext(headersField)
     const responseField = this.responseField(context, code)
-    const inheritedWholeDiff = this.wholeOperationDiff
-      ?? this.wholeDiffOf(this.reader.readField(context.operation, 'responses', this.operationSides))
+    const inheritedWholeDiff = facts.wholeDiff
+      ?? this.wholeDiffOf(facts.responsesField)
       ?? this.wholeDiffOf(responseField)
       ?? this.wholeDiffOf(headersField)
     const headers: OpenApiResponseHeadersSpec = {
@@ -424,7 +307,7 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   }
 
   private responseField(context: OpenApiOperationContext, code: string): FieldSides {
-    const responsesField = this.reader.readField(context.operation, 'responses', this.operationSides)
+    const { responsesField } = this.operationFacts.resolve(context)
     return this.readResponseField(context.operation.responses, code, this.reader.childContext(responsesField))
   }
 
@@ -450,21 +333,20 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   /* Shared */
 
   /** Copies the owner's `x-*` diffs onto the extensions map and records its presence (≥1 key). */
-  private decorateExtensions(extensions: OpenApiExtensionsSpec, owner: unknown, ownerContext: SideContext): void {
+  private decorateExtensions(extensions: OpenApiExtensionsSpec, owner: unknown, ownerContext: SideContext, operationWholeDiff: Diff | undefined): void {
     const record: DiffsRecord = {}
-    const presence = { before: false, after: false }
+    let presence = SideContexts.NONE
     const ownerRecord = this.reader.record(owner) ?? {}
     for (const key of Object.keys(extensions)) {
       const field = this.reader.readField(owner, key, ownerContext)
-      presence.before ||= field.beforePresent
-      presence.after ||= field.afterPresent
+      presence = SideContexts.union(presence, this.reader.childContext(field))
       const diff = ownerRecord[key]
       if (diff) {
         record[key] = diff
       } else if (field.beforePresent !== field.afterPresent) {
         // The owner (operation, response, ...) exists on one side only: the separate JSO tree needs
         // per-key diffs to show the value on that side only.
-        record[key] = this.reader.diffPresence(this.reader.childContext(field), field.beforePresent ? field.before : field.after, [this.wholeOperationDiff])
+        record[key] = this.reader.diffPresence(this.reader.childContext(field), field.beforePresent ? field.before : field.after, [operationWholeDiff])
       }
     }
     this.reader.writeRecord(extensions, record)
@@ -472,70 +354,11 @@ export class OpenApiSpecWithDiffsTransformer extends OpenApiSpecTransformer {
   }
 
   private entriesPresence(entries: readonly OpenApiSchemaEntry[], owner: unknown, ownerContext: SideContext): SideContext {
-    const presence = { before: false, after: false }
-    for (const entry of entries) {
-      this.mergePresence(presence, this.reader.childContext(this.reader.readField(owner, entry.recordKey, ownerContext)))
-    }
-    return presence
-  }
-
-  /**
-   * Whole-section diff of `section` in `owner`'s record under `key`: a synthetic add / remove when
-   * the section's presence flips. Under a wholly added / removed operation nothing is written -
-   * every node inherits the operation diff.
-   */
-  private writeSectionDiff(
-    owner: object,
-    key: string,
-    section: object,
-    presence: SideContext = this.presenceOf(section),
-    rawSectionDiff?: Diff,
-  ): void {
-    if (this.wholeOperationDiff) {
-      return
-    }
-    const current = this.reader.record(owner)?.[key]
-    if (OpenApiSpecWithDiffsTransformer.isKeyedOptionChange(current)) {
-      return
-    }
-    // A raw add / remove of the section object itself (e.g. a whole `content` map) wins over a synthetic one.
-    const diff = rawSectionDiff && SideReader.isWholeChange(rawSectionDiff)
-      ? rawSectionDiff
-      : this.reader.diffPresence(presence, section, [rawSectionDiff, ...this.reader.collectDiffs(section)])
-    this.reader.writeDiff(owner, key, diff)
-  }
-
-  private presenceOf(section: object): SideContext {
-    return this.presence.get(section) ?? BOTH_SIDES
-  }
-
-  private mergePresence(target: { before: boolean, after: boolean }, source: SideContext): void {
-    target.before ||= source.before
-    target.after ||= source.after
+    return SideContexts.union(...entries.map(entry => this.reader.childContext(this.reader.readField(owner, entry.recordKey, ownerContext))))
   }
 
   private wholeDiffOf(field: FieldSides): Diff | undefined {
     return SideReader.isWholeChange(field.diff) ? field.diff : undefined
-  }
-
-  /**
-   * Boolean flags (`deprecated`, `required`) default to `false` in api-unifier: a diff may report
-   * `false -> true` although one document omits the key (E5). Normalized to add (became true) /
-   * remove (became false); no diff when the effective value is unchanged.
-   */
-  private normalizeFlagDiff(field: FieldSides): Diff | undefined {
-    const { diff } = field
-    if (!diff || !(isDiffAdd(diff) || isDiffRemove(diff) || isDiffReplace(diff))) {
-      return undefined
-    }
-    const before = field.before === true
-    const after = field.after === true
-    if (before === after) {
-      return undefined
-    }
-    return after
-      ? this.reader.createDiff(DiffAction.add, { afterValue: true }, [diff])
-      : this.reader.createDiff(DiffAction.remove, { beforeValue: true }, [diff])
   }
 
   private createSchemaWithDiffsSynthesizer(): OpenApiObjectSchemaWithDiffsSynthesizer {

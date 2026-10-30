@@ -2,7 +2,7 @@ import { Diff } from "@netcracker/qubership-apihub-api-diff"
 import { SECURITY_ALTERNATIVES_DIFF_KEY } from "../../model/security/tree-with-diffs/diff-keys"
 import { SECURITY_OAUTH_FLOW_TYPES } from "../../model/security/types/node-value"
 import { DiffsRecord, isArray, isObject, isString } from "../../utilities"
-import { SideContext, SideReader } from "../shared/side-reader"
+import { SideContext, SideContexts, SideReader } from "../shared/side-reader"
 import { SecurityOAuthFlowSpec, SecuritySchemeSpec } from "./security-spec"
 import { UnknownRecord } from "./security-spec-builder"
 
@@ -18,10 +18,6 @@ const SECURITY_SCHEME_FIELDS: ReadonlyArray<readonly [string, string]> = [
 ]
 
 const OAUTH_FLOW_FIELDS: readonly string[] = ['authorizationUrl', 'tokenUrl', 'refreshUrl']
-
-export function intersectSides(a: SideContext, b: SideContext): SideContext {
-  return { before: a.before && b.before, after: a.after && b.after }
-}
 
 /**
  * The with-diffs part of a Security section, shared by the API types: diff records of a scheme
@@ -89,11 +85,11 @@ export class SecuritySpecDiffsDecorator {
         }
         const flowField = this.reader.readField(flows, flowType, flowsContext)
         const flowContext = this.reader.childContext(flowField)
-        const flowDiff = this.reader.diffPresence(intersectSides(flowContext, schemeContext), flowSpec, [flowField.diff, flowsField.diff])
+        const flowDiff = this.reader.diffPresence(SideContexts.intersect(flowContext, schemeContext), flowSpec, [flowField.diff, flowsField.diff])
         if (flowDiff && schemeContext.before && schemeContext.after) {
           schemeRecord[flowType] = flowDiff
         }
-        this.decorateOAuthFlow(flowSpec, flow, intersectSides(flowContext, schemeContext), schemeContext)
+        this.decorateOAuthFlow(flowSpec, flow, SideContexts.intersect(flowContext, schemeContext), schemeContext)
       }
     }
     this.reader.writeRecord(scheme, schemeRecord)

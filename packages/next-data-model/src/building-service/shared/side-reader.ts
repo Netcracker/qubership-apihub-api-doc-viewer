@@ -9,7 +9,26 @@ export type SideContext = {
   readonly after: boolean
 }
 
-export const BOTH_SIDES: SideContext = { before: true, after: true }
+/** Operations on `SideContext` values: where something exists in a merged document. */
+export class SideContexts {
+  /** Exists on no side: the start of an accumulation. */
+  public static readonly NONE: SideContext = { before: false, after: false }
+  /** Exists on both sides: the document root. */
+  public static readonly BOTH: SideContext = { before: true, after: true }
+
+  /** Exists on a side only where both `a` and `b` do. */
+  public static intersect(a: SideContext, b: SideContext): SideContext {
+    return { before: a.before && b.before, after: a.after && b.after }
+  }
+
+  /** Exists on a side where any of `contexts` does (`NONE` for none). */
+  public static union(...contexts: readonly SideContext[]): SideContext {
+    return {
+      before: contexts.some(context => context.before),
+      after: contexts.some(context => context.after),
+    }
+  }
+}
 
 /** One field of a merged object, reconstructed per side. */
 export type FieldSides = {
@@ -162,6 +181,16 @@ export class SideReader {
     Reflect.set(owner, this.diffsMetaKey, { ...(this.record(owner) ?? {}), ...record })
   }
 
+  /** Replaces `key` of `owner`'s record with `diff`, or drops it when `diff` is absent (a fresh record object). */
+  public replaceRecordEntry(owner: object, key: string, diff: Diff | undefined): void {
+    const record: DiffsRecord = { ...(this.record(owner) ?? {}) }
+    delete record[key]
+    if (diff) {
+      record[key] = diff
+    }
+    Reflect.set(owner, this.diffsMetaKey, record)
+  }
+
   /**
    * Row of a selector: one synthetic `replace` under `key` of `target` when any option diff of
    * `options` is an option change (`isOptionChange`), typed by the strongest of them.
@@ -179,6 +208,31 @@ export class SideReader {
 
   public static isRename(diff: Diff | undefined): boolean {
     return diff !== undefined && isDiffRename(diff)
+  }
+
+  /** A keyed entry wholly added / removed or renamed (a selector option change). */
+  public static isWholeChangeOrRename(diff: Diff | undefined): diff is Diff {
+    return SideReader.isWholeChange(diff) || SideReader.isRename(diff)
+  }
+
+  /**
+   * Boolean flags that default to `false` (OpenAPI `deprecated`, `required` after api-unifier): a diff
+   * may report `false -> true` although one document omits the key (E5). Normalized to add (became
+   * true) / remove (became false); no diff when the effective value is unchanged.
+   */
+  public normalizeFlagDiff(field: FieldSides): Diff | undefined {
+    const { diff } = field
+    if (!diff || !(isDiffAdd(diff) || isDiffRemove(diff) || isDiffReplace(diff))) {
+      return undefined
+    }
+    const before = field.before === true
+    const after = field.after === true
+    if (before === after) {
+      return undefined
+    }
+    return after
+      ? this.createDiff(DiffAction.add, { afterValue: true }, [diff])
+      : this.createDiff(DiffAction.remove, { beforeValue: true }, [diff])
   }
 
   public static deepEqual(a: unknown, b: unknown, visited: WeakMap<object, object> = new WeakMap()): boolean {

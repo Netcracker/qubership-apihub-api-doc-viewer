@@ -83,3 +83,11 @@ GraphQL is legacy and is not reviewed.
 3. Update the architecture diagrams in `docs/design/<api-type>/architecture/` when the structure
    changes; the report itself holds findings, decisions, lessons, and verification only.
 4. Apply approved fixes one at a time; after each, type-check and run both packages' Jest suites.
+5. A data-layer refactor that must not change behaviour is proven by an **equivalence check**, not
+   by unit tests alone (they cover only some outputs): extract the baseline `src` with
+   `git archive <commit> packages/next-data-model/src` into a temporary folder inside the package
+   (so dependencies resolve), add a temporary Jest test that builds every fixture with both versions
+   and deep-compares the trees (values, diffs, summaries, severities, symbol-keyed records, logs),
+   break one helper on purpose to prove the check fails, then delete both. Fresh source per build:
+   the rollup writes onto the merged objects. Files importing through the `@apihub/` alias resolve
+   to the current code in both copies — check that the compared stack uses relative imports.

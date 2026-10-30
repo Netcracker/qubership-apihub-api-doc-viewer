@@ -684,6 +684,17 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
 - **Integer-like object keys enumerate first.** JS lists `200`, `500` before `2XX`, `default` no matter
   the insertion order, so a canonically sorted object cannot keep response codes in order; sort the
   tree children instead (`OpenApiTreeBuilder.sortResponseCodes`).
+- **No per-operation state on a transformer.** Facts every step needs (where the operation exists,
+  its whole add / remove, its path rename, frequently read fields) come from
+  `OpenApiDiffsOperationFactsResolver.resolve(context)` — derived from the context argument, cached
+  per context object — never from fields set by `buildSpec` before the base class calls the
+  overrides. Collaborators that need them (the security spec builder) receive the resolver and
+  `OpenApiSectionPresence` as objects, not callbacks into the transformer.
+- **"Which sides" arithmetic goes through `SideContexts`** (`building-service/shared/side-reader.ts`:
+  `NONE`, `BOTH`, `intersect`, `union`); accumulate with `presence = SideContexts.union(presence,
+  next)`, never a mutable `{ before, after }` with `||=`. Replace one record entry with
+  `SideReader.replaceRecordEntry`, not a hand-written copy + `delete` + `Reflect.set`. The side name
+  type is `DiffSide` (`model/abstract/diff-side.ts`, usable from model code).
 
 ## Security module (OpenAPI + AsyncAPI)
 

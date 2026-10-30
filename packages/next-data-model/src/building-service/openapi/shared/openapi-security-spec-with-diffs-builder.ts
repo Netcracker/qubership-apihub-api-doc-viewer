@@ -3,18 +3,20 @@ import { BuildingServiceLogger } from "../../../loggers"
 import { DiffsRecord, isArray, isObject } from "../../../utilities"
 import { SecurityAlternativeSpec, SecuritySpec } from "../../security/security-spec"
 import { UnknownRecord } from "../../security/security-spec-builder"
-import { intersectSides, SecuritySpecDiffsDecorator } from "../../security/security-spec-diffs-decorator"
-import { BOTH_SIDES, FieldSides, SideContext, SideReader } from "../../shared/side-reader"
+import { SecuritySpecDiffsDecorator } from "../../security/security-spec-diffs-decorator"
+import { FieldSides, SideContext, SideContexts, SideReader } from "../../shared/side-reader"
+import { OpenApiDiffsOperationFactsResolver } from "./openapi-diffs-operation-facts"
+import { OpenApiSectionPresence } from "./openapi-section-presence"
 import { OpenApiSecuritySpecBuilder } from "./openapi-security-spec-builder"
 import { OpenApiOperationContext } from "./openapi-spec-transformer"
 
-/** What the builder reads from the with-diffs transformer that owns it. */
+/** The collaborators the builder shares with the with-diffs transformer that owns it. */
 export type OpenApiSecurityDiffsHost = {
   readonly reader: SideReader
-  /** The sides where the operation exists. */
-  readonly operationSides: () => SideContext
+  /** Facts of the operation (the sides where it exists). */
+  readonly operationFacts: OpenApiDiffsOperationFactsResolver
   /** Presence of the section per side (its synthetic whole add / remove). */
-  readonly setPresence: (section: object, presence: SideContext) => void
+  readonly presence: OpenApiSectionPresence
 }
 
 /** One list slot per side: `{}` (anonymous access) and / or a requirement naming schemes. */
@@ -48,14 +50,16 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
 
   public override build(context: OpenApiOperationContext): SecuritySpec | undefined {
     const { source, operation } = context
-    const operationSecurityField = this.reader.readField(operation, 'security', this.host.operationSides())
-    const documentSecurityField = this.reader.readField(source, 'security', BOTH_SIDES)
+    const operationSides = this.host.operationFacts.resolve(context).sides
+    const operationSecurityField = this.reader.readField(operation, 'security', operationSides)
+    const documentSecurityField = this.reader.readField(source, 'security', SideContexts.BOTH)
     const beforeUsesOperation = operationSecurityField.beforePresent
     const afterUsesOperation = operationSecurityField.afterPresent
     if (beforeUsesOperation === afterUsesOperation) {
       const listField = beforeUsesOperation ? operationSecurityField : documentSecurityField
       const list = beforeUsesOperation ? operation.security : source.security
-      return this.buildFromOneList(context, list, this.restrictToOperation(this.reader.childContext(listField)), !afterUsesOperation)
+      // The document list is shared by every operation: limit its sides to where the operation exists.
+      return this.buildFromOneList(context, list, SideContexts.intersect(this.reader.childContext(listField), operationSides), !afterUsesOperation)
     }
     return this.buildFromSwitchedLists(
       context,
@@ -66,19 +70,14 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
     )
   }
 
-  /** The document list is shared by every operation: limit its sides to where the operation exists. */
-  private restrictToOperation(context: SideContext): SideContext {
-    return intersectSides(context, this.host.operationSides())
-  }
-
   private buildFromOneList(context: OpenApiOperationContext, list: unknown, listContext: SideContext, isInheritedFromDocument: boolean): SecuritySpec | undefined {
     if (!isArray(list) || list.length === 0) {
       return undefined
     }
     const alternatives: SecurityAlternativeSpec[] = []
     const securityRecord: DiffsRecord = {}
-    const presence = { before: false, after: false }
-    const anonymous = { before: false, after: false }
+    let presence = SideContexts.NONE
+    let anonymous = SideContexts.NONE
     const anonymousCauses: (Diff | undefined)[] = []
     list.forEach((requirement, index) => {
       if (!isObject(requirement)) {
@@ -86,12 +85,10 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       }
       const alternativeField = this.reader.readField(list, index, listContext)
       const alternativeContext = this.reader.childContext(alternativeField)
-      presence.before ||= alternativeContext.before
-      presence.after ||= alternativeContext.after
+      presence = SideContexts.union(presence, alternativeContext)
       const slot = this.resolveSlotSides(requirement, alternativeField)
       if (slot.anonymous.before || slot.anonymous.after) {
-        anonymous.before ||= slot.anonymous.before
-        anonymous.after ||= slot.anonymous.after
+        anonymous = SideContexts.union(anonymous, slot.anonymous)
         anonymousCauses.push(...slot.causes)
       }
       if (!slot.alternative.before && !slot.alternative.after) {
@@ -136,7 +133,7 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       securityRecord.allowsAnonymous = anonymousDiff
     }
     this.reader.writeRecord(security, securityRecord)
-    this.host.setPresence(security, presence)
+    this.host.presence.set(security, presence)
     return security
   }
 
@@ -214,7 +211,7 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
       this.decorator.decorateRequiredScopes(scheme, requirement[name], schemeContext)
       const definition = this.takeDefinition(context, name)
       if (definition) {
-        this.decorator.decorateSchemeDefinition(scheme, definition, intersectSides(this.definitionSides(context, name), schemeContext), schemeContext)
+        this.decorator.decorateSchemeDefinition(scheme, definition, SideContexts.intersect(this.definitionSides(context, name), schemeContext), schemeContext)
       }
     }
     this.reader.writeRecord(alternative, alternativeRecord)
@@ -222,7 +219,7 @@ export class OpenApiSecuritySpecWithDiffsBuilder extends OpenApiSecuritySpecBuil
 
   /** The sides where `components.securitySchemes[name]` exists. */
   private definitionSides(context: OpenApiOperationContext, name: string): SideContext {
-    const componentsField = this.reader.readField(context.source, 'components', BOTH_SIDES)
+    const componentsField = this.reader.readField(context.source, 'components', SideContexts.BOTH)
     const components = context.source.components
     const schemesField = this.reader.readField(components, 'securitySchemes', this.reader.childContext(componentsField))
     const securitySchemes = isObject(components) ? components.securitySchemes : undefined

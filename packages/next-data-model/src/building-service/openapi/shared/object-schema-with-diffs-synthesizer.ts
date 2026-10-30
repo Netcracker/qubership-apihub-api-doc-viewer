@@ -9,6 +9,7 @@ import {
   OpenApiObjectSchemaSynthesizer,
   OpenApiSchemaEntry,
 } from "./object-schema-synthesizer"
+import { DiffSide } from "../../../model/abstract/diff-side"
 import { FieldSides, SideContext, SideReader } from "../../shared/side-reader"
 
 type UnknownRecord = Record<PropertyKey, unknown>
@@ -117,14 +118,14 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
       return false
     }
 
-    const rootValue = (key: string, side: 'before' | 'after'): unknown => {
+    const rootValue = (key: string, side: DiffSide): unknown => {
       const source = side === 'before' ? sourceBefore : sourceAfter
       if (!source) {
         return undefined
       }
       const sourceSchema = side === 'before' ? source.field.before : source.field.after
       if (isSameSource) {
-        const rootField = this.reader.readField(source.merged, key, { before: source.field.beforePresent, after: source.field.afterPresent })
+        const rootField = this.reader.readField(source.merged, key, this.reader.childContext(source.field))
         return side === 'before' ? rootField.before : rootField.after
       }
       return isObject(sourceSchema) ? sourceSchema[key] : undefined
@@ -147,7 +148,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     return property
   }
 
-  private resolveSchemaSourceOnSide(entry: UnknownRecord, entryContext: SideContext, side: 'before' | 'after'): SchemaSource | undefined {
+  private resolveSchemaSourceOnSide(entry: UnknownRecord, entryContext: SideContext, side: DiffSide): SchemaSource | undefined {
     const schemaField = this.reader.readField(entry, 'schema', entryContext)
     if (side === 'before' ? schemaField.beforePresent : schemaField.afterPresent) {
       return { field: schemaField, merged: entry.schema }
@@ -235,7 +236,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     key: string,
     entry: UnknownRecord,
     entryContext: SideContext,
-    rootValue: (key: string, side: 'before' | 'after') => unknown,
+    rootValue: (key: string, side: DiffSide) => unknown,
     isSameSource: boolean,
     normalize: (value: unknown) => unknown,
   ): void {
@@ -254,14 +255,14 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     } else {
       property[key] = shown
     }
-    this.replaceRecordEntry(property, key, diff)
+    this.reader.replaceRecordEntry(property, key, diff)
   }
 
   private applyShownFlag(
     property: UnknownRecord,
     entry: UnknownRecord,
     entryContext: SideContext,
-    rootValue: (key: string, side: 'before' | 'after') => unknown,
+    rootValue: (key: string, side: DiffSide) => unknown,
     isSameSource: boolean,
   ): void {
     const entryField = this.reader.readField(entry, DEPRECATED_KEY, entryContext)
@@ -279,7 +280,7 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
     const diff = shownBefore === shownAfter
       ? undefined
       : this.reader.createDiff(DiffAction.replace, { beforeValue: shownBefore, afterValue: shownAfter }, [entryField.diff])
-    this.replaceRecordEntry(property, DEPRECATED_KEY, diff)
+    this.reader.replaceRecordEntry(property, DEPRECATED_KEY, diff)
   }
 
   private applyMediaTypeAnnotation(property: UnknownRecord, before: string | undefined, after: string | undefined, causes: readonly (Diff | undefined)[]): void {
@@ -301,15 +302,5 @@ export class OpenApiObjectSchemaWithDiffsSynthesizer extends OpenApiObjectSchema
       ? this.reader.createDiff(DiffAction.add, { afterValue: annotation }, causes)
       : this.reader.createDiff(DiffAction.remove, { beforeValue: annotation }, causes)
     this.reader.writeDiff(annotations, MEDIA_TYPE_CUSTOM_ANNOTATION_KEY, diff)
-  }
-
-  /** Replaces (or drops) one key of the property's record without mutating the shared raw record. */
-  private replaceRecordEntry(property: UnknownRecord, key: string, diff: Diff | undefined): void {
-    const current: DiffsRecord = { ...(this.reader.record(property) ?? {}) }
-    delete current[key]
-    if (diff) {
-      current[key] = diff
-    }
-    Reflect.set(property, this.reader.diffsMetaKey, current)
   }
 }

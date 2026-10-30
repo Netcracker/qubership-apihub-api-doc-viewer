@@ -4,7 +4,7 @@ import { DiffsRecord, isArray, isObject } from "../../../utilities"
 import { SecurityAlternativeSpec, SecuritySchemeSpec, SecuritySpec } from "../../security/security-spec"
 import { UnknownRecord } from "../../security/security-spec-builder"
 import { SecuritySpecDiffsDecorator } from "../../security/security-spec-diffs-decorator"
-import { BOTH_SIDES, SideContext, SideReader } from "../../shared/side-reader"
+import { SideContext, SideContexts, SideReader } from "../../shared/side-reader"
 import { AsyncApiSecurityInput, AsyncApiSecuritySpecBuilder } from "./async-api-security-spec-builder"
 
 /**
@@ -29,19 +29,18 @@ export class AsyncApiSecuritySpecWithDiffsBuilder extends AsyncApiSecuritySpecBu
     if (!isArray(list) || list.length === 0) {
       return undefined
     }
-    const listField = this.reader.readField(owner, 'security', BOTH_SIDES)
+    const listField = this.reader.readField(owner, 'security', SideContexts.BOTH)
     const listContext = this.reader.childContext(listField)
     const alternatives: SecurityAlternativeSpec[] = []
     const securityRecord: DiffsRecord = {}
-    const presence = { before: false, after: false }
+    let presence = SideContexts.NONE
     list.forEach((item, index) => {
       if (!isObject(item)) {
         return
       }
       const itemField = this.reader.readField(list, index, listContext)
       const itemContext = this.reader.childContext(itemField)
-      presence.before ||= itemContext.before
-      presence.after ||= itemContext.after
+      presence = SideContexts.union(presence, itemContext)
       const alternative = this.buildAlternative(source, item, index)
       const scheme = alternative.schemes[alternative.schemeNames[0]]
       this.decorateScheme(scheme, item, itemContext)

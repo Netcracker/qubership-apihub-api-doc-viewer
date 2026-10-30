@@ -1,3 +1,4 @@
+import { DiffSide } from "../../abstract/diff-side"
 import { RowDiffsNode } from "../../abstract/tree-with-diffs/row-diffs-base"
 import { OpenApiBlockEdges } from "./block-edges"
 import { OpenApiSpacingConfig } from "./spacing-config"
@@ -13,8 +14,6 @@ import {
   OpenApiSeparatorRow,
   OpenApiSideTone,
 } from "./types"
-
-type Side = 'before' | 'after'
 
 /** Interned separators: equal separators are one object (cheap equality for consumers). Bounded. */
 const SEPARATOR_CACHE = new Map<string, OpenApiSeparatorRow>()
@@ -93,7 +92,7 @@ export class OpenApiLayoutPlanner {
   ): OpenApiSeparatorRow | undefined {
     const levelGap = above && below ? config.levelGap[level] : 0
     const half = (edge: OpenApiBlockEdge | undefined): number => edge ? config.halfGap[edge.kind] : 0
-    const sideBands = (side: Side): OpenApiBand[] => {
+    const sideBands = (side: DiffSide): OpenApiBand[] => {
       const tone = (edge: OpenApiBlockEdge | undefined): OpenApiSideTone => edge?.tones[side]
       return merge<OpenApiBand>([
         { height: half(above), tone: tone(above) },
