@@ -15,6 +15,7 @@ export declare function maxDiffType(diffTypes: Set<DiffType> | DiffType[]): Diff
 export declare function maxDiffTypeFromDiffs(...changes: Array<Diff | undefined>): [DiffType | undefined, string | undefined];
 export declare function maxDiffTypeFromNodeSummary(summary?: NodeChangesSummary): DiffType | undefined;
 export declare function maxDiffTypeFromNestedNodesSummary(summaries?: Record<string, NodeChangesSummary>): DiffType | undefined;
+/** Diff-type order of the data layer (`DiffTypeOrder`); every caller passes a defined `a`. */
 export declare function compareDiffTypes(a: DiffType | undefined, b: DiffType | undefined): number;
 export declare const DEFAULT_DIFF_TYPE_AND_CAUSE_PAIR: [DiffType | undefined, string | undefined];
 export declare function getLayoutModeFlags(mode?: LayoutMode): {

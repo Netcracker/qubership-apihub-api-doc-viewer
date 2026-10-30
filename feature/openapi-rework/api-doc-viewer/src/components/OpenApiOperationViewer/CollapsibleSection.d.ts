@@ -1,5 +1,5 @@
 import { TitleRowProps } from '../shared-components/TitleRow/types';
-import { OpenApiBlock } from './OpenApiLayout';
+import { StackBlock } from '../shared-components/Layout/StackLayout';
 import { OpenApiViewState } from './OpenApiViewStateContext';
 /** The title-row props of a collapsible 2nd-level section: its fixed expander column and the toggle. */
 export type OpenApiSectionTitleRowProps = Pick<TitleRowProps, 'usage' | 'expandable' | 'expanded' | 'onClickExpander'>;
@@ -13,4 +13,9 @@ export declare function useOpenApiSectionTitleRowProps(sectionNodeId: string): O
  * elements, each indented past the expander column (`openapi-section-content`). Collapsed, the
  * section is its title row alone, so its tail edge is the title row.
  */
-export declare function buildCollapsibleSectionElements(title: OpenApiBlock, content: readonly OpenApiBlock[], view: OpenApiViewState, sectionNodeId: string): [OpenApiBlock, ...OpenApiBlock[]];
+export declare function buildCollapsibleSectionElements(title: StackBlock, content: readonly StackBlock[], view: OpenApiViewState, sectionNodeId: string): [StackBlock, ...StackBlock[]];
+/**
+ * A content element under the section's title text: rows shifted by the expander column + row gap.
+ * For sections whose elements are already decided (the Body: `OpenApiBlockEdges.bodyElements`).
+ */
+export declare function indentSectionContent(block: StackBlock): StackBlock;

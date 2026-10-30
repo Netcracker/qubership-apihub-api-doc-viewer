@@ -1,8 +1,8 @@
-import { OpenApiBadgeSegment } from '../../../../../next-data-model/src/model/openapi/layout';
+import { LayoutBadgeSegment } from '../../../../../next-data-model/src/model/abstract/layout';
 import { FC } from '../../../../../../node_modules/react';
 type BadgeStubProps = {
     /** Stacked segments from the layout data; a segment without a type leaves a gap. */
-    segments: readonly OpenApiBadgeSegment[];
+    segments: readonly LayoutBadgeSegment[];
 };
 /**
  * A decorative stand-in for the diffs floating badge on a synthetic row (separator, card frame row):

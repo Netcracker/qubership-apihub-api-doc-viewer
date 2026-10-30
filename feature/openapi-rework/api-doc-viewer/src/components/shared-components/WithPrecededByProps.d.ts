@@ -25,10 +25,10 @@ export declare enum PrecededBy {
     /** Follows a sibling column block that ended with an additional-info row. */
     DDL_COLUMN_AFTER_ADDITIONAL_INFO_ROW = "ddl-column-after-additional-info-row",
     DDL_INDEX_ROW = "ddl-index-row",
-    /** Any OpenAPI row. */
-    OPENAPI_ROW = "openapi-row",
-    /** The first row of a nested JSON Schema / JSO viewer: keeps its own inset (`--openapi-nested-viewer-inset`). */
-    OPENAPI_NESTED_VIEWER_START = "openapi-nested-viewer-start"
+    /** Any row of a separator layout. */
+    SEPARATOR_LAYOUT_ROW = "separator-layout-row",
+    /** The first row of a nested JSON Schema / JSO viewer under such a row: keeps its own inset (`--separator-layout-nested-viewer-inset`). */
+    SEPARATOR_LAYOUT_NESTED_VIEWER_START = "separator-layout-nested-viewer-start"
 }
 export type WithPrecededByProps = {
     [ATTRIBUTE_PRECEDED_BY]?: PrecededBy;

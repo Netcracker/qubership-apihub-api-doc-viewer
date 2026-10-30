@@ -1,18 +1,21 @@
 import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/types/aliases';
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
-import { OpenApiBlock } from './OpenApiLayout';
-import { OpenApiViewState } from './OpenApiViewStateContext';
-type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
+import { StackBlock } from '../shared-components/Layout/StackLayout';
+export type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>;
+type SecurityNodeViewerProps = {
+    blocks: readonly StackBlock[];
+};
+type SecuritySectionRowProps = {
+    node: SecurityNode;
+};
 /**
- * The Security section as a layout block. Its elements: the title row (with the `Optional` badge of
- * anonymous access), the toolbar row when there is an alternative, then the selected alternative's
- * scheme cards (each card one element; 4px outside its border). The toolbar and content come from
- * `SecuritySectionBase`; the selection lives in the operation view state.
+ * "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND).
+ * Layout block: `security-blocks.tsx`.
  */
-export declare function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): OpenApiBlock;
-/** "Security" (h2), the security toolbar (alternatives, OR, always shown), framed scheme cards (AND). */
-export declare const SecurityNodeViewer: FC<{
-    blocks: readonly OpenApiBlock[];
-}>;
+export declare const SecurityNodeViewer: FC<SecurityNodeViewerProps>;
+/** "Security" (h2) with the `Optional` badge when anonymous access (`{}`) is allowed on that side. */
+export declare const SecurityTitleRow: FC<SecuritySectionRowProps>;
+/** The alternatives toolbar; the selection lives in the operation view state. */
+export declare const OpenApiSecurityToolbarRow: FC<SecuritySectionRowProps>;
 export {};

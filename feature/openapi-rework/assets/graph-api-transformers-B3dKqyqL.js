@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{Ar as t,kr as n}from"./UxBadge-BGHR5KdO.js";import{n as r,t as i}from"./buildASTSchema-Dlu1HQB8.js";function a(e){return n(i(e,{noLocation:!0}))}function o(){return(o=e((()=>{t(),r()})))()}export{o as n,a as t};

@@ -1,6 +1,6 @@
 import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ChangedPropertyMetaData, NodeDiffsSeverity } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
-import { OpenApiFrameRow } from '../../../../../next-data-model/src/model/openapi/layout';
+import { LayoutFrameRow } from '../../../../../next-data-model/src/model/abstract/layout';
 import { FC, ReactNode } from '../../../../../../node_modules/react';
 import { WithFramePositionProps } from '../Frame/types';
 import { WithPrecededByProps } from '../WithPrecededByProps';
@@ -26,8 +26,8 @@ type SecurityRowProps = WithPrecededByProps & WithFramePositionProps & {
  */
 export declare const SecurityRow: FC<SecurityRowProps>;
 type SecurityFrameRowProps = {
-    /** Height (the card's inner inset), whole-card tones and badge (next-data-model `OpenApiLayoutPlanner.frameRow`). */
-    frameRow: OpenApiFrameRow;
+    /** Height (the card's inner inset), whole-card tones and badge (next-data-model `LayoutPlanner.frameRow`). */
+    frameRow: LayoutFrameRow;
     /** `first`: the card's opening row (border at its top), `last`: its closing row (border at its bottom). */
     position: 'first' | 'last';
     /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */
@@ -61,19 +61,21 @@ type SecurityPropValueProps = {
 };
 export declare const SecurityPropValue: FC<SecurityPropValueProps>;
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
-export declare const SecurityFlowHeaderContent: FC<{
+type SecurityFlowHeaderContentProps = {
     prefix: string;
     name: string;
-}>;
+};
+export declare const SecurityFlowHeaderContent: FC<SecurityFlowHeaderContentProps>;
 /**
  * `Scopes ▾` - label and expander only (no value), JSON Schema title pattern: the text and the
  * expander are both clickable; the expander comes after the text.
  */
-export declare const SecurityScopesToggleContent: FC<{
+type SecurityScopesToggleContentProps = {
     label: string;
     expanded: boolean;
     onToggle: () => void;
-}>;
+};
+export declare const SecurityScopesToggleContent: FC<SecurityScopesToggleContentProps>;
 type SecurityScopeContentProps = {
     name: string;
     description: string;

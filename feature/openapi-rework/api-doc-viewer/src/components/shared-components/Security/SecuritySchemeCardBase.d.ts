@@ -17,7 +17,7 @@ type SecuritySchemeCardBaseProps = SecuritySchemeCardProps & {
 /**
  * Framed card of one security scheme of the selected alternative, for every API type: an opening
  * frame row (border at its top), the content rows with the separators around them, a closing frame
- * row (border at its bottom); frame row heights and tones from `OpenApiLayoutPlanner.frameRow`. The
+ * row (border at its bottom); frame row heights and tones from `LayoutPlanner.frameRow`. The
  * space outside the border is the card's own half-gap in the separators of the Security level.
  * Labels (scheme types, unresolved text) and which rows a scheme type has come from `presentation`.
  * Design: docs/design/openapi/entities/security.md -> "Scheme card", docs/design/async-api/features/security.md.

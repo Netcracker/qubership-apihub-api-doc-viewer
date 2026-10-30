@@ -1,3 +1,4 @@
+import { LayoutSide } from '../../../types/internal/LayoutSide';
 import { ITreeNode } from '../../../../../next-data-model/src/model/abstract/tree/tree-node.interface';
 import { ChangedPropertyMetaData, NodeDiffsSeverity } from '../../../../../next-data-model/src/model/abstract/tree-with-diffs/tree-node.interface';
 import { ReactElement } from '../../../../../../node_modules/react';
@@ -10,6 +11,8 @@ type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
     /** Row background: a whole section add / remove, or `replace` when an option was added / removed. */
     diff?: ChangedPropertyMetaData;
     severity?: NodeDiffsSeverity;
+    /** Whether a side shows the options and arrows (`SecurityRowDiffs.Security.isToolbarShownOnSide`). */
+    isShownOnSide: (layoutSide: LayoutSide) => boolean;
 };
 /**
  * Security toolbar: `‹ [option] [option] … ›`. The options form one non-wrapping line in the shared
