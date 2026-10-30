@@ -45,7 +45,7 @@ export interface OpenApiTreeNodeValueTypeParameters {
 | Item | Rule |
 | --- | --- |
 | Header | `TitleRow` with the group title, **h3**, collapsible (expander column, expanded by default; the schema indented past it — [collapsible-sections.md](../features/collapsible-sections.md)) |
-| Content | `JsonSchemaViewer` / `JsonSchemaDiffsViewer` over `value.schema`, `customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}`, `expandedDepth` from `OpenApiViewerContext` (default `2`, as AsyncAPI address parameters), `firstRowPrecededBy={OPENAPI_NESTED_VIEWER_START}` (the first schema row takes the in-block gap under the h3, [Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
+| Content | `JsonSchemaViewer` / `JsonSchemaDiffsViewer` over `value.schema`, `customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}`, `expandedDepth` from `OpenApiViewerContext` (default `2`, as AsyncAPI address parameters), `firstRowPrecededBy={SEPARATOR_LAYOUT_NESTED_VIEWER_START}` (the first schema row takes the in-block gap under the h3, [Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
 | Diffs viewer | passes `diffMetaKeys`, `diffTypes`, `hideUnchangedNodes`; **no** wrapping or stamping in the viewer — the synthesizer already attached every diff ([With diffs](#with-diffs)) |
 
 Each parameter becomes one property row of the JSON Schema viewer: name + required `*`, type

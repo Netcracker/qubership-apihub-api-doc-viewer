@@ -14,13 +14,13 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
 export type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>
 
 type SecurityNodeViewerProps = {
-  blocks: readonly OpenApiBlock[]
+  blocks: readonly StackBlock[]
 }
 
 type SecuritySectionRowProps = {
@@ -33,7 +33,7 @@ type SecuritySectionRowProps = {
  */
 export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = ({ blocks }) => (
   <div data-testid="openapi-security-section" className="flex flex-col">
-    <OpenApiLayout blocks={blocks} level="security" />
+    <StackLayout blocks={blocks} level="security" />
   </div>
 )
 
@@ -57,7 +57,7 @@ export const SecurityTitleRow: FC<SecuritySectionRowProps> = ({ node }) => {
   ), [badgeDiff, layoutMode, node])
   return (
     <TitleRow
-      data-precededby={PrecededBy.OPENAPI_ROW}
+      data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
       value={SECURITY_SECTION_TITLE}
       expandable={false}
       variant={TextValueVariant.h2}

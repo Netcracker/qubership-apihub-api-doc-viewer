@@ -1,5 +1,5 @@
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
-import { OpenApiBlock } from "./OpenApiLayout"
+import { StackBlock } from "../shared-components/Layout/StackLayout"
 import { isOpenApiSectionExpanded, OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
 import "./CollapsibleSection.css"
 
@@ -13,7 +13,7 @@ export type OpenApiSectionTitleRowProps = Pick<TitleRowProps, 'usage' | 'expanda
 export function useOpenApiSectionTitleRowProps(sectionNodeId: string): OpenApiSectionTitleRowProps {
   const view = useOpenApiViewState()
   return {
-    usage: TitleRowUsage.OpenApiSection,
+    usage: TitleRowUsage.CollapsibleSection,
     expandable: true,
     expanded: isOpenApiSectionExpanded(view, sectionNodeId),
     onClickExpander: () => view.toggleCollapsed(sectionNodeId),
@@ -26,16 +26,16 @@ export function useOpenApiSectionTitleRowProps(sectionNodeId: string): OpenApiSe
  * section is its title row alone, so its tail edge is the title row.
  */
 export function buildCollapsibleSectionElements(
-  title: OpenApiBlock,
-  content: readonly OpenApiBlock[],
+  title: StackBlock,
+  content: readonly StackBlock[],
   view: OpenApiViewState,
   sectionNodeId: string,
-): [OpenApiBlock, ...OpenApiBlock[]] {
+): [StackBlock, ...StackBlock[]] {
   return isOpenApiSectionExpanded(view, sectionNodeId) ? [title, ...content.map(indented)] : [title]
 }
 
 /** A content element under the section's title text: rows shifted by the expander column + row gap. */
-function indented(block: OpenApiBlock): OpenApiBlock {
+function indented(block: StackBlock): StackBlock {
   return {
     ...block,
     payload: () => (

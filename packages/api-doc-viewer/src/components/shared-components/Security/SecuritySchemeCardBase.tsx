@@ -1,4 +1,5 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
+import { useLayoutSpacing } from "@apihub/contexts/LayoutSpacingContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
@@ -10,7 +11,7 @@ import {
   NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { OpenApiBlockEdges, OpenApiLayoutPlanner } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { BlockEdges, LayoutPlanner } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { SECURITY_OAUTH_FLOW_HEADER_PREFIX, SECURITY_PROP_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { SecuritySchemeCardRows } from "@netcracker/qubership-apihub-next-data-model/model/security/card-rows"
 import { SecurityPresentation } from "@netcracker/qubership-apihub-next-data-model/model/security/presentation"
@@ -18,8 +19,7 @@ import { SecurityRowDiffs, SecurityScopeRow } from "@netcracker/qubership-apihub
 import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
 import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/security/types/node-kind"
 import { FC, Fragment, ReactElement, ReactNode, useState } from "react"
-import { OpenApiBlock, OpenApiLayout } from "../../OpenApiOperationViewer/OpenApiLayout"
-import { useOpenApiViewerContext } from "../../OpenApiOperationViewer/OpenApiViewerContext"
+import { StackBlock, StackLayout } from "../Layout/StackLayout"
 import { FramePosition } from "../Frame/types"
 import { MarkdownTextRow } from "../MarkdownTextRow/MarkdownTextRow"
 import { ShowUnchangedTrigger } from "../ShowUnchangedRow/ShowUnchangedTrigger"
@@ -83,10 +83,10 @@ class CardRows {
   }
 
   /** Each row as a layout element: edges from its own diff and badge (next-data-model). */
-  public toBlocks(framePosition: FramePositionResolver): OpenApiBlock[] {
+  public toBlocks(framePosition: FramePositionResolver): StackBlock[] {
     return this.rows.map(row => ({
       id: row.key,
-      ...OpenApiBlockEdges.single(OpenApiBlockEdges.row(row)),
+      ...BlockEdges.single(BlockEdges.row(row)),
       payload: () => <Fragment key={row.key}>{row.render(framePosition)}</Fragment>,
     }))
   }
@@ -95,7 +95,7 @@ class CardRows {
 /**
  * Framed card of one security scheme of the selected alternative, for every API type: an opening
  * frame row (border at its top), the content rows with the separators around them, a closing frame
- * row (border at its bottom); frame row heights and tones from `OpenApiLayoutPlanner.frameRow`. The
+ * row (border at its bottom); frame row heights and tones from `LayoutPlanner.frameRow`. The
  * space outside the border is the card's own half-gap in the separators of the Security level.
  * Labels (scheme types, unresolved text) and which rows a scheme type has come from `presentation`.
  * Design: docs/design/openapi/entities/security.md -> "Scheme card", docs/design/async-api/features/security.md.
@@ -104,7 +104,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
   const { node, presentation, titleVariant = TextValueVariant.h4 } = props
   const { labels } = presentation
   const displayMode = useDisplayMode()
-  const { spacing } = useOpenApiViewerContext()
+  const spacing = useLayoutSpacing()
   const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
   const severities = takeSecuritySeverities(node)
@@ -131,7 +131,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
     severity: severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
     render: (framePosition) => (
       <TitleRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
+        data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
         value={value?.name ?? String(node.key)}
         expandable={false}
         variant={titleVariant}
@@ -150,7 +150,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
       severity: undefined,
       render: (framePosition) => (
         <TextRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           value={labels.unresolvedSchemeText}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
@@ -169,7 +169,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
       severity: severities?.[NodeDiffsSeverityPlacemennt.DescriptionRow],
       render: (framePosition) => (
         <MarkdownTextRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body1}
           diff={descriptionDiff}
@@ -248,7 +248,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
       severity: undefined,
       render: (framePosition) => (
         <SecurityRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           testId="security-show-unchanged"
           framePosition={framePosition}
           renderSide={() => (
@@ -261,12 +261,12 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
 
   const isPresent = (side: LayoutSide): boolean => SecurityRowDiffs.Scheme.isCardPresentOnSide(node, side)
   const middle: FramePositionResolver = (side) => isPresent(side) ? 'middle' : undefined
-  const frameRow = OpenApiLayoutPlanner.frameRow(node, spacing)
+  const frameRow = LayoutPlanner.frameRow(node, spacing)
   const presence = { before: isPresent(ORIGIN_LAYOUT_SIDE), after: isPresent(CHANGED_LAYOUT_SIDE) }
   return (
     <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
       <SecurityFrameRow frameRow={frameRow} position="first" presence={presence} />
-      <OpenApiLayout
+      <StackLayout
         blocks={card.toBlocks(middle)}
         level="card"
         outerHalves={true}
@@ -300,7 +300,7 @@ function fieldPropRow(params: FieldPropRowParams): CardRow {
     severity,
     render: (framePosition) => (
       <SecurityRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
+        data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
         testId={`security-prop-${key}`}
         framePosition={framePosition}
         diff={rowDiff}
@@ -340,7 +340,7 @@ function addFlowRows(
     severity: severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
     render: (framePosition) => (
       <SecurityRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
+        data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
         testId={`security-${flowKey}`}
         framePosition={framePosition}
         diff={blockDiff}
@@ -390,7 +390,7 @@ function addScopeRows(
     severity: blockDiff ? blockSeverity : undefined,
     render: (framePosition) => (
       <SecurityRow
-        data-precededby={PrecededBy.OPENAPI_ROW}
+        data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
         framePosition={framePosition}
         diff={blockDiff}
         severity={blockDiff ? blockSeverity : undefined}
@@ -410,7 +410,7 @@ function addScopeRows(
       severity: scope.severity,
       render: (framePosition) => (
         <SecurityRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
           diff={scope.rowDiff}

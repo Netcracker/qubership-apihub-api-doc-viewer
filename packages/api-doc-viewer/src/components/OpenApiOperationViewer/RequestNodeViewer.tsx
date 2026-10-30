@@ -11,7 +11,7 @@ import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
 import { MediaTypeContentSection } from "./MediaTypeContentSection"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
 export const REQUEST_SECTION_TITLE = 'Request'
@@ -21,7 +21,7 @@ export type RequestBodyNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUES
 
 type RequestNodeViewerProps = {
   /** Its elements (title row, sub-blocks), built by `buildRequestBlock` (the parent needs them for the Request's own edges). */
-  blocks: readonly OpenApiBlock[]
+  blocks: readonly StackBlock[]
 }
 
 /**
@@ -30,7 +30,7 @@ type RequestNodeViewerProps = {
  */
 export const RequestNodeViewer: FC<RequestNodeViewerProps> = ({ blocks }) => (
   <div data-testid="openapi-request-section" className="flex flex-col">
-    <OpenApiLayout blocks={blocks} level="request" />
+    <StackLayout blocks={blocks} level="request" />
   </div>
 )
 
@@ -40,7 +40,7 @@ type RequestTitleRowProps = {
 
 export const RequestTitleRow: FC<RequestTitleRowProps> = ({ node }) => (
   <TitleRow
-    data-precededby={PrecededBy.OPENAPI_ROW}
+    data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
     value={REQUEST_SECTION_TITLE}
     expandable={false}
     variant={TextValueVariant.h2}
@@ -76,7 +76,7 @@ export const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = ({ node }) 
           edge: OpenApiBlockEdges.descriptionRow(node),
           render: () => (
             <MarkdownTextRow
-              data-precededby={PrecededBy.OPENAPI_ROW}
+              data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
               value={value?.description ?? ''}
               variant={TextValueVariant.body2}
               diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}

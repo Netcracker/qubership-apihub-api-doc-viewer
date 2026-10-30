@@ -384,42 +384,43 @@
   padding-top: 8px;
   padding-bottom: 8px;
 }
-/* ─── OpenAPI operation viewer ─────────────────────────────────────────────── */
+/* ─── Separator layout (OpenAPI operation, Security sections) ──────────────── */
 
-/* OpenAPI rows have no vertical padding: a row is its content. Every vertical gap is a separator
-   row (SeparatorRow) planned in next-data-model (OpenApiLayoutPlanner, OpenApiSpacingConfig):
-   the upper element's half-gap + the level gap + the lower element's half-gap.
+/* Separator layout rows have no vertical padding: a row is its content. Every vertical gap is a
+   separator row (SeparatorRow) planned in next-data-model (LayoutPlanner, LayoutSpacingConfig):
+   the upper element's half-gap + the level gap + the lower element's half-gap. Used by the OpenAPI
+   operation and by the Security sections of every API type (StackLayout).
    Design: docs/design/openapi/features/vertical-gaps.md */
 
-.title-row-content[data-precededby="openapi-row"],
-.text-row-content[data-precededby="openapi-row"],
-.markdown-text-row-content[data-precededby="openapi-row"],
-.address-row-content[data-precededby="openapi-row"],
-.external-docs-row-content[data-precededby="openapi-row"],
-.security-toolbar[data-precededby="openapi-row"],
-.security-row[data-precededby="openapi-row"] {
+.title-row-content[data-precededby="separator-layout-row"],
+.text-row-content[data-precededby="separator-layout-row"],
+.markdown-text-row-content[data-precededby="separator-layout-row"],
+.address-row-content[data-precededby="separator-layout-row"],
+.external-docs-row-content[data-precededby="separator-layout-row"],
+.security-toolbar[data-precededby="separator-layout-row"],
+.security-row[data-precededby="separator-layout-row"] {
   padding-top: 0;
   padding-bottom: 0;
 }
 
 /* Markdown values (descriptions): the separators alone set the row's edges - no default margins
-   of the first / last block (paragraph, list, heading). All OpenAPI members start with `openapi-`. */
-.markdown-text-row-content[data-precededby^="openapi-"] .markdown > :first-child {
+   of the first / last block (paragraph, list, heading). All separator layout members start with `separator-layout-`. */
+.markdown-text-row-content[data-precededby^="separator-layout-"] .markdown > :first-child {
   margin-top: 0;
 }
 
-.markdown-text-row-content[data-precededby^="openapi-"] .markdown > :last-child {
+.markdown-text-row-content[data-precededby^="separator-layout-"] .markdown > :last-child {
   margin-bottom: 0;
 }
 
-/* First row of a nested viewer under an OpenAPI row: the viewer's own inset above its content (a
-   nested viewer owns no half-gap). JSON Schema: on the row body (its own default top is 8px);
-   --openapi-nested-viewer-inset comes from OpenApiSpacingConfig.nestedViewerInset. */
-.json-schema-property .title-row-content[data-precededby="openapi-nested-viewer-start"] > .json-schema-property-row-body {
-  padding-top: var(--openapi-nested-viewer-inset, 4px);
+/* First row of a nested viewer under a separator layout row: the viewer's own inset above its content
+   (a nested viewer owns no half-gap). JSON Schema: on the row body (its own default top is 8px);
+   --separator-layout-nested-viewer-inset comes from OpenApiSpacingConfig.nestedViewerInset. */
+.json-schema-property .title-row-content[data-precededby="separator-layout-nested-viewer-start"] > .json-schema-property-row-body {
+  padding-top: var(--separator-layout-nested-viewer-inset, 4px);
 }
 
 /* JSO rows have no vertical padding: their 26px min-height centring already insets the text. */
-.jso-property .title-row-content[data-precededby="openapi-nested-viewer-start"] {
+.jso-property .title-row-content[data-precededby="separator-layout-nested-viewer-start"] {
   padding-top: 0;
 }

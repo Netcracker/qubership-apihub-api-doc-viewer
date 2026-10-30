@@ -1,22 +1,21 @@
-import { DiffSide } from "../../abstract/diff-side"
-import { RowDiffsNode } from "../../abstract/tree-with-diffs/row-diffs-base"
-import { OpenApiBlockEdges } from "./block-edges"
-import { OpenApiSpacingConfig } from "./spacing-config"
+import { DiffSide } from "../diff-side"
+import { RowDiffsNode } from "../tree-with-diffs/row-diffs-base"
+import { BlockEdges } from "./block-edges"
+import { LayoutSpacingConfig } from "./spacing-config"
 import {
-  OpenApiBadgeSegment,
-  OpenApiBand,
-  OpenApiBlockEdge,
-  OpenApiFrameRow,
-  OpenApiLayoutBlock,
-  OpenApiLayoutItem,
-  OpenApiLayoutLevel,
-  OpenApiPlanOptions,
-  OpenApiSeparatorRow,
-  OpenApiSideTone,
+  LayoutBadgeSegment,
+  LayoutBand,
+  LayoutBlock,
+  LayoutBlockEdge,
+  LayoutFrameRow,
+  LayoutItem,
+  LayoutPlanOptions,
+  LayoutSeparatorRow,
+  LayoutSideTone,
 } from "./types"
 
 /** Interned separators: equal separators are one object (cheap equality for consumers). Bounded. */
-const SEPARATOR_CACHE = new Map<string, OpenApiSeparatorRow>()
+const SEPARATOR_CACHE = new Map<string, LayoutSeparatorRow>()
 const SEPARATOR_CACHE_LIMIT = 1000
 
 /** Adjacent pieces of the same look become one piece; zero-height pieces are dropped. */
@@ -48,16 +47,16 @@ function signatureOf(pieces: readonly { readonly height: number, readonly look: 
  * neighbours) + the lower element's own half-gap, per side. Pure; the consumer renders the items.
  * Design: docs/design/openapi/features/vertical-gaps.md -> "Algorithm".
  */
-export class OpenApiLayoutPlanner {
-  public static plan<TPayload>(
-    blocks: readonly OpenApiLayoutBlock<TPayload>[],
-    level: OpenApiLayoutLevel,
-    config: OpenApiSpacingConfig,
-    options: OpenApiPlanOptions = {},
-  ): OpenApiLayoutItem<TPayload>[] {
-    const items: OpenApiLayoutItem<TPayload>[] = []
-    const pushSeparator = (id: string, above: OpenApiBlockEdge | undefined, below: OpenApiBlockEdge | undefined): void => {
-      const separator = OpenApiLayoutPlanner.separator(above, below, level, config)
+export class LayoutPlanner {
+  public static plan<TPayload, TLevel extends string>(
+    blocks: readonly LayoutBlock<TPayload>[],
+    level: TLevel,
+    config: LayoutSpacingConfig<TLevel>,
+    options: LayoutPlanOptions = {},
+  ): LayoutItem<TPayload>[] {
+    const items: LayoutItem<TPayload>[] = []
+    const pushSeparator = (id: string, above: LayoutBlockEdge | undefined, below: LayoutBlockEdge | undefined): void => {
+      const separator = LayoutPlanner.separator(above, below, level, config)
       if (separator) {
         items.push({ type: 'separator', id, separator })
       }
@@ -84,23 +83,23 @@ export class OpenApiLayoutPlanner {
    * The separator between `above` and `below` (either may be absent at a level's outer edge: then
    * only the present element's half, no level gap). `undefined` when it would be 0px high.
    */
-  public static separator(
-    above: OpenApiBlockEdge | undefined,
-    below: OpenApiBlockEdge | undefined,
-    level: OpenApiLayoutLevel,
-    config: OpenApiSpacingConfig,
-  ): OpenApiSeparatorRow | undefined {
+  public static separator<TLevel extends string>(
+    above: LayoutBlockEdge | undefined,
+    below: LayoutBlockEdge | undefined,
+    level: TLevel,
+    config: LayoutSpacingConfig<TLevel>,
+  ): LayoutSeparatorRow | undefined {
     const levelGap = above && below ? config.levelGap[level] : 0
-    const half = (edge: OpenApiBlockEdge | undefined): number => edge ? config.halfGap[edge.kind] : 0
-    const sideBands = (side: DiffSide): OpenApiBand[] => {
-      const tone = (edge: OpenApiBlockEdge | undefined): OpenApiSideTone => edge?.tones[side]
-      return merge<OpenApiBand>([
+    const half = (edge: LayoutBlockEdge | undefined): number => edge ? config.halfGap[edge.kind] : 0
+    const sideBands = (side: DiffSide): LayoutBand[] => {
+      const tone = (edge: LayoutBlockEdge | undefined): LayoutSideTone => edge?.tones[side]
+      return merge<LayoutBand>([
         { height: half(above), tone: tone(above) },
         ...(levelGap > 0 ? config.splitBands(tone(above), tone(below), levelGap) : []),
         { height: half(below), tone: tone(below) },
       ], (a, b) => a.tone === b.tone)
     }
-    const badge = merge<OpenApiBadgeSegment>([
+    const badge = merge<LayoutBadgeSegment>([
       { height: half(above), type: above?.badge },
       ...(levelGap > 0 ? config.splitBadge(above?.badge, below?.badge, levelGap) : []),
       { height: half(below), type: below?.badge },
@@ -111,12 +110,12 @@ export class OpenApiLayoutPlanner {
     if (height <= 0) {
       return undefined
     }
-    return OpenApiLayoutPlanner.intern(height, before, after, badge)
+    return LayoutPlanner.intern(height, before, after, badge)
   }
 
   /** A card opening / closing row (inside the border): whole-card tones and badge stub. */
-  public static frameRow(card: RowDiffsNode, config: OpenApiSpacingConfig): OpenApiFrameRow {
-    const edge = OpenApiBlockEdges.card(card)
+  public static frameRow<TLevel extends string>(card: RowDiffsNode, config: LayoutSpacingConfig<TLevel>): LayoutFrameRow {
+    const edge = BlockEdges.card(card)
     return {
       height: config.cardInnerInset,
       tones: edge.tones,
@@ -126,10 +125,10 @@ export class OpenApiLayoutPlanner {
 
   private static intern(
     height: number,
-    before: readonly OpenApiBand[],
-    after: readonly OpenApiBand[],
-    badge: readonly OpenApiBadgeSegment[],
-  ): OpenApiSeparatorRow {
+    before: readonly LayoutBand[],
+    after: readonly LayoutBand[],
+    badge: readonly LayoutBadgeSegment[],
+  ): LayoutSeparatorRow {
     const signature = [
       signatureOf(before.map(band => ({ height: band.height, look: band.tone }))),
       signatureOf(after.map(band => ({ height: band.height, look: band.tone }))),
@@ -142,7 +141,7 @@ export class OpenApiLayoutPlanner {
     if (SEPARATOR_CACHE.size >= SEPARATOR_CACHE_LIMIT) {
       SEPARATOR_CACHE.clear()
     }
-    const separator: OpenApiSeparatorRow = { height, before, after, badge, signature }
+    const separator: LayoutSeparatorRow = { height, before, after, badge, signature }
     SEPARATOR_CACHE.set(signature, separator)
     return separator
   }

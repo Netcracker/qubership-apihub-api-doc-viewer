@@ -8,7 +8,7 @@ Shared rules: [../SKILL.md](../SKILL.md).
 | --- | --- |
 | Viewers | `packages/api-doc-viewer/src/components/OpenApiOperationViewer/` (`OpenApiOperationViewer`, `OpenApiOperationDiffsViewer`) |
 | Viewer utilities | `packages/api-doc-viewer/src/utils/openapi/`, `shared-styles/colors/openapi.css` (`buildOpenApiDiffCause` in `utils/common/changes.ts` is a legacy GraphQL / annotation helper, not part of this stack) |
-| Shared UI introduced for OpenAPI | `shared-components/Security/`, `Separator/`, `ExternalDocsRow/`, `Selector` tone, `TitleRowUsage.OpenApiSection`, `OPENAPI_*` preceded-by kinds, `shared-styles/frame.css` |
+| Shared UI introduced for OpenAPI | `shared-components/Security/`, `Separator/`, `ExternalDocsRow/`, `Selector` tone, `TitleRowUsage.CollapsibleSection`, `OPENAPI_*` preceded-by kinds, `shared-styles/frame.css` |
 | Data model | `packages/next-data-model/src/{model,building-service,shared}/openapi/` and the spec-neutral `{model,building-service}/security/` |
 
 Out of scope: `stories/`, `it/`, `samples/`, `bin/`, and the nested JSON Schema and JSO viewers
@@ -27,14 +27,16 @@ findings here, but check every fix against the AsyncAPI security sections too.
 
 ## Focus
 
-- **Layout as a cross-API contract.** `model/openapi/layout/` (`OpenApiLayoutPlanner`, block edges,
-  spacing config) in next-data-model is an approved convention (`next-data-model-authoring`,
-  `features/block-separators.md`); check that its generic part and the viewer's `OpenApiLayout` are
-  not imported from OpenAPI folders by shared components or AsyncAPI (2026-10 review, F1).
-- **OpenAPI types in shared components.** `Separator/` imports `OpenApiSeparatorRow` /
-  `OpenApiBadgeSegment`; `TitleRow` has an `OpenApiSection` usage; `WithPrecededByProps` has
-  `OPENAPI_ROW` kinds. Either generalize the types or move the pieces into the OpenAPI container
-  layer.
+- **Layout as a cross-API contract.** The separator layout is spec-neutral since the 2026-10
+  review (F1): `model/abstract/layout/` (`LayoutPlanner`, `BlockEdges`, `LayoutSpacingConfig`),
+  `model/security/block-edges.ts`, the viewer's `shared-components/Layout/StackLayout.tsx` and
+  `LayoutSpacingContext` (provided by every root). Check that shared components and AsyncAPI import
+  nothing from `model/openapi/layout/` or the OpenAPI viewer folder, and that no root renders a
+  `StackLayout` without providing the context.
+- **API-type names on shared pieces.** Shared rows use behaviour names since F2
+  (`PrecededBy.SEPARATOR_LAYOUT_*`, `TitleRowUsage.CollapsibleSection`, `X_AXIS_PADDING_ROWS`). The
+  other API-type-named `TitleRowUsage` members (`DdlApiSection`, `AsyncApiJsoSection`, …) are left
+  for their own reviews; new shared members get behaviour names.
 - **Large transformer classes.** `openapi-spec-with-diffs-transformer.ts` (~540 lines),
   `openapi-spec-transformer.ts` (~400), `object-schema-with-diffs-synthesizer.ts` (~310),
   `model/openapi/tree-with-diffs/row-diffs.ts`: check single responsibility; section presence (I3)

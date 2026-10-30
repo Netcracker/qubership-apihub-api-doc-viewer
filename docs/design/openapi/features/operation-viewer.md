@@ -220,7 +220,7 @@ export const OPENAPI_SECTION_ORDER = {
 | Containers | iterate their list and render the section whose id they meet, skipping sections that are not visible; no container has a hard-coded sequence of sections |
 | Fixed, not configurable | the operation header rows (title, operation ID, address, description, external docs) and the rows **inside** a section (e.g. Body header → description → schema; Security header → selector → cards). The Responses header with its code selector always comes first in the Responses section — it is the section header, not a section of the list. |
 | Moving between levels | not supported: a section id stays in its own list (a response section cannot move into `request`) |
-| Spacing | separators are planned over the visible sections in the **configured** order (`OpenApiLayoutPlanner.plan`), never from a hard-coded predecessor — changing the order needs no CSS change ([Spacing](#spacing-data-precededby)) |
+| Spacing | separators are planned over the visible sections in the **configured** order (`LayoutPlanner.plan`), never from a hard-coded predecessor — changing the order needs no CSS change ([Spacing](#spacing-data-precededby)) |
 | Test ids, change markers, diffs | independent of the order |
 | Unit test | each list contains exactly its allowed ids, each once (a reordered list is valid, a missing or foreign id fails) |
 | Public API | not exposed to hosts in v1; the map is the extension point |
@@ -236,19 +236,20 @@ colouring principle and badge stubs: [block-separators.md](block-separators.md).
 
 | Rule | Value |
 | --- | --- |
-| Every OpenAPI row | **no vertical padding** (`data-precededby="openapi-row"`); every gap is a separator row |
+| Every OpenAPI row | **no vertical padding** (`data-precededby="separator-layout-row"`); every gap is a separator row |
 | Element half-gaps | row 4px, security card 4px (outside its border), nested JSON Schema / JSO viewer 0 (its own ≥ 4px inset) |
 | Gap | upper element's half + level gap + lower element's half: **8px** inside a block, **12px** between the top-level blocks (operation header, Security, Extensions, Request, Responses; level gap 4 = 2 + 2 continuing the neighbours) |
 | Colouring | each element's half and the adjacent level half take that element's own tone per side; a row that changed alone: 4 / 4 inside a block, 4 / 6 at a top-level edge |
 | Security cards | frame rows of `cardInnerInset` (8px) inside the border, coloured by the whole-card diff only; card rows planned at the `card` level with outer halves (border → content 12px) |
 | Floating badges | separators and frame rows carry a decorative **badge stub** (no hover, no text) following the same bands |
-| Nested JSON Schema / JSO viewers | their own rows; their first row gets `OPENAPI_NESTED_VIEWER_START` (opt-in hooks `firstRowPrecededBy`, `contentPrecededBy`) |
+| Nested JSON Schema / JSO viewers | their own rows; their first row gets `SEPARATOR_LAYOUT_NESTED_VIEWER_START` (opt-in hooks `firstRowPrecededBy`, `contentPrecededBy`) |
 | Viewer top / bottom | the first / last element's own half (config `viewerEdges`) |
 
 All numbers and rules live in one config, `OpenApiSpacingConfig` (next-data-model
-`model/openapi/layout/`); the data layer computes element edges, separators and frame rows; each
-container builds its elements in the configured section order and renders the plan
-(`OpenApiLayout level=…`). Separators are interned and their rendered elements cached.
+`model/openapi/layout/`, extending the spec-neutral `LayoutSpacingConfig` of `model/abstract/layout/`);
+the data layer computes element edges, separators and frame rows; each container builds its elements
+in the configured section order and renders the plan (shared `StackLayout level=…`, spacing from
+`LayoutSpacingContext`, which the root provides). Separators are interned and their rendered elements cached.
 
 ## View state
 
@@ -278,9 +279,9 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | Component | Renders | Notes |
 | --- | --- | --- |
 | `OpenApiOperationViewer.tsx` / `OpenApiOperationDiffsViewer.tsx` | root | see [Root component shape](#root-component-shape) |
-| `OpenApiViewerContext.ts` | context | `devMode`, `expandedDepth`, `hideUnchangedNodes`, `spacing` (`OpenApiSpacingConfig`) |
+| `OpenApiViewerContext.ts` | context | `devMode`, `expandedDepth`, `hideUnchangedNodes`, `spacing` (`OpenApiSpacingConfig`; the root also provides it as `LayoutSpacingContext`) |
 | `OpenApiViewStateContext.ts` | context | the view-state store ([View state](#view-state)) |
-| `OpenApiLayout.tsx` | one container level | renders `OpenApiLayoutPlanner.plan(blocks)`: blocks and `SeparatorRow`s; `OpenApiBlock` = a layout block whose payload renders it |
+| `shared-components/Layout/StackLayout.tsx` (shared with the AsyncAPI Security section) | one container level | renders `LayoutPlanner.plan(blocks)`: blocks and `SeparatorRow`s; `StackBlock` = a layout block whose payload renders it |
 | `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | owns the view state; builds the header block (rows from `resolveOperationHeaderRows`) and the section blocks in config order; places the deprecated tag (title, operation ID or address row) |
 | `SecurityNodeViewer.tsx` | rows 6–8 | `buildSecurityBlock`: title (with the `Optional` badge) + toolbar block, then the cards |
 | `OpenApiSecuritySchemeCard.tsx` | one framed card: `SecuritySchemeCardBase` with `OPENAPI_SECURITY_PRESENTATION` | rows in [security](../entities/security.md#scheme-card); opening / closing `SecurityFrameRow`, content segments planned like blocks |

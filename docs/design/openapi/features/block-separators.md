@@ -177,7 +177,7 @@ coloured by the separator rule above.
 
 `data-block-last-row`, the 10 / 16px top paddings, section `tail` / `closing` promises, the frame's
 outer half-gap padding (`--frame-outer-gap`). `data-precededby` stays for the nested viewers' first
-row (`OPENAPI_NESTED_VIEWER_START`). The one-pass chain now emits a separator between two blocks
+row (`SEPARATOR_LAYOUT_NESTED_VIEWER_START`). The one-pass chain now emits a separator between two blocks
 and hands it the colours of the rows around it.
 
 ## 6. Decided points (approved 2026-10-15)
@@ -192,48 +192,57 @@ Two goals drive it: the data for every synthetic row (separators, card frame row
 next-data-model**, and every number or rule that may change later is **one entry in a config
 object** or **one replaceable strategy function** — the viewer only renders what it is given.
 
+> **Module layout since the 2026-10 architecture review (F1).** The engine is spec-neutral: types,
+> planner, shared config (`LayoutSpacingConfig`, `DEFAULT_LAYOUT_SPACING_CONFIG`) and generic edges
+> (`BlockEdges`) live in next-data-model `model/abstract/layout/`; the Security edges in
+> `model/security/block-edges.ts` (`SecurityBlockEdges`); `model/openapi/layout/` keeps the OpenAPI
+> levels (`OpenApiLayoutLevel`), `OpenApiSpacingConfig` and `OpenApiBlockEdges extends BlockEdges`.
+> The viewer renders with `shared-components/Layout/StackLayout.tsx`, which reads
+> `LayoutSpacingContext`. The type names below follow the current code; the numbers and fields of
+> this section are the v1 design, superseded by [vertical-gaps.md](vertical-gaps.md).
+
 ### 7.1 Responsibilities
 
 | Layer | Owns | Does not own |
 | --- | --- | --- |
-| next-data-model `model/openapi/layout/` | spacing config; tones of block edges per block kind; the separator / frame-row data (heights, per-side bands and their tones); the one-pass planner that interleaves blocks and separators | React, CSS, view state |
+| next-data-model `model/abstract/layout/` + `model/openapi/layout/` | spacing config; tones of block edges per block kind; the separator / frame-row data (heights, per-side bands and their tones); the one-pass planner that interleaves blocks and separators | React, CSS, view state |
 | api-doc-viewer `OpenApiOperationViewer/` | which blocks are visible, in the configured section order (`OPENAPI_SECTION_ORDER`), and the view state that decides them (selected alternative / response / media type); rendering of the planned items | any colour, height or "is a separator needed" decision |
 
 View state stays in React; it is passed **into** the data-layer functions as plain arguments (the
 selected node), so they remain pure and unit-testable on fixtures.
 
-### 7.2 Data types (`model/openapi/layout/types.ts`)
+### 7.2 Data types (`model/abstract/layout/types.ts`)
 
 ```typescript
 /** Background of a row on one side: green / red / yellow / gray, or undefined = unchanged. */
-type OpenApiSideTone = HighlightVariant | undefined
+type LayoutSideTone = HighlightVariant | undefined
 
-type OpenApiEdgeTones = { readonly before: OpenApiSideTone, readonly after: OpenApiSideTone }
+type LayoutEdgeTones = { readonly before: LayoutSideTone, readonly after: LayoutSideTone }
 
 /** The top or bottom edge of a block: a plain row, or a card frame row (already holds outer space). */
-type OpenApiBlockEdge = { readonly kind: 'row' | 'frame', readonly tones: OpenApiEdgeTones, readonly badge?: DiffType }
+type LayoutBlockEdge = { readonly kind: 'row' | 'frame', readonly tones: LayoutEdgeTones, readonly badge?: DiffType }
 
 /** What the planner needs to know about a block; `TPayload` is the viewer's render data. */
-type OpenApiLayoutBlock<TPayload> = {
+type LayoutBlock<TPayload> = {
   readonly id: string
-  readonly head: OpenApiBlockEdge
-  readonly tail: OpenApiBlockEdge
+  readonly head: LayoutBlockEdge
+  readonly tail: LayoutBlockEdge
   readonly payload: TPayload
 }
 
-type OpenApiBand = { readonly height: number, readonly tone: OpenApiSideTone }
+type LayoutBand = { readonly height: number, readonly tone: LayoutSideTone }
 
-type OpenApiBadgeSegment = { readonly height: number, readonly type?: DiffType }
+type LayoutBadgeSegment = { readonly height: number, readonly type?: DiffType }
 
 /** A separator row: per side a stack of bands (both sum to the same height), one badge stub stack. */
-type OpenApiSeparatorRow = { readonly id: string, readonly before: readonly OpenApiBand[], readonly after: readonly OpenApiBand[], readonly badge: readonly OpenApiBadgeSegment[] }
+type LayoutSeparatorRow = { readonly id: string, readonly before: readonly LayoutBand[], readonly after: readonly LayoutBand[], readonly badge: readonly LayoutBadgeSegment[] }
 
 /** A card frame row (opening / closing): its height, where the border runs, its tones, its badge stub. */
-type OpenApiFrameRow = { readonly height: number, readonly borderOffset: number, readonly tones: OpenApiEdgeTones, readonly badge?: DiffType }
+type LayoutFrameRow = { readonly height: number, readonly borderOffset: number, readonly tones: LayoutEdgeTones, readonly badge?: DiffType }
 
-type OpenApiLayoutItem<TPayload> =
-  | { readonly type: 'block', readonly block: OpenApiLayoutBlock<TPayload> }
-  | { readonly type: 'separator', readonly separator: OpenApiSeparatorRow }
+type LayoutItem<TPayload> =
+  | { readonly type: 'block', readonly block: LayoutBlock<TPayload> }
+  | { readonly type: 'separator', readonly separator: LayoutSeparatorRow }
 ```
 
 ### 7.3 Config (`model/openapi/layout/spacing-config.ts`)
@@ -247,11 +256,11 @@ type OpenApiSpacingConfig = {
   readonly frameRowHeight: number        // 24 — card opening / closing row
   readonly frameBorderOffset: number     // 12 — border position inside a frame row (middle)
   /** Whether two neighbouring block edges get a separator (default: none next to a frame edge). */
-  readonly needsSeparator: (above: OpenApiBlockEdge, below: OpenApiBlockEdge) => boolean
+  readonly needsSeparator: (above: LayoutBlockEdge, below: LayoutBlockEdge) => boolean
   /** Bands of one side of a separator (default: one band if the tones match, else two halves). */
-  readonly splitBands: (above: OpenApiSideTone, below: OpenApiSideTone, height: number) => OpenApiBand[]
+  readonly splitBands: (above: LayoutSideTone, below: LayoutSideTone, height: number) => LayoutBand[]
   /** Badge stub of a separator (default: the band rule, by diff type) — §9.2. */
-  readonly splitBadge: (above?: DiffType, below?: DiffType, height: number) => OpenApiBadgeSegment[]
+  readonly splitBadge: (above?: DiffType, below?: DiffType, height: number) => LayoutBadgeSegment[]
   /** Card frame rows show the whole card's badge stub (§9.3-1). */
   readonly frameRowBadge: boolean
 }
@@ -267,7 +276,7 @@ an `OpenApiSpacing.withOverrides(partial)` helper; not exposed to hosts in v1). 
 the config through `OpenApiViewerContext` and writes the numbers to CSS custom properties on the
 viewer root (`--openapi-row-padding`, …), so CSS never hard-codes them.
 
-### 7.4 Block edge tones (`model/openapi/layout/block-edges.ts`)
+### 7.4 Block edge tones (`model/abstract/layout/block-edges.ts`, `model/openapi/layout/block-edges.ts`)
 
 One static accessor per **block kind** on a class `OpenApiBlockEdges`, built from the existing row
 diff accessors (`OpenApiRowDiffs`) — the same diff that paints the row:
@@ -293,7 +302,7 @@ nestedEdge(owner)               = { kind: 'row',   tones: tones(Section.takeHead
 
 A new block kind = one new accessor; nothing else changes.
 
-### 7.5 Planner (`model/openapi/layout/planner.ts`) — one pass per container level
+### 7.5 Planner (`model/abstract/layout/planner.ts`) — one pass per container level
 
 ```text
 plan(blocks, config):
@@ -331,9 +340,9 @@ tail of its last child (§7.4), so separators between levels compose without spe
 
 ### 7.6 Viewer rendering
 
-- Each container builds its `OpenApiLayoutBlock<render function>[]` (visibility + config order +
-  view state), calls `OpenApiLayoutPlanner.plan`, and maps the items: a block → its rows, a separator
-  → `SeparatorRow` component (`OpenApiLayout` does this).
+- Each container builds its `LayoutBlock<render function>[]` (visibility + config order +
+  view state), calls `LayoutPlanner.plan`, and maps the items: a block → its rows, a separator
+  → `SeparatorRow` component (`StackLayout` does this).
 - `SeparatorRow` (`shared-components/Separator/`): a `SideBySideLayout` / `OneSideLayout`
   row whose sides render their bands as stacked divs with `height` from the data and the background
   class of the band's tone (`DiffsClassesBuilder.background`). No padding, no margin, no text.
@@ -341,8 +350,8 @@ tail of its last child (§7.4), so separators between levels compose without spe
 - Card opening / closing rows: `SecurityFrameRow` with `height` from `frameRow(...)`; it passes the
   border position as `--frame-border-top` (opening) / `--frame-border-bottom` (closing) and
   `frame.css` draws the border there (both rows get their tone from the whole card).
-- All OpenAPI content rows use one member `PrecededBy.OPENAPI_ROW` whose rule is
-  `padding: var(--openapi-row-padding) 0`; `OPENAPI_NESTED_VIEWER_START` stays for the first row of a
+- All OpenAPI content rows use one member `PrecededBy.SEPARATOR_LAYOUT_ROW` whose rule is
+  `padding: var(--openapi-row-padding) 0`; `SEPARATOR_LAYOUT_NESTED_VIEWER_START` stays for the first row of a
   nested viewer.
 
 ### 7.7 Removed by this change
@@ -400,15 +409,15 @@ collapsed scopes as input, so a collapsed flow part ends with its `Scopes` row.
 
 | Piece | Where |
 | --- | --- |
-| Types, config, edges, planner | next-data-model `src/model/openapi/layout/` (`types.ts`, `spacing-config.ts`, `block-edges.ts`, `planner.ts`, `index.ts`) |
+| Types, config, edges, planner | next-data-model `src/model/abstract/layout/` (`types.ts`, `spacing-config.ts`, `block-edges.ts`, `planner.ts`, `index.ts`); OpenAPI part `src/model/openapi/layout/` (`types.ts`, `spacing-config.ts`, `block-edges.ts`); Security edges `src/model/security/block-edges.ts` |
 | Header row order | `OpenApiNodeVisibility.resolveOperationHeaderRows` (`OPENAPI_OPERATION_HEADER_ROWS`) and `OpenApiRowDiffs.Operation.takeHeaderRowDiff` |
 | Unit tests | next-data-model `tests/unit-tests/openapi-layout.test.ts`; api-doc-viewer `tests/openapi-view-selection.test.ts` |
 | View state | api-doc-viewer `OpenApiViewStateContext.ts` (store in `OperationNodeViewer`), `src/utils/openapi/view-selection.ts` (resolvers with the defaults) |
-| Rendering | `OpenApiLayout.tsx` (plans one level), `shared-components/Separator/SeparatorRow.tsx`, `shared-components/Separator/BadgeStub.tsx` (decorative badge stub), `SecurityFrameRow` in `shared-components/Security/SecurityRows.tsx` |
+| Rendering | `shared-components/Layout/StackLayout.tsx` (plans one level; spacing from `LayoutSpacingContext`), `shared-components/Separator/SeparatorRow.tsx`, `shared-components/Separator/BadgeStub.tsx` (decorative badge stub), `SecurityFrameRow` in `shared-components/Security/SecurityRows.tsx` |
 | Block builders | `buildSecurityBlock`, `buildExtensionsBlock`, `buildRequestBlock`, `buildParametersBlock`, `buildResponsesBlock`, `buildResponseBlocks` (`response-blocks.tsx`), card segments in `SecuritySchemeCardBase` |
 | CSS | `preceded-by.css` → "OpenAPI operation viewer" (`--openapi-row-padding`, `--openapi-row-padding-operation-id`, set on the viewer root from the config); `frame.css` (`--frame-border-top` / `--frame-border-bottom`); `SeparatorRow.css` |
 | Badge placements | `OpenApiRowDiffs.Operation.resolveHeaderRowSeverityPlacement` (header rows and their edges); other edges read the `TitleRow` / `DescriptionRow` / `SelectorRow` placement their row renders; card rows carry the severity they render (`CardRow.severity`) |
-| Config entry point | `OpenApiViewerContext.spacing` (= `DEFAULT_OPENAPI_SPACING_CONFIG`); not a public prop in v1 |
+| Config entry point | `OpenApiViewerContext.spacing` (= `DEFAULT_OPENAPI_SPACING_CONFIG`), also provided as `LayoutSpacingContext` by the OpenAPI roots; not a public prop in v1 |
 
 ## 9. Operation ID padding, badge stubs on synthetic rows (implemented 2026-10-15)
 
@@ -504,11 +513,11 @@ Data layer (`model/openapi/layout/`):
 
 | Piece | Change |
 | --- | --- |
-| `OpenApiBlockEdge` | `+ badge?: DiffType` — the diff type of the floating badge the edge row shows (absent = no badge) |
+| `LayoutBlockEdge` | `+ badge?: DiffType` — the diff type of the floating badge the edge row shows (absent = no badge) |
 | `OpenApiBlockEdges` accessors | read the badge type from the **same severity placement the row renders** (`node.diffsSeverities[placement]?.type`) via one helper `rowEdge(diff, severity)`; nested / frame edges: the owner's whole-block severity. The severity placement of each operation header row moves into one data-layer accessor (`Operation.resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)`) used by both the edges and the rows, so they cannot disagree |
-| `OpenApiSeparatorRow` | `+ badge: readonly OpenApiBadgeSegment[]` (`{ height, type?: DiffType }`), one stack for the whole row |
-| `OpenApiFrameRow` | `+ badge?: DiffType` |
-| `OpenApiSpacingConfig` | `rowPadding` becomes `{ default, operationId }` (§9.1); `+ splitBadge(above?, below?, height) => OpenApiBadgeSegment[]` (default = the band rule); `+ frameRowBadge: boolean` (decision 9.3-1) |
+| `LayoutSeparatorRow` | `+ badge: readonly LayoutBadgeSegment[]` (`{ height, type?: DiffType }`), one stack for the whole row |
+| `LayoutFrameRow` | `+ badge?: DiffType` |
+| `OpenApiSpacingConfig` | `rowPadding` becomes `{ default, operationId }` (§9.1); `+ splitBadge(above?, below?, height) => LayoutBadgeSegment[]` (default = the band rule); `+ frameRowBadge: boolean` (decision 9.3-1) |
 | Planner | `separator(...)` also fills `badge` from `above.badge` / `below.badge` |
 
 Viewer:
@@ -597,7 +606,7 @@ stay as they are — not uniform.
 
 | Piece | Change |
 | --- | --- |
-| `OpenApiBlockEdge` | `+ scope: 'row' \| 'block'` — whether the edge's tones / badge come from a row that changed alone or from the block's whole add / remove |
+| `LayoutBlockEdge` | `+ scope: 'row' \| 'block'` — whether the edge's tones / badge come from a row that changed alone or from the block's whole add / remove |
 | `OpenApiBlockEdges` | row-based accessors (`operationHeader`, `securityHeader`, `noAuthentication`, `requestBody`, `responseBody`, `responses`, `responseDescription`, `rows` for card segments) mark their edges `scope: 'row'` unless the painting diff is the owning block's whole add / remove (`Section.takeHeaderRowDiff(owner)`; for card segments the flow / scheme that the segment belongs to) — then `'block'`. `nestedEdge` / `frameEdge` / `wholeBlockEdge` are `'block'` |
 | `OpenApiSpacingConfig` | `+ separatorEdge: (edge) => { tones, badge }` — default: the edge's own values when `scope === 'block'`, none otherwise; returning the edge as is restores today's §2 behaviour (one-line switch) |
 | Planner | `separator(...)` reads `config.separatorEdge(above)` / `config.separatorEdge(below)` before `splitBands` / `splitBadge` |

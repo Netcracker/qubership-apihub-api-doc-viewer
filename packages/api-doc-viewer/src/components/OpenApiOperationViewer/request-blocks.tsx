@@ -10,7 +10,7 @@ import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/
 import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
 import { OpenApiParameterLocation } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-value"
 import { OPENAPI_SECTION_ORDER, OpenApiSectionId, OpenApiSectionIds } from "./config/section-order"
-import { OpenApiBlock } from "./OpenApiLayout"
+import { StackBlock } from "../shared-components/Layout/StackLayout"
 import { isOpenApiSectionExpanded, OpenApiViewState } from "./OpenApiViewStateContext"
 import { buildParametersBlock } from "./parameters-blocks"
 import { RequestBodyNode, RequestBodyNodeViewer, RequestNode, RequestNodeViewer, RequestTitleRow } from "./RequestNodeViewer"
@@ -23,8 +23,8 @@ const PARAMETER_SECTION_LOCATIONS: Readonly<Partial<Record<OpenApiSectionId, Ope
 }
 
 /** The Request section as a layout block: its h2 title row, then its sub-blocks - elements of one level. */
-export function buildRequestBlock(node: RequestNode, view: OpenApiViewState): OpenApiBlock {
-  const children: [OpenApiBlock, ...OpenApiBlock[]] = [
+export function buildRequestBlock(node: RequestNode, view: OpenApiViewState): StackBlock {
+  const children: [StackBlock, ...StackBlock[]] = [
     { id: 'title', ...OpenApiBlockEdges.single(OpenApiBlockEdges.sectionTitleRow(node)), payload: () => <RequestTitleRow key="title" node={node} /> },
     ...buildRequestChildBlocks(node, view),
   ]
@@ -36,10 +36,10 @@ export function buildRequestBlock(node: RequestNode, view: OpenApiViewState): Op
 }
 
 /** Parameter groups and the Body, in config order. */
-function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): OpenApiBlock[] {
+function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): StackBlock[] {
   const groups = getOpenApiChildren(node, isOpenApiParametersNode)
   const requestBody = findOpenApiChild(node, isOpenApiRequestBodyNode)
-  return OPENAPI_SECTION_ORDER.request.flatMap((sectionId): OpenApiBlock[] => {
+  return OPENAPI_SECTION_ORDER.request.flatMap((sectionId): StackBlock[] => {
     const location = PARAMETER_SECTION_LOCATIONS[sectionId]
     if (location) {
       const group = groups.find(candidate => candidate.value()?.location === location)
@@ -55,7 +55,7 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Ope
   })
 }
 
-function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): OpenApiBlock {
+function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): StackBlock {
   const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value()) ? OpenApiBlockEdges.descriptionRow(node) : undefined
   return {
     id,

@@ -9,9 +9,9 @@ the providers, and the nested viewers differ.
 
 ```mermaid
 flowchart TB
-  RootD["AsyncApiOperationDiffsViewer.tsx<br/>AsyncApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
+  RootD["AsyncApiOperationDiffsViewer.tsx<br/>AsyncApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS) · LayoutSpacingContext (DEFAULT_LAYOUT_SPACING_CONFIG)"]
   NodeViewers["Message / Sections / Content / Channel / Operation /<br/>Servers / Server / Bindings / Extensions / Security viewers<br/>(shared with plain)"]
-  SecurityD["AsyncApiSecuritySection · SecuritySchemeCardBase<br/>SecurityRowDiffs accessors · takeSecuritySeverities ·<br/>separators from OpenApiLayoutPlanner"]
+  SecurityD["AsyncApiSecuritySection · SecuritySchemeCardBase<br/>SecurityRowDiffs accessors · takeSecuritySeverities ·<br/>separators from LayoutPlanner"]
   DiffState["shared-components/diffs/node-diff-props.ts<br/>useNodeDiffState · toNodeDiffState · buildRowDiffProps<br/>(diffKey · diffsSeverityPlacement · fallbackToNodeDiff)"]
   Guards["shared-utilities/tree-node-guards.ts<br/>is*NodeWithDiffs"]
   Rows["TitleRow · TextRow · AddressRow · ServerAddressRow<br/>→ DiffFloatingBadgeWrapper → SideBySideLayout"]

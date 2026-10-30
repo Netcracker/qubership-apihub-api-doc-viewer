@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { resolveDiffSideStyle } from "@apihub/utils/diffs/resolve-diff-side-style"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -51,7 +51,7 @@ const DdlSchemaNameBlockSideContent: FC<DdlSchemaNameBlockWithDiffsProps> = memo
     return (
       <div
         data-precededby={precededBy}
-        className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
+        className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS} ${diffsStyleClasses.join(' ')}`}
       />
     )
   }
@@ -59,7 +59,7 @@ const DdlSchemaNameBlockSideContent: FC<DdlSchemaNameBlockWithDiffsProps> = memo
   return (
     <div
       data-precededby={precededBy}
-      className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS_ASYNC_API} ${diffsStyleClasses.join(' ')}`}
+      className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS} ${diffsStyleClasses.join(' ')}`}
     >
       <span
         className={`ddl-schema-name-block ${textHighlighterColor ? DiffsClassesBuilder.highlighter(textHighlighterColor) : ''}`}

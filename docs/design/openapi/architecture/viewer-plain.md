@@ -9,7 +9,7 @@ stack: [../features/operation-viewer.md](../features/operation-viewer.md#row-sta
 
 ```mermaid
 flowchart TB
-  Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext (spacing) ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext · CSS variables"]
+  Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext (spacing) · LayoutSpacingContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext · CSS variables"]
   Operation["OperationNodeViewer.tsx<br/>owns OpenApiViewStateContext (selection · collapsed) ·<br/>header rows: title (h1) + deprecated tag · Operation ID · AddressRow · description · ExternalDocsRow ·<br/>sections in OPENAPI_SECTION_ORDER (config/section-order.ts)"]
   Security["SecurityNodeViewer.tsx · security-blocks.tsx<br/>Security (h2) + Optional badge · SecurityToolbarRow"]
   SecBase["shared-components/Security/<br/>SecuritySectionBase · security-section-blocks · SecurityToolbar (ArrowScrollStrip)"]
@@ -23,9 +23,9 @@ flowchart TB
   Response["response-blocks.tsx · ResponseBodyViewer.tsx<br/>description · Headers · Extensions · Body (OPENAPI_SECTION_ORDER.response)"]
   Collapsible["CollapsibleSection.tsx<br/>useOpenApiSectionTitleRowProps · buildCollapsibleSectionElements"]
   SchemaViewer["OpenApiSchemaViewer.tsx<br/>JsonSchemaViewer (SUPPRESS_ROOT_NESTING_INDICATOR) · wrapJsonSchemaForViewer('Type')"]
-  Layout["OpenApiLayout.tsx · shared-components/Separator<br/>one container level: blocks + separator rows"]
+  Layout["shared-components/Layout/StackLayout.tsx · shared-components/Separator<br/>one container level: blocks + separator rows (LayoutSpacingContext)"]
   ViewUtils["utils/openapi/<br/>node-type-checkers · view-selection · http-method-badge-config · response-code-tone"]
-  NdmModel["next-data-model model/openapi<br/>OpenApiNodeVisibility · OpenApiDisplayLabels · OPENAPI_SECURITY_PRESENTATION ·<br/>layout/ (OpenApiBlockEdges · OpenApiLayoutPlanner · OpenApiSpacingConfig)"]
+  NdmModel["next-data-model model/openapi<br/>OpenApiNodeVisibility · OpenApiDisplayLabels · OPENAPI_SECURITY_PRESENTATION ·<br/>layout/ (OpenApiBlockEdges · OpenApiSpacingConfig) · abstract/layout (LayoutPlanner · BlockEdges)"]
   Jso["JsoViewer (extensions)"]
   SharedRows["shared-components<br/>TitleRow · TextRow · MarkdownTextRow · AddressRow · ExternalDocsRow · Selector (tone)"]
 
@@ -69,7 +69,7 @@ flowchart TB
 
 - Containers are `build*Block` functions (in `*-blocks.tsx` modules) plus row components (in the
   component files): a block carries its edges (from
-  `OpenApiBlockEdges`) and a `payload` render function; `OpenApiLayout` plans the separators of one
+  `OpenApiBlockEdges`) and a `payload` render function; `StackLayout` plans the separators of one
   level and renders the payloads.
 - Containers read node values, visibility flags, and display labels from next-data-model; they
   compute neither visibility nor labels.
@@ -77,5 +77,5 @@ flowchart TB
   `childrenNodes() as …`.
 - All hooks run before any early `return` (outer component returns `null` for a missing source,
   inner component checks the root kind after its hooks).
-- The security card, toolbar, rows and `OpenApiLayout` are also used by the AsyncAPI security
+- The security card, toolbar, rows and `StackLayout` are also used by the AsyncAPI security
   sections (review finding F1: still under OpenAPI names).

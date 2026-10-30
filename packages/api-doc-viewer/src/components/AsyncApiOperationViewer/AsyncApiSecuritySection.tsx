@@ -3,7 +3,7 @@ import { resolveSelectedSecurityAlternative } from "@apihub/utils/security/node-
 import { ASYNC_API_SECURITY_DISPLAY_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/async-api/security-presentation"
 import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
 import { FC, memo, useMemo, useState } from "react"
-import { OpenApiBlock, OpenApiLayout } from "../OpenApiOperationViewer/OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import {
   SECURITY_SECTION_TITLE,
   SecuritySectionNode,
@@ -34,7 +34,7 @@ export const AsyncApiSecuritySection: FC<AsyncApiSecuritySectionProps> = memo(pr
   const [selectedId, setSelectedId] = useState<string>()
   const selected = resolveSelectedSecurityAlternative(node, selectedId)
 
-  const blocks: OpenApiBlock[] = useMemo(() => [
+  const blocks: StackBlock[] = useMemo(() => [
     buildSecurityToolbarBlock(node, () => (
       <SecurityToolbarRow
         key="security-toolbar"
@@ -57,7 +57,7 @@ export const AsyncApiSecuritySection: FC<AsyncApiSecuritySectionProps> = memo(pr
         diff={SecurityRowDiffs.Section.takeHeaderRowDiff(node)}
         diffsSeverities={takeSecuritySeverities(node)}
       />
-      <OpenApiLayout blocks={blocks} level="security" outerHalves={true} />
+      <StackLayout blocks={blocks} level="security" outerHalves={true} />
     </div>
   )
 })

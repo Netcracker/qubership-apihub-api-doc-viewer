@@ -1024,7 +1024,7 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
   sides `SecurityRowDiffs.Security.isToolbarShownOnSide`.
 - **AsyncAPI keeps its own rows outside, the shared layout inside.** The AsyncAPI section title is an
   AsyncAPI `TitleRow` spaced by `data-precededby`; the toolbar and cards render in
-  `OpenApiLayout level="security" outerHalves`. The element after a section is
+  `StackLayout level="security" outerHalves`. The element after a section is
   `PrecededBy.SECURITY_SECTION` (`preceded-by.css`: 8px + the last card's 4px half = 12px). Local
   selection state is fine here because no outer planner depends on it (unlike the OpenAPI operation,
   see **View state is one store** below).
@@ -1040,18 +1040,23 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
 
 - **Elements and half-gaps.** An element is an OpenAPI row (4px half), a security card seen from
   outside (4px), or a nested JSON Schema / JSO viewer (0px — its first / last row already insets its
-  text: JSON Schema row body via `OPENAPI_NESTED_VIEWER_START` + `--openapi-nested-viewer-inset`, JSO
-  26px centring). `OpenApiBlockEdge.kind` (`row` / `card` / `nested`) selects the half from
+  text: JSON Schema row body via `SEPARATOR_LAYOUT_NESTED_VIEWER_START` + `--separator-layout-nested-viewer-inset`, JSO
+  26px centring). `LayoutBlockEdge.kind` (`row` / `card` / `nested`) selects the half from
   `OpenApiSpacingConfig.halfGap`.
 - **Levels.** Every container plans its own elements: `operation` (blocks 1–5, level gap 4 → 12px),
   `operationHeader`, `security`, `request`, `responses`, `section` (rows of a parameter group / Body /
   Extensions), `card` (all 0 → 8px). The level gap splits into halves that continue the neighbours
   (`splitBands`). Every row is its own block of its container; containers take the head of their first
-  child and the tail of their last (`OpenApiBlockEdges.container`). Outer halves: the root (config
+  child and the tail of their last (`BlockEdges.container`). Outer halves: the root (config
   `viewerEdges`) and the inside of a card.
-- **Data computed in next-data-model** (`model/openapi/layout/`: `OpenApiBlockEdges`,
-  `OpenApiLayoutPlanner`, `OpenApiSpacingConfig`); the viewer only renders the plan (`OpenApiLayout
-  level=…`). Never decide a colour, height or "separator here?" in React. A Body's outer edges come
+- **Data computed in next-data-model** (spec-neutral `model/abstract/layout/`: `LayoutPlanner`,
+  `BlockEdges`, `LayoutSpacingConfig`; `model/security/block-edges.ts`; OpenAPI part
+  `model/openapi/layout/`: `OpenApiBlockEdges extends BlockEdges`, `OpenApiSpacingConfig`); the
+  viewer only renders the plan (shared `shared-components/Layout/StackLayout.tsx`, `level=…`).
+  `StackLayout` and the security cards read their numbers from `LayoutSpacingContext`, which has no
+  default: every root viewer that renders a separator layout provides it (OpenAPI roots: their
+  `OpenApiSpacingConfig`; AsyncAPI roots: `DEFAULT_LAYOUT_SPACING_CONFIG`). Shared components never
+  read `OpenApiViewerContext` or import from the OpenAPI viewer folder. Never decide a colour, height or "separator here?" in React. A Body's outer edges come
   from `OpenApiBlockEdges.body(title, description, selectedMediaType)`; `MediaTypeContentSection`
   plans the same elements inside, so the parent and the component agree.
 - **Blocks, not sections.** Each container has a pure builder (`buildRequestBlock`,
@@ -1078,7 +1083,7 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
   suppressed root). JSO: `ExtensionsSectionContent` `contentPrecededBy`. A nested viewer's edge tone
   is the owning block's whole add / remove only (its inner rows are invisible to the OpenAPI layer).
 - **Collapsible 2nd-level sections** (design: `docs/design/openapi/features/collapsible-sections.md`):
-  `TitleRowUsage.OpenApiSection` fixes the expander column width (the caret icons differ in width, so
+  `TitleRowUsage.CollapsibleSection` fixes the expander column width (the caret icons differ in width, so
   an unfixed column moves the title on toggle); the collapsed state is the view-state set
   `collapsed`, and a collapsed section is planned as its title row alone
   (`buildCollapsibleSectionElements`). **Indenting content that contains nested JSON Schema / JSO
@@ -1093,7 +1098,7 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
 - **Badge stubs on synthetic rows.** Separator and frame rows carry `BadgeStub` (same 4px bar and
   position as `UxDiffFloatingBadge`, `pointer-events: none`, no text) inside the same
   `relative flex` wrapper shape as `DiffFloatingBadgeWrapper`. Their segments come from the plan
-  (`OpenApiSeparatorRow.badge`, `OpenApiFrameRow.badge`); an edge's badge must be the badge its row
+  (`LayoutSeparatorRow.badge`, `LayoutFrameRow.badge`); an edge's badge must be the badge its row
   really renders, so the row and the edge read one placement accessor
   (`resolveHeaderRowSeverityPlacement`) and card rows carry their rendered severity (`CardRow.severity`).
 - **CSS custom properties in `style`** are typed by `src/types/css-custom-properties.d.ts` — no casts.

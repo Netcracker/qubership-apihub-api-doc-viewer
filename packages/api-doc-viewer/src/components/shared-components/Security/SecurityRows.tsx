@@ -7,7 +7,7 @@ import {
   ChangedPropertyMetaData,
   NodeDiffsSeverity,
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { OpenApiFrameRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { LayoutFrameRow } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { FC, memo, ReactElement, ReactNode } from "react"
 import { TagsWithDiffs } from "../diffs/TagsWithDiffs"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
@@ -16,7 +16,7 @@ import { WithFramePositionProps } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
 import { BadgeStub } from "../Separator/BadgeStub"
-import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import { NODE_TITLE_TEXT_CLASSES, X_AXIS_PADDING_ROWS } from "../../shared-styles/tailwind-classnames"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../WithPrecededByProps"
 import "../../shared-styles/frame.css"
 import "../SubheaderValue/SubheaderValue.css"
@@ -57,7 +57,7 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
         data-testid={testId}
         data-precededby={precededBy}
         data-frame-position={framePosition?.(layoutSide)}
-        className={`security-row flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={`security-row flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
         {visible && renderSide(layoutSide)}
       </div>
@@ -75,8 +75,8 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
 }
 
 type SecurityFrameRowProps = {
-  /** Height (the card's inner inset), whole-card tones and badge (next-data-model `OpenApiLayoutPlanner.frameRow`). */
-  frameRow: OpenApiFrameRow
+  /** Height (the card's inner inset), whole-card tones and badge (next-data-model `LayoutPlanner.frameRow`). */
+  frameRow: LayoutFrameRow
   /** `first`: the card's opening row (border at its top), `last`: its closing row (border at its bottom). */
   position: 'first' | 'last'
   /** Whether the card exists on a side: no frame on the side where it was wholly added / removed. */

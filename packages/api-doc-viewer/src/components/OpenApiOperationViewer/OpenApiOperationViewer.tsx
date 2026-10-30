@@ -1,3 +1,4 @@
+import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
@@ -79,13 +80,15 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
       <DisplayModeContext.Provider value={displayMode}>
         <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
           <LevelContext.Provider value={0}>
-            <div data-testid="openapi-operation-viewer" style={{
-              '--openapi-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
-              '--openapi-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
-              '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
-            }}>
-              <OperationNodeViewer node={operationNode} noHeading={noHeading} />
-            </div>
+            <LayoutSpacingContext.Provider value={viewerContext.spacing}>
+              <div data-testid="openapi-operation-viewer" style={{
+                '--separator-layout-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
+                '--collapsible-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
+                '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
+              }}>
+                <OperationNodeViewer node={operationNode} noHeading={noHeading} />
+              </div>
+            </LayoutSpacingContext.Provider>
           </LevelContext.Provider>
         </LayoutModeContext.Provider>
       </DisplayModeContext.Provider>

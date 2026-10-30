@@ -691,9 +691,11 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   for boolean flags (`deprecated`, `required`) and `takeChangesMarkerSummary(node)` for selector
   option markers (design note V9: inner changes only — response codes, media types and security
   alternatives alike). Per-spec accessors delegate; viewers never pick summaries themselves.
-- **Layout data lives in `model/openapi/layout/`.** Separator rows, card frame rows, block-edge tones
-  and the planner (`OpenApiSpacingConfig`, `OpenApiBlockEdges`, `OpenApiLayoutPlanner`) are pure model
-  code over the built tree and the view state passed in (selected nodes, `expanded`). Tones come from
+- **Layout data lives in `model/abstract/layout/` (spec-neutral) and `model/<spec>/layout/`.**
+  Separator rows, card frame rows, block-edge tones and the planner (`LayoutPlanner`, `BlockEdges`,
+  `LayoutSpacingConfig<TLevel>` / `DEFAULT_LAYOUT_SPACING_CONFIG`; per API type its levels, config
+  extension and `<Spec>BlockEdges extends BlockEdges`, e.g. `OpenApiBlockEdges`, `SecurityBlockEdges`
+  in `model/security/block-edges.ts`) are pure model code over the built tree and the view state passed in (selected nodes, `expanded`). Tones come from
   the same `OpenApiRowDiffs` accessors that paint the rows; next to a nested JSON Schema / JSO viewer
   only the owning block's whole add / remove counts. Design: `docs/design/openapi/features/block-separators.md`.
 - **Integer-like object keys enumerate first.** JS lists `200`, `500` before `2XX`, `default` no matter
@@ -744,7 +746,9 @@ Traps (session 2026-10-20):
   OpenAPI `apiKey` (`<Place> parameter name`) share `SecuritySchemeParameterNameRow`: a scheme type
   has only one of the two rows. A new row that can coexist with an existing one needs its own
   placement.
-- **Layout edges take any row node.** `OpenApiBlockEdges` generic edges and
-  `OpenApiLayoutPlanner.frameRow` accept `RowDiffsNode`, so the AsyncAPI section reuses the OpenAPI
-  vertical layout. Keep OpenAPI-only edges (`operationHeaderRow`, bodies, responses) on
-  `OpenApiTreeNode`.
+- **Layout edges take any row node.** `BlockEdges` (generic), `SecurityBlockEdges` and
+  `LayoutPlanner.frameRow` accept `RowDiffsNode`, so the AsyncAPI Security section reuses the
+  separator layout of the OpenAPI operation. Keep OpenAPI-only edges (`operationHeaderRow`, bodies,
+  responses) on `OpenApiBlockEdges` over `OpenApiTreeNode`; never import `model/openapi/layout/` from
+  shared or other-API-type code. A shared level goes into `SharedLayoutLevel` and
+  `DEFAULT_LAYOUT_SPACING_CONFIG.levelGap`; an API-type level only into its own config.

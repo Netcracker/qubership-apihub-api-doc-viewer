@@ -4,7 +4,8 @@ import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { wrapJsonSchemaForDiffsViewer, wrapJsonSchemaForViewer } from "@apihub/utils/jso/prepare-json-schema-to-jso-viewers"
 import { ChangedPropertyMetaData, NodeDiffsSeverities } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
-import { OpenApiBlockEdge, OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { LayoutBlockEdge } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
+import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -18,7 +19,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { buildCollapsibleSectionElements, useOpenApiSectionTitleRowProps } from "./CollapsibleSection"
-import { OpenApiLayout } from "./OpenApiLayout"
+import { StackLayout } from "../shared-components/Layout/StackLayout"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
 import { OptionKeyText } from "./OptionKeyText"
@@ -31,7 +32,7 @@ export const WRAPPED_BODY_SCHEMA_TITLE = 'Type'
 
 /** A row between the Body header and the schema (the body description): its layout edge and how to render it. */
 export type MediaTypeContentDescription = {
-  readonly edge: OpenApiBlockEdge
+  readonly edge: LayoutBlockEdge
   readonly render: () => ReactElement
 }
 
@@ -50,7 +51,7 @@ type MediaTypeContentSectionProps = {
   /** Request body only: the `required` tag of a required change. */
   requiredTagDiff?: ChangedPropertyMetaData
   /** Layout edge of the title row (next-data-model `OpenApiBlockEdges.requestBodyTitleRow` / `responseBodyTitleRow`). */
-  titleEdge: OpenApiBlockEdge
+  titleEdge: LayoutBlockEdge
   /** The row between the header and the schema (the body description) and its edge; omitted when hidden. */
   description?: MediaTypeContentDescription
   /** Node id the section's collapsed state is kept under (view state); expanded by default. */
@@ -138,7 +139,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
       payload: () => (
         <TitleRow
           key="title"
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           value={BODY_SECTION_TITLE}
           titleContent={renderTitle}
           variant={TextValueVariant.h3}
@@ -161,7 +162,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
 
   return (
     <div data-testid={testId} className="flex flex-col">
-      <OpenApiLayout blocks={blocks} level="section" />
+      <StackLayout blocks={blocks} level="section" />
     </div>
   )
 }

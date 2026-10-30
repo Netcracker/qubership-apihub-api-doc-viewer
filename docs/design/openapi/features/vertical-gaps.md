@@ -265,8 +265,16 @@ R4 with level gap 0: 8px between rows and between card segments (flow parts) —
 
 ## 7. Configuration
 
-All numbers and rules in one object (next-data-model `model/openapi/layout/spacing-config.ts`),
-replacing `rowPadding` / `blockGap`:
+All numbers and rules in one object, replacing `rowPadding` / `blockGap`. The engine is shared with
+the Security sections of other API types (AsyncAPI), so the object has a spec-neutral part
+(next-data-model `model/abstract/layout/spacing-config.ts`: `LayoutSpacingConfig<TLevel>`,
+`DEFAULT_LAYOUT_SPACING_CONFIG` with the shared levels `security` / `section` / `card`) and an
+OpenAPI part (`model/openapi/layout/spacing-config.ts`: `OpenApiSpacingConfig` =
+`LayoutSpacingConfig<OpenApiLayoutLevel>` + the OpenAPI-only entries; `DEFAULT_OPENAPI_SPACING_CONFIG`
+spreads the shared defaults). Each root viewer provides its config through the viewer's
+`LayoutSpacingContext` (OpenAPI: `DEFAULT_OPENAPI_SPACING_CONFIG`; AsyncAPI:
+`DEFAULT_LAYOUT_SPACING_CONFIG`); the shared `StackLayout` and the security cards read only that.
+Together:
 
 ```typescript
 type OpenApiSpacingConfig = {
@@ -284,15 +292,20 @@ type OpenApiSpacingConfig = {
   }
   /** Border → first / last card content row's half (px). */
   readonly cardInnerInset: number       // 8
-  /** A nested JSON Schema viewer's first-row inset under an OpenAPI row (px; CSS --openapi-nested-viewer-inset). */
+  /** A nested JSON Schema viewer's first-row inset under an OpenAPI row (px; CSS --separator-layout-nested-viewer-inset). */
   readonly nestedViewerInset: number    // 4
   /** Keep the first / last element's half at the viewer's top / bottom. */
   readonly viewerEdges: boolean         // true (D5)
+  /** Collapsible sections: expander column width and the gap after it (px; collapsible-sections.md). */
+  readonly sectionExpander: { readonly width: number, readonly gap: number }   // 16 / 8
   /** Unchanged rules (block-separators §7.3): */
-  readonly splitBands: (above, below, height) => OpenApiBand[]
-  readonly splitBadge: (above, below, height) => OpenApiBadgeSegment[]
+  readonly splitBands: (above, below, height) => LayoutBand[]
+  readonly splitBadge: (above, below, height) => LayoutBadgeSegment[]
   readonly frameRowBadge: boolean
 }
+// Shared part (LayoutSpacingConfig): halfGap, levelGap (security / section / card), cardInnerInset,
+// splitBands, splitBadge, frameRowBadge. OpenAPI only: the levels operation / operationHeader /
+// request / responses, nestedViewerInset, viewerEdges, sectionExpander.
 ```
 
 Changing a gap later is a one-number edit: e.g. `levelGap.request: 4` gives 12px between Request
@@ -300,12 +313,14 @@ sub-blocks; `halfGap.row: 6` gives 12px between rows everywhere.
 
 ## 8. Algorithm
 
-Data layer (`model/openapi/layout/`):
+Data layer (`model/abstract/layout/`, OpenAPI part in `model/openapi/layout/`):
 
 | Piece | Change |
 | --- | --- |
-| `OpenApiBlockEdge` | `{ halfGap: number, tones, badge }` — `halfGap` from the element kind (R2); `tones` / `badge` the element's own (row diff, whole card; nested viewer: its owner's whole add / remove) |
-| `OpenApiBlockEdges` | `row(painted)`, `card(card)`, `nested(owner)`, `single(edge)`, `container(children)`, `body(title, description, selectedMediaType)`; painted-row accessors per row kind (`sectionTitleRow`, `operationHeaderRow`, `securityToolbarRow`, `noAuthenticationRow`, `responsesTitleRow`, `requestBodyTitleRow`, `responseBodyTitleRow`, `descriptionRow`) |
+| `LayoutBlockEdge` | `{ halfGap: number, tones, badge }` — `halfGap` from the element kind (R2); `tones` / `badge` the element's own (row diff, whole card; nested viewer: its owner's whole add / remove) |
+| `BlockEdges` (generic) | `row(painted)`, `card(card)`, `nested(owner)`, `single(edge)`, `container(children)`, `sectionTitleRow` |
+| `SecurityBlockEdges extends BlockEdges` | `toolbarRow`, `titleRow` (`model/security/block-edges.ts`) |
+| `OpenApiBlockEdges extends BlockEdges` | `body(title, description, selectedMediaType)`; painted-row accessors per OpenAPI row kind (`operationHeaderRow`, `responsesTitleRow`, `requestBodyTitleRow`, `responseBodyTitleRow`, `descriptionRow`) |
 | Planner `plan(blocks, level, config, { outerHalves })` | between two siblings, per side: `[ owned(above.tail), splitBands(above, below, levelGap[level]), owned(below.head) ]` — the default `splitBands` gives two halves in the neighbours' tones (one piece when equal); empty bands dropped, equal neighbours merged; the badge stub the same way (`splitBadge`). `outerHalves` (the root with `viewerEdges`, the inside of a card) adds the first element's upper half and the last element's lower half |
 | Frame rows | `cardInnerInset` high, border at the outer edge; outside space comes from the card's half in the separator |
 
@@ -314,7 +329,7 @@ Viewer (`OpenApiOperationViewer/`):
 | Piece | Change |
 | --- | --- |
 | Containers | every row is its own block of its container (block 1: one block per header row; Security: header, toolbar, each card) — no "rows touching" any more |
-| `OpenApiLayout` | `+ level`; renders the leading / trailing separators the planner returns |
+| `StackLayout` | `+ level`; renders the leading / trailing separators the planner returns |
 | CSS | OpenAPI row padding rules (`--openapi-row-padding`, `openapi-operation-id-row`) removed; nested-viewer first-row override stays (it is the viewer's ≥ 4 inset) |
 | `SeparatorRow` / `BadgeStub` | render any stack of bands; frame positions passed as resolved values |
 | Memoisation | the planner interns separators by `signature` (equal separators are one object); `SeparatorRow` and `SecurityFrameRow` are `memo` with value comparators; `renderSeparatorRow` returns one cached element per look and frame positions, so React skips them on re-render |
@@ -324,7 +339,7 @@ Viewer (`OpenApiOperationViewer/`):
 | Aspect | Estimate |
 | --- | --- |
 | Data layer | medium: new edge shape, planner with levels and three-part separators, config, frame rows; unit tests (band stacks for every §4 example, config overrides) |
-| Viewer | medium: header / Security / card rows as blocks, `level` on every `OpenApiLayout`, CSS padding removed |
+| Viewer | medium: header / Security / card rows as blocks, `level` on every `StackLayout`, CSS padding removed |
 | Runtime | negligible (a few more separator rows per operation: one per row instead of one per block) |
 | Screenshots | **all** OpenAPI suites, plain and diffs (every gap changes); JSON Schema / JSO suites unchanged |
 | Risk | nested viewers' inset differs slightly (JSON Schema 4px, JSO ≈ 5px from centring) — within "≥ 4"; verified by the vertical spacing audit |

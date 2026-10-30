@@ -32,7 +32,7 @@ export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((p
       data-layout-side={layoutSide}
       className={[
         "show-unchanged-row-content flex w-full items-stretch gap-2",
-        // X_AXIS_PADDING_ROWS_ASYNC_API,
+        // X_AXIS_PADDING_ROWS,
       ].join(" ")}
     >
       {level > 0 && (

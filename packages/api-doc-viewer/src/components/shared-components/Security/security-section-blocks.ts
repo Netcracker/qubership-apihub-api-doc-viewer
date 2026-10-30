@@ -1,7 +1,7 @@
 import { getSecurityChildren, isSecuritySchemeNode } from "@apihub/utils/security/node-type-checkers"
-import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { SecurityBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/security/block-edges"
 import { ReactElement } from "react"
-import { OpenApiBlock } from "../../OpenApiOperationViewer/OpenApiLayout"
+import { StackBlock } from "../Layout/StackLayout"
 import { SecuritySchemeNode } from "./SecuritySchemeCardBase"
 import { SecurityAlternativeNode, SecuritySectionNode } from "./SecuritySectionBase"
 
@@ -12,10 +12,10 @@ import { SecurityAlternativeNode, SecuritySectionNode } from "./SecuritySectionB
  */
 
 /** The toolbar row as a layout element; `render` draws the API type's `SecurityToolbarRow` (it owns the selection). */
-export function buildSecurityToolbarBlock(node: SecuritySectionNode, render: () => ReactElement): OpenApiBlock {
+export function buildSecurityToolbarBlock(node: SecuritySectionNode, render: () => ReactElement): StackBlock {
   return {
     id: 'security-toolbar',
-    ...OpenApiBlockEdges.single(OpenApiBlockEdges.securityToolbarRow(node)),
+    ...SecurityBlockEdges.single(SecurityBlockEdges.toolbarRow(node)),
     payload: render,
   }
 }
@@ -24,10 +24,10 @@ export function buildSecurityToolbarBlock(node: SecuritySectionNode, render: () 
  * The selected alternative's content as layout elements: one element per card (4px outside its
  * border). `renderCard` draws the API type's card (keyed by the scheme id).
  */
-export function buildSecurityContentBlocks(selected: SecurityAlternativeNode | undefined, renderCard: (scheme: SecuritySchemeNode) => ReactElement): OpenApiBlock[] {
+export function buildSecurityContentBlocks(selected: SecurityAlternativeNode | undefined, renderCard: (scheme: SecuritySchemeNode) => ReactElement): StackBlock[] {
   return getSecurityChildren(selected, isSecuritySchemeNode).map(scheme => ({
     id: scheme.id,
-    ...OpenApiBlockEdges.single(OpenApiBlockEdges.card(scheme)),
+    ...SecurityBlockEdges.single(SecurityBlockEdges.card(scheme)),
     payload: () => renderCard(scheme),
   }))
 }

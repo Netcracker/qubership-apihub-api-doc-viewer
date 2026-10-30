@@ -50,7 +50,7 @@ export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, 
 
   return (
     <SecurityToolbar
-      data-precededby={PrecededBy.OPENAPI_ROW}
+      data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
       options={options}
       selectedOption={selectedOption}
       onSelectOption={(option) => onSelect(option.node)}

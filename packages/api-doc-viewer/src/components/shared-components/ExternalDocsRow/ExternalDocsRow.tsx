@@ -11,7 +11,7 @@ import {
 import { FC, memo, useMemo } from "react"
 import { ArrowUpRightIcon } from "../../kit/icons/ArrowUpRightIcon"
 import { UxTooltip } from "../../kit/ux/UxTooltip/UxTooltip"
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "../../shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS } from "../../shared-styles/tailwind-classnames"
 import { DiffFloatingBadgeWrapper } from "../DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { OneSideLayout } from "../Layout/OneSideLayout"
 import { SideBySideLayout } from "../Layout/SideBySideLayout"
@@ -84,7 +84,7 @@ const ExternalDocsRowContent: FC<ExternalDocsRowContentProps> = (props) => {
     <div
       data-precededby={precededBy}
       data-testid="external-docs-row"
-      className={`external-docs-row-content flex w-full h-full items-center ${X_AXIS_PADDING_ROWS_ASYNC_API} ${backgroundClass}`}
+      className={`external-docs-row-content flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${backgroundClass}`}
     >
       {link && side?.description
         ? <UxTooltip text={side.description} maxWidthClass="max-w-sm">{link}</UxTooltip>

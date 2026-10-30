@@ -40,7 +40,7 @@ export const ResponseBodyViewer: FC<ResponseNodeProps> = ({ node }) => {
 /** The response description row. */
 export const ResponseDescriptionRow: FC<ResponseNodeProps> = ({ node }) => (
   <MarkdownTextRow
-    data-precededby={PrecededBy.OPENAPI_ROW}
+    data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
     value={node.value()?.description ?? ''}
     variant={TextValueVariant.body2}
     diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}

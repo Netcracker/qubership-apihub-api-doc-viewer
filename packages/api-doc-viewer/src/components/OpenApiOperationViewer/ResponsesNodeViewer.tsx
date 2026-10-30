@@ -14,7 +14,7 @@ import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
 import { takeOpenApiSeverities } from "./diff-state"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { OptionKeyText } from "./OptionKeyText"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
@@ -25,7 +25,7 @@ type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
 
 type ResponsesNodeViewerProps = {
   /** Its elements (title row, sections), built by `buildResponsesBlock` (the parent needs them for the section's own edges). */
-  blocks: readonly OpenApiBlock[]
+  blocks: readonly StackBlock[]
 }
 
 /**
@@ -34,7 +34,7 @@ type ResponsesNodeViewerProps = {
  */
 export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) => (
   <div data-testid="openapi-responses-section" className="flex flex-col">
-    <OpenApiLayout blocks={blocks} level="responses" />
+    <StackLayout blocks={blocks} level="responses" />
   </div>
 )
 
@@ -71,7 +71,7 @@ export const ResponsesTitleRow: FC<ResponsesTitleRowProps> = ({ node }) => {
 
   return (
     <TitleRow
-      data-precededby={PrecededBy.OPENAPI_ROW}
+      data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
       value={RESPONSES_SECTION_TITLE}
       expandable={false}
       variant={TextValueVariant.h2}

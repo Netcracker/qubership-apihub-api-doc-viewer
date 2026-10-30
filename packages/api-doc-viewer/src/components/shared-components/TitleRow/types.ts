@@ -17,8 +17,8 @@ export enum TitleRowUsage {
   DdlApiSection = 'ddlapi-section',
   DdlApiProperty = 'ddlapi-property',
   JsonSchemaProperty = 'json-schema-property',
-  /** A collapsible OpenAPI 2nd-level section title: the default row with a fixed-width expander column. */
-  OpenApiSection = 'openapi-section',
+  /** A collapsible section title: the default row with a fixed-width expander column (`TitleRow.css`). */
+  CollapsibleSection = 'collapsible-section',
 }
 
 export type TitleRowProps = WithPrecededByProps & WithDdlListLastRowProps & WithFramePositionProps & {

@@ -13,10 +13,10 @@ the providers, and the nested viewers differ.
 
 ```mermaid
 flowchart TB
-  RootD["OpenApiOperationDiffsViewer.tsx<br/>OpenApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>OpenApiViewerContext (hideUnchangedNodes) · UnchangedBlocksContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
-  Containers["Operation / Security / OpenApiSecuritySchemeCard (SecuritySchemeCardBase) / Request /<br/>Parameters / MediaTypeContentSection / Responses / response-blocks / Extensions /<br/>OpenApiSchemaViewer / OpenApiLayout (shared with plain)"]
+  RootD["OpenApiOperationDiffsViewer.tsx<br/>OpenApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>OpenApiViewerContext (hideUnchangedNodes) · LayoutSpacingContext · UnchangedBlocksContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
+  Containers["Operation / Security / OpenApiSecuritySchemeCard (SecuritySchemeCardBase) / Request /<br/>Parameters / MediaTypeContentSection / Responses / response-blocks / Extensions /<br/>OpenApiSchemaViewer / StackLayout (shared with plain)"]
   DiffState["diff-state.ts · takeOpenApiSeverities<br/>next-data-model isOpenApiTreeNodeWithDiffs"]
-  RowDiffs["next-data-model<br/>OpenApiRowDiffs · SecurityRowDiffs · OpenApiBlockEdges"]
+  RowDiffs["next-data-model<br/>OpenApiRowDiffs · SecurityRowDiffs · OpenApiBlockEdges · SecurityBlockEdges"]
   Rows["TitleRow · TextRow · MarkdownTextRow · AddressRow · ExternalDocsRow · SecurityRow<br/>→ DiffFloatingBadgeWrapper → SideBySideLayout"]
   Separators["SeparatorRow · BadgeStub (bands and badge stubs from the plan)"]
   Selectors["Selector options with diffs · descendantDiffsSummary (marker) · tone"]

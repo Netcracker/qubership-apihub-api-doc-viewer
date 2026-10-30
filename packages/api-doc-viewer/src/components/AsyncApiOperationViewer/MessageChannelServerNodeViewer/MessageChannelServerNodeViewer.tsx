@@ -4,7 +4,7 @@ import { FC, memo, useCallback, useMemo } from "react"
 
 import { DEFAULT_LONG_TEXT_COLOR } from "@apihub/components/shared-components/TextRow/consts"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
-import { X_AXIS_PADDING_ROWS_ASYNC_API } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS } from "@apihub/components/shared-styles/tailwind-classnames"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { getSecurityChildren, isSecuritySectionNode } from "@apihub/utils/security/node-type-checkers"
@@ -176,7 +176,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return (
         <div
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
-          className={`${X_AXIS_PADDING_ROWS_ASYNC_API} py-2 flex flex-row w-full h-full ${diffClasses.join(' ')}`}
+          className={`${X_AXIS_PADDING_ROWS} py-2 flex flex-row w-full h-full ${diffClasses.join(' ')}`}
         >
           {!isInvisible && (
             <div className="server-address-container server-address server-subheader">

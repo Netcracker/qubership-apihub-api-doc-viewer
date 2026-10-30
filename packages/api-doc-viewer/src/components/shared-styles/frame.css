@@ -9,7 +9,7 @@
    and pads its content into that box. Segments of consecutive rows line up into one card.
 
    The first and last rows are content-less frame rows (SecurityFrameRow): their height and the
-   border's offset come from the layout data (next-data-model OpenApiLayoutPlanner.frameRow), passed
+   border's offset come from the layout data (next-data-model LayoutPlanner.frameRow), passed
    as --frame-border-top (first row: border this far below the row top) and --frame-border-bottom
    (last row: border this far above the row bottom). The space outside the border is part of those
    rows, so neighbouring cards and rows need no separator next to them.
@@ -20,7 +20,7 @@
 
 /* `div[…]` outranks the rows' own `w-full` / `px-4` utilities. */
 div[data-frame-position] {
-  /* Frame box: starts 16px in (= px-4, X_AXIS_PADDING_ROWS_ASYNC_API), under the section title text.
+  /* Frame box: starts 16px in (= px-4, X_AXIS_PADDING_ROWS), under the section title text.
      Plain mode: 40% of the side, at most 500px, at least 320px - but never wider than the side
      allows (100% minus the 16px indents on both sides). */
   --frame-left: 16px;

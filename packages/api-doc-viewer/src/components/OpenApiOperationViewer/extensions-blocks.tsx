@@ -4,7 +4,7 @@ import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-mod
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { buildCollapsibleSectionElements } from "./CollapsibleSection"
 import { CollapsibleExtensionsTitleRow, ExtensionsTitleRow, ExtensionsValues } from "./OpenApiExtensionsNodeViewer"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { OpenApiViewState } from "./OpenApiViewStateContext"
 
 type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
@@ -20,21 +20,21 @@ type OpenApiExtensionsNodeViewerProps = {
  * view state it is a collapsible 2nd-level section (response, Responses Object extensions); the
  * operation's own (h2) Extensions are not collapsible.
  */
-export function buildExtensionsBlock(id: string, props: OpenApiExtensionsNodeViewerProps, collapsibleIn?: OpenApiViewState): OpenApiBlock {
+export function buildExtensionsBlock(id: string, props: OpenApiExtensionsNodeViewerProps, collapsibleIn?: OpenApiViewState): StackBlock {
   const { node, variant, testId } = props
-  const title: OpenApiBlock = {
+  const title: StackBlock = {
     id: 'title',
     ...OpenApiBlockEdges.single(OpenApiBlockEdges.sectionTitleRow(node)),
     payload: () => collapsibleIn
       ? <CollapsibleExtensionsTitleRow key="title" node={node} variant={variant} />
       : <ExtensionsTitleRow key="title" node={node} variant={variant} />,
   }
-  const values: OpenApiBlock = {
+  const values: StackBlock = {
     id: 'values',
     ...OpenApiBlockEdges.single(OpenApiBlockEdges.nested(node)),
     payload: () => <ExtensionsValues key="values" node={node} />,
   }
-  const elements: [OpenApiBlock, ...OpenApiBlock[]] = collapsibleIn
+  const elements: [StackBlock, ...StackBlock[]] = collapsibleIn
     ? buildCollapsibleSectionElements(title, [values], collapsibleIn, node.id)
     : [title, values]
   return {
@@ -42,7 +42,7 @@ export function buildExtensionsBlock(id: string, props: OpenApiExtensionsNodeVie
     ...OpenApiBlockEdges.container(elements),
     payload: () => (
       <div key={id} data-testid={testId} className="flex flex-col">
-        <OpenApiLayout blocks={elements} level="section" />
+        <StackLayout blocks={elements} level="section" />
       </div>
     ),
   }

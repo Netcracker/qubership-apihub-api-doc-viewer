@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
@@ -19,7 +19,7 @@ const TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TextRowUsage, string[
 }
 
 function getTextRowClassesByUsage(usage: TextRowUsage): string {
-  const xAxisPaddingClass = TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  const xAxisPaddingClass = TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS
   const additionalClasses = TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE[usage] ?? []
   return [xAxisPaddingClass, ...additionalClasses].join(' ')
 }

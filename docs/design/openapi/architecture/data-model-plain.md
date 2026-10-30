@@ -35,7 +35,7 @@ flowchart TB
     Labels["display/labels.ts · OpenApiDisplayLabels"]
     SecPres["security-presentation.ts<br/>OpenApiSecurityDisplayLabels · OpenApiSecurityNodeVisibility ·<br/>OPENAPI_SECURITY_PRESENTATION"]
     Visibility["node-visibility.ts · OpenApiNodeVisibility (I5)"]
-    Layout["layout/ · OpenApiBlockEdges · OpenApiLayoutPlanner ·<br/>OpenApiSpacingConfig (also used by AsyncAPI security)"]
+    Layout["layout/ · OpenApiBlockEdges (extends abstract BlockEdges) ·<br/>OpenApiLayoutLevel · OpenApiSpacingConfig"]
   end
 
   subgraph BS["building-service/openapi"]
@@ -172,7 +172,10 @@ Notes:
 - Row visibility: `OpenApiNodeVisibility` (operation header rows, body / response descriptions) and
   `OPENAPI_SECURITY_NODE_VISIBILITY` (scheme cards, flows). Pure functions of a node value, valid for
   plain and merged trees (I5).
-- Layout data (separator rows, card frame rows, block edges): `model/openapi/layout/`; design
+- Layout data (separator rows, card frame rows, block edges): the spec-neutral planner, types,
+  shared config and generic edges in `model/abstract/layout/` (also used by the AsyncAPI Security
+  section; security edges in `model/security/block-edges.ts`), the OpenAPI levels, config and edges in
+  `model/openapi/layout/`; design
   [../features/vertical-gaps.md](../features/vertical-gaps.md), [../features/block-separators.md](../features/block-separators.md).
 - Exports: `OpenApiTreeBuilder`, `OpenApiTreeWithDiffsBuilder`, `createOpenApiLogger`, the builder
   params and `OpenApiOperationKeys` from the package root `src/index.ts`.

@@ -1,3 +1,4 @@
+import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
 import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
@@ -100,13 +101,15 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
               <LevelContext.Provider value={0}>
-                <div data-testid="openapi-operation-diffs-viewer" style={{
-              '--openapi-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
-              '--openapi-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
-              '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
-            }}>
-                  <OperationNodeViewer node={operationNode} noHeading={noHeading} />
-                </div>
+                <LayoutSpacingContext.Provider value={viewerContext.spacing}>
+                  <div data-testid="openapi-operation-diffs-viewer" style={{
+                '--separator-layout-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
+                '--collapsible-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
+                '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
+              }}>
+                    <OperationNodeViewer node={operationNode} noHeading={noHeading} />
+                  </div>
+                </LayoutSpacingContext.Provider>
               </LevelContext.Provider>
             </LayoutModeContext.Provider>
           </DisplayModeContext.Provider>

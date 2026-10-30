@@ -143,7 +143,7 @@ overrides `createSecuritySpecBuilder()`.
 Security                           TitleRow; data-precededby = what precedes it (summary / description / address row)
   ┄ 4px                            the toolbar's own upper half (outer halves of the layout)
 ‹ [scheme] [scheme] … ›            SecurityToolbarRow   ┐
-  ┄ 4 + 4                          separator            │ OpenApiLayout level="security"
+  ┄ 4 + 4                          separator            │ StackLayout level="security"
 ┌ card ─────────────┐              scheme card          │ (same planner, separators and
 └───────────────────┘                                   │  tones as the OpenAPI section)
   ┄ 4px                            last card's lower half ┘
@@ -168,12 +168,16 @@ Security                           TitleRow; data-precededby = what precedes it 
 | Labels `OPENAPI_SECURITY_LABELS` / `ASYNC_API_SECURITY_LABELS` | `*_SECURITY_DISPLAY_LABELS`, `*_SECURITY_NODE_VISIBILITY`, `*_SECURITY_PRESENTATION` | one `SecurityPresentation` object per API type for the presenters |
 | `SecuritySectionBase` component + `buildSecurityToolbarOptions` | building blocks (`buildSecurityToolbarBlock`, `buildSecurityContentBlocks`, `SecurityToolbarRow`); options built inside `SecurityToolbarRow` | OpenAPI places the section as a block of its operation layout, AsyncAPI between rows of its own; title and selection differ |
 | — | `SecurityTreeNode<K>` + `utils/security/` guards; the OpenAPI requirement / scheme / flow guards removed | the presenters take nodes of either tree without casts |
-| — | The generic edges of `OpenApiBlockEdges` (`row`, `card`, `nested`, `sectionTitleRow`, `securityToolbarRow`, `noAuthenticationRow`, `severityOf`) and `OpenApiLayoutPlanner.frameRow` take any row node (`RowDiffsNode`) | the AsyncAPI section reuses the OpenAPI vertical layout |
+| — | The generic edges (`BlockEdges`: `row`, `card`, `nested`, `sectionTitleRow`, `severityOf`; `SecurityBlockEdges`: `toolbarRow`, `titleRow`) and `LayoutPlanner.frameRow` take any row node (`RowDiffsNode`) | the AsyncAPI section reuses the separator layout of the OpenAPI operation |
 | `SecuritySchemeCard/SecuritySchemeCard.tsx` reused | its body moved to `SecuritySchemeCardBase`; `OpenApiSecuritySchemeCard` wraps it | base presenter + two specific extensions |
 
 Known limitation (shared with OpenAPI): on the side where a section is absent (wholly added /
 removed) the toolbar row still draws its disabled arrows on the gray band.
 
-Refactoring candidate: the vertical layout (`OpenApiLayout`, `OpenApiBlockEdges`,
-`OpenApiLayoutPlanner`, `OpenApiSpacingConfig`) now serves the AsyncAPI Security section too and
-can move to a spec-neutral row-layout module.
+The separator layout is a spec-neutral module (architecture review 2026-10, F1): next-data-model
+`model/abstract/layout/` (`LayoutPlanner`, `BlockEdges`, `LayoutSpacingConfig`,
+`DEFAULT_LAYOUT_SPACING_CONFIG`), the security edges in `model/security/block-edges.ts`
+(`SecurityBlockEdges`), the viewer `shared-components/Layout/StackLayout.tsx`. Its numbers come from
+`LayoutSpacingContext`, which every root viewer provides: the AsyncAPI roots pass
+`DEFAULT_LAYOUT_SPACING_CONFIG`, the OpenAPI roots their `OpenApiSpacingConfig` (same shared numbers).
+The hook throws without a provider, so no API type gets another's numbers by default.

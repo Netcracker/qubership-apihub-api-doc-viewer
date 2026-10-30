@@ -1,10 +1,10 @@
-import { OpenApiBadgeSegment } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { LayoutBadgeSegment } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { FC, ReactElement } from "react"
 import { DIFF_TYPE_COLORS } from "../../kit/ux/UxMarker/consts"
 
 type BadgeStubProps = {
   /** Stacked segments from the layout data; a segment without a type leaves a gap. */
-  segments: readonly OpenApiBadgeSegment[]
+  segments: readonly LayoutBadgeSegment[]
 }
 
 /**

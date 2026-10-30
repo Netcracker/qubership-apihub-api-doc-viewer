@@ -32,7 +32,7 @@ import '../shared-styles/preceded-by.css'
 import { OPENAPI_SECTION_ORDER, OpenApiSectionIds } from "./config/section-order"
 import { takeOpenApiSeverities } from "./diff-state"
 import { buildExtensionsBlock } from "./extensions-blocks"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { useOpenApiViewerContext } from "./OpenApiViewerContext"
 import { OpenApiViewState, OpenApiViewStateContext } from "./OpenApiViewStateContext"
 import { buildRequestBlock } from "./request-blocks"
@@ -86,20 +86,20 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   return (
     <OpenApiViewStateContext.Provider value={view}>
       <div className="flex flex-col">
-        <OpenApiLayout blocks={blocks} level="operation" outerHalves={spacing.viewerEdges} />
+        <StackLayout blocks={blocks} level="operation" outerHalves={spacing.viewerEdges} />
       </div>
     </OpenApiViewStateContext.Provider>
   )
 }
 
-function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationRowVisibility, view: OpenApiViewState): OpenApiBlock[] {
+function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationRowVisibility, view: OpenApiViewState): StackBlock[] {
   const security = findOpenApiChild(node, isOpenApiSecurityNode)
   const operationExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'extensions')
   const request = findOpenApiChild(node, isOpenApiRequestNode)
   const responses = findOpenApiChild(node, isOpenApiResponsesNode)
   const responsesExtensions = findOpenApiChild(node, isOpenApiExtensionsNode, 'responsesExtensions')
 
-  const sections = OPENAPI_SECTION_ORDER.operation.flatMap((sectionId): OpenApiBlock[] => {
+  const sections = OPENAPI_SECTION_ORDER.operation.flatMap((sectionId): StackBlock[] => {
     switch (sectionId) {
       case OpenApiSectionIds.SECURITY:
         return security ? [buildSecurityBlock(security, view)] : []
@@ -120,9 +120,9 @@ function buildOperationBlocks(node: OperationNode, visibility: OpenApiOperationR
 }
 
 /** The header block: one block per visible row, in the data-layer order (`resolveOperationHeaderRows`). */
-function buildOperationHeaderBlock(node: OperationNode, visibility: OpenApiOperationRowVisibility): OpenApiBlock | undefined {
+function buildOperationHeaderBlock(node: OperationNode, visibility: OpenApiOperationRowVisibility): StackBlock | undefined {
   const { deprecatedTagRow } = visibility
-  const rows = OpenApiNodeVisibility.resolveOperationHeaderRows(visibility).map((row): OpenApiBlock => ({
+  const rows = OpenApiNodeVisibility.resolveOperationHeaderRows(visibility).map((row): StackBlock => ({
     id: row,
     ...OpenApiBlockEdges.single(OpenApiBlockEdges.operationHeaderRow(node, row, deprecatedTagRow)),
     payload: () => <OperationHeaderRow key={row} node={node} row={row} deprecatedTagRow={deprecatedTagRow} />,
@@ -133,7 +133,7 @@ function buildOperationHeaderBlock(node: OperationNode, visibility: OpenApiOpera
   return {
     id: 'operation-header',
     ...OpenApiBlockEdges.container(rows),
-    payload: () => <OpenApiLayout key="operation-header" blocks={rows} level="operationHeader" />,
+    payload: () => <StackLayout key="operation-header" blocks={rows} level="operationHeader" />,
   }
 }
 
@@ -169,7 +169,7 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
     case 'title':
       return (
         <TitleRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           value={value?.title ?? ''}
           expandable={false}
           variant={TextValueVariant.h1}
@@ -181,7 +181,7 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
     case 'operationId':
       return (
         <TextRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           label={OPERATION_ID_ROW_LABEL}
           value={value?.operationId ?? ''}
           variant={TextValueVariant.body2}
@@ -198,7 +198,7 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
     case 'address':
       return (
         <AddressRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           badge={resolveHttpMethodBadge(value?.method ?? '')}
           address={value?.path ?? ''}
           trailing={deprecatedTagRow === 'address' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
@@ -210,7 +210,7 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
     case 'description':
       return (
         <MarkdownTextRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           value={value?.description ?? ''}
           variant={TextValueVariant.body2}
           diff={diff}
@@ -220,7 +220,7 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
     case 'externalDocs':
       return (
         <ExternalDocsRow
-          data-precededby={PrecededBy.OPENAPI_ROW}
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
           resolveSide={(layoutSide) => OpenApiRowDiffs.Operation.resolveExternalDocsSide(node, layoutSide)}
           diff={diff}
           diffsSeverities={severities}

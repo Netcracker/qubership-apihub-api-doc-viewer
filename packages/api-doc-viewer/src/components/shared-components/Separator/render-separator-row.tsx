@@ -1,4 +1,4 @@
-import { OpenApiSeparatorRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { LayoutSeparatorRow } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { ReactElement } from "react"
 import { SeparatorFramePositions, SeparatorRow } from "./SeparatorRow"
 
@@ -11,7 +11,7 @@ const ELEMENT_CACHE_LIMIT = 1000
  * every time, so React skips it on re-render. Context (layout mode) still reaches it: the memoised
  * component re-renders only when the context it reads changes.
  */
-export function renderSeparatorRow(separator: OpenApiSeparatorRow, framePositions?: SeparatorFramePositions): ReactElement {
+export function renderSeparatorRow(separator: LayoutSeparatorRow, framePositions?: SeparatorFramePositions): ReactElement {
   const key = `${separator.signature}#${framePositions?.before ?? ''}#${framePositions?.after ?? ''}`
   const cached = ELEMENT_CACHE.get(key)
   if (cached) {

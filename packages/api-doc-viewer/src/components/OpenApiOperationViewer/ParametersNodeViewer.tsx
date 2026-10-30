@@ -20,7 +20,7 @@ export const ParametersTitleRow: FC<ParametersTitleRowProps> = ({ node, title })
   const sectionProps = useOpenApiSectionTitleRowProps(node.id)
   return (
     <TitleRow
-      data-precededby={PrecededBy.OPENAPI_ROW}
+      data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
       value={title}
       variant={TextValueVariant.h3}
       {...sectionProps}

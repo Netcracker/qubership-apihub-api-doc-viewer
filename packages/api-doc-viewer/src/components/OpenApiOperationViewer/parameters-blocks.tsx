@@ -1,6 +1,6 @@
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { buildCollapsibleSectionElements } from "./CollapsibleSection"
-import { OpenApiBlock, OpenApiLayout } from "./OpenApiLayout"
+import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { OpenApiSchemaViewer } from "./OpenApiSchemaViewer"
 import { OpenApiViewState } from "./OpenApiViewStateContext"
 import { ParametersNode, ParametersTitleRow } from "./ParametersNodeViewer"
@@ -16,7 +16,7 @@ type ParametersNodeViewerProps = {
  * with the expander, then (expanded) the synthesized object schema (a nested viewer) when there is
  * one. Design: entities/parameters.md, features/collapsible-sections.md.
  */
-export function buildParametersBlock(id: string, props: ParametersNodeViewerProps, view: OpenApiViewState): OpenApiBlock {
+export function buildParametersBlock(id: string, props: ParametersNodeViewerProps, view: OpenApiViewState): StackBlock {
   const { node, title, testId } = props
   const schema = node.value()?.schema
   const elements = buildCollapsibleSectionElements(
@@ -32,7 +32,7 @@ export function buildParametersBlock(id: string, props: ParametersNodeViewerProp
     ...OpenApiBlockEdges.container(elements),
     payload: () => (
       <div key={id} data-testid={testId} className="flex flex-col">
-        <OpenApiLayout blocks={elements} level="section" />
+        <StackLayout blocks={elements} level="section" />
       </div>
     ),
   }

@@ -32,7 +32,7 @@ Request                                   h2
 
 | Item | Rule |
 | --- | --- |
-| Expander column | `TitleRow` with `usage={TitleRowUsage.OpenApiSection}`, `expandable`, `expanded`, `onClickExpander`: the default row's `level-indicator-column` with the caret, fixed at `sectionExpander.width` (16px) so the title does not move when the caret icon changes |
+| Expander column | `TitleRow` with `usage={TitleRowUsage.CollapsibleSection}`, `expandable`, `expanded`, `onClickExpander`: the default row's `level-indicator-column` with the caret, fixed at `sectionExpander.width` (16px) so the title does not move when the caret icon changes |
 | Toggle | the caret and the title text both toggle (`TextValue onClick`; the Body passes it to its custom title) |
 | Collapsed | the title row only: description, nested JSON Schema / JSO viewer are not rendered; the subheader (media-type selector, `required` tag) stays |
 | Diffs | unchanged: the title row keeps its own diff colouring and badge; a collapsed section shows no change of its content (no marker is added for hidden changes) |
@@ -53,7 +53,7 @@ The shift is a **transparent left border** on every per-side row element inside 
   row still fills its whole side — the full-width row rule;
 - floating badges (outside the rows) and separators (no content) do not move.
 
-The viewer root writes `--openapi-section-expander-width` and `--openapi-section-content-indent`
+The viewer root writes `--collapsible-section-expander-width` and `--openapi-section-content-indent`
 from the spacing config.
 
 ## View state and layout

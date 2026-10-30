@@ -60,7 +60,7 @@ Operation ID: uploadPetPhoto               operation ID row (small, grey)
 | Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OPERATION_ID_ROW_LABEL = 'Operation ID'`) in the container. `labelFontWeight='normal'`, `labelColor` = secondary grey (`#626D82`). |
 | Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
-| Spacing | the header rows (title, operation ID, address, description, external docs) are one block: symmetric row padding (`PrecededBy.OPENAPI_ROW`), a separator row before the first section ([block-separators.md](../features/block-separators.md)) |
+| Spacing | the header rows (title, operation ID, address, description, external docs) are one block: symmetric row padding (`PrecededBy.SEPARATOR_LAYOUT_ROW`), a separator row before the first section ([block-separators.md](../features/block-separators.md)) |
 | Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). The **label is never highlighted** — on a replace only the value gets the yellow text highlighter (`TextValue` puts diff classes on the value span only). On add / remove the side where `operationId` does not exist renders **no text at all**, label included (`TextValue` returns `null` for an invisible side), so a bare `Operation ID:` never appears. |
 
 ## Deprecated tag
@@ -168,7 +168,7 @@ means "no external docs on this side" (nothing rendered on that side).
 | Arrow | an up-right arrow icon **after** the text, inside the link (so it is clickable too): new `kit/icons/ArrowUpRightIcon.tsx`, same shape as the existing `ArrowRightIcon` / `ArrowUpIcon` (inline SVG, `currentColor`, ~12px, `aria-hidden="true"`), small gap before it |
 | Description | when `externalDocs.description` is non-empty, the link is wrapped in `UxTooltip` (`kit/ux/UxTooltip`) with `text={description}` — shown on hover. No description → no tooltip wrapper. The description is CommonMark in the specification but `UxTooltip` takes plain `text: string`: render it as plain text (markdown source as is). |
 | Accessibility | no `title` attribute (it would show a second, native tooltip); when a description exists, set `aria-label` to `View external documentation: <description>` so screen readers get the hover-only text |
-| Typography | body2, link color, underline on hover; same horizontal padding as `AddressRow` (`X_AXIS_PADDING_ROWS_ASYNC_API`) |
+| Typography | body2, link color, underline on hover; same horizontal padding as `AddressRow` (`X_AXIS_PADDING_ROWS`) |
 | Layout | `OneSideLayout` / `SideBySideLayout` + `DiffFloatingBadgeWrapper`, like `AddressRow`; the row content div carries `flex w-full` (width contract, `api-doc-viewer-authoring`) |
 
 **`UxTooltip` constraint.** Its popup is `w-max` with no wrapping, positioned to the right of the

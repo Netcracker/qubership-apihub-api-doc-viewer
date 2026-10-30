@@ -34,7 +34,7 @@ export const OpenApiSchemaViewer: FC<OpenApiSchemaViewerProps> = ({ schema }) =>
     return diffMetaKeys
       ? (
         <JsonSchemaDiffsViewer
-          firstRowPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
+          firstRowPrecededBy={PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START}
           schema={schema}
           displayMode={displayMode}
           diffMetaKeys={diffMetaKeys}
@@ -48,7 +48,7 @@ export const OpenApiSchemaViewer: FC<OpenApiSchemaViewerProps> = ({ schema }) =>
   }
   return (
     <JsonSchemaViewer
-      firstRowPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START}
+      firstRowPrecededBy={PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START}
       schema={schema}
       displayMode={displayMode}
       expandedDepth={expandedDepth}

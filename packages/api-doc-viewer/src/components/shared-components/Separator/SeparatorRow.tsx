@@ -2,7 +2,7 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { OpenApiSeparatorRow } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { LayoutSeparatorRow } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { FC, memo, ReactElement } from "react"
 import { FramePosition } from "../Frame/types"
 import { OneSideLayout } from "../Layout/OneSideLayout"
@@ -17,13 +17,13 @@ export type SeparatorFramePositions = {
 }
 
 type SeparatorRowProps = {
-  separator: OpenApiSeparatorRow
+  separator: LayoutSeparatorRow
   framePositions?: SeparatorFramePositions
 }
 
 /**
  * A content-less row: per side a stack of bands whose heights and tones come from the layout data
- * (next-data-model `OpenApiLayoutPlanner`), and in diffs mode a decorative badge stub continuing the
+ * (next-data-model `LayoutPlanner`), and in diffs mode a decorative badge stub continuing the
  * neighbouring rows' floating badges. No padding, no margin, no text. Memoised on the interned
  * separator and the frame positions; `renderSeparatorRow` (render-separator-row.tsx) also reuses the
  * rendered element.

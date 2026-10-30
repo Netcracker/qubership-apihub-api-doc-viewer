@@ -2,14 +2,16 @@ import { OpenApiTreeWithDiffsBuilder } from '../../src/building-service/openapi/
 import { DiffType } from '@netcracker/qubership-apihub-api-diff'
 import { HighlightVariant, NodeDiffsSeverityPlacemennt } from '../../src/model/abstract/tree-with-diffs/tree-node.interface'
 import {
+  LayoutBlock,
+  LayoutBlockEdge,
+  LayoutItem,
+  LayoutPlanner,
+  LayoutSeparatorRow,
+} from '../../src/model/abstract/layout'
+import {
   DEFAULT_OPENAPI_SPACING_CONFIG,
-  OpenApiBlockEdge,
   OpenApiBlockEdges,
-  OpenApiLayoutBlock,
-  OpenApiLayoutItem,
   OpenApiLayoutLevel,
-  OpenApiLayoutPlanner,
-  OpenApiSeparatorRow,
   OpenApiSpacing,
 } from '../../src/model/openapi/layout'
 import { OpenApiNodeVisibility } from '../../src/model/openapi/node-visibility'
@@ -41,16 +43,16 @@ function child(node: OpenApiTreeNodeWithDiffs, kind: OpenApiTreeNodeKind, key?: 
   return found
 }
 
-const row = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): OpenApiBlockEdge => ({ kind: 'row', tones: { before, after }, badge })
-const nested = (before?: HighlightVariant, after?: HighlightVariant): OpenApiBlockEdge => ({ kind: 'nested', tones: { before, after } })
-const card = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): OpenApiBlockEdge => ({ kind: 'card', tones: { before, after }, badge })
-const block = (id: string, head: OpenApiBlockEdge, tail = head): OpenApiLayoutBlock<string> => ({ id, head, tail, payload: id })
+const row = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): LayoutBlockEdge => ({ kind: 'row', tones: { before, after }, badge })
+const nested = (before?: HighlightVariant, after?: HighlightVariant): LayoutBlockEdge => ({ kind: 'nested', tones: { before, after } })
+const card = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffType): LayoutBlockEdge => ({ kind: 'card', tones: { before, after }, badge })
+const block = (id: string, head: LayoutBlockEdge, tail = head): LayoutBlock<string> => ({ id, head, tail, payload: id })
 
-function between(above: OpenApiBlockEdge, below: OpenApiBlockEdge, level: OpenApiLayoutLevel): OpenApiSeparatorRow | undefined {
-  return OpenApiLayoutPlanner.separator(above, below, level, DEFAULT_OPENAPI_SPACING_CONFIG)
+function between(above: LayoutBlockEdge, below: LayoutBlockEdge, level: OpenApiLayoutLevel): LayoutSeparatorRow | undefined {
+  return LayoutPlanner.separator(above, below, level, DEFAULT_OPENAPI_SPACING_CONFIG)
 }
 
-function ids(items: OpenApiLayoutItem<string>[]): string[] {
+function ids(items: LayoutItem<string>[]): string[] {
   return items.map(item => item.type === 'block' ? item.block.id : item.id)
 }
 
@@ -127,19 +129,19 @@ describe('OpenAPI layout: separators', () => {
 describe('OpenAPI layout: planner', () => {
   it('interleaves separators between blocks; outer halves only on request', () => {
     const blocks = [block('a', row()), block('b', row()), block('c', nested())]
-    expect(ids(OpenApiLayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG))).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
+    expect(ids(LayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG))).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
     // A trailing nested viewer owns no half: no trailing separator.
-    expect(ids(OpenApiLayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true }))).toEqual(['^a', 'a', 'a|b', 'b', 'b|c', 'c'])
+    expect(ids(LayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true }))).toEqual(['^a', 'a', 'a|b', 'b', 'b|c', 'c'])
   })
 
   it('an outer half is the edge element\'s own 4px, no level gap', () => {
-    const [first] = OpenApiLayoutPlanner.plan([block('title', row(Yellow, Yellow))], 'operation', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true })
+    const [first] = LayoutPlanner.plan([block('title', row(Yellow, Yellow))], 'operation', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true })
     expect(first.type === 'separator' && first.separator.before).toEqual([{ height: 4, tone: Yellow }])
   })
 
   it('follows a config override (rows 6px each: 12 inside a block)', () => {
     const config = OpenApiSpacing.withOverrides({ halfGap: { row: 6, card: 4, nested: 0 } })
-    expect(OpenApiLayoutPlanner.separator(row(), row(), 'operationHeader', config)?.height).toBe(12)
+    expect(LayoutPlanner.separator(row(), row(), 'operationHeader', config)?.height).toBe(12)
   })
 })
 
@@ -173,8 +175,8 @@ describe('OpenAPI layout: edges on fixtures', () => {
     const addedBadge = added.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
     expect(addedBadge).toBeDefined()
     expect(OpenApiBlockEdges.card(added)).toEqual(card(Gray, Green, addedBadge))
-    expect(OpenApiLayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
-    expect(OpenApiLayoutPlanner.frameRow(added, OpenApiSpacing.withOverrides({ frameRowBadge: false })).badge).toBeUndefined()
+    expect(LayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
+    expect(LayoutPlanner.frameRow(added, OpenApiSpacing.withOverrides({ frameRowBadge: false })).badge).toBeUndefined()
     const retyped = security('security/16-scheme-type-changed').childrenNodes()[0].childrenNodes()[0]
     expect(OpenApiBlockEdges.card(retyped)).toEqual(card())
   })

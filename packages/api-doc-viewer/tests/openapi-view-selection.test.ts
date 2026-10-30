@@ -76,9 +76,9 @@ describe("OpenAPI view selection", () => {
 
 describe("JSON Schema first row hook", () => {
   it("hands the root's precededBy to the first child only when the root row is suppressed", () => {
-    expect(resolveChildPrecededBy(true, PrecededBy.OPENAPI_NESTED_VIEWER_START, 0)).toBe(PrecededBy.OPENAPI_NESTED_VIEWER_START)
-    expect(resolveChildPrecededBy(true, PrecededBy.OPENAPI_NESTED_VIEWER_START, 1)).toBe(PrecededBy.JSON_SCHEMA_PROPERTY)
-    expect(resolveChildPrecededBy(false, PrecededBy.OPENAPI_NESTED_VIEWER_START, 0)).toBe(PrecededBy.JSON_SCHEMA_PROPERTY)
+    expect(resolveChildPrecededBy(true, PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START, 0)).toBe(PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START)
+    expect(resolveChildPrecededBy(true, PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START, 1)).toBe(PrecededBy.JSON_SCHEMA_PROPERTY)
+    expect(resolveChildPrecededBy(false, PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START, 0)).toBe(PrecededBy.JSON_SCHEMA_PROPERTY)
     expect(resolveChildPrecededBy(true, undefined, 0)).toBe(PrecededBy.JSON_SCHEMA_PROPERTY)
   })
 })

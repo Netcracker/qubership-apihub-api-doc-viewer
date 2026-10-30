@@ -28,7 +28,7 @@ type ExtensionsValuesProps = {
 /** Operation (h2), Response (h3) and Responses Object (h3) extensions title. Layout block: `extensions-blocks.tsx`. */
 export const ExtensionsTitleRow: FC<ExtensionsTitleRowContentProps> = ({ node, variant, section }) => (
   <ExtensionsSectionTitleRow
-    data-precededby={PrecededBy.OPENAPI_ROW}
+    data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
     variant={variant}
     section={section}
     titleRowDiffProps={{
@@ -47,5 +47,5 @@ export const CollapsibleExtensionsTitleRow: FC<ExtensionsTitleRowProps> = (props
 
 /** The `x-*` values (JSO viewer); its first row keeps the nested-viewer inset. */
 export const ExtensionsValues: FC<ExtensionsValuesProps> = ({ node }) => (
-  <ExtensionsSectionContent rawValues={node.value()?.rawValues ?? {}} contentPrecededBy={PrecededBy.OPENAPI_NESTED_VIEWER_START} />
+  <ExtensionsSectionContent rawValues={node.value()?.rawValues ?? {}} contentPrecededBy={PrecededBy.SEPARATOR_LAYOUT_NESTED_VIEWER_START} />
 )

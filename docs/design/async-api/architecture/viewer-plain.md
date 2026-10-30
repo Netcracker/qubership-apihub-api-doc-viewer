@@ -5,9 +5,9 @@ layer: [../../shared/architecture/viewer-plain.md](../../shared/architecture/vie
 
 ```mermaid
 flowchart TB
-  Root["AsyncApiOperationViewer.tsx<br/>AsyncApiTreeBuilder · AsyncApiDevModeContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext"]
+  Root["AsyncApiOperationViewer.tsx<br/>AsyncApiTreeBuilder · AsyncApiDevModeContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext ·<br/>LayoutSpacingContext (DEFAULT_LAYOUT_SPACING_CONFIG)"]
   Message["MessageNodeViewer.tsx<br/>title (h1) · AddressRow · description · summary · Security (h3)"]
-  Security["AsyncApiSecuritySection.tsx<br/>title (h3 / h5) · OpenApiLayout level=security<br/>local alternative selection"]
+  Security["AsyncApiSecuritySection.tsx<br/>title (h3 / h5) · shared StackLayout level=security<br/>local alternative selection"]
   SecurityShared["shared-components/Security/<br/>SecuritySectionBase (toolbar / content blocks) ·<br/>SecuritySchemeCardBase ← AsyncApiSecuritySchemeCard<br/>(ASYNC_API_SECURITY_PRESENTATION)"]
   Address["AddressRow/AddressRow.tsx<br/>action badge + address"]
   Sections["MessageSectionsViewer.tsx<br/>Selector: Message | Channel | Operation"]

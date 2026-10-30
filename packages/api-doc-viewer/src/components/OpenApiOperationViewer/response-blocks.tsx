@@ -10,7 +10,7 @@ import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-mo
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { OPENAPI_SECTION_ORDER, OpenApiSectionIds } from "./config/section-order"
 import { buildExtensionsBlock } from "./extensions-blocks"
-import { OpenApiBlock } from "./OpenApiLayout"
+import { StackBlock } from "../shared-components/Layout/StackLayout"
 import { isOpenApiSectionExpanded, OpenApiViewState } from "./OpenApiViewStateContext"
 import { buildParametersBlock } from "./parameters-blocks"
 import { ResponseBodyViewer, ResponseDescriptionRow, ResponseNode } from "./ResponseBodyViewer"
@@ -23,14 +23,14 @@ export const RESPONSE_HEADERS_SECTION_TITLE = 'Headers'
  * (next to the Responses Object extensions), so the planner separates them like any other blocks.
  * Block ids carry the response id: switching codes remounts the sections. Design: entities/responses.md.
  */
-export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewState): OpenApiBlock[] {
+export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewState): StackBlock[] {
   const headers = findOpenApiChild(response, isOpenApiResponseHeadersNode)
   const extensions = findOpenApiChild(response, isOpenApiExtensionsNode)
   const content = findOpenApiChild(response, isOpenApiContentNode)
   const hasBody = getOpenApiMediaTypes(response).length > 0
   const id = (sectionId: string): string => `${response.id}:${sectionId}`
 
-  return OPENAPI_SECTION_ORDER.response.flatMap((sectionId): OpenApiBlock[] => {
+  return OPENAPI_SECTION_ORDER.response.flatMap((sectionId): StackBlock[] => {
     switch (sectionId) {
       case OpenApiSectionIds.RESPONSE_DESCRIPTION:
         return OpenApiNodeVisibility.showResponseDescription(response.value())
