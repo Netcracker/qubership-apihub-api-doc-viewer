@@ -40,12 +40,10 @@ export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, 
     node: alternative,
     title: labels.securityRequirementTitle(alternative.value()?.schemeNames ?? []),
     testId: `security-alternative-${index}`,
-    // A wholly added / removed option shows only its green / red border; any other changed option
-    // gets the round marker of its strongest change.
+    // Markers show inner changes only (V9, as response codes and media types): a wholly added /
+    // removed option shows only its green / red border.
     ...(hasNodeDiffs(alternative)
-      ? SecurityRowDiffs.Section.takeHeaderRowDiff(alternative)
-        ? { diffs: alternative.diffs }
-        : { diffs: alternative.diffs, diffsSummary: alternative.diffsSummary, descendantDiffsSummary: alternative.descendantDiffsSummary }
+      ? { diffs: alternative.diffs, descendantDiffsSummary: SecurityRowDiffs.NodeLevel.takeChangesMarkerSummary(alternative) }
       : {}),
   })), [alternatives, labels])
   const selectedOption = options.find(option => option.node.id === selected?.id) ?? null
@@ -58,6 +56,7 @@ export const SecurityToolbarRow: FC<SecurityToolbarRowProps> = ({ node, labels, 
       onSelectOption={(option) => onSelect(option.node)}
       diff={SecurityRowDiffs.Security.takeToolbarRowDiff(node)}
       severity={takeSecuritySeverities(node)?.[NodeDiffsSeverityPlacemennt.SelectorRow]}
+      isShownOnSide={(side) => SecurityRowDiffs.Security.isToolbarShownOnSide(node, side)}
     />
   )
 }

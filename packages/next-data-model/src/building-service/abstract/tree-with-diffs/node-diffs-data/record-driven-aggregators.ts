@@ -7,7 +7,6 @@ import {
   NodeDescendantDiffsSummary,
   NodeDiffs,
   NodeDiffsSeverities,
-  NodeDiffsSeverity,
   NodeDiffsSeverityPlacemennt,
   NodeDiffsSummary,
 } from "../../../../model/abstract/tree-with-diffs/tree-node.interface"
@@ -20,6 +19,8 @@ import { AbstractNodeDescendantsDiffsSummaryAggregator } from "./node-descendant
 import { AbstractNodeDiffsAggregator } from "./node-diffs-aggregator"
 import { AbstractNodeDiffsSeveritiesAggregator } from "./node-diffs-severities-aggregator"
 import { AbstractNodeDiffsSummaryAggregator } from "./node-diffs-summary-aggregator"
+import { DiffTypeOrder } from "../../../../model/abstract/tree-with-diffs/diff-type-order"
+import { FieldPlacements } from "../../../../model/abstract/tree-with-diffs/field-placements"
 
 /**
  * Aggregators for "record-driven" node kinds: every kind-specific diff semantic (presence, synthetic
@@ -27,9 +28,6 @@ import { AbstractNodeDiffsSummaryAggregator } from "./node-diffs-summary-aggrega
  * as plain diff records on the crawl input; these only read the records and map them to rows. Used
  * by every OpenAPI kind and by the Security section kinds of every API type.
  */
-
-/** A field diff badges one row, or several alternative rows (the viewer reads the one it renders). */
-export type RecordDrivenFieldPlacements = Readonly<Record<string, NodeDiffsSeverityPlacemennt | readonly NodeDiffsSeverityPlacemennt[]>>
 
 /**
  * Inheritance + node-level diff + field diffs of one kind.
@@ -124,7 +122,7 @@ export class RecordDrivenNodeDescendantDiffsAggregator extends AbstractNodeDesce
  */
 export class RecordDrivenNodeDiffsSeveritiesAggregator<V extends object | boolean | null> extends AbstractNodeDiffsSeveritiesAggregator<V> {
   constructor(
-    private readonly fieldPlacements: RecordDrivenFieldPlacements = {},
+    private readonly fieldPlacements: FieldPlacements = {},
     private readonly nodePlacements: readonly NodeDiffsSeverityPlacemennt[] = [NodeDiffsSeverityPlacemennt.TitleRow],
   ) {
     super()
@@ -135,12 +133,12 @@ export class RecordDrivenNodeDiffsSeveritiesAggregator<V extends object | boolea
     const wholeDiff = nodeDiffs[NODE_LEVEL_DIFF_KEY]?.data
     if (wholeDiff && (isDiffAdd(wholeDiff) || isDiffRemove(wholeDiff))) {
       for (const placement of this.nodePlacements) {
-        severities[placement] = RecordDrivenNodeDiffsSeveritiesAggregator.toSeverity(wholeDiff)
+        severities[placement] = DiffTypeOrder.toSeverity(wholeDiff)
       }
       return severities
     }
     if (wholeDiff) {
-      severities[NodeDiffsSeverityPlacemennt.TitleRow] = RecordDrivenNodeDiffsSeveritiesAggregator.toSeverity(wholeDiff)
+      severities[NodeDiffsSeverityPlacemennt.TitleRow] = DiffTypeOrder.toSeverity(wholeDiff)
     }
     for (const [field, fieldPlacements] of Object.entries(this.fieldPlacements)) {
       const diff: Diff | undefined = Reflect.get(nodeDiffs, field)?.data
@@ -149,19 +147,12 @@ export class RecordDrivenNodeDiffsSeveritiesAggregator<V extends object | boolea
       }
       for (const placement of typeof fieldPlacements === 'string' ? [fieldPlacements] : fieldPlacements) {
         const current = severities[placement]
-        if (!current || AbstractNodeDiffsSeveritiesAggregator.compareDiffTypes(diff.type, current.type) > 0) {
-          severities[placement] = RecordDrivenNodeDiffsSeveritiesAggregator.toSeverity(diff)
+        if (!current || DiffTypeOrder.compare(diff.type, current.type) > 0) {
+          severities[placement] = DiffTypeOrder.toSeverity(diff)
         }
       }
     }
     return Object.keys(severities).length > 0 ? severities : undefined
-  }
-
-  private static toSeverity(diff: Diff): NodeDiffsSeverity {
-    const causedAt = isDiffAdd(diff)
-      ? diff.afterDeclarationPaths[0]
-      : 'beforeDeclarationPaths' in diff ? diff.beforeDeclarationPaths[0] : undefined
-    return { type: diff.type, causedAt: causedAt ?? [] }
   }
 }
 

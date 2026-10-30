@@ -1,7 +1,7 @@
 import { Diff, DiffAction, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "../layout-side"
 import { ITreeNode } from "../tree/tree-node.interface"
-import { ChangedPropertyMetaData, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY } from "./tree-node.interface"
+import { ChangedPropertyMetaData, HighlightVariant, ITreeNodeWithDiffs, NODE_LEVEL_DIFF_KEY, NodeDescendantDiffsSummary } from "./tree-node.interface"
 
 /**
  * Spec-neutral row-diff helpers of the row-based viewers (OpenAPI, the security sections of OpenAPI
@@ -169,6 +169,30 @@ export class NodeLevelRowDiffs {
   public static isOwnWholeChange(node: RowDiffsNode): boolean {
     const diff = NodeLevelRowDiffs.takeNodeLevelDiff(node)
     return !!diff && !diff.inherited && isWholeChangeDiff(diff.data)
+  }
+
+  /**
+   * Whether a boolean flag field (`deprecated`, `required`) is true on a side: never where the node
+   * does not exist; else the flag diff's value on that side; else the merged value.
+   */
+  public static isFlagOnSide(node: RowDiffsNode, field: string, side: LayoutSide): boolean {
+    if (!NodeLevelRowDiffs.isPresentOnSide(node, side)) {
+      return false
+    }
+    const diff = takeFieldDiff(node, field)?.data
+    if (diff && !isDiffRename(diff)) {
+      return takeSideValue(diff, side) === true
+    }
+    return takeValueField(node, field) === true
+  }
+
+  /**
+   * The changes a selector option's round marker shows (design note V9): the option's inner changes
+   * only. Its own add / remove / rename is shown by its border shadow and title, never by the marker;
+   * the descendant summary is empty for a wholly added / removed / inherited option.
+   */
+  public static takeChangesMarkerSummary(node: RowDiffsNode): NodeDescendantDiffsSummary {
+    return hasNodeDiffs(node) ? node.descendantDiffsSummary : new Set()
   }
 }
 

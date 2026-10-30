@@ -10,7 +10,7 @@ import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { getSecurityChildren, isSecuritySectionNode } from "@apihub/utils/security/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
-import { AbstractNodeDiffsSeveritiesAggregator } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { HighlightVariant, NODE_LEVEL_DIFF_KEY, NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { AsyncApiTreeNodeValueTypeServer } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-value"
@@ -25,6 +25,7 @@ import { AsyncApiSecuritySection } from "../AsyncApiSecuritySection"
 import { BindingsNodeViewer } from "../BindingsNodeViewer"
 import { ServerAddressRow, ServerAddressRowProps } from "../ServerAddressRow"
 import { SizeVariant } from "../types/SizeVariant"
+import { DiffTypeOrder } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/diff-type-order"
 import './MessageChannelServerNodeViewer.css'
 
 type MessageChannelServerNodeViewerProps = WithPrecededByProps & {
@@ -70,7 +71,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   const serverAddressRowDiffsProps: Pick<ServerAddressRowProps, 'diff' | 'descendantDiffs' | 'diffsSeverities'> = useMemo(() => {
     return buildRowDiffProps<AsyncApiTreeNodeValueTypeServer>(nodeDiffState, {
       resolveDiff: (diffs, getDiffByKey) => {
-        const maxDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(getDiffByKey('protocol'), getDiffByKey('host'))
+        const maxDiff = DiffTypeOrder.strongestChangedPropertyMetaData(getDiffByKey('protocol'), getDiffByKey('host'))
         return diffs[NODE_LEVEL_DIFF_KEY] ?? maxDiff
       },
     })

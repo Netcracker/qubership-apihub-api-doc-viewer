@@ -1,4 +1,5 @@
 import { DisplayMode } from "../abstract/display-mode"
+import { isNonEmptyString } from "../../utilities"
 import { isDetailedDisplayMode } from "../abstract/guards/display-mode"
 import { SecurityTreeNodeValueTypeOAuthFlow, SecurityTreeNodeValueTypeScheme } from "./types/node-value"
 
@@ -23,10 +24,6 @@ export type SecurityOAuthFlowRowVisibility = {
   readonly showScopes: boolean
 }
 
-function hasText(value: unknown): boolean {
-  return typeof value === 'string' && value.length > 0
-}
-
 /**
  * Row visibility of a security card. Works for plain and merged trees alike: a merged node value
  * keeps removed values, so "has content on either side" is "has a merged value". Detail rows are
@@ -42,12 +39,12 @@ export abstract class SecurityNodeVisibility {
     const detailed = isDetailedDisplayMode(displayMode)
     const type = value?.type ?? ''
     return {
-      showDescription: detailed && hasText(value?.description),
-      showParameterName: detailed && this.parameterNameTypes.has(type) && hasText(value?.parameterName),
-      showApiKeyLocation: detailed && this.apiKeyLocationTypes.has(type) && hasText(value?.in),
-      showHttpScheme: detailed && type === 'http' && hasText(value?.scheme),
-      showBearerFormat: detailed && type === 'http' && hasText(value?.bearerFormat),
-      showOpenIdConnectUrl: detailed && type === 'openIdConnect' && hasText(value?.openIdConnectUrl),
+      showDescription: detailed && isNonEmptyString(value?.description),
+      showParameterName: detailed && this.parameterNameTypes.has(type) && isNonEmptyString(value?.parameterName),
+      showApiKeyLocation: detailed && this.apiKeyLocationTypes.has(type) && isNonEmptyString(value?.in),
+      showHttpScheme: detailed && type === 'http' && isNonEmptyString(value?.scheme),
+      showBearerFormat: detailed && type === 'http' && isNonEmptyString(value?.bearerFormat),
+      showOpenIdConnectUrl: detailed && type === 'openIdConnect' && isNonEmptyString(value?.openIdConnectUrl),
       showRequiredScopeList: detailed && !!value && value.requiredScopesKind !== 'ignored',
       showUnresolved: !!value && !value.isResolved,
     }
@@ -56,9 +53,9 @@ export abstract class SecurityNodeVisibility {
   public resolveOAuthFlow(value: SecurityTreeNodeValueTypeOAuthFlow | null, displayMode: DisplayMode): SecurityOAuthFlowRowVisibility {
     const detailed = isDetailedDisplayMode(displayMode)
     return {
-      showAuthorizationUrl: detailed && hasText(value?.authorizationUrl),
-      showTokenUrl: detailed && hasText(value?.tokenUrl),
-      showRefreshUrl: detailed && hasText(value?.refreshUrl),
+      showAuthorizationUrl: detailed && isNonEmptyString(value?.authorizationUrl),
+      showTokenUrl: detailed && isNonEmptyString(value?.tokenUrl),
+      showRefreshUrl: detailed && isNonEmptyString(value?.refreshUrl),
       showScopes: detailed && Object.keys(value?.scopes ?? {}).length > 0,
     }
   }

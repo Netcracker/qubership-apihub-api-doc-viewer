@@ -1,6 +1,6 @@
 import { DiffMetaKeys } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
 import { AbstractNodeDiffsAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-aggregator"
-import { AbstractNodeDiffsSeveritiesAggregator } from "@apihub/next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+
 import {
   ChangedPropertyMetaData,
   ITreeNodeWithDiffs,
@@ -27,6 +27,7 @@ import {
   isDiffReplace,
 } from "@netcracker/qubership-apihub-api-diff"
 import { JsonSchemaNodeDiffsAggregatorKindAny } from "./kind-any"
+import { DiffTypeOrder } from "@apihub/next-data-model/model/abstract/tree-with-diffs/diff-type-order"
 
 export class JsonSchemaNodeDiffsAggregatorKindProperty
   extends JsonSchemaNodeDiffsAggregatorKindAny {
@@ -608,7 +609,7 @@ export class JsonSchemaNodeDiffsAggregatorKindProperty
       }
     }
 
-    const representativeDiff = AbstractNodeDiffsSeveritiesAggregator.maxChangedPropertyMetaDataByDiffType(
+    const representativeDiff = DiffTypeOrder.strongestChangedPropertyMetaData(
       ...Object.values(itemDiffs),
     )
     if (!representativeDiff) {

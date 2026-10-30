@@ -1,7 +1,6 @@
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
-import { maxDiffType } from "@apihub/utils/common/changes"
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
 import { getSecurityChildren, isSecurityOAuthFlowNode } from "@apihub/utils/security/node-type-checkers"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
@@ -13,6 +12,7 @@ import {
 } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiBlockEdges, OpenApiLayoutPlanner } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { SECURITY_OAUTH_FLOW_HEADER_PREFIX, SECURITY_PROP_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
+import { SecuritySchemeCardRows } from "@netcracker/qubership-apihub-next-data-model/model/security/card-rows"
 import { SecurityPresentation } from "@netcracker/qubership-apihub-next-data-model/model/security/presentation"
 import { SecurityRowDiffs, SecurityScopeRow } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
 import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
@@ -67,16 +67,6 @@ type CardRow = {
   readonly diff: ChangedPropertyMetaData | undefined
   readonly severity: NodeDiffsSeverity | undefined
   readonly render: (framePosition: FramePositionResolver) => ReactElement
-}
-
-const severityOf = (diff: ChangedPropertyMetaData | undefined): NodeDiffsSeverity | undefined =>
-  diff ? { type: diff.data.type, causedAt: [] } : undefined
-
-/** The diff with the strongest type (floating badge of a row with several diffs). */
-function strongestDiff(...diffs: (ChangedPropertyMetaData | undefined)[]): ChangedPropertyMetaData | undefined {
-  const present = diffs.filter((diff): diff is ChangedPropertyMetaData => diff !== undefined)
-  const strongest = maxDiffType(new Set(present.map(diff => diff.data.type)))
-  return present.find(diff => diff.data.type === strongest)
 }
 
 /** Collects the card rows in order (the grid columns are fixed fractions of the card, nothing to measure). */
@@ -204,38 +194,20 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
       field: 'parameterName',
       label: labelOf,
       rowDiff: SecurityRowDiffs.Scheme.takeParameterNameRowDiff(node),
-      severity: severities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
+      severity: severities?.[SecuritySchemeCardRows.parameterNamePlacement()],
     }))
   }
-  if (visibility.showApiKeyLocation) {
-    // AsyncAPI `apiKey`: `in` is where the key goes (`user` / `password`), shown as its label.
+  for (const row of SecuritySchemeCardRows.schemeProps(visibility, labels)) {
     card.add(fieldPropRow({
-      key: 'apiKeyLocation',
+      key: row.key,
       node,
-      field: 'in',
-      label: () => SECURITY_PROP_LABELS.apiKeyLocation,
-      rowDiff: SecurityRowDiffs.Scheme.takeFieldRowDiff(node, 'in'),
-      severity: severities?.[NodeDiffsSeverityPlacemennt.SecuritySchemeParameterNameRow],
-      format: location => labels.apiKeyLocation(location),
+      field: row.field,
+      label: () => row.label,
+      rowDiff: SecurityRowDiffs.Scheme.takeFieldRowDiff(node, row.field),
+      severity: severities?.[row.placement],
+      link: row.link,
+      format: row.format,
     }))
-  }
-  const schemeFields: ReadonlyArray<readonly [boolean, string, string, NodeDiffsSeverityPlacemennt, boolean]> = [
-    [visibility.showHttpScheme, 'scheme', SECURITY_PROP_LABELS.httpAuthorizationScheme, NodeDiffsSeverityPlacemennt.SecuritySchemeHttpSchemeRow, false],
-    [visibility.showBearerFormat, 'bearerFormat', SECURITY_PROP_LABELS.bearerFormat, NodeDiffsSeverityPlacemennt.SecuritySchemeBearerFormatRow, false],
-    [visibility.showOpenIdConnectUrl, 'openIdConnectUrl', SECURITY_PROP_LABELS.openIdConnectUrl, NodeDiffsSeverityPlacemennt.SecuritySchemeOpenIdConnectUrlRow, true],
-  ]
-  for (const [shown, field, label, placement, link] of schemeFields) {
-    if (shown) {
-      card.add(fieldPropRow({
-        key: field,
-        node,
-        field,
-        label: () => label,
-        rowDiff: SecurityRowDiffs.Scheme.takeFieldRowDiff(node, field),
-        severity: severities?.[placement],
-        link,
-      }))
-    }
   }
   if (detailed) {
     flows.forEach(flow => addFlowRows(card, flow, node, presentation, displayMode, collapsedScopes, toggleScopes))
@@ -382,24 +354,17 @@ function addFlowRows(
       />
     ),
   })
-  const urlFields: ReadonlyArray<readonly [boolean, 'authorizationUrl' | 'tokenUrl' | 'refreshUrl', NodeDiffsSeverityPlacemennt]> = [
-    [visibility.showAuthorizationUrl, 'authorizationUrl', NodeDiffsSeverityPlacemennt.OAuthFlowAuthorizationUrlRow],
-    [visibility.showTokenUrl, 'tokenUrl', NodeDiffsSeverityPlacemennt.OAuthFlowTokenUrlRow],
-    [visibility.showRefreshUrl, 'refreshUrl', NodeDiffsSeverityPlacemennt.OAuthFlowRefreshUrlRow],
-  ]
-  for (const [shown, field, placement] of urlFields) {
-    if (shown) {
-      const label = SECURITY_PROP_LABELS[field]
-      card.add(fieldPropRow({
-        key: `${flowKey}-${field}`,
-        node: flow,
-        field,
-        label: () => label,
-        rowDiff: SecurityRowDiffs.OAuthFlow.takeFieldRowDiff(flow, field),
-        severity: severities?.[placement],
-        link: true,
-      }))
-    }
+  for (const row of SecuritySchemeCardRows.flowProps(visibility)) {
+    card.add(fieldPropRow({
+      key: `${flowKey}-${row.key}`,
+      node: flow,
+      field: row.field,
+      label: () => row.label,
+      rowDiff: SecurityRowDiffs.OAuthFlow.takeFieldRowDiff(flow, row.field),
+      severity: severities?.[row.placement],
+      link: row.link,
+      format: row.format,
+    }))
   }
   if (visibility.showScopes) {
     addScopeRows(card, flowKey, SECURITY_PROP_LABELS.scopes, SecurityRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
@@ -413,7 +378,7 @@ function addScopeRows(
   label: string,
   scopes: readonly SecurityScopeRow[],
   blockDiff: ChangedPropertyMetaData | undefined,
-  /** Severity of the whole block (flow / card): the badge of rows painted only by the block diff. */
+  /** Severity of the whole block (flow / card): the badge of the `Scopes ▾` toggle row; scope rows carry their own (`SecurityScopeRow.severity`). */
   blockSeverity: NodeDiffsSeverity | undefined,
   collapsedScopes: ReadonlySet<string>,
   toggleScopes: (key: string) => void,
@@ -439,23 +404,17 @@ function addScopeRows(
     return
   }
   for (const scope of scopes) {
-    // A row painted only by the whole-block diff takes the block's severity; otherwise the strongest
-    // of the scope's own diffs (added / removed / description replaced, required changed).
-    const ownRowDiff = scope.rowDiff !== blockDiff ? scope.rowDiff : undefined
-    const rowSeverity = ownRowDiff || scope.requiredDiff
-      ? severityOf(strongestDiff(ownRowDiff, scope.requiredDiff))
-      : scope.rowDiff ? blockSeverity : undefined
     card.add({
       key: `${key}-scope-${scope.name}`,
       diff: scope.rowDiff,
-      severity: rowSeverity,
+      severity: scope.severity,
       render: (framePosition) => (
         <SecurityRow
           data-precededby={PrecededBy.OPENAPI_ROW}
           testId={`security-scope-${scope.name}`}
           framePosition={framePosition}
           diff={scope.rowDiff}
-          severity={rowSeverity}
+          severity={scope.severity}
           renderSide={(side) => {
             const sideScope = side === ORIGIN_LAYOUT_SIDE ? scope.origin : scope.changed
             return sideScope
@@ -464,7 +423,7 @@ function addScopeRows(
                   name={scope.name}
                   description={sideScope.description}
                   required={sideScope.required}
-                  descriptionHighlighterClass={resolveValueHighlighter(ownRowDiff, side)}
+                  descriptionHighlighterClass={resolveValueHighlighter(scope.ownRowDiff, side)}
                   requiredDiff={scope.requiredDiff}
                   layoutSide={side}
                 />

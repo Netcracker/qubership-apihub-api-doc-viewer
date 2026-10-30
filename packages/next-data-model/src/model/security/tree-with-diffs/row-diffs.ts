@@ -16,7 +16,14 @@ import {
   toStringList,
   toStringMap,
 } from "../../abstract/tree-with-diffs/row-diffs-base"
-import { ChangedPropertyMetaData, HighlightVariant, NODE_LEVEL_DIFF_KEY } from "../../abstract/tree-with-diffs/tree-node.interface"
+import { DiffTypeOrder } from "../../abstract/tree-with-diffs/diff-type-order"
+import {
+  ChangedPropertyMetaData,
+  HighlightVariant,
+  NODE_LEVEL_DIFF_KEY,
+  NodeDiffsSeverity,
+  NodeDiffsSeverityPlacemennt,
+} from "../../abstract/tree-with-diffs/tree-node.interface"
 import { SecurityDisplayLabels, SecurityParameterNameLabel } from "../display/labels"
 import { SECURITY_ALTERNATIVES_DIFF_KEY } from "./diff-keys"
 
@@ -55,6 +62,11 @@ class Security {
     const options = takeFieldDiff(node, SECURITY_ALTERNATIVES_DIFF_KEY)
     return SectionRowDiffs.takeHeaderRowDiff(node) ?? (options ? RowChangedPropertyMetaData.buildRowReplace(options.data) : undefined)
   }
+
+  /** Whether the toolbar shows options and arrows on a side: not where the whole section was added / removed. */
+  public static isToolbarShownOnSide(node: RowDiffsNode, side: LayoutSide): boolean {
+    return NodeLevelRowDiffs.isPresentOnSide(node, side)
+  }
 }
 
 /** One side of a scope row; absent = the scope does not exist on that side. */
@@ -73,14 +85,25 @@ export type SecurityScopeRow = {
    * yellow `replace` when only the required status changed; or the inherited whole-block diff.
    */
   readonly rowDiff?: ChangedPropertyMetaData
+  /** The scope's own change only (added / removed / description replaced): its description's text highlighter. */
+  readonly ownRowDiff?: ChangedPropertyMetaData
   /** `required` badge + side-exclusive `*`: the scope exists on both sides and its required status changed. */
   readonly requiredDiff?: ChangedPropertyMetaData
+  /**
+   * Floating badge of the row: the strongest of its own and its required change (caused at that
+   * diff's declaration path); else, for a row painted by the inherited block diff, the block's badge.
+   */
+  readonly severity?: NodeDiffsSeverity
 }
 
 function requiredScopesOnSide(scheme: RowDiffsNode, side: LayoutSide): ReadonlySet<string> {
   return NodeLevelRowDiffs.isPresentOnSide(scheme, side)
     ? new Set(Scheme.resolveRequiredScopesSideItems(scheme, side).map(item => item.text))
     : new Set()
+}
+
+function takeTitleRowSeverity(node: RowDiffsNode): NodeDiffsSeverity | undefined {
+  return hasNodeDiffs(node) ? node.diffsSeverities[NodeDiffsSeverityPlacemennt.TitleRow] : undefined
 }
 
 function buildScopeRow(
@@ -90,6 +113,7 @@ function buildScopeRow(
   scopesDiff: Diff | undefined,
   requiredScopesDiff: Diff | undefined,
   inheritedDiff: ChangedPropertyMetaData | undefined,
+  inheritedSeverity: NodeDiffsSeverity | undefined,
 ): SecurityScopeRow {
   let ownRowDiff: Diff | undefined
   if (scopesDiff && origin && !changed) {
@@ -105,15 +129,19 @@ function buildScopeRow(
     : undefined
   // Row background: the scope's own change; else a synthetic yellow `replace` (no text highlighter)
   // when only its required status changed; else the inherited whole-block diff.
-  const rowDiff = ownRowDiff
-    ? RowChangedPropertyMetaData.build(ownRowDiff)
-    : requiredDiff ? RowChangedPropertyMetaData.buildRowReplace(requiredDiff) : inheritedDiff
+  const ownRowMetaData = ownRowDiff ? RowChangedPropertyMetaData.build(ownRowDiff) : undefined
+  const rowDiff = ownRowMetaData
+    ?? (requiredDiff ? RowChangedPropertyMetaData.buildRowReplace(requiredDiff) : inheritedDiff)
+  const strongest = DiffTypeOrder.strongestDiff(ownRowDiff, requiredDiff)
+  const severity = strongest ? DiffTypeOrder.toSeverity(strongest) : rowDiff ? inheritedSeverity : undefined
   return {
     name,
     ...(origin ? { origin } : {}),
     ...(changed ? { changed } : {}),
     ...(rowDiff ? { rowDiff } : {}),
+    ...(ownRowMetaData ? { ownRowDiff: ownRowMetaData } : {}),
     ...(requiredDiff ? { requiredDiff: RowChangedPropertyMetaData.build(requiredDiff) } : {}),
+    ...(severity ? { severity } : {}),
   }
 }
 
@@ -241,6 +269,7 @@ class Scheme {
     const changed = requiredScopesOnSide(scheme, CHANGED_LAYOUT_SIDE)
     const names = [...new Set([...changed, ...origin])].filter(name => !declared.has(name))
     const requiredScopesDiff = takeFieldDiff(scheme, 'requiredScopes')?.data
+    const schemeSeverity = takeTitleRowSeverity(scheme)
     return names.map(name => buildScopeRow(
       name,
       origin.has(name) ? { description: '', required: true } : undefined,
@@ -248,6 +277,7 @@ class Scheme {
       requiredScopesDiff,
       undefined,
       NodeLevelRowDiffs.takeWholeNodeDiff(scheme),
+      schemeSeverity,
     ))
   }
 }
@@ -282,13 +312,20 @@ class OAuthFlow {
     const names = [...new Set([...Object.keys(changedScopes ?? {}), ...Object.keys(originScopes ?? {})])]
     const scopesDiff = takeFieldDiff(flow, 'scopes')?.data
     const requiredScopesDiff = takeFieldDiff(scheme, 'requiredScopes')?.data
+    const flowDiff = NodeLevelRowDiffs.takeWholeNodeDiff(flow)
+    // A wholly added / removed flow badges its rows with its title-row badge; a wholly replaced flow
+    // has no whole-block badge, so its rows show the replace itself.
+    const flowSeverity = SectionRowDiffs.takeHeaderRowDiff(flow)
+      ? takeTitleRowSeverity(flow)
+      : flowDiff ? DiffTypeOrder.toSeverity(flowDiff.data) : undefined
     return names.map(name => buildScopeRow(
       name,
       originScopes && name in originScopes ? { description: originScopes[name], required: originRequired.has(name) } : undefined,
       changedScopes && name in changedScopes ? { description: changedScopes[name], required: changedRequired.has(name) } : undefined,
       scopesDiff && !isDiffRename(scopesDiff) ? scopesDiff : undefined,
       requiredScopesDiff && !isDiffRename(requiredScopesDiff) ? requiredScopesDiff : undefined,
-      NodeLevelRowDiffs.takeWholeNodeDiff(flow),
+      flowDiff,
+      flowSeverity,
     ))
   }
 }

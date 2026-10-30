@@ -76,8 +76,18 @@ GraphQL is legacy and is not reviewed.
 
 ## Report
 
-1. Write the report to `docs/design/<api-type>/notes/<yyyy-mm>-architecture-review.md` — it is too
-   large for chat.
+1. A review produces **two documents** in `docs/design/<api-type>/notes/` (both too large for chat),
+   created with the review and updated with every fix batch:
+
+   | Document | File | Reader | Content |
+   | --- | --- | --- | --- |
+   | Notes | `<yyyy-mm>-architecture-review.md` | reviewer, later reviews | findings table, accepted decisions, fix log with deviations, verification, configuration proposals, lessons |
+   | Explanation | `<yyyy-mm>-architecture-review-explained.md` | a developer who did not do the review | per batch, per finding, in plain language: **Background** (the concept a reader needs, e.g. what a severity or a `SideContext` is), **Problem** (a short real code excerpt, not a paraphrase), **Fix** (what changes, where, and why that place), **Visible change** (none / what the user sees; an ASCII sketch when layout or markers change), **Decisions needed**. Also what a term in the notes means when it is not obvious (e.g. "scope rows are not tree nodes": what they are instead). |
+
+   Write the explanation **before** asking for approval of a batch, so the developer approves what
+   they understood. When the developer asks to explain a finding in chat, the answer goes into the
+   explanation document too. Shared modules (security, layout, row-diffs base): every finding states
+   which other API types use the code and how they are verified.
 2. Findings table columns: `ID`, `Status`, `Severity`, `Where`, `What`, `Broken rule(s)`,
    `Suggested fix`. Link long explanations to report sections.
 3. Update the architecture diagrams in `docs/design/<api-type>/architecture/` when the structure
@@ -90,4 +100,7 @@ GraphQL is legacy and is not reviewed.
    and deep-compares the trees (values, diffs, summaries, severities, symbol-keyed records, logs),
    break one helper on purpose to prove the check fails, then delete both. Fresh source per build:
    the rollup writes onto the merged objects. Files importing through the `@apihub/` alias resolve
-   to the current code in both copies — check that the compared stack uses relative imports.
+   to the current code in both copies — check that the compared stack uses relative imports, or
+   rewrite the copy's alias imports to relative paths before running (AsyncAPI uses the alias).
+   Outputs computed by accessors at render time (not stored in the tree, e.g. security scope rows)
+   need their own comparison: call the accessor on every node of both versions' trees.

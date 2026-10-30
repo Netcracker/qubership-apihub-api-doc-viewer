@@ -2,7 +2,6 @@ import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { buildDiffCauseByPathCausedAt } from "@apihub/utils/common/changes"
-import { isDiffAdd, isDiffRemove } from "@netcracker/qubership-apihub-api-diff"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { ITreeNode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree/tree-node.interface"
 import {
@@ -26,6 +25,8 @@ type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
   /** Row background: a whole section add / remove, or `replace` when an option was added / removed. */
   diff?: ChangedPropertyMetaData
   severity?: NodeDiffsSeverity
+  /** Whether a side shows the options and arrows (`SecurityRowDiffs.Security.isToolbarShownOnSide`). */
+  isShownOnSide: (layoutSide: LayoutSide) => boolean
 }
 
 /**
@@ -35,20 +36,18 @@ type SecurityToolbarProps<N extends ITreeNode> = WithPrecededByProps & {
  * Design: docs/design/openapi/entities/security.md -> "Security toolbar".
  */
 export function SecurityToolbar<N extends ITreeNode>(props: SecurityToolbarProps<N>): ReactElement {
-  const { diff, severity, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
+  const { diff, severity, isShownOnSide, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
   const layoutMode = useLayoutMode()
 
   const renderSide = (layoutSide: LayoutSide): ReactElement => {
     const styles = diff ? (layoutSide === ORIGIN_LAYOUT_SIDE ? diff.styles.before : diff.styles.after) : undefined
-    // A wholly added / removed section has no toolbar on its absent side: no options, no arrows.
-    const isAbsentSide = !!diff && (layoutSide === ORIGIN_LAYOUT_SIDE ? isDiffAdd(diff.data) : isDiffRemove(diff.data))
     return (
       <div
         data-precededby={precededBy}
         data-testid="security-toolbar"
         className={`security-toolbar flex w-full h-full items-center gap-1 ${X_AXIS_PADDING_ROWS_ASYNC_API} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
       >
-        {!isAbsentSide && <SecurityOptionsStrip {...props} layoutSide={layoutSide} />}
+        {isShownOnSide(layoutSide) && <SecurityOptionsStrip {...props} layoutSide={layoutSide} />}
       </div>
     )
   }

@@ -2,13 +2,14 @@ import { NodeDiffsSeverityPlacemennt } from "../../../../../model/abstract/tree-
 import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../../model/openapi/types/node-kind"
 import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node-value"
-import { RecordDrivenFieldPlacements, RecordDrivenNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators"
-import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS } from "../../../../security/tree-with-diffs/aggregation-tables"
+import { FieldPlacements } from "../../../../../model/abstract/tree-with-diffs/field-placements"
+import { RecordDrivenNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators"
+import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS } from "../../../../../model/security/tree-with-diffs/placements"
 
 const Placement = NodeDiffsSeverityPlacemennt
 
 /** Field diff -> the row it belongs to. One placement per row instance (D7). */
-const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, RecordDrivenFieldPlacements>>> = {
+const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacements>>> = {
   ...SECURITY_FIELD_PLACEMENTS,
   [OpenApiTreeNodeKinds.OPERATION]: {
     title: Placement.TitleRow,

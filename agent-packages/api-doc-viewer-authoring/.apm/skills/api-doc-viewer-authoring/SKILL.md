@@ -1014,8 +1014,14 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
   (server, under h5). A new placement of the card picks a variant below its section's title.
 - **Labels and row visibility come from the presentation**, never from a spec switch in JSX: a new
   scheme type or row is a `SecurityDisplayLabels` / `SecurityNodeVisibility` change in
-  next-data-model plus, for a new row kind, one `fieldPropRow` in the base card (e.g. AsyncAPI
-  `API key location` with a `format` for the value label).
+  next-data-model. The card's `label  value` rows come from `SecuritySchemeCardRows.schemeProps` /
+  `flowProps` (key, field, label, placement, link, `format`), so a new row of that shape is one row
+  definition in `model/security/card-rows.ts` — no tuple tables or placement literals in the card.
+- **The card renders badges, it never computes them.** Scope rows carry `SecurityScopeRow.severity`
+  (with `causedAt`) and `ownRowDiff` (description highlighter); do not pick the strongest diff or
+  build a `{ type, causedAt: [] }` severity in React. The toolbar's options use
+  `SecurityRowDiffs.NodeLevel.takeChangesMarkerSummary` (the V9 marker rule of every selector) and its
+  sides `SecurityRowDiffs.Security.isToolbarShownOnSide`.
 - **AsyncAPI keeps its own rows outside, the shared layout inside.** The AsyncAPI section title is an
   AsyncAPI `TitleRow` spaced by `data-precededby`; the toolbar and cards render in
   `OpenApiLayout level="security" outerHalves`. The element after a section is

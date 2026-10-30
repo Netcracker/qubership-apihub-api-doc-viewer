@@ -665,17 +665,32 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
   `alternatives`) must be listed in the synthetic-key table (security: `SECURITY_SYNTHETIC_FIELD_DIFF_KEYS` in
   `building-service/security/tree-with-diffs/aggregation-tables.ts`) and mapped in the field
-  placements. OpenAPI model files (`model/openapi/`) do not import `building-service` (some other
-  specs' model files do — DDL node visibility, JSON Schema combiner row diffs — but keep OpenAPI's
-  boundary), so severity math belongs in the
-  transformer / aggregators, not in `row-diffs.ts`.
+  placements (security: `SECURITY_FIELD_PLACEMENTS` in `model/security/tree-with-diffs/placements.ts`).
+  OpenAPI, security and JSON Schema model files do not import `building-service` (DDL node visibility
+  and `model/abstract/tree-with-diffs/changed-property-meta-data.ts` still do — keep the boundary
+  for new code).
+- **Diff-type order and severities are model code: `DiffTypeOrder`**
+  (`model/abstract/tree-with-diffs/diff-type-order.ts`: `RANKS`, `compare`, `strongestType`,
+  `strongestDiff`, `strongestChangedPropertyMetaData`, `toSeverity`). Aggregators, row accessors and
+  the viewer utility `compareDiffTypes` all use it; do not add another ordering table (the JSO
+  builder's private copy is a known leftover). A row that is not a tree node (a security scope row)
+  gets its severity in its row accessor with `DiffTypeOrder.toSeverity` — never in React — so its
+  floating badge carries `causedAt` like every aggregated badge (`SecurityScopeRow.severity`).
+- **Security card rows are described once.** The aggregator fills and the card reads the same
+  `SECURITY_FIELD_PLACEMENTS`; the card's `label  value` rows come from `SecuritySchemeCardRows`
+  (`model/security/card-rows.ts`: `schemeProps`, `flowProps`, `parameterNamePlacement`). A new
+  card row = one row definition there plus its placement in the table (`security-card-rows.test.ts`).
 - **A row that may move needs one placement per host, written by the aggregator.** The operation
   `deprecated` tag sits on the title row, else the operation ID row, else the address row — which
   depends on view options (`noHeading`) the aggregator cannot see. The severities aggregator writes the
   merged severity for every candidate (`TitleRow`, `OperationIdRowWithDeprecatedTag`,
   `AddressRowWithDeprecatedTag`; a field may map to several placements); the model only **picks** the
-  placement (`OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement`). Do not merge
-  severities in `row-diffs.ts` — that needs `building-service` diff-type ordering.
+  placement (`OpenApiRowDiffs.Operation.resolveOperationIdRowSeverityPlacement`). Rows that are tree
+  nodes take their severities from the aggregators, not from accessors.
+- **Shared row helpers on `NodeLevelRowDiffs`** (`row-diffs-base.ts`): `isFlagOnSide(node, field, side)`
+  for boolean flags (`deprecated`, `required`) and `takeChangesMarkerSummary(node)` for selector
+  option markers (design note V9: inner changes only — response codes, media types and security
+  alternatives alike). Per-spec accessors delegate; viewers never pick summaries themselves.
 - **Layout data lives in `model/openapi/layout/`.** Separator rows, card frame rows, block-edge tones
   and the planner (`OpenApiSpacingConfig`, `OpenApiBlockEdges`, `OpenApiLayoutPlanner`) are pure model
   code over the built tree and the view state passed in (selected nodes, `expanded`). Tones come from
@@ -706,7 +721,7 @@ specialisations — extend it, do not fork a per-spec copy.
 | --- | --- | --- |
 | Kinds / values / alias | `model/security/types/` (`SecurityTreeNodeKinds`, `SECURITY_NODE_VALUE_PROPS`, `SecurityTreeNode<K>`) | spread into `OpenApiTreeNodeKinds` / `AsyncApiTreeNodeKinds`; value maps `T extends SecurityTreeNodeKind ? SecurityTreeNodeValue<T>` |
 | Spec builders | `building-service/security/` — `SecuritySpecBuilder<TInput>` (abstract), `SecuritySpecDiffsDecorator` (composed), `getSecurityCrawlRules()` | `<Spec>SecuritySpecBuilder` + `<Spec>SecuritySpecWithDiffsBuilder extends` it; the spec transformer's `createSecuritySpecBuilder()` is the only with-diffs override |
-| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + `aggregation-tables.ts` | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `ASYNC_API_SECURITY_NODE_AGGREGATORS` (one typed `SecurityNodeAggregators<V, K, M>` instance per API type — no untyped cache, no casts) |
+| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + placement tables (`model/security/tree-with-diffs/placements.ts`) + synthetic keys (`building-service/security/tree-with-diffs/aggregation-tables.ts`) | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `ASYNC_API_SECURITY_NODE_AGGREGATORS` (one typed `SecurityNodeAggregators<V, K, M>` instance per API type — no untyped cache, no casts) |
 | Row diffs | `SecurityRowDiffs` | — |
 | Labels / visibility | `SecurityDisplayLabels`, `SecurityNodeVisibility`, `SecurityPresentation` | `model/<spec>/security-presentation.ts` (`*_SECURITY_DISPLAY_LABELS`, `*_SECURITY_NODE_VISIBILITY`, `*_SECURITY_PRESENTATION`) |
 

@@ -7,7 +7,8 @@ import {
   RecordDrivenNodeDiffsSeveritiesAggregator,
   RecordDrivenNodeDiffsSummaryAggregator,
 } from "../../abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators"
-import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS, securityFieldDiffKeys } from "./aggregation-tables"
+import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS } from "../../../model/security/tree-with-diffs/placements"
+import { securityFieldDiffKeys } from "./aggregation-tables"
 
 /**
  * Aggregators of the Security section kinds for the API types whose own aggregators are not

@@ -1,7 +1,7 @@
 import { Diff, DiffAction, DiffType, isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 import { JsonPath } from "@netcracker/qubership-apihub-json-crawl"
 import { DiffsRecord, isArray, isObjective, takeIfDiffsRecord } from "../../utilities"
-import { AbstractNodeDiffsSeveritiesAggregator } from "../abstract/tree-with-diffs/node-diffs-data/node-diffs-severities-aggregator"
+import { DiffTypeOrder } from "../../model/abstract/tree-with-diffs/diff-type-order"
 
 /** Whether the current object exists on each side of a merged document. */
 export type SideContext = {
@@ -128,7 +128,7 @@ export class SideReader {
     causes: readonly (Diff | undefined)[],
   ): Diff {
     const contributing = causes.filter((cause): cause is Diff => cause !== undefined)
-    const type: DiffType = AbstractNodeDiffsSeveritiesAggregator.maxDiffByDiffType(...contributing)?.type ?? 'annotation'
+    const type: DiffType = DiffTypeOrder.strongestDiff(...contributing)?.type ?? 'annotation'
     const beforeDeclarationPaths: JsonPath[] = contributing.flatMap(cause => 'beforeDeclarationPaths' in cause ? cause.beforeDeclarationPaths : [])
     const afterDeclarationPaths: JsonPath[] = contributing.flatMap(cause => 'afterDeclarationPaths' in cause ? cause.afterDeclarationPaths : [])
     switch (action) {

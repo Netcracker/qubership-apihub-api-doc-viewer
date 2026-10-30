@@ -2,7 +2,6 @@ import { isDiffRename } from "@netcracker/qubership-apihub-api-diff"
 import { LayoutSide } from "../../abstract/layout-side"
 import { RowChangedPropertyMetaData } from "../../abstract/tree-with-diffs/row-changed-property-metadata"
 import {
-  hasNodeDiffs,
   NodeLevelRowDiffs,
   SectionRowDiffs,
   takeFieldDiff,
@@ -129,12 +128,7 @@ class Operation {
   }
 
   public static isDeprecatedOnSide(node: AnyOpenApiNode, side: LayoutSide): boolean {
-    const diff = takeFieldDiff(node, 'deprecated')?.data
-    if (diff && !isDiffRename(diff)) {
-      return takeSideValue(diff, side) === true
-    }
-    const value = node.value()
-    return NodeLevelRowDiffs.isPresentOnSide(node, side) && !!value && 'deprecated' in value && value.deprecated === true
+    return NodeLevelRowDiffs.isFlagOnSide(node, 'deprecated', side)
   }
 
   /**
@@ -173,15 +167,7 @@ class RequestBody {
 
   /** Side-exclusive required star. */
   public static isRequiredStarVisibleOnSide(node: AnyOpenApiNode, side: LayoutSide): boolean {
-    if (!NodeLevelRowDiffs.isPresentOnSide(node, side)) {
-      return false
-    }
-    const diff = takeFieldDiff(node, 'required')?.data
-    if (diff && !isDiffRename(diff)) {
-      return takeSideValue(diff, side) === true
-    }
-    const value = node.value()
-    return !!value && 'required' in value && value.required === true
+    return NodeLevelRowDiffs.isFlagOnSide(node, 'required', side)
   }
 
   /** The `required` tag: only for a required change of a body that exists on both sides. */
@@ -214,7 +200,7 @@ class MediaType {
    * the marker. Empty for a wholly added / removed / inherited option.
    */
   public static takeChangesMarkerSummary(node: AnyOpenApiNode): NodeDescendantDiffsSummary {
-    return hasNodeDiffs(node) ? node.descendantDiffsSummary : new Set()
+    return NodeLevelRowDiffs.takeChangesMarkerSummary(node)
   }
 }
 
@@ -246,7 +232,7 @@ class Response {
 
   /** Inner changes of the response only - empty for a wholly added / removed / inherited response. */
   public static takeChangesMarkerSummary(node: AnyOpenApiNode): NodeDescendantDiffsSummary {
-    return hasNodeDiffs(node) ? node.descendantDiffsSummary : new Set()
+    return NodeLevelRowDiffs.takeChangesMarkerSummary(node)
   }
 }
 

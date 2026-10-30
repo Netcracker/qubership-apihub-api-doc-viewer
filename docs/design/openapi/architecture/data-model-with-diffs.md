@@ -13,14 +13,16 @@ flowchart TB
     RecordDriven["building-service/abstract/tree-with-diffs/node-diffs-data/<br/>record-driven-aggregators.ts · RecordDriven*Aggregator (5 families)"]
     SideReader["building-service/shared/side-reader.ts<br/>SideReader (readField · normalizeFlagDiff · replaceRecordEntry) ·<br/>SideContext · SideContexts (NONE · BOTH · intersect · union) · FieldSides"]
     Rollup["api-diff aggregateDiffsWithRollup · aggregatedDiffsMetaKey"]
-    RowDiffsBase["model/abstract/tree-with-diffs/row-diffs-base.ts<br/>NodeLevelRowDiffs · SectionRowDiffs"]
+    RowDiffsBase["model/abstract/tree-with-diffs/row-diffs-base.ts<br/>NodeLevelRowDiffs (isFlagOnSide · takeChangesMarkerSummary) · SectionRowDiffs"]
+    DiffTypeOrder["model/abstract/tree-with-diffs/diff-type-order.ts<br/>DiffTypeOrder (compare · strongest* · toSeverity) — the one diff-type order"]
     Placements["NodeDiffsSeverityPlacemennt<br/>+ OperationIdRow(WithDeprecatedTag) · AddressRow(WithDeprecatedTag) ·<br/>ExternalDocsRow · SelectorRow · SecurityScheme*Row · OAuthFlow*Row"]
   end
 
   subgraph SEC["Security module (spec-neutral, shared with AsyncAPI)"]
     SecDecorator["building-service/security/security-spec-diffs-decorator.ts<br/>SecuritySpecDiffsDecorator (composed)"]
-    SecTables["building-service/security/tree-with-diffs/aggregation-tables.ts<br/>SECURITY_FIELD_PLACEMENTS · SECURITY_NODE_PLACEMENTS"]
-    SecRowDiffs["model/security/tree-with-diffs/row-diffs.ts · SecurityRowDiffs"]
+    SecTables["model/security/tree-with-diffs/placements.ts<br/>SECURITY_FIELD_PLACEMENTS · SECURITY_NODE_PLACEMENTS"]
+    SecRowDiffs["model/security/tree-with-diffs/row-diffs.ts · SecurityRowDiffs<br/>(scope rows with severity · isToolbarShownOnSide)"]
+    SecCardRows["model/security/card-rows.ts · SecuritySchemeCardRows<br/>card label / value rows from the placement table"]
   end
 
   subgraph PLAIN["Plain stack (data-model-plain.md)"]
@@ -77,6 +79,9 @@ flowchart TB
   RowDiffs --> RowDiffsBase
   RowDiffs --> DiffKeys
   SecRowDiffs --> RowDiffsBase
+  SecRowDiffs --> DiffTypeOrder
+  SecCardRows --> SecTables
+  RecordDriven --> DiffTypeOrder
 ```
 
 ## Builder contract
