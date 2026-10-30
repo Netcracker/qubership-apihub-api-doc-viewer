@@ -21,7 +21,7 @@ findings here, but check every fix against the AsyncAPI security sections too.
 - Coverage: `docs/design/openapi/display-coverage.md`
 - Architecture: `docs/design/openapi/architecture/`
 - Deviations from the design (I1–I12, V1–V11): `docs/design/openapi/notes/2026-10-implementation-decisions.md`
-  — plan step 9 (rewriting entities and diagrams to match them) is still pending, so expect drift.
+  — the 2026-10 review rewrote the diagrams and (batch 9, D2) the entity and feature pages to match the code.
 - Security: `docs/design/openapi/features/security-redesign.md`, `docs/design/async-api/features/security.md`
 - Shared features: `docs/design/shared/features/`
 
@@ -54,9 +54,9 @@ findings here, but check every fix against the AsyncAPI security sections too.
   (V6): anything derived from raw diffs belongs in `OpenApiRowDiffs` accessors.
 - **One component set for plain and with diffs (D5).** Check that branching on `*WithDiffs` stays
   thin and does not repeat per container.
-- **Design drift.** Diagrams were refreshed by the 2026-10 review; entity tables and
-  `features/diffs.md` may still describe complex nodes, per-kind aggregators,
-  `OpenApiSectionPresenceResolver`, and per-kind visibility managers (I1–I3, I5, V1) until plan
-  step 9 lands. Report each disagreement.
+- **Design drift.** The 2026-10 review aligned the diagrams, entity pages and `features/diffs.md`
+  with the code (D1, D2). Check every code name a page mentions still exists (classes, files,
+  accessors, test files) and that the later approved feature designs (`vertical-gaps.md`, …) have not
+  been contradicted by an older entity page. Report each disagreement.
 - Previous review: `docs/design/openapi/notes/2026-10-architecture-review.md` — start from its open
   findings.

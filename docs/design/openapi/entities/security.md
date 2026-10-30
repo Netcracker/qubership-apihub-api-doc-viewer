@@ -7,7 +7,7 @@ The section is the OpenAPI specialisation of a **spec-neutral security module** 
 Security sections share: node kinds / values (`model/security/`), spec builders and diff decorator
 (`building-service/security/`), `SecurityRowDiffs`, `SecurityDisplayLabels` /
 `SecurityNodeVisibility` (OpenAPI instances in `model/openapi/security-presentation.ts`), and the
-presenters `SecuritySchemeCardBase` / `SecuritySectionBase`. Structure and the AsyncAPI mapping:
+presenters `SecuritySchemeCardBase` / `SecuritySectionBase.tsx` (`SecurityToolbarRow`, with `security-section-blocks.ts`). Structure and the AsyncAPI mapping:
 [../../async-api/features/security.md](../../async-api/features/security.md).
 
 ## OpenAPI semantics
@@ -22,7 +22,7 @@ presenters `SecuritySchemeCardBase` / `SecuritySectionBase`. Structure and the A
 | Scheme reference | By **name**, into `components.securitySchemes`; not a `$ref`. | The transformer resolves names (D11). |
 | Scopes list | OAuth2 / OpenID Connect: required scopes. OAS 3.1 also: role names for every other type. OAS 3.0: must be empty for other types. | `Required scopes` / `Required roles` row — [../features/oas-versions.md](../features/oas-versions.md#security). |
 
-## Effective security (`OpenApiSpecTransformer.resolveEffectiveSecurity`)
+## Effective security (`OpenApiSecuritySpecBuilder.build`)
 
 ```text
 operation.security !== undefined  →  operation.security     (isInheritedFromDocument = false)
@@ -77,7 +77,7 @@ The scheme spec is a **merge** of the requirement entry (name, scopes) and the s
 | `securityAlternatives` | **complex** | `alternatives` | none (delegates to the selected alternative) | nested: `securityRequirement` per alternative (never `{}`) |
 | `securityRequirement` | simple | alternative index | `{ schemeNames: string[] }` | children: `securityScheme` per scheme |
 | `securityScheme` | simple | scheme name | the scheme spec without `flows` | children: `oauthFlow` per flow |
-| `oauthFlow` | simple | flow type | `OpenApiOAuthFlowSpec` | — |
+| `oauthFlow` | simple | flow type | `SecurityOAuthFlowSpec` (`building-service/security/security-spec.ts`) | — |
 
 The alternatives are nested nodes of the complex `securityAlternatives` container (shared rule
 [../../shared/features/selector-options.md](../../shared/features/selector-options.md)); `security`
@@ -158,10 +158,10 @@ other string is shown as is.
 
 ### OAuth flow parts
 
-Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizationCode`. Flow parts
-after the first one start a sub-block of the card (`CardRow.startsBlock`): the last row of the
-previous part and the flow header split a 20px gap (10 + 10). The first flow part follows the scheme
-props at the in-block 8px.
+Flows in fixed order: `implicit`, `password`, `clientCredentials`, `authorizationCode`. Every card
+row, the flow headers included, is one element of the card's `StackLayout` (level `card`, level gap
+0): flow parts are **8px** apart like any two rows ([../features/vertical-gaps.md](../features/vertical-gaps.md)
+§6, decision D3 of 2026-10-16; it replaced the earlier 20px between flow parts).
 
 | Row | Shown when | Content | Severity placement |
 | --- | --- | --- | --- |
@@ -191,11 +191,11 @@ element wraps "the card" on one side. The frame is therefore drawn **per row and
 
 ```text
  origin side                         changed side
-┌───────────────────────────┐       ┌───────────────────────────┐   ← framePosition 'first'  (top + sides, top radius)
+┌───────────────────────────┐       ┌───────────────────────────┐   ← opening SecurityFrameRow, 'first' (top + sides, top radius)
 │ petstore_auth  [OAuth 2.0]│       │ petstore_auth  [OAuth 2.0]│
-│ Required scopes  write:…  │       │ Required scopes  write:…  │   ← 'middle' (sides only)
+│ Required scopes  write:…  │       │ Required scopes  write:…  │   ← every content row and separator: 'middle' (sides only)
 │   Token URL  https://…    │       │   Token URL  https://…    │
-└───────────────────────────┘       └───────────────────────────┘   ← 'last' (bottom + sides, bottom radius)
+└───────────────────────────┘       └───────────────────────────┘   ← closing SecurityFrameRow, 'last' (bottom + sides, bottom radius)
 ```
 
 | Piece | Rule |
@@ -203,11 +203,11 @@ element wraps "the card" on one side. The frame is therefore drawn **per row and
 | Row API | `TitleRow`, `TextRow`, `MarkdownTextRow`, `AdditionalInfoRow` get an optional prop `framePosition?: (layoutSide: LayoutSide) => FramePosition \| undefined`, `FramePosition = 'single' \| 'first' \| 'middle' \| 'last'` (type in `shared-components/Frame/types.ts`). Undefined = no frame; existing callers are unaffected. |
 | DOM | the row's per-side content div gets `data-frame-position="<position>"`. That div stays **full side width**: the card is not a block but a stack of full-width rows, and the frame is an illusion drawn by each row (2026-10-14). |
 | CSS | `shared-styles/frame.css`: each framed row draws its frame segment as an absolutely positioned `::before` box — 16px from the left (under the section title text), width `--frame-width` (plain `min(40%, 500px)`, diffs `80%` of the side; at least 320px; never past the side / separator) — with left / right borders (`1px solid #D5DCE3`); `first` adds the top border and radius (6px, `--frame-radius`), `last` the bottom, `single` both. The row pads its content into that box (16px inner padding on every side of the card). |
-| Positions | precomputed in **one pass** by `SecuritySchemeCardBase` over the rows it will actually render on that side (title, unresolved, description, detail rows, every OAuth flow row) — the DDL `buildColumnViewerContexts` pattern. Positions come from the visibility manager result, not from JSX order guesses. |
+| Positions | fixed by role, not by row order: the opening / closing `SecurityFrameRow` (`SecurityRows.tsx`, height `cardInnerInset`, `LayoutPlanner.frameRow`) are `first` / `last`; every content row and every separator inside the card is `middle` (`SecuritySchemeCardBase` passes one resolver and `separatorFramePositions` to `StackLayout`) |
 | Per side | a card absent on one side (scheme wholly added / removed) gets **no** frame on that side: `SecurityRowDiffs.Scheme.isCardPresentOnSide(node, side)`; rows there keep their whole-node diff styles (grey, hidden content). |
 | Diff backgrounds | the row diff background is on the full-width row div, so a highlighted row — and a wholly added / removed card — is colored across the **whole side** up to the separator, inside and outside the frame; the space between two cards is the closing row of one and the opening row of the next, each painted with its own whole-card diff. |
 | Floating badges | `DiffFloatingBadgeWrapper` sits outside `SideBySideLayout` and is unaffected. |
-| Spacing | every card row has the symmetric OpenAPI row padding (4 + 4 between rows); content **segments** (scheme rows with the first flow part, every further flow part, the required-scopes list after flow parts) are planned like blocks — a 12px separator row inside the frame (`data-frame-position="middle"`, side borders continue) coloured by the rows around it. Vertical gaps inside the frame must be padding on the row, never margin (a margin would break the side borders), and no `min-height` ([block-separators.md](../features/block-separators.md)). |
+| Spacing | rows have no vertical padding; every gap is a separator row ([vertical-gaps.md](../features/vertical-gaps.md) §6): 8px between rows and flow parts (level `card`, gap 0), border → content 12px (`cardInnerInset` 8 + the row's 4px half). Separators inside the frame are `middle` (side borders continue) and coloured by the rows around them; never a margin (it would break the side borders), no `min-height` |
 | OAuth flows | flow rows stay inside the scheme's frame; the flow title (h5) is a `middle` row. |
 | Tests | a story with two cards, one wholly added (frame on the changed side only); DOM check that each side's frame width equals the column width. |
 
@@ -299,7 +299,7 @@ When the effective list switches between the document list `D` and the operation
 | Prop rows | the row only: add green, remove red, replace yellow; a replaced **value** gets the `textHighlighterColor`, added / removed values do not |
 | Type change | the title row gets a synthetic yellow `replace` background (`SecurityRowDiffs.Scheme.takeTitleRowDiff`, built from a value-less copy of the type diff, so the origin title still reads the scheme name) and the gray type text is highlighted on both sides (Q-S8). Type text marker (`resolveTypeTextHighlight`): yellow on both sides for a replaced type; green on the changed side when the type appears (scheme definition added to `components`), red on the origin side when it disappears (definition removed) |
 | Scope rows | scope added / removed: green / red row on one side; description replaced: yellow row + highlighted description; required changed: the whole row gets a synthetic yellow `replace` background (no text highlighter), `*` on the origin side when removed, on the changed side when added, and the diff-colored `required` badge **after** the description |
-| Spacing | vertical spacing is padding inside rows only (OpenAPI rules in `preceded-by.css`, frame halves in `frame.css`), so adjacent highlighted rows form one block without white seams ([Spacing](../features/operation-viewer.md#spacing-data-precededby)) |
+| Spacing | every gap is a separator row coloured by its neighbours per side, so adjacent highlighted rows form one block without white seams ([Spacing](../features/operation-viewer.md#spacing-data-precededby), [vertical-gaps.md](../features/vertical-gaps.md)) |
 
 ## Related documents
 

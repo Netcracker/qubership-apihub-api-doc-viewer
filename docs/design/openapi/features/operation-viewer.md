@@ -42,7 +42,7 @@ export type OpenApiOperationDiffsViewerProps = Omit<OpenApiOperationViewerProps,
 | Rule | Detail |
 | --- | --- |
 | No `referenceNamePropertyKey` | AsyncAPI needs it to resolve message keys; an OpenAPI operation is addressed by its `paths` key and method. |
-| `operationKeys` omitted | The transformer picks the first `paths` key and, inside it, the first method in `OPEN_API_HTTP_METHODS` order (`get, put, post, delete, options, head, patch, trace`), and logs an error — same contract as AsyncAPI `operationKeysOrDefaults`. |
+| `operationKeys` omitted | The transformer picks the first `paths` key and, inside it, the first method in `OPEN_API_HTTP_METHODS_ORDER` (`get, put, post, delete, options, head, patch, trace`), and logs an error — same contract as AsyncAPI `operationKeysOrDefaults`. |
 | `operationKeys` not found | Logs an error; the viewer renders nothing (`null`). |
 | Diffs viewer `path` | The key of the **merged** document: the after path for a mapped or renamed path, the before path for a removed one. `apiDiff` stores a renamed path under its after key (see [../notes/2026-10-design-analysis.md](../notes/2026-10-design-analysis.md), E1). |
 | Expected merge | Whole documents, `components` kept (default `apiDiff` mode, or operation mode **without** stripping `components`). Stripping `components` loses every security scheme definition and its diffs (E9). |
@@ -79,8 +79,8 @@ object for every value the nested viewers need from the root.
 ## Row stack
 
 Top to bottom. "Node" is the tree node that owns the row ([../architecture/data-model-plain.md](../architecture/data-model-plain.md)).
-Every row is optional unless stated; visibility comes from the next-data-model visibility manager
-of the owning node kind. Headings: **h1** title, **h2** sections, **h3** subsections, **h4** card
+Every row is optional unless stated; visibility comes from the next-data-model value rules
+(`OpenApiNodeVisibility`, `SecurityNodeVisibility`) and, with diffs, from each side's diff styles. Headings: **h1** title, **h2** sections, **h3** subsections, **h4** card
 titles, **h5** OAuth flow titles.
 
 | # | Row | Component | Node | Shown when (plain) | Details |
@@ -221,7 +221,7 @@ export const OPENAPI_SECTION_ORDER = {
 
 | Rule | Detail |
 | --- | --- |
-| Scope | one list per container level: `OperationNodeViewer` (`operation`), `RequestNodeViewer` (`request`), `ResponsesNodeViewer` (`responses`), `ResponseNodeViewer` (`response`) |
+| Scope | one list per container level: `OperationNodeViewer` (`operation`), `RequestNodeViewer` (`request`), `ResponsesNodeViewer` (`responses`), `buildResponseBlocks` (`response-blocks.tsx`, `response`) |
 | Containers | iterate their list and render the section whose id they meet, skipping sections that are not visible; no container has a hard-coded sequence of sections |
 | Fixed, not configurable | the operation header rows (title, operation ID, address, description, external docs) and the rows **inside** a section (e.g. Body header → description → schema; Security header → selector → cards). The Responses header with its code selector always comes first in the Responses section — it is the section header, not a section of the list. |
 | Moving between levels | not supported: a section id stays in its own list (a response section cannot move into `request`) |
@@ -291,7 +291,7 @@ wholly added / removed node does. Do not auto-switch selection per side.
 | `OperationNodeViewer.tsx` | rows 1–5, dispatch of sections | owns the view state; builds the header block (rows from `resolveOperationHeaderRows`) and the section blocks in config order; places the deprecated tag (title, operation ID or address row) |
 | `SecurityNodeViewer.tsx` | rows 6–8 | `buildSecurityBlock`: title (with the `Optional` badge) + toolbar block, then the cards |
 | `OpenApiSecuritySchemeCard.tsx` | one framed card: `SecuritySchemeCardBase` with `OPENAPI_SECURITY_PRESENTATION` | rows in [security](../entities/security.md#scheme-card); opening / closing `SecurityFrameRow`, content segments planned like blocks |
-| `shared-components/Security/` | `SecurityToolbar`, `SecurityRow`, `SecurityFrameRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with the AsyncAPI Security sections, with `SecuritySchemeCardBase` (flow parts are built inside it) and `SecuritySectionBase` (toolbar / content blocks) |
+| `shared-components/Security/` | `SecurityToolbar`, `SecurityRow`, `SecurityFrameRow` + row contents (props, flow header, scopes toggle, scope rows) | shared with the AsyncAPI Security sections, with `SecuritySchemeCardBase` (flow parts are built inside it), `SecuritySectionBase.tsx` (`SecurityToolbarRow`) and `security-section-blocks.ts` (toolbar / content blocks) |
 | `RequestNodeViewer.tsx` | row 10, rows 11–17 | `buildRequestBlock` (parameter groups and the Body, in config order); the request body viewer (rows 15–17) is inside this file |
 | `ParametersNodeViewer.tsx` | rows 11–14 (one instance per location) and row 20 | `buildParametersBlock`; same component for request parameters and response headers |
 | `OpenApiExtensionsNodeViewer.tsx` (shared `ExtensionsSection`) | rows 9, 21, 24 | `buildExtensionsBlock`; heading variant per call site (h2 operation, h3 response / Responses) |
@@ -311,7 +311,7 @@ tested):
 
 | File | Content |
 | --- | --- |
-| `node-type-checkers.ts` | `isOpenApiOperationNode`, `isOpenApiSecurityNode`, …, `getOpenApiChildNodes(node)` (type-guard helpers, no `as`) |
+| `node-type-checkers.ts` | `isOpenApiOperationNode`, `isOpenApiSecurityNode`, …, `getOpenApiChildren`, `findOpenApiChild`, `getOpenApiOptions` (options of a complex container, `nestedNodes()`) (type-guard helpers, no `as`) |
 | `http-method-badge-config.ts` | `OPENAPI_HTTP_METHOD_BADGE_CONFIG` + `resolveHttpMethodBadge(method)` (D13); colors in `shared-styles/colors/openapi.css` |
 | `response-code-tone.ts` | `OpenApiResponseCodeClass` → tone class (`OPENAPI_RESPONSE_CODE_TONE_CLASSES`); colors in `shared-styles/colors/openapi.css` |
 

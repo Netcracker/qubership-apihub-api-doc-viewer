@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-10-30T16:30:34.440889+00:00'
+generated_at: '2026-10-30T18:18:15.276358+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -70,14 +70,14 @@ dependencies:
     .claude/skills/api-doc-viewer-reviewing/review/ddlapi.md: sha256:f2a8acf5e6b767db0ff9d27dbe03837c01b01237f5cefe4076705bc6a3f67247
     .claude/skills/api-doc-viewer-reviewing/review/jso.md: sha256:f9663238234661343d0024f713d1592cb9d94ff4968a21184900bea7794e87a1
     .claude/skills/api-doc-viewer-reviewing/review/json-schema.md: sha256:8f1c11d311ef9f0023358b1bd407c50acaf9997b6ca12cea65f0cfb7d4e9ec79
-    .claude/skills/api-doc-viewer-reviewing/review/openapi.md: sha256:93b5c46480a4e517333b78dcc5351f283303e198d40cca246fd13c941d215b8f
+    .claude/skills/api-doc-viewer-reviewing/review/openapi.md: sha256:106e9f2144765fc15aad8a7478c4399923933e3b0038c0c9783ece7f224b55a0
     .cursor/rules/api-doc-viewer-reviewing.mdc: sha256:ac2940e8c41be654de2182e3fba9009d83c147901508d7656382b44cf8ba2ad1
     .cursor/skills/api-doc-viewer-reviewing/SKILL.md: sha256:5475acd8ad8c48b0512d56adc99ff4cd77ea4a3142b4198539dbf6a49a6b1056
     .cursor/skills/api-doc-viewer-reviewing/review/async-api.md: sha256:17bb070138bd3f5078407a49e0352c9d994db1dddfffcdf73d13b987017fc51a
     .cursor/skills/api-doc-viewer-reviewing/review/ddlapi.md: sha256:f2a8acf5e6b767db0ff9d27dbe03837c01b01237f5cefe4076705bc6a3f67247
     .cursor/skills/api-doc-viewer-reviewing/review/jso.md: sha256:f9663238234661343d0024f713d1592cb9d94ff4968a21184900bea7794e87a1
     .cursor/skills/api-doc-viewer-reviewing/review/json-schema.md: sha256:8f1c11d311ef9f0023358b1bd407c50acaf9997b6ca12cea65f0cfb7d4e9ec79
-    .cursor/skills/api-doc-viewer-reviewing/review/openapi.md: sha256:93b5c46480a4e517333b78dcc5351f283303e198d40cca246fd13c941d215b8f
+    .cursor/skills/api-doc-viewer-reviewing/review/openapi.md: sha256:106e9f2144765fc15aad8a7478c4399923933e3b0038c0c9783ece7f224b55a0
   source: local
   local_path: ./agent-packages/api-doc-viewer-reviewing
 - repo_url: _local/api-doc-viewer-testing
@@ -415,7 +415,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-reviewing
   active_owner: ./agent-packages/api-doc-viewer-reviewing
-  content_hash: sha256:93b5c46480a4e517333b78dcc5351f283303e198d40cca246fd13c941d215b8f
+  content_hash: sha256:106e9f2144765fc15aad8a7478c4399923933e3b0038c0c9783ece7f224b55a0
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-testing
@@ -784,7 +784,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-reviewing
   active_owner: ./agent-packages/api-doc-viewer-reviewing
-  content_hash: sha256:93b5c46480a4e517333b78dcc5351f283303e198d40cca246fd13c941d215b8f
+  content_hash: sha256:106e9f2144765fc15aad8a7478c4399923933e3b0038c0c9783ece7f224b55a0
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-testing

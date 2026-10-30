@@ -613,6 +613,28 @@ vs new: the trees with nested nodes flattened back (763 / 763 identical, includi
 severity and summary), and the rendered HTML (763 / 763 byte-identical). Both were broken on purpose
 to prove they can fail.
 
+## Batch 9 — the design pages match the code (D2, done 2026-10-30)
+
+Five OpenAPI design pages (plus two found on the way) still named classes, files and tests that were
+renamed, merged or never written: per-kind `Kind*` aggregators, `OpenApiSectionPresenceResolver`,
+with-diffs visibility managers, five test files that do not exist. The rules they describe were right.
+Batch 9 changed only "where it lives".
+
+| Concern | Now described as |
+| --- | --- |
+| Diff pipeline | per-section steps of the with-diffs transformer with its collaborators, then the rollup |
+| Diff aggregation | one record-driven registry from tables; a table of where each per-kind semantic lives |
+| Row visibility | plain value rules (`OpenApiNodeVisibility`) + each side's diff styles; no with-diffs managers |
+| Row accessors | `OpenApiRowDiffs` + `SecurityRowDiffs`, current signatures |
+| Unit tests | existing files only, plus the list of what has no dedicated test |
+| Security card frame | frame rows `first` / `last`, content rows `middle`, 8px gaps (vertical-gaps §6) |
+
+**One rule disagreement.** The security entity page still had the old 20px between OAuth flow parts;
+the later approved vertical-gaps design (8px) is what the code does, so the page follows it.
+
+**Verification (done).** A name check over the pages: 41 missing code names before (18 in
+`features/diffs.md` alone), 0 after; prose checked by word search. Docs only — no code changed.
+
 ## Batch 8 — last cleanups F24, F22, F21, F14 (done 2026-10-30)
 
 Four low-severity findings, none visible on screen. Three proposals were revised after reading the

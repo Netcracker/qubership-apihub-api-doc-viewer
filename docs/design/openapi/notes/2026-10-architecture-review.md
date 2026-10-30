@@ -67,7 +67,7 @@ genuinely simple. The weak points are at the **boundaries**:
 | F24 | Fixed | Low | `tree/node-data/builder.ts` L280–287 | `unresolvedSecurityScheme` meta is set by duck typing any node value (`isResolved === false && name`), regardless of kind | Type guards over structural guesses | Delete the field and the duck-typed check: nothing reads `meta.unresolvedSecurityScheme` (the unresolved row comes from `value.isResolved` via `SecurityNodeVisibility`). *Revised 2026-10-30* |
 | F25 | Fixed | High | ndm crawl rules (`responses`, `content`, shared Security), `SecuritySpecDiffsDecorator`, security kinds / tables, `SecurityRowDiffs`; viewer option helpers, `SecuritySectionBase`, `security-blocks`, `AsyncApiSecuritySection` | Found while explaining F15: OpenAPI built every selector's options (response codes, media types, security alternatives) as ordinary children (decision I1), unlike AsyncAPI, where a selector's options are nested nodes of a complex container. The developer set the common rule: options of a selector are nested nodes of the container they belong to. [Details](#f25-selector-options-are-not-nested-nodes) | Design is the source of truth (the entity docs said complex); one rule across API types | `responses` and `content` complex; a new complex `securityAlternatives` container under the simple `security` (shared, so AsyncAPI too); option helpers over `nestedNodes()` |
 | D1 | Fixed | Medium | `docs/design/openapi/architecture/*.md` | All four diagrams described the pre-implementation structure: complex nodes, per-kind aggregators, `OpenApiSectionPresenceResolver`, per-kind visibility managers, `AdditionalInfoRow` cards, `node-diff-props`, `tree-node-guards` | Design is the source of truth | Rewritten to the implemented structure (I1–I3, I5, V1–V11, security module, layout module) |
-| D2 | Open (partly fixed by F25) | Medium | `entities/request-body.md`, `entities/responses.md`, `entities/security.md`, `features/diffs.md` | Still describe complex `content` / `responses` / `security`, `KindRequestBody`, `OPENAPI_COMPLEX_KINDS_WITH_VALUE`, `OpenApiSectionPresenceResolver`, with-diffs visibility managers, a non-existent `openapi-section-presence.test.ts` | Design is the source of truth | Plan step 9 rewrite (entities / features); not done here — the brief limits this review to the diagrams |
+| D2 | Fixed | Medium | `entities/request-body.md`, `entities/responses.md`, `entities/security.md`, `features/diffs.md` | Still describe complex `content` / `responses` / `security`, `KindRequestBody`, `OPENAPI_COMPLEX_KINDS_WITH_VALUE`, `OpenApiSectionPresenceResolver`, with-diffs visibility managers, a non-existent `openapi-section-presence.test.ts` | Design is the source of truth | Rewrite the "where it lives" of the entity / feature pages, keep the rules (batch 9, scope extended by the developer) |
 | D3 | Fixed | Low | `api-doc-viewer-reviewing/SKILL.md` | The skill says to run `node_modules/.bin/tsc` / `jest`; in this monorepo the binaries are hoisted to the repository root (the package-local path does not exist) | Minimal blind spots | Skill names the root `node_modules/.bin/` and the per-package working directory |
 | D4 | Fixed | Low | `api-doc-viewer-reviewing/review/openapi.md` | Brief listed `buildOpenApiDiffCause` (legacy) in scope and focused on moving the layout out of next-data-model, which is an approved convention | Minimal blind spots | Brief corrected: legacy helper dropped; layout focus is its cross-API placement |
 | A1 | Accepted | — | `KindAny` aggregators (I2) | One table-driven aggregator per family is a data-driven strategy, not a catch-all: per-kind behaviour is in the field / node placement tables and the transformer's records | — | Keep; only the factory duplication (F14) |
@@ -801,6 +801,37 @@ clean, ESLint clean over the changed files.
 `testEnvironment: 'node'`, no jsdom / react-test-renderer); a regression test needs a dev dependency
 (`jest-environment-jsdom`) — see Configuration proposals.
 
+### Batch 9 — design pages match the code (D2, 2026-10-30)
+
+Approved: D2 as proposed — the review scope extended from the diagrams to the entity and feature
+pages. Only "where it lives" changed; every rule, table, fixture list and example was kept.
+
+| Page | Change |
+| --- | --- |
+| `features/diffs.md` | Pipeline: per-section steps with the real collaborators (`OpenApiDiffsOperationFactsResolver`, `OpenApiObjectSchemaWithDiffsSynthesizer`, `OpenApiContentWithDiffsDecorator`, `OpenApiSecuritySpecWithDiffsBuilder`, `OpenApiSectionPresence`), then the rollup. Address key `path` (I4). "Node diff aggregation" rewritten for the record-driven design (registry, tables, families; a table of where each formerly planned `Kind*` semantic lives). Inheritance named after `RecordDrivenNodeDiffsAggregator`. Accessor table: Security accessors under `SecurityRowDiffs`, the current operation-row signatures, missing accessors added. Row visibility: no with-diffs visibility managers. Unit tests: only existing files, plus a "not covered by a dedicated unit test" list. Inline sample files |
+| `entities/request-body.md` | `required` normalization in `buildRequestBody` (`SideReader.normalizeFlagDiff`); `RequiredMark`; visibility from `OpenApiNodeVisibility` + diffs |
+| `entities/responses.md` | change-marker pseudocode names `RecordDrivenNodeDescendantDiffsSummaryAggregator`; headers via `buildParametersBlock`; presence via `OpenApiSectionPresence`; visibility as for the request body |
+| `entities/parameters.md` | `buildParametersBlock`; the group's whole add / remove from `OpenApiSectionPresence.writeSectionDiff` |
+| `entities/security.md` | effective security in `OpenApiSecuritySpecBuilder.build`; `SecurityOAuthFlowSpec`; `SecuritySectionBase.tsx` / `security-section-blocks.ts`; **card frame and spacing rows rewritten** (frame rows `first` / `last`, every content row and separator `middle`; 8px between rows and flow parts) |
+| `entities/operation.md` | header-row spacing: one element per row at the `operationHeader` level, no row padding |
+| `features/operation-viewer.md` | `OPEN_API_HTTP_METHODS_ORDER`; value rules instead of "visibility manager"; `buildResponseBlocks`; the Security files; the current node-type-checker helpers |
+
+**One rule disagreement found and resolved by the newer approved design.** `entities/security.md` said
+flow parts are 20px apart (10 + 10) and card rows carry row padding; `features/vertical-gaps.md`
+(approved and implemented 2026-10-16, D3) set 8px and separator rows, and the code follows it. The
+entity page now points to vertical-gaps §6. No code changed.
+
+**Verification.** A temporary name check (every backticked code name on the pages — classes,
+constants, `A.b` members, calls, `.ts` / `.tsx` files — must exist in the two packages or the samples'
+`src`; UI labels such as `Optional` / `Header` excluded): the committed `features/diffs.md` reports 18
+missing names, the six D2 pages 41 in total before the batch; after it, every OpenAPI entity page,
+`features/diffs.md` and `features/operation-viewer.md` report 0. Prose names (outside backticks)
+checked by a word search (`resolver`, `visibility manager`, `KindAny`, `row padding`, `step 4 / 5`). No
+code, so no tree / render comparison.
+
+Left: a code comment in `shared/openapi/types/http-method.ts` names `OPEN_API_HTTP_METHODS` (the
+constant is `OPEN_API_HTTP_METHODS_ORDER`) — a one-word code fix outside this docs-only batch.
+
 ## Configuration proposals (for approval; not changed)
 
 | Proposal | Why |
@@ -837,4 +868,6 @@ plain transformer reports no error, confirming F13.
 - "Viewer consumes" was held well for row diffs but not for severities; severities are where the
   rule erodes first, because a component that composes rows also wants their badges.
 - Design step 9 (rewrite after implementation) still pending made the diagrams the least reliable
-  source; the review fixed them, the entity documents remain (D2).
+  source; the review fixed them, and batch 9 the entity and feature pages (D2). Two approved designs
+  can disagree (an entity page and a later feature redesign): the later approved one wins, and the
+  older page must be updated in the same change.

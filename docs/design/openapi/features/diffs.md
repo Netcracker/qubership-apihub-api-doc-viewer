@@ -10,19 +10,23 @@ locations: [../notes/2026-10-design-analysis.md](../notes/2026-10-design-analysi
 
 ```text
 merged apiDiff document (whole documents, components kept)
-  → OpenApiSpecWithDiffsTransformer
-      1. super.transform(...)                       plain operation-oriented spec
-      2. relocate diff records onto the spec        (tables below) under diffsMetaKey
-      3. synthesize parameter / header schemas with diffs (OpenApiObjectSchemaWithDiffsSynthesizer)
-      4. resolve section presence per side → synthetic section add / remove (OpenApiSectionPresenceResolver)
-      5. aggregateDiffsWithRollup(spec, diffsMetaKey, aggregatedDiffsMetaKey)   ← on the TRANSFORMED spec
-  → OpenApiTreeWithDiffsBuilder (assignNodeDiffs per node, five aggregator families)
+  → OpenApiSpecWithDiffsTransformer (the plain transformer's build hooks, overridden per section)
+      per section, bottom-up (options → Body → group → Request; codes → Responses):
+        a. relocate the section's diff records onto the spec   (tables below) under diffsMetaKey
+           facts read once per operation: OpenApiDiffsOperationFactsResolver (sides, whole diff,
+           address diff, the responses / parameters / requestBody fields)
+        b. synthesize parameter / header schemas with diffs     (OpenApiObjectSchemaWithDiffsSynthesizer)
+        c. body content: media-type options, cloned extensions  (OpenApiContentWithDiffsDecorator)
+        d. security: alternatives and their records             (OpenApiSecuritySpecWithDiffsBuilder → SecuritySpecDiffsDecorator)
+        e. presence per side → synthetic section add / remove   (OpenApiSectionPresence: set / of / writeSectionDiff)
+      then aggregateDiffsWithRollup(spec, diffsMetaKey, aggregatedDiffsMetaKey)   ← on the TRANSFORMED spec
+  → OpenApiTreeWithDiffsBuilder (assignNodeDiffs per node: one RecordDrivenAggregatorRegistry)
   → OpenApiOperationDiffsViewer → containers read OpenApiRowDiffs accessors
   → nested JsonSchemaDiffsViewer / JsoDiffsViewer continue inside schemas and extensions
 ```
 
-Step 5 must run on the transformed spec (AsyncAPI comment: "It is IMPORTANT to aggregate diffs on
-TRANSFORMED DOCUMENT"), otherwise rollups miss relocated and synthesized records.
+The rollup must run on the transformed spec (AsyncAPI comment: "It is IMPORTANT to aggregate diffs
+on TRANSFORMED DOCUMENT"), otherwise rollups miss relocated and synthesized records.
 
 ## Diff sources
 
@@ -33,7 +37,7 @@ Paths are inside the merged document; `M` = `diffsMetaKey`, `op` = `paths[path][
 | UI | Merged-document source | Transformed-spec key |
 | --- | --- | --- |
 | Whole operation added / removed | `paths[path][M][method]` (`add` / `remove`); else `paths[M][path]` (`add` / `remove` of the whole path item — default `apiDiff`; with `openApiPathItemPerOperationDiffs: true` it is per method instead, E2) | root `M[""]` (node-level) |
-| Address (path renamed) | `paths[M][path]` with `action: rename` (`beforeKey` → `afterKey`, E1) | root `M.address` as a **`replace`** with `beforeValue = beforeKey`, `afterValue = afterKey`, same `type` / declaration paths |
+| Address (path renamed) | `paths[M][path]` with `action: rename` (`beforeKey` → `afterKey`, E1) | root `M.path` as a **`replace`** with `beforeValue = beforeKey`, `afterValue = afterKey`, same `type` / declaration paths (`path` is a value prop of the operation, I4) |
 | Title | `op[M].summary` | root `M.title` |
 | Operation ID row | `op[M].operationId` | root `M.operationId` |
 | Deprecated tag (title row; without a title the operation ID row, else the address row) | `op[M].deprecated` (a missing value is the unifier default `false`; normalize like `required`) | root `M.deprecated` → tag diff + synthetic yellow replace on the row that carries the tag; its severity merged into that row's placement (`TitleRow` / `OperationIdRowWithDeprecatedTag` / `AddressRowWithDeprecatedTag`) |
@@ -74,26 +78,47 @@ properties.
 
 ## Node diff aggregation
 
-Five families per kind, Factory + Strategy, under
-`packages/next-data-model/src/building-service/openapi/tree-with-diffs/node-diffs-data/`. Every
-kind aggregator extends `KindAny` and calls `super.aggregate()` first.
+**Record-driven** (I2): every kind-specific diff semantic is prepared by the with-diffs transformer as
+plain diff records on the spec; the aggregators only read the records and map them to rows. There are
+no per-kind aggregator classes. One `RecordDrivenAggregatorRegistry`
+(`building-service/abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators.ts`) per API
+type hands out the five aggregators per kind, built from `OPENAPI_AGGREGATION_TABLES`
+(`building-service/openapi/tree-with-diffs/aggregation-tables.ts`):
 
-| Family | `KindAny` | Kind-specific aggregators |
+| Table | Content |
+| --- | --- |
+| field diff keys | the kind's value props (`OPENAPI_NODE_VALUE_PROPS`) + its synthetic row keys (`OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY`, `OPENAPI_RESPONSE_OPTIONS_DIFF_KEY`, the Security `SECURITY_ALTERNATIVES_DIFF_KEY`) |
+| field placements | `OPENAPI_FIELD_PLACEMENTS` (`model/openapi/tree-with-diffs/placements.ts`, the Security tables spread in) |
+| node placements | `OPENAPI_NODE_PLACEMENTS` (the rows a wholly added / removed node badges; default the title row) |
+
+| Family | Record-driven aggregator | What it reads |
 | --- | --- | --- |
-| `node-diffs/` | inheritance (below) + text fields `title`, `description` | `KindOperation` (`address`, `operationId`, `externalDocs`, `deprecated` flag + title-row synthetic replace), `KindRequestBody` (`required` normalized to boolean semantics + title-row synthetic replace), section kinds read the synthetic whole-section diff written by `OpenApiSectionPresenceResolver` ([below](#section-presence-and-whole-section-changes)) — no section logic in `aggregateByDescendantDiffs`, `KindSecurityScheme` (field diffs, `requiredScopes` list), `KindOAuthFlow` (URL fields, `scopes` list), `KindResponse` (code rename) |
-| `node-descendant-diffs/` | child-key → diff from the node's own diff record | `KindSecurity` (index keys), `KindContent` (media-type keys), `KindResponses` (code keys), `KindRequest` (location keys + `requestBody`) |
-| `node-diffs-summary/` | node's own diff types | — |
-| `node-descendant-diffs-summary/` | local descendants | forward aggregators reading `aggregatedDiffsMetaKey` for kinds whose content another viewer renders: `parameters`, `responseHeaders`, `mediaType`, `extensions`, and their containers `content`, `requestBody`, `request`, `responses`; `KindResponse` = the response-code change marker (inner changes only, ∅ for a wholly added / removed response — [responses.md](../entities/responses.md#change-markers-on-response-code-options)). Rule for every kind: a node whose node-level diff is add / remove (own or inherited) gets an empty descendant summary and skips `mergeAggregatedDiffTypesIntoDescendantSummary` (inferred and stamped diffs are not "changes inside") |
-| `node-diffs-severities/` | one severity per placement (below) | `KindSecurityScheme`, `KindOAuthFlow` (field rows) |
+| `nodeDiffs` | `RecordDrivenNodeDiffsAggregator` | inheritance (below), then the node's own record: `""` and the table's field keys |
+| `descendantDiffs` | `RecordDrivenNodeDescendantDiffsAggregator` | child key → diff from the node's own record (option / section / scheme add, remove, rename) |
+| `diffsSummary` | `RecordDrivenNodeDiffsSummaryAggregator` | the node's own diff types |
+| `descendantDiffsSummary` | `RecordDrivenNodeDescendantDiffsSummaryAggregator` | the rollup (`aggregatedDiffsMetaKey`) of the transformed value; ∅ for a wholly added / removed node (own or inherited) — the response-code / media-type change markers ([responses.md](../entities/responses.md#change-markers-on-response-code-options)) |
+| `severities` | `RecordDrivenNodeDiffsSeveritiesAggregator` | one severity per placement (below) |
 
-### Inheritance (`KindAny`)
+Where the per-kind semantics live instead (all in the with-diffs transformer and its collaborators):
 
-Copy AsyncAPI `AsyncApiNodeDiffsAggregatorKindAny`:
+| Kind semantics (formerly planned as `Kind*` classes) | Done by |
+| --- | --- |
+| Operation: address (`path`), `operationId`, `externalDocs`, `deprecated` flag | `OpenApiSpecWithDiffsTransformer.buildSpec` (address from `OpenApiDiffsOperationFactsResolver`, flags via `SideReader.normalizeFlagDiff`); the title-row / tag-row synthetic replace is a row accessor (`OpenApiRowDiffs.Operation`) |
+| Request Body `required` (boolean semantics) | `buildRequestBody` (`SideReader.normalizeFlagDiff`) |
+| Whole-section add / remove of every section | `OpenApiSectionPresence.writeSectionDiff` ([below](#section-presence-and-whole-section-changes)) |
+| Option add / remove / rename (media types, response codes) and the selector's synthetic row diff | `OpenApiContentWithDiffsDecorator.decorate`, `buildResponses` — records on the complex container (`content`, `responses`) |
+| Security alternatives, schemes, flows, scopes | `OpenApiSecuritySpecWithDiffsBuilder` + `SecuritySpecDiffsDecorator` (shared with AsyncAPI); scope rows: `SecurityRowDiffs` |
+| Descendant summaries of nested-viewer content (parameters, headers, schemas, extensions) | the rollup on the transformed spec; `mergeAggregatedDiffTypesIntoDescendantSummary` is **not** called (I6: inferred and stamped diffs are not "changes inside") |
 
-1. Container first, then parent: a wholly **added / removed** container or parent → the child
+### Inheritance (`RecordDrivenNodeDiffsAggregator`)
+
+The AsyncAPI `AsyncApiNodeDiffsAggregatorKindAny` rule; the owner is `container ?? parent` (a
+selector option's container, else the parent):
+
+1. A wholly **added / removed** owner → the child
    inherits that diff with `inherited: true` and aggregation stops.
-2. Otherwise the child takes `container.descendantDiffs[key]` / `parent.descendantDiffs[key]` as its
-   node-level diff (an option added to a selector, a scheme added to an alternative, …).
+2. Otherwise the child takes `owner.descendantDiffs[key]` as its node-level diff (an option added
+   to a selector, a scheme added to an alternative, …).
 3. A **rename** under the node-level key (media type, response code) is **not** a whole-node change:
    aggregation continues and the node's own field diffs are still collected (JSON Schema
    node-key-rename rule). Consumers that need "whole node changed" use
@@ -130,10 +155,12 @@ A media type without `schema` is **not** content (product decision, 2026-10-08):
 selector option in either mode, and a Body made only of such media types (and no description) is
 not rendered.
 
-**Whole-section diff.** `OpenApiSectionPresenceResolver` (with-diffs transformer, step 4) evaluates
-every section bottom-up (options → Body → group → Request; codes → Responses) and writes a
-**synthetic node-level diff** into the parent's diff record under the section key — the place
-`KindAny` reads it from (`parent.descendantDiffs[key]`):
+**Whole-section diff.** `OpenApiSectionPresence` (`building-service/openapi/shared/openapi-section-presence.ts`,
+called by the with-diffs transformer while it builds each section) evaluates every section bottom-up
+(options → Body → group → Request; codes → Responses) — `set` / `of` keep each built section's
+presence per side — and `writeSectionDiff` writes a **synthetic node-level diff** into the parent's
+diff record under the section key — the place the node-diffs inheritance reads it from
+(`parent.descendantDiffs[key]`):
 
 | `present(before)` | `present(after)` | Section | Synthetic diff |
 | :---: | :---: | --- | --- |
@@ -143,11 +170,11 @@ every section bottom-up (options → Body → group → Request; codes → Respo
 | ✗ | ✗ | not rendered at all | none — even if raw diffs exist inside (e.g. a schema-less media type added) |
 
 - A raw add / remove already on the section object (`requestBody` removed, a response removed, the
-  whole operation added) yields the same result; the resolver keeps the raw diff instead of a
+  whole operation added) yields the same result; `writeSectionDiff` keeps the raw diff instead of a
   synthetic one.
 - Synthetic diff metadata: `type` = the highest type among the raw diffs that caused the change;
   declaration paths from those diffs.
-- Through `KindAny` inheritance every row of a wholly added / removed section takes the section
+- Through the node-diffs inheritance every row of a wholly added / removed section takes the section
   diff: header and rows green / red on the side that has them, hidden (grey, no content) on the
   other. Inner raw diffs are not shown on top (aggregation stops on inherited add / remove).
 - The header severity (`TitleRow` placement) is built from the **same** diff object.
@@ -200,41 +227,48 @@ each with a doc comment naming its row:
 
 Reused: `TitleRow` (every title / section header), `AddressRow`, `DescriptionRow` (operation,
 request body, response, scheme descriptions — one per node, so no collision). A whole-node add /
-remove fills **every** placement of the node (AsyncAPI `KindAny` severities pattern); a field diff
-fills only its own placement.
+remove fills **every** placement of the node (`OPENAPI_NODE_PLACEMENTS`, the AsyncAPI severities
+pattern); a field diff fills only its own placement (`OPENAPI_FIELD_PLACEMENTS`).
 
 ## Row diff accessors
 
 `packages/next-data-model/src/model/openapi/tree-with-diffs/row-diffs.ts`, namespace
-`OpenApiRowDiffs` (mirrors `JsonSchemaRowDiffs` / `DdlApiRowDiffs`). Containers call these; they
-never read `node.diffs[...]` directly.
+`OpenApiRowDiffs` (mirrors `JsonSchemaRowDiffs` / `DdlApiRowDiffs`); the shared parts
+(`NodeLevel`, `Section`) come from `model/abstract/tree-with-diffs/row-diffs-base.ts`, the Security
+accessors are `SecurityRowDiffs` (`model/security/tree-with-diffs/row-diffs.ts`, shared with
+AsyncAPI). Containers call these; they never read `node.diffs[...]` directly. `deprecatedTagRow` is the
+row that carries the `deprecated` tag (`title`, else `operationId`, else `address`).
 
 | Accessor | Returns |
 | --- | --- |
 | `NodeLevel.takeWholeNodeDiff(node)` | node-level diff unless it is a `rename` |
 | `Operation.takeTitleRowDiff(node)` | whole-node diff, else `title` diff, else synthetic replace for a `deprecated` change |
-| `Operation.takeOperationIdRowDiff(node)` | `operationId` diff, else whole-node diff |
+| `Operation.takeOperationIdRowDiff(node, deprecatedTagRow)` | `operationId` diff (whole-node diff first), else the `deprecated` replace when this row carries the tag |
+| `Operation.takeHeaderRowDiff(node, row, deprecatedTagRow)` / `resolveHeaderRowSeverityPlacement(row, deprecatedTagRow)` | the diff and the severity placement of one operation header row |
 | `Operation.takeDeprecatedTagDiff(node)` | the tag's own `deprecated` diff (never a borrowed node-level diff) |
 | `RequestBody.isRequiredStarVisibleOnSide(node, side)` | required on that side (side-exclusive) |
 | `RequestBody.takeRequiredTagDiff(node)` | normalized `required` diff, `undefined` when the body is wholly added / removed |
-| `SecurityScheme.isCardPresentOnSide(node, side)` | `false` on the side where the scheme does not exist (no frame there) |
-| `Operation.takeAddressRowDiff(node)` | `address` diff, else whole-node diff |
+| `SecurityRowDiffs.Scheme.isCardPresentOnSide(node, side)` | `false` on the side where the scheme does not exist (no frame there) |
+| `Operation.takeAddressRowDiff(node, deprecatedTagRow)` | `path` diff (whole-node diff first), else the `deprecated` replace when this row carries the tag |
 | `Operation.takeExternalDocsRowDiff(node)` / `resolveExternalDocsSide(node, side)` | row diff (whole object, `url`, or `description` — Q16 option A) / `{ url, description } \| null` per side — the link text is static |
 | `Section.takeHeaderRowDiff(node)` | the section-rule diff on `""` |
-| `SecurityScheme.takeFieldRowDiff(node, field)` | field diff for one detail row |
-| `SecurityScheme.resolveRequiredScopesSideItems(node, side)` | chips per side (`resolveListSideItems`) |
-| `OAuthFlow.resolveScopesSideItems(node, side)` | chips per side |
+| `SecurityRowDiffs.Scheme.takeFieldRowDiff(node, field)` / `SecurityRowDiffs.OAuthFlow.takeFieldRowDiff(node, field)` | field diff for one detail row |
+| `SecurityRowDiffs.Scheme.resolveRequiredScopesSideItems(node, side)` | chips per side (`resolveListSideItems`) |
+| `SecurityRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme)` | the flow's scope rows with their own diffs and severities |
+| `SecurityRowDiffs.Alternatives.takeToolbarRowDiff(container)` / `isToolbarShownOnSide(container, side)` | the security toolbar row (on the `securityAlternatives` container) |
 | `MediaType.resolveSideTitle(node, side)` / `resolveSideTitleHighlight(node, side)` | media type text per side (rename aware) / yellow text highlighter of a renamed media type |
 | `MediaType.takeChangesMarkerSummary(node)` | option change marker: inner changes only (∅ for its own add / remove / rename and inherited whole changes) |
 | `RequestBody.takeHeaderRowDiff(node)` / `ResponseBody.takeHeaderRowDiff(content)` | Body header: whole add / remove, else (request) `required` yellow row, else yellow row from the synthetic `mediaTypes` option diff |
 | `Responses.takeTitleRowDiff(node)` | Responses title: whole add / remove, else yellow row from the synthetic `codes` option diff |
 | `Response.resolveSideCode(node, side)` / `resolveSideCodeHighlight(node, side)` | code text per side (rename aware) / yellow text highlighter of a renamed code |
 | `Response.keepsCodeTone(node)` | `false` for a code wholly added / removed on its own: neutral option, border shadow only |
+| `Response.takeChangesMarkerSummary(node)` | response-code option change marker: inner changes only |
 
 ## Row visibility
 
-With-diffs visibility managers (`tree-with-diffs/node-visibility-data/kind-*.ts`) delegate diff-free
-rules to the plain managers. Two separate questions, never mixed:
+There are no with-diffs visibility managers. Which rows a node has comes from the plain value rules
+(`OpenApiNodeVisibility`, `model/openapi/node-visibility.ts`, and `SecurityNodeVisibility`) applied to
+the merged value; what each side shows comes from the diffs. Two separate questions, never mixed:
 
 | Question | Rule |
 | --- | --- |
@@ -258,16 +292,26 @@ So a header is never shown on a side merely because the section's raw object exi
 
 | File | Covers |
 | --- | --- |
-| `openapi-spec-transformer.test.ts` | lookup, defaults, effective security, synthesis (plain), code order, dialect per fixture |
-| `openapi-spec-with-diffs-transformer.test.ts` | every row of the diff-source tables above, one case per fixture under `openapi-diffs/` |
-| `openapi-object-schema-synthesizer.test.ts` | add / remove / rename / required / whole-group stamping / description and schema sources (every scenario of `parameters.md` → "Description and schema sources", fixtures `query-parameters/21-description-moved-entry-to-schema`–`18`) |
-| `openapi-section-presence.test.ts` | `OpenApiSectionPresenceResolver`: every row of the presence table and the fixture table in [Section presence](#section-presence-and-whole-section-changes) (raw vs synthetic whole diffs, schema-less media types, description keeps the Body present, mixed directions, unchanged sibling, neither side present → nothing rendered) |
-| `openapi-security-override-diffs.test.ts` | synthetic alternative diffs (`security/03-document-security-overridden`, reverse) |
-| `openapi-response-change-markers.test.ts` | `KindResponse` descendant summary: every row of the fixture table in [responses.md](../entities/responses.md#change-markers-on-response-code-options) (whole add / remove / rename → ∅, stamped header diffs ignored, strongest type wins via the set) |
-| `openapi-severities.test.ts` | one placement per row; whole-node fills all placements |
+| `openapi-spec-transformer.test.ts` | the full OAS 3.0 operation, external docs, effective security (document vs operation list), OAS 3.1 role scopes and `mutualTLS`, parameter synthesis (plain), OAS 3.1 without responses, the default response (`OpenApiResponseCode.pickDefault`), response-code order, response codes as nested nodes |
+| `openapi-with-diffs.test.ts` | the with-diffs pipeline on `openapi-diffs/` fixtures, by area: operation (summary, address rename, whole add, deprecated / operation ID, the tag row, external docs), parameters (whole group removal, `required`, both places, schema ↔ content, entry extensions), request body (option removal / rename / highlight, `required`, extensions cloned), responses (option add / rename, the Responses row, Body / Headers presence, extensions), security (alternatives, scopes, schemes, the override switch, `security: []`), side accessors, security card accessors |
+| `openapi-security-anonymous.test.ts` | anonymous access (`{}`): `allowsAnonymous`, the `Optional` badge diff, slots `{}` on one side only |
+| `openapi-security-hiding-unchanged.test.ts` | `SecurityRowDiffs.Scheme.isContentChanged` (collapsed cards) |
+| `openapi-media-type-schema.test.ts` | `OpenApiMediaTypeSchema.wrap` (the Body schema wrapper and its `Type` record) |
+| `openapi-node-visibility.test.ts` | security scheme visibility: the required scope list (`SecurityNodeVisibility`) |
+| `openapi-layout.test.ts` | the spacing config, edges and separators (`LayoutPlanner`) |
+| `selector-options.test.ts` | options as nested nodes of complex containers (shared rule, OpenAPI and AsyncAPI) |
+| `record-driven-aggregator-registry.test.ts` | the registry and the aggregation tables (the Security tables shared unchanged) |
 
-Inline cases go to `packages/samples/src/openapi-diffs.ts` (published as
-`@netcracker/qubership-apihub-samples`), as `async-api-diffs.ts` does.
+**Not covered by a dedicated unit test** (the screenshot suites and `openapi-with-diffs.test.ts`
+cover parts): every row of the [presence table](#section-presence-and-whole-section-changes) (raw vs
+synthetic whole diffs, schema-less media types, mixed directions, neither side present);
+`OpenApiObjectSchemaWithDiffsSynthesizer` scenario by scenario ([parameters.md](../entities/parameters.md)
+→ "Description and schema sources"); the response-code change-marker table
+([responses.md](../entities/responses.md#change-markers-on-response-code-options)); the severity
+tables (one placement per row, a whole add / remove fills all of them).
+
+Inline cases go to `packages/samples/src/` (published as `@netcracker/qubership-apihub-samples`), as
+`async-api-diffs.ts` does (OpenAPI: `openapi-diffs-hiding-unchanged-nodes.ts`, `openapi-arrow-buttons.ts`).
 
 ## Related documents
 

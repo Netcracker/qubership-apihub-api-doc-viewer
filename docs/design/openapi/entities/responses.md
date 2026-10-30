@@ -84,14 +84,14 @@ only diffs **inside** it, because the response's own add / remove / rename sits 
 `responses` diff record and `apiDiff` emits no diffs inside a wholly added / removed object.
 
 ```text
-OpenApiNodeDescendantDiffsSummaryAggregatorKindResponse.aggregate(nodeDiffs, …, crawlValue, diffsMetaKeys):
+RecordDrivenNodeDescendantDiffsSummaryAggregator.aggregate(nodeDiffs, …, crawlValue, diffsMetaKeys):   // every kind; the response option reads it via OpenApiRowDiffs.Response.takeChangesMarkerSummary
   wholeDiff = nodeDiffs[""]
   if wholeDiff is add or remove (own or inherited)      → return ∅          // rule "not counted", incl. stamped diffs
   diffs = takeAggregatedDiffs(crawlValue, diffsMetaKeys) // crawlValue = the TRANSFORMED response value
   return { d.type | d ∈ diffs, d !== wholeDiff?.data }   // a rename is never in the rollup; guard anyway
 ```
 
-- The rollup must be the one computed on the **transformed** spec (pipeline step 5 in
+- The rollup must be the one computed on the **transformed** spec (the last pipeline step in
   [../features/diffs.md](../features/diffs.md#pipeline)), so relocated, synthesized (header
   properties, description precedence) and presence diffs are included and dropped / shadowed ones
   are not.
@@ -135,8 +135,8 @@ selection. Diff key `description`, severity `DescriptionRow`. Not the schema des
 | --- | --- |
 | Source | `response.headers` (map name → Header Object); synthesized by the same `OpenApiObjectSchemaSynthesizer` as parameters ([parameters.md](parameters.md#schema-synthesizer)) — entry name = map key, no `in` |
 | Header row | `TitleRow` "Headers", **h3**, test id `openapi-response-headers`; collapsible, expanded by default ([collapsible-sections.md](../features/collapsible-sections.md)) — as the response Body and both Extensions subsections |
-| Content | `ParametersNodeViewer` (same component as request parameter groups) |
-| Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and the presence resolver turns it into a wholly removed Headers section (`response-headers/20-all-removed`) |
+| Content | `buildParametersBlock` (`parameters-blocks.tsx`, the same block as request parameter groups) |
+| Shown when | ≥1 header (in diffs: on either side); an explicit empty map counts as no headers. Per side, the section follows its presence (≥1 header): deleting the `headers` map arrives as one `remove` **per header** (the unifier default `headers: {}` exists on the after side, E19), and `OpenApiSectionPresence.writeSectionDiff` turns it into a wholly removed Headers section (`response-headers/20-all-removed`) |
 | `Content-Type` header | shown (Q5) |
 | Header `x-*` | moved flat into the header's synthetic property schema and shown in its **Extensions** sub-tree — same rules as parameters ([parameters.md](parameters.md#entry-extensions)) |
 
@@ -199,11 +199,11 @@ description and headers still render.
 
 ## Visibility
 
-`OpenApiNodeVisibilityManagerKindResponse` (plain and with-diffs variants) returns
-`{ showDescription, showHeaders, showBody }` for the selected response;
-`…KindResponses` returns `{ showSection }`. With diffs, each flag means "rendered" (present on
-either side); what each side shows comes from the whole-section diff of `responseHeaders` /
-`content` / `responses` — a section is hidden on the side where it is not present, never shown
+Value rules: `OpenApiNodeVisibility.showResponseDescription` (the description row); Headers and Body
+render when their node exists (the transformer builds them only when present on some side), the
+Responses section when it has a code or extensions. There is no separate with-diffs visibility code:
+what each side shows comes from the whole-section diff of `responseHeaders` / `content` / `responses`
+(`OpenApiSectionPresence`) — a section is hidden on the side where it is not present, never shown
 there just because its raw object exists
 ([../features/diffs.md](../features/diffs.md#row-visibility)).
 

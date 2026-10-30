@@ -40,7 +40,7 @@ export interface OpenApiTreeNodeValueTypeParameters {
 
 ## Rendering
 
-`ParametersNodeViewer` — the same component renders response headers.
+`buildParametersBlock` (`parameters-blocks.tsx`) — the same block renders response headers.
 
 | Item | Rule |
 | --- | --- |
@@ -349,7 +349,8 @@ Not wholly added / removed (header stays uncolored; property rows show their own
 | Mix of whole-entry adds and field changes on another entry | the changed entry has no `add` |
 
 **Consequences on screen** (the shared [section header colorizing](../../shared/features/section-header-colorizing.md)
-rule, implemented in `KindParameters.aggregateByDescendantDiffs` over the synthesized properties —
+rule, implemented by the with-diffs transformer: `OpenApiSectionPresence.writeSectionDiff` per
+parameter location, from the entries' presence per side —
 [../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes)):
 
 | Group state | Origin side | Changed side |
@@ -364,7 +365,7 @@ property diffs — they are all the same direction; `type` = the max severity am
 This is the presence rule of
 [../features/diffs.md](../features/diffs.md#section-presence-and-whole-section-changes) for a group
 (present on a side = ≥1 entry on that side): "every property `add`" is exactly "no entry before,
-≥1 after". The resolver computes presence from the reconstructed sides, so it also covers diffs
+≥1 after". `OpenApiSectionPresence` computes presence from the reconstructed sides, so it also covers diffs
 that land on a container instead of each entry.
 
 The **Request** section header (h2) uses the same presence rule one level up: present on a side when

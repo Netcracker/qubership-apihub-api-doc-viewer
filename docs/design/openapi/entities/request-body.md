@@ -42,14 +42,15 @@ Mirrors JSON Schema's `required` rendering ([meta flags and required](../../json
 
 | Element | Plain | With diffs |
 | --- | --- | --- |
-| Red `*` after "Body" (shared `RequiredStar`, via `TitleRow` `titleContent` per side) | shown when `required === true` | **side-exclusive**: shown only on the side where the body is required (`OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)`); unchanged required → both sides |
+| Red `*` after "Body" (`RequiredMark`, via `TitleRow` `titleContent` per side) | shown when `required === true` | **side-exclusive**: shown only on the side where the body is required (`OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)`); unchanged required → both sides |
 | **required** tag in the subheader, after the media-type selector (`TagsWithDiffs`) | never | shown only when the required status changed **and** the body was not wholly added / removed; colored by its own diff (`OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)`) — green when it became required, red when it became optional |
 | Title row background | — | yellow synthetic replace when the required status changed (JSON Schema title-row priority: whole add / remove wins) |
 
 Diff shape: `requestBody[M].required`. A missing `required` is `false` (`api-unifier` default, E5),
 so "became optional" can arrive as `true → false` replace **or** as a `remove` of `required: true`;
-normalize both to boolean semantics in `KindRequestBody` (`add` → became required, `remove` →
-became optional) and drop diffs whose effective value did not change. Severity: `TitleRow`.
+normalize both to boolean semantics in the with-diffs transformer (`buildRequestBody` →
+`SideReader.normalizeFlagDiff`: `add` → became required, `remove` → became optional) and drop diffs
+whose effective value did not change. Severity: `TitleRow` (`OPENAPI_FIELD_PLACEMENTS`).
 
 ## Description row
 
@@ -131,9 +132,13 @@ are green / red on the side that has them and hidden on the other.
 
 ## Visibility
 
-`OpenApiNodeVisibilityManagerKindRequestBody`:
+Value rules: `OpenApiNodeVisibility.showRequestBodyDescription` (the description row); the Body
+header and the schema follow the Body's presence and the selected option. With diffs, what each
+side shows comes from the diffs (the whole-section diff of `requestBody` / `content` written by
+`OpenApiSectionPresence`, the option's own diff) — there is no separate with-diffs visibility code
+([../features/diffs.md](../features/diffs.md#row-visibility)):
 
-| Flag | Plain | With diffs: row rendered | With diffs: per side |
+| Row | Plain | With diffs: row rendered | With diffs: per side |
 | --- | --- | --- | --- |
 | `showHeader` | Body present | present on either side | hidden on the side where the Body is not present (whole-section diff styles) |
 | `showDescription` | `description` non-empty | `description` on either side, or a `description` diff | per its own diff, or inherited from a whole-section diff |
