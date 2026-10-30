@@ -62,8 +62,8 @@ export type LayoutBadgeSegment = {
 
 /**
  * A content-less row: per side a stack of bands, both summing to `height`, plus one badge stub stack
- * for the whole row (the floating badge is per row, not per side). Interned by `signature`: equal
- * separators are the same object, so consumers can memoise on identity or on the signature.
+ * for the whole row (the floating badge is per row, not per side). `signature` encodes every band and
+ * badge segment: equal separators have equal signatures, so consumers memoise on it.
  */
 export type LayoutSeparatorRow = {
   readonly height: number

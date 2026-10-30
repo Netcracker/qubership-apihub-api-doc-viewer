@@ -86,7 +86,7 @@ record holds the per-alternative add / remove / rename entries and the toolbar's
 `SECURITY_ALTERNATIVES_DIFF_KEY` replace (severity placement `SelectorRow`). Same shape in AsyncAPI
 (shared Security module).
 
-`meta.unresolvedSecurityScheme = name` is set when `isResolved` is false.
+An unresolved scheme is recognised from its value (`isResolved: false`); the card's "unresolved" row reads it through `SecurityNodeVisibility` (no node meta).
 
 ## Section header
 

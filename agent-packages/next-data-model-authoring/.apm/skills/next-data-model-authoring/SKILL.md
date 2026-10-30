@@ -661,11 +661,13 @@ Design: `docs/design/openapi/features/diffs.md`, `entities/security.md`. Accesso
   of a `scopes` map replace; a scope whose only change is `required`) get diffs derived in the model
   from the parent diff (type + declaration paths kept); a required-only change gets a yellow
   `buildRowReplace` so the whole row is painted.
-- **Synthetic field diffs need an allow-list.** The `KindAny` node-diffs aggregator copies only the
-  kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
+- **Synthetic field diffs need an allow-list.** The record-driven node-diffs aggregator copies only
+  the kind's value props; a transformer-written synthetic key (e.g. the security toolbar's
   `alternatives`) must be listed in the synthetic-key table (security: `SECURITY_SYNTHETIC_FIELD_DIFF_KEYS` in
-  `building-service/security/tree-with-diffs/aggregation-tables.ts`) and mapped in the field
-  placements (security: `SECURITY_FIELD_PLACEMENTS` in `model/security/tree-with-diffs/placements.ts`).
+  `building-service/security/tree-with-diffs/aggregation-tables.ts`; OpenAPI: the private table in
+  `building-service/openapi/tree-with-diffs/aggregation-tables.ts`) and mapped in the field
+  placements (security: `SECURITY_FIELD_PLACEMENTS` in `model/security/tree-with-diffs/placements.ts`;
+  OpenAPI: `OPENAPI_FIELD_PLACEMENTS` in `model/openapi/tree-with-diffs/placements.ts`).
   OpenAPI, security and JSON Schema model files do not import `building-service` (DDL node visibility
   and `model/abstract/tree-with-diffs/changed-property-meta-data.ts` still do — keep the boundary
   for new code).
@@ -752,7 +754,7 @@ specialisations — extend it, do not fork a per-spec copy.
 | --- | --- | --- |
 | Kinds / values / alias | `model/security/types/` (`SecurityTreeNodeKinds`, `SECURITY_NODE_VALUE_PROPS`, `SecurityTreeNode<K>`) | spread into `OpenApiTreeNodeKinds` / `AsyncApiTreeNodeKinds`; value maps `T extends SecurityTreeNodeKind ? SecurityTreeNodeValue<T>` |
 | Spec builders | `building-service/security/` — `SecuritySpecBuilder<TInput>` (abstract), `SecuritySpecDiffsDecorator` (composed), `getSecurityCrawlRules()` | `<Spec>SecuritySpecBuilder` + `<Spec>SecuritySpecWithDiffsBuilder extends` it; the spec transformer's `createSecuritySpecBuilder()` is the only with-diffs override |
-| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + placement tables (`model/security/tree-with-diffs/placements.ts`) + synthetic keys (`building-service/security/tree-with-diffs/aggregation-tables.ts`) | OpenAPI `KindAny` spreads the tables; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `ASYNC_API_SECURITY_NODE_AGGREGATORS` (one typed `SecurityNodeAggregators<V, K, M>` instance per API type — no untyped cache, no casts) |
+| Aggregators | record-driven (`building-service/abstract/.../record-driven-aggregators.ts`) + placement tables (`model/security/tree-with-diffs/placements.ts`) + synthetic keys (`building-service/security/tree-with-diffs/aggregation-tables.ts`) | OpenAPI spreads the tables into `OPENAPI_AGGREGATION_TABLES`; AsyncAPI factories dispatch `isSecurityTreeNodeKind(kind)` to `ASYNC_API_SECURITY_NODE_AGGREGATORS`. Both are one `RecordDrivenAggregatorRegistry<V, K, M, T>` per API type, built from `RecordDrivenAggregationTables<T>` (`SECURITY_AGGREGATION_TABLES` for AsyncAPI) — no per-kind classes, no factories, no casts |
 | Row diffs | `SecurityRowDiffs` | — |
 | Labels / visibility | `SecurityDisplayLabels`, `SecurityNodeVisibility`, `SecurityPresentation` | `model/<spec>/security-presentation.ts` (`*_SECURITY_DISPLAY_LABELS`, `*_SECURITY_NODE_VISIBILITY`, `*_SECURITY_PRESENTATION`) |
 

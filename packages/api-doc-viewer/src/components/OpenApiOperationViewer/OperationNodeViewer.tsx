@@ -21,7 +21,7 @@ import {
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { FC, ReactElement, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, ReactElement, useCallback, useMemo, useState } from "react"
 import { AddressRow } from "../shared-components/AddressRow/AddressRow"
 import { TagsWithDiffs } from "../shared-components/diffs/TagsWithDiffs"
 import { ExternalDocsRow } from "../shared-components/ExternalDocsRow/ExternalDocsRow"
@@ -60,13 +60,17 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const { spacing } = useOpenApiViewerContext()
   const visibility = useMemo(() => OpenApiNodeVisibility.resolveOperation(node.value(), noHeading), [node, noHeading])
 
-  // View state of the whole operation; a rebuilt tree (new source) starts fresh.
+  // View state of the whole operation; a rebuilt tree (new source) starts fresh. Reset during render,
+  // not in an effect: React re-runs this component before its children render, so the previous
+  // tree's selections are never drawn (node ids are path-based and would match the new tree).
   const [selection, setSelection] = useState<OpenApiSelection>(new Map())
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
-  useEffect(() => {
+  const [stateOwner, setStateOwner] = useState(node)
+  if (stateOwner !== node) {
+    setStateOwner(node)
     setSelection(new Map())
     setCollapsed(new Set())
-  }, [node])
+  }
   const select = useCallback((ownerNodeId: string, selectedNodeId: string) => {
     setSelection(current => new Map(current).set(ownerNodeId, selectedNodeId))
   }, [])

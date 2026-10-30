@@ -14,10 +14,6 @@ import {
   LayoutSideTone,
 } from "./types"
 
-/** Interned separators: equal separators are one object (cheap equality for consumers). Bounded. */
-const SEPARATOR_CACHE = new Map<string, LayoutSeparatorRow>()
-const SEPARATOR_CACHE_LIMIT = 1000
-
 /** Adjacent pieces of the same look become one piece; zero-height pieces are dropped. */
 function merge<T extends { readonly height: number }>(pieces: readonly T[], same: (a: T, b: T) => boolean): T[] {
   const result: T[] = []
@@ -110,7 +106,7 @@ export class LayoutPlanner {
     if (height <= 0) {
       return undefined
     }
-    return LayoutPlanner.intern(height, before, after, badge)
+    return LayoutPlanner.separatorRow(height, before, after, badge)
   }
 
   /** A card opening / closing row (inside the border): whole-card tones and badge stub. */
@@ -123,7 +119,7 @@ export class LayoutPlanner {
     }
   }
 
-  private static intern(
+  private static separatorRow(
     height: number,
     before: readonly LayoutBand[],
     after: readonly LayoutBand[],
@@ -134,15 +130,6 @@ export class LayoutPlanner {
       signatureOf(after.map(band => ({ height: band.height, look: band.tone }))),
       signatureOf(badge.map(segment => ({ height: segment.height, look: segment.type }))),
     ].join('/')
-    const cached = SEPARATOR_CACHE.get(signature)
-    if (cached) {
-      return cached
-    }
-    if (SEPARATOR_CACHE.size >= SEPARATOR_CACHE_LIMIT) {
-      SEPARATOR_CACHE.clear()
-    }
-    const separator: LayoutSeparatorRow = { height, before, after, badge, signature }
-    SEPARATOR_CACHE.set(signature, separator)
-    return separator
+    return { height, before, after, badge, signature }
   }
 }

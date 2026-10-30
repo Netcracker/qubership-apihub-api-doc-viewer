@@ -119,12 +119,12 @@ describe('OpenAPI layout: separators', () => {
     expect(between(card(), card(Gray, Green, 'non-breaking'), 'security')?.after).toEqual([{ height: 4, tone: undefined }, { height: 4, tone: Green }])
   })
 
-  it('equal separators are one interned object with a stable signature', () => {
+  it('equal separators have one stable signature, different separators another', () => {
     const a = between(row(Yellow, Yellow), row(), 'operation')
     const b = between(row(Yellow, Yellow), row(), 'operation')
-    expect(a).toBe(b)
+    expect(a).toEqual(b)
     expect(a?.signature).toBe('6yellow,6-/6yellow,6-/12-')
-    expect(between(row(), row(), 'operationHeader')).not.toBe(a)
+    expect(between(row(), row(), 'operationHeader')?.signature).not.toBe(a?.signature)
   })
 })
 

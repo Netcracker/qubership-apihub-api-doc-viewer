@@ -332,7 +332,7 @@ Viewer (`OpenApiOperationViewer/`):
 | `StackLayout` | `+ level`; renders the leading / trailing separators the planner returns |
 | CSS | OpenAPI row padding rules (`--openapi-row-padding`, `openapi-operation-id-row`) removed; nested-viewer first-row override stays (it is the viewer's ≥ 4 inset) |
 | `SeparatorRow` / `BadgeStub` | render any stack of bands; frame positions passed as resolved values |
-| Memoisation | the planner interns separators by `signature` (equal separators are one object); `SeparatorRow` and `SecurityFrameRow` are `memo` with value comparators; `renderSeparatorRow` returns one cached element per look and frame positions, so React skips them on re-render |
+| Memoisation | the planner is pure (no caches); every separator carries a `signature` of its bands and badge segments; `SeparatorRow` (memo on `signature` + frame positions) and `SecurityFrameRow` are `memo` with value comparators, so React skips them on re-render |
 
 ## 9. Cost
 

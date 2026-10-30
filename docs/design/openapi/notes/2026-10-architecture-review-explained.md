@@ -613,7 +613,43 @@ vs new: the trees with nested nodes flattened back (763 / 763 identical, includi
 severity and summary), and the rendered HTML (763 / 763 byte-identical). Both were broken on purpose
 to prove they can fail.
 
-## Batch 7 — smaller cleanups F12, F15–F18 (done 2026-10-30; F14 proposed)
+## Batch 8 — last cleanups F24, F22, F21, F14 (done 2026-10-30)
+
+Four low-severity findings, none visible on screen. Three proposals were revised after reading the
+code again (notes → "F14, F21, F22, F24").
+
+| ID | In one sentence | Fix in one sentence |
+| --- | --- | --- |
+| F24 | Every OpenAPI node gets a "this looks like an unresolved scheme" meta by a shape guess, and nothing reads it. | Delete the field and the guess; the unresolved row already reads `value.isResolved`. |
+| F22 | The planner and the separator renderer each keep a page-wide cache, wiped at 1000 entries, for re-render skipping that `SeparatorRow`'s `memo` already does by signature. | Delete both caches and the `renderSeparatorRow` helper. |
+| F21 | After the tree is rebuilt, the operation renders once with the previous selections and collapsed sections, then resets them in an effect and renders again. | Reset during render when the node object changes, so the stale state is never drawn. |
+| F14 | The "one aggregator per kind, cached" logic exists three times, plus five near-empty `KindAny` classes; OpenAPI tables hide in aggregator files. | One generic registry built from tables, one instance per API type; tables in `placements.ts` / `aggregation-tables.ts`. |
+
+### What was done (2026-10-30)
+
+| Concern | Lives in | Notes |
+| --- | --- | --- |
+| "Is this scheme unresolved?" | the scheme value (`isResolved`), read by `SecurityNodeVisibility` | F24: the unread meta copy is gone |
+| Separator re-render skipping | `SeparatorRow`'s memo on the `signature` | F22: no page-wide caches; the planner is pure |
+| Resetting the view state on a rebuilt tree | `OperationNodeViewer`, during render | F21: no stale frame, no second render of the operation |
+| The five aggregators per kind | one `RecordDrivenAggregatorRegistry` per API type, built from tables | F14: OpenAPI `OPENAPI_AGGREGATION_TABLES`; AsyncAPI `SECURITY_AGGREGATION_TABLES` |
+| OpenAPI placement tables | `model/openapi/tree-with-diffs/placements.ts` | F14: like Security |
+
+**Verification (done).** Trees and rendered HTML equal for every OpenAPI and AsyncAPI fixture after
+each step. Breaks: F24 on a synthetic unresolved scheme (no fixture has one); F21 in a temporary jsdom
+render (old: one commit still shows the previous selection; new: none); F14 4 OpenAPI and 14 AsyncAPI
+cases differ when a table entry is dropped. Gaps: F22's memoisation cannot be seen in HTML (equal by
+construction), and F21 has no committed test — the viewer has no DOM test environment (configuration
+proposal in the notes).
+
+### Verification plan for batch 8
+
+- `tsc`, unit tests and lint in both packages.
+- Tree comparison (every OpenAPI and AsyncAPI fixture) after F24 and F14; render-HTML comparison after
+  every step; one deliberate break per finding.
+- F21 cannot be seen in static HTML: a viewer unit test that fails on the old effect first.
+
+## Batch 7 — smaller cleanups F12, F15–F18 (done 2026-10-30; F14 done in batch 8)
 
 Six low-severity findings, all still in the code after batches 1–5, none visible on screen. Grouped
 by risk: F12 + F15 (data path, mechanical), F14 (shared aggregator plumbing, touches AsyncAPI via

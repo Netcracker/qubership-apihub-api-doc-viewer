@@ -254,15 +254,16 @@ All numbers and rules live in one config, `OpenApiSpacingConfig` (next-data-mode
 `model/openapi/layout/`, extending the spec-neutral `LayoutSpacingConfig` of `model/abstract/layout/`);
 the data layer computes element edges, separators and frame rows; each container builds its elements
 in the configured section order and renders the plan (shared `StackLayout level=…`, spacing from
-`LayoutSpacingContext`, which the root provides). Separators are interned and their rendered elements cached.
+`LayoutSpacingContext`, which the root provides). The planner is pure; `SeparatorRow` is memoised on the separator `signature`.
 
 ## View state
 
 All selection state lives in **one** view-state store owned by `OperationNodeViewer`
 (`OpenApiViewStateContext`: owner node id -> selected node id); the tree model never changes. Every
 level reads it: the layout of a level depends on the selections below it (the selected media type
-decides where a Body, and so the Request, ends). The store resets when the operation node changes
-(a rebuilt tree starts fresh). Resolvers with the defaults: `OpenApiViewSelection` (`src/utils/openapi/view-selection.ts`: `alternative`, `response`, `mediaTypes`, `mediaType`); the default response code is the domain rule `OpenApiResponseCode.pickDefault` (next-data-model, Q13).
+decides where a Body, and so the Request, ends). The store resets when the operation node object changes
+(a rebuilt tree starts fresh), during render rather than in an effect, so the previous tree's
+selections are never drawn: node ids are path-based and would match the rebuilt tree. Resolvers with the defaults: `OpenApiViewSelection` (`src/utils/openapi/view-selection.ts`: `alternative`, `response`, `mediaTypes`, `mediaType`); the default response code is the domain rule `OpenApiResponseCode.pickDefault` (next-data-model, Q13).
 
 | State | Owner key | Initial value |
 | --- | --- | --- |

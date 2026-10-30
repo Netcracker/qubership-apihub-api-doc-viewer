@@ -2,28 +2,32 @@ import { NodeDescendantDiffs, NodeDiffs } from "../../../model/abstract/tree-wit
 import { OpenApiTreeWithDiffs } from "../../../model/openapi/tree-with-diffs/tree.impl"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../../../model/openapi/types/aliases"
 import { OpenApiTreeNodeKind } from "../../../model/openapi/types/node-kind"
+import { OpenApiTreeNodeMeta } from "../../../model/openapi/types/node-meta"
 import { OpenApiAnyTreeNodeValue } from "../../../model/openapi/types/node-value"
 import { isOpenApiTreeNodeWithDiffs } from "../../../shared/openapi/guards/tree-node"
 import { OpenApiTreeWithDiffsBuilderParams } from "../../../shared/openapi/types/tree-builder-params"
 import { isObjective } from "../../../utilities"
 import { NodeId, NodeKey } from "../../../utility-types"
 import { DiffMetaKeys } from "../../abstract/tree-with-diffs/node-diffs-data/diff-meta-keys"
+import { RecordDrivenAggregatorRegistry } from "../../abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators"
 import { OpenApiOperationOrientedSpec } from "../shared/openapi-spec-transformer"
 import { OpenApiSpecWithDiffsTransformer } from "../shared/openapi-spec-with-diffs-transformer"
 import { OpenApiTreeBuildingNodeParams } from "../tree/building-hooks"
 import { OpenApiTreeBuilder } from "../tree/builder"
 import { OpenApiNodeDataBuilder } from "../tree/node-data/builder"
-import {
-  OpenApiNodeDescendantDiffsAggregatorFactory,
-  OpenApiNodeDescendantDiffsSummaryAggregatorFactory,
-  OpenApiNodeDiffsAggregatorFactory,
-  OpenApiNodeDiffsSeveritiesAggregatorFactory,
-  OpenApiNodeDiffsSummaryAggregatorFactory,
-} from "./node-diffs-data/factories"
+import { OPENAPI_AGGREGATION_TABLES } from "./aggregation-tables"
 
 const OPENAPI_WITH_DIFFS_LOG_PREFIX = '[OpenAPI][WithDiffs]'
 
 type OpenApiNodeDiffs = NodeDiffs<OpenApiAnyTreeNodeValue | null>
+
+/** The record-driven aggregators of every OpenAPI kind, built from the OpenAPI tables. */
+const OPENAPI_AGGREGATORS = new RecordDrivenAggregatorRegistry<
+  OpenApiAnyTreeNodeValue | null,
+  OpenApiTreeNodeKind,
+  OpenApiTreeNodeMeta,
+  OpenApiTreeNodeKind
+>(OPENAPI_AGGREGATION_TABLES)
 
 /**
  * Merged `apiDiff` document -> tree with precomputed diffs.
@@ -83,21 +87,21 @@ export class OpenApiTreeWithDiffsBuilder extends OpenApiTreeBuilder {
     const parent = this.takeNodeWithDiffs(params.parent)
     const container = this.takeNodeWithDiffs(params.container)
 
-    const nodeDiffs: OpenApiNodeDiffs | undefined = OpenApiNodeDiffsAggregatorFactory
-      .instance(kind)
+    const nodeDiffs: OpenApiNodeDiffs | undefined = OPENAPI_AGGREGATORS
+      .nodeDiffs(kind)
       .aggregate(params.value, this.diffsMetaKeys, node.key, parent, container)
     if (nodeDiffs) {
       Object.assign(node.diffs, nodeDiffs)
     }
 
-    const diffsSummary = OpenApiNodeDiffsSummaryAggregatorFactory.instance().aggregate(node.diffs)
+    const diffsSummary = OPENAPI_AGGREGATORS.diffsSummary().aggregate(node.diffs)
     if (diffsSummary) {
       node.diffsSummary.clear()
       node.addDiffsSummary(diffsSummary)
     }
 
-    const descendantDiffs: NodeDescendantDiffs | undefined = OpenApiNodeDescendantDiffsAggregatorFactory
-      .instance()
+    const descendantDiffs: NodeDescendantDiffs | undefined = OPENAPI_AGGREGATORS
+      .descendantDiffs()
       .aggregate(params.value, this.diffsMetaKeys)
     if (descendantDiffs) {
       Object.assign(node.descendantDiffs, descendantDiffs)
@@ -106,15 +110,15 @@ export class OpenApiTreeWithDiffsBuilder extends OpenApiTreeBuilder {
     // The forward summary reads the document rollup itself, including the node's own field diffs;
     // `mergeAggregatedDiffTypesIntoDescendantSummary` is deliberately not called (it would re-add
     // diffs stamped by the synthesizer onto a wholly added / removed node).
-    const descendantDiffsSummary = OpenApiNodeDescendantDiffsSummaryAggregatorFactory
-      .instance()
+    const descendantDiffsSummary = OPENAPI_AGGREGATORS
+      .descendantDiffsSummary()
       .aggregate(node.diffs, node.descendantDiffs, params.value, this.diffsMetaKeys)
     if (descendantDiffsSummary) {
       node.descendantDiffsSummary.clear()
       node.addDescendantDiffsSummary(descendantDiffsSummary)
     }
 
-    const severities = OpenApiNodeDiffsSeveritiesAggregatorFactory.instance(kind).aggregate(node.diffs)
+    const severities = OPENAPI_AGGREGATORS.severities(kind).aggregate(node.diffs)
     if (severities) {
       Object.assign(node.diffsSeverities, severities)
     }

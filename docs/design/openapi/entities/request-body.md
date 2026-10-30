@@ -125,7 +125,7 @@ media types without `schema`. Shared rule and resolver:
 | media type with schema + description | `content: {}`, description kept | present on both sides: description unchanged, option removed, header uncolored — `request-body/14-media-type-removed-description-kept` |
 | `required: true` + schema-less media type | anything that is still not present | Body not rendered on either side |
 
-A wholly added / removed Body paints every row through `KindAny` inheritance: header, required
+A wholly added / removed Body paints every row through the record-driven node-diffs inheritance: header, required
 marker, description, options, and the schema (wrapped root painted by the passed node-level diff)
 are green / red on the side that has them and hidden on the other.
 

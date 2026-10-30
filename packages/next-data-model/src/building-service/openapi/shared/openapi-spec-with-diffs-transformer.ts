@@ -32,7 +32,7 @@ const OPERATION_SECTION_KEYS = ['security', 'extensions', 'request', 'responses'
 /**
  * Merged `apiDiff` document -> operation-oriented spec with diff records attached for the
  * OpenAPI layer. Child-section diffs live in the parent's own record under the child key (where
- * `KindAny` inheritance reads them); synthetic whole-section diffs come from presence per side.
+ * record-driven node-diffs inheritance reads them); synthetic whole-section diffs come from presence per side.
  * Collaborators: operation facts (`OpenApiDiffsOperationFactsResolver`), section presence
  * (`OpenApiSectionPresence`), body content (`OpenApiContentWithDiffsDecorator`). No per-operation
  * state lives on the transformer: every step reads the facts of the context it is given.

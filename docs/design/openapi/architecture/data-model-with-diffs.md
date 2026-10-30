@@ -10,7 +10,7 @@ Rules: [../features/diffs.md](../features/diffs.md).
 ```mermaid
 flowchart TB
   subgraph ABS["Abstract (shared)"]
-    RecordDriven["building-service/abstract/tree-with-diffs/node-diffs-data/<br/>record-driven-aggregators.ts · RecordDriven*Aggregator (5 families)"]
+    RecordDriven["building-service/abstract/tree-with-diffs/node-diffs-data/<br/>record-driven-aggregators.ts · RecordDriven*Aggregator (5 families)<br/>RecordDrivenAggregatorRegistry (built from RecordDrivenAggregationTables, cached per kind)"]
     SideReader["building-service/shared/side-reader.ts<br/>SideReader (readField · normalizeFlagDiff · replaceRecordEntry) ·<br/>SideContext · SideContexts (NONE · BOTH · intersect · union) · FieldSides"]
     Rollup["api-diff aggregateDiffsWithRollup · aggregatedDiffsMetaKey"]
     RowDiffsBase["model/abstract/tree-with-diffs/row-diffs-base.ts<br/>NodeLevelRowDiffs (isFlagOnSide · takeChangesMarkerSummary) · SectionRowDiffs"]
@@ -20,7 +20,7 @@ flowchart TB
 
   subgraph SEC["Security module (spec-neutral, shared with AsyncAPI)"]
     SecDecorator["building-service/security/security-spec-diffs-decorator.ts<br/>SecuritySpecDiffsDecorator (composed)"]
-    SecTables["model/security/tree-with-diffs/placements.ts<br/>SECURITY_FIELD_PLACEMENTS · SECURITY_NODE_PLACEMENTS"]
+    SecTables["model/security/tree-with-diffs/placements.ts<br/>SECURITY_FIELD_PLACEMENTS · SECURITY_NODE_PLACEMENTS<br/>+ building-service/security/tree-with-diffs/aggregation-tables.ts<br/>SECURITY_SYNTHETIC_FIELD_DIFF_KEYS · SECURITY_AGGREGATION_TABLES (AsyncAPI)"]
     SecRowDiffs["model/security/tree-with-diffs/row-diffs.ts · SecurityRowDiffs<br/>(scope rows with severity · Alternatives: toolbar row diff, isToolbarShownOnSide)"]
     SecCardRows["model/security/card-rows.ts · SecuritySchemeCardRows<br/>card label / value rows from the placement table"]
   end
@@ -41,16 +41,14 @@ flowchart TB
     SecBuilderD["shared/openapi-security-spec-with-diffs-builder.ts<br/>OpenApiSecuritySpecWithDiffsBuilder (one list / switched lists, allowsAnonymous)"]
     SynthD["shared/object-schema-with-diffs-synthesizer.ts<br/>OpenApiObjectSchemaWithDiffsSynthesizer"]
     BuilderD["tree-with-diffs/builder.ts<br/>OpenApiTreeWithDiffsBuilder · assignNodeDiffs"]
-    subgraph AGG["tree-with-diffs/node-diffs-data — one KindAny per family (I2)"]
-      Factories["factories.ts · OpenApiNode*AggregatorFactory (cached per kind)"]
-      KindAny["node-diffs · node-descendant-diffs · node-diffs-summary ·<br/>node-descendant-diffs-summary · node-diffs-severities<br/>*/kind-any.ts (FIELD_PLACEMENTS · NODE_PLACEMENTS · SYNTHETIC_FIELD_DIFF_KEYS)"]
-    end
+    Tables["tree-with-diffs/aggregation-tables.ts<br/>OPENAPI_AGGREGATION_TABLES (value props + synthetic keys,<br/>the placement tables); one record-driven family for every kind (I2)"]
   end
 
   subgraph MODELD["model/openapi/tree-with-diffs"]
     TreeD["tree.impl.ts · OpenApiTreeWithDiffs"]
     DiffKeys["diff-keys.ts · OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY · OPENAPI_RESPONSE_OPTIONS_DIFF_KEY"]
     RowDiffs["row-diffs.ts · OpenApiRowDiffs<br/>Operation · RequestBody · ResponseBody · MediaType · Responses · Response"]
+    OpenApiPlacements["placements.ts · OPENAPI_FIELD_PLACEMENTS · OPENAPI_NODE_PLACEMENTS<br/>(the Security tables spread in)"]
   end
 
   Builder -->|extends| BuilderD
@@ -70,11 +68,11 @@ flowchart TB
   SecBuilderD --> SecDecorator
   TransformerD --> Rollup
   TransformerD --> DiffKeys
-  BuilderD --> Factories
-  Factories --> KindAny
-  KindAny -->|extend| RecordDriven
-  KindAny --> SecTables
-  KindAny --> Placements
+  BuilderD -->|OPENAPI_AGGREGATORS: RecordDrivenAggregatorRegistry| RecordDriven
+  BuilderD --> Tables
+  Tables --> OpenApiPlacements
+  OpenApiPlacements --> SecTables
+  OpenApiPlacements --> Placements
   BuilderD --> TreeD
   RowDiffs --> RowDiffsBase
   RowDiffs --> DiffKeys

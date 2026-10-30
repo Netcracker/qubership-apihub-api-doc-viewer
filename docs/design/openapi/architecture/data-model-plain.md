@@ -173,7 +173,7 @@ Notes:
 - Node value pick lists: `OPENAPI_NODE_VALUE_PROPS` (`tree/node-data/builder.ts`, `satisfies` per
   kind); the security kinds reuse `SECURITY_NODE_VALUE_PROPS`. The same lists are the field-diff
   allow-list of the with-diffs aggregators.
-- `meta`: `{ _fragment, unresolvedSecurityScheme? }`.
+- `meta`: `{ _fragment }`.
 - Row visibility: `OpenApiNodeVisibility` (operation header rows, body / response descriptions) and
   `OPENAPI_SECURITY_NODE_VISIBILITY` (scheme cards, flows). Pure functions of a node value, valid for
   plain and merged trees (I5).

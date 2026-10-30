@@ -1092,15 +1092,17 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
   to the container component — do not build twice. Shared
   components that must be split into elements export their pieces (`ExtensionsSectionTitleRow`,
   `ExtensionsSectionContent`) and keep the composed component byte-identical for AsyncAPI.
-- **Memoised separators.** The planner interns separators by `signature` (equal separators are one
-  object); `SeparatorRow` and `SecurityFrameRow` are `memo` with value comparators (frame positions
-  and presence are passed as resolved values, not functions); `renderSeparatorRow`
-  (`Separator/render-separator-row.tsx`) returns one cached element per look, so React skips them on
-  re-render.
+- **Memoised separators.** `SeparatorRow` (on the separator `signature` and the frame positions)
+  and `SecurityFrameRow` are `memo` with value comparators (frame positions and presence are passed
+  as resolved values, not functions), so React skips them on re-render. The planner is pure: no
+  module-level caches for separators or rendered elements — memoise on values, not identity.
 - **View state is one store.** Selections live in `OpenApiViewStateContext` (owner node id → selected
   node id), owned by `OperationNodeViewer`: a Body's selected media type decides where Request ends,
   which the operation level needs. Per-container `useState` for a selection breaks the plan.
-  Resolvers with the defaults: `src/utils/openapi/view-selection.ts`.
+  Resolvers with the defaults: `OpenApiViewSelection` (`src/utils/openapi/view-selection.ts`). The
+  store resets **during render** when the operation node object changes (`stateOwner !== node`), not
+  in a `useEffect`: an effect commits one render with the old selections first, and `key={node.id}`
+  never resets (a rebuilt tree has the same path-based ids).
 - **Nested viewers: boundary only.** `JsonSchemaViewer` / `JsonSchemaDiffsViewer` **ignore** a
   `data-precededby` passed to them (AsyncAPI still passes one; honouring it would shift AsyncAPI rows),
   so the hook is the opt-in `firstRowPrecededBy` (root title row, or the first child under a

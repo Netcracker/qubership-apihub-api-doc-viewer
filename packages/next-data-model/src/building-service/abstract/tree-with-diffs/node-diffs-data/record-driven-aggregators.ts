@@ -196,3 +196,66 @@ export class RecordDrivenNodeDescendantDiffsSummaryAggregator extends AbstractNo
     return summary
   }
 }
+
+/** The kind tables one record-driven stack is built from (keyed by the tables' kind `T`). */
+export type RecordDrivenAggregationTables<T extends string> = {
+  /** The diffs a kind aggregates as fields: its value props and its synthetic row keys. */
+  readonly fieldDiffKeys: (kind: T) => readonly string[]
+  /** Field diff -> the row(s) it badges, per kind. */
+  readonly fieldPlacements: Readonly<Partial<Record<T, FieldPlacements>>>
+  /** The rows a wholly added / removed node badges, per kind (default: the title row). */
+  readonly nodePlacements: Readonly<Partial<Record<T, readonly NodeDiffsSeverityPlacemennt[]>>>
+}
+
+/**
+ * The five record-driven aggregators of one API type's tree (node types `V`, `K`, `M`) for the kinds
+ * of its tables (`T`): built from the tables, cached per kind (stateless). One instance per API type:
+ * OpenAPI (every kind, the Security tables included) and AsyncAPI (the Security kinds only).
+ */
+export class RecordDrivenAggregatorRegistry<
+  V extends object | boolean | null,
+  K extends string,
+  M extends object,
+  T extends string,
+> {
+  private readonly nodeDiffsByKind = new Map<T, RecordDrivenNodeDiffsAggregator<V, K, M>>()
+  private readonly severitiesByKind = new Map<T, RecordDrivenNodeDiffsSeveritiesAggregator<V>>()
+  private readonly descendantDiffsAggregator = new RecordDrivenNodeDescendantDiffsAggregator()
+  private readonly diffsSummaryAggregator = new RecordDrivenNodeDiffsSummaryAggregator()
+  private readonly descendantDiffsSummaryAggregator = new RecordDrivenNodeDescendantDiffsSummaryAggregator()
+
+  constructor(private readonly tables: RecordDrivenAggregationTables<T>) { }
+
+  public nodeDiffs(kind: T): RecordDrivenNodeDiffsAggregator<V, K, M> {
+    let aggregator = this.nodeDiffsByKind.get(kind)
+    if (!aggregator) {
+      aggregator = new RecordDrivenNodeDiffsAggregator<V, K, M>(this.tables.fieldDiffKeys(kind))
+      this.nodeDiffsByKind.set(kind, aggregator)
+    }
+    return aggregator
+  }
+
+  public severities(kind: T): RecordDrivenNodeDiffsSeveritiesAggregator<V> {
+    let aggregator = this.severitiesByKind.get(kind)
+    if (!aggregator) {
+      aggregator = new RecordDrivenNodeDiffsSeveritiesAggregator<V>(
+        this.tables.fieldPlacements[kind] ?? {},
+        this.tables.nodePlacements[kind] ?? [NodeDiffsSeverityPlacemennt.TitleRow],
+      )
+      this.severitiesByKind.set(kind, aggregator)
+    }
+    return aggregator
+  }
+
+  public descendantDiffs(): RecordDrivenNodeDescendantDiffsAggregator {
+    return this.descendantDiffsAggregator
+  }
+
+  public diffsSummary(): RecordDrivenNodeDiffsSummaryAggregator {
+    return this.diffsSummaryAggregator
+  }
+
+  public descendantDiffsSummary(): RecordDrivenNodeDescendantDiffsSummaryAggregator {
+    return this.descendantDiffsSummaryAggregator
+  }
+}

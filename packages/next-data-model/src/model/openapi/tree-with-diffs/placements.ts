@@ -1,15 +1,16 @@
-import { NodeDiffsSeverityPlacemennt } from "../../../../../model/abstract/tree-with-diffs/tree-node.interface"
-import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY } from "../../../../../model/openapi/tree-with-diffs/diff-keys"
-import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../../model/openapi/types/node-kind"
-import { OpenApiAnyTreeNodeValue } from "../../../../../model/openapi/types/node-value"
-import { FieldPlacements } from "../../../../../model/abstract/tree-with-diffs/field-placements"
-import { RecordDrivenNodeDiffsSeveritiesAggregator } from "../../../../abstract/tree-with-diffs/node-diffs-data/record-driven-aggregators"
-import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS } from "../../../../../model/security/tree-with-diffs/placements"
+import { FieldPlacements } from "../../abstract/tree-with-diffs/field-placements"
+import { NodeDiffsSeverityPlacemennt } from "../../abstract/tree-with-diffs/tree-node.interface"
+import { SECURITY_FIELD_PLACEMENTS, SECURITY_NODE_PLACEMENTS } from "../../security/tree-with-diffs/placements"
+import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../types/node-kind"
+import { OPENAPI_MEDIA_TYPE_OPTIONS_DIFF_KEY, OPENAPI_RESPONSE_OPTIONS_DIFF_KEY } from "./diff-keys"
 
 const Placement = NodeDiffsSeverityPlacemennt
 
-/** Field diff -> the row it belongs to. One placement per row instance (D7). */
-const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacements>>> = {
+/**
+ * Field diff -> the row it belongs to. One placement per row instance (D7). The Security kinds'
+ * tables are shared (`model/security/tree-with-diffs/placements.ts`).
+ */
+export const OPENAPI_FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacements>>> = {
   ...SECURITY_FIELD_PLACEMENTS,
   [OpenApiTreeNodeKinds.OPERATION]: {
     title: Placement.TitleRow,
@@ -40,7 +41,7 @@ const FIELD_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, FieldPlacem
 }
 
 /** Rows a node renders: a whole add / remove badges each of them. */
-const NODE_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly NodeDiffsSeverityPlacemennt[]>>> = {
+export const OPENAPI_NODE_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly NodeDiffsSeverityPlacemennt[]>>> = {
   ...SECURITY_NODE_PLACEMENTS,
   [OpenApiTreeNodeKinds.OPERATION]: [
     Placement.TitleRow,
@@ -53,11 +54,4 @@ const NODE_PLACEMENTS: Readonly<Partial<Record<OpenApiTreeNodeKind, readonly Nod
   ],
   [OpenApiTreeNodeKinds.REQUEST_BODY]: [Placement.TitleRow, Placement.DescriptionRow],
   [OpenApiTreeNodeKinds.RESPONSE]: [Placement.DescriptionRow],
-}
-
-/** Severities of every OpenAPI kind from its placement tables (the Security kinds' are shared). */
-export class OpenApiNodeDiffsSeveritiesAggregatorKindAny extends RecordDrivenNodeDiffsSeveritiesAggregator<OpenApiAnyTreeNodeValue | null> {
-  constructor(kind: OpenApiTreeNodeKind) {
-    super(FIELD_PLACEMENTS[kind] ?? {}, NODE_PLACEMENTS[kind] ?? [NodeDiffsSeverityPlacemennt.TitleRow])
-  }
 }

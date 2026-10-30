@@ -2,7 +2,7 @@ import { SECURITY_NODE_VALUE_PROPS } from "../../../../model/security/types/node
 import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from "../../../../model/openapi/types/node-kind"
 import { OpenApiTreeNodeMeta } from "../../../../model/openapi/types/node-meta"
 import { OpenApiAnyTreeNodeValue, OpenApiTreeNodeValue, OpenApiTreeNodeValueTypeExtensions, OpenApiTreeNodeValueTypeMediaType, OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeParameters, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse, OpenApiTreeNodeValueTypeResponseHeaders } from "../../../../model/openapi/types/node-value"
-import { isObject, isObjectWithStringKeys, isString } from "../../../../utilities"
+import { isObjectWithStringKeys } from "../../../../utilities"
 import { AbstractNodeDataBuilder, NodeDataPickFunction } from "../../../abstract/tree/node-data/builder"
 
 const OPERATION_VALUE_PROPS = [
@@ -47,13 +47,7 @@ export const OPENAPI_NODE_VALUE_PROPS: OpenApiNodeValueProps = {
 
 export class OpenApiNodeDataBuilder extends AbstractNodeDataBuilder<OpenApiAnyTreeNodeValue | null, OpenApiTreeNodeMeta> {
   public override createNodeMeta(value: unknown): OpenApiTreeNodeMeta {
-    const unresolvedSecurityScheme = isObject(value) && value.isResolved === false && isString(value.name)
-      ? value.name
-      : undefined
-    return {
-      ...(unresolvedSecurityScheme !== undefined ? { unresolvedSecurityScheme } : {}),
-      _fragment: value,
-    }
+    return { _fragment: value }
   }
 
   public override createNodeValue(

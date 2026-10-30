@@ -54,17 +54,17 @@ genuinely simple. The weak points are at the **boundaries**:
 | F11 | Fixed | Medium | `OpenApiOperationViewer.tsx` / `OpenApiOperationDiffsViewer.tsx`; `CollapsibleSection.css`, `TitleRow/TitleRow.css`, `preceded-by.css` | The two root viewers repeat the same body: logger memo, viewer-context memo, the provider stack and an identical inline style object writing three CSS custom properties from the spacing config. The CSS reads those properties with numeric fallbacks (`16px`, `24px`, `4px`) that repeat the config defaults, so the numbers have a second, silent home. [Details](#f11-two-root-viewers-with-the-same-body) | Literal duplication; inline literals | A presentational `OpenApiViewerRoot` (providers + root `div`) used by both roots, one viewer-side `toOpenApiCssVariables(spacing)`; no numeric fallbacks in CSS |
 | F12 | Fixed | Low | `OpenApiExtensionsNodeViewer.tsx` L287 | `node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode` read in a container, bypassing the accessors the row-diffs header asks containers to use | Viewer consumes accessors | `OpenApiRowDiffs.Section.takeHeaderRowHighlightingMode(node)` |
 | F13 | Fixed | Low | `openapi-spec-transformer.ts` L268, L378, L380 (`eslint-disable`), L401 (`{} as …`); `tree/node-data/builder.ts` L300; `security/tree-with-diffs/aggregators.ts` L364 | Three `eslint-disable no-unused-vars` comments suppress nothing (ESLint with `--no-inline-config` reports no error: default `args: after-used`); `{} as OpenApiExtensionsSpec` is avoidable; `as readonly (keyof OpenApiAnyTreeNodeValue)[]` casts to the keys common to a union (effectively none), so `pick` is unchecked; `existing as T` in a heterogeneous `Map<string, unknown>` | No assertions without justification; no error suppression | Delete the comments; build a typed object; per-kind typed pick; one typed map per aggregator family |
-| F14 | Open | Low | `tree-with-diffs/node-diffs-data/factories.ts`, the five empty `*KindAny` subclasses, tables in `node-diffs-severities/kind-any.ts` and `node-diffs/kind-any.ts`; `SecurityNodeAggregators` | Two copies of the lazy per-kind cache in OpenAPI plus a third in security; OpenAPI tables hide inside aggregator files while security has `aggregation-tables.ts`. The `KindAny` approach itself is accepted (A1) | Literal duplication | One `RecordDrivenAggregatorRegistry<K>` for both stacks; `building-service/openapi/tree-with-diffs/aggregation-tables.ts` |
+| F14 | Fixed | Low | `tree-with-diffs/node-diffs-data/factories.ts`, the five empty `*KindAny` subclasses, tables in `node-diffs-severities/kind-any.ts` and `node-diffs/kind-any.ts`; `SecurityNodeAggregators` | Two copies of the lazy per-kind cache in OpenAPI plus a third in security; OpenAPI tables hide inside aggregator files while security has `aggregation-tables.ts`. The `KindAny` approach itself is accepted (A1) | Literal duplication | One `RecordDrivenAggregatorRegistry<K>` for both stacks; `building-service/openapi/tree-with-diffs/aggregation-tables.ts` |
 | F15 | Fixed | Low | `tree/builder.ts` complex branch, `createStateForComplexNode`, `sortResponseCodes`; `openapi-spec-transformer.ts` L339 | After I1 no OpenAPI node is complex, but the builder keeps the complex path; the transformer sorts codes into an object that cannot keep the order (the builder re-sorts); `sortResponseCodes` sorts the array returned by `childrenNodes()` in place, relying on it being the internal storage | Dead code; minimal blind spots | Drop the complex path and the transformer sort; reorder children through an explicit tree method |
 | F16 | Fixed | Low | `utils/openapi/view-selection.ts`, `http-method-badge-config.ts` | The default response rule (first `2XX`, Q13) and the media-type defaults are free functions in the viewer; `resolveHttpMethodBadge` has an inline return type | Domain logic encapsulated by convention; inline types | `OpenApiResponseCode.pickDefault(codes)` in ndm; an `OpenApiViewSelection` static class; an `HttpMethodBadge` type |
 | F17 | Fixed | Low | `RequestNodeViewer.tsx`, `ResponsesNodeViewer.tsx`, `response-blocks.tsx`, `MediaTypeContentSection.tsx`, `OperationNodeViewer.tsx`, `SecuritySectionBase.tsx`, `SecuritySchemeCardBase.tsx` L271 | `OpenApiDisplayLabels` states labels are resolved in the data layer, yet seven section / row titles and the card's `Show N unchanged rows` text live in the viewer; the plural rule duplicates `ShowUnchangedRowContent` | Literal constants; minimal blind spots | Move titles to `OpenApiDisplayLabels` / `SecurityDisplayLabels`; one `ShowUnchangedLabels.rows(n)` / `.nodes(n)` |
 | F18 | Fixed | Low | `OperationNodeViewer.tsx` `SECONDARY_TEXT_COLOR '#626D82'`; `SecuritySchemeCardBase.tsx` `MUTED_TEXT_COLOR '#8F9EB4'`; `MediaTypeContentSection.tsx` `text-red-500` star | Hard-coded colors in components | Clean reusable CSS | Color tokens in `shared-styles/colors/` |
 | F19 | Fixed | Low | 11 inline prop types (`FC<{ node: … }>`) in OpenAPI and security components; `keys: { path; method }` ×2, `owners: ReadonlyArray<{ owner; context }>` ×2, `state: { readonly expanded }`, `displayMode: ReturnType<typeof useDisplayMode>`; `node-visibility.ts` L1 (import and JSDoc on one line) | Inline types | No inline types | Named prop / param types; `OpenApiOperationKeysResolved`, `ExtensionOwnerSides`; `DisplayMode` |
 | F20 | Fixed | Low | `config/section-order.ts`, `OperationNodeViewer.tsx` / `response-blocks.tsx` / `ResponsesNodeViewer.tsx` switches, `PARAMETER_SECTION_LOCATIONS` | `OPENAPI_SECTION_ORDER` and every switch use string literals while `OpenApiSectionIds` exists; `OPENAPI_SECTION_IDS_BY_LEVEL` repeats the lists with constants | Literal duplication | Use `OpenApiSectionIds` everywhere; derive `…_IDS_BY_LEVEL` from one definition |
-| F21 | Open | Low | `OperationNodeViewer.tsx` L66–69 | View state is reset in `useEffect` after the node changes, so the first render of a new operation uses the previous selection / collapsed sets | React state hygiene | Key the state owner by the operation node id (`key={node.id}`) and drop the effect |
-| F22 | Open | Low | ndm `layout/planner.ts` `SEPARATOR_CACHE`; viewer `Separator/render-separator-row.tsx` `ELEMENT_CACHE` | Two module-level caches (clear-all at 1000) for one memoization concern; the planner documents itself as pure | Minimal blind spots | Keep interning by signature in the planner only, or scope the caches per viewer root |
+| F21 | Fixed | Low | `OperationNodeViewer.tsx` L66–69 | View state is reset in `useEffect` after the node changes, so the first render of a new operation uses the previous selection / collapsed sets | React state hygiene | Reset the view state during render when the operation node object changes (React "adjust state when a prop changes"), drop the effect. *Revised 2026-10-30: `key={node.id}` would never reset — a rebuilt tree has the same path-based ids* |
+| F22 | Fixed | Low | ndm `layout/planner.ts` `SEPARATOR_CACHE`; viewer `Separator/render-separator-row.tsx` `ELEMENT_CACHE` | Two module-level caches (clear-all at 1000) for one memoization concern; the planner documents itself as pure | Minimal blind spots | Delete both caches: `SeparatorRow`'s `memo` already compares by `signature` and the frame positions, so neither interning nor element reuse is needed; the planner becomes pure. *Revised 2026-10-30* |
 | F23 | Fixed | Low | 7 files: `OpenApiExtensionsNodeViewer.tsx` (3), `response-blocks.tsx` (2), `SecuritySectionBase.tsx` (2), `ParametersNodeViewer.tsx`, `RequestNodeViewer.tsx`, `ResponsesNodeViewer.tsx`, `SecurityNodeViewer.tsx` | 11 `react-refresh/only-export-components` warnings: component files also export block builders and constants | Lint hygiene | Block builders into `*-blocks.ts` modules next to the components (as `response-blocks.tsx` started) |
-| F24 | Open | Low | `tree/node-data/builder.ts` L280–287 | `unresolvedSecurityScheme` meta is set by duck typing any node value (`isResolved === false && name`), regardless of kind | Type guards over structural guesses | Set it from the security scheme kind only |
+| F24 | Fixed | Low | `tree/node-data/builder.ts` L280–287 | `unresolvedSecurityScheme` meta is set by duck typing any node value (`isResolved === false && name`), regardless of kind | Type guards over structural guesses | Delete the field and the duck-typed check: nothing reads `meta.unresolvedSecurityScheme` (the unresolved row comes from `value.isResolved` via `SecurityNodeVisibility`). *Revised 2026-10-30* |
 | F25 | Fixed | High | ndm crawl rules (`responses`, `content`, shared Security), `SecuritySpecDiffsDecorator`, security kinds / tables, `SecurityRowDiffs`; viewer option helpers, `SecuritySectionBase`, `security-blocks`, `AsyncApiSecuritySection` | Found while explaining F15: OpenAPI built every selector's options (response codes, media types, security alternatives) as ordinary children (decision I1), unlike AsyncAPI, where a selector's options are nested nodes of a complex container. The developer set the common rule: options of a selector are nested nodes of the container they belong to. [Details](#f25-selector-options-are-not-nested-nodes) | Design is the source of truth (the entity docs said complex); one rule across API types | `responses` and `content` complex; a new complex `securityAlternatives` container under the simple `security` (shared, so AsyncAPI too); option helpers over `nestedNodes()` |
 | D1 | Fixed | Medium | `docs/design/openapi/architecture/*.md` | All four diagrams described the pre-implementation structure: complex nodes, per-kind aggregators, `OpenApiSectionPresenceResolver`, per-kind visibility managers, `AdditionalInfoRow` cards, `node-diff-props`, `tree-node-guards` | Design is the source of truth | Rewritten to the implemented structure (I1–I3, I5, V1–V11, security module, layout module) |
 | D2 | Open (partly fixed by F25) | Medium | `entities/request-body.md`, `entities/responses.md`, `entities/security.md`, `features/diffs.md` | Still describe complex `content` / `responses` / `security`, `KindRequestBody`, `OPENAPI_COMPLEX_KINDS_WITH_VALUE`, `OpenApiSectionPresenceResolver`, with-diffs visibility managers, a non-existent `openapi-section-presence.test.ts` | Design is the source of truth | Plan step 9 rewrite (entities / features); not done here — the brief limits this review to the diagrams |
@@ -442,7 +442,7 @@ fallbacks (a missing property makes the declaration invalid, so the browser defa
 only happens outside a root that writes them, and `TitleRow.css` documents that a
 `CollapsibleSection` usage needs the property). **Visible change:** none.
 
-## F12, F14–F18. Smaller cleanups (batch 7: F12, F15–F18 done; F14 proposed)
+## F12, F14–F18. Smaller cleanups (batch 7: F12, F15–F18 done; F14 done in batch 8)
 
 Checked against the code after batches 1–5; all six are still present.
 
@@ -503,6 +503,39 @@ copies (JSON Schema title, legacy `RequiredStar` / `NullableAsterisk`, DDL / ico
 their own reviews.
 
 **Visible change for all six:** none.
+
+## F14, F21, F22, F24. Last cleanups (batch 8, done 2026-10-30)
+
+Re-checked against the code after batch 7; three suggested fixes were revised (the table shows the
+revised ones). Order: F24 → F22 → F21 → F14.
+
+**F24 — dead meta set by a shape guess.** `OpenApiNodeDataBuilder.createNodeMeta(value)` writes
+`unresolvedSecurityScheme` for any value that looks like an unresolved scheme (it gets no kind).
+Nothing reads the field: the "unresolved" row comes from `value.isResolved`
+(`SecurityNodeVisibility.resolveScheme` → `showUnresolved`). Fix: remove the field from
+`OpenApiTreeNodeMeta` and the check; the meta is `{ _fragment }`. The suggested "set it from the kind"
+would keep dead code and widen a method shared by every API type.
+
+**F22 — two global caches that do nothing.** `LayoutPlanner` interns separators in a module-level
+`SEPARATOR_CACHE`, `renderSeparatorRow` reuses elements from `ELEMENT_CACHE`; both are shared by every
+viewer on the page and cleared at 1000 entries, and the planner calls itself pure. `SeparatorRow`'s
+`memo` already compares `separator.signature` and the two frame positions, so re-render skipping does
+not depend on either cache. Fix: delete both; `StackLayout` renders `SeparatorRow` directly;
+`render-separator-row.tsx` (one caller) goes. Shared with AsyncAPI.
+
+**F21 — the previous selection for one render.** `OperationNodeViewer` resets `selection` /
+`collapsed` in a `useEffect` on `node`: the first render of a rebuilt tree uses the old state, React
+commits it (node ids are path-based, so old selections match the new tree), then the effect resets
+it and the whole operation renders again. `key={node.id}` would not reset at all for the same
+reason. Fix: remember the node the state belongs to and reset during render
+(`if (stateOwner !== node) { … }`) — React re-runs the component before its children render, so the
+stale state is never committed. Unit test: rebuild the tree after a selection change; the first
+committed output shows the default.
+
+**F14** — as described in "F12, F14–F18" above (one `RecordDrivenAggregatorRegistry`, tables in
+`placements.ts` / `aggregation-tables.ts`), now including the `securityAlternatives` kind.
+
+**Visible change for all four:** none.
 
 ## F25. Selector options are not nested nodes
 
@@ -737,11 +770,43 @@ After batch 7: next-data-model 47 suites / 796 tests, api-doc-viewer 12 suites /
 clean, ESLint clean over the changed files (the 3 errors left are in untouched DDL / JSON Schema
 test files).
 
+### Batch 8 — last cleanups F24, F22, F21, F14 (2026-10-30)
+
+Approved: F24 → F22 → F21 → F14 with the revised fixes ("F14, F21, F22, F24" above).
+
+| ID | Change | Deviation from the suggested fix |
+| --- | --- | --- |
+| F24 | `OpenApiTreeNodeMeta.unresolvedSecurityScheme` and the shape check in `OpenApiNodeDataBuilder.createNodeMeta` removed; the meta is `{ _fragment }` | Deleted rather than "set from the kind" (no reader) |
+| F22 | `SEPARATOR_CACHE` (planner) and `ELEMENT_CACHE` (`render-separator-row.tsx`, deleted) removed; `StackLayout` renders `SeparatorRow` directly; the planner builds a plain separator with its `signature`; the layout unit test checks equal signatures instead of one object | Both caches deleted (the memo already compares the signature) |
+| F21 | `OperationNodeViewer` resets `selection` / `collapsed` during render when the operation node object changes (`stateOwner !== node`); the `useEffect` is gone | Not `key={node.id}` (would never reset) |
+| F14 | `RecordDrivenAggregatorRegistry<V, K, M, T>` + `RecordDrivenAggregationTables<T>` next to the record-driven aggregators; OpenAPI: `OPENAPI_AGGREGATION_TABLES` (`building-service/openapi/tree-with-diffs/aggregation-tables.ts`), `OPENAPI_FIELD_PLACEMENTS` / `OPENAPI_NODE_PLACEMENTS` (`model/openapi/tree-with-diffs/placements.ts`), one registry in the with-diffs builder; Security: `SECURITY_AGGREGATION_TABLES`, AsyncAPI's `ASYNC_API_SECURITY_NODE_AGGREGATORS` is a registry. Deleted: `factories.ts`, the five OpenAPI `KindAny` files, `SecurityNodeAggregators`. New unit test `record-driven-aggregator-registry.test.ts` | The registry has a fourth type parameter `T` (the tables' kind): AsyncAPI's tree kind is not the Security kind |
+
+**Verification.** Baselines of both packages taken before the batch; both harnesses validated on
+identical copies first (763 / 763 each).
+
+| Step | Tree comparison (763 cases) | Render-HTML comparison (1530 renders) | Deliberate break |
+| --- | --- | --- | --- |
+| F24 | 763 / 763 equal | 763 / 763 byte-identical | No fixture references a missing scheme (counted: 0 unresolved values), so a synthetic operation with `security: [{ missing: [] }]` was added to the harness: equal trees; with the meta compared too it differs (the removed field) |
+| F22 | — (data unchanged) | 763 / 763 | HTML cannot see re-render skipping; equal by construction (`SeparatorRow`'s memo compares the signature, which encodes every band and badge segment) |
+| F21 | — | 763 / 763 | Client render in jsdom (temporary; jsdom borrowed from a sibling workspace repository, the scroll strip stubbed — its own layout effect adds a pre-paint commit): select `404`, rebuild the tree. Old code: 2 commits, 1 showing `404`. New: 1 commit, 0 |
+| F14 | 763 / 763 | 763 / 763 | `RESPONSE` field placement removed → 4 cases differ; Security node placements emptied in `SECURITY_AGGREGATION_TABLES` → 14 AsyncAPI security cases differ; the new unit test fails when OpenAPI drops the Security synthetic keys |
+
+Temporary harnesses and baselines deleted. **Visible change:** none (F21 removes a one-frame flash
+after a rebuild; no fixture or screenshot shows it).
+
+After batch 8: next-data-model 48 suites / 799 tests, api-doc-viewer 12 suites / 117 tests, both `tsc`
+clean, ESLint clean over the changed files.
+
+**Not covered by a committed test: F21.** The viewer package has no DOM test environment (Jest
+`testEnvironment: 'node'`, no jsdom / react-test-renderer); a regression test needs a dev dependency
+(`jest-environment-jsdom`) — see Configuration proposals.
+
 ## Configuration proposals (for approval; not changed)
 
 | Proposal | Why |
 | --- | --- |
 | Set `@typescript-eslint/no-explicit-any` to `error` in `.eslintrc.json` (it is `off`). | The shared rules forbid `any`; the OpenAPI scope has none and the repository has 8 occurrences, so enforcing it is cheap and keeps new stacks clean. |
+| Add `jest-environment-jsdom` (dev) to api-doc-viewer and allow `@jest-environment jsdom` per test file. | Viewer state behaviour (F21: no stale selection after a rebuild) can only be tested with a client render; today it was checked with a temporary harness only. |
 
 ## Proposed fix order
 
