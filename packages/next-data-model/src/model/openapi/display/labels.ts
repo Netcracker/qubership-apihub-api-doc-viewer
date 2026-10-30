@@ -12,6 +12,9 @@ const PARAMETER_GROUP_TITLES: Readonly<Record<OpenApiParameterLocation, string>>
  * section's labels are `OPENAPI_SECURITY_DISPLAY_LABELS` (`../security-presentation`).
  */
 export class OpenApiDisplayLabels {
+  /** Root property a Body schema is wrapped under in its nested viewer (AsyncAPI parity; `OpenApiMediaTypeSchema`). */
+  public static readonly WRAPPED_BODY_SCHEMA_TITLE = 'Type'
+
   public static parameterGroupTitle(location: OpenApiParameterLocation): string {
     return PARAMETER_GROUP_TITLES[location]
   }

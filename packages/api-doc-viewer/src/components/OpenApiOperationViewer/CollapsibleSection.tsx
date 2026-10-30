@@ -31,11 +31,14 @@ export function buildCollapsibleSectionElements(
   view: OpenApiViewState,
   sectionNodeId: string,
 ): [StackBlock, ...StackBlock[]] {
-  return isOpenApiSectionExpanded(view, sectionNodeId) ? [title, ...content.map(indented)] : [title]
+  return isOpenApiSectionExpanded(view, sectionNodeId) ? [title, ...content.map(indentSectionContent)] : [title]
 }
 
-/** A content element under the section's title text: rows shifted by the expander column + row gap. */
-function indented(block: StackBlock): StackBlock {
+/**
+ * A content element under the section's title text: rows shifted by the expander column + row gap.
+ * For sections whose elements are already decided (the Body: `OpenApiBlockEdges.bodyElements`).
+ */
+export function indentSectionContent(block: StackBlock): StackBlock {
   return {
     ...block,
     payload: () => (

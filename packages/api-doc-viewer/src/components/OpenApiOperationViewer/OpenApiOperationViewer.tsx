@@ -1,20 +1,16 @@
-import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
-import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext } from "@apihub/contexts/LevelContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { DOCUMENT_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isOpenApiOperationNode } from "@apihub/utils/openapi/node-type-checkers"
 import { createOpenApiLogger, OpenApiTreeBuilder } from "@netcracker/qubership-apihub-next-data-model"
-import { DEFAULT_OPENAPI_SPACING_CONFIG, OpenApiSpacing } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { DEFAULT_OPENAPI_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiOperationKeys } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/operation-keys"
 import { FC, memo, useMemo } from "react"
 import '../../index.css'
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { OpenApiViewerContext, OpenApiViewerContextValue } from "./OpenApiViewerContext"
-import { OperationNodeViewer } from "./OperationNodeViewer"
+import { OpenApiViewerContextValue } from "./OpenApiViewerContext"
+import { OpenApiViewerRoot } from "./OpenApiViewerRoot"
 
 export type { OpenApiOperationKeys }
 
@@ -76,22 +72,13 @@ const OpenApiOperationViewerInner: FC<OpenApiOperationViewerProps> = memo<OpenAp
   }
 
   return (
-    <OpenApiViewerContext.Provider value={viewerContext}>
-      <DisplayModeContext.Provider value={displayMode}>
-        <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
-          <LevelContext.Provider value={0}>
-            <LayoutSpacingContext.Provider value={viewerContext.spacing}>
-              <div data-testid="openapi-operation-viewer" style={{
-                '--separator-layout-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
-                '--collapsible-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
-                '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
-              }}>
-                <OperationNodeViewer node={operationNode} noHeading={noHeading} />
-              </div>
-            </LayoutSpacingContext.Provider>
-          </LevelContext.Provider>
-        </LayoutModeContext.Provider>
-      </DisplayModeContext.Provider>
-    </OpenApiViewerContext.Provider>
+    <OpenApiViewerRoot
+      operation={operationNode}
+      noHeading={noHeading}
+      viewerContext={viewerContext}
+      displayMode={displayMode}
+      layoutMode={DOCUMENT_LAYOUT_MODE}
+      testId="openapi-operation-viewer"
+    />
   )
 })

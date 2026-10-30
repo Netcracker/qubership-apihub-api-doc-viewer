@@ -57,9 +57,10 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Sta
 
 function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): StackBlock {
   const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value()) ? OpenApiBlockEdges.descriptionRow(node) : undefined
+  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.requestBodyTitleRow(node), description, resolveSelectedMediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) })
   return {
     id,
-    ...OpenApiBlockEdges.body(OpenApiBlockEdges.requestBodyTitleRow(node), description, resolveSelectedMediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) }),
-    payload: () => <RequestBodyNodeViewer key={id} node={node} />,
+    ...OpenApiBlockEdges.body(elements),
+    payload: () => <RequestBodyNodeViewer key={id} node={node} elements={elements} />,
   }
 }

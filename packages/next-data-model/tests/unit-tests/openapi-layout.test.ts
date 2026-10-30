@@ -194,9 +194,15 @@ describe('OpenAPI layout: edges on fixtures', () => {
     const mediaType = child(child(body, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE)
     const title = OpenApiBlockEdges.requestBodyTitleRow(body)
     const description = OpenApiBlockEdges.descriptionRow(body)
-    expect(OpenApiBlockEdges.body(title, description, mediaType).tail.kind).toBe('nested')
-    expect(OpenApiBlockEdges.body(title, description, undefined).tail).toBe(description)
-    expect(OpenApiBlockEdges.body(title, description, mediaType, { expanded: false })).toEqual({ head: title, tail: title })
+    const elements = OpenApiBlockEdges.bodyElements(title, description, mediaType)
+    expect(elements.map(element => element.id)).toEqual(['title', 'description', 'schema'])
+    expect(elements[2]).toEqual({ id: 'schema', edge: OpenApiBlockEdges.nested(mediaType), mediaType })
+    expect(OpenApiBlockEdges.body(elements).tail.kind).toBe('nested')
+    expect(OpenApiBlockEdges.body(OpenApiBlockEdges.bodyElements(title, description, undefined)).tail).toBe(description)
+    expect(OpenApiBlockEdges.bodyElements(title, undefined, undefined).map(element => element.id)).toEqual(['title'])
+    const collapsed = OpenApiBlockEdges.bodyElements(title, description, mediaType, { expanded: false })
+    expect(collapsed.map(element => element.id)).toEqual(['title'])
+    expect(OpenApiBlockEdges.body(collapsed)).toEqual({ head: title, tail: title })
   })
 
   it('a container takes the head of its first child and the tail of its last one', () => {

@@ -1,6 +1,5 @@
 import { getOpenApiMediaTypes, resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
-import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
-import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
+import { OpenApiBodyElements } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -51,9 +50,11 @@ export const RequestTitleRow: FC<RequestTitleRowProps> = ({ node }) => (
 
 type RequestBodyNodeViewerProps = {
   node: RequestBodyNode
+  /** The Body's elements, decided by `buildRequestBodyBlock` (`OpenApiBlockEdges.bodyElements`). */
+  elements: OpenApiBodyElements
 }
 
-export const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = ({ node }) => {
+export const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = ({ node, elements }) => {
   const value = node.value()
   const severities = takeOpenApiSeverities(node)
   const { selection, select } = useOpenApiViewState()
@@ -69,22 +70,17 @@ export const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = ({ node }) 
       diffsSeverities={severities}
       isRequiredOnSide={(side) => OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide(node, side)}
       requiredTagDiff={OpenApiRowDiffs.RequestBody.takeRequiredTagDiff(node)}
-      titleEdge={OpenApiBlockEdges.requestBodyTitleRow(node)}
+      elements={elements}
       sectionNodeId={node.id}
-      description={OpenApiNodeVisibility.showRequestBodyDescription(value)
-        ? {
-          edge: OpenApiBlockEdges.descriptionRow(node),
-          render: () => (
-            <MarkdownTextRow
-              data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-              value={value?.description ?? ''}
-              variant={TextValueVariant.body2}
-              diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}
-              diffsSeverities={severities}
-            />
-          ),
-        }
-        : undefined}
+      renderDescription={() => (
+        <MarkdownTextRow
+          data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
+          value={value?.description ?? ''}
+          variant={TextValueVariant.body2}
+          diff={OpenApiRowDiffs.NodeLevel.takeRowDiff(node, 'description')}
+          diffsSeverities={severities}
+        />
+      )}
     />
   )
 }

@@ -13,7 +13,7 @@ import { buildExtensionsBlock } from "./extensions-blocks"
 import { StackBlock } from "../shared-components/Layout/StackLayout"
 import { isOpenApiSectionExpanded, OpenApiViewState } from "./OpenApiViewStateContext"
 import { buildParametersBlock } from "./parameters-blocks"
-import { ResponseBodyViewer, ResponseDescriptionRow, ResponseNode } from "./ResponseBodyViewer"
+import { ContentNode, ResponseBodyViewer, ResponseDescriptionRow, ResponseNode } from "./ResponseBodyViewer"
 
 export const RESPONSE_HEADERS_SECTION_TITLE = 'Headers'
 
@@ -50,14 +50,20 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
           : []
       case OpenApiSectionIds.RESPONSE_BODY:
         return content && hasBody
-          ? [{
-            id: id(sectionId),
-            ...OpenApiBlockEdges.body(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection), { expanded: isOpenApiSectionExpanded(view, content.id) }),
-            payload: () => <ResponseBodyViewer key={id(sectionId)} node={response} />,
-          }]
+          ? [buildResponseBodyBlock(id(sectionId), response, content, view)]
           : []
       default:
         return []
     }
   })
+}
+
+/** The response Body: its elements are decided here once, for its outer edges and for what it renders. */
+function buildResponseBodyBlock(id: string, response: ResponseNode, content: ContentNode, view: OpenApiViewState): StackBlock {
+  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection), { expanded: isOpenApiSectionExpanded(view, content.id) })
+  return {
+    id,
+    ...OpenApiBlockEdges.body(elements),
+    payload: () => <ResponseBodyViewer key={id} node={response} content={content} elements={elements} />,
+  }
 }

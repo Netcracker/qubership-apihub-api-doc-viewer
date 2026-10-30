@@ -42,7 +42,7 @@ import { buildSecurityBlock } from "./security-blocks"
 export const OPERATION_ID_ROW_LABEL = 'Operation ID'
 const SECONDARY_TEXT_COLOR = '#626D82'
 
-type OperationNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>
+export type OperationNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>
 
 type OperationNodeViewerProps = {
   node: OperationNode

@@ -415,9 +415,10 @@
 
 /* First row of a nested viewer under a separator layout row: the viewer's own inset above its content
    (a nested viewer owns no half-gap). JSON Schema: on the row body (its own default top is 8px);
-   --separator-layout-nested-viewer-inset comes from OpenApiSpacingConfig.nestedViewerInset. */
+   --separator-layout-nested-viewer-inset comes from OpenApiSpacingConfig.nestedViewerInset (written by
+   OpenApiViewerRoot; no fallback). */
 .json-schema-property .title-row-content[data-precededby="separator-layout-nested-viewer-start"] > .json-schema-property-row-body {
-  padding-top: var(--separator-layout-nested-viewer-inset, 4px);
+  padding-top: var(--separator-layout-nested-viewer-inset);
 }
 
 /* JSO rows have no vertical padding: their 26px min-height centring already insets the text. */

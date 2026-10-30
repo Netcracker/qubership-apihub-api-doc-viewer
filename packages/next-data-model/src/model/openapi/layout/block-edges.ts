@@ -1,10 +1,11 @@
 import { NodeDiffsSeverityPlacemennt } from "../../abstract/tree-with-diffs/tree-node.interface"
 import { BlockEdges } from "../../abstract/layout/block-edges"
 import { LayoutBlockEdge, LayoutBlockEdgePair } from "../../abstract/layout/types"
+import { OpenApiMediaTypeSchema } from "../media-type-schema"
 import { OpenApiDeprecatedTagRow, OpenApiOperationHeaderRow } from "../node-visibility"
 import { OpenApiRowDiffs } from "../tree-with-diffs/row-diffs"
 import { OpenApiTreeNode, OpenApiTreeNodeWithDiffs } from "../types/aliases"
-import { OpenApiSectionViewState } from "./types"
+import { OpenApiBodyElement, OpenApiBodyElements, OpenApiSectionViewState } from "./types"
 
 type AnyOpenApiNode = OpenApiTreeNode | OpenApiTreeNodeWithDiffs
 
@@ -40,28 +41,34 @@ export class OpenApiBlockEdges extends BlockEdges {
   }
 
   /**
-   * A Body (request / response): its title row, the optional description row, then the selected media
-   * type's schema (a nested viewer) when it has one. Collapsed (view state): the title row only.
+   * The elements of a Body (request / response), decided once for both the parent level (its outer
+   * edges, `body`) and the Body itself (what it renders): its title row, the optional description row,
+   * then the selected media type's schema (a nested viewer) when it has one. Collapsed (view state):
+   * the title row only.
    */
-  public static body(
+  public static bodyElements(
     title: LayoutBlockEdge,
     description: LayoutBlockEdge | undefined,
     selectedMediaType: AnyOpenApiNode | undefined,
     state: OpenApiSectionViewState = { expanded: true },
-  ): LayoutBlockEdgePair {
+  ): OpenApiBodyElements {
+    const titleElement: OpenApiBodyElement = { id: 'title', edge: title }
     if (!state.expanded) {
-      return BlockEdges.single(title)
+      return [titleElement]
     }
-    const tail = selectedMediaType && OpenApiBlockEdges.hasSchema(selectedMediaType)
-      ? BlockEdges.nested(selectedMediaType)
-      : description ?? title
-    return { head: title, tail }
+    return [
+      titleElement,
+      ...(description ? [{ id: 'description' as const, edge: description }] : []),
+      ...(selectedMediaType && OpenApiMediaTypeSchema.has(selectedMediaType)
+        ? [{ id: 'schema' as const, edge: BlockEdges.nested(selectedMediaType), mediaType: selectedMediaType }]
+        : []),
+    ]
   }
 
-  /** Whether a media type has a schema to show (an object; `true` / `false` schemas are prepared as objects). */
-  public static hasSchema(mediaType: AnyOpenApiNode): boolean {
-    const schema: unknown = Reflect.get(mediaType.value() ?? {}, 'schema')
-    return typeof schema === 'object' && schema !== null
+  /** A Body's outer edges: the head of its first element, the tail of its last one. */
+  public static body(elements: OpenApiBodyElements): LayoutBlockEdgePair {
+    const [first, ...rest] = elements
+    return BlockEdges.container([BlockEdges.single(first.edge), ...rest.map(element => BlockEdges.single(element.edge))])
   }
 
   /** A description row of a node (request body, response): its `description` diff, else the whole node's. */

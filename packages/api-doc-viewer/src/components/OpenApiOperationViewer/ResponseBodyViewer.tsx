@@ -1,6 +1,5 @@
-import { findOpenApiChild, isOpenApiContentNode } from "@apihub/utils/openapi/node-type-checkers"
 import { getOpenApiMediaTypes, resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
-import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { OpenApiBodyElements } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -13,15 +12,22 @@ import { MediaTypeContentSection } from "./MediaTypeContentSection"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
 export type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
+export type ContentNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.CONTENT>
 
 type ResponseNodeProps = {
   node: ResponseNode
 }
 
+type ResponseBodyViewerProps = ResponseNodeProps & {
+  /** The response's `content` node: paints the Body title row and keeps its collapsed state. */
+  content: ContentNode
+  /** The Body's elements, decided by `response-blocks.tsx` (`OpenApiBlockEdges.bodyElements`). */
+  elements: OpenApiBodyElements
+}
+
 /** The response Body; its media-type selection is kept per response in the view state. Layout blocks: `response-blocks.tsx`. */
-export const ResponseBodyViewer: FC<ResponseNodeProps> = ({ node }) => {
+export const ResponseBodyViewer: FC<ResponseBodyViewerProps> = ({ node, content, elements }) => {
   const { selection, select } = useOpenApiViewState()
-  const content = findOpenApiChild(node, isOpenApiContentNode)
   return (
     <MediaTypeContentSection
       testId="openapi-response-body-section"
@@ -29,10 +35,10 @@ export const ResponseBodyViewer: FC<ResponseNodeProps> = ({ node }) => {
       mediaTypes={getOpenApiMediaTypes(node)}
       selectedId={resolveSelectedMediaType(node, selection)?.id}
       onSelect={(mediaTypeId) => select(node.id, mediaTypeId)}
-      headerDiff={content ? OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content) : undefined}
-      diffsSeverities={content ? takeOpenApiSeverities(content) : undefined}
-      titleEdge={content ? OpenApiBlockEdges.responseBodyTitleRow(content) : OpenApiBlockEdges.row({})}
-      sectionNodeId={content?.id ?? `${node.id}:body`}
+      headerDiff={OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content)}
+      diffsSeverities={takeOpenApiSeverities(content)}
+      elements={elements}
+      sectionNodeId={content.id}
     />
   )
 }

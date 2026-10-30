@@ -9,5 +9,5 @@
    painted under the border, so a highlighted row still fills its whole side. */
 .openapi-section-content .one-side-layout > *,
 .openapi-section-content .side-by-side-layout > div > * {
-  border-left: var(--openapi-section-content-indent, 24px) solid transparent;
+  border-left: var(--openapi-section-content-indent) solid transparent;
 }

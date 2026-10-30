@@ -1,16 +1,12 @@
-import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
 import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
 import { DiffTypesContext } from "@apihub/contexts/DiffTypesContext"
-import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
-import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
-import { LevelContext } from "@apihub/contexts/LevelContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
 import { isOpenApiOperationNode } from "@apihub/utils/openapi/node-type-checkers"
 import { DiffType } from "@netcracker/qubership-apihub-api-diff"
 import { createOpenApiLogger, OpenApiTreeWithDiffsBuilder } from "@netcracker/qubership-apihub-next-data-model"
-import { DEFAULT_OPENAPI_SPACING_CONFIG, OpenApiSpacing } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
+import { DEFAULT_OPENAPI_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiOperationKeys } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/operation-keys"
 import { FC, memo, useMemo } from "react"
 import '../../index.css'
@@ -20,8 +16,8 @@ import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
 import { resolveDiffsNodesVisibilityMode } from "../shared-components/ShowUnchangedRow/DiffsNodesVisibilityMode"
 import { UnchangedBlocksContext, useUnchangedBlocksContextValue } from "../shared-components/ShowUnchangedRow/UnchangedBlocksContext"
 import '../shared-styles/diffs/index.css'
-import { OpenApiViewerContext, OpenApiViewerContextValue } from "./OpenApiViewerContext"
-import { OperationNodeViewer } from "./OperationNodeViewer"
+import { OpenApiViewerContextValue } from "./OpenApiViewerContext"
+import { OpenApiViewerRoot } from "./OpenApiViewerRoot"
 
 export type OpenApiOperationDiffsViewerProps = {
   /** Merged `apiDiff` document of two whole OpenAPI documents (`components` kept). */
@@ -96,25 +92,16 @@ const OpenApiOperationDiffsViewerInner: FC<OpenApiOperationDiffsViewerProps> = m
   return (
     <DiffMetaKeysContext.Provider value={diffMetaKeys}>
       <DiffTypesContext.Provider value={diffTypes}>
-        <OpenApiViewerContext.Provider value={viewerContext}>
-          <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
-          <DisplayModeContext.Provider value={displayMode}>
-            <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
-              <LevelContext.Provider value={0}>
-                <LayoutSpacingContext.Provider value={viewerContext.spacing}>
-                  <div data-testid="openapi-operation-diffs-viewer" style={{
-                '--separator-layout-nested-viewer-inset': `${viewerContext.spacing.nestedViewerInset}px`,
-                '--collapsible-section-expander-width': `${viewerContext.spacing.sectionExpander.width}px`,
-                '--openapi-section-content-indent': `${OpenApiSpacing.sectionContentIndent(viewerContext.spacing)}px`,
-              }}>
-                    <OperationNodeViewer node={operationNode} noHeading={noHeading} />
-                  </div>
-                </LayoutSpacingContext.Provider>
-              </LevelContext.Provider>
-            </LayoutModeContext.Provider>
-          </DisplayModeContext.Provider>
-          </UnchangedBlocksContext.Provider>
-        </OpenApiViewerContext.Provider>
+        <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
+          <OpenApiViewerRoot
+            operation={operationNode}
+            noHeading={noHeading}
+            viewerContext={viewerContext}
+            displayMode={displayMode}
+            layoutMode={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}
+            testId="openapi-operation-diffs-viewer"
+          />
+        </UnchangedBlocksContext.Provider>
       </DiffTypesContext.Provider>
     </DiffMetaKeysContext.Provider>
   )
