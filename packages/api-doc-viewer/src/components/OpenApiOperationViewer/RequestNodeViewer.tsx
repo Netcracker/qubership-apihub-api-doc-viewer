@@ -1,4 +1,5 @@
-import { getOpenApiMediaTypes, resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
+import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBodyElements } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
@@ -13,7 +14,6 @@ import { MediaTypeContentSection } from "./MediaTypeContentSection"
 import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
-export const REQUEST_SECTION_TITLE = 'Request'
 
 export type RequestNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST>
 export type RequestBodyNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST_BODY>
@@ -40,7 +40,7 @@ type RequestTitleRowProps = {
 export const RequestTitleRow: FC<RequestTitleRowProps> = ({ node }) => (
   <TitleRow
     data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-    value={REQUEST_SECTION_TITLE}
+    value={OpenApiDisplayLabels.REQUEST_TITLE}
     expandable={false}
     variant={TextValueVariant.h2}
     diff={OpenApiRowDiffs.Section.takeHeaderRowDiff(node)}
@@ -63,8 +63,8 @@ export const RequestBodyNodeViewer: FC<RequestBodyNodeViewerProps> = ({ node, el
     <MediaTypeContentSection
       testId="openapi-request-body-section"
       optionTestIdPrefix="request-media-type"
-      mediaTypes={getOpenApiMediaTypes(node)}
-      selectedId={resolveSelectedMediaType(node, selection)?.id}
+      mediaTypes={OpenApiViewSelection.mediaTypes(node)}
+      selectedId={OpenApiViewSelection.mediaType(node, selection)?.id}
       onSelect={(mediaTypeId) => select(node.id, mediaTypeId)}
       headerDiff={OpenApiRowDiffs.RequestBody.takeHeaderRowDiff(node)}
       diffsSeverities={severities}

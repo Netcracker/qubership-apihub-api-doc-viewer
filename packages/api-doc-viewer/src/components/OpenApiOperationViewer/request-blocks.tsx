@@ -4,7 +4,7 @@ import {
   isOpenApiParametersNode,
   isOpenApiRequestBodyNode,
 } from "@apihub/utils/openapi/node-type-checkers"
-import { resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
@@ -57,7 +57,7 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Sta
 
 function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): StackBlock {
   const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value()) ? OpenApiBlockEdges.descriptionRow(node) : undefined
-  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.requestBodyTitleRow(node), description, resolveSelectedMediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) })
+  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.requestBodyTitleRow(node), description, OpenApiViewSelection.mediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) })
   return {
     id,
     ...OpenApiBlockEdges.body(elements),

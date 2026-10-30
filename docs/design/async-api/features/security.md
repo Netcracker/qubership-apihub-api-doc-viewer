@@ -107,10 +107,10 @@ overrides `createSecuritySpecBuilder()`.
 
 | Piece | Base | OpenAPI | AsyncAPI |
 | --- | --- | --- | --- |
-| Node guards | `utils/security/node-type-checkers.ts` — `isSecuritySectionNode`, `isSecurityRequirementNode`, `isSecuritySchemeNode`, `isSecurityOAuthFlowNode`, `getSecurityChildren`, `resolveSelectedSecurityAlternative`; `utils/security/diff-state.ts` — `takeSecuritySeverities` | `resolveSelectedAlternative` delegates | — |
+| Node guards | `utils/security/node-type-checkers.ts` — `isSecuritySectionNode`, `isSecurityRequirementNode`, `isSecuritySchemeNode`, `isSecurityOAuthFlowNode`, `getSecurityChildren`, `resolveSelectedSecurityAlternative`; `utils/security/diff-state.ts` — `takeSecuritySeverities` | `OpenApiViewSelection.alternative` delegates | — |
 | Card | `shared-components/Security/SecuritySchemeCardBase.tsx` — the presenter: frame rows, rows, flows, scopes toggle; labels / visibility from a `SecurityPresentation` | `OpenApiOperationViewer/OpenApiSecuritySchemeCard.tsx` | `AsyncApiOperationViewer/AsyncApiSecuritySchemeCard.tsx` |
 | Toolbar | `SecurityToolbar` + `SecurityToolbarRow` (options from the alternatives, titles from the API type's labels) | | |
-| Section | `shared-components/Security/SecuritySectionBase.tsx` — `SECURITY_SECTION_TITLE`, `SecurityToolbarRow`; `security-section-blocks.ts` — `buildSecurityToolbarBlock(node, render)`, `buildSecurityContentBlocks(selected, renderCard)` (layout elements) | `SecurityNodeViewer` / `buildSecurityBlock` (operation-level block, h2, selection in the view-state store) | `AsyncApiOperationViewer/AsyncApiSecuritySection.tsx` (h3 / h5 by `SizeVariant`, local selection), test id `async-api-security-section` |
+| Section | `shared-components/Security/SecuritySectionBase.tsx` — `SecurityToolbarRow` (takes the `securityAlternatives` container); `security-section-blocks.ts` — `buildSecurityToolbarBlock(toolbar, render)`, `buildSecurityContentBlocks(selected, renderCard)` (layout elements) | `SecurityNodeViewer` / `buildSecurityBlock` (operation-level block, h2, selection in the view-state store) | `AsyncApiOperationViewer/AsyncApiSecuritySection.tsx` (h3 / h5 by `SizeVariant`, local selection), test id `async-api-security-section` |
 | Placement | | operation level, after the header | `MessageNodeViewer` after the summary, before the section selector (`PRIMARY`, h3); `MessageChannelServerNodeViewer` after the summary, before the bindings (`SECONDARY`, h5) |
 
 ### 4.3 Samples, stories, tests

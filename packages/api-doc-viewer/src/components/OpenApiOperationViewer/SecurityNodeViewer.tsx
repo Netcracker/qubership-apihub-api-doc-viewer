@@ -1,7 +1,8 @@
+import { SECURITY_SECTION_TITLE } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { OPENAPI_SECURITY_OPTIONAL_BADGE_COLOR_SCHEMA, OPENAPI_SECURITY_OPTIONAL_BADGE_SIZE_CLASS } from "../../consts/tags"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
-import { resolveSelectedAlternative } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OPENAPI_SECURITY_DISPLAY_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/openapi/security-presentation"
 import { SECURITY_OPTIONAL_BADGE_TEXT } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/security/tree-with-diffs/row-diffs"
@@ -9,7 +10,7 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { FC, ReactElement, useCallback } from "react"
 import { BadgeWithDiffs } from "../shared-components/diffs/BadgeWithDiffs"
-import { SECURITY_SECTION_TITLE, SecurityAlternativesNode, SecurityToolbarRow } from "../shared-components/Security/SecuritySectionBase"
+import { SecurityAlternativesNode, SecurityToolbarRow } from "../shared-components/Security/SecuritySectionBase"
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { PrecededBy } from "../shared-components/WithPrecededByProps"
@@ -75,7 +76,7 @@ export const OpenApiSecurityToolbarRow: FC<SecuritySectionRowProps & { toolbar: 
     <SecurityToolbarRow
       toolbar={toolbar}
       labels={OPENAPI_SECURITY_DISPLAY_LABELS}
-      selected={resolveSelectedAlternative(node, selection)}
+      selected={OpenApiViewSelection.alternative(node, selection)}
       onSelect={(alternative) => select(node.id, alternative.id)}
     />
   )

@@ -2,7 +2,7 @@ import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/mo
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
 import { SecurityTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/security/types/aliases"
 import { SecurityTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/security/types/node-kind"
-import { OpenApiResponseCodeClasses } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
+import { OpenApiResponseCode } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/response-code"
 import {
   findOpenApiChild,
   getOpenApiOptions,
@@ -24,26 +24,27 @@ type SecurityNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.SECURITY>
 type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type MediaTypeOwnerNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.REQUEST_BODY> | OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
 
-/** The selected security alternative: the chosen one, else the first (index 0 of the merged list). */
-export function resolveSelectedAlternative(security: SecurityNode, selection: OpenApiSelection): SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT> | undefined {
-  return resolveSelectedSecurityAlternative(security, selection.get(security.id))
-}
+export class OpenApiViewSelection {
+  /** The selected security alternative: the chosen one, else the first (index 0 of the merged list). */
+  public static alternative(security: SecurityNode, selection: OpenApiSelection): SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT> | undefined {
+    return resolveSelectedSecurityAlternative(security, selection.get(security.id))
+  }
 
-/** The selected response: the chosen one, else the first 2XX, else the first (features/response-code-selector.md). */
-export function resolveSelectedResponse(responses: ResponsesNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE> | undefined {
-  const codes = getOpenApiOptions(responses, isOpenApiResponseNode)
-  return codes.find(response => response.id === selection.get(responses.id))
-    ?? codes.find(response => response.value()?.codeClass === OpenApiResponseCodeClasses.SUCCESS)
-    ?? codes[0]
-}
+  /** The selected response: the chosen one, else the default code (`OpenApiResponseCode.pickDefault`, features/response-code-selector.md). */
+  public static response(responses: ResponsesNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE> | undefined {
+    const codes = getOpenApiOptions(responses, isOpenApiResponseNode)
+    return codes.find(response => response.id === selection.get(responses.id))
+      ?? OpenApiResponseCode.pickDefault(codes, response => String(response.key))
+  }
 
-/** Media types of a body owner (request body, or a response for its body), in document order. */
-export function getOpenApiMediaTypes(owner: MediaTypeOwnerNode): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>[] {
-  return getOpenApiOptions(findOpenApiChild(owner, isOpenApiContentNode), isOpenApiMediaTypeNode)
-}
+  /** Media types of a body owner (request body, or a response for its body), in document order. */
+  public static mediaTypes(owner: MediaTypeOwnerNode): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>[] {
+    return getOpenApiOptions(findOpenApiChild(owner, isOpenApiContentNode), isOpenApiMediaTypeNode)
+  }
 
-/** The selected media type of a body owner: the chosen one, else the first. */
-export function resolveSelectedMediaType(owner: MediaTypeOwnerNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE> | undefined {
-  const mediaTypes = getOpenApiMediaTypes(owner)
-  return mediaTypes.find(mediaType => mediaType.id === selection.get(owner.id)) ?? mediaTypes[0]
+  /** The selected media type of a body owner: the chosen one, else the first. */
+  public static mediaType(owner: MediaTypeOwnerNode, selection: OpenApiSelection): OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE> | undefined {
+    const mediaTypes = OpenApiViewSelection.mediaTypes(owner)
+    return mediaTypes.find(mediaType => mediaType.id === selection.get(owner.id)) ?? mediaTypes[0]
+  }
 }

@@ -102,8 +102,16 @@ describe('OpenAPI spec transformer (plain)', () => {
     expect(spec?.data.responses).toBeUndefined()
   })
 
+  it('picks the default response: the first 2XX, else the first (Q13)', () => {
+    const code = (option: string): string => option
+    expect(OpenApiResponseCode.pickDefault(['101', '302', '201', '200'], code)).toBe('201')
+    expect(OpenApiResponseCode.pickDefault(['404', '2XX', 'default'], code)).toBe('2XX')
+    expect(OpenApiResponseCode.pickDefault(['400', 'default'], code)).toBe('400')
+    expect(OpenApiResponseCode.pickDefault([], code)).toBeUndefined()
+  })
+
   it('orders response codes canonically', () => {
-    expect(OpenApiResponseCode.sort(['500', '101', '200', '2XX', '302', '404', '4XX', '503', 'default', 'x-weird']))
+    expect(['500', '101', '200', '2XX', '302', '404', '4XX', '503', 'default', 'x-weird'].sort(OpenApiResponseCode.compare))
       .toEqual(['101', '200', '2XX', '302', '404', '4XX', '500', '503', 'x-weird', 'default'])
     // The spec object cannot hold this order (JS puts integer-like keys first): the tree sorts it.
     const tree = new OpenApiTreeBuilder({ source: loadNormalizedOpenApiSample('oas30/structure/04-response-code-order'), operationKeys: ORDERS_POST }).build()

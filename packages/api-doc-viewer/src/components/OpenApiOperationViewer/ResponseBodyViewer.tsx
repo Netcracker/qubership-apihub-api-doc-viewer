@@ -1,4 +1,4 @@
-import { getOpenApiMediaTypes, resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBodyElements } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
@@ -32,8 +32,8 @@ export const ResponseBodyViewer: FC<ResponseBodyViewerProps> = ({ node, content,
     <MediaTypeContentSection
       testId="openapi-response-body-section"
       optionTestIdPrefix="response-media-type"
-      mediaTypes={getOpenApiMediaTypes(node)}
-      selectedId={resolveSelectedMediaType(node, selection)?.id}
+      mediaTypes={OpenApiViewSelection.mediaTypes(node)}
+      selectedId={OpenApiViewSelection.mediaType(node, selection)?.id}
       onSelect={(mediaTypeId) => select(node.id, mediaTypeId)}
       headerDiff={OpenApiRowDiffs.ResponseBody.takeHeaderRowDiff(content)}
       diffsSeverities={takeOpenApiSeverities(content)}

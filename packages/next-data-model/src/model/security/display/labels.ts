@@ -43,6 +43,9 @@ const PARAMETER_NAME_LABEL_SUFFIX = ' parameter name'
 /** Plain text before the flow name in a flow part header: `Flow type **Authorization Code**`. */
 export const SECURITY_OAUTH_FLOW_HEADER_PREFIX = 'Flow type'
 
+/** The Security section title of every API type. */
+export const SECURITY_SECTION_TITLE = 'Security'
+
 /** The title-row badge of a Security section that allows anonymous access (OpenAPI `{}`). */
 export const SECURITY_OPTIONAL_BADGE_TEXT = 'Optional'
 

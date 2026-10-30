@@ -1,3 +1,5 @@
+import { TextColors } from "../shared-styles/colors/text-colors"
+import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { ArrayUtils } from "@apihub/utils/common/arrays"
 import { resolveHttpMethodBadge } from "@apihub/utils/openapi/http-method-badge-config"
@@ -39,8 +41,6 @@ import { buildRequestBlock } from "./request-blocks"
 import { buildResponsesBlock } from "./responses-blocks"
 import { buildSecurityBlock } from "./security-blocks"
 
-export const OPERATION_ID_ROW_LABEL = 'Operation ID'
-const SECONDARY_TEXT_COLOR = '#626D82'
 
 export type OperationNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.OPERATION>
 
@@ -182,13 +182,13 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
       return (
         <TextRow
           data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-          label={OPERATION_ID_ROW_LABEL}
+          label={OpenApiDisplayLabels.OPERATION_ID_LABEL}
           value={value?.operationId ?? ''}
           variant={TextValueVariant.body2}
           labelFontWeight="normal"
           textFontWeight="normal"
-          labelColor={SECONDARY_TEXT_COLOR}
-          textColor={SECONDARY_TEXT_COLOR}
+          labelColor={TextColors.SECONDARY}
+          textColor={TextColors.SECONDARY}
           trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
           diff={diff}
           diffsSeverities={severities}

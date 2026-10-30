@@ -1,7 +1,8 @@
+import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiOptions, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
 import { resolveResponseCodeToneClass } from "@apihub/utils/openapi/response-code-tone"
-import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -18,7 +19,6 @@ import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout
 import { OptionKeyText } from "./OptionKeyText"
 import { useOpenApiViewState } from "./OpenApiViewStateContext"
 
-export const RESPONSES_SECTION_TITLE = 'Responses'
 
 export type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>
 type ResponseNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSE>
@@ -66,13 +66,13 @@ export const ResponsesTitleRow: FC<ResponsesTitleRowProps> = ({ node }) => {
       ? { diffs: response.diffs, descendantDiffsSummary: OpenApiRowDiffs.Response.takeChangesMarkerSummary(response) }
       : {}),
   })), [responses])
-  const selected = resolveSelectedResponse(node, selection)
+  const selected = OpenApiViewSelection.response(node, selection)
   const selectedOption = options.find(option => option.node.id === selected?.id) ?? null
 
   return (
     <TitleRow
       data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-      value={RESPONSES_SECTION_TITLE}
+      value={OpenApiDisplayLabels.RESPONSES_TITLE}
       expandable={false}
       variant={TextValueVariant.h2}
       // No strip (no codes, no arrows) on the side where the Responses section does not exist.

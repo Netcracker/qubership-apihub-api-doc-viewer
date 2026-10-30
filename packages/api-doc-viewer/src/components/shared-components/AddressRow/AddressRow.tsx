@@ -1,3 +1,4 @@
+import { TextColors } from "../../shared-styles/colors/text-colors"
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
 import { X_AXIS_PADDING_ROWS } from "@apihub/components/shared-styles/tailwind-classnames"
@@ -108,7 +109,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           layoutSide={layoutSide}
           diff={diff}
           textFontWeight='normal'
-          textColor='#626D82'
+          textColor={TextColors.SECONDARY}
         />
       </>
     }
@@ -122,7 +123,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           variant={TextValueVariant.h4}
           layoutSide={layoutSide}
           textFontWeight='normal'
-          textColor='#626D82'
+          textColor={TextColors.SECONDARY}
         />
         <TextValue
           value={suffix}
@@ -130,7 +131,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
           layoutSide={layoutSide}
           diff={partialReplaceDiff}
           textFontWeight='normal'
-          textColor='#626D82'
+          textColor={TextColors.SECONDARY}
         />
       </div>
     </>

@@ -4,15 +4,12 @@ import "./ShowUnchangedRowContent.css"
 import { LevelIndicator } from "../LevelIndicator"
 import { ATTRIBUTE_PRECEDED_BY } from "../WithPrecededByProps"
 import type { ShowUnchangedRowProps } from "./ShowUnchangedRow"
+import { ShowUnchangedLabels } from "./show-unchanged-labels"
 import { ShowUnchangedTrigger } from "./ShowUnchangedTrigger"
 
 type ShowUnchangedRowContentProps = ShowUnchangedRowProps & {
   layoutSide: "before" | "after"
   level: number
-}
-
-function formatShowUnchangedLabel(count: number): string {
-  return count === 1 ? "Show 1 unchanged node" : `Show ${count} unchanged nodes`
 }
 
 export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((props) => {
@@ -46,7 +43,7 @@ export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((p
       <div className="json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center">
         <ShowUnchangedTrigger
           unchangedBlockId={unchangedBlockId}
-          label={formatShowUnchangedLabel(count)}
+          label={ShowUnchangedLabels.nodes(count)}
           onReveal={onReveal}
         />
       </div>

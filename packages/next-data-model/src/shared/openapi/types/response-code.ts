@@ -72,7 +72,12 @@ export class OpenApiResponseCode {
     return rangeA ? 0 : Number(a) - Number(b)
   }
 
-  public static sort(codes: readonly string[]): string[] {
-    return [...codes].sort(OpenApiResponseCode.compare)
+  /**
+   * The response shown when none is selected (Q13): the first `2XX` (an explicit success code or the
+   * range), else the first. `codeOf` gives an option's code as in the document.
+   * Design: docs/design/openapi/features/response-code-selector.md.
+   */
+  public static pickDefault<T>(options: readonly T[], codeOf: (option: T) => string): T | undefined {
+    return options.find(option => OpenApiResponseCode.resolveClass(codeOf(option)) === OpenApiResponseCodeClasses.SUCCESS) ?? options[0]
   }
 }

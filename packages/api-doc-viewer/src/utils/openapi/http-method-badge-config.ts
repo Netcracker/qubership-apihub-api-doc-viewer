@@ -22,7 +22,13 @@ export const OPENAPI_HTTP_METHOD_BADGE_CONFIG: Readonly<Record<OpenApiHttpMethod
   DEFAULT: { colorClass: 'openapi-http-method-badge_default' },
 }
 
-export function resolveHttpMethodBadge(method: string): { text: string, colorClass: string } {
+/** The address row's method badge: its text and background class. */
+export type HttpMethodBadge = {
+  readonly text: string
+  readonly colorClass: string
+}
+
+export function resolveHttpMethodBadge(method: string): HttpMethodBadge {
   const config = Object.entries(OPENAPI_HTTP_METHOD_BADGE_CONFIG).find(([key]) => key === method.toLowerCase())?.[1]
     ?? OPENAPI_HTTP_METHOD_BADGE_CONFIG.DEFAULT
   return { text: method.toUpperCase(), colorClass: config.colorClass }

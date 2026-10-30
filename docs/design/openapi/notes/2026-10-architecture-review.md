@@ -52,13 +52,13 @@ genuinely simple. The weak points are at the **boundaries**:
 | F9 | Fixed | Medium | transformer L295, L367, L494 vs `isKeyedOptionChange`; `RESPONSE_CODE_RANGE` vs `OpenApiResponseCode.isRange`; `isNonEmptyString` / `hasText` / inline length checks (4 copies); `CUSTOM_ANNOTATIONS_KEY` ×2; `'[OpenAPI]'` literal ×6 in the transformer | Repeated predicates and constants next to the existing named ones | Literal duplication; inline literal constants | Reuse `isKeyedOptionChange`, `OpenApiResponseCode.isRange`, one `TextValues.isNonEmpty`, export the annotation key, use `OPENAPI_LOG_PREFIX` |
 | F10 | Fixed | Medium | ndm `model/openapi/tree-with-diffs/row-diffs.ts` (`isDeprecatedOnSide`, `isRequiredStarVisibleOnSide`, two `takeChangesMarkerSummary`); `SecuritySectionBase.tsx` (`SecurityToolbarRow` options) | Two small algorithms are copy-pasted in the OpenAPI row accessors ("is this boolean flag true on this side", "which changes does a selector option's marker show"), and the security toolbar decides its option markers with a third, inline rule that differs from the OpenAPI one. [Details](#f10-copy-pasted-row-accessors-and-a-third-marker-rule) | Logical duplication; viewer consumes | One flag-on-side accessor and one marker accessor on the shared row-diffs base; the toolbar uses an accessor too, keeping today's look (or aligning it — your decision) |
 | F11 | Fixed | Medium | `OpenApiOperationViewer.tsx` / `OpenApiOperationDiffsViewer.tsx`; `CollapsibleSection.css`, `TitleRow/TitleRow.css`, `preceded-by.css` | The two root viewers repeat the same body: logger memo, viewer-context memo, the provider stack and an identical inline style object writing three CSS custom properties from the spacing config. The CSS reads those properties with numeric fallbacks (`16px`, `24px`, `4px`) that repeat the config defaults, so the numbers have a second, silent home. [Details](#f11-two-root-viewers-with-the-same-body) | Literal duplication; inline literals | A presentational `OpenApiViewerRoot` (providers + root `div`) used by both roots, one viewer-side `toOpenApiCssVariables(spacing)`; no numeric fallbacks in CSS |
-| F12 | Open | Low | `OpenApiExtensionsNodeViewer.tsx` L287 | `node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode` read in a container, bypassing the accessors the row-diffs header asks containers to use | Viewer consumes accessors | `OpenApiRowDiffs.Section.takeHeaderRowHighlightingMode(node)` |
+| F12 | Fixed | Low | `OpenApiExtensionsNodeViewer.tsx` L287 | `node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode` read in a container, bypassing the accessors the row-diffs header asks containers to use | Viewer consumes accessors | `OpenApiRowDiffs.Section.takeHeaderRowHighlightingMode(node)` |
 | F13 | Fixed | Low | `openapi-spec-transformer.ts` L268, L378, L380 (`eslint-disable`), L401 (`{} as …`); `tree/node-data/builder.ts` L300; `security/tree-with-diffs/aggregators.ts` L364 | Three `eslint-disable no-unused-vars` comments suppress nothing (ESLint with `--no-inline-config` reports no error: default `args: after-used`); `{} as OpenApiExtensionsSpec` is avoidable; `as readonly (keyof OpenApiAnyTreeNodeValue)[]` casts to the keys common to a union (effectively none), so `pick` is unchecked; `existing as T` in a heterogeneous `Map<string, unknown>` | No assertions without justification; no error suppression | Delete the comments; build a typed object; per-kind typed pick; one typed map per aggregator family |
 | F14 | Open | Low | `tree-with-diffs/node-diffs-data/factories.ts`, the five empty `*KindAny` subclasses, tables in `node-diffs-severities/kind-any.ts` and `node-diffs/kind-any.ts`; `SecurityNodeAggregators` | Two copies of the lazy per-kind cache in OpenAPI plus a third in security; OpenAPI tables hide inside aggregator files while security has `aggregation-tables.ts`. The `KindAny` approach itself is accepted (A1) | Literal duplication | One `RecordDrivenAggregatorRegistry<K>` for both stacks; `building-service/openapi/tree-with-diffs/aggregation-tables.ts` |
-| F15 | Partly fixed (F25) | Low | `tree/builder.ts` complex branch, `createStateForComplexNode`, `sortResponseCodes`; `openapi-spec-transformer.ts` L339 | After I1 no OpenAPI node is complex, but the builder keeps the complex path; the transformer sorts codes into an object that cannot keep the order (the builder re-sorts); `sortResponseCodes` sorts the array returned by `childrenNodes()` in place, relying on it being the internal storage | Dead code; minimal blind spots | Drop the complex path and the transformer sort; reorder children through an explicit tree method |
-| F16 | Open | Low | `utils/openapi/view-selection.ts`, `http-method-badge-config.ts` | The default response rule (first `2XX`, Q13) and the media-type defaults are free functions in the viewer; `resolveHttpMethodBadge` has an inline return type | Domain logic encapsulated by convention; inline types | `OpenApiResponseCode.pickDefault(codes)` in ndm; an `OpenApiViewSelection` static class; an `HttpMethodBadge` type |
-| F17 | Open | Low | `RequestNodeViewer.tsx`, `ResponsesNodeViewer.tsx`, `response-blocks.tsx`, `MediaTypeContentSection.tsx`, `OperationNodeViewer.tsx`, `SecuritySectionBase.tsx`, `SecuritySchemeCardBase.tsx` L271 | `OpenApiDisplayLabels` states labels are resolved in the data layer, yet seven section / row titles and the card's `Show N unchanged rows` text live in the viewer; the plural rule duplicates `ShowUnchangedRowContent` | Literal constants; minimal blind spots | Move titles to `OpenApiDisplayLabels` / `SecurityDisplayLabels`; one `ShowUnchangedLabels.rows(n)` / `.nodes(n)` |
-| F18 | Open | Low | `OperationNodeViewer.tsx` `SECONDARY_TEXT_COLOR '#626D82'`; `SecuritySchemeCardBase.tsx` `MUTED_TEXT_COLOR '#8F9EB4'`; `MediaTypeContentSection.tsx` `text-red-500` star | Hard-coded colors in components | Clean reusable CSS | Color tokens in `shared-styles/colors/` |
+| F15 | Fixed | Low | `tree/builder.ts` complex branch, `createStateForComplexNode`, `sortResponseCodes`; `openapi-spec-transformer.ts` L339 | After I1 no OpenAPI node is complex, but the builder keeps the complex path; the transformer sorts codes into an object that cannot keep the order (the builder re-sorts); `sortResponseCodes` sorts the array returned by `childrenNodes()` in place, relying on it being the internal storage | Dead code; minimal blind spots | Drop the complex path and the transformer sort; reorder children through an explicit tree method |
+| F16 | Fixed | Low | `utils/openapi/view-selection.ts`, `http-method-badge-config.ts` | The default response rule (first `2XX`, Q13) and the media-type defaults are free functions in the viewer; `resolveHttpMethodBadge` has an inline return type | Domain logic encapsulated by convention; inline types | `OpenApiResponseCode.pickDefault(codes)` in ndm; an `OpenApiViewSelection` static class; an `HttpMethodBadge` type |
+| F17 | Fixed | Low | `RequestNodeViewer.tsx`, `ResponsesNodeViewer.tsx`, `response-blocks.tsx`, `MediaTypeContentSection.tsx`, `OperationNodeViewer.tsx`, `SecuritySectionBase.tsx`, `SecuritySchemeCardBase.tsx` L271 | `OpenApiDisplayLabels` states labels are resolved in the data layer, yet seven section / row titles and the card's `Show N unchanged rows` text live in the viewer; the plural rule duplicates `ShowUnchangedRowContent` | Literal constants; minimal blind spots | Move titles to `OpenApiDisplayLabels` / `SecurityDisplayLabels`; one `ShowUnchangedLabels.rows(n)` / `.nodes(n)` |
+| F18 | Fixed | Low | `OperationNodeViewer.tsx` `SECONDARY_TEXT_COLOR '#626D82'`; `SecuritySchemeCardBase.tsx` `MUTED_TEXT_COLOR '#8F9EB4'`; `MediaTypeContentSection.tsx` `text-red-500` star | Hard-coded colors in components | Clean reusable CSS | Color tokens in `shared-styles/colors/` |
 | F19 | Fixed | Low | 11 inline prop types (`FC<{ node: … }>`) in OpenAPI and security components; `keys: { path; method }` ×2, `owners: ReadonlyArray<{ owner; context }>` ×2, `state: { readonly expanded }`, `displayMode: ReturnType<typeof useDisplayMode>`; `node-visibility.ts` L1 (import and JSDoc on one line) | Inline types | No inline types | Named prop / param types; `OpenApiOperationKeysResolved`, `ExtensionOwnerSides`; `DisplayMode` |
 | F20 | Fixed | Low | `config/section-order.ts`, `OperationNodeViewer.tsx` / `response-blocks.tsx` / `ResponsesNodeViewer.tsx` switches, `PARAMETER_SECTION_LOCATIONS` | `OPENAPI_SECTION_ORDER` and every switch use string literals while `OpenApiSectionIds` exists; `OPENAPI_SECTION_IDS_BY_LEVEL` repeats the lists with constants | Literal duplication | Use `OpenApiSectionIds` everywhere; derive `…_IDS_BY_LEVEL` from one definition |
 | F21 | Open | Low | `OperationNodeViewer.tsx` L66–69 | View state is reset in `useEffect` after the node changes, so the first render of a new operation uses the previous selection / collapsed sets | React state hygiene | Key the state owner by the operation node id (`key={node.id}`) and drop the effect |
@@ -442,7 +442,7 @@ fallbacks (a missing property makes the declaration invalid, so the browser defa
 only happens outside a root that writes them, and `TitleRow.css` documents that a
 `CollapsibleSection` usage needs the property). **Visible change:** none.
 
-## F12, F14–F18. Smaller cleanups (batch 7, proposed)
+## F12, F14–F18. Smaller cleanups (batch 7: F12, F15–F18 done; F14 proposed)
 
 Checked against the code after batches 1–5; all six are still present.
 
@@ -466,7 +466,7 @@ five factories go; the OpenAPI placement tables move to `model/openapi/tree-with
 the synthetic keys to `building-service/openapi/tree-with-diffs/aggregation-tables.ts`. Touches the
 shared Security module: AsyncAPI verified too.
 
-**F15 — dead "complex node" path and a fragile sort.** *Update after F25: the complex path is used now (that part is cancelled) and the sort uses the new `sortNestedNodes`; only the transformer's sort is left.* Every OpenAPI node is simple (I1) and no
+**F15 — dead "complex node" path and a fragile sort.** *Update after F25: the complex path is used now (that part is cancelled) and the sort uses the new `sortNestedNodes`. Left: the transformer's sort; with it gone, `OpenApiResponseCode.sort` has no production caller (only its unit test), so it goes too and the test checks `compare` directly.* Every OpenAPI node is simple (I1) and no
 OpenAPI crawl rule sets `complex`, yet the builder keeps a complex branch (`createNodeFromRaw`,
 `takeComplexNode`, `isComplexTreeNode`) and the rule type still allows `complex?`. The transformer
 sorts response codes into an object, which cannot keep that order (integer-like keys enumerate
@@ -478,7 +478,7 @@ transformer sort; add an explicit `sortChildrenNodes(compare)` to the tree node 
 node: its own list; complex node: its nested node) and use it. The contract change is shared by
 every API type but adds a method only.
 
-**F16 — selection defaults as free functions.** `utils/openapi/view-selection.ts` exports four free
+**F16 — selection defaults as free functions.** *Scope after F25: the resolvers now read options through `getOpenApiOptions` / `getSecurityAlternatives`; the rule becomes `OpenApiResponseCode.pickDefault(options, codeOf)` (generic over the option, so the viewer passes nodes and `option => String(option.key)`).* `utils/openapi/view-selection.ts` exports four free
 functions; one of them holds a domain rule — the default response is the first `2XX`, else the
 first (Q13). `resolveHttpMethodBadge` returns an inline `{ text, colorClass }` type. Fix: the rule
 becomes `OpenApiResponseCode.pickDefault(...)` in next-data-model (next to `compare` / `sort`); the
@@ -709,6 +709,33 @@ container kind. D2: the complex `content` / `responses` descriptions are now cor
 After batch 6: next-data-model 47 suites / 795 tests, api-doc-viewer 12 suites / 117 tests, both
 `tsc` clean, ESLint clean over the changed files (the 3 errors left are in untouched DDL / JSON
 Schema test files).
+
+### Batch 7 — smaller cleanups F12, F15–F18 (2026-10-30)
+
+Approved: F12, F15–F18 as proposed (F14 follows separately).
+
+| ID | Change | Deviation from the suggested fix |
+| --- | --- | --- |
+| F12 | `ExtensionsTitleRow` reads `highlightingMode` from the diff that paints the row (`OpenApiRowDiffs.Section.takeHeaderRowDiff(node)?.highlightingMode`); the raw `node.diffs[NODE_LEVEL_DIFF_KEY]` read and its imports removed | No new accessor: the mode comes from the same diff object |
+| F15 | The transformer keeps response codes in document order (its `OpenApiResponseCode.sort` had no effect on an object); `OpenApiResponseCode.sort` removed (no production caller); its test sorts with `compare`. The tree order comes from `sortNestedNodes` (batch 6) | The "dead complex path" part was cancelled by F25 |
+| F16 | `OpenApiResponseCode.pickDefault(options, codeOf)` (next-data-model, Q13: first `2XX`, else the first); `OpenApiViewSelection` static class (`alternative`, `response`, `mediaTypes`, `mediaType`) replaces the four free functions at every call site (9 files + the view-selection test); `HttpMethodBadge` type for `resolveHttpMethodBadge`; unit test for `pickDefault` | `pickDefault` reads the class from the option's code (`resolveClass`), the same function the transformer uses for `codeClass` |
+| F17 | `OpenApiDisplayLabels.REQUEST_TITLE`, `RESPONSES_TITLE`, `BODY_TITLE`, `RESPONSE_HEADERS_TITLE`, `OPERATION_ID_LABEL` replace five viewer constants; `SECURITY_SECTION_TITLE` moved to `model/security/display/labels.ts` (OpenAPI and AsyncAPI read it there); `ShowUnchangedLabels.nodes(n)` / `.rows(n)` (`shared-components/ShowUnchangedRow/show-unchanged-labels.ts`) replace the two plural rules | — |
+| F18 | `TextColors.SECONDARY` / `.MUTED` (`shared-styles/colors/text-colors.ts`) in `OperationNodeViewer`, `SecuritySchemeCardBase` and `AddressRow` (three places, shared with AsyncAPI); `RequiredMark` (`shared-components/RequiredMark/`) for the Body and security scope stars | `TextColors` is a static class like the label classes. The other copies (JSON Schema title, legacy `RequiredStar` / `NullableAsterisk`, DDL / icon CSS) are left for their own reviews |
+
+**Verification.** Baselines of both packages taken before the batch; both harnesses validated on
+identical copies first (763 / 763 each).
+
+| Step | Tree comparison (763 cases, plain + diffs, OpenAPI + AsyncAPI) | Render-HTML comparison (1530 renders) | Deliberate break |
+| --- | --- | --- | --- |
+| F12 + F15 | 763 / 763 equal | 763 / 763 byte-identical | tree sort skipped → 1 case differs (the code-order fixture). F12: dropping the mode changes **no** HTML in any fixture — the mode has no static effect on this row; F12 is equal by construction (same diff object when the row is painted, no painting otherwise) |
+| F16 | 763 / 763 | 763 / 763 | `pickDefault` returns the first code → 3 cases differ |
+| F17 + F18 | 763 / 763 | 763 / 763 | colour token changed → 763 differ; rows wording changed → 228 differ |
+
+Temporary harnesses and baselines deleted. **Visible change:** none.
+
+After batch 7: next-data-model 47 suites / 796 tests, api-doc-viewer 12 suites / 117 tests, both `tsc`
+clean, ESLint clean over the changed files (the 3 errors left are in untouched DDL / JSON Schema
+test files).
 
 ## Configuration proposals (for approval; not changed)
 

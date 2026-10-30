@@ -1,10 +1,11 @@
+import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import {
   findOpenApiChild,
   isOpenApiContentNode,
   isOpenApiExtensionsNode,
   isOpenApiResponseHeadersNode,
 } from "@apihub/utils/openapi/node-type-checkers"
-import { getOpenApiMediaTypes, resolveSelectedMediaType } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiNodeVisibility } from "@netcracker/qubership-apihub-next-data-model/model/openapi/node-visibility"
 import { TextValueVariant } from "../shared-components/TextValue/types"
@@ -15,7 +16,6 @@ import { isOpenApiSectionExpanded, OpenApiViewState } from "./OpenApiViewStateCo
 import { buildParametersBlock } from "./parameters-blocks"
 import { ContentNode, ResponseBodyViewer, ResponseDescriptionRow, ResponseNode } from "./ResponseBodyViewer"
 
-export const RESPONSE_HEADERS_SECTION_TITLE = 'Headers'
 
 /**
  * The sections of one (the selected) response as layout blocks — description, Headers, Extensions,
@@ -27,7 +27,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
   const headers = findOpenApiChild(response, isOpenApiResponseHeadersNode)
   const extensions = findOpenApiChild(response, isOpenApiExtensionsNode)
   const content = findOpenApiChild(response, isOpenApiContentNode)
-  const hasBody = getOpenApiMediaTypes(response).length > 0
+  const hasBody = OpenApiViewSelection.mediaTypes(response).length > 0
   const id = (sectionId: string): string => `${response.id}:${sectionId}`
 
   return OPENAPI_SECTION_ORDER.response.flatMap((sectionId): StackBlock[] => {
@@ -42,7 +42,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
           : []
       case OpenApiSectionIds.RESPONSE_HEADERS:
         return headers
-          ? [buildParametersBlock(id(sectionId), { node: headers, title: RESPONSE_HEADERS_SECTION_TITLE, testId: 'openapi-response-headers-section' }, view)]
+          ? [buildParametersBlock(id(sectionId), { node: headers, title: OpenApiDisplayLabels.RESPONSE_HEADERS_TITLE, testId: 'openapi-response-headers-section' }, view)]
           : []
       case OpenApiSectionIds.RESPONSE_EXTENSIONS:
         return extensions
@@ -60,7 +60,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
 
 /** The response Body: its elements are decided here once, for its outer edges and for what it renders. */
 function buildResponseBodyBlock(id: string, response: ResponseNode, content: ContentNode, view: OpenApiViewState): StackBlock {
-  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, resolveSelectedMediaType(response, view.selection), { expanded: isOpenApiSectionExpanded(view, content.id) })
+  const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.responseBodyTitleRow(content), undefined, OpenApiViewSelection.mediaType(response, view.selection), { expanded: isOpenApiSectionExpanded(view, content.id) })
   return {
     id,
     ...OpenApiBlockEdges.body(elements),

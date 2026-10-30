@@ -336,7 +336,9 @@ export class OpenApiSpecTransformer {
     if (!isObject(responses)) {
       return undefined
     }
-    const codes = OpenApiResponseCode.sort(Object.keys(responses).filter(code => !isSpecificationExtensionKey(code)))
+    // Document order: the spec object cannot hold the canonical order (integer-like keys enumerate
+    // first); the tree builder sorts the response options (`OpenApiResponseCode.compare`).
+    const codes = Object.keys(responses).filter(code => !isSpecificationExtensionKey(code))
     const result: Record<string, OpenApiResponseSpec> = {}
     for (const code of codes) {
       const response = responses[code]

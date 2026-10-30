@@ -1,3 +1,4 @@
+import { RequiredMark } from "../RequiredMark/RequiredMark"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -218,7 +219,7 @@ export const SecurityScopeContent: FC<SecurityScopeContentProps> = (props) => {
     <div className={`security-scope ${SECURITY_PROP_GRID_CLASSES}`}>
       <div className="min-w-0 break-words pl-5">
         <span className={NODE_TITLE_TEXT_CLASSES}>{name}</span>
-        {required && <sup className="ml-0.5 text-red-500">*</sup>}
+        {required && <RequiredMark />}
       </div>
       <div className="flex min-w-0 flex-wrap items-start gap-2">
         <span className={`title-row-subheader-value subheader text ${descriptionHighlighterClass}`}>{description}</span>

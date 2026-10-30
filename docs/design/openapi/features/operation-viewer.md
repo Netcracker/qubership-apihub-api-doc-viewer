@@ -262,7 +262,7 @@ All selection state lives in **one** view-state store owned by `OperationNodeVie
 (`OpenApiViewStateContext`: owner node id -> selected node id); the tree model never changes. Every
 level reads it: the layout of a level depends on the selections below it (the selected media type
 decides where a Body, and so the Request, ends). The store resets when the operation node changes
-(a rebuilt tree starts fresh). Resolvers with the defaults: `src/utils/openapi/view-selection.ts`.
+(a rebuilt tree starts fresh). Resolvers with the defaults: `OpenApiViewSelection` (`src/utils/openapi/view-selection.ts`: `alternative`, `response`, `mediaTypes`, `mediaType`); the default response code is the domain rule `OpenApiResponseCode.pickDefault` (next-data-model, Q13).
 
 | State | Owner key | Initial value |
 | --- | --- | --- |

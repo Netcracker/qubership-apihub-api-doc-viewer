@@ -1,4 +1,4 @@
-import { resolveSelectedAlternative } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { findSecurityAlternatives, getSecurityAlternatives } from "@apihub/utils/security/node-type-checkers"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { SecurityBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/security/block-edges"
@@ -15,7 +15,7 @@ import { OpenApiSecurityToolbarRow, SecurityNode, SecurityNodeViewer, SecurityTi
  * `security-section-blocks.ts`; the selection lives in the operation view state.
  */
 export function buildSecurityBlock(node: SecurityNode, view: OpenApiViewState): StackBlock {
-  const selected = resolveSelectedAlternative(node, view.selection)
+  const selected = OpenApiViewSelection.alternative(node, view.selection)
   // An anonymous-only list (`[{}]`) has no alternative: the title row alone.
   const toolbar = findSecurityAlternatives(node)
   const hasAlternatives = getSecurityAlternatives(node).length > 0

@@ -1002,7 +1002,7 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
 | --- | --- | --- | --- |
 | Card | `SecuritySchemeCardBase` (`presentation: SecurityPresentation`) | `OpenApiSecuritySchemeCard` | `AsyncApiSecuritySchemeCard` |
 | Toolbar | `SecurityToolbarRow` (`labels`, `selected`, `onSelect`) over `SecurityToolbar` | selection in `OpenApiViewStateContext` | local `useState` |
-| Section | `security-section-blocks.ts` (`buildSecurityToolbarBlock(node, render)`, `buildSecurityContentBlocks(selected, renderCard)`), `SECURITY_SECTION_TITLE` | `security-blocks.tsx` `buildSecurityBlock` (h2, operation-level block) | `AsyncApiSecuritySection` (h3 `PRIMARY` in `MessageNodeViewer`, h5 `SECONDARY` in `MessageChannelServerNodeViewer`) |
+| Section | `security-section-blocks.ts` (`buildSecurityToolbarBlock(toolbar, render)`, `buildSecurityContentBlocks(selected, renderCard)`); the title `SECURITY_SECTION_TITLE` comes from next-data-model `model/security/display/labels.ts` | `security-blocks.tsx` `buildSecurityBlock` (h2, operation-level block) | `AsyncApiSecuritySection` (h3 `PRIMARY` in `MessageNodeViewer`, h5 `SECONDARY` in `MessageChannelServerNodeViewer`) |
 
 - **Navigate with the security guards.** `utils/security/node-type-checkers.ts`
   (`getSecurityChildren`, `isSecuritySchemeNode`, `resolveSelectedSecurityAlternative`, …) and
@@ -1023,6 +1023,13 @@ Design: `docs/design/async-api/features/security.md` (structure, layout, deviati
   `SecurityRowDiffs.NodeLevel.takeChangesMarkerSummary` (the V9 marker rule of every selector) and its
   sides `SecurityRowDiffs.Alternatives.isToolbarShownOnSide` — on the toolbar's `securityAlternatives`
   container (`findSecurityAlternatives`), which `SecurityToolbarRow` / `buildSecurityToolbarBlock` take.
+- **Literals have one home.** OpenAPI titles and row labels: `OpenApiDisplayLabels` (next-data-model);
+  the Security title: `SECURITY_SECTION_TITLE` (`model/security/display/labels.ts`, both API types);
+  the "show unchanged" wording: `ShowUnchangedLabels.nodes(n)` / `.rows(n)`; text colours passed as
+  values (`textColor`, `labelColor` → inline style): `TextColors` (`shared-styles/colors/text-colors.ts`);
+  badge / selector colours stay CSS classes in `shared-styles/colors/*.css`; the red required `*`:
+  `RequiredMark`. Selection defaults: `OpenApiViewSelection`; the default response code rule is
+  `OpenApiResponseCode.pickDefault` in next-data-model.
 - **Selector options are nested nodes** (`docs/design/shared/features/selector-options.md`). Read
   response codes / media types with `getOpenApiOptions(container, guard)` and alternatives with
   `getSecurityAlternatives(security)` — all `nestedNodes()`. Never call `childrenNodes()` or `value()`

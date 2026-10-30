@@ -10,12 +10,7 @@ import {
   isOpenApiResponsesNode,
   isOpenApiSecurityNode,
 } from "../src/utils/openapi/node-type-checkers"
-import {
-  getOpenApiMediaTypes,
-  resolveSelectedAlternative,
-  resolveSelectedMediaType,
-  resolveSelectedResponse,
-} from "../src/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "../src/utils/openapi/view-selection"
 
 const schema = { type: 'object', properties: { id: { type: 'string' } } }
 
@@ -54,25 +49,25 @@ function required<T>(value: T | undefined): T {
 describe("OpenAPI view selection", () => {
   it("defaults to the first alternative and follows the selection", () => {
     const security = required(findOpenApiChild(operation(), isOpenApiSecurityNode))
-    const first = resolveSelectedAlternative(security, new Map())
+    const first = OpenApiViewSelection.alternative(security, new Map())
     // The alternatives are nested nodes of the section's `securityAlternatives` container.
     const [firstAlternative, second] = getSecurityAlternatives(security)
     expect(first?.id).toBe(firstAlternative.id)
-    expect(resolveSelectedAlternative(security, new Map([[security.id, second.id]]))?.id).toBe(second.id)
+    expect(OpenApiViewSelection.alternative(security, new Map([[security.id, second.id]]))?.id).toBe(second.id)
   })
 
   it("defaults to the first 2XX response, not to the first code", () => {
     const responses = required(findOpenApiChild(operation(), isOpenApiResponsesNode))
-    expect(resolveSelectedResponse(responses, new Map())?.key).toBe('201')
+    expect(OpenApiViewSelection.response(responses, new Map())?.key).toBe('201')
   })
 
   it("keeps the media-type selection per owner and ignores unknown ids", () => {
     const body = required(findOpenApiChild(findOpenApiChild(operation(), isOpenApiRequestNode), isOpenApiRequestBodyNode))
-    const xml = getOpenApiMediaTypes(body)[1]
-    expect(resolveSelectedMediaType(body, new Map())?.key).toBe('application/json')
-    expect(resolveSelectedMediaType(body, new Map([[body.id, xml.id]]))?.key).toBe('application/xml')
-    expect(resolveSelectedMediaType(body, new Map([['another-owner', xml.id]]))?.key).toBe('application/json')
-    expect(resolveSelectedMediaType(body, new Map([[body.id, 'unknown']]))?.key).toBe('application/json')
+    const xml = OpenApiViewSelection.mediaTypes(body)[1]
+    expect(OpenApiViewSelection.mediaType(body, new Map())?.key).toBe('application/json')
+    expect(OpenApiViewSelection.mediaType(body, new Map([[body.id, xml.id]]))?.key).toBe('application/xml')
+    expect(OpenApiViewSelection.mediaType(body, new Map([['another-owner', xml.id]]))?.key).toBe('application/json')
+    expect(OpenApiViewSelection.mediaType(body, new Map([[body.id, 'unknown']]))?.key).toBe('application/json')
   })
 })
 

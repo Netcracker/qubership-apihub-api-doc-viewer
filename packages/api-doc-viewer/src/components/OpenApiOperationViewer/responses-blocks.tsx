@@ -1,4 +1,4 @@
-import { resolveSelectedResponse } from "@apihub/utils/openapi/view-selection"
+import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -16,7 +16,7 @@ type ExtensionsNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.EXTENSIONS>
 export function buildResponsesBlock(node: ResponsesNode, extensionsNode: ExtensionsNode | undefined, view: OpenApiViewState): StackBlock {
   const sections = OPENAPI_SECTION_ORDER.responses.flatMap((sectionId): StackBlock[] => {
     if (sectionId === OpenApiSectionIds.SELECTED_RESPONSE) {
-      const selected = resolveSelectedResponse(node, view.selection)
+      const selected = OpenApiViewSelection.response(node, view.selection)
       return selected ? buildResponseBlocks(selected, view) : []
     }
     return extensionsNode

@@ -1,3 +1,5 @@
+import { RequiredMark } from "../shared-components/RequiredMark/RequiredMark"
+import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -24,7 +26,6 @@ import { OptionKeyText } from "./OptionKeyText"
 
 export type MediaTypeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>
 
-export const BODY_SECTION_TITLE = 'Body'
 
 type MediaTypeContentSectionProps = {
   testId: string
@@ -95,8 +96,8 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
 
   const renderTitle = (layoutSide: LayoutSide): ReactElement => (
     <div className="flex flex-row items-baseline">
-      <TextValue value={BODY_SECTION_TITLE} variant={TextValueVariant.h3} layoutSide={layoutSide} diff={headerDiff} onClick={sectionProps.onClickExpander} />
-      {isRequiredOnSide?.(layoutSide) && <sup className="ml-0.5 text-red-500">*</sup>}
+      <TextValue value={OpenApiDisplayLabels.BODY_TITLE} variant={TextValueVariant.h3} layoutSide={layoutSide} diff={headerDiff} onClick={sectionProps.onClickExpander} />
+      {isRequiredOnSide?.(layoutSide) && <RequiredMark />}
     </div>
   )
 
@@ -132,7 +133,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
             <TitleRow
               key="title"
               data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-              value={BODY_SECTION_TITLE}
+              value={OpenApiDisplayLabels.BODY_TITLE}
               titleContent={renderTitle}
               variant={TextValueVariant.h3}
               {...sectionProps}

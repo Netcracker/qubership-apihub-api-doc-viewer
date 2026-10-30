@@ -613,7 +613,7 @@ vs new: the trees with nested nodes flattened back (763 / 763 identical, includi
 severity and summary), and the rendered HTML (763 / 763 byte-identical). Both were broken on purpose
 to prove they can fail.
 
-## Batch 7 — smaller cleanups F12, F14–F18 (proposed)
+## Batch 7 — smaller cleanups F12, F15–F18 (done 2026-10-30; F14 proposed)
 
 Six low-severity findings, all still in the code after batches 1–5, none visible on screen. Grouped
 by risk: F12 + F15 (data path, mechanical), F14 (shared aggregator plumbing, touches AsyncAPI via
@@ -623,12 +623,30 @@ Security), F16 + F17 + F18 (viewer tidy-ups). Full text: notes → "F12, F14–F
 | --- | --- | --- |
 | F12 | The Extensions title row takes its diff from one accessor and its highlighting mode from a raw `node.diffs[""]` read. | Take the mode from the same diff object. |
 | F14 | The "one aggregator per kind, cached" logic exists three times (two OpenAPI factories + `SecurityNodeAggregators`), plus five near-empty `KindAny` classes; OpenAPI tables hide in aggregator files. | One generic registry built from tables, one instance per stack; tables in `placements.ts` / `aggregation-tables.ts` like Security. |
-| F15 | The builder keeps a "complex node" path no OpenAPI node can take, the transformer sorts codes into an object that cannot keep the order, and the builder re-sorts by mutating the array a getter returns. | Delete the dead path and the useless sort; sort children through an explicit `sortChildrenNodes` method. |
+| F15 | *(after F25: the complex path is used and the tree sort uses `sortNestedNodes`)* The transformer still sorts codes into an object that cannot keep the order. | Delete that sort and the then-unused `OpenApiResponseCode.sort`; the test checks `compare`. |
 | F16 | "Default response = first 2XX" is a domain rule written as a viewer free function; the badge helper returns an inline type. | `OpenApiResponseCode.pickDefault` in next-data-model, an `OpenApiViewSelection` class, an `HttpMethodBadge` type. |
 | F17 | Six section titles and the `Show N unchanged …` wording are literals in components, the plural rule twice. | Titles to the display-label classes; one `ShowUnchangedLabels` helper. |
 | F18 | Two text colours and the red required star are hard-coded in components. | A `TextColors` module and a `RequiredMark` component for the OpenAPI / Security copies. |
 
-### Verification plan for batch 6
+### What was done (2026-10-30)
+
+| Concern | Lives in | Notes |
+| --- | --- | --- |
+| Extensions title row highlighting | the row's own diff (`takeHeaderRowDiff`) | F12 |
+| Response-code order | tree only (`sortNestedNodes` + `compare`) | F15: the transformer sort and `OpenApiResponseCode.sort` are gone |
+| Default response (first 2XX) | `OpenApiResponseCode.pickDefault` (next-data-model) | F16 |
+| Selected option per selector | `OpenApiViewSelection` (viewer, view state) | F16 |
+| Section titles, row labels | `OpenApiDisplayLabels`, `SECURITY_SECTION_TITLE` (next-data-model) | F17 |
+| "Show N unchanged …" wording | `ShowUnchangedLabels` | F17 |
+| Text colours given as values | `TextColors` | F18 |
+| Red required `*` | `RequiredMark` | F18 |
+
+**Verification (done).** Trees and rendered HTML equal for every OpenAPI and AsyncAPI fixture after
+each step; each step broken on purpose once (1 / 3 / 763 / 228 cases differ). One honest gap: F12's
+highlighting mode has no visible effect on any fixture, so the HTML check cannot see it; it is equal by
+construction (the same diff object whenever the row is painted).
+
+### Verification plan for batch 7 (as written before approval)
 
 - `tsc`, unit tests and lint in both packages.
 - The render-HTML comparison of batches 4–5 (old vs new, every OpenAPI and AsyncAPI fixture): must

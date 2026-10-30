@@ -11,8 +11,6 @@ import { SelectorOption } from "../Selector/Selector"
 import { PrecededBy } from "../WithPrecededByProps"
 import { SecurityToolbar } from "./SecurityToolbar"
 
-/** The Security section title of every API type. */
-export const SECURITY_SECTION_TITLE = 'Security'
 
 export type SecuritySectionNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY>
 /** The toolbar's complex container; its nested nodes are the alternatives. */

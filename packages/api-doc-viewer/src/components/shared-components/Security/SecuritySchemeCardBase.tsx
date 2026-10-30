@@ -1,3 +1,4 @@
+import { TextColors } from "../../shared-styles/colors/text-colors"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutSpacing } from "@apihub/contexts/LayoutSpacingContext"
 import { DisplayMode } from "@apihub/types/DisplayMode"
@@ -22,6 +23,7 @@ import { FC, Fragment, ReactElement, ReactNode, useState } from "react"
 import { StackBlock, StackLayout } from "../Layout/StackLayout"
 import { FramePosition } from "../Frame/types"
 import { MarkdownTextRow } from "../MarkdownTextRow/MarkdownTextRow"
+import { ShowUnchangedLabels } from "../ShowUnchangedRow/show-unchanged-labels"
 import { ShowUnchangedTrigger } from "../ShowUnchangedRow/ShowUnchangedTrigger"
 import { useOptionalUnchangedBlocksContext } from "../ShowUnchangedRow/UnchangedBlocksContext"
 import { TextRow } from "../TextRow/TextRow"
@@ -53,8 +55,6 @@ type SecuritySchemeCardBaseProps = SecuritySchemeCardProps & {
   /** Scheme name size; smaller than the section title it sits under (default h4 under an h2 / h3 title). */
   titleVariant?: TextValueVariant
 }
-
-const MUTED_TEXT_COLOR = '#8F9EB4'
 
 type FramePositionResolver = (side: LayoutSide) => FramePosition | undefined
 
@@ -154,7 +154,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
           value={labels.unresolvedSchemeText}
           variant={TextValueVariant.body2}
           textFontWeight="normal"
-          textColor={MUTED_TEXT_COLOR}
+          textColor={TextColors.MUTED}
           diff={unresolvedDiff}
           framePosition={framePosition}
         />
@@ -241,7 +241,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
     && !unchangedBlocks.revealedBlockIds.has(node.id)
     && !SecurityRowDiffs.Scheme.isContentChanged(node)
   ) {
-    const label = hiddenRowCount === 1 ? 'Show 1 unchanged row' : `Show ${hiddenRowCount} unchanged rows`
+    const label = ShowUnchangedLabels.rows(hiddenRowCount)
     card.collapseContent({
       key: 'show-unchanged',
       diff: undefined,

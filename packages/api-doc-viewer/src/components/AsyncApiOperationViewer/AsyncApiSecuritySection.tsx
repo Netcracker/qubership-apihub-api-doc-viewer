@@ -1,3 +1,4 @@
+import { SECURITY_SECTION_TITLE } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
 import { findSecurityAlternatives, resolveSelectedSecurityAlternative } from "@apihub/utils/security/node-type-checkers"
 import { ASYNC_API_SECURITY_DISPLAY_LABELS } from "@netcracker/qubership-apihub-next-data-model/model/async-api/security-presentation"
@@ -5,7 +6,6 @@ import { SecurityRowDiffs } from "@netcracker/qubership-apihub-next-data-model/m
 import { FC, memo, useMemo, useState } from "react"
 import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
 import {
-  SECURITY_SECTION_TITLE,
   SecuritySectionNode,
   SecurityToolbarRow,
 } from "../shared-components/Security/SecuritySectionBase"

@@ -57,7 +57,7 @@ Operation ID: uploadPetPhoto               operation ID row (small, grey)
 | Item | Rule |
 | --- | --- |
 | Component | `TextRow`, `variant={TextValueVariant.body2}` — small and muted, never a heading. Label and value are rendered by the row's existing `label` + `value` props (same mechanism as the AsyncAPI binding `Version` row), so they share one line. |
-| Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OPERATION_ID_ROW_LABEL = 'Operation ID'`) in the container. `labelFontWeight='normal'`, `labelColor` = secondary grey (`#626D82`). |
+| Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OpenApiDisplayLabels.OPERATION_ID_LABEL = 'Operation ID'`, next-data-model). `labelFontWeight='normal'`, `labelColor` = secondary grey (`TextColors.SECONDARY`, `#626D82`). |
 | Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
 | Spacing | the header rows (title, operation ID, address, description, external docs) are one block: symmetric row padding (`PrecededBy.SEPARATOR_LAYOUT_ROW`), a separator row before the first section ([block-separators.md](../features/block-separators.md)) |

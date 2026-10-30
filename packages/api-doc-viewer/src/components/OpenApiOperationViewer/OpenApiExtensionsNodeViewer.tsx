@@ -1,8 +1,6 @@
-import { NODE_LEVEL_DIFF_KEY } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { OpenApiRowDiffs } from "@netcracker/qubership-apihub-next-data-model/model/openapi/tree-with-diffs/row-diffs"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
-import { isOpenApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/guards/tree-node"
 import { FC } from "react"
 import { ExtensionsSectionContent, ExtensionsSectionTitleRow } from "../shared-components/ExtensionsSection/ExtensionsSection"
 import { TextValueVariant } from "../shared-components/TextValue/types"
@@ -26,18 +24,22 @@ type ExtensionsValuesProps = {
 }
 
 /** Operation (h2), Response (h3) and Responses Object (h3) extensions title. Layout block: `extensions-blocks.tsx`. */
-export const ExtensionsTitleRow: FC<ExtensionsTitleRowContentProps> = ({ node, variant, section }) => (
-  <ExtensionsSectionTitleRow
-    data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-    variant={variant}
-    section={section}
-    titleRowDiffProps={{
-      diff: OpenApiRowDiffs.Section.takeHeaderRowDiff(node),
-      diffsSeverities: takeOpenApiSeverities(node),
-      highlightingMode: isOpenApiTreeNodeWithDiffs(node) ? node.diffs[NODE_LEVEL_DIFF_KEY]?.highlightingMode : undefined,
-    }}
-  />
-)
+export const ExtensionsTitleRow: FC<ExtensionsTitleRowContentProps> = ({ node, variant, section }) => {
+  // Background and highlighting mode from the one diff that paints the row.
+  const diff = OpenApiRowDiffs.Section.takeHeaderRowDiff(node)
+  return (
+    <ExtensionsSectionTitleRow
+      data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
+      variant={variant}
+      section={section}
+      titleRowDiffProps={{
+        diff,
+        diffsSeverities: takeOpenApiSeverities(node),
+        highlightingMode: diff?.highlightingMode,
+      }}
+    />
+  )
+}
 
 /** The same title with the section expander (expanded state from the operation view state). */
 export const CollapsibleExtensionsTitleRow: FC<ExtensionsTitleRowProps> = (props) => {
