@@ -1,4 +1,0 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{r as t}from"./AsyncApiOperationViewer-D0M4xHQ_.js";import{d as n,o as r,r as i,s as a,u as o}from"./compatibility-suite-utils-DHQgKRmI.js";var s,c,l,u;function d(){return(d=e((()=>{t(),a(),n(),s={id:`openapi-compatibility-suite-31-30-general-operation-parameters`,title:`OpenAPI Compatibility Suite/OAS 3.1 vs OAS 3.0/general-operation-parameters`,render:i},c=`general-operation-parameters`,l={name:`replace-ref-path-item-to-inline`,args:r(o,c,`replace-ref-path-item-to-inline`,[`3.1.0`,`3.0.0`])},l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`{
-  name: 'replace-ref-path-item-to-inline',
-  args: getOpenApiStoryArgs(TEST_SPEC_TYPE_OPEN_API, SUITE_ID, 'replace-ref-path-item-to-inline', ['3.1.0', '3.0.0'])
-}`,...l.parameters?.docs?.source}}},u=[`ReplaceRefPathItemToInline`]})))()}d();export{l as ReplaceRefPathItemToInline,u as __namedExportsOrder,s as default};

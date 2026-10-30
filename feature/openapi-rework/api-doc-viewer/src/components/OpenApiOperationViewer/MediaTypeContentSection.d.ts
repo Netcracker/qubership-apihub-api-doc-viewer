@@ -5,7 +5,6 @@ import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/t
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC, ReactElement } from '../../../../../node_modules/react';
 export type MediaTypeNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.MEDIA_TYPE>;
-export declare const BODY_SECTION_TITLE = "Body";
 type MediaTypeContentSectionProps = {
     testId: string;
     /** Prefix of the option test ids (`request-media-type` / `response-media-type`): bodies can share media types. */

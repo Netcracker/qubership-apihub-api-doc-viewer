@@ -1,7 +1,6 @@
 import { StackBlock } from '../shared-components/Layout/StackLayout';
 import { OpenApiViewState } from './OpenApiViewStateContext';
 import { ResponseNode } from './ResponseBodyViewer';
-export declare const RESPONSE_HEADERS_SECTION_TITLE = "Headers";
 /**
  * The sections of one (the selected) response as layout blocks — description, Headers, Extensions,
  * Body in `OPENAPI_SECTION_ORDER.response` order. They are sibling blocks of the Responses level

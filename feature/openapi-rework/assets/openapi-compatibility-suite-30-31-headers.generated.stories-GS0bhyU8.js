@@ -1,4 +1,0 @@
-import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{r as t}from"./AsyncApiOperationViewer-D0M4xHQ_.js";import{d as n,o as r,r as i,s as a,u as o}from"./compatibility-suite-utils-DHQgKRmI.js";var s,c,l,u;function d(){return(d=e((()=>{t(),a(),n(),s={id:`openapi-compatibility-suite-30-31-headers`,title:`OpenAPI Compatibility Suite/OAS 3.0 vs OAS 3.1/headers`,render:i},c=`headers`,l={name:`add-overriden-description`,args:r(o,c,`add-overriden-description`,[`3.0.0`,`3.1.0`])},l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`{
-  name: 'add-overriden-description',
-  args: getOpenApiStoryArgs(TEST_SPEC_TYPE_OPEN_API, SUITE_ID, 'add-overriden-description', ['3.0.0', '3.1.0'])
-}`,...l.parameters?.docs?.source}}},u=[`AddOverridenDescription`]})))()}d();export{l as AddOverridenDescription,u as __namedExportsOrder,s as default};

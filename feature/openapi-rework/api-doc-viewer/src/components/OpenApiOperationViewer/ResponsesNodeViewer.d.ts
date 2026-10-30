@@ -2,7 +2,6 @@ import { OpenApiTreeNode } from '../../../../next-data-model/src/model/openapi/t
 import { OpenApiTreeNodeKinds } from '../../../../next-data-model/src/model/openapi/types/node-kind';
 import { FC } from '../../../../../node_modules/react';
 import { StackBlock } from '../shared-components/Layout/StackLayout';
-export declare const RESPONSES_SECTION_TITLE = "Responses";
 export type ResponsesNode = OpenApiTreeNode<typeof OpenApiTreeNodeKinds.RESPONSES>;
 type ResponsesNodeViewerProps = {
     /** Its elements (title row, sections), built by `buildResponsesBlock` (the parent needs them for the section's own edges). */

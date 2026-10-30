@@ -2,9 +2,9 @@ import { SecurityDisplayLabels } from '../../../../../next-data-model/src/model/
 import { SecurityTreeNode } from '../../../../../next-data-model/src/model/security/types/aliases';
 import { SecurityTreeNodeKinds } from '../../../../../next-data-model/src/model/security/types/node-kind';
 import { FC } from '../../../../../../node_modules/react';
-/** The Security section title of every API type. */
-export declare const SECURITY_SECTION_TITLE = "Security";
 export type SecuritySectionNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY>;
+/** The toolbar's complex container; its nested nodes are the alternatives. */
+export type SecurityAlternativesNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_ALTERNATIVES>;
 export type SecurityAlternativeNode = SecurityTreeNode<typeof SecurityTreeNodeKinds.SECURITY_REQUIREMENT>;
 /**
  * Pieces of a Security section, shared by the API types: the alternatives toolbar row here, the
@@ -14,7 +14,8 @@ export type SecurityAlternativeNode = SecurityTreeNode<typeof SecurityTreeNodeKi
  * Design: docs/design/openapi/entities/security.md, docs/design/async-api/features/security.md.
  */
 export type SecurityToolbarRowProps = {
-    node: SecuritySectionNode;
+    /** The section's `securityAlternatives` container (`findSecurityAlternatives`): options, row diff and badge. */
+    toolbar: SecurityAlternativesNode;
     labels: SecurityDisplayLabels;
     /** The shown alternative (`resolveSelectedSecurityAlternative`). */
     selected: SecurityAlternativeNode | undefined;

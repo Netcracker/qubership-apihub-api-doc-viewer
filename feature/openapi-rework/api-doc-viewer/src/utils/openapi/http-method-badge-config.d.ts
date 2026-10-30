@@ -9,7 +9,9 @@ export type HttpMethodBadgeConfig = {
  * live in `components/shared-styles/colors/openapi.css`.
  */
 export declare const OPENAPI_HTTP_METHOD_BADGE_CONFIG: Readonly<Record<OpenApiHttpMethod | 'DEFAULT', HttpMethodBadgeConfig>>;
-export declare function resolveHttpMethodBadge(method: string): {
-    text: string;
-    colorClass: string;
+/** The address row's method badge: its text and background class. */
+export type HttpMethodBadge = {
+    readonly text: string;
+    readonly colorClass: string;
 };
+export declare function resolveHttpMethodBadge(method: string): HttpMethodBadge;
