@@ -13,7 +13,7 @@ the providers, and the nested viewers differ.
 
 ```mermaid
 flowchart TB
-  RootD["OpenApiOperationDiffsViewer.tsx<br/>OpenApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>OpenApiViewerContext (hideUnchangedNodes) · LayoutSpacingContext · UnchangedBlocksContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
+  RootD["OpenApiOperationDiffsViewer.tsx → OpenApiViewerRoot.tsx<br/>OpenApiTreeWithDiffsBuilder · DiffMetaKeysContext · DiffTypesContext ·<br/>OpenApiViewerContext (hideUnchangedNodes) · LayoutSpacingContext · UnchangedBlocksContext ·<br/>LayoutModeContext (SIDE_BY_SIDE_DIFFS)"]
   Containers["Operation / Security / OpenApiSecuritySchemeCard (SecuritySchemeCardBase) / Request /<br/>Parameters / MediaTypeContentSection / Responses / response-blocks / Extensions /<br/>OpenApiSchemaViewer / StackLayout (shared with plain)"]
   DiffState["diff-state.ts · takeOpenApiSeverities<br/>next-data-model isOpenApiTreeNodeWithDiffs"]
   RowDiffs["next-data-model<br/>OpenApiRowDiffs · SecurityRowDiffs · OpenApiBlockEdges · SecurityBlockEdges"]
@@ -23,7 +23,7 @@ flowchart TB
   Hiding["ShowUnchangedTrigger (security cards without content changes)"]
   JsonSchemaD["JsonSchemaDiffsViewer<br/>(parameters · headers · bodies)"]
   JsoD["JsoDiffsViewer (extensions)"]
-  Wrap["wrapJsonSchemaForDiffsViewer('Type', schema, body diff) — media-type schemas only"]
+  Wrap["next-data-model OpenApiMediaTypeSchema.wrap(mediaType, diffsMetaKey)<br/>media-type schemas: Type + whole add / remove record"]
 
   RootD --> Containers
   Containers --> DiffState

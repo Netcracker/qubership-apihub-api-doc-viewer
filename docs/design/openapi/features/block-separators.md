@@ -392,7 +392,7 @@ resets when the operation node changes (a rebuilt tree), as the per-container st
 
 **Collapsible blocks (implemented 2026-10-20, [collapsible-sections.md](collapsible-sections.md)).**
 Collapsing is one more view-state input — a set of collapsed section node ids in the same store —
-passed to the block builders (a collapsed section is its title row alone) and `OpenApiBlockEdges.body`.
+passed to the block builders (a collapsed section is its title row alone) and `OpenApiBlockEdges.bodyElements`.
 Numbers below are from this document's original model; the effects are the same:
 
 | Effect of collapsing | Handled by |

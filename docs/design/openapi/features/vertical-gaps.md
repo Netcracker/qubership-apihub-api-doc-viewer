@@ -320,7 +320,7 @@ Data layer (`model/abstract/layout/`, OpenAPI part in `model/openapi/layout/`):
 | `LayoutBlockEdge` | `{ halfGap: number, tones, badge }` — `halfGap` from the element kind (R2); `tones` / `badge` the element's own (row diff, whole card; nested viewer: its owner's whole add / remove) |
 | `BlockEdges` (generic) | `row(painted)`, `card(card)`, `nested(owner)`, `single(edge)`, `container(children)`, `sectionTitleRow` |
 | `SecurityBlockEdges extends BlockEdges` | `toolbarRow`, `titleRow` (`model/security/block-edges.ts`) |
-| `OpenApiBlockEdges extends BlockEdges` | `body(title, description, selectedMediaType)`; painted-row accessors per OpenAPI row kind (`operationHeaderRow`, `responsesTitleRow`, `requestBodyTitleRow`, `responseBodyTitleRow`, `descriptionRow`) |
+| `OpenApiBlockEdges extends BlockEdges` | `bodyElements(title, description, selectedMediaType, state)` (the Body's elements, decided once for the parent and the Body) and `body(elements)` (their outer edges); painted-row accessors per OpenAPI row kind (`operationHeaderRow`, `responsesTitleRow`, `requestBodyTitleRow`, `responseBodyTitleRow`, `descriptionRow`) |
 | Planner `plan(blocks, level, config, { outerHalves })` | between two siblings, per side: `[ owned(above.tail), splitBands(above, below, levelGap[level]), owned(below.head) ]` — the default `splitBands` gives two halves in the neighbours' tones (one piece when equal); empty bands dropped, equal neighbours merged; the badge stub the same way (`splitBadge`). `outerHalves` (the root with `viewerEdges`, the inside of a card) adds the first element's upper half and the last element's lower half |
 | Frame rows | `cardInnerInset` high, border at the outer edge; outside space comes from the card's half in the separator |
 

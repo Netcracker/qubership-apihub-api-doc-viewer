@@ -249,7 +249,7 @@ So a header is never shown on a side merely because the section's raw object exi
 | Content | Viewer | What the OpenAPI layer passes |
 | --- | --- | --- |
 | Parameter groups, response headers | `JsonSchemaDiffsViewer` | the synthesized schema (diffs already attached) |
-| Media-type schemas | `JsonSchemaDiffsViewer` | `wrapJsonSchemaForDiffsViewer('Type', schema, mediaTypeNode.diffs[""], diffMetaKeys)` |
+| Media-type schemas | `JsonSchemaDiffsViewer` | `OpenApiMediaTypeSchema.wrap(mediaType, diffsMetaKey)` (next-data-model; the `Type` record = the media type's whole add / remove) |
 | Extensions | `JsoDiffsViewer` | `rawValues` with the relocated `M` record |
 
 `hideUnchangedNodes` and `diffTypes` are forwarded from `OpenApiViewerContext`.

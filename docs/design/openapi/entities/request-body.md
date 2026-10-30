@@ -64,8 +64,9 @@ message and section descriptions; only security card detail rows are `detailed`-
 | Item | Rule |
 | --- | --- |
 | Shown when | an option is selected — every option has a `schema` on at least one side by definition |
-| Wrapping | `wrapJsonSchemaForViewer('Type', schema)` / `wrapJsonSchemaForDiffsViewer('Type', schema, mediaTypeNode.diffs[NODE_LEVEL_DIFF_KEY], diffMetaKeys)` from `utils/jso/prepare-json-schema-to-jso-viewers.ts`, `SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS` — exactly the AsyncAPI payload rendering (Q4). Extract the `'Type'` title into one shared constant used by both stacks. |
-| Diffs | a wholly added / removed / renamed media type passes its node-level diff to the wrapper so the root property is painted; diffs inside the schema are already on the merged schema |
+| Wrapping | next-data-model `OpenApiMediaTypeSchema.wrap(mediaType, diffsMetaKey?)` (`model/openapi/media-type-schema.ts`): the schema under one property `OpenApiDisplayLabels.WRAPPED_BODY_SCHEMA_TITLE` (`'Type'`), `SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS` — the AsyncAPI payload rendering (Q4; AsyncAPI still wraps with its viewer helper). The viewer only memoises the call per selected media type (architecture review 2026-10, F5). |
+| Diffs | with the diffs key, the wrapper carries the record `{ Type: <the media type's whole add / remove> }` (`SectionRowDiffs.takeHeaderRowDiff(mediaType)`, inherited from a wholly added / removed owner included) so the root property is painted; diffs inside the schema are already on the merged schema |
+| Elements | which Body elements exist (title, description, schema) is decided once by the block builder with `OpenApiBlockEdges.bodyElements` and passed to `MediaTypeContentSection`, which renders them (F6) |
 ## Extensions
 
 Approved split (2026-10-08). The request side has **no separate Extensions subsection**: every

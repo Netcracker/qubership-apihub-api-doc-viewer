@@ -62,6 +62,6 @@ The collapsed state is one more input of the operation's view-state store
 (`OpenApiViewStateContext.collapsed`: a set of section node ids, empty = everything expanded;
 `toggleCollapsed`), owned by `OperationNodeViewer` and reset with the selections when the operation
 node changes. A collapsed section is planned as its title row alone
-(`buildCollapsibleSectionElements`; for the Body `OpenApiBlockEdges.body(…, { expanded })`), so its
+(`buildCollapsibleSectionElements`; for the Body `OpenApiBlockEdges.bodyElements(…, { expanded })`), so its
 tail edge — and the tail of its container — is the title row; separator heights do not change
 ([vertical-gaps.md](vertical-gaps.md), [block-separators.md](block-separators.md) §7.9).

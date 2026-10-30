@@ -1056,9 +1056,20 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
   `StackLayout` and the security cards read their numbers from `LayoutSpacingContext`, which has no
   default: every root viewer that renders a separator layout provides it (OpenAPI roots: their
   `OpenApiSpacingConfig`; AsyncAPI roots: `DEFAULT_LAYOUT_SPACING_CONFIG`). Shared components never
-  read `OpenApiViewerContext` or import from the OpenAPI viewer folder. Never decide a colour, height or "separator here?" in React. A Body's outer edges come
-  from `OpenApiBlockEdges.body(title, description, selectedMediaType)`; `MediaTypeContentSection`
-  plans the same elements inside, so the parent and the component agree.
+  read `OpenApiViewerContext` or import from the OpenAPI viewer folder. Never decide a colour,
+  height or "separator here?" in React.
+- **A Body's elements are decided once.** The block builder calls
+  `OpenApiBlockEdges.bodyElements(title, description, selectedMediaType, { expanded })` (title,
+  description?, schema? with its media type; collapsed = title), plans the outer edges with
+  `OpenApiBlockEdges.body(elements)` and passes the same list to `RequestBodyNodeViewer` /
+  `ResponseBodyViewer` → `MediaTypeContentSection`, which only renders it (indenting content with
+  `indentSectionContent`). Do not re-check description visibility, schema presence or expansion in the
+  component: two copies drift and the outer separator stops continuing the last row. The Body schema
+  comes wrapped from next-data-model (`OpenApiMediaTypeSchema.wrap`, the `Type` record included);
+  never build diff records in React.
+- **Root viewers.** Both OpenAPI roots render `OpenApiViewerRoot` (common contexts, root `div`, CSS
+  custom properties from `toOpenApiCssVariables`); add a root-level context or CSS property there
+  once. The CSS reading those properties has no numeric fallbacks.
 - **Blocks, not sections.** Each container has a pure builder (`buildRequestBlock`,
   `buildResponsesBlock`, `buildSecurityBlock`, `buildParametersBlock`, `buildExtensionsBlock`,
   `buildResponseBlocks`) returning `{ id, head, tail, payload }`, so the parent level can plan before

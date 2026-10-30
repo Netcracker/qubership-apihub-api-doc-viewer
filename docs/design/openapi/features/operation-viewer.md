@@ -59,14 +59,19 @@ Copy `AsyncApiOperationViewer.tsx` / `AsyncApiOperationDiffsViewer.tsx`:
    `new OpenApiTreeWithDiffsBuilder({ source: mergedSource, operationKeys, diffsMetaKeys, logger })`)
    in `useMemo`, `tree = builder.build()` in `useMemo`.
 3. After hooks: `const root = tree.root; if (!root || !isOpenApiOperationNode(root)) return null`.
-4. Providers, outermost first:
-   - diffs only: `DiffMetaKeysContext`, `DiffTypesContext`;
-   - `OpenApiViewerContext` (`devMode`, `expandedDepth`, `hideUnchangedNodes`);
+4. Diffs only, outermost first: `DiffMetaKeysContext`, `DiffTypesContext`, `UnchangedBlocksContext`.
+5. Then both roots render `OpenApiViewerRoot` (`OpenApiViewerRoot.tsx`, presentational; one copy of
+   what used to be duplicated), which provides, outermost first:
+   - `OpenApiViewerContext` (`devMode`, `expandedDepth`, `hideUnchangedNodes`, `spacing`);
    - `DisplayModeContext`;
    - `LayoutModeContext` — `DOCUMENT_LAYOUT_MODE` (plain) / `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE` (diffs);
-   - `LevelContext` = `0`.
-5. Root element: `<div data-testid="openapi-operation-viewer">` (plain) /
-   `<div data-testid="openapi-operation-diffs-viewer">` (diffs), then `OperationNodeViewer`.
+   - `LevelContext` = `0`;
+   - `LayoutSpacingContext` = `viewerContext.spacing`;
+
+   and the root element `<div data-testid="openapi-operation-viewer">` (plain) /
+   `<div data-testid="openapi-operation-diffs-viewer">` (diffs) with the spacing numbers as CSS
+   custom properties (`toOpenApiCssVariables`: the only place they are written; the CSS rules that
+   read them have no fallbacks), then `OperationNodeViewer`.
 
 `OpenApiViewerContext` replaces AsyncAPI's single-purpose `AsyncApiDevModeContext`: one context
 object for every value the nested viewers need from the root.

@@ -9,7 +9,7 @@ stack: [../features/operation-viewer.md](../features/operation-viewer.md#row-sta
 
 ```mermaid
 flowchart TB
-  Root["OpenApiOperationViewer.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext (spacing) · LayoutSpacingContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext · CSS variables"]
+  Root["OpenApiOperationViewer.tsx → OpenApiViewerRoot.tsx<br/>OpenApiTreeBuilder · OpenApiViewerContext (spacing) · LayoutSpacingContext ·<br/>DisplayModeContext · LayoutModeContext (DOCUMENT) · LevelContext · CSS variables"]
   Operation["OperationNodeViewer.tsx<br/>owns OpenApiViewStateContext (selection · collapsed) ·<br/>header rows: title (h1) + deprecated tag · Operation ID · AddressRow · description · ExternalDocsRow ·<br/>sections in OPENAPI_SECTION_ORDER (config/section-order.ts)"]
   Security["SecurityNodeViewer.tsx · security-blocks.tsx<br/>Security (h2) + Optional badge · SecurityToolbarRow"]
   SecBase["shared-components/Security/<br/>SecuritySectionBase · security-section-blocks · SecurityToolbar (ArrowScrollStrip)"]
@@ -20,9 +20,9 @@ flowchart TB
   Params["ParametersNodeViewer.tsx · parameters-blocks.tsx<br/>Path Parameters · Query Parameters · Headers · Cookies · response Headers (h3, collapsible)"]
   Body["MediaTypeContentSection.tsx<br/>Body (h3, collapsible) + required * · media-type Selector (+ required tag) · description · schema"]
   Responses["ResponsesNodeViewer.tsx · responses-blocks.tsx<br/>Responses (h2) + toned code Selector in ArrowScrollStrip"]
-  Response["response-blocks.tsx · ResponseBodyViewer.tsx<br/>description · Headers · Extensions · Body (OPENAPI_SECTION_ORDER.response)"]
-  Collapsible["CollapsibleSection.tsx<br/>useOpenApiSectionTitleRowProps · buildCollapsibleSectionElements"]
-  SchemaViewer["OpenApiSchemaViewer.tsx<br/>JsonSchemaViewer (SUPPRESS_ROOT_NESTING_INDICATOR) · wrapJsonSchemaForViewer('Type')"]
+  Response["response-blocks.tsx · ResponseBodyViewer.tsx<br/>description · Headers · Extensions · Body (OPENAPI_SECTION_ORDER.response) ·<br/>Body elements from OpenApiBlockEdges.bodyElements"]
+  Collapsible["CollapsibleSection.tsx<br/>useOpenApiSectionTitleRowProps · buildCollapsibleSectionElements · indentSectionContent"]
+  SchemaViewer["OpenApiSchemaViewer.tsx<br/>JsonSchemaViewer (SUPPRESS_ROOT_NESTING_INDICATOR) ·<br/>Body schema from next-data-model OpenApiMediaTypeSchema.wrap"]
   Layout["shared-components/Layout/StackLayout.tsx · shared-components/Separator<br/>one container level: blocks + separator rows (LayoutSpacingContext)"]
   ViewUtils["utils/openapi/<br/>node-type-checkers · view-selection · http-method-badge-config · response-code-tone"]
   NdmModel["next-data-model model/openapi<br/>OpenApiNodeVisibility · OpenApiDisplayLabels · OPENAPI_SECURITY_PRESENTATION ·<br/>layout/ (OpenApiBlockEdges · OpenApiSpacingConfig) · abstract/layout (LayoutPlanner · BlockEdges)"]
