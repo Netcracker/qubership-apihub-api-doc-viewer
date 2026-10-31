@@ -15,7 +15,7 @@ import { isObject } from '../../src/utilities'
 import { loadMergedOpenApiSample, OPENAPI_TEST_DIFF_META_KEYS } from '../helpers/openapi-fixtures'
 
 const M = OPENAPI_TEST_DIFF_META_KEYS.diffsMetaKey
-const OPERATION = { path: '/orders/{orderId}', method: 'post' }
+const OPERATION = { path: '/orders', method: 'post' }
 
 function build(caseId: string, operationKeys = OPERATION): OpenApiTreeWithDiffs {
   return new OpenApiTreeWithDiffsBuilder({

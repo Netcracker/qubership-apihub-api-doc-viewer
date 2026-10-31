@@ -14,7 +14,6 @@ import { loadMergedOpenApiSample, loadNormalizedOpenApiSample, mergeOpenApiDocum
 // title row. Design: docs/design/openapi/entities/security.md -> "Optional badge (anonymous access)".
 
 const ORDERS_POST = { path: '/orders', method: 'post' }
-const ORDER_POST = { path: '/orders/{orderId}', method: 'post' }
 
 function securityOf(root: unknown): OpenApiTreeNodeWithDiffs {
   if (!root || !isOpenApiTreeNodeWithDiffs(root)) {
@@ -27,7 +26,7 @@ function securityOf(root: unknown): OpenApiTreeNodeWithDiffs {
   return security
 }
 
-function buildDiffs(source: unknown, operationKeys = ORDER_POST): OpenApiTreeNodeWithDiffs {
+function buildDiffs(source: unknown, operationKeys = ORDERS_POST): OpenApiTreeNodeWithDiffs {
   return securityOf(new OpenApiTreeWithDiffsBuilder({ source, operationKeys, diffsMetaKeys: OPENAPI_TEST_DIFF_META_KEYS }).build().root)
 }
 
@@ -116,8 +115,8 @@ describe('OpenAPI security: anonymous access (with diffs)', () => {
   })
 
   it('a wholly added section keeps the badge plain (the section row color wins)', () => {
-    const before = { openapi: '3.0.3', info: { title: 'T', version: '1' }, paths: { '/orders/{orderId}': { post: { security: [], responses: { 200: { description: '' } } } } } }
-    const after = { ...before, paths: { '/orders/{orderId}': { post: { security: [{}], responses: { 200: { description: '' } } } } } }
+    const before = { openapi: '3.0.3', info: { title: 'T', version: '1' }, paths: { '/orders': { post: { security: [], responses: { 200: { description: '' } } } } } }
+    const after = { ...before, paths: { '/orders': { post: { security: [{}], responses: { 200: { description: '' } } } } } }
     const security = buildDiffs(mergeOpenApiDocuments(before, after))
     expect(SecurityRowDiffs.Security.takeTitleRowDiff(security)?.data.action).toBe(DiffAction.add)
     expect(SecurityRowDiffs.Security.takeOptionalBadgeDiff(security)).toBeUndefined()

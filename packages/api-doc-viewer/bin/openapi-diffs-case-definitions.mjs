@@ -1,8 +1,13 @@
 /**
  * Case definitions of the OpenAPI Operation Diffs Suite (`packages/samples/openapi-diffs/`).
  *
- * Every case is a before / after pair derived from one base document by mutators. Rules
- * (docs/design/openapi/features/diffs-case-matrix.md):
+ * Every case is a before / after pair derived from its category's minimal base document by
+ * mutators. Rules (docs/design/openapi/features/diffs-case-matrix.md):
+ * - Minimal operation: a base document holds only what its category covers (the cookies base has
+ *   cookie parameters only, the security base one scheme and requirement). Anything else a case
+ *   needs is added by its `setup`, so a change to an unrelated fragment never touches a case.
+ *   OAS 3.0 requires `responses`: categories that do not cover responses keep a status-only
+ *   `200` (`description: ''`); the OAS 3.1 base has no `responses`.
  * - `pair(...)` emits a change and its opposite next to each other (add <-> remove, on <-> off,
  *   A -> B <-> B -> A for moves); `change(...)` emits a value replace with no opposite.
  * - Parameter-like fragments (path / query / header / cookie parameters, response headers) and
@@ -13,102 +18,135 @@
  * Regenerate: `node bin/generate-openapi-diffs-suite.mjs`.
  */
 
-const OPERATION_PATH = '/orders/{orderId}'
+/** Path of every case except path parameters (no path parameters, no template). */
+const OPERATION_PATH = '/orders'
+/** Path of the path-parameter cases. */
+const PATH_PARAMETERS_PATH = '/orders/{orderId}'
 
-/** OAS 3.0 base document every case starts from. */
-export function createBaseDocument() {
+/** OAS 3.0 requires `responses`: the smallest valid value (the viewer hides the empty text). */
+const statusOnlyResponses = () => ({ 200: { description: '' } })
+
+/** A minimal document: `POST <path>` holding `post` only (plus `components` when given). */
+function createDocument(post, { openapi = '3.0.3', path = OPERATION_PATH, components } = {}) {
   return {
-    openapi: '3.0.3',
+    openapi,
     info: { title: 'Orders', version: '1.0.0' },
-    security: [{ api_key: [] }],
-    paths: {
-      [OPERATION_PATH]: {
-        post: {
-          operationId: 'updateOrder',
-          summary: 'Update an order',
-          description: 'Replaces the order.',
-          'x-rate-limit': 100,
-          security: [{ oauth: ['orders:write'] }],
-          parameters: [
-            { name: 'orderId', in: 'path', required: true, schema: { type: 'string' } },
-            { name: 'dryRun', in: 'query', schema: { type: 'boolean' } },
-            { name: 'expand', in: 'query', schema: { type: 'string' } },
-            { name: 'X-Request-Id', in: 'header', required: true, schema: { type: 'string', format: 'uuid' } },
-            { name: 'X-Trace', in: 'header', schema: { type: 'string' } },
-            { name: 'session', in: 'cookie', schema: { type: 'string' } },
-            { name: 'theme', in: 'cookie', schema: { type: 'string' } },
-          ],
-          requestBody: {
-            description: 'New order state.',
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['status'],
-                  properties: {
-                    status: { type: 'string', enum: ['new', 'paid'] },
-                    note: { type: 'string' },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            200: {
-              description: 'Updated order.',
-              headers: {
-                ETag: { schema: { type: 'string' } },
-                'X-Request-Id': { schema: { type: 'string', format: 'uuid' } },
-              },
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      id: { type: 'string' },
-                      status: { type: 'string' },
-                    },
-                  },
-                },
-              },
-            },
-            400: {
-              description: 'Invalid request.',
-              content: {
-                'application/problem+json': {
-                  schema: { type: 'object', properties: { title: { type: 'string' } } },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    components: {
-      securitySchemes: {
-        api_key: { type: 'apiKey', in: 'header', name: 'X-API-Key' },
-        basic: { type: 'http', scheme: 'basic' },
-        bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        oauth: {
-          type: 'oauth2',
-          flows: {
-            clientCredentials: {
-              tokenUrl: 'https://auth.example.com/token',
-              scopes: { 'orders:read': 'Read orders', 'orders:write': 'Modify orders' },
-            },
-          },
-        },
-        oidc: { type: 'openIdConnect', openIdConnectUrl: 'https://auth.example.com/.well-known/openid-configuration' },
-      },
-    },
+    paths: { [path]: { post } },
+    ...(components ? { components } : {}),
   }
 }
 
-/** OAS 3.1 base: the 3.0 base with the version bumped. */
-export function createBaseDocument31() {
-  return { ...createBaseDocument(), openapi: '3.1.0' }
+/** Security scheme definitions; a case defines only the schemes it references. */
+const SECURITY_SCHEMES = {
+  api_key: { type: 'apiKey', in: 'header', name: 'X-API-Key' },
+  basic: { type: 'http', scheme: 'basic' },
+  bearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+  oauth: {
+    type: 'oauth2',
+    flows: {
+      clientCredentials: {
+        tokenUrl: 'https://auth.example.com/token',
+        scopes: { 'orders:read': 'Read orders', 'orders:write': 'Modify orders' },
+      },
+    },
+  },
+  oidc: { type: 'openIdConnect', openIdConnectUrl: 'https://auth.example.com/.well-known/openid-configuration' },
+  mtls: { type: 'mutualTLS' },
 }
+
+const PARAMETER_ENTRIES = {
+  path: [{ name: 'orderId', in: 'path', required: true, schema: { type: 'string' } }],
+  query: [
+    { name: 'dryRun', in: 'query', schema: { type: 'boolean' } },
+    { name: 'expand', in: 'query', schema: { type: 'string' } },
+  ],
+  header: [
+    { name: 'X-Request-Id', in: 'header', required: true, schema: { type: 'string', format: 'uuid' } },
+    { name: 'X-Trace', in: 'header', schema: { type: 'string' } },
+  ],
+  cookie: [
+    { name: 'session', in: 'cookie', schema: { type: 'string' } },
+    { name: 'theme', in: 'cookie', schema: { type: 'string' } },
+  ],
+}
+
+const createRequestBody = () => ({
+  description: 'New order state.',
+  required: true,
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        required: ['status'],
+        properties: {
+          status: { type: 'string', enum: ['new', 'paid'] },
+          note: { type: 'string' },
+        },
+      },
+    },
+  },
+})
+
+const createResponseContent = () => ({
+  'application/json': {
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        status: { type: 'string' },
+      },
+    },
+  },
+})
+
+/** Operation category: a bare operation; every case adds the operation fields it covers. */
+export const createOperationBase = () => createDocument({ responses: statusOnlyResponses() })
+
+/** Parameter categories: the parameters of one location only. */
+const createParametersBase = (location) => () => createDocument(
+  { parameters: structuredClone(PARAMETER_ENTRIES[location]), responses: statusOnlyResponses() },
+  { path: location === 'path' ? PATH_PARAMETERS_PATH : OPERATION_PATH },
+)
+
+/** Response headers category: the headers of a status-only `200`. */
+const createResponseHeadersBase = () => createDocument({
+  responses: {
+    200: {
+      description: '',
+      headers: {
+        ETag: { schema: { type: 'string' } },
+        'X-Request-Id': { schema: { type: 'string', format: 'uuid' } },
+      },
+    },
+  },
+})
+
+/** Request body category: the request body only. */
+const createRequestBodyBase = () => createDocument({ requestBody: createRequestBody(), responses: statusOnlyResponses() })
+
+/** Response body category: the body of a `200` without a description. */
+const createResponseBodyBase = () => createDocument({ responses: { 200: { description: '', content: createResponseContent() } } })
+
+/** Responses category: `200` (headers + body; initially selected) and a description-only `400`. */
+const createResponsesBase = () => createDocument({
+  responses: {
+    200: {
+      description: 'Updated order.',
+      headers: { ETag: { schema: { type: 'string' } } },
+      content: createResponseContent(),
+    },
+    400: { description: 'Invalid request.' },
+  },
+})
+
+/** Security category: one OAuth requirement and its scheme definition. */
+const createSecurityBase = () => createDocument(
+  { security: [{ oauth: ['orders:write'] }], responses: statusOnlyResponses() },
+  { components: { securitySchemes: { oauth: structuredClone(SECURITY_SCHEMES.oauth) } } },
+)
+
+/** OAS 3.1 base: a bare operation, no `responses` (optional in 3.1); every case adds its own content. */
+export const createOas31Base = () => createDocument({}, { openapi: '3.1.0' })
 
 // ---------------------------------------------------------------------------------------------
 // Accessors
@@ -117,7 +155,22 @@ export const operation = (doc) => Object.values(doc.paths)[0].post
 const response = (doc, code = '200') => operation(doc).responses[code]
 const requestBody = (doc) => operation(doc).requestBody
 const scheme = (doc, name) => doc.components.securitySchemes[name]
-const withSecurity = (requirement) => (doc) => { operation(doc).security = [requirement] }
+
+/** Adds the definitions of `names` to `components.securitySchemes`. */
+function defineSchemes(doc, ...names) {
+  doc.components ??= {}
+  doc.components.securitySchemes ??= {}
+  for (const name of names) {
+    doc.components.securitySchemes[name] = structuredClone(SECURITY_SCHEMES[name])
+  }
+}
+
+/** Replaces the operation security by `requirement`; only its schemes stay defined. */
+const withSecurity = (requirement) => (doc) => {
+  operation(doc).security = [requirement]
+  doc.components = { securitySchemes: {} }
+  defineSchemes(doc, ...Object.keys(requirement))
+}
 
 function renameKey(record, from, to) {
   const entries = Object.entries(record).map(([key, value]) => [key === from ? to : key, value])
@@ -141,7 +194,12 @@ function parameterFragment(location, target, extra) {
     remove: (doc, name) => {
       operation(doc).parameters = all(doc).filter(entry => !(entry.in === location && entry.name === name))
     },
-    removeAll: (doc) => { operation(doc).parameters = all(doc).filter(entry => entry.in !== location) },
+    removeAll: (doc) => {
+      operation(doc).parameters = all(doc).filter(entry => entry.in !== location)
+      if (operation(doc).parameters.length === 0) {
+        delete operation(doc).parameters
+      }
+    },
     rename: (doc, from, to) => { all(doc).find(entry => entry.in === location && entry.name === from).name = to },
   }
 }
@@ -162,20 +220,20 @@ const PATH_PARAMETERS_FRAGMENT = {
   // A path parameter cannot be added, removed, or made optional without changing the path template
   // (apiDiff then pairs different paths = a different operation); its rename renames the template.
   rename: (doc, from, to) => {
-    const pathItem = doc.paths[OPERATION_PATH]
-    delete doc.paths[OPERATION_PATH]
-    doc.paths[OPERATION_PATH.replace(`{${from}}`, `{${to}}`)] = pathItem
+    const pathItem = doc.paths[PATH_PARAMETERS_PATH]
+    delete doc.paths[PATH_PARAMETERS_PATH]
+    doc.paths[PATH_PARAMETERS_PATH.replace(`{${from}}`, `{${to}}`)] = pathItem
     pathItem.post.parameters.find(entry => entry.in === 'path' && entry.name === from).name = to
   },
   pathTemplate: true,
 }
 
 export const PARAMETER_FRAGMENTS = [
-  { folder: 'path-parameters', title: 'Path Parameters', fragment: PATH_PARAMETERS_FRAGMENT },
-  { folder: 'query-parameters', title: 'Query Parameters', fragment: parameterFragment('query', 'dryRun', 'limit') },
-  { folder: 'request-headers', title: 'Request Headers', fragment: parameterFragment('header', 'X-Trace', 'X-Client') },
-  { folder: 'cookies', title: 'Cookies', fragment: parameterFragment('cookie', 'session', 'locale') },
-  { folder: 'response-headers', title: 'Response Headers', fragment: RESPONSE_HEADERS_FRAGMENT },
+  { folder: 'path-parameters', title: 'Path Parameters', fragment: PATH_PARAMETERS_FRAGMENT, createBase: createParametersBase('path') },
+  { folder: 'query-parameters', title: 'Query Parameters', fragment: parameterFragment('query', 'dryRun', 'limit'), createBase: createParametersBase('query') },
+  { folder: 'request-headers', title: 'Request Headers', fragment: parameterFragment('header', 'X-Trace', 'X-Client'), createBase: createParametersBase('header') },
+  { folder: 'cookies', title: 'Cookies', fragment: parameterFragment('cookie', 'session', 'locale'), createBase: createParametersBase('cookie') },
+  { folder: 'response-headers', title: 'Response Headers', fragment: RESPONSE_HEADERS_FRAGMENT, createBase: createResponseHeadersBase },
 ]
 
 // Both forms carry the same schema: a `schema` <-> `content` switch differs only by the media type.
@@ -338,8 +396,8 @@ const RESPONSE_BODY_FRAGMENT = {
 }
 
 export const BODY_FRAGMENTS = [
-  { folder: 'request-body', title: 'Request Body', fragment: REQUEST_BODY_FRAGMENT },
-  { folder: 'response-body', title: 'Response Body', fragment: RESPONSE_BODY_FRAGMENT },
+  { folder: 'request-body', title: 'Request Body', fragment: REQUEST_BODY_FRAGMENT, createBase: createRequestBodyBase },
+  { folder: 'response-body', title: 'Response Body', fragment: RESPONSE_BODY_FRAGMENT, createBase: createResponseBodyBase },
 ]
 
 const jsonMediaType = b => doc => b.content(doc)['application/json']
@@ -467,13 +525,18 @@ const addResponse = (code, description) => doc => {
   }
 }
 
+const withSummary = doc => { operation(doc).summary = 'Update an order' }
+const withOperationId = doc => { operation(doc).operationId = 'updateOrder' }
+const withDescription = doc => { operation(doc).description = 'Replaces the order.' }
+const withRateLimitExtension = doc => { operation(doc)['x-rate-limit'] = 100 }
+
 export const OPERATION_CASES = [
-  { pair: ['summary-added', 'summary-removed'], titles: ['summary added (title row appears)', 'summary removed'], reversed: true, apply: () => doc => { delete operation(doc).summary } },
-  { change: 'summary-changed', title: 'summary replaced', after: () => doc => { operation(doc).summary = 'Replace an order' } },
-  { pair: ['operation-id-added', 'operation-id-removed'], titles: ['operation ID added', 'operation ID removed'], reversed: true, apply: () => doc => { delete operation(doc).operationId } },
-  { change: 'operation-id-changed', title: 'operation ID replaced', after: () => doc => { operation(doc).operationId = 'replaceOrder' } },
-  { pair: ['description-added', 'description-removed'], titles: ['description added', 'description removed'], reversed: true, apply: () => doc => { delete operation(doc).description } },
-  { change: 'description-changed', title: 'description replaced', after: () => doc => { operation(doc).description = 'Replaces the whole order.' } },
+  { pair: ['summary-added', 'summary-removed'], titles: ['summary added (title row appears)', 'summary removed'], apply: () => withSummary },
+  { change: 'summary-changed', title: 'summary replaced', setup: () => withSummary, after: () => doc => { operation(doc).summary = 'Replace an order' } },
+  { pair: ['operation-id-added', 'operation-id-removed'], titles: ['operation ID added', 'operation ID removed'], apply: () => withOperationId },
+  { change: 'operation-id-changed', title: 'operation ID replaced', setup: () => withOperationId, after: () => doc => { operation(doc).operationId = 'replaceOrder' } },
+  { pair: ['description-added', 'description-removed'], titles: ['description added', 'description removed'], apply: () => withDescription },
+  { change: 'description-changed', title: 'description replaced', setup: () => withDescription, after: () => doc => { operation(doc).description = 'Replaces the whole order.' } },
   {
     pair: ['external-docs-added', 'external-docs-removed'],
     titles: ['external docs added', 'external docs removed'],
@@ -491,16 +554,26 @@ export const OPERATION_CASES = [
     setup: () => doc => { operation(doc).externalDocs = { url: 'https://docs.example.com/orders', description: 'Orders guide' } },
     after: () => doc => { operation(doc).externalDocs.description = 'Orders guide v2' },
   },
-  { pair: ['deprecated-added', 'deprecated-removed'], titles: ['operation became deprecated', 'operation is no longer deprecated'], apply: () => doc => { operation(doc).deprecated = true } },
+  {
+    pair: ['deprecated-added', 'deprecated-removed'],
+    titles: ['operation became deprecated (tag on the title row)', 'operation is no longer deprecated'],
+    setup: () => withSummary,
+    apply: () => doc => { operation(doc).deprecated = true },
+  },
   {
     pair: ['deprecated-added-without-summary', 'deprecated-removed-without-summary'],
     titles: ['became deprecated, no summary (tag and yellow row on the operation ID row)', 'no longer deprecated, no summary (tag and yellow row on the operation ID row)'],
-    setup: () => doc => { delete operation(doc).summary },
+    setup: () => withOperationId,
     apply: () => doc => { operation(doc).deprecated = true },
   },
-  { pair: ['extension-added', 'extension-removed'], titles: ['one more `x-*` added', 'one of several `x-*` removed'], apply: () => doc => { operation(doc)['x-audience'] = { visibility: 'public' } } },
-  { change: 'extension-changed', title: '`x-*` replaced', after: () => doc => { operation(doc)['x-rate-limit'] = 200 } },
-  { pair: ['extensions-added', 'extensions-removed'], titles: ['Extensions section appears', 'Extensions section disappears'], reversed: true, apply: () => doc => { delete operation(doc)['x-rate-limit'] } },
+  {
+    pair: ['extension-added', 'extension-removed'],
+    titles: ['one more `x-*` added', 'one of several `x-*` removed'],
+    setup: () => withRateLimitExtension,
+    apply: () => doc => { operation(doc)['x-audience'] = { visibility: 'public' } },
+  },
+  { change: 'extension-changed', title: '`x-*` replaced', setup: () => withRateLimitExtension, after: () => doc => { operation(doc)['x-rate-limit'] = 200 } },
+  { pair: ['extensions-added', 'extensions-removed'], titles: ['Extensions section appears', 'Extensions section disappears'], apply: () => withRateLimitExtension },
   {
     pair: ['operation-added', 'operation-removed'],
     titles: ['whole operation added next to an existing GET', 'whole operation removed, GET stays'],
@@ -582,11 +655,16 @@ export const SECURITY_CASES = [
     pair: ['document-security-overridden', 'document-security-override-removed'],
     titles: ['inherited document security replaced by an operation override', 'operation override removed, document security inherited'],
     reversed: true,
+    setup: () => doc => {
+      doc.security = [{ api_key: [] }]
+      defineSchemes(doc, 'api_key')
+    },
     apply: () => doc => { delete operation(doc).security },
   },
   {
     pair: ['alternative-added', 'alternative-removed'],
     titles: ['second alternative added', 'one of two alternatives removed'],
+    setup: () => doc => defineSchemes(doc, 'api_key'),
     apply: () => doc => { operation(doc).security.push({ api_key: [] }) },
     clicks: ['security-alternative-1'],
   },
@@ -598,6 +676,7 @@ export const SECURITY_CASES = [
   {
     pair: ['scheme-added-to-alternative', 'scheme-removed-from-alternative'],
     titles: ['second scheme added to the alternative (AND)', 'one of two schemes removed from the alternative'],
+    setup: () => doc => defineSchemes(doc, 'basic'),
     apply: () => doc => { operation(doc).security[0].basic = [] },
   },
   {
@@ -635,7 +714,10 @@ export const SECURITY_CASES = [
   {
     pair: ['bearer-format-added', 'bearer-format-removed'],
     titles: ['http `bearerFormat` added', 'http `bearerFormat` removed'],
-    setup: () => doc => { withSecurity({ bearer: [] })(doc); delete scheme(doc, 'bearer').bearerFormat },
+    setup: () => doc => {
+      withSecurity({ bearer: [] })(doc)
+      delete scheme(doc, 'bearer').bearerFormat
+    },
     apply: () => doc => { scheme(doc, 'bearer').bearerFormat = 'JWT' },
   },
   {
@@ -675,7 +757,10 @@ export const SECURITY_CASES = [
     // apiDiff pairs alternatives by index: the slot is `{}` on one side and `{ api_key }` on the other.
     pair: ['anonymous-alternative-replaced-by-api-key', 'api-key-alternative-replaced-by-anonymous'],
     titles: ['`{}` replaced by an `api_key` alternative (badge removed, option added)', '`api_key` alternative replaced by `{}` (option removed, badge added)'],
-    setup: () => doc => { operation(doc).security.push({}) },
+    setup: () => doc => {
+      operation(doc).security.push({})
+      defineSchemes(doc, 'api_key')
+    },
     apply: () => doc => { operation(doc).security[1] = { api_key: [] } },
     clicks: ['security-alternative-1'],
   },
@@ -685,12 +770,18 @@ export const OAS31_CASES = [
   {
     change: 'nullable-via-type-array',
     title: 'request body property became nullable via a type array',
+    setup: () => doc => {
+      operation(doc).requestBody = { content: { 'application/json': { schema: { type: 'object', properties: { note: { type: 'string' } } } } } }
+    },
     after: () => doc => { requestBody(doc).content['application/json'].schema.properties.note.type = ['string', 'null'] },
   },
   {
     pair: ['mutual-tls-alternative-added', 'mutual-tls-alternative-removed'],
     titles: ['`mutualTLS` alternative added', '`mutualTLS` alternative removed'],
-    setup: () => doc => { doc.components.securitySchemes.mtls = { type: 'mutualTLS' } },
+    setup: () => doc => {
+      withSecurity({ api_key: [] })(doc)
+      defineSchemes(doc, 'mtls')
+    },
     apply: () => doc => { operation(doc).security.push({ mtls: [] }) },
     clicks: ['security-alternative-1'],
   },
@@ -706,24 +797,23 @@ export const OAS31_CASES = [
   {
     pair: ['responses-added', 'responses-removed'],
     titles: ['`responses` appears (section appears)', '`responses` disappears (allowed in 3.1)'],
-    reversed: true,
-    apply: () => doc => { delete operation(doc).responses },
+    apply: () => doc => { operation(doc).responses = { 200: { description: 'Updated order.' } } },
   },
 ]
 
-/** Folders in Storybook order: [folder, title, base factory, case list, fragment?]. */
+/** Folders in Storybook order: { folder, title, createBase, cases, fragment?, family? }. */
 export function collectCategories() {
   return [
-    { folder: 'operation', title: 'Operation', createBase: createBaseDocument, cases: OPERATION_CASES },
-    ...PARAMETER_FRAGMENTS.map(({ folder, title, fragment }) => ({
-      folder, title, createBase: createBaseDocument, fragment, family: 'parameters',
+    { folder: 'operation', title: 'Operation', createBase: createOperationBase, cases: OPERATION_CASES },
+    ...PARAMETER_FRAGMENTS.map(({ folder, title, fragment, createBase }) => ({
+      folder, title, createBase, fragment, family: 'parameters',
       cases: [...PARAMETER_CASES, ...(PARAMETER_EXTRA_CASES[folder] ?? [])],
     })),
-    ...BODY_FRAGMENTS.map(({ folder, title, fragment }) => ({
-      folder, title, createBase: createBaseDocument, fragment, family: 'bodies', cases: BODY_CASES,
+    ...BODY_FRAGMENTS.map(({ folder, title, fragment, createBase }) => ({
+      folder, title, createBase, fragment, family: 'bodies', cases: BODY_CASES,
     })),
-    { folder: 'responses', title: 'Responses', createBase: createBaseDocument, cases: RESPONSES_CASES },
-    { folder: 'security', title: 'Security', createBase: createBaseDocument, cases: SECURITY_CASES },
-    { folder: 'oas31', title: 'OAS 3.1', createBase: createBaseDocument31, cases: OAS31_CASES },
+    { folder: 'responses', title: 'Responses', createBase: createResponsesBase, cases: RESPONSES_CASES },
+    { folder: 'security', title: 'Security', createBase: createSecurityBase, cases: SECURITY_CASES },
+    { folder: 'oas31', title: 'OAS 3.1', createBase: createOas31Base, cases: OAS31_CASES },
   ]
 }

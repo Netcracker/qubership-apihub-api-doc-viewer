@@ -159,8 +159,11 @@ function writeRootCatalogue(expanded) {
   const text = `# OpenAPI diff fixtures
 
 Before / after OpenAPI documents for \`OpenApiOperationDiffsViewer\`:
-\`<category>/<case-id>/{before,after}.yaml\`. Every pair is derived from one base document
-(\`POST /orders/{orderId}\`) and changes one thing; stories merge the two whole documents with
+\`<category>/<case-id>/{before,after}.yaml\`. Every pair is derived from its category's minimal base
+document and changes one thing. A base holds only what its category covers (\`POST /orders\`, or
+\`POST /orders/{orderId}\` for path parameters; OAS 3.0 cases outside the response categories keep a
+status-only \`200\`, because \`responses\` is required); anything else a case needs, its setup adds.
+Stories merge the two whole documents with
 \`mergeOpenApiDocuments\` (\`components\` kept) and show \`POST\` of the first \`paths\` key of the after
 document. The case matrix (what is covered, opposites, fragments) is in
 [docs/design/openapi/features/diffs-case-matrix.md](../../../docs/design/openapi/features/diffs-case-matrix.md).

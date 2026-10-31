@@ -10,7 +10,7 @@ import { isOpenApiTreeNodeWithDiffs } from '../../src/shared/openapi/guards/tree
 import { isObjective } from '../../src/utilities'
 import { loadMergedOpenApiSample, OPENAPI_TEST_DIFF_META_KEYS } from '../helpers/openapi-fixtures'
 
-const OPERATION = { path: '/orders/{orderId}', method: 'post' }
+const OPERATION = { path: '/orders', method: 'post' }
 const DIFFS_KEY = OPENAPI_TEST_DIFF_META_KEYS.diffsMetaKey
 const TITLE = OpenApiDisplayLabels.WRAPPED_BODY_SCHEMA_TITLE
 

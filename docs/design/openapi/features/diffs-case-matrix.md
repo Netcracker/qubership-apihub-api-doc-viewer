@@ -10,6 +10,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 | Rule | Detail |
 | --- | --- |
 | Every displayed OpenAPI fragment | operation summary, operation ID, description, external docs, deprecated, extensions, the whole operation; every parameter location and response headers; request and response bodies, their media types and schemas; responses as a whole, each response code kind, response description and extensions; security sections, alternatives, schemes, scheme fields per type, OAuth flows and scopes. |
+| Minimal operation | A case holds only the content it covers, so a change to an unrelated fragment never affects it. Each category has its own minimal base: `POST /orders` (`POST /orders/{orderId}` for path parameters) with only that category's fragment — the cookies base has cookie parameters only, the request body base the request body only, the security base one OAuth requirement and its scheme. Anything else a case needs (a summary next to `deprecated`, a second scheme, document-level security) is added by its setup. OAS 3.0 requires `responses`, so categories outside responses / response headers / response body keep a status-only `200` (`description: ''`, the text is hidden). The OAS 3.1 base has no `responses`. |
 | Opposites next to each other | Every add has its remove, every on (`deprecated`, `required`) its off, every move A → B its B → A, with consecutive case ids. A value replace (A → B) has no reverse case: B → A shows the same rows with swapped texts. |
 | Same change, same id | Parameter-like fragments (path / query / header / cookie parameters, response headers) share one case list, and so do the two bodies: `query-parameters/11-schema-to-content` and `cookies/11-schema-to-content` are the same change. A change a fragment cannot express is skipped, and its id stays unused there (`—` below). |
 | Path parameters | Cannot be added, removed, made optional, or removed as a group without changing the path template, which makes `apiDiff` pair different paths (a different operation). Covered: rename (renames the template: address row replace + property rename), description, deprecated, `schema` ↔ `content`, extensions. |
@@ -110,7 +111,7 @@ One case list for the request body and the body of the initially selected respon
 | `11-external-docs-removed` | external docs removed | `10-external-docs-added` |
 | `12-external-docs-url-changed` | external docs URL replaced (row painted) | — |
 | `13-external-docs-description-changed` | external docs description replaced (yellow row, highlighted link; each tooltip shows its own side) | — |
-| `14-deprecated-added` | operation became deprecated | `15-deprecated-removed` |
+| `14-deprecated-added` | operation became deprecated (tag on the title row) | `15-deprecated-removed` |
 | `15-deprecated-removed` | operation is no longer deprecated | `14-deprecated-added` |
 | `16-deprecated-added-without-summary` | became deprecated, no summary (tag and yellow row on the operation ID row) | `17-deprecated-removed-without-summary` |
 | `17-deprecated-removed-without-summary` | no longer deprecated, no summary (tag and yellow row on the operation ID row) | `16-deprecated-added-without-summary` |

@@ -85,7 +85,7 @@ describe('SecuritySchemeCardRows: the card rows and the badge each reads', () =>
 function buildOpenApiSecurityCase(caseId: string): AnyNode | null {
   return new OpenApiTreeWithDiffsBuilder({
     source: loadMergedOpenApiSample(`security/${caseId}`),
-    operationKeys: { path: '/orders/{orderId}', method: 'post' },
+    operationKeys: { path: '/orders', method: 'post' },
     diffsMetaKeys: OPENAPI_TEST_DIFF_META_KEYS,
   }).build().root
 }
@@ -115,7 +115,7 @@ describe('SecurityScopeRow.severity: scope-row badges come from the data layer w
   it('OpenAPI: a changed scope description badges its row, caused at the scopes declaration', () => {
     const root = new OpenApiTreeWithDiffsBuilder({
       source: loadMergedOpenApiSample('security/32-flow-scope-description-changed'),
-      operationKeys: { path: '/orders/{orderId}', method: 'post' },
+      operationKeys: { path: '/orders', method: 'post' },
       diffsMetaKeys: OPENAPI_TEST_DIFF_META_KEYS,
     }).build().root
     const flow = findWithParent(root, SecurityTreeNodeKinds.OAUTH_FLOW)

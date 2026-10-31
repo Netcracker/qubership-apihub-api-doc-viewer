@@ -12,7 +12,7 @@ import { loadMergedOpenApiSample, loadNormalizedOpenApiSample, OPENAPI_TEST_DIFF
 
 // Selector options are nested nodes of one complex container (docs/design/shared/features/selector-options.md).
 
-const ORDER_POST = { path: '/orders/{orderId}', method: 'post' }
+const ORDER_POST = { path: '/orders', method: 'post' }
 
 function find(node: ITreeNode | null | undefined, kind: string): ITreeNode {
   const found = node?.childrenNodes().find(candidate => candidate.kind === kind)
@@ -63,8 +63,9 @@ describe('Selector options are nested nodes: OpenAPI', () => {
     const requestBody = find(find(operation, OpenApiTreeNodeKinds.REQUEST), OpenApiTreeNodeKinds.REQUEST_BODY)
     const options = expectContainerOf(find(requestBody, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE, requestBody)
     expect(options.map(option => option.key)).toEqual(['application/json', 'application/xml'])
-    const response = find(operation, OpenApiTreeNodeKinds.RESPONSES).nestedNodes()[0]
-    expectContainerOf(find(response, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE, response)
+    const response = find(withDiffs('response-body/08-media-type-added'), OpenApiTreeNodeKinds.RESPONSES).nestedNodes()[0]
+    const responseOptions = expectContainerOf(find(response, OpenApiTreeNodeKinds.CONTENT), OpenApiTreeNodeKinds.MEDIA_TYPE, response)
+    expect(responseOptions.map(option => option.key)).toEqual(['application/json', 'application/xml'])
   })
 
   it('alternatives are nested nodes of `securityAlternatives`; `security` stays simple with its own value', () => {

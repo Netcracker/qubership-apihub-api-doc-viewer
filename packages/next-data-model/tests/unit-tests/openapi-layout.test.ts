@@ -21,7 +21,7 @@ import { OpenApiTreeNodeKind, OpenApiTreeNodeKinds } from '../../src/model/opena
 import { isOpenApiTreeNodeWithDiffs } from '../../src/shared/openapi/guards/tree-node'
 import { loadMergedOpenApiSample, OPENAPI_TEST_DIFF_META_KEYS } from '../helpers/openapi-fixtures'
 
-const OPERATION = { path: '/orders/{orderId}', method: 'post' }
+const OPERATION = { path: '/orders', method: 'post' }
 const { Yellow, Green, Red, Gray } = HighlightVariant
 
 function operation(caseId: string): OpenApiTreeNodeWithDiffs {

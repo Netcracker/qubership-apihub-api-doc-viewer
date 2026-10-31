@@ -122,8 +122,14 @@ prefixed per body because both bodies can show the same media type).
 
 ## Diffs suite (`packages/samples/openapi-diffs/`)
 
-- One base document (`POST /orders/{orderId}`, OAS 3.0; `oas31/` uses a 3.1 base), every case
-  changes one thing via mutators. `pair([...])` emits a change **and its opposite** on adjacent
+- **Minimal operation per category** (design: `diffs-case-matrix.md` → Minimal operation): each
+  category has its own base (`createOperationBase`, `createParametersBase(location)`,
+  `createSecurityBase`, …) holding only its fragment on `POST /orders` (`/orders/{orderId}` for path
+  parameters); a case's `setup` adds anything else it needs (a summary next to `deprecated`, a
+  second scheme via `defineSchemes`, document-level security). OAS 3.0 bases outside the response
+  categories keep a status-only `200`; the OAS 3.1 base has no `responses`. Never put content into a
+  base that its category does not cover: a shared "realistic" base makes every case fail when an
+  unrelated fragment's rendering changes. Every case changes one thing via mutators. `pair([...])` emits a change **and its opposite** on adjacent
   ids (add ↔ remove, on ↔ off, A → B ↔ B → A for moves; `reversed: true` when `apply` removes
   something). `change(...)` = a value replace, **no** reverse case (decided: it would only swap
   texts).
@@ -234,5 +240,5 @@ When cases change, update the story exports and the IT `CASES` together (ids fro
 `openapi-diffs-hiding-unchanged-nodes-suite`.
 
 `OpenApiOperationDiffsViewer` hides unchanged card content by default, so every
-`openapi-diffs-suite` case whose base document keeps an unchanged scheme (the `oauth` card of the
+`openapi-diffs-suite` security case that keeps an unchanged scheme (the `oauth` card of the security
 base) renders that card collapsed — regenerate those baselines together with card changes.
