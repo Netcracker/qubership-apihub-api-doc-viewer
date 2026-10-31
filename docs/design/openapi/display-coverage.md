@@ -66,27 +66,27 @@ JSO viewers. Diagrams: [architecture/](architecture/).
 | Header | `Operation ID: <operationId>` (secondary text, static label + value on one line) | `operationId` | [entities/operation.md](entities/operation.md#operation-id-row) |
 | Header | Address row: method badge + path | always | [entities/operation.md](entities/operation.md#address-row) |
 | Header | External docs link: static `View external documentation ↗`; `externalDocs.description` in a hover `UxTooltip` | `externalDocs.url` | [entities/operation.md](entities/operation.md#external-docs-row) |
-| Header | Description (markdown) | `description` | [entities/operation.md](entities/operation.md#description-row) |
+| Header | Description (markdown) | `description`; `detailed` mode only | [entities/operation.md](entities/operation.md#description-row) |
 | Security | Section (h2) | ≥1 effective list item (`[{}]` included) | [entities/security.md](entities/security.md) |
 | Security | Security toolbar: `‹` options strip `›` (scrolls one option per arrow click, cropped titles) | ≥1 non-anonymous alternative | [entities/security.md](entities/security.md#security-toolbar), [shared/features/arrow-scroll-strip.md](../shared/features/arrow-scroll-strip.md) |
-| Security | Framed scheme card: title (h4) + gray type text, description, security props (`<Place> parameter name`, `HTTP Authorization Scheme`, `Bearer Format`, `OpenID Connect URL`, `Required scopes` / `Required roles`) | per scheme of the selected alternative; detail rows in `detailed` mode | [entities/security.md](entities/security.md#scheme-card) |
+| Security | Framed scheme card: title (h4) + gray type text, description, security props (`<Place> parameter name`, `HTTP Authorization Scheme`, `Bearer Format`, `OpenID Connect URL`, `Required scopes` / `Required roles`) | per scheme of the selected alternative; description and scope descriptions in `detailed` mode only | [entities/security.md](entities/security.md#scheme-card) |
 | Security | OAuth flow parts: `Flow type **…**` header, `Authorization URL` / `Token URL` / `Refresh URL` links, expandable `Scopes` with scope rows (required `*`) | oauth2 | [entities/security.md](entities/security.md#oauth-flow-parts) |
 | Security | `Optional` badge in the section title row | `{}` requirement | [entities/security.md](entities/security.md#optional-badge-anonymous-access) |
 | Extensions | Section (h2) + JSO tree | `x-*` keys on the operation | [entities/operation.md](entities/operation.md#extensions-section) |
 | Request | Section (h2) | parameters or body | [entities/parameters.md](entities/parameters.md) |
 | Request | Path / Query Parameters, Headers, Cookies (h3) + synthesized schema | parameters of that `in` | [entities/parameters.md](entities/parameters.md#groups) |
 | Request | `Media type` custom annotation on a parameter | `content`-described parameter | [entities/parameters.md](entities/parameters.md#property-schema-of-one-entry) |
-| Request, Responses | Parameter / response-header `x-*` in the property's **Extensions** sub-tree (detailed mode) | entry-level `x-*` keys | [entities/parameters.md](entities/parameters.md#entry-extensions) |
+| Request, Responses | Parameter / response-header `x-*` in the property's **Extensions** sub-tree (both display modes) | entry-level `x-*` keys | [entities/parameters.md](entities/parameters.md#entry-extensions) |
 | Request, Responses | Request Body and Media Type `x-*` cloned into the body schema root's **Extensions** sub-tree | `x-*` on those objects and a schema to attach to | [entities/request-body.md](entities/request-body.md#extensions) |
 | Responses | **Extensions** (h3) of the selected response, after Headers and before Body | Response Object `x-*` | [entities/responses.md](entities/responses.md#response-extensions) |
 | Responses | **Extensions** (h3) of the Responses Object, after the selected response | Responses Object `x-*` | [entities/responses.md](entities/responses.md#responses-extensions) |
 | All | Section order from one config map | — | [features/operation-viewer.md](features/operation-viewer.md#section-order) |
 | Request | Body (h3) + media-type selector | Body present: `description` or ≥1 media type with `schema` | [entities/request-body.md](entities/request-body.md) |
 | Request | Required `*` on the Body title | `requestBody.required: true` | [entities/request-body.md](entities/request-body.md#required-marker) |
-| Request | Body description (markdown) | `requestBody.description` | [entities/request-body.md](entities/request-body.md#description-row) |
+| Request | Body description (markdown) | `requestBody.description`; `detailed` mode only | [entities/request-body.md](entities/request-body.md#description-row) |
 | Request | Body schema (wrapped root `Type`) | selected media type has `schema` | [entities/request-body.md](entities/request-body.md#schema) |
 | Responses | Section (h2) + toned code selector: `‹` codes strip `›` in the subheader (one line, scrolls one code per arrow click) | `responses` | [entities/responses.md](entities/responses.md), [features/response-code-selector.md](features/response-code-selector.md), [shared/features/arrow-scroll-strip.md](../shared/features/arrow-scroll-strip.md) |
-| Responses | Response description (markdown) | `description` | [entities/responses.md](entities/responses.md#description-row) |
+| Responses | Response description (markdown) | `description`; `detailed` mode only | [entities/responses.md](entities/responses.md#description-row) |
 | Responses | Headers (h3) + synthesized schema | ≥1 header | [entities/responses.md](entities/responses.md#headers) |
 | Responses | Body (h3) + media-type selector in the subheader + schema | the selected response has ≥1 media type with `schema` | [entities/responses.md](entities/responses.md#body) |
 

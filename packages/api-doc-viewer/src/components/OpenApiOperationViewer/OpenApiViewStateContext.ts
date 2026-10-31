@@ -1,3 +1,4 @@
+import { DETAILED_DISPLAY_MODE, DisplayMode } from "@apihub/types/DisplayMode"
 import { OpenApiSelection } from "@apihub/utils/openapi/view-selection"
 import { createContext, useContext } from "react"
 
@@ -14,6 +15,8 @@ export type OpenApiViewState = {
   /** Node ids of the collapsed 2nd-level sections; every section is expanded until toggled. */
   readonly collapsed: ReadonlySet<string>
   readonly toggleCollapsed: (sectionNodeId: string) => void
+  /** The viewer's display mode: which rows exist (annotations are `detailed` only) shapes every level. */
+  readonly displayMode: DisplayMode
 }
 
 export const OpenApiViewStateContext = createContext<OpenApiViewState>({
@@ -21,6 +24,7 @@ export const OpenApiViewStateContext = createContext<OpenApiViewState>({
   select: () => undefined,
   collapsed: new Set(),
   toggleCollapsed: () => undefined,
+  displayMode: DETAILED_DISPLAY_MODE,
 })
 
 export function useOpenApiViewState(): OpenApiViewState {

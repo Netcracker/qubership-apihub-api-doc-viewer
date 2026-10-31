@@ -150,7 +150,7 @@ describe('OpenAPI layout: planner', () => {
 describe('OpenAPI layout: edges on fixtures', () => {
   it('operation/09: the description row is yellow with its badge, the address row is not', () => {
     const node = operation('operation/09-description-changed')
-    const { deprecatedTagRow } = OpenApiNodeVisibility.resolveOperation(node.value(), false)
+    const { deprecatedTagRow } = OpenApiNodeVisibility.resolveOperation(node.value(), false, 'detailed')
     const description = OpenApiBlockEdges.operationHeaderRow(node, 'description', deprecatedTagRow)
     expect(description.tones).toEqual({ before: Yellow, after: Yellow })
     expect(description.badge).toBe(node.diffsSeverities?.[NodeDiffsSeverityPlacemennt.DescriptionRow]?.type)

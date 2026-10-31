@@ -1,4 +1,6 @@
 import { isNonEmptyString } from "../../utilities"
+import { DisplayMode } from "../abstract/display-mode"
+import { DisplayModeRowCategories, DisplayModeRows } from "../abstract/display-mode-rows"
 import { OpenApiTreeNodeValueTypeOperation, OpenApiTreeNodeValueTypeRequestBody, OpenApiTreeNodeValueTypeResponse } from "./types/node-value"
 
 /** The rows of the operation header block, in their fixed display order. */
@@ -18,22 +20,46 @@ export type OpenApiOperationRowVisibility = {
   readonly deprecatedTagRow: OpenApiDeprecatedTagRow
 }
 
+/** Operation header rows by display-mode category: only the description is an annotation. */
+export const OPENAPI_OPERATION_HEADER_ROW_CATEGORIES: DisplayModeRowCategories<OpenApiOperationHeaderRow> = {
+  title: 'structure',
+  operationId: 'structure',
+  address: 'structure',
+  description: 'annotation',
+  externalDocs: 'structure',
+}
+
+/** Request body and response rows of the OpenAPI layer by display-mode category. */
+export const OPENAPI_DESCRIPTION_ROW_CATEGORIES: DisplayModeRowCategories<'description'> = {
+  description: 'annotation',
+}
+
 /**
  * Row visibility of the OpenAPI layer. Works for plain and merged trees alike: a merged node value
  * keeps removed values (E18), so "has content on either side" is "has a merged value".
  * Security cards: `OPENAPI_SECURITY_NODE_VISIBILITY` (`./security-presentation`).
- * Design: docs/design/openapi/features/diffs.md -> "Row visibility".
+ * Display modes: `simple` hides annotations (`OPENAPI_*_ROW_CATEGORIES`).
+ * Design: docs/design/openapi/features/diffs.md -> "Row visibility", docs/design/shared/features/display-mode-annotations.md.
  */
 export class OpenApiNodeVisibility {
-  public static resolveOperation(value: OpenApiTreeNodeValueTypeOperation | null, noHeading: boolean): OpenApiOperationRowVisibility {
-    const showTitle = !noHeading && isNonEmptyString(value?.title)
-    const showOperationId = isNonEmptyString(value?.operationId)
+  public static resolveOperation(
+    value: OpenApiTreeNodeValueTypeOperation | null,
+    noHeading: boolean,
+    displayMode: DisplayMode,
+  ): OpenApiOperationRowVisibility {
+    const shown = DisplayModeRows.apply({
+      title: !noHeading && isNonEmptyString(value?.title),
+      operationId: isNonEmptyString(value?.operationId),
+      address: true,
+      description: isNonEmptyString(value?.description),
+      externalDocs: isNonEmptyString(value?.externalDocs?.url),
+    }, OPENAPI_OPERATION_HEADER_ROW_CATEGORIES, displayMode)
     return {
-      showTitle,
-      showOperationId,
-      showExternalDocs: isNonEmptyString(value?.externalDocs?.url),
-      showDescription: isNonEmptyString(value?.description),
-      deprecatedTagRow: showTitle ? 'title' : showOperationId ? 'operationId' : 'address',
+      showTitle: shown.title,
+      showOperationId: shown.operationId,
+      showExternalDocs: shown.externalDocs,
+      showDescription: shown.description,
+      deprecatedTagRow: shown.title ? 'title' : shown.operationId ? 'operationId' : 'address',
     }
   }
 
@@ -49,11 +75,15 @@ export class OpenApiNodeVisibility {
     return OPENAPI_OPERATION_HEADER_ROWS.filter(row => shown[row])
   }
 
-  public static showRequestBodyDescription(value: OpenApiTreeNodeValueTypeRequestBody | null): boolean {
-    return isNonEmptyString(value?.description)
+  public static showRequestBodyDescription(value: OpenApiTreeNodeValueTypeRequestBody | null, displayMode: DisplayMode): boolean {
+    return OpenApiNodeVisibility.showDescription(value?.description, displayMode)
   }
 
-  public static showResponseDescription(value: OpenApiTreeNodeValueTypeResponse | null): boolean {
-    return isNonEmptyString(value?.description)
+  public static showResponseDescription(value: OpenApiTreeNodeValueTypeResponse | null, displayMode: DisplayMode): boolean {
+    return OpenApiNodeVisibility.showDescription(value?.description, displayMode)
+  }
+
+  private static showDescription(description: string | undefined, displayMode: DisplayMode): boolean {
+    return DisplayModeRows.apply({ description: isNonEmptyString(description) }, OPENAPI_DESCRIPTION_ROW_CATEGORIES, displayMode).description
   }
 }

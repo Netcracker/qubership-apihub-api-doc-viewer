@@ -113,9 +113,9 @@ describe('OpenAPI with diffs: operation', () => {
 
   it('the deprecated tag row is the title row, else the operation ID row, else the address row', () => {
     const value = { method: 'post', path: '/orders' }
-    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, false).deprecatedTagRow).toBe('title')
-    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, true).deprecatedTagRow).toBe('operationId')
-    expect(OpenApiNodeVisibility.resolveOperation({ ...value }, false).deprecatedTagRow).toBe('address')
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, false, 'detailed').deprecatedTagRow).toBe('title')
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value, title: 'Update', operationId: 'update' }, true, 'detailed').deprecatedTagRow).toBe('operationId')
+    expect(OpenApiNodeVisibility.resolveOperation({ ...value }, false, 'detailed').deprecatedTagRow).toBe('address')
   })
 
   it.each([

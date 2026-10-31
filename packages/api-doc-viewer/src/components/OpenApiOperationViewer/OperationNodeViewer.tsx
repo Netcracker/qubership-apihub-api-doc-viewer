@@ -1,4 +1,5 @@
 import { cn } from "@apihub/utils/common/cn"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { TextColors } from "../shared-styles/colors/text-colors"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -59,7 +60,8 @@ type OperationNodeViewerProps = {
 export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
   const { node, noHeading } = props
   const { spacing } = useOpenApiViewerContext()
-  const visibility = useMemo(() => OpenApiNodeVisibility.resolveOperation(node.value(), noHeading), [node, noHeading])
+  const displayMode = useDisplayMode()
+  const visibility = useMemo(() => OpenApiNodeVisibility.resolveOperation(node.value(), noHeading, displayMode), [node, noHeading, displayMode])
 
   // View state of the whole operation; a rebuilt tree (new source) starts fresh. Reset during render,
   // not in an effect: React re-runs this component before its children render, so the previous
@@ -84,7 +86,10 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
       return next
     })
   }, [])
-  const view: OpenApiViewState = useMemo(() => ({ selection, select, collapsed, toggleCollapsed }), [selection, select, collapsed, toggleCollapsed])
+  const view: OpenApiViewState = useMemo(
+    () => ({ selection, select, collapsed, toggleCollapsed, displayMode }),
+    [selection, select, collapsed, toggleCollapsed, displayMode],
+  )
 
   const blocks = useMemo(() => buildOperationBlocks(node, visibility, view), [node, visibility, view])
 

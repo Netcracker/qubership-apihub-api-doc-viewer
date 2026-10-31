@@ -246,10 +246,13 @@ Security  [Optional]                  ← h2 title row; badge in the subheader
 | Row | `simple` | `detailed` |
 | --- | --- | --- |
 | Section header, toolbar, card titles with type text | shown | shown |
-| Descriptions, security props, flow parts, scopes | hidden | shown |
+| Security props, flow parts, scope / role names (`Scopes ▾` / `Roles ▾` lists) | shown | shown |
+| Scheme description, scope / role descriptions (annotations) | hidden | shown |
 
-Rules live in `SecurityNodeVisibility.resolveSecurityScheme` / `resolveOAuthFlow` (`OPENAPI_SECURITY_NODE_VISIBILITY`)
-(`model/openapi/node-visibility.ts`), not in JSX (Q-S4).
+Rules live in `SecurityNodeVisibility.resolveSecurityScheme` / `resolveOAuthFlow`
+(`model/security/node-visibility.ts`, categories `SECURITY_SCHEME_ROW_CATEGORIES` /
+`SECURITY_OAUTH_FLOW_ROW_CATEGORIES`), not in JSX (Q-S4). Rule:
+[../../shared/features/display-mode-annotations.md](../../shared/features/display-mode-annotations.md).
 
 ## With diffs
 

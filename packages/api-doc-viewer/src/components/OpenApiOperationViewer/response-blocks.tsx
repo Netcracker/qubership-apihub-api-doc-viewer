@@ -33,7 +33,7 @@ export function buildResponseBlocks(response: ResponseNode, view: OpenApiViewSta
   return OPENAPI_SECTION_ORDER.response.flatMap((sectionId): StackBlock[] => {
     switch (sectionId) {
       case OpenApiSectionIds.RESPONSE_DESCRIPTION:
-        return OpenApiNodeVisibility.showResponseDescription(response.value())
+        return OpenApiNodeVisibility.showResponseDescription(response.value(), view.displayMode)
           ? [{
             id: id(sectionId),
             ...OpenApiBlockEdges.single(OpenApiBlockEdges.descriptionRow(response)),

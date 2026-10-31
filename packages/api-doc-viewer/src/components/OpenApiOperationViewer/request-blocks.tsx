@@ -56,7 +56,7 @@ function buildRequestChildBlocks(node: RequestNode, view: OpenApiViewState): Sta
 }
 
 function buildRequestBodyBlock(id: string, node: RequestBodyNode, view: OpenApiViewState): StackBlock {
-  const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value()) ? OpenApiBlockEdges.descriptionRow(node) : undefined
+  const description = OpenApiNodeVisibility.showRequestBodyDescription(node.value(), view.displayMode) ? OpenApiBlockEdges.descriptionRow(node) : undefined
   const elements = OpenApiBlockEdges.bodyElements(OpenApiBlockEdges.requestBodyTitleRow(node), description, OpenApiViewSelection.mediaType(node, view.selection), { expanded: isOpenApiSectionExpanded(view, node.id) })
   return {
     id,

@@ -7,7 +7,6 @@ import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/typ
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
 import { getSecurityChildren, isSecurityOAuthFlowNode } from "@apihub/utils/security/node-type-checkers"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
-import { isDetailedDisplayMode } from "@netcracker/qubership-apihub-next-data-model/model/abstract/guards/display-mode"
 import {
   ChangedPropertyMetaData,
   NodeDiffsSeverity,
@@ -106,7 +105,6 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
   const { labels } = presentation
   const displayMode = useDisplayMode()
   const spacing = useLayoutSpacing()
-  const detailed = isDetailedDisplayMode(displayMode)
   const value = node.value()
   const severities = takeSecuritySeverities(node)
   const visibility = presentation.visibility.resolveSecurityScheme(value, displayMode)
@@ -210,9 +208,8 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
       format: row.format,
     }))
   }
-  if (detailed) {
-    flows.forEach(flow => addFlowRows(card, flow, node, presentation, displayMode, collapsedScopes, toggleScopes))
-  }
+  const scopeRows: ScopeRowsOptions = { showDescriptions: visibility.showScopeDescriptions, collapsedScopes, toggleScopes }
+  flows.forEach(flow => addFlowRows(card, flow, node, presentation, displayMode, scopeRows))
 
   // The scheme's own list of required scopes (rows with `*`): every required scope for openIdConnect
   // and OAS 3.1 roles (no flows), the ones no flow declares for oauth2. No separate prop row.
@@ -226,8 +223,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
         requiredOnly,
         SecurityRowDiffs.NodeLevel.takeWholeNodeDiff(node),
         severities?.[NodeDiffsSeverityPlacemennt.TitleRow],
-        collapsedScopes,
-        toggleScopes,
+        scopeRows,
       )
     }
   }
@@ -327,8 +323,7 @@ function addFlowRows(
   scheme: SecuritySchemeNode,
   presentation: SecurityPresentation,
   displayMode: DisplayMode,
-  collapsedScopes: ReadonlySet<string>,
-  toggleScopes: (key: string) => void,
+  scopeRows: ScopeRowsOptions,
 ): void {
   const value = flow.value()
   const severities = takeSecuritySeverities(flow)
@@ -368,8 +363,15 @@ function addFlowRows(
     }))
   }
   if (visibility.showScopes) {
-    addScopeRows(card, flowKey, SECURITY_PROP_LABELS.scopes, SecurityRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], collapsedScopes, toggleScopes)
+    addScopeRows(card, flowKey, SECURITY_PROP_LABELS.scopes, SecurityRowDiffs.OAuthFlow.resolveScopeRows(flow, scheme), blockDiff, severities?.[NodeDiffsSeverityPlacemennt.TitleRow], scopeRows)
   }
+}
+
+/** Scope rows of one card: description visibility (annotations, `detailed` only) and the `Scopes ▾` toggle state. */
+type ScopeRowsOptions = {
+  readonly showDescriptions: boolean
+  readonly collapsedScopes: ReadonlySet<string>
+  readonly toggleScopes: (key: string) => void
 }
 
 /** `Scopes ▾` / `Roles ▾` toggle (expanded by default) and the 2nd-level scope rows under it. */
@@ -381,8 +383,7 @@ function addScopeRows(
   blockDiff: ChangedPropertyMetaData | undefined,
   /** Severity of the whole block (flow / card): the badge of the `Scopes ▾` toggle row; scope rows carry their own (`SecurityScopeRow.severity`). */
   blockSeverity: NodeDiffsSeverity | undefined,
-  collapsedScopes: ReadonlySet<string>,
-  toggleScopes: (key: string) => void,
+  { showDescriptions, collapsedScopes, toggleScopes }: ScopeRowsOptions,
 ): void {
   const expanded = !collapsedScopes.has(key)
   card.add({
@@ -422,7 +423,7 @@ function addScopeRows(
               ? (
                 <SecurityScopeContent
                   name={scope.name}
-                  description={sideScope.description}
+                  description={showDescriptions ? sideScope.description : undefined}
                   required={sideScope.required}
                   descriptionHighlighterClass={resolveValueHighlighter(scope.ownRowDiff, side)}
                   requiredDiff={scope.requiredDiff}

@@ -19,9 +19,9 @@ describe('OpenAPI security scheme: required scope list', () => {
     ['apiKey', 'roles', true],
     ['http', 'roles', true],
     ['apiKey', 'ignored', false],
-  ] as const)('%s (%s): list shown in detailed mode = %s', (type, kind, shown) => {
+  ] as const)('%s (%s): list shown in both display modes = %s', (type, kind, shown) => {
     expect(OPENAPI_SECURITY_NODE_VISIBILITY.resolveSecurityScheme(scheme(type, kind), 'detailed').showRequiredScopeList).toBe(shown)
-    expect(OPENAPI_SECURITY_NODE_VISIBILITY.resolveSecurityScheme(scheme(type, kind), 'simple').showRequiredScopeList).toBe(false)
+    expect(OPENAPI_SECURITY_NODE_VISIBILITY.resolveSecurityScheme(scheme(type, kind), 'simple').showRequiredScopeList).toBe(shown)
   })
 
   it.each([

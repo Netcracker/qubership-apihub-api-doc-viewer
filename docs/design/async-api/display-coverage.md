@@ -67,8 +67,8 @@ JSON Schema viewers; bindings and extensions by the JSO viewers. Diagrams:
 | --- | --- | --- |
 | Message title (h1) | unless `noHeading`; `title`, else the node key | `message.title` |
 | Address row | always | `action` badge (`SEND` / `RECEIVE`) + `address` (`<address unknown>` when absent) |
-| Description | `description` present | `message.description` |
-| Summary | `summary` present | `message.summary` |
+| Description | `detailed` mode, `description` present | `message.description` |
+| Summary | `detailed` mode, `summary` present | `message.summary` |
 | `Security` (h3) | operation `security` non-empty | see **Security** |
 | Section selector | always | `Message` / `Channel` / `Operation` tabs; the first tab is selected initially |
 
@@ -88,7 +88,7 @@ Rows in rendering order:
 | UI element | Condition | Rendered by |
 | --- | --- | --- |
 | Channel title (h2) | `title`, else the node key | `TitleRow` |
-| Description, summary | present | `TextRow` (h5) |
+| Description, summary | `detailed` mode, present | `TextRow` (h5) |
 | `Address Parameters` (h3) | `parameters` present | `JsonSchemaViewer`; each parameter gets a `Location` custom annotation row |
 | `Servers` (h3) | `servers` present | one server block per server |
 | `Extensions` (h3) | `x-*` keys on the channel | `JsoViewer` |
@@ -100,7 +100,7 @@ Rows in rendering order:
 | --- | --- |
 | Server title (h4) | `title`, else the node key |
 | Server address row | `protocol` + `host` |
-| Description, summary | present (h6) |
+| Description, summary | `detailed` mode, present (h6) |
 | `Security` (h5, secondary size) | server `security` non-empty; see **Security** |
 | `Bindings` (h5, secondary size) | server `bindings` present |
 
@@ -109,7 +109,7 @@ Rows in rendering order:
 | UI element | Condition |
 | --- | --- |
 | Operation title (h2) | `title`, else the node key |
-| Description, summary | present (h5) |
+| Description, summary | `detailed` mode, present (h5) |
 | `Extensions`, `Bindings` | present |
 
 ### Bindings (`BindingsNodeViewer`)
@@ -131,13 +131,16 @@ Shared with OpenAPI (`SecuritySchemeCardBase`, `SecurityToolbarRow`); full desig
 | Toolbar (one option per list item = one scheme; always shown) | always |
 | Scheme card: name + type label (13 types) | the selected option |
 | Unresolved text | the `$ref` cannot be resolved |
-| Description | detailed mode, `description` present |
-| `<Place> parameter name` | detailed, `httpApiKey` |
-| `API key location` (`User` / `Password`) | detailed, `apiKey` |
-| `HTTP Authorization Scheme`, `Bearer Format` | detailed, `http` |
-| `OpenID Connect URL` | detailed, `openIdConnect` |
-| OAuth flow parts (URLs, `Scopes` from `availableScopes`, required `*` from the scheme `scopes`) | detailed, `oauth2` |
-| `Scopes` list of required scopes no flow declares | detailed, `oauth2` / `openIdConnect` |
+| Description | `detailed` mode, `description` present |
+| `<Place> parameter name` | `httpApiKey` |
+| `API key location` (`User` / `Password`) | `apiKey` |
+| `HTTP Authorization Scheme`, `Bearer Format` | `http` |
+| `OpenID Connect URL` | `openIdConnect` |
+| OAuth flow parts (URLs, `Scopes` from `availableScopes`, required `*` from the scheme `scopes`) | `oauth2`; scope descriptions in `detailed` mode only |
+| `Scopes` list of required scopes no flow declares | `oauth2` / `openIdConnect`; scope descriptions in `detailed` mode only |
+
+Display mode `simple` hides the annotations only (summaries, descriptions, scope descriptions):
+[../shared/features/display-mode-annotations.md](../shared/features/display-mode-annotations.md).
 
 ## Displayed (with diffs)
 

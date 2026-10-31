@@ -275,7 +275,7 @@ grouped per parameter. That reuses the JSON Schema extensions pipeline unchanged
 | `aggregateExtensionsDiffs` (`node-diffs/kind-any.ts`) | reads per-key diffs from the property schema's own diff record, keyed by the `x-*` name |
 | whole-node add / remove → `extensionsDiffs` | a wholly added / removed parameter paints all its extensions too |
 | `aggregateExtensionsUniformRowColorizingDiff` | colors the property's **Extensions** header when all extensions were added / removed uniformly |
-| `JsonSchemaExtensionsSection` + embedded `JsoViewer` / `JsoDiffsViewer` | renders the **Extensions** sub-tree of the property row (detailed display mode), diffs inside values included |
+| `JsonSchemaExtensionsSection` + embedded `JsoViewer` / `JsoDiffsViewer` | renders the **Extensions** sub-tree of the property row (both display modes), diffs inside values included |
 
 So on screen a parameter's extensions appear exactly like a schema property's extensions — under
 the parameter's row, never as a separate OpenAPI section.

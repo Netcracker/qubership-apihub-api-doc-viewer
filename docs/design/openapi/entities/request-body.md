@@ -55,8 +55,9 @@ whose effective value did not change. Severity: `TitleRow` (`OPENAPI_FIELD_PLACE
 ## Description row
 
 `MarkdownTextRow`, body2, `description` of the request body (**not** the schema description).
-Diff key `description`, severity `DescriptionRow`. Shown in both display modes, like the AsyncAPI
-message and section descriptions; only security card detail rows are `detailed`-only.
+Diff key `description`, severity `DescriptionRow`. An annotation: `detailed` display mode only
+([../../shared/features/display-mode-annotations.md](../../shared/features/display-mode-annotations.md)).
+Without it a Body is its title row and media types.
 
 ## Schema
 

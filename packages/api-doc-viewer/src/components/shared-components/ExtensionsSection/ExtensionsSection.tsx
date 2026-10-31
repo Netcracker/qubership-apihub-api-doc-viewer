@@ -1,5 +1,6 @@
 import { cn } from "@apihub/utils/common/cn"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { FC } from "react"
 import { JsoDiffsViewer } from "../../JsoViewer/JsoDiffsViewer"
 import { JsoViewer } from "../../JsoViewer/JsoViewer"
@@ -50,12 +51,15 @@ type ExtensionsSectionContentProps = Pick<ExtensionsSectionProps, 'rawValues' | 
 export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (props) => {
   const { rawValues, contentPrecededBy = PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL, hideUnchangedNodes } = props
   const diffMetaKeys = useDiffMetaKeys()
+  // Every embedded viewer gets the host's display mode: a viewer root without the prop resets it to `detailed`.
+  const displayMode = useDisplayMode()
   return diffMetaKeys
     ? (
       <JsoDiffsViewer
         data-precededby={contentPrecededBy}
         mergedSource={rawValues}
         initialLevel={1}
+        displayMode={displayMode}
         diffMetaKeys={diffMetaKeys}
         hideUnchangedNodes={hideUnchangedNodes}
       />
@@ -65,6 +69,7 @@ export const ExtensionsSectionContent: FC<ExtensionsSectionContentProps> = (prop
         data-precededby={contentPrecededBy}
         source={rawValues}
         initialLevel={1}
+        displayMode={displayMode}
       />
     )
 }

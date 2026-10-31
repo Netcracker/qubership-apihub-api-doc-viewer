@@ -9,7 +9,8 @@ import { X_AXIS_PADDING_ROWS } from "@apihub/components/shared-styles/tailwind-c
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { isBindingsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { getSecurityChildren, isSecuritySectionNode } from "@apihub/utils/security/node-type-checkers"
-import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
+import { resolveAsyncApiTextRowVisibility, shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
+import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff"
 
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
@@ -219,8 +220,11 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
   }, [node, renderHost, renderProtocol, serverAddressRowDiffsProps.diff])
 
   const isTitleDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'title'), [value, nodeDiffs])
-  const isDescriptionDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'description'), [value, nodeDiffs])
-  const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
+  const displayMode = useDisplayMode()
+  const { showDescription: isDescriptionDisplayed, showSummary: isSummaryDisplayed } = useMemo(
+    () => resolveAsyncApiTextRowVisibility<AsyncApiTreeNodeValueTypeServer>(value, nodeDiffs, displayMode),
+    [value, nodeDiffs, displayMode],
+  )
 
   if (!value) {
     return null

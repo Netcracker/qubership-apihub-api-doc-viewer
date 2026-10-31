@@ -26,7 +26,7 @@ embedded JSON Schema and JSO viewer alike; with `false`, none of them hides anyt
 | Title-only change | A change of the title row alone (the scheme type) is not content: the card stays collapsed, the title row keeps its yellow row and type highlighter. |
 | Trigger | `ShowUnchangedTrigger` (the JSON Schema three-dots button) in a `SecurityRow` (test id `security-show-unchanged`), tooltip `Show N unchanged row(s)` where N = hidden rows. |
 | Reveal | Click reveals the card; the card's node id is the block id in the viewer-level `UnchangedBlocksContext`, so it stays revealed while switching alternatives, scope toggles, or display modes. |
-| `simple` mode | Cards have only the title row, so there is nothing to hide and no trigger. |
+| `simple` mode | Same rule: cards keep their props, flows and scope names (only descriptions are hidden), so an unchanged card collapses behind the trigger as in `detailed`. |
 | Plain viewer, AsyncAPI | No `UnchangedBlocksContext` provider → every row shown. |
 
 ### Anonymous access changes

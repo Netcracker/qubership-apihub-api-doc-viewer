@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-10-31T15:17:17.539633+00:00'
+generated_at: '2026-10-31T16:59:17.480853+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -154,7 +154,7 @@ dependencies:
     .claude/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md: sha256:026fe54366c8c6de4350dc17a4eec5553ab5c026b8367c970d86054a39539058
     .claude/skills/next-data-model-authoring/node-visibility/authoring.md: sha256:715c86a9ea31b91edd7caf625ce82411fdfc88a0175b3f748072d0fde847dad2
     .claude/skills/next-data-model-authoring/node-visibility/ddlapi.md: sha256:a8945401440060035907c66f79d124520351981a10d19544c951acf174c00400
-    .claude/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
+    .claude/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:a48e44182de1c955ecc071433544525a36c78d2297daced8ec8863d61367477a
     .cursor/rules/next-data-model-authoring.mdc: sha256:fb7dab286ef502d05029953c39235ea585ebb75236a65d4509e13f82c3199b8d
     .cursor/skills/next-data-model-authoring/SKILL.md: sha256:d4eaa04351aecdd73358cb9946d0ccdfb4f887e2a1e74fd368d526c2e8507d0c
     .cursor/skills/next-data-model-authoring/json-schema/json-schema-meta-flags-and-required.md: sha256:8e6d7f9bb652d770446d6afb7a7968bc42af0a2226a175cc819eb72899ad8d87
@@ -163,7 +163,7 @@ dependencies:
     .cursor/skills/next-data-model-authoring/json-schema/json-schema-validation-rows.md: sha256:026fe54366c8c6de4350dc17a4eec5553ab5c026b8367c970d86054a39539058
     .cursor/skills/next-data-model-authoring/node-visibility/authoring.md: sha256:715c86a9ea31b91edd7caf625ce82411fdfc88a0175b3f748072d0fde847dad2
     .cursor/skills/next-data-model-authoring/node-visibility/ddlapi.md: sha256:a8945401440060035907c66f79d124520351981a10d19544c951acf174c00400
-    .cursor/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
+    .cursor/skills/next-data-model-authoring/node-visibility/general-approach.md: sha256:a48e44182de1c955ecc071433544525a36c78d2297daced8ec8863d61367477a
   source: local
   local_path: ./agent-packages/next-data-model-authoring
 - repo_url: _local/next-data-model-using
@@ -577,7 +577,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
+  content_hash: sha256:a48e44182de1c955ecc071433544525a36c78d2297daced8ec8863d61367477a
 - kind: project-relative
   target: claude
   value: .claude/skills/next-data-model-using
@@ -946,7 +946,7 @@ deployments:
   owners:
   - ./agent-packages/next-data-model-authoring
   active_owner: ./agent-packages/next-data-model-authoring
-  content_hash: sha256:2b6f93f8797bedaac1cfa590d82de6cdb2497df92b36fe3dd54def464c08a64c
+  content_hash: sha256:a48e44182de1c955ecc071433544525a36c78d2297daced8ec8863d61367477a
 - kind: project-relative
   target: cursor
   value: .cursor/skills/next-data-model-using
