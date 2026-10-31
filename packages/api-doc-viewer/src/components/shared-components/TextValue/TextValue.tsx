@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn";
 import { ChangedPropertyMetaData, DiffHighlightingApplicationMode, HighlightVariant } from "@apihub/next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
 import { isDiffAdd, isDiffRemove, isDiffRename, isDiffReplace } from "@netcracker/qubership-apihub-api-diff";
@@ -40,9 +41,9 @@ const Expander: FC<TextExpanderProps> = props => {
 
   return <>
     {isExpandable && (
-      <div className="mt-1">
+      <div className={cn("mt-1")}>
         <a
-          className={`text-value-expander ${getExpanderFontSizeClass(variant)} text-blue-600 hover:text-blue-500 hover:cursor-pointer`.trim()}
+          className={cn(`text-value-expander ${getExpanderFontSizeClass(variant)} text-blue-600 hover:text-blue-500 hover:cursor-pointer`.trim())}
           onClick={onClick}
         >
           {!expanded ? 'Show more' : 'Show less'}
@@ -83,7 +84,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
     const renderByVariant = (content: ReactNode, className: string) => {
       const variantProps = {
         ...commonProps,
-        className,
+        className: cn(className),
       }
       switch (variant) {
         case TextValueVariant.h1:
@@ -99,9 +100,9 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
         case TextValueVariant.h6:
           return <h6 {...variantProps}>{content}</h6>
         case TextValueVariant.body1:
-          return <span {...variantProps} className={`${className} text-value-body1`.trim()}>{content}</span>
+          return <span {...variantProps} className={cn(`${className} text-value-body1`.trim())}>{content}</span>
         case TextValueVariant.body2:
-          return <span {...variantProps} className={`${className} text-value-body2`.trim()}>{content}</span>
+          return <span {...variantProps} className={cn(`${className} text-value-body2`.trim())}>{content}</span>
       }
     }
 
@@ -109,12 +110,12 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       return renderByVariant(
         <>
           <span
-            className={labelFontWeight ? `font-${labelFontWeight}` : 'font-bold'}
+            className={cn(labelFontWeight ? `font-${labelFontWeight}` : 'font-bold')}
             style={labelColor?.trim() ? { color: labelColor } : {}}
           >
             {`${label}: `}
           </span>
-          <span className={diffsStyles}>{resolvedValue}</span>
+          <span className={cn(diffsStyles)}>{resolvedValue}</span>
         </>,
         commonStylesWithoutDiffs,
       )
@@ -196,7 +197,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
 
   const [resolvedValue, diffsStyleClasses, isInvisible] = renderValue(value)
 
-  const content = useMemo(() => <div className="flex flex-col items-start gap-1">
+  const content = useMemo(() => <div className={cn("flex flex-col items-start gap-1")}>
     {renderElement(resolvedValue, diffsStyleClasses, isInvisible)}
     {!isInvisible && (
       <Expander

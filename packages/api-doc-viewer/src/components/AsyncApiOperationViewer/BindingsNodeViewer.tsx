@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn";
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext";
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { LayoutSide } from "@apihub/types/internal/LayoutSide";
@@ -154,7 +155,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
   }, [selectedBindingNode, bindingValue, displayMode, diffMetaKeys])
 
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col")}>
       <TitleRow
         data-precededby={precededBy}
         value='Bindings'
@@ -165,7 +166,7 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
         // diffs
         {...diffsProps}
       />
-      <div data-testid={`${selectedBinding?.testId}-content`} className="flex flex-col">
+      <div data-testid={`${selectedBinding?.testId}-content`} className={cn("flex flex-col")}>
         <TextRow
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
           value={bindingVersion}

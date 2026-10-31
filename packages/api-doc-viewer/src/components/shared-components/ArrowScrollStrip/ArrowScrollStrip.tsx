@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { resolveStripScrollState, resolveStripScrollTarget, StripItemBox, StripScrollState } from "@apihub/utils/common/strip-scroll"
 import { ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ChevronIcon } from "../../kit/icons/ChevronIcon"
@@ -75,13 +76,13 @@ export function ArrowScrollStrip(props: ArrowScrollStripProps): ReactElement {
   }
 
   return (
-    <div className="arrow-scroll-strip flex min-w-0 flex-1 items-center gap-1">
+    <div className={cn("arrow-scroll-strip flex min-w-0 flex-1 items-center gap-1")}>
       <StripArrow testIdPrefix={testIdPrefix} direction="left" enabled={scrollState.canScrollLeft} onClick={scrollByOneOption} />
       <div
         ref={stripRef}
         data-testid={`${testIdPrefix}-strip`}
         onScroll={updateScrollState}
-        className="arrow-scroll-strip-viewport relative min-w-0 flex-1 overflow-x-auto"
+        className={cn("arrow-scroll-strip-viewport relative min-w-0 flex-1 overflow-x-auto")}
         style={overhangVertically ? { marginBlock: -decorationInset } : undefined}
       >
         {/* Inset: decorations overhanging the options would be clipped at the strip edges. A block
@@ -117,7 +118,7 @@ function StripArrow(props: StripArrowProps): ReactElement {
         event.stopPropagation()
         onClick(direction)
       }}
-      className="icon-button arrow-scroll-strip-arrow"
+      className={cn("icon-button arrow-scroll-strip-arrow")}
     >
       <ChevronIcon direction={direction} />
     </button>

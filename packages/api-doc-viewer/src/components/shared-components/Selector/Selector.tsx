@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { maxDiffType } from "@apihub/utils/common/changes"
 import { DiffAction, DiffType } from "@netcracker/qubership-apihub-api-diff"
@@ -55,7 +56,7 @@ export function Selector<
   }
 
   return (
-    <div className={noWrap ? 'flex flex-row flex-nowrap gap-2' : 'flex flex-row flex-wrap gap-2'}>
+    <div className={cn(noWrap ? 'flex flex-row flex-nowrap gap-2' : 'flex flex-row flex-wrap gap-2')}>
       {options.map((option) => {
         const { diffsRelatedClassesList, isInvisible } = resolveOptionDiffPresentation({
           diffs: option.diffs,
@@ -75,14 +76,14 @@ export function Selector<
           <button
             key={option.node.id}
             data-testid={option.testId}
-            className={`button-selector-option button-selector-option_${variant}${toneClass}${croppedClass} ${selectedOption === option ? 'selected' : ''} ${diffsRelatedClasses}`}
+            className={cn(`button-selector-option button-selector-option_${variant}${toneClass}${croppedClass} ${selectedOption === option ? 'selected' : ''} ${diffsRelatedClasses}`)}
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
               onSelectOption(option)
             }}
           >
-            {noWrap ? <span className="button-selector-option-label">{resolvedTitle}</span> : resolvedTitle}
+            {noWrap ? <span className={cn("button-selector-option-label")}>{resolvedTitle}</span> : resolvedTitle}
           </button>
         )
       })}

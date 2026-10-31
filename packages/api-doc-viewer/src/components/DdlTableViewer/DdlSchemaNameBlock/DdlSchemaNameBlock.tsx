@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { X_AXIS_PADDING_ROWS } from "@apihub/components/shared-styles/tailwind-classnames"
 import { FC } from "react"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../../shared-components/WithPrecededByProps"
@@ -19,9 +20,9 @@ export const DdlSchemaNameBlock: FC<DdlSchemaNameBlockProps> = (props) => {
   return (
     <div
       data-precededby={precededBy}
-      className={`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS}`}
+      className={cn(`ddl-schema-name-block-row flex w-full h-full ${X_AXIS_PADDING_ROWS}`)}
     >
-      <span className="ddl-schema-name-block">{schemaName}</span>
+      <span className={cn("ddl-schema-name-block")}>{schemaName}</span>
     </div>
   )
 }

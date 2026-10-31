@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { buildCollapsibleSectionElements } from "./CollapsibleSection"
 import { StackBlock, StackLayout } from "../shared-components/Layout/StackLayout"
@@ -31,7 +32,7 @@ export function buildParametersBlock(id: string, props: ParametersNodeViewerProp
     id,
     ...OpenApiBlockEdges.container(elements),
     payload: () => (
-      <div key={id} data-testid={testId} className="flex flex-col">
+      <div key={id} data-testid={testId} className={cn("flex flex-col")}>
         <StackLayout blocks={elements} level="section" />
       </div>
     ),

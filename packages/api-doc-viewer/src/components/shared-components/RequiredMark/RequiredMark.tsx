@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { FC } from "react"
 
 /**
@@ -5,4 +6,4 @@ import { FC } from "react"
  * whether to show it comes from the data layer (`OpenApiRowDiffs.RequestBody.isRequiredStarVisibleOnSide`,
  * `SecurityScopeRow`).
  */
-export const RequiredMark: FC = () => <sup className="ml-0.5 text-red-500">*</sup>
+export const RequiredMark: FC = () => <sup className={cn("ml-0.5 text-red-500")}>*</sup>

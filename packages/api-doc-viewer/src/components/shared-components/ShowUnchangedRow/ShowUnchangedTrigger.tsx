@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { FC, memo, useCallback } from "react"
 import { ThreeDotsIcon } from "@apihub/components/kit/icons/ThreeDotsIcon"
 import { UxTooltip } from "@apihub/components/kit/ux/UxTooltip/UxTooltip"
@@ -27,7 +28,7 @@ export const ShowUnchangedTrigger: FC<ShowUnchangedTriggerProps> = memo((props) 
     <UxTooltip text={label}>
       <button
         type="button"
-        className="icon-button show-unchanged-trigger"
+        className={cn("icon-button show-unchanged-trigger")}
         aria-label={label}
         onClick={onClick}
       >

@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { X_AXIS_PADDING_ROWS, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { applyLevelReduction } from "@apihub/contexts/AsyncLevelContext/applyLevelReduction"
@@ -75,14 +76,14 @@ export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContent
     <div
       data-testid="nesting-indicator-title-row-content"
       data-precededby={precededBy}
-      className={[
+      className={cn([
         "nesting-indicator-title-row-content flex w-full h-full",
         isJsonSchemaUsage ? "items-stretch" : "",
         usageDrivenClasses,
         ...diffsStyleClasses,
-      ].filter(Boolean).join(" ")}
+      ].filter(Boolean).join(" "))}
     >
-      <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
+      <div data-precededby={precededBy} className={cn("level-indicator-column flex items-stretch self-stretch")}>
         <LevelIndicator level={level} lastInvisible={lastInvisible && isLabelVisible} />
       </div>
       {isTitleVisible && <NestingIndicatorTitleLabel title={resolvedTitle} />}

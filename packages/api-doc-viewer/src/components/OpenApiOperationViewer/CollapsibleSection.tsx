@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
 import { StackBlock } from "../shared-components/Layout/StackLayout"
 import { isOpenApiSectionExpanded, OpenApiViewState, useOpenApiViewState } from "./OpenApiViewStateContext"
@@ -42,7 +43,7 @@ export function indentSectionContent(block: StackBlock): StackBlock {
   return {
     ...block,
     payload: () => (
-      <div key={block.id} className="openapi-section-content flex flex-col">
+      <div key={block.id} className={cn("openapi-section-content flex flex-col")}>
         {block.payload()}
       </div>
     ),

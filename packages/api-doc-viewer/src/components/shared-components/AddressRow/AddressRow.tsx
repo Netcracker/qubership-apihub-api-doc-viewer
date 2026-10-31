@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { TextColors } from "../../shared-styles/colors/text-colors"
 import { DiffFloatingBadgeWrapper } from "@apihub/components/shared-components/DiffFloatingBadgeWrapper/DiffFloatingBadgeWrapper"
 import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "@apihub/components/shared-components/WithPrecededByProps"
@@ -87,7 +88,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
     const partialReplaceCase = diff && detectPartialReplaceCase(diff)
 
     let actionElement: React.ReactNode = badge ? (
-      <div className={`font-bold px-1 py-0 ${badge.colorClass} text-white rounded-md`}>
+      <div className={cn(`font-bold px-1 py-0 ${badge.colorClass} text-white rounded-md`)}>
         {badge.text}
       </div>
     ) : null
@@ -117,7 +118,7 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
     const suffix = layoutSide === ORIGIN_LAYOUT_SIDE ? beforeSuffix : afterSuffix
     return <>
       {actionElement}
-      <div className='flex flex-row'>
+      <div className={cn('flex flex-row')}>
         <TextValue
           value={prefix}
           variant={TextValueVariant.h4}
@@ -153,15 +154,15 @@ const AddressRowContent: FC<AddressRowContentProps> = (props) => {
   return (
     <div
       data-precededby={precededBy}
-      className={`address-row address-row-content font-Inter-Medium flex w-full h-full ${X_AXIS_PADDING_ROWS} ${diffStyles.join(' ')}`}
+      className={cn(`address-row address-row-content font-Inter-Medium flex w-full h-full ${X_AXIS_PADDING_ROWS} ${diffStyles.join(' ')}`)}
     >
       <div
-        className='flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3'
+        className={cn('flex flex-row items-center w-max py-2 bg-slate-100 rounded-md gap-3')}
         style={{ paddingLeft: 10, paddingRight: 10 }}
       >
         {renderAddress()}
       </div>
-      {trailing && <div className="flex items-center pl-2">{trailing(layoutSide)}</div>}
+      {trailing && <div className={cn("flex items-center pl-2")}>{trailing(layoutSide)}</div>}
     </div>
   )
 }

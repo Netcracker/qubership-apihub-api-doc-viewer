@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { X_AXIS_PADDING_ROWS, X_AXIS_PADDING_ROWS_DDL_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { useLevelContext } from "@apihub/contexts/LevelContext"
@@ -134,7 +135,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
 
     if (isJsonSchemaPropertyRow) {
       return (
-        <div data-precededby={precededBy} className="level-indicator-column flex shrink-0 items-stretch self-stretch">
+        <div data-precededby={precededBy} className={cn("level-indicator-column flex shrink-0 items-stretch self-stretch")}>
           <LevelIndicator level={level} />
           <JsonSchemaExpanderColumn
             isRoot={jsonSchemaIsRoot}
@@ -149,7 +150,7 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
     return (
       <>
         {(expandable || level > 0) && (
-          <div data-precededby={precededBy} className="level-indicator-column flex items-stretch self-stretch">
+          <div data-precededby={precededBy} className={cn("level-indicator-column flex items-stretch self-stretch")}>
             <LevelIndicator level={level} />
             <Expander
               expandable={expandable}
@@ -174,16 +175,16 @@ export const TitleRowContent: FC<TitleRowContentProps> = memo<TitleRowContentPro
       data-ddl-list-last-row={ddlListLastRow ? true : undefined}
       data-usage={usage !== TitleRowUsage.Default ? usage : undefined}
       data-frame-position={props.framePosition?.(layoutSide)}
-      className={`title-row-content flex w-full ${isDdlApiPropertyRow || isJsonSchemaPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`}
+      className={cn(`title-row-content flex w-full ${isDdlApiPropertyRow || isJsonSchemaPropertyRow ? 'items-stretch' : 'items-center'} h-full ${usageDrivenClasses} gap-2 ${diffsStyleClasses.join(' ')}`)}
     >
       {header}
       {isDdlApiPropertyRow ? (
-        <div className="ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2">
+        <div className={cn("ddlapi-property-row-body flex min-w-0 flex-1 items-center gap-2")}>
           {headerValue}
           {subheader?.(layoutSide)}
         </div>
       ) : isJsonSchemaPropertyRow ? (
-        <div className="json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center gap-2">
+        <div className={cn("json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center gap-2")}>
           {headerValue}
           {subheader?.(layoutSide)}
         </div>

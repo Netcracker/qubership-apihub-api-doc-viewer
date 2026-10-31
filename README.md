@@ -17,6 +17,7 @@ comparison mode, as a side-by-side view of what changed between two versions.
 - [Quick start](#quick-start)
 - [Preparing documents](#preparing-documents)
 - [Common props](#common-props)
+- [Styling](#styling)
 - [Components](#components)
   - [JsonSchemaViewer / JsonSchemaDiffsViewer](#jsonschemaviewer--jsonschemadiffsviewer)
   - [OpenApiOperationViewer / OpenApiOperationDiffsViewer](#openapioperationviewer--openapioperationdiffsviewer)
@@ -126,6 +127,29 @@ Props shared by most viewers. Each component section lists which ones it accepts
 
 Every viewer renders nothing when its document prop is `null`, and shows an inline error message
 instead of crashing the host page when rendering fails.
+
+## Styling
+
+The stylesheet is isolated from the host application:
+
+- **Every class is prefixed.** The viewers render classes such as `api-doc-viewer-flex` and
+  `api-doc-viewer-selected`, and `dist/style.css` only contains selectors for those names, so it
+  cannot restyle host elements that use common class names (`flex`, `selected`), and host classes
+  cannot restyle the viewers.
+- **No global rules.** The CSS reset and element defaults (`ul`, `a`, `button`, `h1`, CSS variables)
+  apply only inside a viewer's root element, `.api-doc-viewer-root`. The host page, its `body`, and
+  its buttons and links are not touched. Host element rules (for example a global `button { … }`)
+  can still reach elements inside a viewer when they come later in the cascade.
+- **Own font names.** The bundled Inter and Fira Code faces are registered as
+  `"api-doc-viewer Inter"`, `"api-doc-viewer Fire Code"`, and so on, so they never replace or merge
+  with the host's fonts of the same name.
+
+To adjust a viewer's look from the host, target the prefixed classes inside
+`.api-doc-viewer-root`. These class names are an implementation detail and may change between
+releases.
+
+A custom `navigationLinkComponent` receives a `className` that is already prefixed — pass it to the
+rendered element unchanged.
 
 ## Components
 
@@ -249,7 +273,7 @@ generated expressions), indexes, and foreign keys as navigation links to the ref
 | `mergedSource` | `Realm` | yes | **Diffs.** `apiDiff` merged Realm of two versions |
 | `tableKey` | `TableKey` | yes | Table to render, e.g. `{ schemaName: 'public', name: 'orders' }` |
 | `navigationLinkBuilder` | `NavigationLinkBuilder` | yes | `(schema, table, column) => string` — builds the URL of a foreign-key target |
-| `navigationLinkComponent` | `NavigationLinkComponent` | no | Renders foreign-key links; receives `{ href, className, children }`. **Default:** a plain `<a href>` |
+| `navigationLinkComponent` | `NavigationLinkComponent` | no | Renders foreign-key links; receives `{ href, className, children }`; apply `className` unchanged. **Default:** a plain `<a href>` |
 | `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
 | `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
 | `diffTypes` | `DiffType[]` | no | **Diffs.** Accepted, not applied yet |

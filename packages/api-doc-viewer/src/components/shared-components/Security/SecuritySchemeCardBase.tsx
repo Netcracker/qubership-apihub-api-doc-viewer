@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { TextColors } from "../../shared-styles/colors/text-colors"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { useLayoutSpacing } from "@apihub/contexts/LayoutSpacingContext"
@@ -186,7 +187,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
     const locationDiff = SecurityRowDiffs.Scheme.takeParameterLocationTextDiff(node)
     const labelOf = (side: LayoutSide): ReactNode => {
       const { place, suffix } = SecurityRowDiffs.Scheme.resolveParameterNameLabel(node, side, labels)
-      return <><span className={`security-prop-label-place ${resolveValueHighlighter(locationDiff, side)}`}>{place}</span>{suffix}</>
+      return <><span className={cn(`security-prop-label-place ${resolveValueHighlighter(locationDiff, side)}`)}>{place}</span>{suffix}</>
     }
     card.add(fieldPropRow({
       key: 'parameterName',
@@ -264,7 +265,7 @@ export const SecuritySchemeCardBase: FC<SecuritySchemeCardBaseProps> = (props) =
   const frameRow = LayoutPlanner.frameRow(node, spacing)
   const presence = { before: isPresent(ORIGIN_LAYOUT_SIDE), after: isPresent(CHANGED_LAYOUT_SIDE) }
   return (
-    <div data-testid={`security-scheme-${String(node.key)}`} className="flex flex-col">
+    <div data-testid={`security-scheme-${String(node.key)}`} className={cn("flex flex-col")}>
       <SecurityFrameRow frameRow={frameRow} position="first" presence={presence} />
       <StackLayout
         blocks={card.toBlocks(middle)}
@@ -449,5 +450,5 @@ const SchemeTypeText: FC<SchemeTypeTextProps> = ({ node, presentation, layoutSid
     return <></>
   }
   const highlighter = DiffsClassesBuilder.highlighter(SecurityRowDiffs.Scheme.resolveTypeTextHighlight(node, layoutSide))
-  return <span className={`title-row-subheader-value subheader text ${highlighter}`}>{label}</span>
+  return <span className={cn(`title-row-subheader-value subheader text ${highlighter}`)}>{label}</span>
 }

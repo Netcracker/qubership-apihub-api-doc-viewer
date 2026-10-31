@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
 import { DEFAULT_LAYOUT_SPACING_CONFIG } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration";
@@ -90,10 +91,12 @@ const AsyncApiOperationDiffsViewerInner: FC<AsyncApiOperationDiffsViewerProps> =
               <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                 <LevelContext.Provider value={0}>
                   <LayoutSpacingContext.Provider value={DEFAULT_LAYOUT_SPACING_CONFIG}>
-                    <MessageNodeViewer
-                      node={messageNode}
-                      noHeading={noHeading}
-                    />
+                    <div className={cn('root')}>
+                      <MessageNodeViewer
+                        node={messageNode}
+                        noHeading={noHeading}
+                      />
+                    </div>
                   </LayoutSpacingContext.Provider>
                 </LevelContext.Provider>
               </LayoutModeContext.Provider>

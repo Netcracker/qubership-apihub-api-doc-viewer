@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { DisplayModeContext } from "@apihub/contexts/DisplayModeContext"
 import { LayoutModeContext } from "@apihub/contexts/LayoutModeContext"
 import { LayoutSpacingContext } from "@apihub/contexts/LayoutSpacingContext"
@@ -30,7 +31,7 @@ export const OpenApiViewerRoot: FC<OpenApiViewerRootProps> = ({ operation, noHea
       <LayoutModeContext.Provider value={layoutMode}>
         <LevelContext.Provider value={0}>
           <LayoutSpacingContext.Provider value={viewerContext.spacing}>
-            <div data-testid={testId} style={toOpenApiCssVariables(viewerContext.spacing)}>
+            <div className={cn('root')} data-testid={testId} style={toOpenApiCssVariables(viewerContext.spacing)}>
               <OperationNodeViewer node={operation} noHeading={noHeading} />
             </div>
           </LayoutSpacingContext.Provider>

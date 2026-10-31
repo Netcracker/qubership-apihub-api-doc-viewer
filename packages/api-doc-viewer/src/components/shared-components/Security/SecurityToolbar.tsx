@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -45,7 +46,7 @@ export function SecurityToolbar<N extends ITreeNode>(props: SecurityToolbarProps
       <div
         data-precededby={precededBy}
         data-testid="security-toolbar"
-        className={`security-toolbar flex w-full h-full items-center gap-1 ${X_AXIS_PADDING_ROWS} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={cn(`security-toolbar flex w-full h-full items-center gap-1 ${X_AXIS_PADDING_ROWS} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`)}
       >
         {isShownOnSide(layoutSide) && <SecurityOptionsStrip {...props} layoutSide={layoutSide} />}
       </div>

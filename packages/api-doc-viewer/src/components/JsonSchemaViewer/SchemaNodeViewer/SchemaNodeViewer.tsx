@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useCustomizationOptions } from "@apihub/contexts/CustomizationOptionsContext"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { LevelContext, useLevelContext } from "@apihub/contexts/LevelContext"
@@ -115,7 +116,7 @@ export const SchemaNodeViewer: FC<SchemaNodeViewerProps> = (props) => {
     <div
       data-testid="json-schema-node-viewer"
       data-name="JsonNode"
-      className="json-schema-property flex flex-col"
+      className={cn("json-schema-property flex flex-col")}
     >
       {!suppressRootNesting && (
         <SchemaNodeTitleRow

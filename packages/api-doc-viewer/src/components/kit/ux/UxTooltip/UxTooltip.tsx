@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { cn } from '@apihub/utils/common/cn'
 import type { FC, PropsWithChildren } from 'react'
 import './UxTooltip.css'
 
@@ -46,11 +47,11 @@ export const UxTooltip: FC<UxTooltipProps> = (props) => {
   const { children, text, floatingContainer = false, maxWidthClass } = props
 
   return (
-    <div className="relative inline-flex hover:cursor-pointer">
-      <div className="UxTooltip-children inline-flex">
+    <div className={cn("relative inline-flex hover:cursor-pointer")}>
+      <div className={cn("UxTooltip-children inline-flex")}>
         {children}
       </div>
-      <span className={buildTooltipInnerStyles(floatingContainer, maxWidthClass)}>
+      <span className={cn(buildTooltipInnerStyles(floatingContainer, maxWidthClass))}>
         {text}
       </span>
     </div>

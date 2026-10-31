@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -69,13 +70,13 @@ const ExternalDocsRowContent: FC<ExternalDocsRowContentProps> = (props) => {
 
   const link = side ? (
     <a
-      className="external-docs-row-link inline-flex items-center gap-1"
+      className={cn("external-docs-row-link inline-flex items-center gap-1")}
       href={side.url}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={side.description ? `${EXTERNAL_DOCS_LINK_TEXT}: ${side.description}` : EXTERNAL_DOCS_LINK_TEXT}
     >
-      <span className={highlighterClass}>{EXTERNAL_DOCS_LINK_TEXT}</span>
+      <span className={cn(highlighterClass)}>{EXTERNAL_DOCS_LINK_TEXT}</span>
       <ArrowUpRightIcon />
     </a>
   ) : null
@@ -84,7 +85,7 @@ const ExternalDocsRowContent: FC<ExternalDocsRowContentProps> = (props) => {
     <div
       data-precededby={precededBy}
       data-testid="external-docs-row"
-      className={`external-docs-row-content flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${backgroundClass}`}
+      className={cn(`external-docs-row-content flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${backgroundClass}`)}
     >
       {link && side?.description
         ? <UxTooltip text={side.description} maxWidthClass="max-w-sm">{link}</UxTooltip>

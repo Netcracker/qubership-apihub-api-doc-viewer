@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { OpenApiViewSelection } from "@apihub/utils/openapi/view-selection"
 import { OpenApiBodyElements } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
@@ -28,7 +29,7 @@ type RequestNodeViewerProps = {
  * Design: entities/parameters.md, entities/request-body.md.
  */
 export const RequestNodeViewer: FC<RequestNodeViewerProps> = ({ blocks }) => (
-  <div data-testid="openapi-request-section" className="flex flex-col">
+  <div data-testid="openapi-request-section" className={cn("flex flex-col")}>
     <StackLayout blocks={blocks} level="request" />
   </div>
 )

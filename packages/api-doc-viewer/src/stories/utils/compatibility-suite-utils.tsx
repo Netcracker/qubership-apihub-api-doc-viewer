@@ -15,6 +15,7 @@
  */
 
 /* eslint-disable react-refresh/only-export-components */
+import { FONT_FAMILY_INTER_NAME } from '@apihub/constants/fonts'
 import { DiffMetaKeys } from '@netcracker/qubership-apihub-api-data-model'
 import { Diff, DIFF_META_KEY, DiffReplace, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
 import { stringifyCyclicJso } from '@netcracker/qubership-apihub-api-unifier'
@@ -42,7 +43,8 @@ import { resolveOpenApiCompatibilitySuiteOperationKeys } from './compatibility-s
 import { getCompareResult } from './merged-document'
 import { parseYamlSource } from './parse-yaml-source'
 
-const FONT_FAMILIES: string[] = ['Inter']
+// The renamed @font-face family (CSS isolation): waiting for plain 'Inter' never resolves.
+const FONT_FAMILIES: string[] = [FONT_FAMILY_INTER_NAME]
 
 function useFontLoaded(): boolean {
   const [fontLoaded, setFontLoaded] = useState(false)

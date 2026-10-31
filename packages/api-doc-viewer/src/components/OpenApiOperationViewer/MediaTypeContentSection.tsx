@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { RequiredMark } from "../shared-components/RequiredMark/RequiredMark"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
@@ -95,14 +96,14 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
   )
 
   const renderTitle = (layoutSide: LayoutSide): ReactElement => (
-    <div className="flex flex-row items-baseline">
+    <div className={cn("flex flex-row items-baseline")}>
       <TextValue value={OpenApiDisplayLabels.BODY_TITLE} variant={TextValueVariant.h3} layoutSide={layoutSide} diff={headerDiff} onClick={sectionProps.onClickExpander} />
       {isRequiredOnSide?.(layoutSide) && <RequiredMark />}
     </div>
   )
 
   const renderSubheader = (layoutSide: LayoutSide): ReactElement => (
-    <div className="flex flex-row flex-wrap items-center gap-2">
+    <div className={cn("flex flex-row flex-wrap items-center gap-2")}>
       <Selector
         options={options}
         selectedOption={selectedOption}
@@ -152,7 +153,7 @@ export const MediaTypeContentSection: FC<MediaTypeContentSectionProps> = (props)
   const blocks = elements.flatMap(renderElement)
 
   return (
-    <div data-testid={testId} className="flex flex-col">
+    <div data-testid={testId} className={cn("flex flex-col")}>
       <StackLayout blocks={blocks} level="section" />
     </div>
   )

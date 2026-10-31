@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
 import { HighlightVariant } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
 import { FC } from "react"
@@ -13,5 +14,5 @@ type OptionKeyTextProps = {
  * their markup does not change.
  */
 export const OptionKeyText: FC<OptionKeyTextProps> = ({ text, highlight }) => (
-  highlight ? <span className={DiffsClassesBuilder.highlighter(highlight)}>{text}</span> : <>{text}</>
+  highlight ? <span className={cn(DiffsClassesBuilder.highlighter(highlight))}>{text}</span> : <>{text}</>
 )

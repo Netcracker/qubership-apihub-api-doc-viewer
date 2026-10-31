@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from '@apihub/constants/configuration'
 import { CustomizationOptions, CustomizationOptionsContext } from '@apihub/contexts/CustomizationOptionsContext'
 import { DisplayModeContext } from '@apihub/contexts/DisplayModeContext'
@@ -130,7 +131,7 @@ const JsonSchemaViewerInner: FC<JsonSchemaViewerProps> = (props) => {
           <DisplayModeContext.Provider value={displayMode}>
             <LayoutModeContext.Provider value={DOCUMENT_LAYOUT_MODE}>
               <LevelContext.Provider value={initialLevel}>
-                <div data-testid="json-schema-viewer">
+                <div className={cn('root')} data-testid="json-schema-viewer">
                   <JsonSchemaNodeViewer node={root} data-precededby={firstRowPrecededBy}/>
                 </div>
               </LevelContext.Provider>

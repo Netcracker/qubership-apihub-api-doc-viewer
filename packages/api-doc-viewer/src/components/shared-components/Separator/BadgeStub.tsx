@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { LayoutBadgeSegment } from "@netcracker/qubership-apihub-next-data-model/model/abstract/layout"
 import { FC, ReactElement } from "react"
 import { DIFF_TYPE_COLORS } from "../../kit/ux/UxMarker/consts"
@@ -18,11 +19,11 @@ export const BadgeStub: FC<BadgeStubProps> = ({ segments }) => {
     return null
   }
   return (
-    <div data-testid="badge-stub" className="badge-stub pointer-events-none absolute left-0 top-0 z-10 flex h-full w-1 flex-col" aria-hidden="true">
+    <div data-testid="badge-stub" className={cn("badge-stub pointer-events-none absolute left-0 top-0 z-10 flex h-full w-1 flex-col")} aria-hidden="true">
       {segments.map((segment, index): ReactElement => (
         <div
           key={index}
-          className="flex-none"
+          className={cn("flex-none")}
           style={{ height: segment.height, backgroundColor: segment.type ? DIFF_TYPE_COLORS[segment.type] : undefined }}
         />
       ))}

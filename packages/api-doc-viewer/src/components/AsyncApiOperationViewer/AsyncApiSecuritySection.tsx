@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { SECURITY_SECTION_TITLE } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { takeSecuritySeverities } from "@apihub/utils/security/diff-state"
 import { findSecurityAlternatives, resolveSelectedSecurityAlternative } from "@apihub/utils/security/node-type-checkers"
@@ -50,7 +51,7 @@ export const AsyncApiSecuritySection: FC<AsyncApiSecuritySectionProps> = memo(pr
   ], [toolbar, selected, variant])
 
   return (
-    <div data-testid="async-api-security-section" className="flex flex-col">
+    <div data-testid="async-api-security-section" className={cn("flex flex-col")}>
       <TitleRow
         data-precededby={precededBy}
         value={SECURITY_SECTION_TITLE}

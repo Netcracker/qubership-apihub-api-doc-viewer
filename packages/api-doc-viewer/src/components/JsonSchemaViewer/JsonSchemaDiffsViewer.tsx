@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { DEFAULT_DISPLAY_MODE, DEFAULT_EXPANDED_DEPTH } from '@apihub/constants/configuration'
 import { CustomizationOptions, CustomizationOptionsContext } from '@apihub/contexts/CustomizationOptionsContext'
 import { DiffMetaKeysContext } from '@apihub/contexts/DiffMetaKeysContext'
@@ -160,7 +161,7 @@ const JsonSchemaDiffsViewerInner: FC<JsonSchemaDiffsViewerProps> = (props) => {
               <DisplayModeContext.Provider value={displayMode}>
                 <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                   <LevelContext.Provider value={initialLevel}>
-                    <div data-testid="json-schema-diffs-viewer">
+                    <div className={cn('root')} data-testid="json-schema-diffs-viewer">
                       <JsonSchemaNodeViewerWithDiffs node={root} data-precededby={props.firstRowPrecededBy}/>
                     </div>
                   </LevelContext.Provider>

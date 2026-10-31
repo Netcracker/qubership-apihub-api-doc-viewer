@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useAsyncLevelContext } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContext"
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS } from "@apihub/contexts/CustomizationOptionsContext"
@@ -59,7 +60,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
 
       if (!nodeValueDiff) {
         return (
-          <div className='flex flex-row gap-2'>
+          <div className={cn('flex flex-row gap-2')}>
             <JsoValueWithDiffs
               isVisible={nodeValue.after.isPrimitive}
               value={nodeValue.after.value}
@@ -189,7 +190,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   })()
 
   return (
-    <div data-testid='jso-property-node-viewer' className="flex flex-col jso-property">
+    <div data-testid='jso-property-node-viewer' className={cn("flex flex-col jso-property")}>
       <TitleRow
         data-precededby={precededBy}
         value={`${node.key}`}

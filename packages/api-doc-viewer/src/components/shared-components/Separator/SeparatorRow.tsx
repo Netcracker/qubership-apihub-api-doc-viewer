@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { SIDE_BY_SIDE_DIFFS_LAYOUT_MODE } from "@apihub/types/LayoutMode"
@@ -38,10 +39,10 @@ export const SeparatorRow: FC<SeparatorRowProps> = memo<SeparatorRowProps>((prop
       <div
         data-testid="layout-separator"
         data-frame-position={layoutSide === ORIGIN_LAYOUT_SIDE ? framePositions?.before : framePositions?.after}
-        className="layout-separator flex w-full flex-col"
+        className={cn("layout-separator flex w-full flex-col")}
       >
         {bands.map((band, index) => (
-          <div key={index} className={`layout-separator-band ${DiffsClassesBuilder.background(band.tone)}`} style={{ height: band.height }} />
+          <div key={index} className={cn(`layout-separator-band ${DiffsClassesBuilder.background(band.tone)}`)} style={{ height: band.height }} />
         ))}
       </div>
     )
@@ -50,7 +51,7 @@ export const SeparatorRow: FC<SeparatorRowProps> = memo<SeparatorRowProps>((prop
   if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
     // Same wrapper shape as `DiffFloatingBadgeWrapper`, so the stub sits where the real badges sit.
     return (
-      <div className="relative flex w-full flex-row items-stretch">
+      <div className={cn("relative flex w-full flex-row items-stretch")}>
         <BadgeStub segments={separator.badge} />
         <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
       </div>

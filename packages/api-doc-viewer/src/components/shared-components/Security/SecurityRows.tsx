@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { RequiredMark } from "../RequiredMark/RequiredMark"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -58,7 +59,7 @@ export const SecurityRow: FC<SecurityRowProps> = (props) => {
         data-testid={testId}
         data-precededby={precededBy}
         data-frame-position={framePosition?.(layoutSide)}
-        className={`security-row flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`}
+        className={cn(`security-row flex w-full h-full items-center ${X_AXIS_PADDING_ROWS} ${styles ? DiffsClassesBuilder.background(styles.backgroundColor) : ''}`)}
       >
         {visible && renderSide(layoutSide)}
       </div>
@@ -99,7 +100,7 @@ export const SecurityFrameRow: FC<SecurityFrameRowProps> = memo<SecurityFrameRow
     <div
       data-testid={`security-frame-${position === 'first' ? 'start' : 'end'}`}
       data-frame-position={(layoutSide === ORIGIN_LAYOUT_SIDE ? presence.before : presence.after) ? position : undefined}
-      className={`security-frame-row flex w-full ${DiffsClassesBuilder.background(layoutSide === ORIGIN_LAYOUT_SIDE ? tones.before : tones.after)}`}
+      className={cn(`security-frame-row flex w-full ${DiffsClassesBuilder.background(layoutSide === ORIGIN_LAYOUT_SIDE ? tones.before : tones.after)}`)}
       style={{ height }}
     />
   )
@@ -107,7 +108,7 @@ export const SecurityFrameRow: FC<SecurityFrameRowProps> = memo<SecurityFrameRow
   if (layoutMode === SIDE_BY_SIDE_DIFFS_LAYOUT_MODE) {
     // A wholly added / removed card: a decorative stub keeps its badge line unbroken (no hover, no text).
     return (
-      <div className="relative flex w-full flex-row items-stretch">
+      <div className={cn("relative flex w-full flex-row items-stretch")}>
         <BadgeStub segments={[{ height, type: frameRow.badge }]} />
         <SideBySideLayout left={renderSide(ORIGIN_LAYOUT_SIDE)} right={renderSide(CHANGED_LAYOUT_SIDE)} />
       </div>
@@ -142,11 +143,11 @@ const SECURITY_PROP_GRID_CLASSES = 'grid w-full grid-cols-[40%_minmax(0,1fr)] it
  * (`NODE_TITLE_TEXT_CLASSES`) and wraps inside its column when longer than 40% of the card.
  */
 export const SecurityPropContent: FC<SecurityPropContentProps> = ({ label, value }) => (
-  <div className={`security-prop ${SECURITY_PROP_GRID_CLASSES}`}>
-    <div className="security-prop-label min-w-0 break-words">
-      <span className={NODE_TITLE_TEXT_CLASSES}>{label}</span>
+  <div className={cn(`security-prop ${SECURITY_PROP_GRID_CLASSES}`)}>
+    <div className={cn("security-prop-label min-w-0 break-words")}>
+      <span className={cn(NODE_TITLE_TEXT_CLASSES)}>{label}</span>
     </div>
-    <div className="security-prop-value min-w-0 break-words">{value}</div>
+    <div className={cn("security-prop-value min-w-0 break-words")}>{value}</div>
   </div>
 )
 
@@ -159,8 +160,8 @@ type SecurityPropValueProps = {
 
 export const SecurityPropValue: FC<SecurityPropValueProps> = ({ text, href = false, highlighterClass = '' }) => (
   href
-    ? <a className={`security-prop-link ${highlighterClass}`} href={text} target="_blank" rel="noopener noreferrer">{text}</a>
-    : <span className={`security-prop-text ${highlighterClass}`}>{text}</span>
+    ? <a className={cn(`security-prop-link ${highlighterClass}`)} href={text} target="_blank" rel="noopener noreferrer">{text}</a>
+    : <span className={cn(`security-prop-text ${highlighterClass}`)}>{text}</span>
 )
 
 /** Flow part header: `Flow type **Authorization Code**` on a light-gray plate. */
@@ -170,8 +171,8 @@ type SecurityFlowHeaderContentProps = {
 }
 
 export const SecurityFlowHeaderContent: FC<SecurityFlowHeaderContentProps> = ({ prefix, name }) => (
-  <span className="security-flow-header">
-    {prefix} <span className="security-flow-header-name">{name}</span>
+  <span className={cn("security-flow-header")}>
+    {prefix} <span className={cn("security-flow-header-name")}>{name}</span>
   </span>
 )
 
@@ -188,8 +189,8 @@ type SecurityScopesToggleContentProps = {
 export const SecurityScopesToggleContent: FC<SecurityScopesToggleContentProps> = (props) => {
   const { label, expanded, onToggle } = props
   return (
-    <div data-testid="security-scopes-toggle" className="security-scopes-toggle flex items-center gap-1">
-      <span className={`inline-flex hover:cursor-pointer ${NODE_TITLE_TEXT_CLASSES}`} onClick={onToggle}>
+    <div data-testid="security-scopes-toggle" className={cn("security-scopes-toggle flex items-center gap-1")}>
+      <span className={cn(`inline-flex hover:cursor-pointer ${NODE_TITLE_TEXT_CLASSES}`)} onClick={onToggle}>
         {label}
       </span>
       <Expander expandable={true} expanded={expanded} onClick={onToggle} level={0} />
@@ -216,13 +217,13 @@ type SecurityScopeContentProps = {
 export const SecurityScopeContent: FC<SecurityScopeContentProps> = (props) => {
   const { name, description, required, descriptionHighlighterClass, requiredDiff, layoutSide } = props
   return (
-    <div className={`security-scope ${SECURITY_PROP_GRID_CLASSES}`}>
-      <div className="min-w-0 break-words pl-5">
-        <span className={NODE_TITLE_TEXT_CLASSES}>{name}</span>
+    <div className={cn(`security-scope ${SECURITY_PROP_GRID_CLASSES}`)}>
+      <div className={cn("min-w-0 break-words pl-5")}>
+        <span className={cn(NODE_TITLE_TEXT_CLASSES)}>{name}</span>
         {required && <RequiredMark />}
       </div>
-      <div className="flex min-w-0 flex-wrap items-start gap-2">
-        <span className={`title-row-subheader-value subheader text ${descriptionHighlighterClass}`}>{description}</span>
+      <div className={cn("flex min-w-0 flex-wrap items-start gap-2")}>
+        <span className={cn(`title-row-subheader-value subheader text ${descriptionHighlighterClass}`)}>{description}</span>
         {requiredDiff && (
           <TagsWithDiffs requiredChanged={true} requiredDiff={requiredDiff} readOnly={false} writeOnly={false} layoutSide={layoutSide} />
         )}

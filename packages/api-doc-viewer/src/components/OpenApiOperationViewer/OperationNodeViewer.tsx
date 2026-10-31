@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { TextColors } from "../shared-styles/colors/text-colors"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
@@ -89,7 +90,7 @@ export const OperationNodeViewer: FC<OperationNodeViewerProps> = (props) => {
 
   return (
     <OpenApiViewStateContext.Provider value={view}>
-      <div className="flex flex-col">
+      <div className={cn("flex flex-col")}>
         <StackLayout blocks={blocks} level="operation" outerHalves={spacing.viewerEdges} />
       </div>
     </OpenApiViewStateContext.Provider>

@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { AsyncApiTreeNode, AsyncApiTreeNodeWithDiffs } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/aliases"
 import { AsyncApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/async-api/types/node-kind"
 import { FC, memo, useCallback, useMemo } from "react"
@@ -118,7 +119,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return null
     }
     return (
-      <span className={Array.from(diffsClasses).join(' ')}>
+      <span className={cn(Array.from(diffsClasses).join(' '))}>
         {resolvedValue}
       </span>
     )
@@ -165,7 +166,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return null
     }
     return (
-      <span className={Array.from(diffsClasses).join(' ')}>
+      <span className={cn(Array.from(diffsClasses).join(' '))}>
         {resolvedValue}
       </span>
     )
@@ -176,10 +177,10 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       return (
         <div
           data-precededby={PrecededBy.MESSAGE_SECTION_HEADER_HIGH_LEVEL}
-          className={`${X_AXIS_PADDING_ROWS} py-2 flex flex-row w-full h-full ${diffClasses.join(' ')}`}
+          className={cn(`${X_AXIS_PADDING_ROWS} py-2 flex flex-row w-full h-full ${diffClasses.join(' ')}`)}
         >
           {!isInvisible && (
-            <div className="server-address-container server-address server-subheader">
+            <div className={cn("server-address-container server-address server-subheader")}>
               {renderProtocol(layoutSide)}
               ://
               {renderHost(layoutSide)}
@@ -233,7 +234,7 @@ export const MessageChannelServerNodeViewer: FC<MessageChannelServerNodeViewerPr
       : PrecededBy.SERVER_ADDRESS_ROW
 
   return (
-    <div className='flex flex-col'>
+    <div className={cn('flex flex-col')}>
       {isTitleDisplayed && (
         <TitleRow
           data-precededby={precededBy}

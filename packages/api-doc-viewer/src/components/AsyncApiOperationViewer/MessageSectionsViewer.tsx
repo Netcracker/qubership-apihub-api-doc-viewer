@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext";
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext";
 import { CHANGED_LAYOUT_SIDE, LayoutSide, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide";
@@ -108,7 +109,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
     return (
       <div
         data-precededby={precededBy}
-        className={`message-sections-selector ${X_AXIS_PADDING_ROWS} w-full h-full ${Array.from(diffsStyles).join(' ')}`}
+        className={cn(`message-sections-selector ${X_AXIS_PADDING_ROWS} w-full h-full ${Array.from(diffsStyles).join(' ')}`)}
       >
         <Selector
           options={sectionSelectorOptions}
@@ -147,7 +148,7 @@ export const MessageSectionsViewer: FC<MessageSectionsViewerProps> = (props) => 
   }, [diffType, diffTypeCause, layoutMode, renderSelector])
 
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col")}>
       {renderSelectorRow()}
       {selectedSection && isMessageSectionNode(selectedSection.node) && (
         <div data-testid={`${selectedSection.testId}-section`}>

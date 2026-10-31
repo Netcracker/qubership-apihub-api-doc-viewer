@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn";
 import { isMessageSectionSelectorNode } from "@apihub/utils/async-api/node-type-checkers";
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers";
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface";
@@ -79,7 +80,7 @@ export const MessageNodeViewer: FC<MessageNodeViewerProps> = (props) => {
       : PrecededBy.ADDRESS_ROW
 
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col")}>
       {!noHeading && isTitleDisplayed && (
         <TitleRow
           data-precededby={PrecededBy.ROOT}
@@ -156,7 +157,7 @@ const MessageChildrenViewer: FC<OperationChildrenViewerProps> = (props) => {
   const { children, [ATTRIBUTE_PRECEDED_BY]: precededBy } = props
 
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col")}>
       {children.map(child => {
         if (isMessageSectionSelectorNode(child)) {
           return (

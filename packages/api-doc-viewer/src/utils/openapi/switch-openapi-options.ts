@@ -14,7 +14,8 @@ export async function switchOpenApiOptions(
   root: ParentNode = document,
 ): Promise<void> {
   const MAX_ATTEMPTS = 40
-  const SELECTED_CLASS_PATTERN = /(?:^|\s)selected(?:\s|$)/
+  // Prefixed by cn() (CSS isolation); spelled out because this body runs through page.evaluate().
+  const SELECTED_CLASS_PATTERN = /(?:^|\s)api-doc-viewer-selected(?:\s|$)/
   const NEXT_RENDER_FALLBACK_TIMEOUT_MS = 100
 
   const waitForNextRender = (): Promise<void> => new Promise(resolve => {

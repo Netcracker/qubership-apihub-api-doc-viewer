@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { useDiffMetaKeys } from "@apihub/contexts/DiffMetaKeysContext"
 import { FC } from "react"
 import { JsoDiffsViewer } from "../../JsoViewer/JsoDiffsViewer"
@@ -82,5 +83,5 @@ export const ExtensionsSection: FC<ExtensionsSectionProps> = (props) => {
     </>
   )
   // Without a test id the section renders as a fragment - the exact DOM AsyncAPI always had.
-  return testId ? <div data-testid={testId} className="flex flex-col">{content}</div> : content
+  return testId ? <div data-testid={testId} className={cn("flex flex-col")}>{content}</div> : content
 }

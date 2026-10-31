@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { FC, memo } from "react"
 import { NestingHorizontalIndicator } from "@apihub/components/common/NestingHorizontalIndicator"
 import "./ShowUnchangedRowContent.css"
@@ -27,20 +28,20 @@ export const ShowUnchangedRowContent: FC<ShowUnchangedRowContentProps> = memo((p
       data-testid="show-unchanged-nodes"
       data-precededby={precededBy}
       data-layout-side={layoutSide}
-      className={[
+      className={cn([
         "show-unchanged-row-content flex w-full items-stretch gap-2",
         // X_AXIS_PADDING_ROWS,
-      ].join(" ")}
+      ].join(" "))}
     >
       {level > 0 && (
-        <div className="level-indicator-column flex items-stretch self-stretch">
+        <div className={cn("level-indicator-column flex items-stretch self-stretch")}>
           <LevelIndicator level={level} />
-          <div className="show-unchanged-connector flex w-4 items-center justify-center" aria-hidden="true">
+          <div className={cn("show-unchanged-connector flex w-4 items-center justify-center")} aria-hidden="true">
             <NestingHorizontalIndicator />
           </div>
         </div>
       )}
-      <div className="json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center">
+      <div className={cn("json-schema-property-row-body flex min-h-[26px] min-w-0 flex-1 items-center")}>
         <ShowUnchangedTrigger
           unchangedBlockId={unchangedBlockId}
           label={ShowUnchangedLabels.nodes(count)}

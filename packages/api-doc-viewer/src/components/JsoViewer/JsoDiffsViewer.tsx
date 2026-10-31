@@ -1,3 +1,4 @@
+import { cn } from '@apihub/utils/common/cn'
 import { DEFAULT_DISPLAY_MODE } from "@apihub/constants/configuration"
 import { AsyncLevelContextProvider } from "@apihub/contexts/AsyncLevelContext/AsyncLevelContextProvider"
 import { DiffMetaKeysContext } from "@apihub/contexts/DiffMetaKeysContext"
@@ -141,7 +142,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
               <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                 <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
                   <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
-                    <div data-testid='jso-diffs-viewer'>
+                    <div className={cn('root')} data-testid='jso-diffs-viewer'>
                       <JsoPropertyChildrenListWithDiffs
                         properties={jsoProperties}
                         supportJsonSchema={supportJsonSchema}

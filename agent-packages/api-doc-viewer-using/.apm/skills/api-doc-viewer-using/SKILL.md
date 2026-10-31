@@ -52,6 +52,14 @@ import '@netcracker/qubership-apihub-api-doc-viewer/dist/style.css'
 Styles are **not** bundled into components — import the CSS once at the
 application entry (root layout or app shell).
 
+**CSS isolation:** every class the viewers render is prefixed `api-doc-viewer-`, and the stylesheet's
+reset and element rules (`ul`, `a`, `button`, `:root` variables) apply only inside a viewer root
+(`.api-doc-viewer-root`) — the host page is not restyled, and host classes with common names do not
+reach the viewers. Bundled fonts are registered as `"api-doc-viewer Inter"` etc. Host overrides
+target prefixed classes inside `.api-doc-viewer-root` and are not a stable API. A host
+`navigationLinkComponent` receives an already prefixed `className` — apply it unchanged. Design:
+`docs/design/shared/features/css-isolation.md`.
+
 **Peer dependencies:** `react` and `react-dom` `^18.2.0` — the host provides
 them; the bundle keeps them external.
 
@@ -240,7 +248,8 @@ Replace `RouterLink` with whatever link primitive the host router exposes
   routing — return a pathname and optional search string the host router
   understands. The **`column`** argument identifies the referenced column;
   table-level navigation may ignore it when building the link.
-- **`navigationLinkComponent`** — receives `{ href, className?, children }`
+- **`navigationLinkComponent`** — receives `{ href, className?, children }` (`className` is
+  already prefixed — apply it unchanged)
   where `href` comes from `navigationLinkBuilder`. Omit for static hosts and
   Storybook that rely on plain anchors (`DefaultNavigationLink`).
 

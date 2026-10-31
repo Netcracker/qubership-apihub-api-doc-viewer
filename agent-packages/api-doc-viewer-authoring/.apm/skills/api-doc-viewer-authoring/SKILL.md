@@ -43,6 +43,33 @@ Do not modify legacy GraphQL viewers (`GraphSchemaViewer`,
 `components/common/diffs/` components without explicit user approval. Use the
 JSON Schema, AsyncAPI, JSO, and DDL viewers for new work.
 
+## CSS isolation: `cn()` on every `className`
+
+Design: `docs/design/shared/features/css-isolation.md`. The library's classes are unique in the
+host: `cn()` (`src/utils/common/cn.ts`) prefixes every class token with `api-doc-viewer-` at
+runtime, and the PostCSS plugin `postcss/css-isolation.cjs` (after `tailwindcss` and
+`autoprefixer` in `postcss.config.js`) applies the same prefix to the stylesheets of `src/`.
+
+- **Every `className` is `cn(...)`** — literal (`cn('flex px-4')`), template, constant, prop
+  (`className={cn(className)}` — idempotent), and a `className` key of a props object spread onto
+  an element (`{ ...commonProps, className: cn(className) }`). ESLint (`no-restricted-syntax` in
+  `.eslintrc.json`) fails on anything else.
+- **Plain names everywhere else** — CSS files, TS constants (`X_AXIS_PADDING_ROWS`), config maps
+  (`OPENAPI_RESPONSE_CODE_TONE_CLASSES`), class props (`toneClass`): never write the prefix
+  there; Tailwind scans the plain names in the source.
+- **Viewer root** — a public (or standalone story-rendered) viewer renders `cn('root')` on its
+  outermost element; the error fallback does too. Global rules (Tailwind preflight, `ul` / `a` /
+  `button` / `h1`, `:root` variables) apply only inside a root, through zero-specificity
+  `:where()`. A component rendered outside any root loses them.
+- **Reading classes from the DOM** — match the prefixed name (`api-doc-viewer-selected`).
+  `combiner-changed-variant.ts` and `switch-openapi-options.ts` spell the prefix inside their
+  bodies because they run through `page.evaluate()`; `tests/cn.test.ts` keeps them in sync. Prefer
+  `data-*` attributes for new DOM queries.
+- **Fonts in inline styles** — `@font-face` families are renamed (`api-doc-viewer Inter`); use
+  `FONT_FAMILY_INTER` from `src/consts/fonts.ts`, not `'Inter'`.
+- **Dynamic class names** (`` `font-${weight}` ``) work only for classes Tailwind generates from a
+  literal elsewhere — unchanged by isolation.
+
 ## Layout and display modes
 
 **Layout mode** (`LayoutMode` in `src/types/LayoutMode.ts`):
@@ -361,7 +388,7 @@ and link rendering are **separate concerns**:
 - Export public types from `src/index.ts`: `NavigationLinkProps`,
   `NavigationLinkComponent` (builder type is re-exported from next-data-model).
 - `ForeignKey` must read both values from `useDdlTableViewerContext()` and
-  render `<NavigationLinkComponent href={…} className="ddlapi-foreign-key-link">`.
+  render `<NavigationLinkComponent href={…} className={cn('ddlapi-foreign-key-link')}>` (the host link receives the prefixed class).
 - Storybook and screenshot suites keep the default anchor — no custom link
   component unless a story explicitly tests link chrome.
 - When implementing `DdlTableDiffsViewer`, forward the same props/context pattern.
@@ -861,7 +888,7 @@ tests for the affected suite (`async-api-diffs-suite-channel-server`,
 colors** section for why the screenshots never caught it.
 
 **Root cause:** `SideBySideLayout` (`shared-components/Layout/SideBySideLayout.tsx`)
-used to wrap each side in a **plain block** `<div className="w-1/2">`. A block
+used to wrap each side in a **plain block** `<div className={cn('w-1/2')}>`. A block
 child with no explicit width naturally fills a block parent, so any consumer's
 row content filled the column *by default* — no `w-full` needed.
 
@@ -869,10 +896,10 @@ A later, unrelated change (DDL diff viewer work, needing `items-stretch` row
 height behaviour) turned that wrapper into a **flex container**:
 
 ```diff
-- <div className="flex flex-row w-full">
--   <div className='w-1/2'>
-+ <div className="flex w-full flex-row items-stretch">
-+   <div className="flex w-1/2">
+- <div className={cn("flex flex-row w-full")}>
+-   <div className={cn('w-1/2')}>
++ <div className={cn("flex w-full flex-row items-stretch")}>
++   <div className={cn("flex w-1/2")}>
       {left}
 ```
 
@@ -889,7 +916,7 @@ were unaffected — that is the pattern to copy.
 to the row's outer div, matching the `TextRowContent` shape:
 
 ```tsx
-className={`... flex w-full h-full ${diffStyles.join(' ')}`}
+className={cn('... flex w-full h-full', diffStyles)}
 ```
 
 **Rule for `SideBySideLayout`/`OneSideLayout` consumers:** the element you
@@ -959,8 +986,8 @@ subheader, `overhangVertically`). Do not re-implement arrows per toolbar. Traps:
 
 ## Global `button` styles (session lesson)
 
-`src/index.css` styles **every** `<button>` (padding `0.6em 1.2em`, 8px radius, a border and a
-background). A small icon button (e.g. a 24px arrow) keeps its box but its icon disappears — the
+`src/index.css` styles **every** `<button>` inside a viewer root (padding `0.6em 1.2em`, 8px
+radius, a border and a background; scoped by CSS isolation, so host buttons are unaffected). A small icon button (e.g. a 24px arrow) keeps its box but its icon disappears — the
 padding leaves no content width. Reset it on new buttons with utilities (`p-0 border-0
 bg-transparent`; class selectors outrank the element rule) — icon buttons use the shared
 `icon-button` class (`shared-styles/colors/icon-buttons.css`), which resets it — or use a non-button clickable element

@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { isBindingsNode, isExtensionsNode } from "@apihub/utils/async-api/node-type-checkers"
 import { shouldBeDisplayed } from "@apihub/utils/async-api/visibility-checkers"
 import { NodeDiffsSeverityPlacemennt } from "@netcracker/qubership-apihub-next-data-model/model/abstract/tree-with-diffs/tree-node.interface"
@@ -59,7 +60,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
   const isSummaryDisplayed = useMemo(() => shouldBeDisplayed<AsyncApiTreeNodeValueTypeMessageOperation>(value, nodeDiffs, 'summary'), [value, nodeDiffs])
 
   return (
-    <div className="flex flex-col">
+    <div className={cn("flex flex-col")}>
       {isTitleDisplayed && (
         <TitleRow
           data-precededby={precededBy}
@@ -110,7 +111,7 @@ export const MessageOperationNodeViewer: FC<MessageOperationNodeViewerProps> = (
       )}
 
       {children.length > 0 && (
-        <div className="flex flex-col">
+        <div className={cn("flex flex-col")}>
           {extensionsChild && (
             <ExtensionsNodeViewer
               data-precededby={

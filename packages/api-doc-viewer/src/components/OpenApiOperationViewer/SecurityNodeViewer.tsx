@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { SECURITY_SECTION_TITLE } from "@netcracker/qubership-apihub-next-data-model/model/security/display/labels"
 import { OPENAPI_SECURITY_OPTIONAL_BADGE_COLOR_SCHEMA, OPENAPI_SECURITY_OPTIONAL_BADGE_SIZE_CLASS } from "../../consts/tags"
 import { useLayoutMode } from "@apihub/contexts/LayoutModeContext"
@@ -33,7 +34,7 @@ type SecuritySectionRowProps = {
  * Layout block: `security-blocks.tsx`.
  */
 export const SecurityNodeViewer: FC<SecurityNodeViewerProps> = ({ blocks }) => (
-  <div data-testid="openapi-security-section" className="flex flex-col">
+  <div data-testid="openapi-security-section" className={cn("flex flex-col")}>
     <StackLayout blocks={blocks} level="security" />
   </div>
 )

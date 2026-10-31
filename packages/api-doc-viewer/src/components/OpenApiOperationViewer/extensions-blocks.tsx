@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { OpenApiBlockEdges } from "@netcracker/qubership-apihub-next-data-model/model/openapi/layout"
 import { OpenApiTreeNode } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/aliases"
 import { OpenApiTreeNodeKinds } from "@netcracker/qubership-apihub-next-data-model/model/openapi/types/node-kind"
@@ -41,7 +42,7 @@ export function buildExtensionsBlock(id: string, props: OpenApiExtensionsNodeVie
     id,
     ...OpenApiBlockEdges.container(elements),
     payload: () => (
-      <div key={id} data-testid={testId} className="flex flex-col">
+      <div key={id} data-testid={testId} className={cn("flex flex-col")}>
         <StackLayout blocks={elements} level="section" />
       </div>
     ),

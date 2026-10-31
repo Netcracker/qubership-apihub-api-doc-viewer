@@ -72,6 +72,13 @@ Canonical skill sources live under `agent-packages/`. After editing skills there
   complex container node; read them with `nestedNodes()` through the API type's option helpers,
   never `childrenNodes()` / `value()` on the container (they delegate to the first option). Design:
   `docs/design/shared/features/selector-options.md`.
+- **CSS isolation** — every `className` is `cn(...)` (`src/utils/common/cn.ts`), which prefixes each
+  class token with `api-doc-viewer-`; the PostCSS plugin `packages/api-doc-viewer/postcss/css-isolation.cjs`
+  applies the same prefix to the stylesheets, scopes global rules (Tailwind preflight, element rules,
+  `:root`) to the viewer root `cn('root')`, and renames `@font-face` families and keyframes. Write plain
+  class names in source, TS constants, and CSS; only `cn()` prefixes. ESLint enforces `cn()` on
+  `className`. A new public viewer renders `cn('root')` on its outermost element. Design:
+  `docs/design/shared/features/css-isolation.md`.
 - **Legacy viewers** — do not change `GraphSchemaViewer`, `GraphQLOperationViewer`,
   `GraphQLOperationDiffViewer`, or `components/common/diffs/` (`DiffTags`, `DiffBadge`)
   without explicit approval. The legacy (api-data-model based) `JsonSchemaViewer` is

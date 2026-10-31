@@ -1,3 +1,4 @@
+import { cn } from "@apihub/utils/common/cn"
 import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { getOpenApiOptions, isOpenApiResponseNode } from "@apihub/utils/openapi/node-type-checkers"
@@ -33,7 +34,7 @@ type ResponsesNodeViewerProps = {
  * sections, and the Responses Object extensions - in config order. Layout block: `responses-blocks.tsx`.
  */
 export const ResponsesNodeViewer: FC<ResponsesNodeViewerProps> = ({ blocks }) => (
-  <div data-testid="openapi-responses-section" className="flex flex-col">
+  <div data-testid="openapi-responses-section" className={cn("flex flex-col")}>
     <StackLayout blocks={blocks} level="responses" />
   </div>
 )
