@@ -4,6 +4,15 @@ declare const meta: {
     title: string;
     component: ({ beforeYaml, afterYaml, hideUnchangedNodes }: JsonSchemaDiffCaseStoryComponentProps) => import("react").JSX.Element;
     argTypes: {
+        displayMode: {
+            readonly control: {
+                readonly type: "select";
+            };
+            readonly options: readonly import('../..').DisplayMode[];
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
         beforeYaml: {
             control: {
                 type: "text";

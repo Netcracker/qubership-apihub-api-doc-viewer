@@ -4,6 +4,15 @@ declare const meta: {
     title: string;
     component: (_props: import('../json-schema-suite/json-schema-samples-common').JsonSchemaCaseStoryComponentProps) => null;
     argTypes: {
+        displayMode: {
+            readonly control: {
+                readonly type: "select";
+            };
+            readonly options: readonly import('../..').DisplayMode[];
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
         caseId: {
             control: {
                 disable: true;

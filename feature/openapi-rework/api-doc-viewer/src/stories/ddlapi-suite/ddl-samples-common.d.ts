@@ -1,4 +1,3 @@
-import { DisplayMode } from '../../types/DisplayMode';
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { DdlSampleCase } from '../utils/ddl-samples-cases';
 import { DdlCaseStoryComponentProps } from './ddl-samples-utils';
@@ -8,6 +7,15 @@ export type DdlSamplesStoryObj = StoryObj<DdlSamplesStoryMeta>;
 export declare const ddlSamplesStoryMetaBase: {
     component: (_props: DdlCaseStoryComponentProps) => null;
     argTypes: {
+        displayMode: {
+            readonly control: {
+                readonly type: "select";
+            };
+            readonly options: readonly import('../..').DisplayMode[];
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
         caseId: {
             control: {
                 type: "text";
@@ -29,7 +37,6 @@ export declare const ddlSamplesStoryMetaBase: {
     };
 };
 export type DdlCaseStoryFactoryOptions = {
-    displayMode?: DisplayMode;
     perCase?: Partial<Record<string, {
         noHeading?: boolean;
     }>>;

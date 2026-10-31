@@ -78,7 +78,8 @@ type SecurityScopesToggleContentProps = {
 export declare const SecurityScopesToggleContent: FC<SecurityScopesToggleContentProps>;
 type SecurityScopeContentProps = {
     name: string;
-    description: string;
+    /** Omitted in `simple` display mode (an annotation). */
+    description?: string;
     required: boolean;
     /** Text highlighter of a replaced description. */
     descriptionHighlighterClass: string;

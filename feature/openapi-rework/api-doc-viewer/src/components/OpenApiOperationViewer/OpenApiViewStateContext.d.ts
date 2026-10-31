@@ -1,3 +1,4 @@
+import { DisplayMode } from '../../types/DisplayMode';
 import { OpenApiSelection } from '../../utils/openapi/view-selection';
 /**
  * The operation viewer's view state, shared by every container: the layout of one level depends on
@@ -12,6 +13,8 @@ export type OpenApiViewState = {
     /** Node ids of the collapsed 2nd-level sections; every section is expanded until toggled. */
     readonly collapsed: ReadonlySet<string>;
     readonly toggleCollapsed: (sectionNodeId: string) => void;
+    /** The viewer's display mode: which rows exist (annotations are `detailed` only) shapes every level. */
+    readonly displayMode: DisplayMode;
 };
 export declare const OpenApiViewStateContext: import('../../../../../node_modules/react').Context<OpenApiViewState>;
 export declare function useOpenApiViewState(): OpenApiViewState;

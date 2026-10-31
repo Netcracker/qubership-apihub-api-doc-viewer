@@ -1,3 +1,4 @@
+import { DisplayMode } from '../../types/DisplayMode';
 import { Meta, StoryObj } from '@storybook/react-vite';
 import { TableKey } from '../../../../next-data-model/src/shared/ddlapi/types/table-key';
 import { RawSampleSources } from '../utils/sample-cases';
@@ -6,8 +7,19 @@ export type DdlDiffSampleCase = {
     beforeSql: string;
     afterSql: string;
 };
-export type DdlDiffCaseStoryComponentProps = Pick<DdlDiffSampleCase, "caseId" | "beforeSql" | "afterSql">;
+export type DdlDiffCaseStoryComponentProps = Pick<DdlDiffSampleCase, "caseId" | "beforeSql" | "afterSql"> & {
+    displayMode?: DisplayMode;
+};
 export declare const ddlDiffSampleReadonlyArgTypes: {
+    displayMode: {
+        readonly control: {
+            readonly type: "select";
+        };
+        readonly options: readonly DisplayMode[];
+        readonly table: {
+            readonly category: "Viewer";
+        };
+    };
     caseId: {
         control: {
             type: "text";
@@ -42,6 +54,15 @@ export type DdlDiffsSamplesStoryObj = StoryObj<DdlDiffsSamplesStoryMeta>;
 export declare const ddlDiffsSamplesStoryMetaBase: {
     component: (_props: DdlDiffCaseStoryComponentProps) => null;
     argTypes: {
+        displayMode: {
+            readonly control: {
+                readonly type: "select";
+            };
+            readonly options: readonly DisplayMode[];
+            readonly table: {
+                readonly category: "Viewer";
+            };
+        };
         caseId: {
             control: {
                 type: "text";
