@@ -1,173 +1,366 @@
 # qubership-apihub-api-doc-viewer
 
-Library which can render JSON schemas, GraphQL schemas and
-GraphAPI specifications in human-readable way.
+React components that render API specifications as human-readable documentation — and, in
+comparison mode, as a side-by-side view of what changed between two versions.
+
+| API type | Viewer | Diffs viewer | Renders |
+| --- | --- | --- | --- |
+| JSON Schema | `JsonSchemaViewer` | `JsonSchemaDiffsViewer` | One schema as an expandable property tree |
+| OpenAPI 3.0 / 3.1 | `OpenApiOperationViewer` | `OpenApiOperationDiffsViewer` | One operation (`path` + `method`): security, parameters, request body, responses |
+| AsyncAPI 3.0 | `AsyncApiOperationViewer` | `AsyncApiOperationDiffsViewer` | One operation and one of its messages: headers, payload, channel, bindings |
+| DDL (PostgreSQL) | `DdlTableViewer` | `DdlTableDiffsViewer` | One table: columns, indexes, foreign-key links |
+| GraphQL *(legacy)* | `GraphQLOperationViewer` | `GraphQLOperationDiffViewer` | One query, mutation, or subscription |
+
+## Contents
+
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Preparing documents](#preparing-documents)
+- [Common props](#common-props)
+- [Components](#components)
+  - [JsonSchemaViewer / JsonSchemaDiffsViewer](#jsonschemaviewer--jsonschemadiffsviewer)
+  - [OpenApiOperationViewer / OpenApiOperationDiffsViewer](#openapioperationviewer--openapioperationdiffsviewer)
+  - [AsyncApiOperationViewer / AsyncApiOperationDiffsViewer](#asyncapioperationviewer--asyncapioperationdiffsviewer)
+  - [DdlTableViewer / DdlTableDiffsViewer](#ddltableviewer--ddltablediffsviewer)
+  - [GraphQLOperationViewer / GraphQLOperationDiffViewer (legacy)](#graphqloperationviewer--graphqloperationdiffviewer-legacy)
+- [Other exports](#other-exports)
+- [Development](#development)
+- [License](#license)
 
 ## Installation
 
-``
+```bash
 npm add @netcracker/qubership-apihub-api-doc-viewer
-``
+```
+
+The host application provides **React 18** (`react` and `react-dom` are not bundled).
+
+Documents are prepared with the companion APIHUB libraries — install the ones for the API types
+you render:
+
+| Package | Used for |
+| --- | --- |
+| `@netcracker/qubership-apihub-api-unifier` | `normalize` / `denormalize` — resolves `$ref`s for plain viewers |
+| `@netcracker/qubership-apihub-api-diff` | `apiDiff` — produces merged documents for diffs viewers, `DIFF_META_KEY` |
+| `@netcracker/qubership-apihub-ddlapi` | `buildFromDdl` — parses SQL DDL into a `Realm` |
+| `@netcracker/qubership-apihub-graphapi` | `buildFromSchema` — converts a GraphQL schema to GraphAPI (legacy viewers) |
+
+## Quick start
+
+Import the stylesheet **once** at the application entry, then render a viewer:
+
+```tsx
+import { JsonSchemaViewer } from '@netcracker/qubership-apihub-api-doc-viewer'
+import '@netcracker/qubership-apihub-api-doc-viewer/dist/style.css'
+
+const schema = {
+  title: 'Pet',
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: { type: 'integer', format: 'int64' },
+    name: { type: 'string', maxLength: 64 },
+    tags: { type: 'array', items: { type: 'string' } },
+  },
+}
+
+export const PetSchema = () => <JsonSchemaViewer schema={schema} />
+```
+
+Only the package root and `dist/style.css` are public entry points — do not import internal module
+paths.
+
+## Preparing documents
+
+Viewers render documents that are **already prepared**; they do not fetch, parse, or diff anything
+themselves. Prepare documents in your data layer (or backend), not in render code.
+
+**Plain viewers** take a document with references resolved — the output of `normalize` followed by
+`denormalize`:
+
+```ts
+import { denormalize, normalize, type NormalizeOptions } from '@netcracker/qubership-apihub-api-unifier'
+
+const options: NormalizeOptions = { source: document, unify: true, validate: true, liftCombiners: true }
+const prepared = denormalize(normalize(document, options), options)
+```
+
+**Diffs viewers** take the **merged document** that `apiDiff` builds from two versions. Diffs are
+stored on the merged document under a symbol meta key; pass the same symbol to the viewer through
+`DiffMetaKeys`:
+
+```ts
+import { apiDiff, DIFF_META_KEY, DIFFS_AGGREGATED_META_KEY } from '@netcracker/qubership-apihub-api-diff'
+import type { DiffMetaKeys } from '@netcracker/qubership-apihub-api-doc-viewer'
+
+const mergedDocument = apiDiff(beforeDocument, afterDocument, {
+  beforeSource: beforeDocument,
+  afterSource: afterDocument,
+  metaKey: DIFF_META_KEY,
+  unify: true,
+  validate: true,
+  liftCombiners: true,
+}).merged
+
+const diffMetaKeys: DiffMetaKeys = {
+  diffsMetaKey: DIFF_META_KEY,
+  aggregatedDiffsMetaKey: DIFFS_AGGREGATED_META_KEY,
+}
+```
+
+> A `diffsMetaKey` that differs from the `metaKey` passed to `apiDiff` renders the document with
+> **no** diff highlights and no error. Use the same symbol instances on both sides.
+
+## Common props
+
+Props shared by most viewers. Each component section lists which ones it accepts.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `displayMode` | `'simple' \| 'detailed'` | `'detailed'` | `simple` shows names and types only; `detailed` shows descriptions, validations, examples, and the rest |
+| `expandedDepth` | `number` | `2` | Number of tree levels expanded initially |
+| `noHeading` | `boolean` | `false` | Hides the viewer's own title row, for hosts that render their own heading |
+| `devMode` | `boolean` | `false` | Logs tree-building diagnostics to the browser console |
+| `diffMetaKeys` | `DiffMetaKeys` | — | **Diffs viewers, required.** Meta keys the merged document was built with |
+| `diffTypes` | `DiffType[]` | — | **Diffs viewers.** Reserved for filtering diffs by severity; accepted but not applied yet |
+
+Every viewer renders nothing when its document prop is `null`, and shows an inline error message
+instead of crashing the host page when rendering fails.
 
 ## Components
 
-There is a high-level description of provided components.
+### JsonSchemaViewer / JsonSchemaDiffsViewer
 
-For more details, see section "Usage & API" below.
+Renders one JSON Schema as a property tree: types, formats, validations, combiners (`oneOf`,
+`anyOf`, `allOf`), `additionalProperties`, `patternProperties`, circular references, and `x-*`
+extensions. Deep subtrees are built lazily on expand, so large schemas stay responsive.
 
-### GraphQLOperationViewer overview
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `schema` | `unknown` | yes | Prepared JSON Schema; for `JsonSchemaDiffsViewer`, the merged schema |
+| `expandedDepth` | `number` | no | See [Common props](#common-props). **Default:** `2` |
+| `displayMode` | `DisplayMode` | no | See [Common props](#common-props) |
+| `devMode` | `boolean` | no | See [Common props](#common-props) |
+| `initialLevel` | `number` | no | Nesting level of the root row when the viewer is embedded into another viewer. **Default:** `0` |
+| `customizationOptions` | `{ headerRowTitle?: string, suppressRootNestingIndicator?: boolean }` | no | `headerRowTitle` replaces the root title; `suppressRootNestingIndicator` renders a wrapper object's properties as a flat top-level list |
+| `topLevelPropsMediaTypes` | `Record<string, string>` | no | **Plain only.** Root property key → media type, shown as a badge next to the property name |
+| `firstRowPrecededBy` | `PrecededBy` | no | Spacing hook for embedding viewers; hosts normally omit it |
 
-* **Accepts:** GraphAPI schema object, operation path and view configuration parameters
-* **Returns:** Rendered GraphQL operation
+`JsonSchemaDiffsViewer` additionally accepts:
 
-### JsonSchemaViewer overview
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `diffMetaKeys` | `DiffMetaKeys` | yes | See [Preparing documents](#preparing-documents) |
+| `diffTypes` | `DiffType[]` | no | Accepted, not applied yet |
+| `hideUnchangedNodes` | `boolean` | no | Collapses runs of unchanged properties behind a "Show N unchanged nodes" row. **Default:** `true` |
 
-* **Accepts:** JSON schema object and view configuration parameters
-* **Returns:** Rendered JSON schema
+```tsx
+<JsonSchemaViewer schema={schema} expandedDepth={3} displayMode="detailed" />
+```
 
-## Usage & API
+`apiDiff` compares whole documents, so a schema is usually diffed inside its enclosing document (for
+example an OpenAPI document) and then taken from the merged result:
 
-### GraphQLOperationViewer usage
+```tsx
+const merged = apiDiff(beforeOpenApi, afterOpenApi, {
+  beforeSource: beforeOpenApi,
+  afterSource: afterOpenApi,
+  metaKey: DIFF_META_KEY,
+  unify: true,
+}).merged as any
 
-1. Get a GraphAPI schema.
+<JsonSchemaDiffsViewer
+  schema={merged.components.schemas.Pet}
+  diffMetaKeys={diffMetaKeys}
+  hideUnchangedNodes={false}
+/>
+```
 
-*Example:*
+### OpenApiOperationViewer / OpenApiOperationDiffsViewer
 
-```JavaScript
-import {buildSchema} from "graphql/utilities";
-import {buildFromSchema} from "@netcracker/qubership-apihub-graphapi";
+Renders one OpenAPI 3.0.x / 3.1.x operation: title, method and path, security requirements,
+parameters, request body (with a media-type selector), responses (with response-code and media-type
+selectors), and extensions. Schemas inside the operation are rendered with the JSON Schema viewer.
 
-...
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `source` | `unknown` | yes | **Plain.** Prepared OpenAPI document (`normalize` + `denormalize`, `components` kept) |
+| `mergedSource` | `unknown` | yes | **Diffs.** `apiDiff` merged document of two whole OpenAPI documents (`components` kept) |
+| `operationKeys` | `{ path: string, method: string }` | no | `path` is the `paths` key exactly as in the document (e.g. `/pets/{petId}`); `method` is case-insensitive. In a merged document a renamed path is addressed by its **after** key. **Default:** the first operation |
+| `expandedDepth` | `number` | no | Forwarded to the nested schema viewers. **Default:** `2` |
+| `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
+| `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
+| `diffTypes` | `DiffType[]` | no | **Diffs.** Accepted, not applied yet |
+| `hideUnchangedNodes` | `boolean` | no | **Diffs.** Collapses unchanged schema properties; a security scheme without changes shows only its title row. **Default:** `true` |
 
-const graphApiSchema: GraphApiSchema = buildFromSchema(
-  buildSchema(GetLibraryByBookTitleOrAuthorSchema, {noLocation: true})
+```tsx
+<OpenApiOperationViewer
+  source={preparedOpenApi}
+  operationKeys={{ path: '/pets/{petId}', method: 'get' }}
+/>
+
+<OpenApiOperationDiffsViewer
+  mergedSource={mergedOpenApi}
+  operationKeys={{ path: '/pets/{petId}', method: 'get' }}
+  diffMetaKeys={diffMetaKeys}
+/>
+```
+
+### AsyncApiOperationViewer / AsyncApiOperationDiffsViewer
+
+Renders one AsyncAPI 3.0 operation together with one of its messages: message headers and payload
+(as JSON Schema), channel, operation, bindings, and extensions.
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `source` | `unknown` | yes | **Plain.** Prepared AsyncAPI 3.0 document |
+| `mergedSource` | `unknown` | yes | **Diffs.** `apiDiff` merged document of two AsyncAPI documents |
+| `referenceNamePropertyKey` | `symbol` | yes | The symbol passed as `firstReferenceKeyProperty` to `normalize` / `apiDiff`; the viewer uses it to read message keys behind resolved `$ref`s |
+| `operationKeys` | `{ operationKey: string, messageKey: string }` | no | Operation key under `operations` and message key of that operation. **Default:** the first operation and its first message |
+| `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
+| `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
+| `diffTypes` | `DiffType[]` | no | **Diffs.** Accepted, not applied yet |
+
+`referenceNamePropertyKey` must be the **same symbol instance** used during preparation:
+
+```tsx
+const REFERENCE_NAME = Symbol('reference-name') // share one instance across your app
+
+const options = { source: document, firstReferenceKeyProperty: REFERENCE_NAME, unify: true, validate: true, liftCombiners: true }
+const prepared = denormalize(normalize(document, options), options)
+
+<AsyncApiOperationViewer
+  source={prepared}
+  referenceNamePropertyKey={REFERENCE_NAME}
+  operationKeys={{ operationKey: 'send-order', messageKey: 'order-created' }}
+/>
+```
+
+For the diffs viewer, pass the same `firstReferenceKeyProperty` to `apiDiff`.
+
+### DdlTableViewer / DdlTableDiffsViewer
+
+Renders one PostgreSQL table from a ddlapi `Realm`: columns (types, defaults, constraints,
+generated expressions), indexes, and foreign keys as navigation links to the referenced tables.
+
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `source` | `Realm` | yes | **Plain.** Realm built with `buildFromDdl` |
+| `mergedSource` | `Realm` | yes | **Diffs.** `apiDiff` merged Realm of two versions |
+| `tableKey` | `{ schemaName: string, name: string }` | yes | Table to render, e.g. `{ schemaName: 'public', name: 'orders' }` |
+| `navigationLinkBuilder` | `NavigationLinkBuilder` | yes | `(schema, table, column) => string` — builds the URL of a foreign-key target |
+| `navigationLinkComponent` | `NavigationLinkComponent` | no | Renders foreign-key links; receives `{ href, className, children }`. **Default:** a plain `<a href>` |
+| `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
+| `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
+| `diffTypes` | `DiffType[]` | no | **Diffs.** Accepted, not applied yet |
+
+```tsx
+import { buildFromDdl } from '@netcracker/qubership-apihub-ddlapi/parser'
+import {
+  DdlTableViewer,
+  type NavigationLinkBuilder,
+  type NavigationLinkComponent,
+} from '@netcracker/qubership-apihub-api-doc-viewer'
+
+const realm = await buildFromDdl(sql)
+
+const navigationLinkBuilder: NavigationLinkBuilder = (schema, table) => `/tables/${schema}.${table}`
+
+// Optional: route foreign-key links through the host router instead of full page loads
+const RouterNavigationLink: NavigationLinkComponent = ({ href, className, children }) => (
+  <Link to={href} className={className}>{children}</Link>
 )
+
+<DdlTableViewer
+  source={realm}
+  tableKey={{ schemaName: 'public', name: 'orders' }}
+  navigationLinkBuilder={navigationLinkBuilder}
+  navigationLinkComponent={RouterNavigationLink}
+/>
 ```
 
-1. Pass the schema to the component:
+Merged Realms for `DdlTableDiffsViewer` come from `apiDiff(beforeRealm, afterRealm, { metaKey,
+unify: true, validate: true, normalizedResult: false }).merged`.
 
-| Property      | Required | Type                     | Description                                                                                                                                                                                |
-|---------------|----------|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| schema        | yes      | GraphApiSchema           | Schema of GraphAPI operation, its dependent definitions and custom directives                                                                                                              |
-| operationPath | no       | string                   | Path to operation in GraphAPI schema, e.g. `#/queries/getEntity`.<br/><br/>**Default:** `first operation path`                                                                             |
-| expandedDepth | no       | number                   | Amount of levels will be expanded by default. <br/><br/>**Default:** `2`                                                                                                                   |
-| displayMode   | no       | `"simple" or "detailed"` | Which mode will be used during rendering.<p/>**Simple** means that there will be only node titles and types<p/>**Detailed** means there will be all information<p/>**Default:** `detailed` |
+### GraphQLOperationViewer / GraphQLOperationDiffViewer (legacy)
 
-*Example 1:* Without specifying operation.
+Renders one GraphQL operation with its arguments, output type, and referenced types. These viewers
+are maintained for compatibility and receive no new features.
 
-A first found operation will be used.
+| Prop | Type | Required | Description |
+| --- | --- | --- | --- |
+| `source` | `unknown` | yes | Prepared GraphAPI schema; for the diff viewer, the `apiDiff` merged GraphAPI schema |
+| `operationType` | `string` | no | `'query'`, `'mutation'`, or `'subscription'` |
+| `operationName` | `string` | no | Operation name, e.g. `getFruit` |
+| `expandedDepth` | `number` | no | **Default:** `2` |
+| `displayMode` | `DisplayMode` | no | See [Common props](#common-props) |
+| `metaKeys` | `DiffMetaKeys` | **Diff**, yes | Note the name: `metaKeys`, not `diffMetaKeys` |
+| `layoutMode` | `LayoutMode` | no | **Diff.** `DOCUMENT_LAYOUT_MODE`, `INLINE_DIFFS_LAYOUT_MODE`, or `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE`. **Default:** `'document'` |
+| `filters` | `DiffType[]` | no | **Diff.** Diff severities filter. **Default:** `[]` |
 
-```JavaScript
-const SomeComponent: FC = () => {
-    ...
-    const operationPath = "#/mutations/createEntity"
-    ...
-    return (
-        <GraphQLOperationViewer
-            schema={graphApiSchema}
-            displayMode={"simple"}
-        />
-    )
-}
+```tsx
+import { buildSchema } from 'graphql'
+import { buildFromSchema } from '@netcracker/qubership-apihub-graphapi'
+
+const graphApi = buildFromSchema(buildSchema(sdl, { noLocation: true }))
+const options = { unify: true, validate: true, liftCombiners: true }
+const prepared = denormalize(normalize(graphApi, options), options)
+
+<GraphQLOperationViewer source={prepared} operationType="mutation" operationName="createEntity" />
 ```
 
-*Example 2:* With specifying operation.
+## Other exports
 
-Operation which matches passed path, e.g. `#/mutations/createEntity`
+| Export | Kind | Description |
+| --- | --- | --- |
+| `<Viewer>Props` (e.g. `JsonSchemaViewerProps`) | type | Props type of every component above |
+| `DisplayMode`, `SIMPLE_DISPLAY_MODE`, `DETAILED_DISPLAY_MODE` | type, constants | Values of `displayMode` |
+| `LayoutMode`, `DOCUMENT_LAYOUT_MODE`, `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE`, `INLINE_DIFFS_LAYOUT_MODE` | type, constants | Values of `layoutMode` (legacy GraphQL diff viewer; the other diffs viewers are always side by side) |
+| `DiffMetaKeys` | type | `{ diffsMetaKey: symbol, aggregatedDiffsMetaKey: symbol }` |
+| `NavigationLinkBuilder` | type | `(schema: string, table: string, column: string) => string` |
+| `NavigationLinkComponent`, `NavigationLinkProps` | type | Foreign-key link renderer and its props `{ href, className?, children }` |
+| `buildOpenApiDiffCause` | function | *Deprecated.* Formats a diff's `caused by components.… change` text |
 
-```JavaScript
-const SomeComponent: FC = () => {
-    ...
-    const operationPath = "#/mutations/createEntity"
-    ...
-    return (
-        <GraphQLOperationViewer
-            schema={graphApiSchema}
-            displayMode={"simple"}
-            operationPath={operationPath}
-        />
-    )
-}
-```
+## Development
 
-### JsonSchemaViewer usage
+This repository is an npm-workspaces monorepo:
 
-1. Get a JSON schema.
+| Package | Description |
+| --- | --- |
+| `packages/api-doc-viewer` | The published React components (this README) |
+| `packages/next-data-model` | Tree builders, crawl rules, and diff aggregators the viewers render from |
+| `packages/samples` | Sample documents used by stories and tests — see [packages/samples/README.md](packages/samples/README.md) |
+| `packages/api-data-model`, `packages/api-state-model` | Data and state models of the legacy GraphQL viewers |
 
-1. Pass the schema to the component:
+Common commands, run from the repository root:
 
-| Property             | Required | Type                     | Description |
-|----------------------|----------|--------------------------|-------------|
-| schema               | yes      | unknown                  | JSON schema (references are resolved by the viewer) |
-| expandedDepth        | no       | number                   | Amount of levels will be expanded by default. <br/><br/>**Default:** `2` |
-| displayMode          | no       | `"simple" or "detailed"` | Which mode will be used during rendering.<p/>**Simple** means that there will be only node titles and types<p/>**Detailed** means there will be all information<p/>**Default:** `detailed` |
-| initialLevel         | no       | number                   | Nesting level of the root row when the viewer is embedded into another viewer. <br/><br/>**Default:** `0` |
-| customizationOptions | no       | CustomizationOptions     | `headerRowTitle` replaces the root title; `suppressRootNestingIndicator` renders a wrapper object's properties as a flat top-level list |
-| devMode              | no       | boolean                  | Enables tree building diagnostics in the console. <br/><br/>**Default:** `false` |
+| Command | Description |
+| --- | --- |
+| `npm run build` | Builds all packages |
+| `npm test` | Runs unit tests |
+| `npm run development:storybook` | Starts Storybook with every viewer and sample on port 9099 |
+| `npm run screenshot-test` | Runs screenshot integration tests (Docker) |
+| `npm run regenerate-screenshots` | Updates screenshot snapshots after intended visual changes |
+| `npm run lint:check` | Lints the repository |
 
-`JsonSchemaDiffsViewer` accepts the same properties, where `schema` is a merged `apiDiff` document, plus
-`diffMetaKeys` (required), optional `diffTypes`, and `hideUnchangedNodes` (**Default:** `true`).
+Design documentation — what each viewer displays, architecture, and feature specifications — lives
+in [docs/design/](docs/design/README.md).
 
-*Example:*
-
-```JavaScript
-const SomeComponent: FC = () => {
-    ...
-    const jsonSchema = {
-      title: 'ObjectWithPlainAndObjectProperties',
-      type: 'object',
-      required: ["id", "subObject"],
-      properties: {
-        id: {
-          type: "string",
-          minLength: 1,
-          maxLength: 15,
-        },
-        name: {
-          type: "string",
-        },
-        subObject: {
-          type: 'object',
-          required: ['subId'],
-          properties: {
-            subId: {
-              type: "number"
-            },
-            subName: {
-              type: "string"
-            }
-          }
-        }
-      },
-      additionalProperties: {
-        type: "string",
-      },
-      patternProperties: {
-        "^[a-z0-9]+$": {
-          type: "number"
-        },
-        "^[0-9]+$": {
-          type: "string"
-        }
-      }
-    }
-    
-    return <JsonSchemaViewer schema={jsonSchema} />
-}
-```
-
-## AI agent configuration (APM)
+### AI agent configuration (APM)
 
 Agent instructions and skills for this monorepo:
 
-* **`AGENTS.md`** — repository orientation at the repo root (hand-written and committed,
-  including **`*.generated.*` naming rules** — compatibility-suites only). Do not run
+* **[`AGENTS.md`](AGENTS.md)** — repository orientation (hand-written and committed). Do not run
   `apm compile` at the root; it would overwrite this file.
 * **`agent-packages/`** — canonical skill sources deployed by APM.
-* **`apm.yml`** — APM dependency list; local packages under `agent-packages/`.
+* **`apm.yml`** — APM dependency list.
 
 Refresh deployed skills and rules after editing agent packages:
 
 ```bash
 apm install --target cursor,claude --legacy-skill-paths
 ```
+
+## License
+
+[Apache License 2.0](LICENSE)
