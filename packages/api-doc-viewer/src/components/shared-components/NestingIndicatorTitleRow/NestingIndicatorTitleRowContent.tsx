@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { applyLevelReduction } from "@apihub/contexts/AsyncLevelContext/applyLevelReduction"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
@@ -16,7 +16,7 @@ const NESTING_INDICATOR_TITLE_ROW_X_AXIS_PADDING_BY_USAGE: Partial<Record<Nestin
 }
 
 function getNestingIndicatorTitleRowClassesByUsage(usage: NestingIndicatorTitleRowUsage): string {
-  return NESTING_INDICATOR_TITLE_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  return NESTING_INDICATOR_TITLE_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS
 }
 
 export const NestingIndicatorTitleRowContent: FC<NestingIndicatorTitleRowContentProps> = memo<NestingIndicatorTitleRowContentProps>((props) => {

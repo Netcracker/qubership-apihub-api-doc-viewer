@@ -133,6 +133,8 @@ export const BindingsNodeViewer: FC<BindingsNodeViewerProps> = (props) => {
           embeddedSchemaDiffsComponent={JsonSchemaDiffsViewer}
           // diffs specific
           diffMetaKeys={diffMetaKeys}
+          // AsyncAPI does not hide unchanged nodes yet
+          hideUnchangedNodes={false}
         />
       )
     }

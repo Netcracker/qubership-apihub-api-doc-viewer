@@ -15,11 +15,20 @@ import { FC, memo, useMemo } from "react"
 import { DisplayMode } from "../.."
 import { ErrorBoundary } from "../services/ErrorBoundary"
 import { ErrorBoundaryFallback } from "../services/ErrorBoundaryFallback"
-import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import {
+  resolveDiffsNodesVisibilityMode,
+  SHOW_ONLY_CHANGED_NODES_MODE,
+} from "../shared-components/ShowUnchangedRow/DiffsNodesVisibilityMode"
+import {
+  UnchangedBlocksContext,
+  useOptionalUnchangedBlocksContext,
+  useUnchangedBlocksContextValue,
+} from "../shared-components/ShowUnchangedRow/UnchangedBlocksContext"
+import { ATTRIBUTE_PRECEDED_BY, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
 import '../shared-styles/diffs/index.css'
 import { JsoEmbeddingContext } from "./embedding/JsoEmbeddingContext"
 import { JsoEmbeddedSchemaDiffsComponent } from "./embedding/jso-embedding-types"
-import { JsoPropertyNodeViewerWithDiffs } from "./JsoPropertyNodeViewerWithDiffs"
+import { JsoPropertyChildrenListWithDiffs } from "./JsoPropertyChildrenListWithDiffs"
 
 type JsoDiffsViewerProps = WithPrecededByProps & {
   mergedSource: unknown
@@ -30,6 +39,12 @@ type JsoDiffsViewerProps = WithPrecededByProps & {
   // diffs specific
   diffMetaKeys: DiffMetaKeys
   diffTypes?: ReadonlyArray<DiffType>
+  /**
+   * Collapse each run of unchanged sibling properties into one "Show N unchanged nodes" row.
+   * When omitted, an embedded viewer follows its host diffs viewer (JSON Schema, OpenAPI) and a
+   * standalone one hides (`true`, the `JsonSchemaDiffsViewer` default).
+   */
+  hideUnchangedNodes?: boolean
   embeddedSchemaDiffsComponent?: JsoEmbeddedSchemaDiffsComponent
 }
 
@@ -56,6 +71,7 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       devMode = false,
       diffMetaKeys,
       diffTypes,
+      hideUnchangedNodes,
       embeddedSchemaDiffsComponent,
     } = props
 
@@ -74,6 +90,14 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
       [source, supportJsonSchema, diffMetaKeys, logger],
     )
     const tree = useMemo(() => builder.build(), [builder])
+
+    // Only the mode follows the host: revealed blocks are this viewer's own, since JSO node ids
+    // repeat across embedded trees (two extension sections both have `#/x-owner`).
+    const hostUnchangedBlocksContext = useOptionalUnchangedBlocksContext()
+    const visibilityMode = hideUnchangedNodes !== undefined
+      ? resolveDiffsNodesVisibilityMode(hideUnchangedNodes)
+      : hostUnchangedBlocksContext?.mode ?? SHOW_ONLY_CHANGED_NODES_MODE
+    const unchangedBlocksContext = useUnchangedBlocksContextValue(visibilityMode)
 
     const embeddingContext = useMemo(
       () => ({ EmbeddedSchemaDiffsComponent: embeddedSchemaDiffsComponent }),
@@ -116,20 +140,15 @@ const JsoDiffsViewerInner: FC<JsoDiffsViewerProps> =
             <DisplayModeContext.Provider value={displayMode}>
               <LayoutModeContext.Provider value={SIDE_BY_SIDE_DIFFS_LAYOUT_MODE}>
                 <AsyncLevelContextProvider beforeLevel={nextBeforeLevel} afterLevel={nextAfterLevel}>
-                  <div data-testid='jso-diffs-viewer'>
-                    {jsoProperties.map((jsoProperty, index) => (
-                      <JsoPropertyNodeViewerWithDiffs
-                        data-precededby={
-                          index === 0
-                            ? precededBy
-                            : PrecededBy.JSO_PROPERTY
-                        }
-                        key={jsoProperty.id}
-                        node={jsoProperty}
+                  <UnchangedBlocksContext.Provider value={unchangedBlocksContext}>
+                    <div data-testid='jso-diffs-viewer'>
+                      <JsoPropertyChildrenListWithDiffs
+                        properties={jsoProperties}
                         supportJsonSchema={supportJsonSchema}
+                        firstRowPrecededBy={precededBy}
                       />
-                    ))}
-                  </div>
+                    </div>
+                  </UnchangedBlocksContext.Provider>
                 </AsyncLevelContextProvider>
               </LayoutModeContext.Provider>
             </DisplayModeContext.Provider>

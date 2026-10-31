@@ -63,6 +63,41 @@ story ids in a browser — this verifies the story renders and the fixture conte
 correctly, but it is **not** a substitute for the real IT run; say so explicitly and leave
 actual snapshot generation for an environment with Docker.
 
+**Faster live check while iterating on layout / CSS (session lesson).** A server-side render
+(esbuild + `react-dom/server`) proves a story renders without errors and lets you grep classes, but
+it cannot see geometry: widths, `::before` frames, overflow clipping, global-CSS side effects (the
+package-wide `button` rule), or font families. Several review rounds were spent on exactly those
+before a browser check caught them in minutes. Instead:
+
+1. `npx storybook dev -p 9099 --no-open --ci` from `packages/api-doc-viewer/` (no
+   `generate-stories` needed), run in the background; poll `http://localhost:9099/index.json` until
+   it returns 200.
+2. Open `http://localhost:9099/iframe.html?id=<story-id>&viewMode=story` with the browser tools;
+   drive selectors by test id from the page (`document.querySelector('[data-testid="…"]').click()`).
+3. Measure instead of eyeballing: `getBoundingClientRect().width` of each row,
+   `getComputedStyle(el, '::before')` for frame boxes, class lists for diff markers; then take a
+   screenshot of the region for the user-visible result.
+4. Stop the Storybook process and close the tab afterwards. This is still not a screenshot IT run.
+
+**Vertical spacing audit (session lesson, OpenAPI spacing rework).** For spacing work, a headless
+Puppeteer script (the repo-root `node_modules/puppeteer`, no Docker) over many story ids beats
+clicking through stories. Per row element (`.title-row-content`, `.text-row-content`,
+`.markdown-text-row-content`, `.address-row-content`, `.security-row`, …) print the computed
+`padding-top/bottom`, `data-precededby`, the diff background class, and the
+**ink insets** — distance from the row edge to the union of its text ranges
+(`Range.getClientRects()`) and boxed elements, skipping `.level-indicator-column`. Then list every
+non-row element with non-zero vertical margin / padding: those are wrapper-chain offsets (markdown
+`<ul>` margins, an inner `py-*`). Insets larger than the padding reveal hidden offsets such as an
+inherited line-height strut. Also list the synthetic rows: `.layout-separator` (each band's height
+and `diffs-background_*` class — print the full tone, `g` alone is ambiguous between green and
+gray) and `.security-frame-row` (`getComputedStyle(el, '::before').top / bottom` for the border).
+Run it on plain and diffs stories (both sides) and on edge cases (status-only response, anonymous
+access — the `Optional` badge, an anonymous-only section without a toolbar — no responses, wholly
+added / removed sections and cards). For floating badges, walk the
+full-width rows (each `.side-by-side-layout` and its parent): a real `.UxDiffFloatingBadge` (map its
+`background-color` back to the diff type) or a `.badge-stub` (segment heights and colours) — the badge
+line must run unbroken across separators and card frame rows.
+
 **Targeted single-suite runner:** `node bin/run-screenshot-test-suite.mjs test|regenerate
 [test-run] [suite]` (e.g. `regenerate json-schema-diffs-suite description-changes`) wraps the
 build-showcase → start-static-server → jest pipeline for one suite, so you don't have to
@@ -72,7 +107,18 @@ need flags it doesn't expose (e.g. `--maxWorkers 1 --verbose` against a suite al
 The `ddlapi-compatibility-suite` test run (`regenerate ddlapi-compatibility-suite [column|column-type|constraints|table]`)
 targets the gitignored `src/it/compatibility-suite/ddlapi-compatibility-suite-*.generated.it-test.ts`;
 the runner calls `npm run generate-tests` before Jest for it in both modes (and generates the
-files up front when they are missing). Add further spec types to `COMPATIBILITY_TEST_RUN_IDS`.
+files up front when they are missing). The OpenAPI compatibility suite has one test run per OAS
+version pair (`openapi-compatibility-suite-30-30`, `-30-31`, `-31-30`, `-31-31`; suites = suite ids,
+e.g. `regenerate openapi-compatibility-suite-30-31 request-body`); `graphql-compatibility-suite` is
+listed too. The shared output folder `src/it/compatibility-suite/` is **not** a test run of its own:
+folder auto-discovery skips it (`COMPATIBILITY_SUITE_DIR`), otherwise it would surface as an
+unprefixed `compatibility-suite` entry that runs every spec type's generated ITs at once and
+bypasses `ensureCompatibilityTests()`. Run compatibility ITs through the spec-type test runs only. **Menu order** comes from `bin/screenshot-test-run-order.json` (compatibility test runs
+carry `"compatibility": true` — that replaced the hard-coded `COMPATIBILITY_TEST_RUN_IDS`), which
+follows `.storybook/preview.ts`; `tests/storybook-order.test.ts` fails when a new hand-written test
+run is missing from the JSON or the JSON leaves the preview order. Adding a suite = a `preview.ts`
+entry **and** a JSON entry in the same API type block (JSO, JSON Schema, AsyncAPI, OpenAPI, DDL API,
+GraphQL). `node bin/run-screenshot-test-suite.mjs list` prints the menu without a TTY.
 
 ## Screenshot test troubleshooting (read first)
 
@@ -253,10 +299,15 @@ use plain `*.it-test.ts` / `*.stories.tsx` / `*.ts` even when a bin script regen
 
 **Generated — compatibility suites only** (do not edit by hand; regenerate):
 
-- GraphQL compatibility suite — `bin/generate-compatibility-suite-stories.mjs`
-  and `bin/generate-compatibility-suite-tests.mjs` →
+- GraphQL, DDL API, and OpenAPI compatibility suites — `bin/generate-compatibility-suite-stories.mjs`
+  and `bin/generate-compatibility-suite-tests.mjs` (helpers in `bin/compatibility-suite-generation-utils.mjs`) →
   `src/stories/compatibility-suite/*.generated.stories.tsx` and
-  `src/it/compatibility-suite/*.generated.it-test.ts`.
+  `src/it/compatibility-suite/*.generated.it-test.ts`. OpenAPI (ported from the legacy apispec-view,
+  design `docs/design/openapi/features/compatibility-suite.md`): one file per (OAS version-pair
+  group, suite), `OpenAPI Compatibility Suite/OAS 3.0 vs OAS 3.1/<suite>`, meta id
+  `openapi-compatibility-suite-30-31-<suite>`; every case variant of `metadata.yaml` is a story
+  (`human-readable` excluded); `OpenApiStoryComponent` shows the added / removed operation of a case
+  with two (`resolveOpenApiCompatibilitySuiteOperationKeys`) with `hideUnchangedNodes: false`.
 
 **Regenerated from local samples** (persistent committed output — run generators **explicitly**,
 not via `npm run generate-stories` / `generate-tests`; do not edit output by hand except when
@@ -270,6 +321,29 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- **OpenAPI suites — read [openapi-suites.md](openapi-suites.md) before touching OpenAPI fixtures,
+  stories, or ITs** (generators, E2E pairs + windows, fields sub-groups, opposites, auto-switch,
+  display-mode args, maintenance workflow, traps). Summary:
+- OpenAPI Operation Suite (plain) — `node bin/generate-openapi-suite.mjs` (cases in
+  `bin/openapi-plain-case-definitions.mjs`) → recreates `packages/samples/openapi/`,
+  `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx` (Fields is split into semantic sub-groups),
+  `src/it/openapi-suite.<dialect>-<group>.it-test.ts`, and the generated block of
+  `docs/design/openapi/features/plain-case-matrix.md`. Groups: E2E section combinations, minimal,
+  fields, document structure (OAS 3.1: fields + structure, only what differs from 3.0). Cases list
+  `switchTo` option test ids (security alternative, response code, `request-media-type-*` /
+  `response-media-type-*`); `switchOpenApiOptions` (`src/utils/openapi/`) selects them from the story
+  `play` and from ITs via `waitForOpenApiOperationViewer(page, { switchTo })` — pure DOM, every
+  helper inside the function body (the combiner auto-switch contract). Story URL args encode
+  booleans as `!true` / `!false`.
+- OpenAPI Operation Diffs Suite — `node bin/generate-openapi-diffs-suite.mjs` (cases in
+  `bin/openapi-diffs-case-definitions.mjs`) → recreates `packages/samples/openapi-diffs/` (fixtures +
+  catalogues), `src/stories/openapi-diffs-suite/<category>.stories.tsx`,
+  `src/it/openapi-diffs-suite.<category>.it-test.ts`, and the generated block of
+  `docs/design/openapi/features/diffs-case-matrix.md`. Opposite cases (add ↔ remove, on ↔ off,
+  A → B ↔ B → A moves) are adjacent; parameter-like fragments and the two bodies share one case
+  list, so one id is one change in every folder (skipped slots stay unused). Display mode is a story
+  control: ITs capture every case in `detailed` and `simple` via `storyPageWithArgs` — never add a
+  per-mode story or fixture.
 - JSON Schema property rename — `node bin/generate-json-schema-property-rename-suite.mjs` →
   `src/stories/json-schema-diffs-suite/property-rename.stories.tsx` and
   `src/it/json-schema-diffs-suite/property-rename.it-test.ts` from the OpenAPI fixture pairs under
@@ -277,6 +351,23 @@ the generator is wrong):
   `apiDiff` never renames a JSON Schema property).
 - Value-range diff (programmatic) — `node bin/generate-value-range-diff-stories.mjs` →
   `number-validation-value-range.stories.tsx` and paired ITs.
+- AsyncAPI Security — `node bin/generate-async-api-security-suite.mjs` (cases in
+  `bin/async-api-security-case-definitions.mjs`: `PLAIN_CASES` 01–26, `DIFF_CASES` 1.x operation /
+  2.x server) → recreates `packages/samples/async-api/security/` and
+  `packages/samples/async-api-diffs/security/` (fixtures + catalogues),
+  `src/stories/async-api-suite/security.stories.tsx` (`Async API Suite/Security`),
+  `src/stories/async-api-diffs-suite/security.stories.tsx` (`Async API Diffs Suite/Security Samples`)
+  and the paired `src/it/async-api-*suite.security.it-test.ts`. Every case is captured in `detailed`
+  and `simple`; server cases click `[data-testid="message-channel"]` and wait for
+  `message-channel-section` first (servers live in the Channel tab). Section test id:
+  `async-api-security-section`. Data-layer tests: `next-data-model/tests/unit-tests/async-api-security.test.ts`
+  (fixtures via `tests/helpers/async-api-security-fixtures.ts`).
+- OpenAPI Arrow Buttons (programmatic, hand-written; no generator) — `OpenAPI Operation Suite (Arrow
+  Buttons)` and `OpenAPI Operation Diffs Suite (Arrow Buttons)`, cases in
+  `packages/samples/src/openapi-arrow-buttons.ts`. **Several screenshots per test:** an overflowing
+  strip is captured at its left edge, middle, and right edge by `expectArrowScrollStripStates`
+  (`src/it/service/arrow-scroll-strip.ts`) — reuse it for any new `ArrowScrollStrip` user. Details:
+  [openapi-suites.md](openapi-suites.md) → Arrow buttons suites.
 
 **Runner:** generators that import `src/stories/**/*.ts` (combiner, value-range, validation
 suites) fail under plain `node` with `ERR_MODULE_NOT_FOUND` on extensionless TS imports such as
@@ -339,10 +430,19 @@ rather than assuming the literal list is the complete requirement.
 **Hand-written** (edit stories and matching IT files together):
 
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
-  `src/stories/*/` with paired `src/it/*.it-test.ts`.
+  `src/stories/*/` with paired `src/it/*.it-test.ts` (except AsyncAPI Security — generated, above).
 - JSON Schema diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
   `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
+- JSO hiding suite — `JSO Diffs Suite (Hiding Unchanged Nodes)/{Root Level, Second Level, Nested}`:
+  `src/stories/jso-diffs-hiding-unchanged-nodes-suite/<group>.stories.tsx` and
+  `src/it/jso-diffs-hiding-unchanged-nodes-suite.<group>.it-test.ts` (fixtures and catalogue:
+  `packages/samples/jso-diffs/hiding-unchanged-nodes/`). Stories reuse the JSO suite's
+  `createJsoCaseStoryFactory(..., defaultHideUnchangedNodes = true)`; the property suites
+  (`JSO Diffs Suite`) keep the default `false`. ITs capture every case collapsed and, for cases with
+  a `⋯` row, `revealed` (click `[data-testid="show-unchanged-nodes"] button` until none is left).
+  In a JSO fixture, an object with a `type` key renders as an embedded JSON Schema — avoid the key
+  unless the case means it.
 - DDL e2e scenarios — `src/stories/ddlapi-suite/e2e-scenarios.stories.tsx`
   and `src/it/ddlapi-suite/e2e-scenarios.it-test.ts`.
 - When adding a diff sample case, add the YAML pair under

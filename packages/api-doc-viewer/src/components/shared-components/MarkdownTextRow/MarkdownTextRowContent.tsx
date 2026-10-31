@@ -1,4 +1,4 @@
-import { X_AXIS_PADDING_ROWS_ASYNC_API, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
+import { X_AXIS_PADDING_ROWS, X_AXIS_PADDING_ROWS_DDL_API_PROPERTIES, X_AXIS_PADDING_ROWS_JSO } from "@apihub/components/shared-styles/tailwind-classnames"
 import { useEffectiveLevel } from "@apihub/contexts/AsyncLevelContext/useEffectiveLevel"
 import { CHANGED_LAYOUT_SIDE, ORIGIN_LAYOUT_SIDE } from "@apihub/types/internal/LayoutSide"
 import { DiffsClassesBuilder } from "@netcracker/qubership-apihub-next-data-model/building-service/abstract/tree-with-diffs/node-diffs-data/utilities"
@@ -23,7 +23,7 @@ const MARKDOWN_TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE: Partial<Record<TextRowUsage
 }
 
 function getMarkdownTextRowClassesByUsage(usage: TextRowUsage): string {
-  const xAxisPaddingClass = MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS_ASYNC_API
+  const xAxisPaddingClass = MARKDOWN_TEXT_ROW_X_AXIS_PADDING_BY_USAGE[usage] ?? X_AXIS_PADDING_ROWS
   const additionalClasses = MARKDOWN_TEXT_ROW_ADDITIONAL_CLASSES_BY_USAGE[usage] ?? []
   return [xAxisPaddingClass, ...additionalClasses].join(" ")
 }
@@ -97,6 +97,7 @@ export const MarkdownTextRowContent: FC<MarkdownTextRowContentProps> = memo<Mark
   return (
     <div
       data-precededby={precededBy}
+      data-frame-position={props.framePosition?.(layoutSide)}
       className={[
         "markdown-text-row-content flex w-full h-full gap-2",
         isDdlApiPropertyRow || usage === TextRowUsage.JsonSchemaDescription ? "items-stretch" : "",

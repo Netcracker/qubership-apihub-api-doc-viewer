@@ -17,7 +17,9 @@ import { buildRowDiffProps, toNodeDiffState } from "../shared-components/diffs/n
 import { TextValueVariant } from "../shared-components/TextValue/types"
 import { TitleRow } from "../shared-components/TitleRow/TitleRow"
 import { TitleRowProps, TitleRowUsage } from "../shared-components/TitleRow/types"
+import { useUnchangedBlocksContext } from "../shared-components/ShowUnchangedRow/UnchangedBlocksContext"
 import { ATTRIBUTE_PRECEDED_BY, PrecededBy, WithPrecededByProps } from "../shared-components/WithPrecededByProps"
+import { JsoPropertyChildrenListWithDiffs } from "./JsoPropertyChildrenListWithDiffs"
 import { JsoValueWithDiffs } from "./JsoValue/JsoValueWithDiffs"
 
 type JsoPropertyNodeViewerWithDiffsProps = WithPrecededByProps & {
@@ -35,6 +37,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
   const diffMetaKeys = useDiffMetaKeys()
   const { beforeLevel, afterLevel } = useAsyncLevelContext()!
   const { EmbeddedSchemaDiffsComponent } = useJsoEmbeddingContext()
+  const { hideUnchangedNodes } = useUnchangedBlocksContext()
 
   const [expanded, setExpanded] = useState(true)
   const onClickExpander = useCallback(() => {
@@ -160,6 +163,7 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
           expandedDepth={2}
           displayMode={displayMode}
           diffMetaKeys={diffMetaKeys}
+          hideUnchangedNodes={hideUnchangedNodes}
           customizationOptions={SUPPRESS_ROOT_NESTING_INDICATOR_CUSTOMIZATION_OPTIONS}
         />
       </AsyncLevelContextProvider>
@@ -205,14 +209,11 @@ export const JsoPropertyNodeViewerWithDiffs: FC<JsoPropertyNodeViewerWithDiffsPr
           beforeLevel={nextBeforeLevel}
           afterLevel={nextAfterLevel}
         >
-          {childrenProperties.map(childProperty => (
-            <JsoPropertyNodeViewerWithDiffs
-              data-precededby={PrecededBy.JSO_PROPERTY}
-              key={childProperty.id}
-              node={childProperty}
-              supportJsonSchema={supportJsonSchema}
-            />
-          ))}
+          <JsoPropertyChildrenListWithDiffs
+            properties={childrenProperties}
+            supportJsonSchema={supportJsonSchema}
+            firstRowPrecededBy={PrecededBy.JSO_PROPERTY}
+          />
         </AsyncLevelContextProvider>
       )}
     </div>
