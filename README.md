@@ -33,7 +33,7 @@ comparison mode, as a side-by-side view of what changed between two versions.
 npm add @netcracker/qubership-apihub-api-doc-viewer
 ```
 
-The host application provides **React 18** (`react` and `react-dom` are not bundled).
+**Peer dependencies:** `react` and `react-dom` `^18.2.0`, provided by the host application (not bundled).
 
 Documents are prepared with the companion APIHUB libraries — install the ones for the API types
 you render:
@@ -142,9 +142,9 @@ extensions. Deep subtrees are built lazily on expand, so large schemas stay resp
 | `displayMode` | `DisplayMode` | no | See [Common props](#common-props) |
 | `devMode` | `boolean` | no | See [Common props](#common-props) |
 | `initialLevel` | `number` | no | Nesting level of the root row when the viewer is embedded into another viewer. **Default:** `0` |
-| `customizationOptions` | `{ headerRowTitle?: string, suppressRootNestingIndicator?: boolean }` | no | `headerRowTitle` replaces the root title; `suppressRootNestingIndicator` renders a wrapper object's properties as a flat top-level list |
-| `topLevelPropsMediaTypes` | `Record<string, string>` | no | **Plain only.** Root property key → media type, shown as a badge next to the property name |
-| `firstRowPrecededBy` | `PrecededBy` | no | Spacing hook for embedding viewers; hosts normally omit it |
+| `customizationOptions` | `CustomizationOptions` | no | `headerRowTitle` replaces the root title; `suppressRootNestingIndicator` renders a wrapper object's properties as a flat top-level list |
+| `topLevelPropsMediaTypes` | `TopLevelPropsMediaTypesMap` | no | **Plain only.** Root property key → media type, shown as a badge next to the property name |
+| `firstRowPrecededBy` | — | no | Internal spacing hook used when the library embeds this viewer in another one; hosts omit it |
 
 `JsonSchemaDiffsViewer` additionally accepts:
 
@@ -186,7 +186,7 @@ selectors), and extensions. Schemas inside the operation are rendered with the J
 | --- | --- | --- | --- |
 | `source` | `unknown` | yes | **Plain.** Prepared OpenAPI document (`normalize` + `denormalize`, `components` kept) |
 | `mergedSource` | `unknown` | yes | **Diffs.** `apiDiff` merged document of two whole OpenAPI documents (`components` kept) |
-| `operationKeys` | `{ path: string, method: string }` | no | `path` is the `paths` key exactly as in the document (e.g. `/pets/{petId}`); `method` is case-insensitive. In a merged document a renamed path is addressed by its **after** key. **Default:** the first operation |
+| `operationKeys` | `OpenApiOperationKeys` | no | `path` is the `paths` key exactly as in the document (e.g. `/pets/{petId}`); `method` is case-insensitive. In a merged document a renamed path is addressed by its **after** key. **Default:** the first operation |
 | `expandedDepth` | `number` | no | Forwarded to the nested schema viewers. **Default:** `2` |
 | `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
 | `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
@@ -216,7 +216,7 @@ Renders one AsyncAPI 3.0 operation together with one of its messages: message he
 | `source` | `unknown` | yes | **Plain.** Prepared AsyncAPI 3.0 document |
 | `mergedSource` | `unknown` | yes | **Diffs.** `apiDiff` merged document of two AsyncAPI documents |
 | `referenceNamePropertyKey` | `symbol` | yes | The symbol passed as `firstReferenceKeyProperty` to `normalize` / `apiDiff`; the viewer uses it to read message keys behind resolved `$ref`s |
-| `operationKeys` | `{ operationKey: string, messageKey: string }` | no | Operation key under `operations` and message key of that operation. **Default:** the first operation and its first message |
+| `operationKeys` | `AsyncApiOperationKeys` | no | Operation key under `operations` and message key of that operation. **Default:** the first operation and its first message |
 | `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
 | `diffMetaKeys` | `DiffMetaKeys` | **Diffs**, yes | See [Preparing documents](#preparing-documents) |
 | `diffTypes` | `DiffType[]` | no | **Diffs.** Accepted, not applied yet |
@@ -247,7 +247,7 @@ generated expressions), indexes, and foreign keys as navigation links to the ref
 | --- | --- | --- | --- |
 | `source` | `Realm` | yes | **Plain.** Realm built with `buildFromDdl` |
 | `mergedSource` | `Realm` | yes | **Diffs.** `apiDiff` merged Realm of two versions |
-| `tableKey` | `{ schemaName: string, name: string }` | yes | Table to render, e.g. `{ schemaName: 'public', name: 'orders' }` |
+| `tableKey` | `TableKey` | yes | Table to render, e.g. `{ schemaName: 'public', name: 'orders' }` |
 | `navigationLinkBuilder` | `NavigationLinkBuilder` | yes | `(schema, table, column) => string` — builds the URL of a foreign-key target |
 | `navigationLinkComponent` | `NavigationLinkComponent` | no | Renders foreign-key links; receives `{ href, className, children }`. **Default:** a plain `<a href>` |
 | `displayMode`, `devMode`, `noHeading` | | no | See [Common props](#common-props) |
@@ -317,9 +317,15 @@ const prepared = denormalize(normalize(graphApi, options), options)
 | `DisplayMode`, `SIMPLE_DISPLAY_MODE`, `DETAILED_DISPLAY_MODE` | type, constants | Values of `displayMode` |
 | `LayoutMode`, `DOCUMENT_LAYOUT_MODE`, `SIDE_BY_SIDE_DIFFS_LAYOUT_MODE`, `INLINE_DIFFS_LAYOUT_MODE` | type, constants | Values of `layoutMode` (legacy GraphQL diff viewer; the other diffs viewers are always side by side) |
 | `DiffMetaKeys` | type | `{ diffsMetaKey: symbol, aggregatedDiffsMetaKey: symbol }` |
+| `CustomizationOptions` | type | `{ headerRowTitle?: string, suppressRootNestingIndicator?: boolean }` — JSON Schema viewers |
+| `TopLevelPropsMediaTypesMap` | type | `Record<string, string>` — root property key → media type, `JsonSchemaViewer` |
+| `OpenApiOperationKeys` | type | `{ path: string, method: string }` — OpenAPI viewers |
+| `AsyncApiOperationKeys` | type | `{ operationKey: string, messageKey: string }` — AsyncAPI viewers |
+| `TableKey` | type | `{ schemaName: string, name: string }` — DDL viewers |
 | `NavigationLinkBuilder` | type | `(schema: string, table: string, column: string) => string` |
 | `NavigationLinkComponent`, `NavigationLinkProps` | type | Foreign-key link renderer and its props `{ href, className?, children }` |
-| `buildOpenApiDiffCause` | function | *Deprecated.* Formats a diff's `caused by components.… change` text |
+| `buildDiffCauseByPathCausedAt` | function | `(path: JsonPath \| undefined) => string \| undefined` — formats `caused by <path> change` for a change caused at `path`; `undefined` for an empty or missing path |
+| `buildOpenApiDiffCause` | function | *Deprecated — use `buildDiffCauseByPathCausedAt`.* Formats `caused by components.… change` from an `apiDiff` `Diff`'s declaration paths |
 
 ## Development
 
