@@ -5,9 +5,10 @@
  * - diff fixtures + catalogue: `packages/samples/async-api-diffs/security/<case>/{before,after}.yaml`;
  * - stories: `src/stories/async-api-suite/security.stories.tsx`,
  *   `src/stories/async-api-diffs-suite/security.stories.tsx`;
- * - screenshot ITs: `src/it/async-api-suite.security.it-test.ts`,
- *   `src/it/async-api-diffs-suite.security.it-test.ts` (every case in display modes `detailed` and
- *   `simple`; server cases open the Channel section first).
+ * - screenshot ITs: `src/it/async-api-suite/security.it-test.ts`,
+ *   `src/it/async-api-diffs-suite/security.it-test.ts` (every case in display mode `detailed`, the
+ *   default; server cases open the Channel section first). Display mode `simple` is covered by
+ *   `Async API Suite (Display Mode = simple)` / `Async API Diffs Suite (Display Mode = simple)`.
  *
  * Usage (from packages/api-doc-viewer): node bin/generate-async-api-security-suite.mjs
  * Design: docs/design/async-api/features/security.md
@@ -25,8 +26,8 @@ const plainSamplesDir = path.resolve(packageRoot, "../samples/async-api/security
 const diffSamplesDir = path.resolve(packageRoot, "../samples/async-api-diffs/security");
 const plainStoriesFile = path.resolve(packageRoot, "src/stories/async-api-suite/security.stories.tsx");
 const diffStoriesFile = path.resolve(packageRoot, "src/stories/async-api-diffs-suite/security.stories.tsx");
-const plainTestsFile = path.resolve(packageRoot, "src/it/async-api-suite.security.it-test.ts");
-const diffTestsFile = path.resolve(packageRoot, "src/it/async-api-diffs-suite.security.it-test.ts");
+const plainTestsFile = path.resolve(packageRoot, "src/it/async-api-suite/security.it-test.ts");
+const diffTestsFile = path.resolve(packageRoot, "src/it/async-api-diffs-suite/security.it-test.ts");
 
 const PLAIN_TITLE = "Async API Suite/Security";
 const DIFF_TITLE = "Async API Diffs Suite/Security Samples";
@@ -77,8 +78,8 @@ ${rows.join("\n")}
 ## Storybook and screenshot tests
 
 Storybook: \`${PLAIN_TITLE}\`, story \`Case_<case id>\` (\`src/stories/async-api-suite/security.stories.tsx\`).
-ITs: \`src/it/async-api-suite.security.it-test.ts\`, every case in display modes \`detailed\` and
-\`simple\`; server cases open the Channel section first.
+ITs: \`src/it/async-api-suite/security.it-test.ts\`, every case in display mode \`detailed\`; server
+cases open the Channel section first.
 `, "utf8");
 }
 
@@ -108,8 +109,8 @@ ${rows.join("\n")}
 ## Storybook and screenshot tests
 
 Storybook: \`${DIFF_TITLE}\`, story \`Case_<case id>\` (\`src/stories/async-api-diffs-suite/security.stories.tsx\`).
-ITs: \`src/it/async-api-diffs-suite.security.it-test.ts\`, every case in display modes \`detailed\` and
-\`simple\`; server cases open the Channel section first.
+ITs: \`src/it/async-api-diffs-suite/security.it-test.ts\`, every case in display mode \`detailed\`;
+server cases open the Channel section first.
 `, "utf8");
 }
 
@@ -209,11 +210,11 @@ function writeTests(file, title, cases, suiteName) {
   });
   fs.writeFileSync(file, `// ${GENERATED}
 /**
- * Screenshot tests for ${suiteName}: every case in display modes \`detailed\` and \`simple\` (the same
- * story, \`displayMode\` passed as a story arg). Server cases open the Channel section first.
+ * Screenshot tests for ${suiteName}: every case in display mode \`detailed\` (the default). Server
+ * cases open the Channel section first.
  */
-import { storyPageWithArgs } from './service/storybook-service'
-import { waitForRenderingComplete } from './service/viewer-waits'
+import { storyPage } from '../service/storybook-service'
+import { waitForRenderingComplete } from '../service/viewer-waits'
 
 /** [case id, story id, open the Channel section (server security)]. */
 const CASES: ReadonlyArray<readonly [string, string, boolean]> = [
@@ -225,18 +226,16 @@ describe('${suiteName}', () => {
     await jestPuppeteer.resetPage()
   })
 
-  describe.each(['detailed', 'simple'])('display mode %s', (displayMode) => {
-    it.each(CASES)('%s', async (_caseId, storyId, openChannel) => {
-      const story = await storyPageWithArgs(page, storyId, { displayMode })
-      const component = await story.viewComponent()
+  it.each(CASES)('%s', async (_caseId, storyId, openChannel) => {
+    const story = await storyPage(page, storyId)
+    const component = await story.viewComponent()
+    await waitForRenderingComplete(page)
+    if (openChannel) {
+      await page.click('[data-testid="message-channel"]')
+      await page.waitForSelector('[data-testid="message-channel-section"]', { visible: true })
       await waitForRenderingComplete(page)
-      if (openChannel) {
-        await page.click('[data-testid="message-channel"]')
-        await page.waitForSelector('[data-testid="message-channel-section"]', { visible: true })
-        await waitForRenderingComplete(page)
-      }
-      expect(await component.captureScreenshot()).toMatchImageSnapshot()
-    })
+    }
+    expect(await component.captureScreenshot()).toMatchImageSnapshot()
   })
 })
 `, "utf8");

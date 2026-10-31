@@ -1,24 +1,15 @@
-import { DETAILED_DISPLAY_MODE, DisplayMode, SIMPLE_DISPLAY_MODE } from "@apihub/types/DisplayMode";
+import { DisplayMode } from "@apihub/types/DisplayMode";
 import { switchOpenApiOptions } from "@apihub/utils/openapi/switch-openapi-options";
 import { OPEN_API_HTTP_METHODS_ORDER } from "@netcracker/qubership-apihub-next-data-model/shared/openapi/types/http-method";
-
-const DISPLAY_MODES: readonly DisplayMode[] = [DETAILED_DISPLAY_MODE, SIMPLE_DISPLAY_MODE];
+import { DISPLAY_MODE_ARG_TYPES, DISPLAY_MODE_DEFAULT_ARGS } from "../shared/display-mode-arg-types";
 
 /**
  * Story controls shared by the OpenAPI suites: one story per case, the display mode is a control
  * (ITs pass `displayMode` as a story arg) - never a duplicated story.
  */
-export const OPENAPI_STORY_ARG_TYPES = {
-  displayMode: {
-    control: { type: "select" },
-    options: DISPLAY_MODES,
-    table: { category: "Viewer" },
-  },
-} as const;
+export const OPENAPI_STORY_ARG_TYPES = DISPLAY_MODE_ARG_TYPES;
 
-export const OPENAPI_STORY_DEFAULT_ARGS: { displayMode: DisplayMode } = {
-  displayMode: DETAILED_DISPLAY_MODE,
-};
+export const OPENAPI_STORY_DEFAULT_ARGS: { displayMode: DisplayMode } = DISPLAY_MODE_DEFAULT_ARGS;
 
 /**
  * Diffs suites: display mode plus `hideUnchangedNodes` - `false` by default, so every row shows;

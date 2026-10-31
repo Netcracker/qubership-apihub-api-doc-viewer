@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync } from 'fs'
+import { mkdirSync, readdirSync, rmSync } from 'fs'
 import { camelCase, upperFirst } from 'lodash-es'
 import path from 'path'
 import { exit } from 'process'
@@ -26,6 +26,20 @@ export const exitIfInsideNodeModules = (importMetaUrl) => {
 export const resetDirectory = (dirPath) => {
   rmSync(dirPath, { recursive: true, force: true })
   mkdirSync(dirPath, { recursive: true })
+}
+
+/**
+ * Removes the files ending with `suffix` from a directory (creating it when missing) and keeps
+ * everything else. The IT output folder also holds the committed screenshot baselines
+ * (`<test-run>/__image_snapshots__/`), so it must never be wiped with `resetDirectory`.
+ */
+export const removeGeneratedFiles = (dirPath, suffix) => {
+  mkdirSync(dirPath, { recursive: true })
+  for (const entry of readdirSync(dirPath, { withFileTypes: true })) {
+    if (entry.isFile() && entry.name.endsWith(suffix)) {
+      rmSync(path.join(dirPath, entry.name))
+    }
+  }
 }
 
 /**

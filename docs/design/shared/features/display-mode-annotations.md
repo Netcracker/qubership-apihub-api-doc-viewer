@@ -110,6 +110,13 @@ its title row.
 - Data layer: `next-data-model/tests/unit-tests/display-mode-annotations.test.ts` (the rule, every
   category table, each resolver in both modes), plus the existing JSON Schema / security visibility
   tests.
-- Screenshot ITs capture OpenAPI, AsyncAPI security, and JSON Schema cases in `simple`; their
-  baselines change where an annotation was shown, a security card gained rows, or a schema has
-  extensions. Regenerate them after reviewing the change.
+- Screenshot ITs: per API type (AsyncAPI, OpenAPI, JSON Schema, and DDL API) one
+  `* Suite (Display Mode = simple)` and one `* Diffs Suite (Display Mode = simple)` capture every
+  case in `detailed` and `simple` (story arg `displayMode`). One case per element `simple` hides (each
+  row of the annotation table above, plus the forwarded JSON Schema hosts: OpenAPI parameter, `Media
+  type` row, body schema, response header; AsyncAPI payload, headers, channel parameter description
+  and `Location`, Kafka binding schema), on the API type's minimal document; the diffs pair replaces
+  that element's value. Cases: `packages/api-doc-viewer/bin/display-mode-simple-case-definitions.mjs`
+  (generator `bin/generate-display-mode-simple-suites.mjs`; catalogues
+  `packages/samples/<api>[-diffs]-display-mode-simple/README.md`). Every other suite captures
+  `detailed` only. Adding an annotation = a table entry here **and** a case there.

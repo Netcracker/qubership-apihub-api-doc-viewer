@@ -69,4 +69,4 @@ Programmatic, not YAML: one operation template and one fragment per scheme kind 
 | --- | --- |
 | Unit tests | `packages/next-data-model/tests/unit-tests/openapi-security-hiding-unchanged.test.ts`, `openapi-security-anonymous.test.ts` |
 | Stories | `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes` — `src/stories/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.stories.tsx` (control `hideUnchangedNodes`) |
-| Screenshot ITs | `src/it/openapi-diffs-hiding-unchanged-nodes-suite.security-schemes.it-test.ts` — every case in `detailed` and `simple`, plus a `revealed` capture of every case with an unchanged card |
+| Screenshot ITs | `src/it/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.it-test.ts` — every case collapsed in `detailed`, plus a `revealed` capture of every case with an unchanged card |

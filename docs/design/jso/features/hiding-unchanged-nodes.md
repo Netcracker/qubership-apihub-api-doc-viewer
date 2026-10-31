@@ -56,7 +56,7 @@ Catalogue: [packages/samples/jso-diffs/hiding-unchanged-nodes/README.md](../../.
 | --- | --- |
 | Unit tests | `packages/next-data-model/tests/unit-tests/jso-changed-only.test.ts` |
 | Stories | `JSO Diffs Suite (Hiding Unchanged Nodes)/{Root Level, Second Level, Nested}` — `src/stories/jso-diffs-hiding-unchanged-nodes-suite/` (control `hideUnchangedNodes`, default `true`) |
-| Screenshot ITs | `src/it/jso-diffs-hiding-unchanged-nodes-suite.<group>.it-test.ts` — every case collapsed, plus a `revealed` capture of every case with a `⋯` row |
+| Screenshot ITs | `src/it/jso-diffs-hiding-unchanged-nodes-suite/<group>.it-test.ts` — every case collapsed, plus a `revealed` capture of every case with a `⋯` row |
 
 The property suites (`JSO Diffs Suite`) pin `hideUnchangedNodes: false` (story control), so they
 keep showing every row.

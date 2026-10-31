@@ -59,6 +59,15 @@ describe("Storybook order and the single-suite runner", () => {
     expect(positions).toEqual(sorted)
   })
 
+  it("keeps every IT in its test-run folder, next to its own __image_snapshots__", () => {
+    // One folder per test run (`src/it/<test-run>/`): no IT directly in src/it, no shared umbrella
+    // snapshot directory. jest-image-snapshot writes next to the test file by default.
+    const misplaced = readdirSync(IT_ROOT, { withFileTypes: true })
+      .filter(entry => entry.isFile() ? entry.name.endsWith(".it-test.ts") : entry.name === "__image_snapshots__")
+      .map(entry => entry.name)
+    expect(misplaced).toEqual([])
+  })
+
   it("orders every hand-written test run of src/it", () => {
     const testRunIds = new Set(readdirSync(IT_ROOT, { withFileTypes: true })
       .filter(entry => entry.isDirectory() ? !IT_DIRS_WITHOUT_TEST_RUN.has(entry.name) : entry.name.endsWith(".it-test.ts"))

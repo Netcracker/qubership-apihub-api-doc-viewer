@@ -32,11 +32,6 @@ const SUITES = [
     testFileName: "escaping-spec-chars.it-test.ts",
   },
   {
-    suiteId: "display-mode-simple",
-    title: "DDL API Suite/Display Mode Simple",
-    testFileName: "display-mode-simple.it-test.ts",
-  },
-  {
     suiteId: "table-descriptions",
     title: "DDL API Suite/Table Descriptions",
     testFileName: "table-descriptions.it-test.ts",
@@ -68,7 +63,7 @@ import { storyPage } from '../service/storybook-service'
 import { waitForDdlTableViewer } from '../service/viewer-waits'
 
 const META_ID = '${metaId}'
-const SNAPSHOTS_DIR = path.resolve(__dirname, '..', '__image_snapshots__')
+const SNAPSHOTS_DIR = path.resolve(__dirname, '__image_snapshots__')
 
 const TEST_IDS: string[] = [
 ${testIdsLiteral}

@@ -99,6 +99,15 @@ Canonical skill sources live under `agent-packages/`. After editing skills there
   Details: `next-data-model-authoring`.
 - **Property lists** — list parents precompute sibling context (`buildColumnViewerContexts`,
   `buildIndexViewerContexts`); item viewers render stacked rows only.
+- **Screenshot IT layout** — one folder per test run: `packages/api-doc-viewer/src/it/<test-run>/*.it-test.ts`
+  with its baselines in `src/it/<test-run>/__image_snapshots__/` (jest-image-snapshot default). No
+  IT directly in `src/it/`, no shared `src/it/__image_snapshots__/` (`tests/storybook-order.test.ts`
+  checks it); compatibility baselines: `src/it/compatibility-suite/<test-run>/__image_snapshots__/`.
+- **Display mode coverage** — only `* Suite (Display Mode = simple)` / `* Diffs Suite (Display Mode
+  = simple)` (AsyncAPI, OpenAPI, JSON Schema, DDL API; `bin/generate-display-mode-simple-suites.mjs`)
+  capture `simple`, one case per hidden element, each in `detailed` and `simple`. Every other suite
+  captures the default `detailed` only — never branch it by display mode. Details:
+  `api-doc-viewer-testing` → Display mode suites.
 
 ## Generated filenames (`*.generated.*`) — important
 
@@ -289,7 +298,7 @@ Hand-written diff sample suites follow the AsyncAPI / JSO pattern:
    (case factories called with `defaultHideUnchangedNodes = true`), renders with
    **`JsonSchemaDiffsViewer`** (`hideUnchangedNodes` defaults to `true`). Storybook root title:
    `JSON Schema Diffs Suite (Hiding Unchanged Nodes)`.
-4. **Screenshot ITs** — paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`;
+4. **Screenshot ITs** — paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite/*.it-test.ts`;
    wait for `[data-testid="json-schema-diffs-viewer"]` before capture (see
    `api-doc-viewer-testing` skill).
 5. **Changed-only rows** — data-layer `isJsonSchemaNodeChanged` /

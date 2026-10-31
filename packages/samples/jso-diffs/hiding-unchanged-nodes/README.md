@@ -53,7 +53,7 @@ are inside `second`. Cases 2.6–2.7 use arrays instead.
 Story root `JSO Diffs Suite (Hiding Unchanged Nodes)`: `Root Level`, `Second Level`, `Nested`
 (`packages/api-doc-viewer/src/stories/jso-diffs-hiding-unchanged-nodes-suite/`), control
 `hideUnchangedNodes` (default `true`). ITs
-`packages/api-doc-viewer/src/it/jso-diffs-hiding-unchanged-nodes-suite.<group>.it-test.ts` capture
+`packages/api-doc-viewer/src/it/jso-diffs-hiding-unchanged-nodes-suite/<group>.it-test.ts` capture
 every case collapsed and, when it has a `⋯` row, once more revealed. Unit tests:
 `packages/next-data-model/tests/unit-tests/jso-changed-only.test.ts`.
 

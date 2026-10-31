@@ -252,10 +252,24 @@ A wrong story id produces the same timeout as a broken viewer — rule out ID mi
 
 ## Test anatomy
 
+**Layout (one folder per test run).** Every IT lives in its test-run folder
+`src/it/<test-run>/<suite>.it-test.ts` (test run = `<samples folder>-suite`, e.g.
+`src/it/async-api-suite/security.it-test.ts`), and its baselines in that folder's
+`__image_snapshots__/` — the jest-image-snapshot default next to the test file, so no
+`customSnapshotsDir` is needed (DDL ITs pass the same folder explicitly next to their custom
+identifiers). There is no shared `src/it/__image_snapshots__/` and no IT directly in `src/it/`;
+`tests/storybook-order.test.ts` fails on either. Generated compatibility ITs stay in
+`src/it/compatibility-suite/` (gitignored) with committed baselines per test run in
+`src/it/compatibility-suite/<test-run>/__image_snapshots__/`; their generator deletes only
+`*.generated.it-test.ts` there, never the folder. A generator that recreates a suite's ITs must
+delete `*.it-test.ts` files only, never `__image_snapshots__/`. Moving an IT file renames its
+default snapshot identifiers (`kebabCase(<file name>-<test name>-<counter>)`): rename the PNGs
+with it instead of regenerating.
+
 Each IT file targets one Storybook meta (suite). Pattern:
 
 ```typescript
-import { storyPage } from './service/storybook-service'
+import { storyPage } from '../service/storybook-service'
 
 beforeEach(async () => {
   await jestPuppeteer.resetPage()
@@ -321,13 +335,27 @@ the generator is wrong):
   `node bin/generate-json-schema-validation-suite-stories.mjs`,
   `node bin/generate-json-schema-type-changes-samples.mjs`,
   `node bin/generate-value-range-diff-stories.mjs`, and matching `*-tests.mjs` scripts.
+- **Display mode suites** — `node bin/generate-display-mode-simple-suites.mjs` (cases in
+  `bin/display-mode-simple-case-definitions.mjs`) → for AsyncAPI, OpenAPI, JSON Schema, and DDL API
+  one `* Suite (Display Mode = simple)` and one `* Diffs Suite (Display Mode = simple)`: test runs
+  `<api>[-diffs]-display-mode-simple-suite`, fixtures + catalogue `packages/samples/<api>[-diffs]-display-mode-simple/`
+  (recreated), `src/stories/<test run>/cases.stories.tsx`, `src/it/<test run>/cases.it-test.ts`.
+  **These are the only suites that capture `simple`:** every case in `detailed` and `simple` via
+  `storyPageWithArgs(page, storyId, { displayMode })`. One case = one element `simple` hides (design
+  `docs/design/shared/features/display-mode-annotations.md`; DDL `docs/design/ddlapi/features/doc-view.md`),
+  on the API type's minimal base document; the diffs pair replaces that element's value (`values:
+  [before, after]`; a single-value case is plain only, its id stays a gap in the diffs suite).
+  Adding a hideable element = append a case there, regenerate, and regenerate the two suites'
+  baselines. Every other suite captures the default `detailed` only — never branch an existing
+  suite by display mode or add a per-mode story or fixture. The `displayMode` story control
+  (`src/stories/shared/display-mode-arg-types.ts`) is shared by every story factory.
 - **OpenAPI suites — read [openapi-suites.md](openapi-suites.md) before touching OpenAPI fixtures,
   stories, or ITs** (generators, E2E pairs + windows, fields sub-groups, opposites, auto-switch,
-  display-mode args, maintenance workflow, traps). Summary:
+  maintenance workflow, traps). Summary:
 - OpenAPI Operation Suite (plain) — `node bin/generate-openapi-suite.mjs` (cases in
   `bin/openapi-plain-case-definitions.mjs`) → recreates `packages/samples/openapi/`,
   `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx` (Fields is split into semantic sub-groups),
-  `src/it/openapi-suite.<dialect>-<group>.it-test.ts`, and the generated block of
+  `src/it/openapi-suite/<dialect>-<group>.it-test.ts`, and the generated block of
   `docs/design/openapi/features/plain-case-matrix.md`. Groups: E2E section combinations, minimal,
   fields, document structure (OAS 3.1: fields + structure, only what differs from 3.0). Cases list
   `switchTo` option test ids (security alternative, response code, `request-media-type-*` /
@@ -338,12 +366,11 @@ the generator is wrong):
 - OpenAPI Operation Diffs Suite — `node bin/generate-openapi-diffs-suite.mjs` (cases in
   `bin/openapi-diffs-case-definitions.mjs`) → recreates `packages/samples/openapi-diffs/` (fixtures +
   catalogues), `src/stories/openapi-diffs-suite/<category>.stories.tsx`,
-  `src/it/openapi-diffs-suite.<category>.it-test.ts`, and the generated block of
+  `src/it/openapi-diffs-suite/<category>.it-test.ts`, and the generated block of
   `docs/design/openapi/features/diffs-case-matrix.md`. Opposite cases (add ↔ remove, on ↔ off,
   A → B ↔ B → A moves) are adjacent; parameter-like fragments and the two bodies share one case
-  list, so one id is one change in every folder (skipped slots stay unused). Display mode is a story
-  control: ITs capture every case in `detailed` and `simple` via `storyPageWithArgs` — never add a
-  per-mode story or fixture.
+  list, so one id is one change in every folder (skipped slots stay unused). ITs capture every case
+  in `detailed` only (`simple`: the Display mode suites above).
 - JSON Schema property rename — `node bin/generate-json-schema-property-rename-suite.mjs` →
   `src/stories/json-schema-diffs-suite/property-rename.stories.tsx` and
   `src/it/json-schema-diffs-suite/property-rename.it-test.ts` from the OpenAPI fixture pairs under
@@ -357,8 +384,8 @@ the generator is wrong):
   `packages/samples/async-api-diffs/security/` (fixtures + catalogues),
   `src/stories/async-api-suite/security.stories.tsx` (`Async API Suite/Security`),
   `src/stories/async-api-diffs-suite/security.stories.tsx` (`Async API Diffs Suite/Security Samples`)
-  and the paired `src/it/async-api-*suite.security.it-test.ts`. Every case is captured in `detailed`
-  and `simple`; server cases click `[data-testid="message-channel"]` and wait for
+  and the paired `src/it/async-api-[diffs-]suite/security.it-test.ts`. Every case is captured in
+  `detailed` (`simple`: the Display mode suites); server cases click `[data-testid="message-channel"]` and wait for
   `message-channel-section` first (servers live in the Channel tab). Section test id:
   `async-api-security-section`. Data-layer tests: `next-data-model/tests/unit-tests/async-api-security.test.ts`
   (fixtures via `tests/helpers/async-api-security-fixtures.ts`).
@@ -432,11 +459,11 @@ rather than assuming the literal list is the complete requirement.
 - JSO general suite, AsyncAPI suites, JSO/AsyncAPI diff sample suites under
   `src/stories/*/` with paired `src/it/*.it-test.ts` (except AsyncAPI Security — generated, above).
 - JSON Schema diff suites — `src/stories/json-schema-diffs-hiding-unchanged-nodes-suite/` and
-  `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts` (fixtures under
+  `src/it/json-schema-diffs-hiding-unchanged-nodes-suite/*.it-test.ts` (fixtures under
   `packages/samples/json-schema-diffs/`).
 - JSO hiding suite — `JSO Diffs Suite (Hiding Unchanged Nodes)/{Root Level, Second Level, Nested}`:
   `src/stories/jso-diffs-hiding-unchanged-nodes-suite/<group>.stories.tsx` and
-  `src/it/jso-diffs-hiding-unchanged-nodes-suite.<group>.it-test.ts` (fixtures and catalogue:
+  `src/it/jso-diffs-hiding-unchanged-nodes-suite/<group>.it-test.ts` (fixtures and catalogue:
   `packages/samples/jso-diffs/hiding-unchanged-nodes/`). Stories reuse the JSO suite's
   `createJsoCaseStoryFactory(..., defaultHideUnchangedNodes = true)`; the property suites
   (`JSO Diffs Suite`) keep the default `false`. ITs capture every case collapsed and, for cases with
@@ -583,7 +610,7 @@ Stories glob fixtures, merge with `prepareJsonDiffSchema()`, and render through
 
 1. YAML pair under the appropriate suite subdirectory.
 2. Story export in the matching `*.stories.tsx`.
-3. Matching `it(...)` in the paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite.*.it-test.ts`.
+3. Matching `it(...)` in the paired `src/it/json-schema-diffs-hiding-unchanged-nodes-suite/*.it-test.ts`.
 4. Screenshot snapshots via `npm run regenerate-screenshots`.
 
 ## Flaky rendering
@@ -657,7 +684,8 @@ the raw PNG bytes (which showed the row background was in fact missing).
 
 ## Snapshots
 
-Images land in `src/it/__image_snapshots__/`. Snapshot identifiers follow
+Images land in `src/it/<test-run>/__image_snapshots__/` (next to the IT; see **Test anatomy** →
+Layout). Snapshot identifiers follow
 `{describe-slug}-{test-name}-{counter}` unless overridden via
 `customSnapshotIdentifier`.
 

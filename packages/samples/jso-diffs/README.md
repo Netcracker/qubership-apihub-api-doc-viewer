@@ -35,7 +35,7 @@ Plain JSO stories (`JSO Suite/General`, 19 stories) use inline data in
 
 Story root `JSO Diffs Suite` (154 stories); fixtures are loaded by `property-samples-common.tsx`.
 Stories pin `hideUnchangedNodes: false` (story control `hideUnchangedNodes`), so every row is shown.
-ITs: `packages/api-doc-viewer/src/it/jso-diffs-suite.*.it-test.ts`.
+ITs: `packages/api-doc-viewer/src/it/jso-diffs-suite/*.it-test.ts`.
 
 ## Regenerate
 

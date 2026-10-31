@@ -2,7 +2,7 @@
 
 What the `OpenAPI Operation Diffs Suite` covers, and why. Fixtures:
 [packages/samples/openapi-diffs/](../../../../packages/samples/openapi-diffs/README.md); stories and
-ITs: `packages/api-doc-viewer/src/{stories/openapi-diffs-suite,it/openapi-diffs-suite.*}`. Diff
+ITs: `packages/api-doc-viewer/src/{stories/openapi-diffs-suite,it/openapi-diffs-suite/*}`. Diff
 rules the cases exercise: [diffs.md](diffs.md).
 
 ## Rules
@@ -16,7 +16,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 | Path parameters | Cannot be added, removed, made optional, or removed as a group without changing the path template, which makes `apiDiff` pair different paths (a different operation). Covered: rename (renames the template: address row replace + property rename), description, deprecated, `schema` ↔ `content`, extensions. |
 | Response codes | Whole add / remove per code kind (`1XX`–`5XX`, a range, `default`); the IT selects the changed code. All other response cases change the initially selected `200`, except `description-changed-non-initial-code` (change marker on a code that is not selected). |
 | JSON Schemas inside | Not fanned out (that is the JSON Schema suites' job): each body has one property add / remove pair and one schema replace; the `schema` ↔ `content` and description-precedence cases cover the parameter synthesis. |
-| Display modes | One story per case; `displayMode` is a story control (default `detailed`). ITs capture every case in `detailed` and `simple` by passing the story arg — never a duplicated story or fixture. |
+| Display modes | One story per case; `displayMode` is a story control (default `detailed`). ITs capture every case in `detailed` only. `simple` is covered once per hidden annotation by `OpenAPI Operation Diffs Suite (Display Mode = simple)` ([../../shared/features/display-mode-annotations.md](../../shared/features/display-mode-annotations.md#tests)) — never a duplicated story, fixture, or IT branch here. |
 | Hiding unchanged nodes | Off: the story control `hideUnchangedNodes` defaults to `false`, so every row of the OpenAPI layer and of every embedded JSON Schema / JSO viewer is shown. Hiding is covered by `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)` ([hiding-unchanged-nodes.md](hiding-unchanged-nodes.md)). |
 | Generated | Fixtures, catalogues, stories, ITs, and the matrix below come from `packages/api-doc-viewer/bin/openapi-diffs-case-definitions.mjs` via `node bin/generate-openapi-diffs-suite.mjs`. Change cases there, not in the output. |
 
@@ -24,7 +24,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-diffs-suite.mjs -->
 
-254 cases; ITs capture each in `detailed` and `simple` (508 screenshots).
+254 cases; ITs capture each in `detailed` (254 screenshots). Display mode `simple` is covered by `OpenAPI Operation Diffs Suite (Display Mode = simple)`.
 
 ### Parameters and headers
 

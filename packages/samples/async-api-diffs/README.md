@@ -37,7 +37,7 @@ Plain AsyncAPI stories (`Async API Suite`, 66 stories) use inline data in
 | `security/` | `Async API Diffs Suite/Security Samples` | `security.*` |
 
 Stories: `packages/api-doc-viewer/src/stories/async-api-diffs-suite/`; ITs:
-`src/it/async-api-diffs-suite.*.it-test.ts`.
+`src/it/async-api-diffs-suite/*.it-test.ts`.
 
 ## Regenerate
 

@@ -9,13 +9,14 @@ the design, and the code; the design wins.
 
 | Suite | Case definitions | Generator | Output (all recreated on every run) |
 | --- | --- | --- | --- |
-| `OpenAPI Operation Suite` (plain) | `packages/api-doc-viewer/bin/openapi-plain-case-definitions.mjs` | `node bin/generate-openapi-suite.mjs` | `packages/samples/openapi/**` (fixtures + catalogues), `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx`, `src/it/openapi-suite.<dialect>-<group>[-<sub-group>].it-test.ts`, generated block of `plain-case-matrix.md` |
-| `OpenAPI Operation Diffs Suite` | `bin/openapi-diffs-case-definitions.mjs` | `node bin/generate-openapi-diffs-suite.mjs` | `packages/samples/openapi-diffs/**`, `src/stories/openapi-diffs-suite/<category>.stories.tsx`, `src/it/openapi-diffs-suite.<category>.it-test.ts`, generated block of `diffs-case-matrix.md` |
+| `OpenAPI Operation Suite` (plain) | `packages/api-doc-viewer/bin/openapi-plain-case-definitions.mjs` | `node bin/generate-openapi-suite.mjs` | `packages/samples/openapi/**` (fixtures + catalogues), `src/stories/openapi-suite/<dialect>-<group>[-<sub-group>].stories.tsx`, `src/it/openapi-suite/<dialect>-<group>[-<sub-group>].it-test.ts`, generated block of `plain-case-matrix.md` |
+| `OpenAPI Operation Diffs Suite` | `bin/openapi-diffs-case-definitions.mjs` | `node bin/generate-openapi-diffs-suite.mjs` | `packages/samples/openapi-diffs/**`, `src/stories/openapi-diffs-suite/<category>.stories.tsx`, `src/it/openapi-diffs-suite/<category>.it-test.ts`, generated block of `diffs-case-matrix.md` |
 
 - Run generators from `packages/api-doc-viewer/`. They are **not** in `npm run generate-*`
   (those are compatibility-suite only); commit the output.
 - Each generator **deletes** its sample root, its `*.stories.tsx` in the story folder, and its
-  `openapi-[diffs-]suite.*.it-test.ts` files before writing. Never put hand-written files there;
+  `*.it-test.ts` files in `src/it/openapi-[diffs-]suite/` (never its `__image_snapshots__/`) before
+  writing. Never put hand-written files there;
   hand-written helpers live next to them under other names (`OpenApiSampleStory.tsx`,
   `OpenApiDiffSampleStory.tsx`, `openapi-story-args.ts`, `openapi-suite-utils.ts`).
 - The design docs keep hand-written rules **outside** the
@@ -151,10 +152,12 @@ prefixed per body because both bodies can show the same media type).
 
 ## Stories and ITs — shared rules
 
-- **One story per case.** Display mode is the story control `displayMode` (default `detailed`);
-  ITs capture every case in `detailed` **and** `simple` via `storyPageWithArgs(page, id,
-  { displayMode })` inside `describe.each(['detailed', 'simple'])`. Never add a per-mode export or
-  fixture. Plain stories also have `autoSwitch` and `noHeading` controls
+- **One story per case, `detailed` only.** Display mode is the story control `displayMode`
+  (default `detailed`); these suites' ITs capture the default only. `simple` is covered once per
+  hideable element by `OpenAPI Operation [Diffs ]Suite (Display Mode = simple)`
+  (`bin/generate-display-mode-simple-suites.mjs`, see SKILL.md → Display mode suites), the only ITs
+  that run `describe.each(['detailed', 'simple'])`. Never add a per-mode export, fixture, or IT
+  branch here. Plain stories also have `autoSwitch` and `noHeading` controls
   (`OPENAPI_PLAIN_STORY_ARG_TYPES`); diff stories `displayMode` and `hideUnchangedNodes`
   (`OPENAPI_DIFFS_STORY_ARG_TYPES`, default `false` — hiding is off in the diffs suite, for the
   OpenAPI layer and every embedded JSON Schema / JSO viewer; only the "Hiding Unchanged Nodes"
@@ -163,7 +166,7 @@ prefixed per body because both bodies can show the same media type).
 - Waits: `waitForOpenApiOperationViewer` / `waitForOpenApiOperationDiffsViewer`
   (`src/it/service/viewer-waits.ts`); never local wait helpers.
 - Suite ids for `bin/run-screenshot-test-suite.mjs`: `openapi-suite`, `openapi-diffs-suite`
-  (flat `openapi-[diffs-]suite.*.it-test.ts` files).
+  (folders `src/it/openapi-[diffs-]suite/`, baselines in their `__image_snapshots__/`).
 
 ## Maintenance workflow
 
@@ -173,7 +176,7 @@ prefixed per body because both bodies can show the same media type).
    deterministic.
 3. Smoke-render without Docker when needed: bundle a scratch entry with the root `esbuild`
    (`--platform=node --jsx=automatic --tsconfig=tsconfig.json --loader:.css=empty`) that renders
-   every case with `react-dom/server` in both display modes and checks every `switchTo` test id is
+   every case with `react-dom/server` and checks every `switchTo` test id is
    present. Keep the entry file out of the repo (delete it after bundling).
 4. Data-layer unit tests load fixtures by id (`tests/helpers/openapi-fixtures.ts`:
    `loadNormalizedOpenApiSample('oas30/structure/01-…')`, `loadMergedOpenApiSample('request-body/04-…')`).
@@ -233,7 +236,7 @@ scroll). In diffs the strips are one per side: index `0` origin, `1` changed. Di
 per scheme kind toggled by `hasChanges` in `packages/samples/src/openapi-diffs-hiding-unchanged-nodes.ts`
 (design: `docs/design/openapi/features/hiding-unchanged-nodes.md`). Stories pass the built documents
 as JSON strings to `OpenApiDiffSampleStory` (`parseYamlSource` reads JSON) and add a
-`hideUnchangedNodes` control. The IT captures every case in `detailed` / `simple` and, for cases with
+`hideUnchangedNodes` control. The IT captures every case collapsed (`detailed`) and, for cases with
 an unchanged card, a `revealed` capture after clicking every `[data-testid="security-show-unchanged"] button`.
 When cases change, update the story exports and the IT `CASES` together (ids from
 `bin/storybook-story-id-utils.mjs` — `oauth2` slugs to `oauth-2`). Suite id for the runner:

@@ -124,7 +124,10 @@ function resolveUiMode() {
 const uiMode = resolveUiMode();
 
 /**
- * @returns {Array<{ samplesDir: string, itSuiteId: string, layout: 'folder' | 'flat' | 'compatibility', itDir?: string, prefix?: string }>}
+ * Every hand-written test run is one folder `src/it/<test-run>/`: its `*.it-test.ts` files and
+ * their baselines (`__image_snapshots__/`, the jest-image-snapshot default next to the test file).
+ *
+ * @returns {Array<{ samplesDir: string, itSuiteId: string, layout: 'folder' | 'compatibility', itDir: string, prefix?: string }>}
  */
 function discoverTestRuns() {
   if (!fs.existsSync(samplesRoot)) {
@@ -143,17 +146,7 @@ function discoverTestRuns() {
       if (fs.existsSync(itDir) && fs.statSync(itDir).isDirectory()) {
         return { samplesDir, itSuiteId, layout: 'folder', itDir };
       }
-
-      const prefix = `${itSuiteId}.`;
-      const hasFlatTests = itEntries.some(
-        (file) => file.isFile() && file.name.startsWith(prefix) && file.name.endsWith('.it-test.ts'),
-      );
-
-      if (!hasFlatTests) {
-        return null;
-      }
-
-      return { samplesDir, itSuiteId, layout: 'flat', prefix };
+      return null;
     })
     .filter(Boolean);
 
@@ -164,7 +157,6 @@ function discoverTestRuns() {
       entry.isDirectory()
       && !knownIds.has(entry.name)
       && entry.name !== 'service'
-      && entry.name !== '__image_snapshots__'
       // Generated compatibility ITs are listed per spec type below, not as one aggregate test run.
       && entry.name !== COMPATIBILITY_SUITE_DIR
     ) {
@@ -180,27 +172,6 @@ function discoverTestRuns() {
         knownIds.add(entry.name);
       }
     }
-  }
-
-  for (const entry of itEntries) {
-    if (!entry.isFile() || !entry.name.endsWith('.it-test.ts')) {
-      continue;
-    }
-    const separatorIndex = entry.name.indexOf('.');
-    if (separatorIndex <= 0) {
-      continue;
-    }
-    const itSuiteId = entry.name.slice(0, separatorIndex);
-    if (knownIds.has(itSuiteId)) {
-      continue;
-    }
-    testRuns.push({
-      samplesDir: itSuiteId.replace(/-suite$/, ''),
-      itSuiteId,
-      layout: 'flat',
-      prefix: `${itSuiteId}.`,
-    });
-    knownIds.add(itSuiteId);
   }
 
   // Listed even when the generated files are absent (gitignored); see ensureCompatibilityTests().
@@ -265,7 +236,7 @@ function ensureCompatibilityTests(testRun) {
 }
 
 /**
- * @param {{ layout: 'folder' | 'flat', itDir?: string, prefix?: string }} testRun
+ * @param {{ layout: 'folder' | 'compatibility', itDir: string, prefix?: string }} testRun
  * @returns {string[]}
  */
 function discoverSuites(testRun) {
@@ -275,33 +246,24 @@ function discoverSuites(testRun) {
       .sort();
   }
 
-  if (testRun.layout === 'folder') {
-    return fs.readdirSync(testRun.itDir)
-      .filter((file) => file.endsWith('.it-test.ts'))
-      .map((file) => file.replace(IT_TEST_SUFFIX_RE, ''))
-      .sort();
-  }
-
-  return fs.readdirSync(itRoot)
-    .filter((file) => file.startsWith(testRun.prefix) && file.endsWith('.it-test.ts'))
-    .map((file) => file.slice(testRun.prefix.length).replace(IT_TEST_SUFFIX_RE, ''))
+  return fs.readdirSync(testRun.itDir)
+    .filter((file) => file.endsWith('.it-test.ts'))
+    .map((file) => file.replace(IT_TEST_SUFFIX_RE, ''))
     .sort();
 }
 
 /**
  * Regex path segment that Jest's `--testPathPatterns` needs to select every IT file
- * belonging to one test run, regardless of its on-disk layout.
+ * belonging to one test run.
  *
- * @param {{ layout: 'folder' | 'flat', itSuiteId: string, prefix?: string }} testRun
+ * @param {{ layout: 'folder' | 'compatibility', itSuiteId: string, prefix?: string }} testRun
  * @returns {string}
  */
 function testRunPatternSegment(testRun) {
   if (testRun.layout === 'compatibility') {
     return `src/it/${COMPATIBILITY_SUITE_DIR}/${testRun.prefix}`;
   }
-  return testRun.layout === 'folder'
-    ? `src/it/${testRun.itSuiteId}/`
-    : `src/it/${testRun.prefix.replace('.', '\\.')}`;
+  return `src/it/${testRun.itSuiteId}/`;
 }
 
 /**
@@ -342,7 +304,7 @@ function resolveTestRunSelection(raw, testRuns) {
 }
 
 /**
- * @param {{ layout: 'folder' | 'flat', itSuiteId: string, prefix?: string }} testRun
+ * @param {{ layout: 'folder' | 'compatibility', itSuiteId: string, itDir: string, prefix?: string }} testRun
  * @param {string} suiteChoice
  * @returns {string}
  */
@@ -354,17 +316,10 @@ function resolveJestTarget(testRun, suiteChoice) {
   }
 
   if (suiteChoice === WHOLE_SUITE_VALUE) {
-    if (testRun.layout === 'folder') {
-      return `src/it/${testRun.itSuiteId}`;
-    }
-    return `--testPathPatterns=${testRun.prefix.replace('.', '\\.')}.+\\.it-test\\.ts$`;
+    return `src/it/${testRun.itSuiteId}`;
   }
 
-  if (testRun.layout === 'folder') {
-    return `src/it/${testRun.itSuiteId}/${resolveItTestFileName(testRun.itDir, suiteChoice)}`;
-  }
-
-  return `src/it/${resolveItTestFileName(itRoot, `${testRun.prefix}${suiteChoice}`)}`;
+  return `src/it/${testRun.itSuiteId}/${resolveItTestFileName(testRun.itDir, suiteChoice)}`;
 }
 
 /**

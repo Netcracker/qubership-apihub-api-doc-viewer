@@ -143,8 +143,8 @@ shows when it has content on either side or a diff of its own.
 ## Regression coverage
 
 Suites (stories under `packages/api-doc-viewer/src/stories/openapi-suite/` and
-`…/openapi-diffs-suite/`, ITs `src/it/openapi-suite.*.it-test.ts` and
-`src/it/openapi-diffs-suite.*.it-test.ts`; unit tests in
+`…/openapi-diffs-suite/`, ITs `src/it/openapi-suite/*.it-test.ts` and
+`src/it/openapi-diffs-suite/*.it-test.ts`; unit tests in
 `packages/next-data-model/tests/unit-tests/openapi-*.test.ts` and
 `packages/api-doc-viewer/tests/openapi-viewer-config.test.ts`):
 

@@ -1,27 +1,18 @@
 import { AsyncApiOperationViewer } from "@apihub/components/AsyncApiOperationViewer/AsyncApiOperationViewer";
-import { DETAILED_DISPLAY_MODE, DisplayMode, SIMPLE_DISPLAY_MODE } from "@apihub/types/DisplayMode";
+import { DETAILED_DISPLAY_MODE, DisplayMode } from "@apihub/types/DisplayMode";
 import { FC, useMemo } from "react";
 import { prepareAsyncApiDocument } from "../preprocess";
+import { DISPLAY_MODE_ARG_TYPES, DISPLAY_MODE_DEFAULT_ARGS } from "../shared/display-mode-arg-types";
 import { parseYamlSource } from "../utils/parse-yaml-source";
 import { TEST_REFERENCE_NAME_PROPERTY } from "./shared-test-data";
 
-/** Operation / message every AsyncAPI Security fixture declares. */
+/** Operation / message every AsyncAPI Security and Display Mode fixture declares. */
 export const ASYNC_API_SECURITY_OPERATION_KEYS = { operationKey: "sendOperation", messageKey: "TestMessage" } as const;
 
-const DISPLAY_MODES: readonly DisplayMode[] = [DETAILED_DISPLAY_MODE, SIMPLE_DISPLAY_MODE];
+/** Story controls of the AsyncAPI document suites: the display mode (a story arg). */
+export const ASYNC_API_SECURITY_STORY_ARG_TYPES = DISPLAY_MODE_ARG_TYPES;
 
-/** Story controls of the AsyncAPI Security suites: the display mode (ITs pass it as a story arg). */
-export const ASYNC_API_SECURITY_STORY_ARG_TYPES = {
-  displayMode: {
-    control: { type: "select" },
-    options: DISPLAY_MODES,
-    table: { category: "Viewer" },
-  },
-} as const;
-
-export const ASYNC_API_SECURITY_STORY_DEFAULT_ARGS: { displayMode: DisplayMode } = {
-  displayMode: DETAILED_DISPLAY_MODE,
-};
+export const ASYNC_API_SECURITY_STORY_DEFAULT_ARGS: { displayMode: DisplayMode } = DISPLAY_MODE_DEFAULT_ARGS;
 
 export type AsyncApiSecuritySampleStoryProps = {
   caseId: string;
@@ -29,7 +20,11 @@ export type AsyncApiSecuritySampleStoryProps = {
   displayMode?: DisplayMode;
 };
 
-/** One plain AsyncAPI Security fixture (`packages/samples/async-api/security/<case>/document.yaml`). */
+/**
+ * One plain AsyncAPI document declaring `sendOperation` / `TestMessage`: the Security fixtures
+ * (`packages/samples/async-api/security/<case>/document.yaml`) and the Display Mode fixtures
+ * (`packages/samples/async-api-display-mode-simple/<case>/sample.yaml`).
+ */
 export const AsyncApiSecuritySampleStory: FC<AsyncApiSecuritySampleStoryProps> = ({ yaml, displayMode = DETAILED_DISPLAY_MODE }) => {
   const source = useMemo(() => prepareAsyncApiDocument({ source: parseYamlSource(yaml) }), [yaml]);
   return (

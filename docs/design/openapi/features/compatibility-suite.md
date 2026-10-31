@@ -41,7 +41,8 @@ shared helpers in `bin/compatibility-suite-generation-utils.mjs`) write
 `src/stories/compatibility-suite/openapi-compatibility-suite-*.generated.stories.tsx` and
 `src/it/compatibility-suite/openapi-compatibility-suite-*.generated.it-test.ts` next to the GraphQL
 and DDL API ones. An IT opens the story, waits for `[data-testid="openapi-operation-diffs-viewer"]`,
-and captures one screenshot (`__image_snapshots__/<metaId>-<testId>-1.png`).
+and captures one screenshot (`src/it/compatibility-suite/<test-run>/__image_snapshots__/<metaId>-<testId>-1.png`,
+committed; the test generator deletes only the gitignored `*.generated.it-test.ts` files there).
 
 Run: `node bin/run-screenshot-test-suite.mjs regenerate openapi-compatibility-suite-30-31 [suite]`.
 

@@ -2,7 +2,7 @@
 
 What the `OpenAPI Operation Suite` covers, and why. Fixtures:
 [packages/samples/openapi/](../../../../packages/samples/openapi/README.md); stories and ITs:
-`packages/api-doc-viewer/src/{stories/openapi-suite,it/openapi-suite.*}`. Diff cases:
+`packages/api-doc-viewer/src/{stories/openapi-suite,it/openapi-suite/*}`. Diff cases:
 [diffs-case-matrix.md](diffs-case-matrix.md).
 
 ## Groups
@@ -24,7 +24,7 @@ What the `OpenAPI Operation Suite` covers, and why. Fixtures:
 | "No description" | A Response Object requires `description`; `''` stands for "none" (the viewer hides empty text). |
 | Deprecated body | OpenAPI has no `deprecated` on a Request Body or Media Type: the deprecated variant marks the media type schema root `deprecated: true`. A response has no `required`, so response bodies vary by media types and the deprecated schema root only. |
 | Auto-switch | `switchTo` (security alternative, response code, media type test ids) is selected by `switchOpenApiOptions` from the story `play` (control `autoSwitch`, default on) and from the ITs via `page.evaluate` — the JSON Schema combiner auto-switch pattern. Media-type test ids are `request-media-type-<key>` / `response-media-type-<key>`. |
-| Display modes | One story per case; ITs capture every case in `detailed` and `simple` via the `displayMode` story arg. |
+| Display modes | One story per case; `displayMode` is a story control (default `detailed`). ITs capture every case in `detailed` only; `simple` is covered once per hidden annotation by `OpenAPI Operation Suite (Display Mode = simple)` ([../../shared/features/display-mode-annotations.md](../../shared/features/display-mode-annotations.md#tests)). |
 | Generated | Fixtures, catalogues, stories, ITs, and the matrix below come from `packages/api-doc-viewer/bin/openapi-plain-case-definitions.mjs` via `node bin/generate-openapi-suite.mjs`. |
 
 ## E2E approach (decision, 2026-10-12 — keep)
@@ -53,7 +53,7 @@ How to extend and maintain the suites:
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-suite.mjs -->
 
-288 cases; ITs capture each in `detailed` and `simple` (576 screenshots, plus the `noHeading` variant of the all-sections case).
+288 cases; ITs capture each in `detailed` (288 screenshots, plus the `noHeading` variant of the all-sections case). Display mode `simple` is covered by `OpenAPI Operation Suite (Display Mode = simple)`.
 
 ### OAS 3.0 — E2E (`oas30/e2e/`, 168)
 

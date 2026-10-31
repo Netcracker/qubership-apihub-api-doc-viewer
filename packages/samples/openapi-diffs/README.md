@@ -35,8 +35,8 @@ Total: 254 cases.
 
 `OpenAPI Operation Diffs Suite/<Category>` stories under `packages/api-doc-viewer/src/stories/openapi-diffs-suite/`
 (display mode is a story control, default `detailed`); ITs
-`packages/api-doc-viewer/src/it/openapi-diffs-suite.<category>.it-test.ts` capture every case in
-`detailed` and `simple`. Cases whose change is on a non-initial option (response code, security
+`packages/api-doc-viewer/src/it/openapi-diffs-suite/<category>.it-test.ts` capture every case in
+`detailed` (`simple`: `OpenAPI Operation Diffs Suite (Display Mode = simple)`). Cases whose change is on a non-initial option (response code, security
 alternative) click it before the capture.
 
 ## Regenerate

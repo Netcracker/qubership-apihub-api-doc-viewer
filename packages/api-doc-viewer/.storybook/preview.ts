@@ -75,12 +75,15 @@ const preview: Preview = {
           'JSON Schema Suite',
           'JSON Schema Suite (Extensions)',
           'JSON Schema Suite (Performance)',
+          'JSON Schema Suite (Display Mode = simple)',
           'JSON Schema Diffs Suite',
           'JSON Schema Diffs Suite (Extensions)',
           'JSON Schema Diffs Suite (Hiding Unchanged Nodes)',
           'JSON Schema Diffs Suite (Node Changes Summary)',
+          'JSON Schema Diffs Suite (Display Mode = simple)',
           // AsyncAPI
           'Async API Suite',
+          'Async API Suite (Display Mode = simple)',
           'Async API Diffs Suite',
           [
             'Whole Apihub Operation Samples',
@@ -90,12 +93,15 @@ const preview: Preview = {
             'Channel Parameters Samples',
             'Channel Server Samples',
           ],
+          'Async API Diffs Suite (Display Mode = simple)',
           // OpenAPI
           'OpenAPI Operation Suite',
           'OpenAPI Operation Suite (Arrow Buttons)',
+          'OpenAPI Operation Suite (Display Mode = simple)',
           'OpenAPI Operation Diffs Suite',
           'OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)',
           'OpenAPI Operation Diffs Suite (Arrow Buttons)',
+          'OpenAPI Operation Diffs Suite (Display Mode = simple)',
           'OpenAPI Compatibility Suite',
           [
             'OAS 3.0 vs OAS 3.0',
@@ -168,7 +174,9 @@ const preview: Preview = {
           [
             'E2E Scenarios',
           ],
+          'DDL API Suite (Display Mode = simple)',
           'DDL API Diffs Suite',
+          'DDL API Diffs Suite (Display Mode = simple)',
           'DDL API Compatibility Suite',
           // GraphQL
           'GraphQL Operation Viewer',

@@ -121,7 +121,7 @@ overrides `createSecuritySpecBuilder()`.
 | Plain fixtures (one document per case) | `packages/samples/async-api/security/<nn-case>/document.yaml` + `README.md` (26 cases) |
 | Diff fixtures | `packages/samples/async-api-diffs/security/<n.m-case>/{before,after}.yaml` + `README.md` (1.x operation, 2.x server; 33 cases) |
 | Stories | `src/stories/async-api-suite/security.stories.tsx` (`Async API Suite/Security`), `src/stories/async-api-diffs-suite/security.stories.tsx` (`Async API Diffs Suite/Security Samples`) |
-| Screenshot ITs | `src/it/async-api-suite.security.it-test.ts`, `src/it/async-api-diffs-suite.security.it-test.ts` (server cases open the `Channel` section first) |
+| Screenshot ITs | `src/it/async-api-suite/security.it-test.ts`, `src/it/async-api-diffs-suite/security.it-test.ts` (server cases open the `Channel` section first) |
 | Unit tests | `packages/next-data-model/tests/unit-tests/async-api-security.test.ts` (plain + with diffs, labels, visibility); the OpenAPI suites cover the shared module |
 
 ## 5. Decisions

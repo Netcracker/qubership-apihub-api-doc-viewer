@@ -9,7 +9,7 @@ Every fixture catalogue is a `README.md` next to its fixtures:
 
 | Level | File | Required sections |
 | --- | --- | --- |
-| Sample root | `<root>/README.md` | `Categories`, `Storybook and screenshot tests`, `Regenerate` |
+| Sample root | `<root>/README.md` | `Categories` (`Cases` for a root without categories), `Storybook and screenshot tests`, `Regenerate` |
 | Category (when it needs detail) | `<root>/<category>/README.md` | `Cases`, `Storybook and screenshot tests`, `Regenerate` |
 
 Titles read `<API type> fixtures`, `<API type> diff fixtures`, or `… fixtures — <category>`.
@@ -29,6 +29,21 @@ its output folder must not share it with hand-written files.
 | `ddlapi/` | DDL API | plain | [ddlapi/README.md](ddlapi/README.md) |
 | `ddlapi-diffs/` | DDL API | with diffs | [ddlapi-diffs/README.md](ddlapi-diffs/README.md) |
 | `jso-diffs/` | JSO | with diffs | [jso-diffs/README.md](jso-diffs/README.md) |
+| `json-schema-display-mode-simple/` | JSON Schema | plain, display modes | [json-schema-display-mode-simple/README.md](json-schema-display-mode-simple/README.md) |
+| `json-schema-diffs-display-mode-simple/` | JSON Schema | with diffs, display modes | [json-schema-diffs-display-mode-simple/README.md](json-schema-diffs-display-mode-simple/README.md) |
+| `async-api-display-mode-simple/` | AsyncAPI | plain, display modes | [async-api-display-mode-simple/README.md](async-api-display-mode-simple/README.md) |
+| `async-api-diffs-display-mode-simple/` | AsyncAPI | with diffs, display modes | [async-api-diffs-display-mode-simple/README.md](async-api-diffs-display-mode-simple/README.md) |
+| `openapi-display-mode-simple/` | OpenAPI (3.0) | plain, display modes | [openapi-display-mode-simple/README.md](openapi-display-mode-simple/README.md) |
+| `openapi-diffs-display-mode-simple/` | OpenAPI (3.0) | with diffs, display modes | [openapi-diffs-display-mode-simple/README.md](openapi-diffs-display-mode-simple/README.md) |
+| `ddlapi-display-mode-simple/` | DDL API | plain, display modes | [ddlapi-display-mode-simple/README.md](ddlapi-display-mode-simple/README.md) |
+| `ddlapi-diffs-display-mode-simple/` | DDL API | with diffs, display modes | [ddlapi-diffs-display-mode-simple/README.md](ddlapi-diffs-display-mode-simple/README.md) |
+
+The `*-display-mode-simple/` roots (one minimal document per element display mode `simple` hides;
+written by `packages/api-doc-viewer/bin/generate-display-mode-simple-suites.mjs`) feed the only
+suites that capture `simple`: `* Suite (Display Mode = simple)` and
+`* Diffs Suite (Display Mode = simple)`, every case in `detailed` and `simple`. All other suites
+capture `detailed` only. Screenshot baselines live next to the ITs, one folder per test run:
+`packages/api-doc-viewer/src/it/<root>-suite/__image_snapshots__/`.
 
 Plain AsyncAPI stories (except Security) and plain JSO stories use inline data under
 `packages/api-doc-viewer/src/stories/`. The AsyncAPI Security fixtures (`async-api/security/`,
@@ -61,7 +76,7 @@ alternative. A case may also add or remove the anonymous alternative `{}` (`anon
 
 **Storybook and screenshot tests:** `OpenAPI Operation Diffs Suite (Hiding Unchanged Nodes)/Security Schemes`
 (`packages/api-doc-viewer/src/stories/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.stories.tsx`),
-ITs `packages/api-doc-viewer/src/it/openapi-diffs-hiding-unchanged-nodes-suite.security-schemes.it-test.ts`;
+ITs `packages/api-doc-viewer/src/it/openapi-diffs-hiding-unchanged-nodes-suite/security-schemes.it-test.ts`;
 unit tests `packages/next-data-model/tests/unit-tests/openapi-security-hiding-unchanged.test.ts`.
 
 **Regenerate:** nothing is written to disk — edit the module. When the case list changes, update the
@@ -88,7 +103,7 @@ option) or `every` (the strip overflows at the 1800px screenshot viewport, also 
 **Storybook and screenshot tests:** `OpenAPI Operation Suite (Arrow Buttons)/{Security Toolbar,Response Codes}`
 and `OpenAPI Operation Diffs Suite (Arrow Buttons)/{Security Toolbar,Response Codes}`
 (`packages/api-doc-viewer/src/stories/openapi-{,diffs-}arrow-buttons-suite/`), ITs
-`packages/api-doc-viewer/src/it/openapi-{,diffs-}arrow-buttons-suite.*.it-test.ts`: an overflowing
+`packages/api-doc-viewer/src/it/openapi-{,diffs-}arrow-buttons-suite/*.it-test.ts`: an overflowing
 strip is one test with three screenshots (left / middle / right).
 
 **Regenerate:** nothing is written to disk — edit the module, then

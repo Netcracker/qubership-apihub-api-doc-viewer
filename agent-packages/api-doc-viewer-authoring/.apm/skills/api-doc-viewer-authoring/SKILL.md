@@ -81,8 +81,14 @@ runtime, and the PostCSS plugin `postcss/css-isolation.cjs` (after `tailwindcss`
 
 **Display mode** (`DisplayMode`):
 
-- `simple` — titles and types only.
-- `detailed` — descriptions, deprecation, annotations, and other metadata.
+- `simple` — every annotation hidden, nothing else (OpenAPI, AsyncAPI, JSON Schema:
+  `docs/design/shared/features/display-mode-annotations.md`); DDL keeps title rows only
+  (`docs/design/ddlapi/features/doc-view.md`).
+- `detailed` (default) — annotations shown.
+
+A new element hidden in `simple` gets one case in `bin/display-mode-simple-case-definitions.mjs`
+(the `* [Diffs ]Suite (Display Mode = simple)` suites, `api-doc-viewer-testing` → Display mode
+suites); other suites never branch by display mode.
 
 Pass modes through the matching React contexts (`LayoutModeContext`,
 `DisplayModeContext`) rather than threading props through every child.
