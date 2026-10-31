@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 export type { DiffMetaKeys } from '../../api-data-model/src';
+export type { OperationKeys as AsyncApiOperationKeys } from '../../next-data-model/src/shared/async-api/types/operation-keys';
 export type { NavigationLinkBuilder } from '../../next-data-model/src/shared/ddlapi/types/navigation-link-builder';
+export type { TableKey } from '../../next-data-model/src/shared/ddlapi/types/table-key';
+export type { OpenApiOperationKeys } from '../../next-data-model/src/shared/openapi/types/operation-keys';
+export type { CustomizationOptions } from './contexts/CustomizationOptionsContext';
 export type { NavigationLinkComponent, NavigationLinkProps } from './components/DdlTableViewer/DefaultNavigationLink';
+export type { TopLevelPropsMediaTypesMap } from './components/JsonSchemaViewer/utils/top-level-props-media-types';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationDiffsViewer';
 export * from './components/AsyncApiOperationViewer/AsyncApiOperationViewer';
 export * from './components/OpenApiOperationViewer/OpenApiOperationDiffsViewer';
@@ -28,4 +33,4 @@ export * from './components/JsonSchemaViewer/JsonSchemaViewer';
 export * from './components/JsonSchemaViewer/JsonSchemaDiffsViewer';
 export * from './types/DisplayMode';
 export * from './types/LayoutMode';
-export { buildOpenApiDiffCause } from './utils/common/changes';
+export { buildDiffCauseByPathCausedAt, buildOpenApiDiffCause } from './utils/common/changes';
