@@ -15,7 +15,7 @@
  */
 /**
  * Clicks the oneOf/anyOf combiner variant option that actually contains the diff (detected via
- * the `diffs-border-shadow_*` / `diffs-round-marker_*` classes `CombinerSelectorRow`'s underlying
+ * the `api-doc-viewer-diffs-border-shadow_*` / `api-doc-viewer-diffs-round-marker_*` classes `CombinerSelectorRow`'s underlying
  * `Selector` component applies to changed options), instead of leaving the default first-option
  * selection. Recurses into nested combiners revealed by each click until no changed-but-unselected
  * option remains (leaf state). Option buttons carry `data-testid="json-schema-combiner-option-
