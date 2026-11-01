@@ -7,7 +7,8 @@ type OptionKeyTextProps = {
 };
 /**
  * Title of a media-type / response-code selector option. Unchanged options keep the bare text, so
- * their markup does not change.
+ * their markup does not change. A highlighted title carries `openapi-option-key-text`, the hook of its
+ * text color in `shared-styles/colors/openapi.css` (other selectors keep the button's text color).
  */
 export declare const OptionKeyText: FC<OptionKeyTextProps>;
 export {};
