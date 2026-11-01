@@ -148,3 +148,10 @@ button.button-selector-option.openapi-response-code_5xx.selected {
   border-color: #FF636F;
   color: #FFFFFF;
 }
+
+/* A yellow-highlighted option title (renamed response code / media type, `OptionKeyText`) is always
+   black: the inherited white of a selected tone is invisible on the highlighter. OpenAPI titles only:
+   other selectors (JSON Schema combiner options) keep the button's own text color on the highlighter. */
+button.button-selector-option .openapi-option-key-text.diffs-highlighter_yellow {
+  color: black;
+}

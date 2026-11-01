@@ -682,6 +682,28 @@ the raw PNG bytes (which showed the row background was in fact missing).
   tolerance for anti-aliasing and font-rendering noise elsewhere in the
   ~900+ existing snapshots — not a decision to make locally per-suite.
 
+### Same blind spot for small-text color (session lesson, 2026-11)
+
+A **text color** change on a short label slips through too. A rule meant for
+OpenAPI response codes (`button.button-selector-option .diffs-highlighter_yellow
+{ color: black }` in the shared `Selector.css`) also turned the highlighted text
+of JSON Schema combiner options from grey `#626D82` to black. The baselines kept
+the grey text, yet the combiner suites (allOf / anyOf / oneOf, cases like
+`138-nested-one-of-string-type-changed`) passed for weeks: a few anti-aliased
+glyphs of grey vs black stay under the thresholds above.
+
+- When a change touches **text color** (a shared selector rule, a color config,
+  an inherited `color`), check the computed `color` of the affected element in
+  the live showcase / Storybook instead of trusting a passing screenshot test:
+  `getComputedStyle(el).color` on the highlighted span next to its container's
+  color, for every API type that renders the shared component.
+- Match the prefixed class names in such DOM checks
+  (`.api-doc-viewer-diffs-highlighter_yellow`, CSS isolation).
+- A shared component's stylesheet (`Selector.css`, row CSS) must not carry a
+  rule for one API type's look; key it on that API type's own class in its color
+  config (`shared-styles/colors/<api-type>.css`) — the fix here was
+  `.openapi-option-key-text.diffs-highlighter_yellow` in `openapi.css`.
+
 ## Snapshots
 
 Images land in `src/it/<test-run>/__image_snapshots__/` (next to the IT; see **Test anatomy** →

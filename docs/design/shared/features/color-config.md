@@ -9,7 +9,7 @@ holds a color value.
 
 | File (`packages/api-doc-viewer/src/components/shared-styles/colors/`) | Colors | Class names come from |
 | --- | --- | --- |
-| `openapi.css` | HTTP method badges (address row); response-code selector options (untouched / hovered / selected) | `utils/openapi/http-method-badge-config.ts`, `utils/openapi/response-code-tone.ts` |
+| `openapi.css` | HTTP method badges (address row); response-code selector options (untouched / hovered / selected); black text of a yellow-highlighted (renamed) response-code / media-type option title (`OptionKeyText`, class `openapi-option-key-text`) — other selectors, e.g. JSON Schema combiner options, keep the button's text color on the highlighter | `utils/openapi/http-method-badge-config.ts`, `utils/openapi/response-code-tone.ts` |
 | `async-api.css` | operation action badges (`SEND`, `RECEIVE`) | `utils/async-api/action-badge-config.ts` |
 | `ddlapi.css` | column flag badges (`PK`, `FK`, `unique`, `not null`, `generated`) | `components/DdlTableViewer/consts.ts` |
 | `icon-buttons.css` | icon buttons of every viewer: the scroll-strip arrows (`‹` `›`) and the "three dots" reveal trigger — enabled / hovered / disabled colors, hover background, radius, as CSS variables on `.icon-button` ([arrow-scroll-strip.md](arrow-scroll-strip.md#arrow-button-styles-shared-icon-button-config)) | `ArrowScrollStrip`, `ShowUnchangedTrigger` |
