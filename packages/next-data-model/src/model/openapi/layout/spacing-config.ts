@@ -22,8 +22,10 @@ export type OpenApiSpacingConfig = LayoutSpacingConfig<OpenApiLayoutLevel> & {
 
 export const DEFAULT_OPENAPI_SPACING_CONFIG: OpenApiSpacingConfig = {
   ...DEFAULT_LAYOUT_SPACING_CONFIG,
-  // 4 + 4 + 4 = 12 between the top-level blocks; 4 + 4 = 8 everywhere else.
-  levelGap: { ...DEFAULT_LAYOUT_SPACING_CONFIG.levelGap, operation: 4, operationHeader: 0, request: 0, responses: 0 },
+  // EXPERIMENT (x2 separators): 8 + 8 + 8 = 24 between the top-level blocks; 8 + 8 = 16 everywhere
+  // else; 8 next to a nested viewer. Baseline: halfGap { row: 4, card: 4, nested: 0 }, operation 4.
+  halfGap: { row: 8, card: 8, nested: 0 },
+  levelGap: { ...DEFAULT_LAYOUT_SPACING_CONFIG.levelGap, operation: 8, operationHeader: 0, request: 0, responses: 0 },
   nestedViewerInset: 4,
   viewerEdges: true,
   sectionExpander: { width: 16, gap: 8 },
