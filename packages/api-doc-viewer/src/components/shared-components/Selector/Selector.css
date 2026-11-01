@@ -5,6 +5,14 @@ button.button-selector-option {
   color: #8F9EB4;
   border-radius: 4px;
   padding: 0px 8px 2px;
+  /* Diff chrome (border shadow, round marker) overhangs the option and the row: a title row is no
+     taller than its option, so the shadow reaches into the separator rows around it. Those rows are
+     positioned (`relative`, badge stub), so the one *below* - later in the DOM - painted its band over
+     the bottom shadow while the top shadow showed. Stacking the option above its row's siblings keeps
+     the chrome whole on every edge without touching the row heights. Below the floating badge / badge
+     stub (z-10); clipped as before inside an `ArrowScrollStrip` viewport. */
+  position: relative;
+  z-index: 1;
 }
 
 .button-selector-option_primary {
