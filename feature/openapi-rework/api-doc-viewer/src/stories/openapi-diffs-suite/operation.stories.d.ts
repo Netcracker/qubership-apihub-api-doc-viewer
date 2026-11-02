@@ -52,3 +52,5 @@ export declare const Case_21_extensions_added: Story;
 export declare const Case_22_extensions_removed: Story;
 export declare const Case_23_operation_added: Story;
 export declare const Case_24_operation_removed: Story;
+export declare const Case_25_long_path_summary_changed: Story;
+export declare const Case_26_very_long_path_summary_changed: Story;

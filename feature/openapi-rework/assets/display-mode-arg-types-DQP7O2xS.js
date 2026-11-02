@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DkW27tQK.js";import{nn as t,rn as n,tn as r}from"./UxBadge-y3QMnp-R.js";var i,a,o;function s(){return(s=e((()=>{n(),i=[r,t],a={displayMode:{control:{type:`select`},options:i,table:{category:`Viewer`}}},o={displayMode:r}})))()}export{o as n,s as r,a as t};
