@@ -24,6 +24,17 @@ import { loadMergedOpenApiSample, OPENAPI_TEST_DIFF_META_KEYS } from '../helpers
 const OPERATION = { path: '/orders', method: 'post' }
 const { Yellow, Green, Red, Gray } = HighlightVariant
 
+/**
+ * The separator / planner cases are worked out on these numbers (rows and cards own 4px, only the
+ * operation level adds 4px), frozen here so that tuning `DEFAULT_OPENAPI_SPACING_CONFIG` breaks only
+ * the test pinning the shipped defaults, not the algorithm tests.
+ */
+const CONFIG = OpenApiSpacing.withOverrides({
+  halfGap: { row: 4, card: 4, nested: 0 },
+  levelGap: { operation: 4, operationHeader: 0, security: 0, request: 0, responses: 0, section: 0, card: 0 },
+  cardInnerInset: 8,
+})
+
 function operation(caseId: string): OpenApiTreeNodeWithDiffs {
   const node = new OpenApiTreeWithDiffsBuilder({
     source: loadMergedOpenApiSample(caseId),
@@ -51,7 +62,7 @@ const card = (before?: HighlightVariant, after?: HighlightVariant, badge?: DiffT
 const block = (id: string, head: LayoutBlockEdge, tail = head): LayoutBlock<string> => ({ id, head, tail, payload: id })
 
 function between(above: LayoutBlockEdge, below: LayoutBlockEdge, level: OpenApiLayoutLevel): LayoutSeparatorRow | undefined {
-  return LayoutPlanner.separator(above, below, level, DEFAULT_OPENAPI_SPACING_CONFIG)
+  return LayoutPlanner.separator(above, below, level, CONFIG)
 }
 
 function ids(items: LayoutItem<string>[]): string[] {
@@ -59,9 +70,9 @@ function ids(items: LayoutItem<string>[]): string[] {
 }
 
 describe('OpenAPI layout: spacing config', () => {
-  it('rows and cards own 4px above and below, nested viewers none; only the operation level adds 4px', () => {
-    expect(DEFAULT_OPENAPI_SPACING_CONFIG.halfGap).toEqual({ row: 4, card: 4, nested: 0 })
-    expect(DEFAULT_OPENAPI_SPACING_CONFIG.levelGap).toEqual({ operation: 4, operationHeader: 0, security: 0, request: 0, responses: 0, section: 0, card: 0 })
+  it('rows and cards own 8px above and below, nested viewers none; only the operation level adds 8px', () => {
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.halfGap).toEqual({ row: 8, card: 8, nested: 0 })
+    expect(DEFAULT_OPENAPI_SPACING_CONFIG.levelGap).toEqual({ operation: 8, operationHeader: 0, security: 0, request: 0, responses: 0, section: 0, card: 0 })
     expect(DEFAULT_OPENAPI_SPACING_CONFIG.cardInnerInset).toBe(8)
     expect(DEFAULT_OPENAPI_SPACING_CONFIG.viewerEdges).toBe(true)
   })
@@ -131,13 +142,13 @@ describe('OpenAPI layout: separators', () => {
 describe('OpenAPI layout: planner', () => {
   it('interleaves separators between blocks; outer halves only on request', () => {
     const blocks = [block('a', row()), block('b', row()), block('c', nested())]
-    expect(ids(LayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG))).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
+    expect(ids(LayoutPlanner.plan(blocks, 'section', CONFIG))).toEqual(['a', 'a|b', 'b', 'b|c', 'c'])
     // A trailing nested viewer owns no half: no trailing separator.
-    expect(ids(LayoutPlanner.plan(blocks, 'section', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true }))).toEqual(['^a', 'a', 'a|b', 'b', 'b|c', 'c'])
+    expect(ids(LayoutPlanner.plan(blocks, 'section', CONFIG, { outerHalves: true }))).toEqual(['^a', 'a', 'a|b', 'b', 'b|c', 'c'])
   })
 
   it('an outer half is the edge element\'s own 4px, no level gap', () => {
-    const [first] = LayoutPlanner.plan([block('title', row(Yellow, Yellow))], 'operation', DEFAULT_OPENAPI_SPACING_CONFIG, { outerHalves: true })
+    const [first] = LayoutPlanner.plan([block('title', row(Yellow, Yellow))], 'operation', CONFIG, { outerHalves: true })
     expect(first.type === 'separator' && first.separator.before).toEqual([{ height: 4, tone: Yellow }])
   })
 
@@ -178,7 +189,7 @@ describe('OpenAPI layout: edges on fixtures', () => {
     const addedBadge = added.diffsSeverities?.[NodeDiffsSeverityPlacemennt.TitleRow]?.type
     expect(addedBadge).toBeDefined()
     expect(OpenApiBlockEdges.card(added)).toEqual(card(Gray, Green, addedBadge))
-    expect(LayoutPlanner.frameRow(added, DEFAULT_OPENAPI_SPACING_CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
+    expect(LayoutPlanner.frameRow(added, CONFIG)).toEqual({ height: 8, tones: { before: Gray, after: Green }, badge: addedBadge })
     expect(LayoutPlanner.frameRow(added, OpenApiSpacing.withOverrides({ frameRowBadge: false })).badge).toBeUndefined()
     const retyped = security('security/16-scheme-type-changed').childrenNodes()[0].childrenNodes()[0]
     expect(OpenApiBlockEdges.card(retyped)).toEqual(card())

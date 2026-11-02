@@ -7,16 +7,26 @@ and §9.1, the frame-row outer half of §3, and the §10 proposal (its problem d
 badge stubs of §9.2 and the data / viewer split of §7 stay. JSON Schema and JSO viewers are **not**
 changed: they keep their own rows and paddings.
 
-## 1. Requirements (as given)
+**Numbers doubled 2026-11-01** (rows stuck together): every OpenAPI element owns **8px** above and
+below (rows, cards) and the operation level adds **8px**, so rows of one block are **16px** apart and
+top-level blocks **24px**. Unchanged: the rule itself (R1–R4), the nested viewers' 0px half, the
+nested-viewer inset (4px), `cardInnerInset` (8px) and the expander column. AsyncAPI Security sections
+keep the shared 4px defaults (§7). All numbers below are the doubled ones; where a comparison column
+says "4px baseline" it gives the numbers approved on 2026-10-16.
+
+## 1. Requirements
 
 | # | Element(s) | Spacing |
 | --- | --- | --- |
-| 1 | **Block 1**: summary, operation ID, address, description, external docs rows | ≥ 4px above, ≥ 4px below each |
-| 2 | **Block 2**: Security header, security toolbar, security card(s) | ≥ 4px above / below each; ≥ 4px between cards |
-| 4 | **Block 3**: Extensions header, JSO viewer | ≥ 4px above / below |
-| 6 | **Block 4**: Request header; path / query / header / cookie parameter and Body sub-blocks (header + JSON Schema viewer) | ≥ 4px above / below |
-| 8 | **Block 5**: Responses header, response description, Headers / Body sub-blocks | ≥ 4px above / below |
-| 3, 5, 7, 9 | between blocks 1–2, 2–3, 3–4, 4–5 | **12px** |
+| 1 | **Block 1**: summary, operation ID, address, description, external docs rows | ≥ 8px above, ≥ 8px below each |
+| 2 | **Block 2**: Security header, security toolbar, security card(s) | ≥ 8px above / below each; ≥ 8px between cards |
+| 4 | **Block 3**: Extensions header, JSO viewer | ≥ 8px above / below |
+| 6 | **Block 4**: Request header; path / query / header / cookie parameter and Body sub-blocks (header + JSON Schema viewer) | ≥ 8px above / below |
+| 8 | **Block 5**: Responses header, response description, Headers / Body sub-blocks | ≥ 8px above / below |
+| 3, 5, 7, 9 | between blocks 1–2, 2–3, 3–4, 4–5 | **24px** |
+
+As given on 2026-10-16: ≥ 4px around every element, 12px between top-level blocks; doubled on
+2026-11-01.
 
 Plus: every vertical gap in OpenAPI is a separator row (or a set of separator rows) coloured by what
 changed; everything stays configurable.
@@ -32,25 +42,25 @@ stacks: a row, a security card (seen from outside), a nested JSON Schema / JSO v
 
 | Element | Owned half-gap (above and below) | Why |
 | --- | --- | --- |
-| OpenAPI row | **4px** | the "≥ 4px above / below" of every row |
-| Security card (outside its border) | **4px** | "≥ 4px around the cards" |
-| Nested JSON Schema / JSO viewer | **0px** | its first / last row already insets its text by ≥ 4px (JSON Schema: 4px row body, overridden for OpenAPI; JSO: 26px min-height centring) — the "≥" |
+| OpenAPI row | **8px** | the "≥ 8px above / below" of every row |
+| Security card (outside its border) | **8px** | "≥ 8px around the cards" |
+| Nested JSON Schema / JSO viewer | **0px** | its first / last row already insets its text by ≥ 4px (JSON Schema: 4px row body, overridden for OpenAPI; JSO: 26px min-height centring); the OpenAPI half next to it supplies the rest |
 
 **R3 — a level gap between top-level blocks.** Between two blocks of the **operation level**
-(blocks 1–5 above) the gap gets an extra **4px**, always split into **two 2px halves**: the upper
+(blocks 1–5 above) the gap gets an extra **8px**, always split into **two 4px halves**: the upper
 half continues the element above, the lower half the element below (§3). Inside a block (rows of
 block 1, sub-blocks of Request / Responses, cards) the level gap is **0**.
 
 **R4 — gap = owned half of the element above + level gap + owned half of the element below.**
 
-| Between | Gap | Today |
+| Between | Gap | 4px baseline |
 | --- | --- | --- |
-| two rows of one block (summary → operation ID → address → description → external docs; Security header → toolbar; Request header → first sub-block header; Responses header → description) | 4 + 0 + 4 = **8** | 8 (operation ID: 16) |
-| two sub-blocks (Path Parameters → Query Parameters, Headers → Body, …) | nested 0 + 0 + 4 = **4** below the viewer's own ≥ 4 inset → **8 visible** | 20 |
-| a sub-block header → its nested viewer | 4 + 0 + 0 → **4** above the viewer's own ≥ 4 inset → **8 visible** | 8 |
-| toolbar → first card border; card border → card border | 4 + 0 + 4 = **8** | 16; 24 |
-| two top-level blocks (1–2, 2–3, 3–4, 4–5) | 4 + **4** + 4 = **12** (after a nested viewer: 0 + 4 + 4 = 8 below its own ≥ 4 inset → 12 visible) | 20 |
-| top / bottom of the viewer | the first / last element's own 4px half (§7, D5) | 4 (row padding) |
+| two rows of one block (summary → operation ID → address → description → external docs; Security header → toolbar; Request header → first sub-block header; Responses header → description) | 8 + 0 + 8 = **16** | 8 |
+| two sub-blocks (Path Parameters → Query Parameters, Headers → Body, …) | nested 0 + 0 + 8 = **8** below the viewer's own ≥ 4 inset → **12 visible** | 4 → 8 visible |
+| a sub-block header → its nested viewer | 8 + 0 + 0 → **8** above the viewer's own ≥ 4 inset → **12 visible** | 4 → 8 visible |
+| toolbar → first card border; card border → card border | 8 + 0 + 8 = **16** | 8 |
+| two top-level blocks (1–2, 2–3, 3–4, 4–5) | 8 + **8** + 8 = **24** (after a nested viewer: 0 + 8 + 8 = 16 below its own ≥ 4 inset → 20 visible) | 12 (after a nested viewer: 8 → 12 visible) |
+| top / bottom of the viewer | the first / last element's own 8px half (§7, D5) | 4 |
 
 ## 3. Colouring
 
@@ -59,11 +69,11 @@ Each band of a separator takes a tone **per side**, as in block-separators §2:
 | Band | Tone on a side |
 | --- | --- |
 | owned half of an element | that element's own background on that side (the row diff that paints the row; a card: its whole-card diff; a nested viewer has a 0px half, but its tone — the whole add / remove of the block that owns it, as block-separators §2.6 — feeds the level half next to it) |
-| upper level half (2px) | the tone of the element **above** (the same as its owned half) |
-| lower level half (2px) | the tone of the element **below** |
+| upper level half (4px) | the tone of the element **above** (the same as its owned half) |
+| lower level half (4px) | the tone of the element **below** |
 
-So a gap between top-level blocks is, per side, `4 + 2` in the tone of the element above and
-`2 + 4` in the tone of the element below — two 6px halves. Neighbouring bands with the same tone
+So a gap between top-level blocks is, per side, `8 + 4` in the tone of the element above and
+`4 + 8` in the tone of the element below — two 12px halves. Neighbouring bands with the same tone
 render as one band (rendering only). Badge stubs follow the same bands: an owned half and the level
 half next to it carry their element's badge.
 
@@ -71,101 +81,101 @@ half next to it carry their element's badge.
 
 | Row that changed alone | Band above / below |
 | --- | --- |
-| inside a block (every gap 4 + 4) | **4 / 4** |
-| at the edge of a top-level block (the last row of block 1, a block's h2 title, the last row before the next block) | **4 / 6** or **6 / 4** — 2px more on the side of the 12px gap |
+| inside a block (every gap 8 + 8) | **8 / 8** |
+| at the edge of a top-level block (the last row of block 1, a block's h2 title, the last row before the next block) | **8 / 12** or **12 / 8** — 4px more on the side of the 24px gap |
 
 A wholly added / removed block is coloured through its elements and their halves; at the operation
-level its colour reaches 6px beyond its edge rows' content.
+level its colour reaches 12px beyond its edge rows' content.
 
 ## 4. Visual examples
 
-Notation: one line per band or row; `(4)` a 4px band, `▒G` green, `▒R` red, `▒Y` yellow, `░░` gray
+Notation: one line per band or row; `(8)` an 8px band, `▒G` green, `▒R` red, `▒Y` yellow, `░░` gray
 (absent side), blank = white; `▌` the floating badge / badge stub of the row's diff type (`▌a`
 annotation, `▌n` non-breaking where the fixture's type is known), leftmost. Left = origin, right = changed. Nested JSON Schema / JSO rows are marked `·`.
 
 ### 4.1 Plain operation (one column)
 
 ```text
-(4)                                        viewer top: first row's own half
+(8)                                        viewer top: first row's own half
 Update an order                            summary (h1)
-(4)(4)                                     8
+(8)(8)                                     16
 Operation ID: updateOrder
-(4)(4)                                     8
+(8)(8)                                     16
 [POST] /orders/{orderId}
-(4)(4)                                     8
+(8)(8)                                     16
 Replaces the order.                        description
-(4)(4)                                     8
+(8)(8)                                     16
 Order docs ↗                               external docs
-(4)(2)(2)(4)                               12 ── block 1 → block 2: 4 + 2 | 2 + 4
+(8)(4)(4)(8)                               24 ── block 1 → block 2: 8 + 4 | 4 + 8
 Security                                   h2
-(4)(4)                                     8
+(8)(8)                                     16
 ‹ oauth  api_key ›                         toolbar
-(4)(4)                                     8
+(8)(8)                                     16
 ┌ oauth  OAuth 2.0 ───────────┐            card 1 (its border; inside: §6)
 └─────────────────────────────┘
-(4)(4)                                     8 between cards
+(8)(8)                                     16 between cards
 ┌ api_key  API Key ───────────┐            card 2
 └─────────────────────────────┘
-(4)(2)(2)(4)                               12 ── block 2 → block 3
+(8)(4)(4)(8)                               24 ── block 2 → block 3
 Extensions                                 h2
-(4)                                        4 + JSO row's own inset
+(8)                                        8 + JSO row's own inset
 · x-rate-limit  100                        JSO viewer
-(2)(2)(4)                                  JSO inset + 8 = 12 ── block 3 → block 4: 0 + 2 | 2 + 4
+(4)(4)(8)                                  JSO inset + 16 = 20 ── block 3 → block 4: 0 + 4 | 4 + 8
 Request                                    h2
-(4)(4)                                     8
+(8)(8)                                     16
 Path Parameters                            h3
-(4)                                        4 + JSON Schema inset
+(8)                                        8 + JSON Schema inset
 · orderId* string                          JSON Schema viewer
-(4)                                        inset + 4 ── sub-block → sub-block (today 20)
+(8)                                        inset + 8 ── sub-block → sub-block
 Query Parameters
-(4)
+(8)
 · dryRun boolean
-(4)
+(8)
 Body*  [application/json]
-(4)
+(8)
 · Type object
-(2)(2)(4)                                  inset + 8 = 12 ── block 4 → block 5
+(4)(4)(8)                                  inset + 16 = 20 ── block 4 → block 5
 Responses  [200] [400]                     h2 + code selector
-(4)(4)                                     8
+(8)(8)                                     16
 Updated order.                             response description
-(4)(4)                                     8
+(8)(8)                                     16
 Headers                                    h3
-(4)
+(8)
 · ETag string
-(4)
+(8)
 Body  [application/json]
-(4)
+(8)
 · Type object                              viewer bottom: nested viewer's own inset
 ```
 
-### 4.2 A row that changed alone — 4 / 4 inside a block, 4 / 6 at a top-level edge
+### 4.2 A row that changed alone — 8 / 8 inside a block, 8 / 12 at a top-level edge
 
 `operation/09-description-changed` (description replaced, annotation; the description is the last
-row of block 1, so the 12px gap to Security is below it):
+row of block 1, so the 24px gap to Security is below it):
 
 ```text
       [POST] /orders/{orderId}       │    [POST] /orders/{orderId}
-      (4)                            │    (4)                       address's half
-▌a ▒Y (4)                            │ ▒Y (4)                       description's half
+      (8)                            │    (8)                       address's half
+▌a ▒Y (8)                            │ ▒Y (8)                       description's half
 ▌a ▒Y Replaces the order.            │ ▒Y Replaces the whole order.
-▌a ▒Y (4)                            │ ▒Y (4)                       description's half
-▌a ▒Y (2)                            │ ▒Y (2)                       upper level half: continues the description
-      (2)                            │    (2)                       lower level half: continues Security
-      (4)                            │    (4)                       Security's half
+▌a ▒Y (8)                            │ ▒Y (8)                       description's half
+▌a ▒Y (4)                            │ ▒Y (4)                       upper level half: continues the description
+      (4)                            │    (4)                       lower level half: continues Security
+      (8)                            │    (8)                       Security's half
       Security                       │    Security
 ```
 
-Band: 4 above, 6 below (a middle row such as the address would be 4 / 4).
+Band: 8 above, 12 below (a middle row such as the address would be 8 / 8).
 
 `operation/05-operation-id-removed` (a middle row of block 1):
 
 ```text
       Update an order                │    Update an order
-      (4)                            │    (4)
-▌  ▒R (4)                            │ ░░ (4)
+      (8)                            │    (8)
+▌  ▒R (8)                            │ ░░ (8)
 ▌  ▒R Operation ID: updateOrder      │ ░░
-▌  ▒R (4)                            │ ░░ (4)
-      (4)                            │    (4)
+▌  ▒R (8)                            │ ░░ (8)
+      (8)                            │    (8)
       [POST] /orders/{orderId}       │    [POST] /orders/{orderId}
 ```
 
@@ -173,10 +183,10 @@ Band: 4 above, 6 below (a middle row such as the address would be 4 / 4).
 
 ```text
       · session string               │    · session string          Cookies' viewer: its own inset, half 0
-▌  ▒Y (4)                            │ ▒Y (4)                       Body title's half
+▌  ▒Y (8)                            │ ▒Y (8)                       Body title's half
 ▌  ▒Y Body  [application/json]       │ ▒Y Body*  [application/json] [required]
-▌  ▒Y (4)                            │ ▒Y (4)                       Body title's half
-      (4)                            │    (4)                       description's half
+▌  ▒Y (8)                            │ ▒Y (8)                       Body title's half
+      (8)                            │    (8)                       description's half
       New order state.               │    New order state.
 ```
 
@@ -184,12 +194,12 @@ Band: 4 above, 6 below (a middle row such as the address would be 4 / 4).
 
 ```text
       · Type object                  │    · Type object             Request's last nested row (half 0)
-      (2)                            │    (2)                       upper level half: continues the nested viewer (Request unchanged)
-▌  ▒Y (2)                            │ ▒Y (2)                       lower level half: continues the Responses title
-▌  ▒Y (4)                            │ ▒Y (4)                       Responses title's half
+      (4)                            │    (4)                       upper level half: continues the nested viewer (Request unchanged)
+▌  ▒Y (4)                            │ ▒Y (4)                       lower level half: continues the Responses title
+▌  ▒Y (8)                            │ ▒Y (8)                       Responses title's half
 ▌  ▒Y Responses [200] [400] [4xx]    │ ▒Y Responses [200] [400] [4XX]
-▌  ▒Y (4)                            │ ▒Y (4)
-      (4)                            │    (4)
+▌  ▒Y (8)                            │ ▒Y (8)
+      (8)                            │    (8)
       Updated order.                 │    Updated order.
 ```
 
@@ -199,12 +209,12 @@ Band: 4 above, 6 below (a middle row such as the address would be 4 / 4).
 
 ```text
       · orderId* string              │    · orderId* string         Path Parameters' viewer
-▌n ░░ (4)                            │ ▒G (4)                       Query Parameters title's half
+▌n ░░ (8)                            │ ▒G (8)                       Query Parameters title's half
 ▌n ░░                                │ ▒G Query Parameters
-▌n ░░ (4)                            │ ▒G (4)
+▌n ░░ (8)                            │ ▒G (8)
 ▌n ░░ ·                              │ ▒G · dryRun boolean          nested rows (painted by JSON Schema)
 ▌n ░░ ·                              │ ▒G · expand string
-      (4)                            │    (4)                       Headers title's half
+      (8)                            │    (8)                       Headers title's half
       Headers                        │    Headers
 ```
 
@@ -212,27 +222,27 @@ A top-level block wholly added — the Security section added between block 1 an
 
 ```text
       Replaces the order.            │    Replaces the order.
-      (4)                            │    (4)                       description's half
-      (2)                            │    (2)                       upper level half: continues the description
-▌n ░░ (2)                            │ ▒G (2)                       lower level half: continues the Security title
-▌n ░░ (4)                            │ ▒G (4)                       Security title's half
+      (8)                            │    (8)                       description's half
+      (4)                            │    (4)                       upper level half: continues the description
+▌n ░░ (4)                            │ ▒G (4)                       lower level half: continues the Security title
+▌n ░░ (8)                            │ ▒G (8)                       Security title's half
 ▌n ░░                                │ ▒G Security
    …                                 │    …
 ▌n ░░ └ card ┘                       │ ▒G └ card ┘
-▌n ░░ (4)                            │ ▒G (4)                       card's half
-▌n ░░ (2)                            │ ▒G (2)                       upper level half: continues the card
-      (2)                            │    (2)                       lower level half: continues the Extensions title
-      (4)                            │    (4)
+▌n ░░ (8)                            │ ▒G (8)                       card's half
+▌n ░░ (4)                            │ ▒G (4)                       upper level half: continues the card
+      (4)                            │    (4)                       lower level half: continues the Extensions title
+      (8)                            │    (8)
       Extensions                     │    Extensions
 ```
 
 A removed block directly above an added one (both at the operation level):
 
 ```text
-▌  ▒R (4)                            │ ░░ (4)                       last element's half of the removed block
-▌  ▒R (2)                            │ ░░ (2)                       upper level half
-▌n ░░ (2)                            │ ▒G (2)                       lower level half
-▌n ░░ (4)                            │ ▒G (4)
+▌  ▒R (8)                            │ ░░ (8)                       last element's half of the removed block
+▌  ▒R (4)                            │ ░░ (4)                       upper level half
+▌n ░░ (4)                            │ ▒G (4)                       lower level half
+▌n ░░ (8)                            │ ▒G (8)
 ▌n ░░                                │ ▒G Extensions
 ```
 
@@ -242,26 +252,28 @@ A card wholly added after an unchanged one:
 
 ```text
       └ card 1 ┘                     │    └ card 1 ┘
-      (4)                            │    (4)                       card 1's half
-▌n ░░ (4)                            │ ▒G (4)                       card 2's half
+      (8)                            │    (8)                       card 1's half
+▌n ░░ (8)                            │ ▒G (8)                       card 2's half
 ▌n ░░ ┌ card 2 ┐                     │ ▒G ┌ card 2 ┐
 ```
 
 ## 5. What this does to the open questions
 
 - **block-separators §10 (asymmetric band of a row that changed alone):** gone inside a block
-  (4 / 4); at a top-level block edge it is 4 / 6 by choice — each 12px gap splits into two halves
-  that continue their neighbours (§3) — instead of today's 4 / 10.
-- **Your earlier request (separators between the block-1 rows, 8 = 4 + 4):** this is R4 for block 1.
-- **Operation ID padding (§9.1):** gone — the row is 8px from its neighbours like every row.
+  (8 / 8); at a top-level block edge it is 8 / 12 by choice — each 24px gap splits into two halves
+  that continue their neighbours (§3) — instead of the pre-2026-10-16 4 / 10.
+- **Your earlier request (separators between the block-1 rows, then 8 = 4 + 4, now 16 = 8 + 8):**
+  this is R4 for block 1.
+- **Operation ID padding (§9.1):** gone — the row is 16px from its neighbours like every row.
 
 ## 6. Security cards (inside)
 
-From outside a card is one element with a 4px half (§2). Inside, today's frame rows (24px, border in
-the middle) lose their outer 12px — that space is now the card's half in the separator outside.
-They keep the inner part: **`cardInnerInset`** between the border and the first / last content row's
-own 4px half. Default **8**, so border → content stays **12px** as today. Rows inside a card follow
-R4 with level gap 0: 8px between rows and between card segments (flow parts) — see D3.
+From outside a card is one element with an 8px half (§2). Inside, the pre-2026-10-16 frame rows
+(24px, border in the middle) lost their outer 12px — that space is now the card's half in the
+separator outside. They keep the inner part: **`cardInnerInset`** between the border and the first /
+last content row's own 8px half. Default **8** (not doubled), so border → content is **16px** (12px
+with the 4px baseline). Rows inside a card follow R4 with level gap 0: 16px between rows and between
+card segments (flow parts) — see D3.
 
 ## 7. Configuration
 
@@ -274,15 +286,17 @@ OpenAPI part (`model/openapi/layout/spacing-config.ts`: `OpenApiSpacingConfig` =
 spreads the shared defaults). Each root viewer provides its config through the viewer's
 `LayoutSpacingContext` (OpenAPI: `DEFAULT_OPENAPI_SPACING_CONFIG`; AsyncAPI:
 `DEFAULT_LAYOUT_SPACING_CONFIG`); the shared `StackLayout` and the security cards read only that.
-Together:
+The doubled numbers are an OpenAPI override (`halfGap` and `levelGap.operation` in
+`DEFAULT_OPENAPI_SPACING_CONFIG`); the shared defaults keep `halfGap` 4 / 4 / 0, so AsyncAPI Security
+sections are unchanged. Together (OpenAPI defaults):
 
 ```typescript
 type OpenApiSpacingConfig = {
   /** R2: owned half-gap above and below, per element kind (px). */
-  readonly halfGap: { readonly row: number, readonly card: number, readonly nested: number }   // 4 / 4 / 0
+  readonly halfGap: { readonly row: number, readonly card: number, readonly nested: number }   // 8 / 8 / 0 (shared default 4 / 4 / 0)
   /** R3: extra gap between two siblings, per container level (px); split in two halves that continue the neighbours. */
   readonly levelGap: {
-    readonly operation: number          // 4  — blocks 1–5
+    readonly operation: number          // 8  — blocks 1–5
     readonly operationHeader: number    // 0  — rows of block 1
     readonly security: number           // 0  — Security header, toolbar, cards
     readonly request: number            // 0  — Request sub-blocks (D1)
@@ -308,8 +322,8 @@ type OpenApiSpacingConfig = {
 // request / responses, nestedViewerInset, viewerEdges, sectionExpander.
 ```
 
-Changing a gap later is a one-number edit: e.g. `levelGap.request: 4` gives 12px between Request
-sub-blocks; `halfGap.row: 6` gives 12px between rows everywhere.
+Changing a gap later is a one-number edit: e.g. `levelGap.request: 8` adds 8px between Request
+sub-blocks (as between top-level blocks); `halfGap.row: 6` gives 12px between rows everywhere.
 
 ## 8. Algorithm
 
@@ -347,6 +361,10 @@ Viewer (`OpenApiOperationViewer/`):
 Roughly one working day including tests, the audit and screenshot regeneration.
 
 ## 10. Decision points
+
+As decided on 2026-10-16, with the 4px baseline numbers (doubled since, see the status note; the
+choices themselves still hold: 16px between sub-blocks, cards and flow parts, border → content 16px,
+the viewer keeps its 8px top / bottom).
 
 1. **Sub-blocks inside Request / Responses** (Path Parameters → Query Parameters, Headers → Body):
    **8px** as the requirements read (today 20), or `levelGap.request / responses = 4` → 12px.

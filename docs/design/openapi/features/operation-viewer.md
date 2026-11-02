@@ -242,10 +242,10 @@ colouring principle and badge stubs: [block-separators.md](block-separators.md).
 | Rule | Value |
 | --- | --- |
 | Every OpenAPI row | **no vertical padding** (`data-precededby="separator-layout-row"`); every gap is a separator row |
-| Element half-gaps | row 4px, security card 4px (outside its border), nested JSON Schema / JSO viewer 0 (its own ≥ 4px inset) |
-| Gap | upper element's half + level gap + lower element's half: **8px** inside a block, **12px** between the top-level blocks (operation header, Security, Extensions, Request, Responses; level gap 4 = 2 + 2 continuing the neighbours) |
-| Colouring | each element's half and the adjacent level half take that element's own tone per side; a row that changed alone: 4 / 4 inside a block, 4 / 6 at a top-level edge |
-| Security cards | frame rows of `cardInnerInset` (8px) inside the border, coloured by the whole-card diff only; card rows planned at the `card` level with outer halves (border → content 12px) |
+| Element half-gaps | row 8px, security card 8px (outside its border), nested JSON Schema / JSO viewer 0 (its own ≥ 4px inset) |
+| Gap | upper element's half + level gap + lower element's half: **16px** inside a block, **24px** between the top-level blocks (operation header, Security, Extensions, Request, Responses; level gap 8 = 4 + 4 continuing the neighbours) |
+| Colouring | each element's half and the adjacent level half take that element's own tone per side; a row that changed alone: 8 / 8 inside a block, 8 / 12 at a top-level edge |
+| Security cards | frame rows of `cardInnerInset` (8px) inside the border, coloured by the whole-card diff only; card rows planned at the `card` level with outer halves (border → content 16px) |
 | Floating badges | separators and frame rows carry a decorative **badge stub** (no hover, no text) following the same bands |
 | Nested JSON Schema / JSO viewers | their own rows; their first row gets `SEPARATOR_LAYOUT_NESTED_VIEWER_START` (opt-in hooks `firstRowPrecededBy`, `contentPrecededBy`) |
 | Viewer top / bottom | the first / last element's own half (config `viewerEdges`) |

@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-11-01T16:33:17.209989+00:00'
+generated_at: '2026-11-02T15:01:46.456655+00:00'
 apm_version: 0.26.0
 dependencies:
 - repo_url: _local/api-doc-viewer-authoring
@@ -17,10 +17,10 @@ dependencies:
   - .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md
   deployed_file_hashes:
     .claude/rules/api-doc-viewer-authoring.md: sha256:1d6c2af8c876a25bc58324fb8e3ab38401857a8ed06b3812dea67327080c4718
-    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:06a0d45525a45771f66aa03dc27854d522fa4e4b4867b613b3e969774950f15a
+    .claude/skills/api-doc-viewer-authoring/SKILL.md: sha256:c76c051f917ea1299e71c4944229eee8e6c2e4f983355bf7cb406f39f0cee9a7
     .claude/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:686d323293b62be68591bd66265130aa214b1c3fa7cc3d894367284da15c2b2a
     .cursor/rules/api-doc-viewer-authoring.mdc: sha256:9f0e280b03507c191c552e7d78bdb65cc1f47d56c7e5fbe37a5e87cfb1afdb8f
-    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:06a0d45525a45771f66aa03dc27854d522fa4e4b4867b613b3e969774950f15a
+    .cursor/skills/api-doc-viewer-authoring/SKILL.md: sha256:c76c051f917ea1299e71c4944229eee8e6c2e4f983355bf7cb406f39f0cee9a7
     .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md: sha256:686d323293b62be68591bd66265130aa214b1c3fa7cc3d894367284da15c2b2a
   source: local
   local_path: ./agent-packages/api-doc-viewer-authoring
@@ -325,7 +325,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:06a0d45525a45771f66aa03dc27854d522fa4e4b4867b613b3e969774950f15a
+  content_hash: sha256:c76c051f917ea1299e71c4944229eee8e6c2e4f983355bf7cb406f39f0cee9a7
 - kind: project-relative
   target: claude
   value: .claude/skills/api-doc-viewer-authoring/refactoring-notes.md
@@ -694,7 +694,7 @@ deployments:
   owners:
   - ./agent-packages/api-doc-viewer-authoring
   active_owner: ./agent-packages/api-doc-viewer-authoring
-  content_hash: sha256:06a0d45525a45771f66aa03dc27854d522fa4e4b4867b613b3e969774950f15a
+  content_hash: sha256:c76c051f917ea1299e71c4944229eee8e6c2e4f983355bf7cb406f39f0cee9a7
 - kind: project-relative
   target: cursor
   value: .cursor/skills/api-doc-viewer-authoring/refactoring-notes.md

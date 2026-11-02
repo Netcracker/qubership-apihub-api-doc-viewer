@@ -1084,14 +1084,14 @@ the upper element's half-gap + the container level's gap + the lower element's h
 no padding on rows or wrappers (section divs, layouts, `DiffFloatingBadgeWrapper`), no `min-height`
 centring. JSON Schema / JSO viewers keep their own rows and paddings.
 
-- **Elements and half-gaps.** An element is an OpenAPI row (4px half), a security card seen from
-  outside (4px), or a nested JSON Schema / JSO viewer (0px — its first / last row already insets its
+- **Elements and half-gaps.** An element is an OpenAPI row (8px half), a security card seen from
+  outside (8px), or a nested JSON Schema / JSO viewer (0px — its first / last row already insets its
   text: JSON Schema row body via `SEPARATOR_LAYOUT_NESTED_VIEWER_START` + `--separator-layout-nested-viewer-inset`, JSO
   26px centring). `LayoutBlockEdge.kind` (`row` / `card` / `nested`) selects the half from
   `OpenApiSpacingConfig.halfGap`.
-- **Levels.** Every container plans its own elements: `operation` (blocks 1–5, level gap 4 → 12px),
+- **Levels.** Every container plans its own elements: `operation` (blocks 1–5, level gap 8 → 24px),
   `operationHeader`, `security`, `request`, `responses`, `section` (rows of a parameter group / Body /
-  Extensions), `card` (all 0 → 8px). The level gap splits into halves that continue the neighbours
+  Extensions), `card` (all 0 → 16px). The level gap splits into halves that continue the neighbours
   (`splitBands`). Every row is its own block of its container; containers take the head of their first
   child and the tail of their last (`BlockEdges.container`). Outer halves: the root (config
   `viewerEdges`) and the inside of a card.
@@ -1164,17 +1164,26 @@ centring. JSON Schema / JSO viewers keep their own rows and paddings.
 - **The user's gap requirements map onto owned halves (session lesson).** Two earlier models were
   rejected: splitting every gap in half between rows (block-edge rows 4 / 10) and symmetric row
   padding with separators only between blocks (a changed row at a block edge 4 / 10 again). The
-  approved model reads "≥ 4px above / below every element, 12px between top-level blocks" literally:
-  each element owns its halves, the 4px level gap splits 2 + 2 continuing the neighbours, so a row that
-  changed alone is 4 / 4 inside a block and 4 / 6 at a top-level edge. When proposing a spacing model,
-  draw the bands of every row kind (block-edge rows included) in plain and diffs mode.
+  approved model (2026-10-16) read "≥ 4px above / below every element, 12px between top-level blocks"
+  literally: each element owns its halves, the level gap splits in two halves continuing the
+  neighbours. The numbers were doubled on 2026-11-01 (rows stuck together): 8px halves, 8 = 4 + 4 level
+  gap, so a row that changed alone is 8 / 8 inside a block and 8 / 12 at a top-level edge. When
+  proposing a spacing model, draw the bands of every row kind (block-edge rows included) in plain and
+  diffs mode.
+- **Tuning the numbers.** Edit `DEFAULT_OPENAPI_SPACING_CONFIG` (next-data-model
+  `model/openapi/layout/spacing-config.ts`) only: the shared `DEFAULT_LAYOUT_SPACING_CONFIG` (4 / 4 / 0)
+  also serves AsyncAPI Security sections. In `tests/unit-tests/openapi-layout.test.ts` only the
+  "spacing config" test pins the shipped defaults; the separator / planner tests run on a frozen 4px
+  `CONFIG` and must not follow the defaults. Then update `docs/design/openapi/features/vertical-gaps.md`
+  (and the summary table in `operation-viewer.md`) and regenerate every OpenAPI screenshot suite.
 - **Big layout changes go design-first with approval.** For this kind of change the user asked for a
   drawn proposal in `docs/design/`, then the algorithm (data computed in next-data-model, every number
   and rule in one config), then a cost estimate — each approved before any code. Expect the same for
   comparable requests.
 - **Verify by measuring**, not by eye (testing skill → vertical spacing audit): OpenAPI rows have 0
-  padding; separators 8 inside a block, 12 between top-level blocks (4 next to a nested viewer), with
-  the right tones per side; card frame rows 8 with the border at their outer edge.
+  padding; separators 16 inside a block, 24 between top-level blocks (8 next to a nested viewer inside
+  a block, 16 at a top-level edge), with the right tones per side; card frame rows 8 with the border at
+  their outer edge (border → content 16).
 
 ## Typography: the JSON Schema property-title look (session lesson)
 
