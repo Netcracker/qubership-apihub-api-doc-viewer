@@ -104,6 +104,7 @@ screenshot ITs must stay unchanged after the move.
 | Badge text | `method.toUpperCase()` |
 | Address text | `path` exactly as in the document (`/pets/{petId}/photos`); server URLs are not prefixed (`servers` is out of v1 scope). |
 | Diff | `address` key of the operation node. The with-diffs transformer converts the `paths` **rename** diff (`beforeKey` → `afterKey`) into a `replace` with `beforeValue = beforeKey`, `afterValue = afterKey`, so the existing partial-replace highlighting works ([../features/diffs.md](../features/diffs.md#operation)). Severity `AddressRow`. |
+| Long address | The grey container hugs its content but never grows past its side (row padding included: 32px between the two sides' containers). When the value does not fit on one line, **only the address value** shrinks in proportion, from 18px down to 12px; the badge and the trailing content keep their size. Both sides use the same size: the smaller of the two sides' fitted sizes. Still too long at 12px: the value wraps (break opportunities after every `/`, line height 1.25). Sizes and rules: `utils/common/address-value-fit.ts` (`ADDRESS_VALUE_FONT_SIZE`, `AddressValueFit`); `AddressRow` measures each side (a hidden one-line probe at 18px against the width left in the row) with a `ResizeObserver`. Applies to the AsyncAPI address rows too (shared component). Fixtures: operation `25-long-path-summary-changed` (shrinks), `26-very-long-path-summary-changed` (wraps). |
 
 ### HTTP method badge config
 

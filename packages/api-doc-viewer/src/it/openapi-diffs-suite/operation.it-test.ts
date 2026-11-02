@@ -32,6 +32,8 @@ const CASES: ReadonlyArray<readonly [string, string, readonly string[]]> = [
   ['22-extensions-removed', 'openapi-operation-diffs-suite-operation--case-22-extensions-removed', []],
   ['23-operation-added', 'openapi-operation-diffs-suite-operation--case-23-operation-added', []],
   ['24-operation-removed', 'openapi-operation-diffs-suite-operation--case-24-operation-removed', []],
+  ['25-long-path-summary-changed', 'openapi-operation-diffs-suite-operation--case-25-long-path-summary-changed', []],
+  ['26-very-long-path-summary-changed', 'openapi-operation-diffs-suite-operation--case-26-very-long-path-summary-changed', []],
 ]
 
 describe('OpenAPI Operation Diffs Suite - Operation', () => {

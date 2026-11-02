@@ -529,6 +529,12 @@ const withSummary = doc => { operation(doc).summary = 'Update an order' }
 const withOperationId = doc => { operation(doc).operationId = 'updateOrder' }
 const withDescription = doc => { operation(doc).description = 'Replaces the order.' }
 const withRateLimitExtension = doc => { operation(doc)['x-rate-limit'] = 100 }
+const withPath = path => doc => renameKey(doc.paths, OPERATION_PATH, path)
+
+/** Too long for one side at the base font size, fits at a smaller one. */
+const LONG_OPERATION_PATH = '/achmeainsurancecontracts/orders/insuredwagecalculationpercentages/yearendbonusandholidayallowance'
+/** Too long for one side even at the minimum font size: wraps. */
+const VERY_LONG_OPERATION_PATH = `${LONG_OPERATION_PATH}/payrolladministrations/employments/wagecomponents/calculationresults/historicalperiodsoverview/exportdefinitions`
 
 export const OPERATION_CASES = [
   { pair: ['summary-added', 'summary-removed'], titles: ['summary added (title row appears)', 'summary removed'], apply: () => withSummary },
@@ -580,6 +586,20 @@ export const OPERATION_CASES = [
     reversed: true,
     setup: () => doc => { doc.paths[OPERATION_PATH].get = { responses: { 200: { description: 'The order.' } } } },
     apply: () => doc => { delete doc.paths[OPERATION_PATH].post },
+  },
+  {
+    change: 'long-path-summary-changed',
+    title: 'summary replaced, long path: the address value font shrinks to fit each side (same size on both sides)',
+    setup: () => withPath(LONG_OPERATION_PATH),
+    before: () => withSummary,
+    after: () => doc => { operation(doc).summary = 'Replace an order' },
+  },
+  {
+    change: 'very-long-path-summary-changed',
+    title: 'summary replaced, very long path: the address value wraps at the minimum font size',
+    setup: () => withPath(VERY_LONG_OPERATION_PATH),
+    before: () => withSummary,
+    after: () => doc => { operation(doc).summary = 'Replace an order' },
   },
 ]
 

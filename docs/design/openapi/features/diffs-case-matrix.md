@@ -24,7 +24,7 @@ rules the cases exercise: [diffs.md](diffs.md).
 
 <!-- BEGIN generated: node packages/api-doc-viewer/bin/generate-openapi-diffs-suite.mjs -->
 
-254 cases; ITs capture each in `detailed` (254 screenshots). Display mode `simple` is covered by `OpenAPI Operation Diffs Suite (Display Mode = simple)`.
+256 cases; ITs capture each in `detailed` (256 screenshots). Display mode `simple` is covered by `OpenAPI Operation Diffs Suite (Display Mode = simple)`.
 
 ### Parameters and headers
 
@@ -122,6 +122,8 @@ One case list for the request body and the body of the initially selected respon
 | `22-extensions-removed` | Extensions section disappears | `21-extensions-added` |
 | `23-operation-added` | whole operation added next to an existing GET | `24-operation-removed` |
 | `24-operation-removed` | whole operation removed, GET stays | `23-operation-added` |
+| `25-long-path-summary-changed` | summary replaced, long path: the address value font shrinks to fit each side (same size on both sides) | — |
+| `26-very-long-path-summary-changed` | summary replaced, very long path: the address value wraps at the minimum font size | — |
 
 ### Responses (`responses/`)
 

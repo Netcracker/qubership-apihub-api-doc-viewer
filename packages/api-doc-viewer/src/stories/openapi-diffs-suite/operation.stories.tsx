@@ -61,3 +61,5 @@ export const Case_21_extensions_added: Story = createCaseStory("21-extensions-ad
 export const Case_22_extensions_removed: Story = createCaseStory("22-extensions-removed");
 export const Case_23_operation_added: Story = createCaseStory("23-operation-added");
 export const Case_24_operation_removed: Story = createCaseStory("24-operation-removed");
+export const Case_25_long_path_summary_changed: Story = createCaseStory("25-long-path-summary-changed");
+export const Case_26_very_long_path_summary_changed: Story = createCaseStory("26-very-long-path-summary-changed");

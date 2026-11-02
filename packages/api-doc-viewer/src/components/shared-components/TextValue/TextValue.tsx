@@ -23,6 +23,8 @@ type TextValueProps = {
   diff?: ChangedPropertyMetaData
   usage?: TitleRowUsage
   highlightingMode?: DiffHighlightingApplicationMode
+  /** Renders the resolved (shortened, side-specific) text, e.g. to add line-break opportunities; plain text by default. */
+  renderText?: (text: string) => ReactNode
 }
 
 export type TextExpanderProps = Partial<{
@@ -60,7 +62,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
   const isInvisibleDiffHighlighting = highlightingMode === DiffHighlightingApplicationMode.Invisible
 
   // value/font specific
-  const { textFontWeight, labelFontWeight, labelColor, textColor, label } = props
+  const { textFontWeight, labelFontWeight, labelColor, textColor, label, renderText } = props
 
   const [expanded, setExpanded] = useState(false)
 
@@ -80,6 +82,7 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
       ...textColor?.trim() ? { style: { color: textColor } } : {},
     }
     resolvedValue = expanded ? resolvedValue : shortenValue(resolvedValue)
+    const text: ReactNode = renderText && resolvedValue !== undefined ? renderText(resolvedValue) : resolvedValue
 
     const renderByVariant = (content: ReactNode, className: string) => {
       const variantProps = {
@@ -115,14 +118,14 @@ export const TextValue: FC<TextValueProps> = memo<TextValueProps>((props) => {
           >
             {`${label}: `}
           </span>
-          <span className={cn(diffsStyles)}>{resolvedValue}</span>
+          <span className={cn(diffsStyles)}>{text}</span>
         </>,
         commonStylesWithoutDiffs,
       )
     }
 
-    return renderByVariant(resolvedValue, commonStyles)
-  }, [expanded, isInvisibleDiffHighlighting, label, labelColor, labelFontWeight, onClick, textColor, textFontWeight, variant])
+    return renderByVariant(text, commonStyles)
+  }, [expanded, isInvisibleDiffHighlighting, label, labelColor, labelFontWeight, onClick, renderText, textColor, textFontWeight, variant])
 
   const renderValue = useCallback((value: string | undefined): [string | undefined, string[], boolean] => {
     const diffsStyleClasses: string[] = []
