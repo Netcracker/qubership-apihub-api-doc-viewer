@@ -86,7 +86,7 @@ titles, **h5** OAuth flow titles.
 | # | Row | Component | Node | Shown when (plain) | Details |
 | ---: | --- | --- | --- | --- | --- |
 | 1 | Operation title (h1) + **deprecated** tag | `TitleRow` | `operation` | `summary` exists and not `noHeading` | [operation](../entities/operation.md#title-row) |
-| 2 | `Operation ID:` label + `operationId` (secondary text, one line) (+ **deprecated** tag when row 1 is absent) | `TextRow` (`label` + `value`) | `operation` | `operationId` exists | [operation](../entities/operation.md#operation-id-row) |
+| 2 | `operationId` (secondary text, no label) (+ **deprecated** tag when row 1 is absent) | `TextRow` (`value`) | `operation` | `operationId` exists | [operation](../entities/operation.md#operation-id-row) |
 | 3 | Address: method badge + path (+ **deprecated** tag when rows 1 and 2 are absent) | shared `AddressRow` | `operation` | always | [operation](../entities/operation.md#address-row) |
 | 4 | Description | `MarkdownTextRow` | `operation` | `description` | [operation](../entities/operation.md#description-row) |
 | 5 | External docs link `View external documentation ↗`, description in a `UxTooltip` | shared `ExternalDocsRow` | `operation` | `externalDocs.url` | [operation](../entities/operation.md#external-docs-row) |
@@ -124,7 +124,7 @@ painted wholly added / removed even when no diff sits on its own object
 
 ```text
 Upload a photo of a pet  [deprecated]                                h1 + deprecated tag (when deprecated)
-Operation ID: uploadPetPhoto                                         operation ID row: static label + value (small, grey)
+uploadPetPhoto                                                       operation ID row: value only (small, grey)
 [POST] /pets/{petId}/photos                                          address row
 Uploads a new photo and attaches it to the pet. …                    description (markdown)
 View external documentation ↗                                        external docs link (description in a hover tooltip)

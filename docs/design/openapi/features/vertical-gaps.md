@@ -99,7 +99,7 @@ annotation, `▌n` non-breaking where the fixture's type is known), leftmost. Le
 (8)                                        viewer top: first row's own half
 Update an order                            summary (h1)
 (8)(8)                                     16
-Operation ID: updateOrder
+updateOrder                                operation ID
 (8)(8)                                     16
 [POST] /orders/{orderId}
 (8)(8)                                     16
@@ -173,7 +173,7 @@ Band: 8 above, 12 below (a middle row such as the address would be 8 / 8).
       Update an order                │    Update an order
       (8)                            │    (8)
 ▌  ▒R (8)                            │ ░░ (8)
-▌  ▒R Operation ID: updateOrder      │ ░░
+▌  ▒R updateOrder                    │ ░░
 ▌  ▒R (8)                            │ ░░ (8)
       (8)                            │    (8)
       [POST] /orders/{orderId}       │    [POST] /orders/{orderId}

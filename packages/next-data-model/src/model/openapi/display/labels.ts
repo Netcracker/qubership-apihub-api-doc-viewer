@@ -19,8 +19,6 @@ export class OpenApiDisplayLabels {
   public static readonly RESPONSES_TITLE = 'Responses'
   public static readonly BODY_TITLE = 'Body'
   public static readonly RESPONSE_HEADERS_TITLE = 'Headers'
-  /** Label of the operation ID row of the operation header. */
-  public static readonly OPERATION_ID_LABEL = 'Operation ID'
 
   public static parameterGroupTitle(location: OpenApiParameterLocation): string {
     return PARAMETER_GROUP_TITLES[location]

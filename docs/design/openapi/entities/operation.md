@@ -45,23 +45,22 @@ export interface OpenApiTreeNodeValueTypeOperation {
 
 ## Operation ID row
 
-Secondary information directly under the title (Q10): a static label followed by the value, on
-**one line**.
+Secondary information directly under the title (Q10): the bare value, **no label** (the
+`Operation ID:` label was removed on 2026-11-03).
 
 ```text
 Upload a photo of a pet                    h1
-Operation ID: uploadPetPhoto               operation ID row (small, grey)
+uploadPetPhoto                             operation ID row (small, grey)
 [POST] /pets/{petId}/photos                address row
 ```
 
 | Item | Rule |
 | --- | --- |
-| Component | `TextRow`, `variant={TextValueVariant.body2}` — small and muted, never a heading. Label and value are rendered by the row's existing `label` + `value` props (same mechanism as the AsyncAPI binding `Version` row), so they share one line. |
-| Label | displayed text `Operation ID:`, static. Pass `label="Operation ID"` **without** the colon: `TextValue` renders the label as `` `${label}: ` `` itself, so `"Operation ID:"` would show `Operation ID:: …`. Keep the string in one constant (`OpenApiDisplayLabels.OPERATION_ID_LABEL = 'Operation ID'`, next-data-model). `labelFontWeight='normal'`, `labelColor` = secondary grey (`TextColors.SECONDARY`, `#626D82`). |
-| Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`#626D82`, the address-row text color) |
+| Component | `TextRow`, `variant={TextValueVariant.body2}` — small and muted, never a heading. Only the `value` prop; no `label`. |
+| Value | `operationId` as is; `textFontWeight='normal'`, `textColor` = secondary grey (`TextColors.SECONDARY`, `#626D82`, the address-row text color) |
 | Shown when | `operationId` exists (diffs: on either side, or an `operationId` diff exists). Independent of the title row: `noHeading` and a missing `summary` hide the title only. |
 | Spacing | each header row (title, operation ID, address, description, external docs) is its own element of the `operationHeader` level (level gap 0: 8px apart); the rows have no vertical padding (`PrecededBy.SEPARATOR_LAYOUT_ROW`), every gap is a separator row ([vertical-gaps.md](../features/vertical-gaps.md)) |
-| Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). The **label is never highlighted** — on a replace only the value gets the yellow text highlighter (`TextValue` puts diff classes on the value span only). On add / remove the side where `operationId` does not exist renders **no text at all**, label included (`TextValue` returns `null` for an invisible side), so a bare `Operation ID:` never appears. |
+| Diff | `operationId` key → row `diff`; severity: new placement `OperationIdRow`. The row background follows the diff (green / red / yellow). On a replace the value gets the yellow text highlighter. On add / remove the side where `operationId` does not exist renders **no text** (`TextValue` returns `null` for an invisible side). |
 
 ## Deprecated tag
 

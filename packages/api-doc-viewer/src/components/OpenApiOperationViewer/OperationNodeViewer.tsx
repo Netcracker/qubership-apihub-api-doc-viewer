@@ -1,7 +1,6 @@
 import { cn } from "@apihub/utils/common/cn"
 import { useDisplayMode } from "@apihub/contexts/DisplayModeContext"
 import { TextColors } from "../shared-styles/colors/text-colors"
-import { OpenApiDisplayLabels } from "@netcracker/qubership-apihub-next-data-model/model/openapi/display/labels"
 import { LayoutSide } from "@apihub/types/internal/LayoutSide"
 import { ArrayUtils } from "@apihub/utils/common/arrays"
 import { resolveHttpMethodBadge } from "@apihub/utils/openapi/http-method-badge-config"
@@ -192,12 +191,9 @@ const OperationHeaderRow: FC<OperationHeaderRowProps> = ({ node, row, deprecated
       return (
         <TextRow
           data-precededby={PrecededBy.SEPARATOR_LAYOUT_ROW}
-          label={OpenApiDisplayLabels.OPERATION_ID_LABEL}
           value={value?.operationId ?? ''}
           variant={TextValueVariant.body2}
-          labelFontWeight="normal"
           textFontWeight="normal"
-          labelColor={TextColors.SECONDARY}
           textColor={TextColors.SECONDARY}
           trailing={deprecatedTagRow === 'operationId' && hasDeprecatedTag ? renderDeprecatedTag : undefined}
           diff={diff}
